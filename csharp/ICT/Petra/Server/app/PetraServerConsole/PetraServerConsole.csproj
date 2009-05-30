@@ -1,0 +1,111 @@
+﻿<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <ProjectGuid>{69E21FFC-F815-451A-96BB-66499CDDEB6E}</ProjectGuid>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <OutputType>Exe</OutputType>
+    <RootNamespace>PetraServerConsole</RootNamespace>
+    <AssemblyName>PetraServerConsole</AssemblyName>
+    <BaseIntermediateOutputPath>../../_bin\</BaseIntermediateOutputPath>
+    <TargetFrameworkVersion>v2.0</TargetFrameworkVersion>
+    <AllowUnsafeBlocks>False</AllowUnsafeBlocks>
+    <NoStdLib>False</NoStdLib>
+    <WarningLevel>4</WarningLevel>
+    <TreatWarningsAsErrors>false</TreatWarningsAsErrors>
+    <StartArguments>-C:PetraServerConsole.exe.config</StartArguments>
+    <DocumentationFile>..\..\_bin\Debug\PetraServerConsole.xml</DocumentationFile>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
+    <OutputPath>../../_bin\Debug\</OutputPath>
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>Full</DebugType>
+    <CheckForOverflowUnderflow>True</CheckForOverflowUnderflow>
+    <DefineConstants>DEBUG;TRACE;DEBUGMODE</DefineConstants>
+    <IntermediateOutputPath>../../_bin\Debug\</IntermediateOutputPath>
+    <Optimize>False</Optimize>
+    <StartAction>Project</StartAction>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)' == 'Release' ">
+    <OutputPath>../../_bin\Release\</OutputPath>
+    <DebugSymbols>false</DebugSymbols>
+    <DebugType>None</DebugType>
+    <CheckForOverflowUnderflow>False</CheckForOverflowUnderflow>
+    <DefineConstants>TRACE</DefineConstants>
+    <Optimize>True</Optimize>
+    <IntermediateOutputPath>../../_bin\Release\</IntermediateOutputPath>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Platform)' == 'AnyCPU' ">
+    <RegisterForComInterop>False</RegisterForComInterop>
+    <GenerateSerializationAssemblies>Auto</GenerateSerializationAssemblies>
+    <BaseAddress>4194304</BaseAddress>
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <FileAlignment>4096</FileAlignment>
+  </PropertyGroup>
+  <Import Project="$(SharpDevelopBinPath)\SharpDevelop.Build.CSharp.targets" />
+  <ItemGroup>
+    <Reference Include="Ict.Common">
+      <HintPath>..\..\..\..\Common\_bin\Debug\Ict.Common.dll</HintPath>
+      <SpecificVersion>False</SpecificVersion>
+    </Reference>
+    <Reference Include="Ict.Common.Data">
+      <HintPath>..\..\..\..\Common\_bin\Debug\Ict.Common.Data.dll</HintPath>
+      <SpecificVersion>False</SpecificVersion>
+    </Reference>
+    <Reference Include="Ict.Petra.Shared.Interfaces">
+      <HintPath>..\..\..\Shared\_bin\Server_Client\Debug\Ict.Petra.Shared.Interfaces.dll</HintPath>
+      <SpecificVersion>False</SpecificVersion>
+    </Reference>
+    <Reference Include="Ict.Petra.Shared.Interfaces.ServerAdminInterface">
+      <HintPath>..\..\..\ServerAdmin\_bin\Debug\Ict.Petra.Shared.Interfaces.ServerAdminInterface.dll</HintPath>
+      <SpecificVersion>False</SpecificVersion>
+    </Reference>
+    <Reference Include="Mono.Posix">
+      <HintPath>..\..\..\..\..\ThirdParty\Mono\Mono.Posix.dll</HintPath>
+      <SpecificVersion>False</SpecificVersion>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Runtime.Remoting, Version=1.0.5000.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="PetraServerConsole.AssemblyInfo.cs" />
+    <Compile Include="Main.cs" />
+    <Compile Include="PetraServerConsole.cs" />
+    <None Include="app.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\lib\MCommon\Ict.Petra.Server.MCommon.csproj">
+      <Project>{1F2FFC91-5C00-44ED-8EFD-3940426793CF}</Project>
+      <Name>Ict.Petra.Server.MCommon</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\lib\MPartner\Ict.Petra.Server.MPartner.Instantiator.csproj">
+      <Project>{69E21FFC-F815-451A-96BB-66499CDDEB6E}</Project>
+      <Name>Ict.Petra.Server.MPartner.Instantiator</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\lib\MPersonnel\Ict.Petra.Server.MPersonnel.Instantiator.csproj">
+      <Project>F37641A0-702F-48F8-A810-6075C3B29F6B</Project>
+      <Name>Ict.Petra.Server.MPersonnel.Instantiator</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\lib\MSysMan\Ict.Petra.Server.MSysMan.csproj">
+      <Project>{5DF56B61-41A0-4E7E-A918-5AF595A023A2}</Project>
+      <Name>Ict.Petra.Server.MSysMan</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\ClientDomain\Ict.Petra.Server.App.ClientDomain.CallForwarder.csproj">
+      <Project>4F3F60C9-AC5E-4023-922A-FB616B53A2C0</Project>
+      <Name>Ict.Petra.Server.App.ClientDomain.CallForwarder</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\ClientDomain\Ict.Petra.Server.App.ClientDomain.csproj">
+      <Project>DC487150-0555-4C05-A13F-91588D9D750D</Project>
+      <Name>Ict.Petra.Server.App.ClientDomain</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Core\Ict.Petra.Server.App.Core.csproj">
+      <Project>{F053BB7D-E40D-4434-B99C-FC803F65E10A}</Project>
+      <Name>Ict.Petra.Server.App.Core</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Main\Ict.Petra.Server.App.Main.csproj">
+      <Project>476D1409-E5EA-4E2A-A3FB-743F4832AE7A</Project>
+      <Name>Ict.Petra.Server.App.Main</Name>
+    </ProjectReference>
+  </ItemGroup>
+</Project>

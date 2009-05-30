@@ -1,0 +1,189 @@
+﻿/*************************************************************************
+ *
+ * DO NOT REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
+ *
+ * @Authors:
+ *       christiank
+ *
+ * Copyright 2004-2009 by OM International
+ *
+ * This file is part of OpenPetra.org.
+ *
+ * OpenPetra.org is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * OpenPetra.org is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with OpenPetra.org.  If not, see <http://www.gnu.org/licenses/>.
+ *
+ ************************************************************************/
+using System;
+using System.Data;
+using System.Windows.Forms;
+using Ict.Common;
+using Ict.Petra.Shared.MPartner.Partner.Data;
+using DevAge.Drawing;
+using DevAge.ComponentModel;
+using DevAge.ComponentModel.Converter;
+using DevAge.ComponentModel.Validator;
+using SourceGrid;
+using SourceGrid.Cells;
+using SourceGrid.Cells.Controllers;
+using SourceGrid.Cells.Editors;
+using SourceGrid.Cells.Views;
+using Ict.Common.Controls;
+using Ict.Petra.Shared;
+
+namespace Ict.Petra.Client.MCommon
+{
+    /// <summary>
+    /// Contains logic for the Partner Location Change Propagation Selection Dialog.
+    /// </summary>
+    public class TPartnerLocationChangePropagationSelectionLogic : System.Object
+    {
+        private PartnerAddressAggregateTDSChangePromotionParametersTable FPartnerSharingLocationDT;
+        private System.Data.DataView FPartnerSharingLocationDV;
+        private TSgrdDataGrid FDataGridPersonsLocations;
+        private TSgrdDataGrid FDataGridChangedDetails;
+
+        /// <summary>
+        /// This property handles the datasource of this dialogue
+        ///
+        /// </summary>
+        public System.Data.DataView PartnerSharingLocationDV
+        {
+            get
+            {
+                return FPartnerSharingLocationDV;
+            }
+
+            set
+            {
+                FPartnerSharingLocationDV = value;
+            }
+        }
+
+        /// <summary>
+        /// This property handles the TypeCode property
+        ///
+        /// </summary>
+        public TSgrdDataGrid DataGridPersonsLocations
+        {
+            get
+            {
+                return this.FDataGridPersonsLocations;
+            }
+
+            set
+            {
+                this.FDataGridPersonsLocations = value;
+            }
+        }
+
+
+        /// <summary>
+        /// This procedure creates the colums of the Persons' Locations DataGrid
+        ///
+        /// </summary>
+        /// <returns>void</returns>
+        public void CreateColumnsPersonsLocations(TSgrdDataGrid AGrid, System.Data.DataTable ASourceTable)
+        {
+            SourceGrid.Cells.Editors.TextBoxUITypeEditor DateEditor;
+            TPetraDateConverter PetraDtConverter;
+            this.DataGridPersonsLocations = AGrid;
+            DateEditor = new SourceGrid.Cells.Editors.TextBoxUITypeEditor(typeof(DateTime));
+            DateEditor.EditableMode = EditableMode.None;
+            PetraDtConverter = new TPetraDateConverter();
+            DateEditor.TypeConverter = PetraDtConverter;
+            this.FDataGridPersonsLocations.AddTextColumn(
+                PartnerAddressAggregateTDSChangePromotionParametersTable.GetPartnerShortNameLabel(),
+                ASourceTable.Columns[PartnerAddressAggregateTDSChangePromotionParametersTable.GetPartnerShortNameDBName()]);
+            this.FDataGridPersonsLocations.AddTextColumn(
+                PartnerAddressAggregateTDSChangePromotionParametersTable.GetPartnerKeyLabel(),
+                ASourceTable.Columns[PartnerAddressAggregateTDSChangePromotionParametersTable.GetPartnerKeyDBName()], 77);
+            this.FDataGridPersonsLocations.AddTextColumn(
+                PartnerAddressAggregateTDSChangePromotionParametersTable.GetTelephoneNumberLabel(),
+                ASourceTable.Columns[PartnerAddressAggregateTDSChangePromotionParametersTable.GetTelephoneNumberDBName()]);
+            this.FDataGridPersonsLocations.AddTextColumn(
+                PartnerAddressAggregateTDSChangePromotionParametersTable.GetExtensionLabel(),
+                ASourceTable.Columns[PartnerAddressAggregateTDSChangePromotionParametersTable.GetExtensionDBName()]);
+            this.FDataGridPersonsLocations.AddTextColumn(
+                PartnerAddressAggregateTDSChangePromotionParametersTable.GetFaxNumberLabel(),
+                ASourceTable.Columns[PartnerAddressAggregateTDSChangePromotionParametersTable.GetFaxNumberDBName()]);
+            this.FDataGridPersonsLocations.AddTextColumn(
+                PartnerAddressAggregateTDSChangePromotionParametersTable.GetFaxExtensionLabel(),
+                ASourceTable.Columns[PartnerAddressAggregateTDSChangePromotionParametersTable.GetFaxExtensionDBName()]);
+            this.FDataGridPersonsLocations.AddTextColumn(
+                PartnerAddressAggregateTDSChangePromotionParametersTable.GetMobileNumberLabel(),
+                ASourceTable.Columns[PartnerAddressAggregateTDSChangePromotionParametersTable.GetMobileNumberDBName()]);
+            this.FDataGridPersonsLocations.AddTextColumn(
+                PartnerAddressAggregateTDSChangePromotionParametersTable.GetAlternateTelephoneLabel(),
+                ASourceTable.Columns[PartnerAddressAggregateTDSChangePromotionParametersTable.GetAlternateTelephoneDBName()]);
+            this.FDataGridPersonsLocations.AddTextColumn(
+                PartnerAddressAggregateTDSChangePromotionParametersTable.GetEmailAddressLabel(),
+                ASourceTable.Columns[PartnerAddressAggregateTDSChangePromotionParametersTable.GetEmailAddressDBName()]);
+            this.FDataGridPersonsLocations.AddTextColumn(
+                PartnerAddressAggregateTDSChangePromotionParametersTable.GetUrlLabel(),
+                ASourceTable.Columns[PartnerAddressAggregateTDSChangePromotionParametersTable.GetUrlDBName()]);
+            this.FDataGridPersonsLocations.AddTextColumn(
+                PartnerAddressAggregateTDSChangePromotionParametersTable.GetLocationTypeLabel(),
+                ASourceTable.Columns[PartnerAddressAggregateTDSChangePromotionParametersTable.GetLocationTypeDBName()], 88);
+            this.FDataGridPersonsLocations.AddCheckBoxColumn(
+                PartnerAddressAggregateTDSChangePromotionParametersTable.GetSendMailLabel(),
+                ASourceTable.Columns[PartnerAddressAggregateTDSChangePromotionParametersTable.GetSendMailDBName()]);
+            this.FDataGridPersonsLocations.AddTextColumn(
+                PartnerAddressAggregateTDSChangePromotionParametersTable.GetDateEffectiveLabel(),
+                ASourceTable.Columns[PartnerAddressAggregateTDSChangePromotionParametersTable.GetDateEffectiveDBName()], -1, null, DateEditor, null,
+                null);
+            this.FDataGridPersonsLocations.AddTextColumn(
+                PartnerAddressAggregateTDSChangePromotionParametersTable.GetDateGoodUntilLabel(),
+                ASourceTable.Columns[PartnerAddressAggregateTDSChangePromotionParametersTable.GetDateGoodUntilDBName()], -1, null, DateEditor, null,
+                null);
+
+            // this.FDataGridPersonsLocations.AddTextColumn(PartnerAddressAggregateTDSChangePromotionParametersTable.GetSiteKeyLabel(),
+            // ASourceTable.Columns[PartnerAddressAggregateTDSChangePromotionParametersTable.GetSiteKeyDBName()], 77);
+            this.FDataGridPersonsLocations.AddTextColumn(
+                PartnerAddressAggregateTDSChangePromotionParametersTable.GetLocationKeyLabel(),
+                ASourceTable.Columns[PartnerAddressAggregateTDSChangePromotionParametersTable.GetLocationKeyDBName()]);
+
+            // Following Columns are for debugging only!
+            // this.FDataGridPersonsLocations.AddTextColumn('Site Key Of Edited Record', ASourceTable.Columns[PartnerAddressAggregateTDSChangePromotionParametersTable.GetSiteKeyOfEditedRecordDBName()], 77);
+            // this.FDataGridPersonsLocations.AddTextColumn('Location Key Of Edited Record', ASourceTable.Columns[PartnerAddressAggregateTDSChangePromotionParametersTable.GetLocationKeyOfEditedRecordDBName()]);
+        }
+
+        #region TPartnerLocationChangePropagationSelectionLogic
+
+        /// <summary>
+        /// This procedure creates the colums of the Changed Details DataGrid
+        ///
+        /// </summary>
+        /// <returns>void</returns>
+        public void CreateColumnsChangedDetails(TSgrdDataGrid AGrid, System.Data.DataTable ASourceTable)
+        {
+            FDataGridChangedDetails = AGrid;
+
+            // this.FDataGridChangedDetails.AddTextColumn('Field DB Name', ASourceTable.Columns['DBName']);
+            this.FDataGridChangedDetails.AddTextColumn("Detail", ASourceTable.Columns["DBLabel"]);
+            this.FDataGridChangedDetails.AddTextColumn("Old Value", ASourceTable.Columns["OriginalValue"]);
+            this.FDataGridChangedDetails.AddTextColumn("New Value", ASourceTable.Columns["CurrentValue"]);
+        }
+
+        /// <summary>
+        /// This procedure initializes this System.Object.
+        ///
+        /// </summary>
+        /// <returns>void</returns>
+        public void InitialisePartnerTypeFamilyMembers(PartnerAddressAggregateTDSChangePromotionParametersTable APartnerSharingLocationDT)
+        {
+            this.FPartnerSharingLocationDT = APartnerSharingLocationDT;
+        }
+
+        #endregion
+    }
+}

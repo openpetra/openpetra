@@ -1,0 +1,302 @@
+﻿/*************************************************************************
+ *
+ * DO NOT REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
+ *
+ * @Authors:
+ *       christiank
+ *
+ * Copyright 2004-2009 by OM International
+ *
+ * This file is part of OpenPetra.org.
+ *
+ * OpenPetra.org is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * OpenPetra.org is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with OpenPetra.org.  If not, see <http://www.gnu.org/licenses/>.
+ *
+ ************************************************************************/
+using System;
+using System.Drawing;
+using System.Collections;
+using System.ComponentModel;
+using System.Windows.Forms;
+using System.Data;
+using Ict.Common;
+using Ict.Petra.Shared.Interfaces.MPartner.Partner.UIConnectors;
+using Ict.Petra.Shared.Interfaces.MPartner.Partner;
+using Ict.Petra.Shared.MPartner.Partner.Data;
+using Ict.Petra.Client.CommonForms;
+using Ict.Petra.Client.MPartner;
+using SourceGrid;
+using Ict.Common.Controls;
+using System.Globalization;
+using Ict.Petra.Shared.MPartner;
+
+namespace Ict.Petra.Client.MPartner
+{
+    /// <summary>
+    /// A UserControl that holds the same information as the Petra 4GL Partner Types
+    /// section in the Petra 4GL Partner Edit screen.
+    ///
+    /// Since this UserControl can be re-used, it is no longer necessary to recreate
+    /// all the layout and fields and verification rules in other places than the
+    /// Partner Edit screen.
+    /// </summary>
+    public class TUCPartnerTypes : TPetraUserControl
+    {
+        /// <summary> Required designer variable. </summary>
+        private System.ComponentModel.IContainer components;
+        private TSgrdDataGrid grdPartnerTypes;
+
+        /// <summary>holds a reference to the Proxy System.Object of the Serverside UIConnector</summary>
+        private IPartnerUIConnectorsPartnerEdit FPartnerEditUIConnector;
+
+        /// <summary>holds the DataSet that contains most data that is used on the screen</summary>
+        private new PartnerEditTDS FMainDS;
+        private TUCPartnerTypesLogic FLogic;
+
+        /// <summary>todoComment</summary>
+        public new PartnerEditTDS MainDS
+        {
+            get
+            {
+                return FMainDS;
+            }
+
+            set
+            {
+                FMainDS = value;
+            }
+        }
+
+        /// <summary>used for passing through the Clientside Proxy for the UIConnector</summary>
+        public IPartnerUIConnectorsPartnerEdit PartnerEditUIConnector
+        {
+            get
+            {
+                return FPartnerEditUIConnector;
+            }
+
+            set
+            {
+                FPartnerEditUIConnector = value;
+            }
+        }
+
+        /// <summary>todoComment</summary>
+        public event TRecalculateScreenPartsEventHandler RecalculateScreenParts;
+
+        /// <summary>todoComment</summary>
+        public event THookupPartnerEditDataChangeEventHandler HookupDataChange;
+
+        #region Windows Form Designer generated code
+
+        /// <summary>
+        /// <summary> Required method for Designer support  do not modify the contents of this method with the code editor. </summary> <summary> Required method for Designer support  do not modify the contents of this method with the code editor.
+        /// </summary>
+        /// </summary>
+        /// <returns>void</returns>
+        private void InitializeComponent()
+        {
+            this.components = new System.ComponentModel.Container();
+            this.grdPartnerTypes = new Ict.Common.Controls.TSgrdDataGrid();
+            this.SuspendLayout();
+
+            //
+            // grdPartnerTypes
+            //
+            this.grdPartnerTypes.AlternatingBackgroundColour = System.Drawing.Color.FromArgb(230, 230, 230);
+            this.grdPartnerTypes.Anchor =
+                ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top |
+                                                        System.Windows.Forms.AnchorStyles.Bottom) |
+                                                       System.Windows.Forms.AnchorStyles.Left) | System.Windows.Forms.AnchorStyles.Right)));
+            this.grdPartnerTypes.AutoFindColumn = ((Int16)(1));
+            this.grdPartnerTypes.AutoFindMode = Ict.Common.Controls.TAutoFindModeEnum.FirstCharacter;
+            this.grdPartnerTypes.BackColor = System.Drawing.SystemColors.ControlDark;
+            this.grdPartnerTypes.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
+            this.grdPartnerTypes.DeleteQuestionMessage = "You have chosen to delete t" + "his record.'#13#10#13#10'Dou you really want to delete it?";
+            this.grdPartnerTypes.FixedRows = 1;
+            this.grdPartnerTypes.Location = new System.Drawing.Point(4, 6);
+            this.grdPartnerTypes.MinimumHeight = 1;
+            this.grdPartnerTypes.Name = "grdPartnerTypes";
+            this.grdPartnerTypes.Size = new System.Drawing.Size(410, 316);
+            this.grdPartnerTypes.SpecialKeys =
+                ((SourceGrid.GridSpecialKeys)((((((SourceGrid.GridSpecialKeys.Arrows |
+                                                   SourceGrid.GridSpecialKeys.PageDownUp) |
+                                                  SourceGrid.GridSpecialKeys.Enter) |
+                                                 SourceGrid.GridSpecialKeys.Escape) |
+                                                SourceGrid.GridSpecialKeys.Control) | SourceGrid.GridSpecialKeys.Shift)));
+            this.SetStatusBarText(this.grdPartnerTypes,
+                "Special Types List. Tick/untick selected Special Type with <Enter> or <Space> key or by double-clicking desired Special Type.");
+            this.grdPartnerTypes.TabIndex = 0;
+            this.grdPartnerTypes.TabStop = true;
+            this.grdPartnerTypes.DoubleClickCell += new TDoubleClickCellEventHandler(this.GrdPartnerTypes_DoubleClickCell);
+            this.grdPartnerTypes.SpaceKeyPressed += new TKeyPressedEventHandler(this.GrdPartnerTypes_SpaceKeyPressed);
+            this.grdPartnerTypes.EnterKeyPressed += new TKeyPressedEventHandler(this.GrdPartnerTypes_EnterKeyPressed);
+
+            //
+            // TUCPartnerTypes
+            //
+            this.Controls.Add(this.grdPartnerTypes);
+            this.Name = "TUCPartnerTypes";
+            this.Size = new System.Drawing.Size(574, 336);
+            this.ResumeLayout(false);
+        }
+
+        #endregion
+
+        /// <summary>
+        /// constructor
+        /// </summary>
+        public TUCPartnerTypes() : base()
+        {
+            //
+            // Required for Windows Form Designer support
+            //
+            InitializeComponent();
+
+            // define the screen's logic
+            FLogic = new TUCPartnerTypesLogic();
+        }
+
+        /// <summary>
+        /// <summary> Clean up any resources being used. </summary>
+        /// </summary>
+        /// <returns>void</returns>
+        protected override void Dispose(Boolean Disposing)
+        {
+            if (Disposing)
+            {
+                if (components != null)
+                {
+                    components.Dispose();
+                }
+            }
+
+            base.Dispose(Disposing);
+        }
+
+        private void RethrowRecalculateScreenParts(System.Object sender, TRecalculateScreenPartsEventArgs e)
+        {
+            OnRecalculateScreenParts(e);
+        }
+
+        private void OnHookupDataChange(THookupPartnerEditDataChangeEventArgs e)
+        {
+            if (HookupDataChange != null)
+            {
+                HookupDataChange(this, e);
+            }
+        }
+
+        private void OnRecalculateScreenParts(TRecalculateScreenPartsEventArgs e)
+        {
+            if (RecalculateScreenParts != null)
+            {
+                RecalculateScreenParts(this, e);
+            }
+        }
+
+        private PartnerEditTDSPartnerTypeChangeFamilyMembersPromotionTable OpenPartnerTypePropagationSelection(String APartnerTypeCode,
+            String AAction)
+        {
+            PartnerEditTDSPartnerTypeChangeFamilyMembersPromotionTable ReturnValue = null;
+
+// TODO OpenPartnerTypePropagationSelection
+#if TODO
+            TPartnerTypeFamilyMembersPropagationSelectionWinForm PartnerTypeFamilyMembersPropagationSelectionWinForm;
+            PartnerEditTDSPartnerTypeChangeFamilyMembersPromotionTable FamilyMembersPromotionTable;
+
+            PartnerTypeFamilyMembersPropagationSelectionWinForm = new TPartnerTypeFamilyMembersPropagationSelectionWinForm();
+            PartnerTypeFamilyMembersPropagationSelectionWinForm.SetParameters(FMainDS.PFamily[0].PartnerKey,
+                FPartnerEditUIConnector,
+                APartnerTypeCode,
+                AAction);
+
+            if (PartnerTypeFamilyMembersPropagationSelectionWinForm.ShowDialog() == System.Windows.Forms.DialogResult.Cancel)
+            {
+                ReturnValue = new PartnerEditTDSPartnerTypeChangeFamilyMembersPromotionTable();
+            }
+            else
+            {
+                if (PartnerTypeFamilyMembersPropagationSelectionWinForm.GetReturnedParameters(out FamilyMembersPromotionTable))
+                {
+                    ReturnValue = FamilyMembersPromotionTable;
+                }
+                else
+                {
+                    ReturnValue = new PartnerEditTDSPartnerTypeChangeFamilyMembersPromotionTable();
+                }
+            }
+#endif
+            return ReturnValue;
+        }
+
+        /// <summary>
+        /// todoComment
+        /// </summary>
+        public new void InitialiseUserControl()
+        {
+            // Set up screen logic
+            FLogic.MultiTableDS = FMainDS;
+            FLogic.PartnerEditUIConnector = FPartnerEditUIConnector;
+            FLogic.InitialiseDelegatePartnerTypePropagationSelection(@OpenPartnerTypePropagationSelection);
+            FLogic.DataGrid = grdPartnerTypes;
+            FLogic.LoadTypes();
+            FLogic.LoadDataOnDemand();
+
+            // Create temp table for grid display
+            FLogic.CreateTempPartnerTypesTable();
+            FLogic.FillTempPartnerTypesTable();
+
+            // Create SourceDataGrid columns
+            FLogic.CreateColumns();
+
+            // DataBindingrelated stuff
+            FLogic.DataBindGrid();
+
+            // Setup the DataGrid's visual appearance
+            SetupDataGridVisualAppearance();
+
+            // Hook up RecalculateScreenParts Event that is fired by FLogic
+            FLogic.RecalculateScreenParts += new TRecalculateScreenPartsEventHandler(this.RethrowRecalculateScreenParts);
+            OnHookupDataChange(new THookupPartnerEditDataChangeEventArgs(TPartnerEditTabPageEnum.petpPartnerTypes));
+        }
+
+        private void GrdPartnerTypes_DoubleClickCell(System.Object Sender, SourceGrid.CellContextEventArgs e)
+        {
+            FLogic.ChangeCheckedStateForRow(e.CellContext.Position.Row - 1);
+        }
+
+        private void GrdPartnerTypes_EnterKeyPressed(System.Object Sender, SourceGrid.RowEventArgs e)
+        {
+            FLogic.ChangeCheckedStateForRow(e.Row - 1);
+        }
+
+        private void GrdPartnerTypes_SpaceKeyPressed(System.Object Sender, SourceGrid.RowEventArgs e)
+        {
+            FLogic.ChangeCheckedStateForRow(e.Row - 1);
+        }
+
+        /// <summary>
+        /// Sets up the visual appearance of the Grid.
+        ///
+        /// </summary>
+        /// <returns>void</returns>
+        private void SetupDataGridVisualAppearance()
+        {
+            grdPartnerTypes.AutoSizeCells();
+
+            // it is necessary to reassign the width because the columns don't take up the maximum width
+            grdPartnerTypes.Width = 510;
+        }
+    }
+}

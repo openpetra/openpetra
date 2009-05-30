@@ -1,0 +1,42 @@
+<PetraDataSets>
+        <ImportUnit name="Ict.Petra.Shared.MPartner.Partner.Data"/>
+    <ImportUnit name="Ict.Petra.Shared.MPersonnel.Personnel.Data"/>
+
+    <DataSet name="OfficeSpecificDataLabelsTDS">
+        <Table sqltable="p_data_label" name="DataLabelList"/>
+        <Table sqltable="p_data_label_use" name="DataLabelUseList"/>
+        <Table sqltable="p_data_label_lookup" name="DataLabelLookupList"/>
+        <Table sqltable="p_data_label_lookup_category" name="DataLabelLookupCategoryList"/>
+        <Table sqltable="p_data_label_value_application"/>
+        <Table sqltable="p_data_label_value_partner"/>
+
+        <CustomRelation name="LabelUse"
+                childTable="DataLabelUseList" childFields="DataLabelKey"
+                parentTable="DataLabelList" parentFields="Key"
+                createConstraints="false"/>
+    </DataSet>
+    
+    <DataSet name="CacheableTablesTDS">
+        <CustomTable name="Contents">
+            <CustomField name="TableName" type="string"/>       <!-- Name of the Cached DataTable -->
+            <CustomField name="DataUpToDate" type="boolean"/>       <!-- Tells whether the data in the Cached DataTable is the same than the external source of the data -->
+            <CustomField name="DataChanged" type="boolean"/>        <!-- Tells whether data in the Cached DataTable was changed -->
+            <CustomField name="ChangesSavedExternally" type="boolean"/> <!-- Tells whether changed data in the CachedDataTable was saved externally -->
+            <CustomField name="CachedSince" type="datetime"/>       <!-- Date and Time when the DataTable was added to the Cache -->
+            <CustomField name="LastAccessed" type="datetime"/>      <!-- Date and Time when the DataTable was last handed out of the Cache -->
+            <CustomField name="HashCode" type="string"/>        <!-- HashCode of the Cached DataTable -->
+            <CustomField name="TableSize" type="int32"/>            <!-- Size of the contents of the Cached DataTable (in Bytes) -->
+            
+            <primarykey thisFields="TableName"/>
+        </CustomTable>    
+    </DataSet>
+
+    <DataSet name="FieldOfServiceTDS">
+        <Table sqltable="p_partner"/>
+        <Table sqltable="p_partner_field_of_service"/>
+        <Table sqltable="p_person"/>
+        <Table sqltable="p_family"/>
+        <Table sqltable="pm_staff_data"/>
+    </DataSet>
+
+</PetraDataSets>

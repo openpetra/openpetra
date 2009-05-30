@@ -1,0 +1,130 @@
+﻿<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <ProjectGuid>{69E21FFC-F815-451A-96BB-66499CDDEB6E}</ProjectGuid>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <OutputType>Library</OutputType>
+    <RootNamespace>Ict.Petra.Shared.MCommon.DataCascading</RootNamespace>
+    <AssemblyName>Ict.Petra.Shared.MCommon.DataCascading</AssemblyName>
+    <BaseIntermediateOutputPath>../../../_bin/Server_Client\</BaseIntermediateOutputPath>
+    <TargetFrameworkVersion>v2.0</TargetFrameworkVersion>
+    <AllowUnsafeBlocks>False</AllowUnsafeBlocks>
+    <NoStdLib>False</NoStdLib>
+    <WarningLevel>4</WarningLevel>
+    <TreatWarningsAsErrors>false</TreatWarningsAsErrors>
+    <DocumentationFile>..\..\..\_bin\Server_Client\Debug\Ict.Petra.Shared.MCommon.DataCascading.xml</DocumentationFile>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
+    <OutputPath>../../../_bin/Server_Client\Debug\</OutputPath>
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>Full</DebugType>
+    <CheckForOverflowUnderflow>True</CheckForOverflowUnderflow>
+    <DefineConstants>DEBUG;TRACE;DEBUGMODE</DefineConstants>
+    <IntermediateOutputPath>../../../_bin/Server_Client\Debug\</IntermediateOutputPath>
+    <Optimize>False</Optimize>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)' == 'Release' ">
+    <OutputPath>../../../_bin/Server_Client\Release\</OutputPath>
+    <DebugSymbols>false</DebugSymbols>
+    <DebugType>None</DebugType>
+    <CheckForOverflowUnderflow>True</CheckForOverflowUnderflow>
+    <DefineConstants>TRACE</DefineConstants>
+    <Optimize>False</Optimize>
+    <IntermediateOutputPath>../../../_bin/Server_Client\Release\</IntermediateOutputPath>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Platform)' == 'AnyCPU' ">
+    <RegisterForComInterop>False</RegisterForComInterop>
+    <GenerateSerializationAssemblies>Auto</GenerateSerializationAssemblies>
+    <BaseAddress>4194304</BaseAddress>
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <FileAlignment>4096</FileAlignment>
+  </PropertyGroup>
+  <Import Project="$(SharpDevelopBinPath)\SharpDevelop.Build.CSharp.targets" />
+  <ItemGroup>
+    <Reference Include="Ict.Common">
+      <HintPath>..\..\..\..\..\Common\_bin\Debug\Ict.Common.dll</HintPath>
+      <SpecificVersion>False</SpecificVersion>
+    </Reference>
+    <Reference Include="Ict.Common.Data">
+      <HintPath>..\..\..\..\..\Common\_bin\Debug\Ict.Common.Data.dll</HintPath>
+      <SpecificVersion>False</SpecificVersion>
+    </Reference>
+    <Reference Include="Ict.Common.DB">
+      <HintPath>..\..\..\..\..\Common\_bin\Debug\Ict.Common.DB.dll</HintPath>
+      <SpecificVersion>False</SpecificVersion>
+    </Reference>
+    <Reference Include="Ict.Common.Verification">
+      <HintPath>..\..\..\..\..\Common\_bin\Debug\Ict.Common.Verification.dll</HintPath>
+      <SpecificVersion>False</SpecificVersion>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Cascading.cs" />
+    <Compile Include="DataCascading.AssemblyInfo.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\..\Ict.Petra.Shared.UserInfo.csproj">
+      <Project>ECC6EB7E-E269-4735-8989-4243ABC58379</Project>
+      <Name>Ict.Petra.Shared.UserInfo</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\MConference\data\Ict.Petra.Shared.MConference.DataAccess.csproj">
+      <Project>FB826CB1-81C5-47BB-B699-A7EB79CF800A</Project>
+      <Name>Ict.Petra.Shared.MConference.DataAccess</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\MConference\data\Ict.Petra.Shared.MConference.DataTables.csproj">
+      <Project>6877C414-A72F-4E48-A5ED-E100787641D3</Project>
+      <Name>Ict.Petra.Shared.MConference.DataTables</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\MFinance\data\Ict.Petra.Shared.MFinance.DataAccess.csproj">
+      <Project>FD074084-1FB7-4C92-BD2A-09E7369EC81D</Project>
+      <Name>Ict.Petra.Shared.MFinance.DataAccess</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\MFinance\data\Ict.Petra.Shared.MFinance.DataTables.csproj">
+      <Project>17586D04-2FFF-478C-A1AD-7DCDA49FB1FA</Project>
+      <Name>Ict.Petra.Shared.MFinance.DataTables</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\MHospitality\data\Ict.Petra.Shared.MHospitality.DataAccess.csproj">
+      <Project>{4B9EB5F9-2B16-4498-A218-77E6375428D6}</Project>
+      <Name>Ict.Petra.Shared.MHospitality.DataAccess</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\MHospitality\data\Ict.Petra.Shared.MHospitality.DataTables.csproj">
+      <Project>{46C94508-2388-4EB4-8244-E50A732D5FF8}</Project>
+      <Name>Ict.Petra.Shared.MHospitality.DataTables</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\MPartner\data\Ict.Petra.Shared.MPartner.DataAccess.csproj">
+      <Project>6372DC9A-981C-48F8-8719-E5B2CF7157DF</Project>
+      <Name>Ict.Petra.Shared.MPartner.DataAccess</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\MPartner\data\Ict.Petra.Shared.MPartner.DataTables.csproj">
+      <Project>6A8AF588-522A-469E-BEC4-C154CBC8866A</Project>
+      <Name>Ict.Petra.Shared.MPartner.DataTables</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\MPersonnel\data\Ict.Petra.Shared.MPersonnel.DataAccess.csproj">
+      <Project>A2B90810-5C72-4154-8E6C-47F243E6538D</Project>
+      <Name>Ict.Petra.Shared.MPersonnel.DataAccess</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\MPersonnel\data\Ict.Petra.Shared.MPersonnel.DataTables.csproj">
+      <Project>5B6D2B12-84D0-4B62-AF1F-B8365FBF68D1</Project>
+      <Name>Ict.Petra.Shared.MPersonnel.DataTables</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\MSysMan\data\Ict.Petra.Shared.MSysMan.DataAccess.csproj">
+      <Project>CF8F3805-344B-4B75-8498-C93205B2A2A9</Project>
+      <Name>Ict.Petra.Shared.MSysMan.DataAccess</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\MSysMan\data\Ict.Petra.Shared.MSysMan.DataTables.csproj">
+      <Project>E5C3D047-F530-4AAA-B7BE-3CEE79A45BCE</Project>
+      <Name>Ict.Petra.Shared.MSysMan.DataTables</Name>
+    </ProjectReference>
+    <ProjectReference Include="Ict.Petra.Shared.MCommon.DataAccess.csproj">
+      <Project>{69E21FFC-F815-451A-96BB-66499CDDEB6E}</Project>
+      <Name>Ict.Petra.Shared.MCommon.DataAccess</Name>
+    </ProjectReference>
+    <ProjectReference Include="Ict.Petra.Shared.MCommon.DataTables.csproj">
+      <Project>EAF53CA5-2E91-4AE2-B412-8292DA40FE93</Project>
+      <Name>Ict.Petra.Shared.MCommon.DataTables</Name>
+    </ProjectReference>
+  </ItemGroup>
+</Project>

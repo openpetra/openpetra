@@ -1,0 +1,1 @@
+Placeholder directory for Conference Module Business Objects.

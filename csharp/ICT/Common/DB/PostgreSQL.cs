@@ -1,0 +1,462 @@
+/*************************************************************************
+ *
+ * DO NOT REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
+ *
+ * @Authors:
+ *       timop, christiank
+ *
+ * Copyright 2004-2009 by OM International
+ *
+ * This file is part of OpenPetra.org.
+ *
+ * OpenPetra.org is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * OpenPetra.org is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with OpenPetra.org.  If not, see <http://www.gnu.org/licenses/>.
+ *
+ ************************************************************************/
+using System;
+using System.Net;
+using System.Data;
+using System.Data.Odbc;
+using System.Data.Common;
+using System.Collections;
+using Npgsql;
+using NpgsqlTypes;
+
+namespace Ict.Common.DB
+{
+    /// <summary>
+    /// this class allows access to PostgreSQL databases
+    /// </summary>
+    public class TPostgreSQL : IDataBaseRDBMS
+    {
+#if WITH_POSTGRESQL_LOGGING
+        private const string NPGSQL_LOGFILENAME = "U:\\tmp\\Npgsql.log";
+#endif
+
+        /// <summary>
+        /// Create a PostgreSQL connection using the Npgsql .NET Data Provider.
+        /// </summary>
+        /// <param name="AServer">The Database Server</param>
+        /// <param name="APort">the port that the db server is running on</param>
+        /// <param name="AUsername">The username for opening the PostgreSQL connection</param>
+        /// <param name="APassword">The password for opening the PostgreSQL connection</param>
+        /// <param name="AConnectionString">The connection string; if it is not empty, it will overrule the previous parameters</param>
+        /// <param name="AStateChangeEventHandler">for connection state changes</param>
+        /// <returns>NpgsqlConnection, but not opened yet (null if connection could not be established).
+        /// </returns>
+        public IDbConnection GetConnection(String AServer, String APort,
+            String AUsername, ref String APassword,
+            ref String AConnectionString,
+            StateChangeEventHandler AStateChangeEventHandler)
+        {
+            ArrayList ExceptionList;
+            NpgsqlConnection TheConnection;
+
+            if (AConnectionString.Length == 0)
+            {
+                if (AUsername == "")
+                {
+                    throw new ArgumentException("AUsername", "AUsername must not be an empty string!");
+                }
+
+                if (APassword == "")
+                {
+                    throw new ArgumentException("APassword", "APassword must not be an empty string!");
+                }
+            }
+
+            TheConnection = null;
+
+            if (AConnectionString == "")
+            {
+                AConnectionString = "Server=" + AServer + ";Port=" + APort + ";User Id=" + AUsername +
+                                    ";Database=petra;ConnectionLifeTime=60;Password=";
+            }
+
+            try
+            {
+                // TLogging.Log('Full ConnectionString (with Password!): ''' + ConnectionString + '''');
+                // TLogging.Log('Full ConnectionString (with Password!): ''' + ConnectionString + '''');
+                // TLogging.Log('ConnectionStringBuilder.ToString (with Password!): ''' + ConnectionStringBuilder.ToString + '''');
+                // Now try to connect to the DB
+                TheConnection = new NpgsqlConnection();
+                TheConnection.ConnectionString = AConnectionString + APassword + ";";
+            }
+            catch (Exception exp)
+            {
+                ExceptionList = new ArrayList();
+                ExceptionList.Add((("Error establishing a DB connection to: " + AConnectionString) + Environment.NewLine));
+                ExceptionList.Add((("Exception thrown :- " + exp.ToString()) + Environment.NewLine));
+                TLogging.Log(ExceptionList, true);
+            }
+
+            if (TheConnection != null)
+            {
+                /* Somehow the StateChange Event is never fired for an NpgsqlConnection, although it is documented.
+                 * As a result of that we cannot rely on the FConnectionReady variable to contain valid values for
+                 * NpgsqlConnection. Therefore I (ChristianK) wrote a wrapper routine, ConnectionReady, which
+                 * handles this difference. FConnectionReady must therefore never be inquired directly, but only
+                 * through calling ConnectionReady()!
+                 */
+
+                // TODO: need to test this
+                ((NpgsqlConnection)TheConnection).StateChange += AStateChangeEventHandler;
+            }
+
+            return TheConnection;
+        }
+
+        /// <summary>
+        /// format an error message if the exception is of type NpgsqlException
+        /// </summary>
+        /// <param name="AException"></param>
+        /// <param name="AErrorMessage"></param>
+        /// <returns>true if this is an NpgsqlException</returns>
+        public bool LogException(Exception AException, ref string AErrorMessage)
+        {
+            if (AException is NpgsqlException)
+            {
+                for (int Counter = 0; Counter <= ((NpgsqlException)AException).Errors.Count - 1; Counter += 1)
+                {
+                    AErrorMessage = AErrorMessage +
+                                    "Index #" + Counter.ToString() + Environment.NewLine +
+                                    "Message: " + ((NpgsqlException)AException)[Counter].Message + Environment.NewLine +
+                                    "Detail: " + ((NpgsqlException)AException)[Counter].Detail.ToString() + Environment.NewLine +
+                                    "Where: " + ((NpgsqlException)AException)[Counter].Where + Environment.NewLine +
+                                    "SQL: " + ((NpgsqlException)AException)[Counter].ErrorSql + Environment.NewLine +
+                                    "Position in SQL: " + ((NpgsqlException)AException)[Counter].Position + Environment.NewLine;
+                }
+
+                return true;
+            }
+
+            return false;
+        }
+
+        /// <summary>
+        /// format the sql query so that it works for PostgreSQL
+        /// see also the comments for TDataBase.FormatQueryRDBMSSpecific
+        /// </summary>
+        /// <param name="ASqlQuery"></param>
+        /// <returns></returns>
+        public String FormatQueryRDBMSSpecific(String ASqlQuery)
+        {
+            string ReturnValue = ASqlQuery;
+
+            ReturnValue = ReturnValue.Replace("PUB_", "public.");
+            ReturnValue = ReturnValue.Replace("PUB.", "public.");
+            ReturnValue = ReturnValue.Replace("pub_", "public.");
+            ReturnValue = ReturnValue.Replace("pub.", "public.");
+            ReturnValue = ReturnValue.Replace("\"", "'");
+
+            // PostgreSQL's 'LIKE' command is case-sensitive, but we prefer case insensitive search
+            ReturnValue = ReturnValue.Replace("LIKE", "ILIKE");
+            return ReturnValue;
+        }
+
+        /// <summary>
+        /// Converts an Array of DbParameter (eg. OdbcParameter) to an Array
+        /// of NpgsqlParameter. If the Parameters don't have a name yet, they
+        /// are given one because PostgreSQL needs named Parameters.
+        /// <para>Furthermore, the parameter placeholders '?' in the the passed in
+        /// <paramref name="ASqlStatement" /> are replaced with PostgreSQL
+        /// ':paramX' placeholders (where 'paramX' is the name of the Parameter).</para>
+        /// </summary>
+        /// <param name="AParameterArray">Array of DbParameter that is to be converted.</param>
+        /// <param name="ASqlStatement">SQL Statement that is to be converted.</param>
+        /// <returns>Array of NpgsqlParameter (converted from <paramref name="AParameterArray" />.</returns>
+        public DbParameter[] ConvertOdbcParameters(DbParameter[] AParameterArray, ref string ASqlStatement)
+        {
+            NpgsqlParameter[] ReturnValue = new NpgsqlParameter[AParameterArray.Length];
+            OdbcParameter[] AParameterArrayOdbc;
+            string ParamName = "";
+            string SQLSelectBeforeQMark;
+            string SQLSelectAfterQMark;
+            string SQLSelectStatementRepl = "";
+            int QMarkPos = 0;
+            int LastQMarkPos = 0;
+            int NextQMarkPos = 0;
+            int ParamCounter = 0;
+
+            if (!(AParameterArray is NpgsqlParameter[]))
+            {
+                AParameterArrayOdbc = (OdbcParameter[])AParameterArray;
+
+                // Parameter Type change and Parameter Name assignment
+                for (int Counter = 0; Counter < AParameterArray.Length; Counter++)
+                {
+                    ParamName = AParameterArrayOdbc[Counter].ParameterName;
+
+                    if (ParamName == "")
+                    {
+                        ParamName = "param" + Counter.ToString();
+#if DEBUGMODE_TODO
+                        if (FDebugLevel >= DBAccess.DB_DEBUGLEVEL_TRACE)
+                        {
+                            TLogging.Log("Assigned Parameter Name '" + ParamName + "' for Parameter with Value '" +
+                                AParameterArrayOdbc[Counter].Value.ToString() + "'.");
+                        }
+#endif
+                    }
+
+                    switch (AParameterArrayOdbc[Counter].OdbcType)
+                    {
+                        case OdbcType.Decimal:
+
+                            ReturnValue[Counter] = new NpgsqlParameter(
+                            ParamName,
+                            NpgsqlDbType.Numeric, AParameterArrayOdbc[Counter].Size);
+
+                            break;
+
+                        case OdbcType.VarChar:
+                            ReturnValue[Counter] = new NpgsqlParameter(
+                            ParamName,
+                            NpgsqlDbType.Varchar, AParameterArrayOdbc[Counter].Size);
+
+                            break;
+
+                        case OdbcType.Bit:
+                            ReturnValue[Counter] = new NpgsqlParameter(
+                            ParamName,
+                            NpgsqlDbType.Boolean);
+
+                            break;
+
+                        case OdbcType.Date:
+                            ReturnValue[Counter] = new NpgsqlParameter(
+                            ParamName,
+                            NpgsqlDbType.Date);
+
+                            break;
+
+                        case OdbcType.Int:
+                            ReturnValue[Counter] = new NpgsqlParameter(
+                            ParamName,
+                            NpgsqlDbType.Integer);
+
+                            break;
+
+                        default:
+                            ReturnValue[Counter] = new NpgsqlParameter(
+                            ParamName,
+                            NpgsqlDbType.Integer);
+
+                            break;
+                    }
+
+                    ReturnValue[Counter].Value = AParameterArrayOdbc[Counter].Value;
+                }
+            }
+            else
+            {
+                ReturnValue = (NpgsqlParameter[])AParameterArray;
+            }
+
+            if (ASqlStatement.Contains("?"))
+            {
+                /* SQL Syntax change from ODBC style to PostgreSQL style: Replace '?' with
+                 * ':xxx' (where xxx is the name of the Parameter).
+                 */
+                while (ASqlStatement.IndexOf("?", QMarkPos + 1) > 0)
+                {
+                    QMarkPos = ASqlStatement.IndexOf("?", QMarkPos + 1);
+
+                    ////                        TLogging.Log("QMarkPos: " + QMarkPos.ToString() +
+                    ////                            "; ParamCounter: " + ParamCounter.ToString() +
+                    ////                            "; LastQMarkPos: " + LastQMarkPos.ToString());
+
+                    if (ParamCounter > 0)
+                    {
+                        SQLSelectBeforeQMark = ASqlStatement.Substring(
+                            LastQMarkPos + 1, QMarkPos - LastQMarkPos - 1);
+                    }
+                    else
+                    {
+                        SQLSelectBeforeQMark = ASqlStatement.Substring(
+                            0, QMarkPos);
+                    }
+
+                    NextQMarkPos = ASqlStatement.IndexOf("?", QMarkPos + 1);
+
+                    if (NextQMarkPos > 0)
+                    {
+                        SQLSelectAfterQMark = "";
+                    }
+                    else
+                    {
+                        SQLSelectAfterQMark = ASqlStatement.Substring(
+                            QMarkPos + 1, ASqlStatement.Length - QMarkPos - 1);
+                    }
+
+                    SQLSelectStatementRepl = SQLSelectStatementRepl +
+                                             SQLSelectBeforeQMark +
+                                             ":" + ReturnValue[ParamCounter].ParameterName +
+                                             SQLSelectAfterQMark;
+
+                    LastQMarkPos = QMarkPos;
+
+                    ////                        TLogging.Log("QMarkPos: " + QMarkPos.ToString() +
+                    ////                            "; ParamCounter: " + ParamCounter.ToString() +
+                    ////                            "; LastQMarkPos: " + LastQMarkPos.ToString() + Environment.NewLine +
+                    ////                            "SQLSelectBeforeQMark: " + SQLSelectBeforeQMark + Environment.NewLine +
+                    ////                            "SQLSelectAfterQMark: " + SQLSelectAfterQMark + Environment.NewLine +
+                    ////                            "SQLSelectStatementRepl: " + SQLSelectStatementRepl + Environment.NewLine);
+
+                    ParamCounter++;
+                }
+
+                ASqlStatement = SQLSelectStatementRepl;
+
+                //                TLogging.Log("new statement: " + SQLSelectStatementRepl);
+            }
+
+            return ReturnValue;
+        }
+
+        /// <summary>
+        /// create a IDbCommand object
+        /// this formats the sql query for PostgreSQL, and transforms the parameters
+        /// </summary>
+        /// <param name="ACommandText"></param>
+        /// <param name="AConnection"></param>
+        /// <param name="AParametersArray"></param>
+        /// <param name="ATransaction"></param>
+        /// <returns></returns>
+        public IDbCommand NewCommand(ref string ACommandText, IDbConnection AConnection, DbParameter[] AParametersArray, TDBTransaction ATransaction)
+        {
+            IDbCommand ObjReturn = null;
+
+            ACommandText = FormatQueryRDBMSSpecific(ACommandText);
+
+#if WITH_POSTGRESQL_LOGGING
+            // TODO?
+            if (FDebugLevel >= DB_DEBUGLEVEL_TRACE)
+            {
+                NpgsqlEventLog.Level = LogLevel.Debug;
+                NpgsqlEventLog.LogName = NPGSQL_LOGFILENAME;
+                TLogging.Log("NpgsqlEventLog.LogName: " + NpgsqlEventLog.LogName);
+            }
+#endif
+            NpgsqlParameter[] NpgsqlParametersArray = null;
+
+            if ((AParametersArray != null)
+                && (AParametersArray.Length > 0))
+            {
+                if (AParametersArray != null)
+                {
+                    NpgsqlParametersArray = (NpgsqlParameter[])ConvertOdbcParameters(AParametersArray, ref ACommandText);
+                }
+
+                // Check for characters that indicate a parameter in query text
+                if (ACommandText.IndexOf(':') == -1)
+                {
+                    throw new EDBParameterisedQueryMissingParameterPlaceholdersException(
+                        "Colons must be present in query text if Parameters are passed in");
+                }
+            }
+
+            ObjReturn = new NpgsqlCommand(ACommandText, (NpgsqlConnection)AConnection);
+
+            if (NpgsqlParametersArray != null)
+            {
+                // add parameters
+                foreach (DbParameter param in NpgsqlParametersArray)
+                {
+                    ObjReturn.Parameters.Add(param);
+                }
+            }
+
+            return ObjReturn;
+        }
+
+        /// <summary>
+        /// create an IDbDataAdapter for PostgreSQL
+        /// </summary>
+        /// <returns></returns>
+        public IDbDataAdapter NewAdapter()
+        {
+            IDbDataAdapter TheAdapter = new NpgsqlDataAdapter();
+
+            return TheAdapter;
+        }
+
+        /// <summary>
+        /// fill an IDbDataAdapter that was created with NewAdapter
+        /// </summary>
+        /// <param name="TheAdapter"></param>
+        /// <param name="AFillDataSet"></param>
+        /// <param name="AStartRecord"></param>
+        /// <param name="AMaxRecords"></param>
+        /// <param name="ADataTableName"></param>
+        public void FillAdapter(IDbDataAdapter TheAdapter,
+            ref DataSet AFillDataSet,
+            Int32 AStartRecord,
+            Int32 AMaxRecords,
+            string ADataTableName)
+        {
+            ((NpgsqlDataAdapter)TheAdapter).Fill(AFillDataSet, AStartRecord, AMaxRecords, ADataTableName);
+        }
+
+        /// <summary>
+        /// overload of FillAdapter, just for one table
+        /// IDbDataAdapter was created with NewAdapter
+        /// </summary>
+        /// <param name="TheAdapter"></param>
+        /// <param name="AFillDataTable"></param>
+        public void FillAdapter(IDbDataAdapter TheAdapter,
+            ref DataTable AFillDataTable)
+        {
+            ((NpgsqlDataAdapter)TheAdapter).Fill(AFillDataTable);
+        }
+
+        /// <summary>
+        /// some databases have some problems with certain Isolation levels
+        /// </summary>
+        /// <param name="AIsolationLevel"></param>
+        /// <returns>true if isolation level was modified</returns>
+        public bool AdjustIsolationLevel(ref IsolationLevel AIsolationLevel)
+        {
+            // all isolation levels work fine for PostgreSQL
+            return false;
+        }
+
+        /// <summary>
+        /// Returns the next sequence value for the given Sequence from the DB.
+        /// </summary>
+        /// <param name="ASequenceName">Name of the Sequence.</param>
+        /// <param name="ATransaction">An instantiated Transaction in which the Query
+        /// to the DB will be enlisted.</param>
+        /// <param name="ADatabase">the database object that can be used for querying</param>
+        /// <param name="AConnection"></param>
+        /// <returns>Sequence Value.</returns>
+        public System.Int64 GetNextSequenceValue(String ASequenceName, TDBTransaction ATransaction, TDataBase ADatabase, IDbConnection AConnection)
+        {
+            return Convert.ToInt64(ADatabase.ExecuteScalar("SELECT NEXTVAL('" + ASequenceName + "')", ATransaction));
+        }
+
+        /// <summary>
+        /// Returns the current sequence value for the given Sequence from the DB.
+        /// </summary>
+        /// <param name="ASequenceName">Name of the Sequence.</param>
+        /// <param name="ATransaction">An instantiated Transaction in which the Query
+        /// to the DB will be enlisted.</param>
+        /// <param name="ADatabase">the database object that can be used for querying</param>
+        /// <param name="AConnection"></param>
+        /// <returns>Sequence Value.</returns>
+        public System.Int64 GetCurrentSequenceValue(String ASequenceName, TDBTransaction ATransaction, TDataBase ADatabase, IDbConnection AConnection)
+        {
+            return Convert.ToInt64(ADatabase.ExecuteScalar("SELECT last_value FROM " + ASequenceName + "", ATransaction));
+        }
+    }
+}

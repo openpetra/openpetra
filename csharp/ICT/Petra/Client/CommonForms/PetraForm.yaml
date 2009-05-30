@@ -1,0 +1,30 @@
+RootNode:
+    BaseClass: System.Windows.Forms.Form
+    #don't generate a form for this file
+    FormType: abstract
+    Icon: petraico-big.ico
+    Events:
+        Activated: {class=System.EventHandler,method=FPetraUtilsObject.TFrmPetra_Activated}
+        Load: {class=System.EventHandler, method=FPetraUtilsObject.TFrmPetra_Load}
+        Closing: {class=System.ComponentModel.CancelEventHandler,method=FPetraUtilsObject.TFrmPetra_Closing}
+        KeyDown: {class=System.Windows.Forms.KeyEventHandler,method=FPetraUtilsObject.Form_KeyDown}
+    Actions:
+        actClose: {Label=&Close, ActionId=eClose, Tooltip=Closes this window, Image=Close.ico}
+    Controls:
+        mnuMain: 
+        tbrMain:
+        stbMain:
+    Menu:
+        mniFile: 
+            Label: &File
+            Order: AlwaysFirst
+            mniClose: {Action=actClose, Order=AlwaysLast}
+        mniHelp: 
+            Label: &Help
+            Order: AlwaysLast
+            mniHelpPetraHelp: {Label=&Petra Help, ActionId=eHelp}
+            mniSeparator: {Label=-}
+            mniHelpBugReport: {Label=Bug &Report, ActionId=eBugReport}
+            mniSeparator: {Label=-}
+            mniHelpAboutPetra: {Label=&About Petra, ActionId=eAHelpbout}
+            mniHelpDevelopmentTeam: {Label=&The Development Team..., ActionId=eHelpDevelopmentTeam}

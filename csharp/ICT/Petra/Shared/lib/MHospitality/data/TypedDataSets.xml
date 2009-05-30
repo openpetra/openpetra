@@ -1,0 +1,15 @@
+<PetraDataSets>
+  <ImportUnit name="Ict.Petra.Shared.MConference.Data"/>
+  <ImportUnit name="Ict.Petra.Shared.MPartner.Partner.Data"/>
+  <ImportUnit name="Ict.Petra.Shared.MHospitality.Data"/>
+  
+    <DataSet name="HospitalityTDS">
+        <Table sqltable="pc_building"/>
+        <Table sqltable="pc_room"/>
+        <Table sqltable="pc_room_alloc"/>
+        <Table sqltable="pc_room_attribute"/>
+        <Table sqltable="ph_booking"/>
+        <Table sqltable="ph_room_booking"/>
+    </DataSet>
+
+</PetraDataSets>

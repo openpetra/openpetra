@@ -1,0 +1,100 @@
+<!ELEMENT database (table?, sequence*)+ >
+<!ATTLIST database
+   name       CDATA  #REQUIRED
+>
+
+<!ELEMENT table (tablefield+, primarykey?, uniquekey*, foreignkey*, trigger*, index*) >
+<!ATTLIST table
+   name       CDATA  #REQUIRED
+   descr      CDATA  #REQUIRED
+   area       CDATA  #REQUIRED
+   label      CDATA  #IMPLIED
+   dumpname     ID  #REQUIRED
+   group      CDATA  #IMPLIED
+   nopgsync      CDATA  #IMPLIED
+   withoutcrmd CDATA #IMPLIED
+   catchupdateexception CDATA #IMPLIED
+>
+
+<!ELEMENT trigger EMPTY >
+<!ATTLIST trigger
+   type     (create|write|delete|assign)  #REQUIRED
+   procname   CDATA     #REQUIRED
+   usecrc   (yes|no)  #IMPLIED
+   overrideble    (no|yes)  #IMPLIED
+>
+
+<!ELEMENT tablefield (trigger)? >
+<!ATTLIST tablefield
+   name     CDATA  #REQUIRED
+   type     (bit|number|integer|varchar|date)  #REQUIRED
+   typedotnet (Int64|Int32|String|Boolean|DateTime)  #IMPLIED
+   namedotnet CDATA #IMPLIED
+   sequence CDATA #IMPLIED
+   length   CDATA  #IMPLIED
+   charlength   CDATA  #IMPLIED
+   decimals   CDATA  #IMPLIED
+   descr    CDATA  #REQUIRED
+   format   CDATA  #IMPLIED
+   label    CDATA  #IMPLIED
+   position   CDATA  #IMPLIED
+   widthcheck (no|yes)  #IMPLIED
+   columnlabel    CDATA  #IMPLIED
+   valueexpression  CDATA  #IMPLIED
+   valuemessage   CDATA  #IMPLIED
+   help     CDATA  #IMPLIED
+   notnull    (no|yes)  #IMPLIED
+   autoincrement (no|yes)  #IMPLIED
+   check              CDATA  #IMPLIED
+   initial   CDATA  #IMPLIED
+>
+
+<!ELEMENT primarykey EMPTY >
+<!ATTLIST primarykey
+   name       CDATA  #REQUIRED
+   descr      CDATA  #IMPLIED
+   thisFields     CDATA  #REQUIRED
+>
+
+<!ELEMENT uniquekey EMPTY >
+<!ATTLIST uniquekey
+   name       CDATA  #REQUIRED
+   descr      CDATA  #IMPLIED
+   thisFields     CDATA  #REQUIRED
+>
+
+<!ELEMENT foreignkey EMPTY >
+<!ATTLIST foreignkey
+   name       CDATA  #REQUIRED
+   descr      CDATA  #IMPLIED
+   thisFields   CDATA  #REQUIRED
+   otherTable   CDATA  #REQUIRED
+   otherFields    CDATA  #REQUIRED
+>
+
+<!ELEMENT index (indexfield)+>
+<!ATTLIST index
+   name       CDATA  #REQUIRED
+   descr      CDATA  #IMPLIED
+   area       CDATA  #REQUIRED
+   primary      CDATA  #IMPLIED
+   unique     CDATA  #IMPLIED
+>
+
+<!ELEMENT indexfield EMPTY>
+<!ATTLIST indexfield
+   name       CDATA  #REQUIRED
+   order      (ascending|descending) #IMPLIED
+>
+
+<!ELEMENT sequence EMPTY>
+<!ATTLIST sequence
+   name       CDATA  #REQUIRED
+   descr      CDATA  #REQUIRED
+   initial      CDATA  #REQUIRED
+   increment      CDATA  #REQUIRED
+   cycleonlimit     CDATA  #REQUIRED
+   minval     CDATA  #REQUIRED
+   maxval     CDATA  #REQUIRED
+   area       CDATA  #IMPLIED
+>

@@ -1,0 +1,6 @@
+RootNode:
+    BaseYaml: ../../CommonForms/PetraModuleForm.yaml
+    FormType: navigation
+    Namespace: Ict.Petra.Client.App.PetraClient    
+    Controls:
+        ucoMainWindowContent: {Dock=Fill}

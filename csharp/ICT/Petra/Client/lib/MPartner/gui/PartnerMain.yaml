@@ -1,0 +1,50 @@
+RootNode:
+    BaseYaml: ../../../CommonForms/PetraModuleForm.yaml
+    UtilObjectClass: TFrmPetraModuleUtils
+    FormType: navigation
+    FormTitle: Partner Module OpenPetra.org 
+    Namespace: Ict.Petra.Client.MPartner.Gui
+    HasManualCodeInOtherFile: true
+    Controls:
+        pnlTODO: {Dock=Fill}
+    Menu:
+        mniFile: 
+           mniImport: {Label=&Import}
+           mniExport: {Label=&Export}
+           mniSeparator: {Label=-}
+        mniPartner:
+           Label: P&artner
+           mniFindMaintain: {Label=&Find && Maintain..., ShortCut=CTRL-F, ActionClick=PartnerFind}
+           mniSeparator: {Label=-}
+           mniLastPartner: {Label=Work with &Last Partner..., ShortCut=CTRL-L}
+           mniLastPartners: {Label=&Recent Partners...}
+           mniSeparator: {Label=-}
+           mniExtracts: {Label=&Extracts...}
+           mniReports: {Label=&Reports...}
+           mniSeparator: {Label=-}
+           mniNewPartner: {Label=New &Partner..., ShortCut=CTRL-N, ActionClick=NewPartner}
+           mniNewPartnerAssistant: 
+              Label: &New Partner (assistant)
+              mniNewPerson: {Label=Add &Person}
+              mniNewFamily: {Label=Add &Family}
+              mniNewChurch: {Label=Add &Church}
+           mniMergePartners: {Label=&Merge Partners}
+           mniDeletePartner: {Label=D&elete Partner}
+           mniSeparator: {Label=-}
+           mniCheckDuplicateAddresses: {Label=&Duplicate Address Check}
+           mniMergeAddresses: {Label=Mer&ge Addresses}
+           mniViewPartnersAtLocation: {Label=&View Partners at Location}
+        mniMailing:
+           Label: Mailin&g
+           mniLabelPrint: {Label=&Label Print}
+           mniMailsortLabelPrint: {Label=Mails&ort Label Print}
+           mniSeparator: {Label=-}
+           mniSubscriptionExpiryNotices: {Label=Subscription Expiry &Notices}
+           mniSubscriptionCancellation: {Label=Subscription &Cancellation}
+           mniSeparator: {Label=-}
+           mniFormLetterPrint: {Label=&Form Letter Print}
+           mniSeparator: {Label=-}
+           mniExtractMailMerge: {Label=Extrac&t Mail Merge}
+        mniMaintainTables:
+           Label: Maintain &Tables
+           mniTodo: {Label=Todo}

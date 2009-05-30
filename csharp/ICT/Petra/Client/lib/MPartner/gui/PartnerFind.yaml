@@ -1,0 +1,102 @@
+RootNode:
+    BaseYaml: ../../../CommonForms/PetraModuleForm.yaml
+    UtilObjectClass: TFrmPetraModuleUtils
+    FormType: navigation
+    FormTitle: Partner Find OpenPetra.org
+    ClassName: TPartnerFindScreen
+    Namespace: Ict.Petra.Client.MPartner.Gui
+    HasManualCodeInOtherFile: true
+    WindowWidth: 740
+    WindowHeight: 570
+    Events:
+        Load: {class=System.EventHandler, method=TPartnerFindScreen_Load}
+    Controls:
+        pnlMain: 
+            Dock: Fill
+            Controls: [tabPartnerFindMethods, pnlModalButtons]
+        tabPartnerFindMethods:
+            Dock: Fill
+            Controls: [tpgFindPartner, tpgFindBankDetails]
+        tpgFindPartner:
+            Label: Find by Partner Details
+            Controls: [ucoFindByPartnerDetails]
+        ucoFindByPartnerDetails:
+            Type: Ict.Petra.Client.MPartner.Gui.TUC_PartnerFind_ByPartnerDetails
+            Dock: Fill
+        tpgFindBankDetails: {Label=Find by Bank Details}
+        pnlModalButtons:
+            Dock: Fill
+            Controls: [btnHelp, btnCancel, btnFullyLoadData, btnAccept]
+        btnHelp: {Label=&Help}
+        btnFullyLoadData: {Label=Fully load Data}
+        btnAccept: {Label=&Accept}
+        btnCancel: {Label=&Cancel}
+    #todo: popup menu for address grid
+    Menu:
+        mniFile:
+            mniFileSearch: {Label=&Search}
+            mniFileSeparator1: {Label=-}
+            mniFileWorkWithLastPartner: {Label=&Work with Last Partner...}
+            mniFileRecentPartners: 
+                Label:&Recent Partners
+                mniFileRecentPartner1: {Label=0}
+                mniFileRecentPartner2: {Label=1}
+                mniFileRecentPartner3: {Label=2}
+                mniFileRecentPartner4: {Label=3}
+                mniFileRecentPartner5: {Label=4}
+                mniFileRecentPartner6: {Label=5}
+                mniFileRecentPartner7: {Label=6}
+                mniFileRecentPartner8: {Label=7}
+                mniFileRecentPartner9: {Label=8}
+                mniFileRecentPartner10: {Label=9}
+            mniFileSeparator2: {Label=-}
+            mniFileNewPartner: {Label=&New Partner...}
+            mniFileViewPartner: {Label=&View Partner}
+            mniFileEditPartner: {Label=&Edit Partner}
+            mniFileMergePartners: {Label=Mer&ge Partners...}
+            mniFileDeletePartner: {Label=&Delete Partner}
+            mniFileSeparator3: {Label=-}
+            mniFileCopyAddress: {Label=Copy Partner\'s &Address...}
+            mniFileCopyPartnerKey: {Label=Copy Partner\'s Partner &Key}
+            mniFileSendEmail: {Label=Send E&mail to Partner}
+            mniFileSeparator4: {Label=-}
+            mniFilePrintPartner: {Label=&Print Partner}
+            mniFileSeparator5: {Label=-}
+            mniFileExportPartner: {Label=E&xport Partner}
+            mniFileImportPartner: {Label=&Import Partner}
+            mniFileSeparator6: {Label=-}
+        mniMaintain: 
+            label: Ma&intain
+            mniMaintainAddresses: {Label=&Addresses...}
+            mniMaintainPartnerDetails: {Label=Partner &Details...}
+            mniMaintainFoundationDetails: {Label=Foundation Details...}
+            mniMaintainSubscriptions: {Label=&Subscriptions...}
+            mniMaintainSpecialTypes: {Label=Special &Types...}
+            mniMaintainContacts: {Label=&Contacts...}
+            mniMaintainFamilyMembers: {Label=Family &Members...}
+            mniMaintainRelationships: {Label=&Relationships...}
+            mniMaintainInterests: {Label=&Interests...}
+            mniMaintainReminders: {Label=R&eminders...}
+            mniMaintainNotes: {Label=&Notes...}
+            mniMaintainOfficeSpecific: {Label=&Local Partner Data...}
+            mniMaintainOMerField: {Label=&OMer Field...}
+            mniMaintainSeparator1: {Label=-}
+            mniMaintainPersonnelIndividualData: {Label=&Personnel/Individual Data...}
+            mniMaintainSeparator2: {Label=-}
+            mniMaintainDonorHistory: {Label=Donor  &History...}
+            mniMaintainRecipientHistory: {Label=Recipient  Histor&y...}
+            mniMaintainFinanceDetails: {Label=&Finance Details...}
+        mniMailing: 
+            Label: &Mailing
+            mniMailingGenerateExtract: {Label=&Generate Extract From Found Partners...}
+            mniMailingExtracts: {Label=&Extracts...}
+            mniMailingSeparator1: {Label=-}
+            mniMailingDuplicateAddressCheck: {Label=&Duplicate  Address Check...}
+            mniMailingMergeAddresses: {Label=&Merge  Addresses...}
+            mniMailingPartnersAtLocation: {Label=Find Partners at &Location...}
+            mniMailingSeparator2: {Label=-}
+            mniMailingSubscriptionExpNotice: {Label=Subscription Expiry &Notices...}
+            mniMailingSubscriptionCancellation: {Label=Subscription  &Cancellation...}
+        mniTools: 
+            Label: &Tools
+            mnuOptions: {Label=&Options...}

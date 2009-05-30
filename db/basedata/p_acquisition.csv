@@ -1,0 +1,17 @@
+ACCOUNTS,Entered in by the Accounts Department,true,false,false,?,?,?,?,?
+APL,Normal recruit applying through our organisation,true,false,true,?,?,?,?,?
+BOOKING,This partner has booked with us for a term of service.,true,false,false,?,?,?,?,?
+CHURCH,Church of Worker,true,false,false,?,?,?,?,?
+INQUIRY,This partner is new to the system and requests info.,true,false,false,?,?,?,?,?
+LOAD,Loaded in a patch,true,false,false,?,?,?,?,?
+MAILROOM,Entered by the Mailroom Department,true,false,false,?,?,?,?,?
+STAFF,Present Worker applying through this office,true,false,true,?,?,?,?,?
+PARTNER,Partner sought out our organisation without solicitation,true,false,false,?,?,?,?,?
+PERS-OFF,Partner entered by Personnel staff,true,false,false,?,?,?,?,?
+POSTCARD,A postal response card was received,true,false,false,?,?,?,?,?
+RECRUITS,Recruiting department entered this partner,true,false,false,?,?,?,?,?
+REPLY,Partner sent in a reply form from a publication.,true,false,false,?,?,?,?,?
+SETUP,Petra System Setup,true,false,false,?,?,?,?,?
+SUPPORTR,Supporter of Worker,true,false,false,?,?,?,?,?
+UNKNOWN,Acquisition not known,false,false,false,?,?,?,?,?
+UNT-LOAD,Uploaded for annual events/congresses,true,false,false,?,?,?,?,?

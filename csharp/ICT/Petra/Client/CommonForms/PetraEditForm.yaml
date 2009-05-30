@@ -1,0 +1,38 @@
+RootNode:
+    BaseYaml: PetraForm.yaml
+    UtilObjectClass: TFrmPetraEditUtils
+    #don't generate this file with designer code, because it should not have the menuitems and toolbar
+    FormType: abstract
+    Actions:
+        actSave: 
+            Label:&Save
+            ActionClick:FileSave
+            #ShortcutKeys: [System.Windows.Forms.Keys.Control, System.Windows.Forms.Keys.S]
+            Tooltip: Saves changed data
+            Image: Save.ico
+    Menu:
+        mniFile:
+           mniFileSave: {Action=actSave}
+           mniSeparator: {Label=-}
+           mniFilePrint:
+              Label:&Print...
+#              ActionClick:MniFile_Click
+              #ShortcutKeys: [System.Windows.Forms.Keys.Control, System.Windows.Forms.Keys.P]
+           mniSeparator: {Label=-}
+        mniEdit: 
+            Label:&Edit
+            mniEditUndoCurrentField: 
+              Label:Undo &Current Field
+#              ActionClick:MniEdit_Click
+              #ShortcutKeys: [System.Windows.Forms.Keys.Control, System.Windows.Forms.Keys.Z]
+            mniEditUndoScreen: 
+              Label:&Undo Screen
+#             ActionClick:MniEdit_Click
+              #ShortcutKeys: [System.Windows.Forms.Keys.Control, System.Windows.Forms.Keys.Z]
+            mniSeparator: {Label=-}
+            mniEditFind: 
+              Label:&Find...
+#             ActionClick:MniEdit_Click
+              #ShortcutKeys: [System.Windows.Forms.Keys.Control, System.Windows.Forms.Keys.F]
+    Toolbar:
+        tbbSave: {Action=actSave, Order=AlwaysFirst}

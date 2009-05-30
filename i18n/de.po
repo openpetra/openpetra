@@ -1,0 +1,64 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2009-04-07 15:49+0200\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+#
+msgid "Invalid date entered."
+msgstr "Ein ungültiges Datum wurde eingegeben."
+#
+#, csharp-format
+msgid "'{0}' cannot be later than '{1}'."
+msgstr "'{0}' darf nicht nach dem '{1}' sein."
+#
+msgid "Invalid Data"
+msgstr "Ungültige Eingabe"
+#
+#, csharp-format
+msgid "'{0}' cannot be later or equal than '{1}'."
+msgstr "'{0}' darf nicht nach order gleich dem '{1}' sein."
+#
+#, csharp-format
+msgid "{0} must be a date.'"
+msgstr "{0} muss ein gültiges Datum sein."
+#
+#, csharp-format
+msgid "'{0}' may not be a past date.'"
+msgstr "'{0}' darf nicht in der Vergangenheit liegen."
+#
+#, csharp-format
+msgid "'{0}' may not be a future date.'"
+msgstr "'{0}' darf nicht in der Zukunft liegen."
+#
+#, csharp-format
+msgid "'{0}' may not be empty.'"
+msgstr "'{0}' darf nicht leer sein."
+
+#
+#, csharp-format
+msgid "'{0}' cannot be earlier than '{1}'."
+msgstr "'{0}' darf nicht vor dem {1} sein."
+
+#
+#, csharp-format
+msgid "'{0}' cannot be earlier or equal than '{1}'."
+msgstr "'{0}' darf nicht vor oder gleich dem {1} sein."
+#
+msgid "Invalid number entered."
+msgstr "Ungültige Zahleingabe."
+#
+#, csharp-format
+msgid "'{0}' must be an Integer (= a number without a fraction)."
+msgstr "'{0}' muss eine Ganzzahl sein (dh. keine Dezimalstellen)."

@@ -1,0 +1,4 @@
+ACTIVE,Active Partner,true,true,false,?,?,?,?,?
+DIED,Partner has died,true,false,false,?,?,?,?,?
+INACTIVE,Inactive partner,true,false,false,?,?,?,?,?
+MERGED,Partner record has been merged into another,true,false,false,?,?,?,?,?

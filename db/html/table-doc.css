@@ -1,0 +1,123 @@
+a:visited {
+	color: blue;
+}
+
+body.top {
+	background-color: #EEFFFF;
+}
+
+body.menu {
+	background-color: #EEFFFF;
+}
+
+body.group {
+	background-color: #CCFFFF;
+}
+
+div.tab {
+	position: absolute;
+	left: 0;
+	top:  0;
+	padding: 5px 5px 5px 5px;
+	width: 95%;
+	border-style: inset;
+	background-color: #BBCCFF;
+	layer-background-color: #BBCCFF;
+}
+
+div.links {
+	position: absolute;
+	padding: 2px 2px 2px 2px;
+	width: 90%;
+
+	border-style: inset;
+	background-color: #EEEEEE;
+	layer-background-color: #EEEEEE;
+}
+
+div.links-tab {
+	position: absolute;
+	top: 5px;
+	padding: 2px 2px 2px 2px;
+	width: 90%;
+
+	border-style: inset;
+	background-color: #EEEEEE;
+	layer-background-color: #EEEEEE;
+}
+
+font.tablenames {
+	font-size: 12px;
+	color: red;
+}
+
+table {
+	border: 1px solid black;
+}
+
+table.fields {
+	border-collapse: collapse;
+	border: 1px solid back;
+}
+
+*#field {
+	border: 1px solid black;
+}
+
+*#descr {
+	border: 1px solid black;
+}
+
+table.name {
+	background-color: #BBEEEF;
+}
+
+table.content {
+	width: 100%;
+}
+
+tr.field {
+	border-top: 1px solid black;
+	vertical-align: top;
+}
+
+iframe.table {
+	position: absolute;
+	left: 28%;
+	top:  60px;
+	width: 69%;
+	padding: 5px 5px 5px 5px;
+	border-style: inset;
+	background-color: #BBCCFF;
+	layer-background-color: #BBCCFF;
+	height: 80%;
+	overflow: scroll;
+}
+
+font.DefaultFieldValue { size: -1; color: red;}
+font.CheckField { size: -1; color: red;}
+font.FieldTriggers { size: -1; color: blue;}
+font.FieldConstraints  { size: -1; color: green;}
+font.FourGLFormat  { size: -1; color: gray;}
+
+/* The fonts */
+font.PrimaryKey   { point-size: 10; Font-weight: bold;}
+font.Constraints  { point-size: 10; Font-weight: bold;}
+font.Unique       { point-size: 10; Font-weight: bold;}
+font.ForeignKey   { point-size: 10; Font-weight: bold;}
+font.ReferencedBy { point-size: 10; Font-weight: bold;}
+font.Index        { point-size: 10; Font-weight: bold;}
+font.Trigger      { point-size: 10; Font-weight: bold;}
+
+/* For the description of the links (Fields) */
+#divDescription {
+	position: absolute;
+	visibility: hidden;
+	z-index: 200;
+	border: 1px solid #000000;
+	background-color: yellow;
+	padding: 2px;
+}
+.clDescription {
+	point-size: 10px;
+}

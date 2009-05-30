@@ -1,0 +1,1365 @@
+﻿/*************************************************************************
+ *
+ * DO NOT REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
+ *
+ * @Authors:
+ *       timop
+ *
+ * Copyright 2004-2009 by OM International
+ *
+ * This file is part of OpenPetra.org.
+ *
+ * OpenPetra.org is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * OpenPetra.org is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with OpenPetra.org.  If not, see <http://www.gnu.org/licenses/>.
+ *
+ ************************************************************************/
+using System;
+using System.Collections.Specialized;
+using System.Data;
+using System.Data.Odbc;
+using Ict.Common;
+using Ict.Common.DB;
+
+namespace Ict.Common.Data
+{
+    /// <summary>
+    /// This is the base class for the data access store.
+    /// It mainly contains static methods.
+    /// </summary>
+    public class TTypedDataAccess
+    {
+        /// name of the column used for tracking changes, one ID per change
+        public const string MODIFICATION_ID = "s_modification_id_c";
+
+        /// <summary>
+        /// who has last modified the row
+        /// </summary>
+        public const string MODIFIED_BY = "s_modified_by_c";
+
+        /// <summary>
+        /// when was the last change to the row
+        /// </summary>
+        public const string MODIFIED_DATE = "s_date_modified_d";
+
+        /// <summary>
+        /// who has originally created this row
+        /// </summary>
+        public const string CREATED_BY = "s_created_by_c";
+
+        /// <summary>
+        /// when was this row originally created
+        /// </summary>
+        public const string CREATED_DATE = "s_date_created_d";
+
+        /// <summary>
+        /// indicates whether a row has been deleted
+        /// </summary>
+        public const string MODIFICATION_ID_DELETEDROW_INDICATOR = "[DELETED ROW!!!]";
+
+        private static int FRowCount;
+
+        /// <summary>
+        /// how many rows are in the current query or have been processed
+        /// this is used for the Progress bar, to watch the current status
+        /// </summary>
+        public static Int32 RowCount
+        {
+            get
+            {
+                return FRowCount;
+            }
+
+            set
+            {
+                FRowCount = value;
+            }
+        }
+
+        /// <summary>
+        /// This function returns true if the column name is not one of the special columns, that
+        /// are written automatically: modified date and by, created date and by, modification id
+        ///
+        /// </summary>
+        /// <returns>true if this is no special auto column</returns>
+        public static bool NoDefaultColumn(String AColumnName)
+        {
+            return (AColumnName != MODIFICATION_ID) && (AColumnName != MODIFIED_BY) && (AColumnName != MODIFIED_DATE)
+                   && (AColumnName != CREATED_BY) && (AColumnName != CREATED_DATE);
+        }
+
+        /// <summary>
+        /// This function returns the next available modification ID.
+        /// It uses the next-value of the sequences seq_modification1 and seq_modification2
+        /// (first counting up seq_modification1, then increasing once seq_modification2,
+        /// and cycling through seq_modification1 again)
+        /// The string is made up by the two values of the sequences, formatted as Hex numbers, and
+        /// separated by a semicolon.
+        ///
+        /// </summary>
+        /// <returns>the next modification ID</returns>
+        public static String GetNextModificationID(DB.TDBTransaction ATransaction)
+        {
+            Int64 value1;
+            Int64 value2;
+
+            value1 = DBAccess.GDBAccessObj.GetNextSequenceValue("seq_modification1", ATransaction);
+
+            if (value1 == 0)
+            {
+                value2 = DBAccess.GDBAccessObj.GetNextSequenceValue("seq_modification2", ATransaction);
+            }
+            else
+            {
+                value2 = DBAccess.GDBAccessObj.GetCurrentSequenceValue("seq_modification2", ATransaction);
+            }
+
+            // this has been tested with an upper limit of 32;
+            // those were the numbers generated:
+            // 13 December 2006, 15:39:42 : Next modification ID: ...00000;...00020
+            // 13 December 2006, 15:39:51 : Next modification ID: ...00001;...00000
+            // 13 December 2006, 15:39:51 : Next modification ID: ...00001;...00001
+            return String.Format("{0:x70}", ((object)value2)) + ';' + String.Format("{0:x70}", ((object)value1));
+        }
+
+        /// <summary>
+        /// This function returns the modification details of a row
+        ///
+        /// </summary>
+        /// <returns>void</returns>
+        public static void GetStoredModification(String ADBTableName,
+            string[] AColumnNames,
+            int[] APrimKeyColumnOrdList,
+            DataRow ADataRow,
+            DB.TDBTransaction ATransaction,
+            ref String AModificationID,
+            ref String AModifiedBy,
+            out System.DateTime AModifiedDate)
+        {
+            Int32 Counter;
+            Boolean First;
+            String SqlString;
+            DataTable table;
+
+            SqlString = "SELECT " + MODIFICATION_ID + ", " + MODIFIED_BY + ", " + MODIFIED_DATE + " FROM PUB_" + ADBTableName + " WHERE ";
+            First = true;
+
+            foreach (int PrimKeyOrd in APrimKeyColumnOrdList)
+            {
+                if (First == true)
+                {
+                    First = false;
+                }
+                else
+                {
+                    SqlString = SqlString + " AND ";
+                }
+
+                SqlString = SqlString + AColumnNames[PrimKeyOrd] + " = ?";
+            }
+
+            OdbcParameter[] Parameters = new OdbcParameter[APrimKeyColumnOrdList.Length];
+
+            Counter = 0;
+
+            foreach (int i in APrimKeyColumnOrdList)
+            {
+                Parameters[Counter] = CreateOdbcParameter(ADataRow.Table, i, ADataRow[i, DataRowVersion.Original]);
+                Parameters[Counter].Value = ADataRow[i, DataRowVersion.Original];
+                Counter = Counter + 1;
+            }
+
+            table = DBAccess.GDBAccessObj.SelectDT(SqlString, ADBTableName, ATransaction, Parameters);
+            AModificationID = "";
+            AModifiedBy = "";
+            AModifiedDate = DateTime.MinValue;
+
+            if (table.Rows.Count == 1)
+            {
+                if (table.Rows[0][0] != System.DBNull.Value)
+                {
+                    AModificationID = (string)table.Rows[0][0];
+                }
+
+                if (table.Rows[0][1] != System.DBNull.Value)
+                {
+                    AModifiedBy = (string)table.Rows[0][1];
+                }
+
+                if (table.Rows[0][2] != System.DBNull.Value)
+                {
+                    AModifiedDate = (DateTime)(table.Rows[0][2]);
+                }
+            }
+            else if (table.Rows.Count == 0)
+            {
+                AModificationID = MODIFICATION_ID_DELETEDROW_INDICATOR;
+            }
+        }
+
+        /// <summary>
+        /// This function is called by the DataStore (SubmitChanges)
+        ///
+        /// </summary>
+        /// <returns>void</returns>
+        public static void InsertRow(String ADBTableName,
+            string[] AColumns,
+            ref DataRow ADataRow,
+            DB.TDBTransaction ATransaction,
+            String ACurrentUser)
+        {
+            DBAccess.GDBAccessObj.ExecuteNonQuery(GenerateInsertClause("PUB_" + ADBTableName,
+                    AColumns,
+                    ADataRow), ATransaction, false, GetParametersForInsertClause(ref ADataRow, AColumns.Length, ATransaction, ACurrentUser));
+        }
+
+        /// <summary>
+        /// This function is called by the DataStore (SubmitChanges)
+        ///
+        /// </summary>
+        /// <returns>void</returns>
+        public static void UpdateRow(String ADBTableName,
+            string[] AColumns,
+            int[] APrimKeyColumnOrdList,
+            ref DataRow ADataRow,
+            DB.TDBTransaction ATransaction,
+            String ACurrentUser)
+        {
+            String LastModificationId = "";
+            String LastModifiedBy = "";
+
+            System.DateTime LastModifiedDate;
+            String OriginalModificationID;
+            String CurrentModificationID;
+
+            // check if modification id of the changed row is the same as currently stored in the database
+            GetStoredModification(ADBTableName,
+                AColumns,
+                APrimKeyColumnOrdList,
+                ADataRow,
+                ATransaction,
+                ref LastModificationId,
+                ref LastModifiedBy,
+                out LastModifiedDate);
+
+            if (LastModificationId != MODIFICATION_ID_DELETEDROW_INDICATOR)
+            {
+                if ((ADataRow[MODIFICATION_ID,
+                              DataRowVersion.Original] == System.DBNull.Value) || (ADataRow[MODIFICATION_ID, DataRowVersion.Original] == null))
+                {
+                    OriginalModificationID = "";
+                }
+                else
+                {
+                    OriginalModificationID = ADataRow[MODIFICATION_ID, DataRowVersion.Original].ToString();
+                }
+
+                if ((ADataRow[MODIFICATION_ID,
+                              DataRowVersion.Current] == System.DBNull.Value) || (ADataRow[MODIFICATION_ID, DataRowVersion.Current] == null))
+                {
+                    CurrentModificationID = "";
+                }
+                else
+                {
+                    CurrentModificationID = ADataRow[MODIFICATION_ID, DataRowVersion.Current].ToString();
+                }
+
+                if (OriginalModificationID == LastModificationId)
+                {
+                    if (CurrentModificationID != LastModificationId)
+                    {
+                        // the modification id has been increased in a previous SubmitChanges, but then the transaction has been rolled back
+                        ADataRow[MODIFICATION_ID] = LastModificationId;
+                        CurrentModificationID = LastModificationId;
+                    }
+                }
+
+                // check if modification id has been changed and committed to the database, but AcceptChanges has not been applied
+                if (OriginalModificationID != CurrentModificationID)
+                {
+                    throw new Exception(
+                        "Developer should fix this: Forgot to call AcceptChanges on table " + ADBTableName + " (OriginalModificationID: '" +
+                        OriginalModificationID + "', CurrentModificationID: '" + CurrentModificationID + "'");
+                }
+
+                if (LastModificationId != OriginalModificationID)
+                {
+                    throw new EDBConcurrencyException(
+                        "Cannot update row of table " + ADBTableName + " because the row has been edited by user " + LastModifiedBy,
+                        "update",
+                        ADBTableName,
+                        LastModifiedBy,
+                        LastModifiedDate);
+                }
+
+                DBAccess.GDBAccessObj.ExecuteNonQuery(GenerateUpdateClause("PUB_" + ADBTableName,
+                        AColumns,
+                        ADataRow,
+                        APrimKeyColumnOrdList), ATransaction, false,
+                    GetParametersForUpdateClause(ref ADataRow, APrimKeyColumnOrdList, AColumns.Length, ATransaction, ACurrentUser));
+            }
+            else
+            {
+                throw new EDBConcurrencyRowDeletedException("Cannot update row of table " + ADBTableName + " because the row has been deleted.",
+                    "update",
+                    ADBTableName,
+                    "",
+                    DateTime.MinValue);
+            }
+        }
+
+        /// <summary>
+        /// This function is called by the DataStore (SubmitChanges)
+        ///
+        /// </summary>
+        /// <returns>void</returns>
+        public static void DeleteRow(String ADBTableName,
+            string[] AColumns,
+            int[] APrimKeyColumnOrdList,
+            DataRow ADataRow,
+            DB.TDBTransaction ATransaction)
+        {
+            String LastModificationId = "";
+            String LastModifiedBy = "";
+
+            System.DateTime LastModifiedDate;
+
+            // check if modification id of the changed row is the same as currently stored in the database
+            GetStoredModification(ADBTableName,
+                AColumns,
+                APrimKeyColumnOrdList,
+                ADataRow,
+                ATransaction,
+                ref LastModificationId,
+                ref LastModifiedBy,
+                out LastModifiedDate);
+
+            if (LastModificationId != (string)(ADataRow[MODIFICATION_ID, DataRowVersion.Original]))
+            {
+                throw new EDBConcurrencyException(
+                    "Cannot delete row of table " + ADBTableName + " because the row has been edited by user " + LastModifiedBy,
+                    "delete",
+                    ADBTableName,
+                    LastModifiedBy,
+                    LastModifiedDate);
+            }
+
+            DBAccess.GDBAccessObj.ExecuteNonQuery(GenerateDeleteClause("PUB_" + ADBTableName,
+                    AColumns,
+                    ADataRow,
+                    APrimKeyColumnOrdList), ATransaction, false, GetParametersForDeleteClause(ADataRow, APrimKeyColumnOrdList));
+        }
+
+        /// <summary>
+        /// This function expects a StringCollection that can be filled, empty or nil.
+        /// It also needs the list of the primary key columns, because otherwise the returned row will fail the constraints.
+        /// It will return a proper Select Clause.
+        /// </summary>
+        /// <returns>the Select Clause
+        /// </returns>
+        public static String GenerateSelectClause(StringCollection AFieldList, string[] APrimaryKeyFields)
+        {
+            String ReturnValue = "";
+
+            ReturnValue = "SELECT ";
+
+            if ((AFieldList == null) || (AFieldList.Count == 0))
+            {
+                ReturnValue = ReturnValue + '*';
+            }
+            else
+            {
+                ReturnValue = ReturnValue + StringHelper.StrMerge(AFieldList, ",");
+
+                foreach (string primkeyField in APrimaryKeyFields)
+                {
+                    if ((!AFieldList.Contains(primkeyField)))
+                    {
+                        ReturnValue = ReturnValue + ',' + primkeyField;
+                    }
+                }
+
+                if ((!AFieldList.Contains(MODIFICATION_ID)))
+                {
+                    ReturnValue = ReturnValue + ',' + MODIFICATION_ID;
+                }
+            }
+
+            return ReturnValue;
+        }
+
+        /// <summary>
+        /// This function expects a StringCollection that can be filled, empty or nil.
+        /// It also needs the list of the primary key columns, because otherwise the returned row will fail the constraints.
+        /// It will prefix all fields with the given tablename. needed for selecting from join statements.
+        /// It will return a proper Select Clause.
+        /// If a field has already a dot in the name, the ATablename is not put before it: That way you can do SUM(PUB_table.p_something).
+        /// </summary>
+        /// <returns>the Select Clause
+        /// </returns>
+        public static String GenerateSelectClauseLong(String ATableName, StringCollection AFieldList, string[] APrimaryKeyFields)
+        {
+            String ReturnValue;
+
+            ReturnValue = "SELECT ";
+
+            if ((AFieldList == null) || (AFieldList.Count == 0))
+            {
+                ReturnValue = ReturnValue + ATableName + ".*";
+            }
+            else
+            {
+                foreach (string s in AFieldList)
+                {
+                    if (ReturnValue != "SELECT ")
+                    {
+                        ReturnValue = ReturnValue + ',';
+                    }
+
+                    if (s.IndexOf('.') == -1)
+                    {
+                        ReturnValue = ReturnValue + ATableName + '.' + s;
+                    }
+                    else
+                    {
+                        ReturnValue = ReturnValue + s;
+                    }
+                }
+
+                foreach (string primkeyField in APrimaryKeyFields)
+                {
+                    if ((!AFieldList.Contains(primkeyField)))
+                    {
+                        if (primkeyField.IndexOf('.') == -1)
+                        {
+                            ReturnValue = ReturnValue + ',' + ATableName + '.' + primkeyField;
+                        }
+                        else
+                        {
+                            ReturnValue = ReturnValue + ',' + primkeyField;
+                        }
+                    }
+                }
+
+                if ((!AFieldList.Contains(MODIFICATION_ID)))
+                {
+                    ReturnValue = ReturnValue + ',' + ATableName + '.' + MODIFICATION_ID;
+                }
+            }
+
+            return ReturnValue;
+        }
+
+        /// <summary>
+        /// This function expects an empty table that contains all existing columns,
+        /// and a datarow that has a string or an empty value for each column.
+        /// It will return a Where clause, using the given values.
+        /// </summary>
+        /// <param name="AColumnNames">the column names</param>
+        /// <param name="ADataRow">the data row with the the columns for the where clause</param>
+        /// <param name="ATemplateOperators">Every template field can have an operator; the default version always used = or LIKE</param>
+        /// <returns>the Where Clause
+        /// </returns>
+        public static String GenerateWhereClause(string[] AColumnNames, DataRow ADataRow, StringCollection ATemplateOperators)
+        {
+            String ReturnValue = "";
+            Int32 Counter;
+            Int32 CounterOperator;
+
+            ReturnValue = "";
+            CounterOperator = 0;
+
+            for (Counter = 0; Counter <= ADataRow.ItemArray.Length - 1; Counter += 1)
+            {
+                if (ADataRow[Counter] != System.DBNull.Value)
+                {
+                    if (ReturnValue.Length == 0)                     //first time around
+                    {
+                        ReturnValue = " WHERE ";
+                    }
+                    else
+                    {
+                        ReturnValue = ReturnValue + " AND ";
+                    }
+
+                    ReturnValue = ReturnValue + AColumnNames[Counter];
+
+                    if ((ATemplateOperators == null) || (CounterOperator >= ATemplateOperators.Count))
+                    {
+                        if (ADataRow[Counter].GetType() == typeof(String))
+                        {
+                            ReturnValue = ReturnValue + " LIKE ";
+                        }
+                        else
+                        {
+                            ReturnValue = ReturnValue + " = ";
+                        }
+                    }
+                    else
+                    {
+                        ReturnValue = ReturnValue + ' ' + ATemplateOperators[CounterOperator] + ' ';
+                    }
+
+                    ReturnValue = ReturnValue + '?';
+                    CounterOperator = CounterOperator + 1;
+                }
+                else
+                {
+                    if ((ATemplateOperators != null) && (ATemplateOperators.Count == ADataRow.ItemArray.Length))
+                    {
+                        CounterOperator = CounterOperator + 1;
+                    }
+                }
+            }
+
+            return ReturnValue;
+        }
+
+        /// <summary>
+        /// This function expects an empty table that contains all existing columns,
+        /// and a datarow that has a string or an empty value for each column.
+        /// It will return a Where clause, using the given values.
+        /// </summary>
+        /// <returns>the Where Clause
+        /// </returns>
+        public static String GenerateWhereClause(string[] AColumnNames, DataRow ADataRow)
+        {
+            return GenerateWhereClause(AColumnNames, ADataRow, null);
+        }
+
+        /// <summary>
+        /// This function expects a string list of all existing columns,
+        /// and a datarow that has a value or an empty value for each column.
+        /// It will return a Where clause, using the given values.
+        /// It does not contain the WHERE keyword.
+        /// It uses the long form, table.fieldname
+        ///
+        /// </summary>
+        /// <param name="ATableName">the table that the where clause is generated for</param>
+        /// <param name="AColumnNames">list of all columns of that table</param>
+        /// <param name="ADataRow">contains the values for the where clause</param>
+        /// <param name="ATemplateOperators">Every template field can have an operator; the default version always used = or LIKE</param>
+        /// <returns>the Where Clause
+        /// </returns>
+        public static String GenerateWhereClauseLong(String ATableName, string[] AColumnNames, DataRow ADataRow, StringCollection ATemplateOperators)
+        {
+            String ReturnValue;
+            Int32 Counter;
+            Int32 CounterOperator;
+
+            ReturnValue = "";
+            Counter = 0;
+            CounterOperator = 0;
+
+            while (Counter < ADataRow.ItemArray.Length)
+            {
+                if (ADataRow[Counter] != System.DBNull.Value)
+                {
+                    ReturnValue = ReturnValue + " AND ";
+                    ReturnValue = ReturnValue + ATableName + '.' + AColumnNames[Counter];
+
+                    if ((ATemplateOperators == null) || (CounterOperator >= ATemplateOperators.Count))
+                    {
+                        if (ADataRow[Counter].GetType() == typeof(String))
+                        {
+                            ReturnValue = ReturnValue + " LIKE ";
+                        }
+                        else
+                        {
+                            ReturnValue = ReturnValue + " = ";
+                        }
+                    }
+                    else
+                    {
+                        ReturnValue = ReturnValue + ' ' + ATemplateOperators[CounterOperator] + ' ';
+                    }
+
+                    ReturnValue = ReturnValue + '?';
+                    CounterOperator = CounterOperator + 1;
+                }
+                else
+                {
+                    if ((ATemplateOperators != null) && (ATemplateOperators.Count == ADataRow.ItemArray.Length))
+                    {
+                        CounterOperator = CounterOperator + 1;
+                    }
+                }
+
+                Counter = Counter + 1;
+            }
+
+            return ReturnValue;
+        }
+
+        /// <summary>
+        /// This function expects a string array with the names of all existing columns,
+        /// and a datarow that has a value or an empty value for each column.
+        /// It will return a Where clause, using the given values.
+        /// It does not contain the WHERE keyword.
+        /// It uses the long form, table.fieldname
+        ///
+        /// </summary>
+        /// <param name="ATableName">the table that the where clause is generated for</param>
+        /// <param name="AColumnNames">list of all columns of that table</param>
+        /// <param name="ADataRow">contains the values for the where clause</param>
+        /// <returns>the Where Clause
+        /// </returns>
+        public static String GenerateWhereClauseLong(String ATableName, string[] AColumnNames, DataRow ADataRow)
+        {
+            return GenerateWhereClauseLong(ATableName, AColumnNames, ADataRow, null);
+        }
+
+        /// <summary>
+        /// This function expects a list of string, where the first string is either "order by" or "group by",
+        /// and the rest of the string is e.g. "p_partner.p_partner_key_n ASC"
+        /// It will return the appropriate part of the sql query
+        /// </summary>
+        /// <param name="AOrderBy">String list with instructions how to order or group the result</param>
+        /// <returns>the order by / group by clause
+        /// </returns>
+        public static String GenerateOrderByClause(StringCollection AOrderBy)
+        {
+            String ReturnValue;
+            Int32 Counter;
+
+            ReturnValue = "";
+
+            if (AOrderBy != null)
+            {
+                ReturnValue = ' ' + AOrderBy[0] + ' ';
+
+                for (Counter = 1; Counter <= AOrderBy.Count - 1; Counter += 1)
+                {
+                    if (Counter > 1)
+                    {
+                        ReturnValue = ReturnValue + ',';
+                    }
+
+                    ReturnValue = ReturnValue + AOrderBy[Counter];
+                }
+            }
+
+            return ReturnValue;
+        }
+
+        /// <summary>
+        /// This function creates an odbc parameter with the correct type, based on the obj which comes from a DataRow
+        ///
+        /// </summary>
+        /// <param name="ATable">Table that we are operating on</param>
+        /// <param name="AColumnNr">which column should the parameter be generated for</param>
+        /// <param name="obj">the value that needs to be converted to OdbcParameter</param>
+        /// <returns>the Odbc parameter</returns>
+        public static OdbcParameter CreateOdbcParameter(DataTable ATable, Int32 AColumnNr, System.Object obj)
+        {
+            OdbcParameter ReturnValue;
+            OdbcType newType;
+
+            System.Int32 Length;
+            Length = -1;
+            newType = OdbcType.Int;
+
+            if (obj.GetType() == typeof(System.Int64))
+            {
+                newType = OdbcType.Decimal;
+                Length = 10;
+            }
+            else if (obj.GetType() == typeof(double))
+            {
+                newType = OdbcType.Decimal;
+                Length = 24;
+            }
+            else if (obj.GetType() == typeof(bool))
+            {
+                newType = OdbcType.Bit;
+            }
+            else if (obj.GetType() == typeof(String))
+            {
+                newType = OdbcType.VarChar;
+
+                // The documentation says:
+                // \\ begin quote
+                // The Length property returns the number of Char objects in this instance,
+                // not the number of Unicode characters.
+                // The reason is that a Unicode character might be represented by more than one Char.
+                // Use the System.Globalization.StringInfo class to work with each Unicode character instead of each Char.
+                // \\ end quote
+                // I wonder if Mono behaves different than Windows?
+                // I should find the maximum number for this field specifically;
+                // multiplying by 2 is not safe with multibyte characters?
+                // Length := (obj as System.String).Length  2;
+                Length = ((TTypedDataTable)ATable).CreateOdbcParameter(ATable.Columns[AColumnNr]).Size;
+
+                if (Length == 0)
+                {
+                    Length = 1;
+                }
+            }
+            else if (obj.GetType() == typeof(System.DateTime))
+            {
+                newType = OdbcType.Date;
+            }
+            else if (obj.GetType() == typeof(System.Int32))
+            {
+                newType = OdbcType.Int;
+            }
+            else if (obj.GetType() == typeof(System.Decimal))
+            {
+                // hardly ever used... p_person.p_christian_since_year_i number(4)
+                newType = OdbcType.Decimal;
+                Length = 24;
+            }
+
+            if (Length == -1)
+            {
+                ReturnValue = new OdbcParameter("", newType);
+            }
+            else
+            {
+                ReturnValue = new OdbcParameter("", newType, Length);
+            }
+
+            return ReturnValue;
+        }
+
+        /// <summary>
+        /// This function returns either a valid object or System.DBNull;
+        /// this is necessary because mono sometimes has a nil pointer in the DataRow for the original version etc.
+        ///
+        /// </summary>
+        /// <returns>either a valid object or System.DBNull</returns>
+        public static System.Object GetSafeValue(DataRow ADataRow, System.Int32 AColumnNr, DataRowVersion AVersion)
+        {
+            System.Object ReturnValue;
+
+            // special treatment for mono: sometimes the value can be nil
+            ReturnValue = System.DBNull.Value;
+
+            if (ADataRow[AColumnNr, AVersion] != null)
+            {
+                ReturnValue = ADataRow[AColumnNr, AVersion];
+            }
+
+            return ReturnValue;
+        }
+
+        /// <summary>
+        /// This function returns either a valid object or System.DBNull;
+        /// this is necessary because mono sometimes has a nil pointer in the DataRow for the original version etc.
+        ///
+        /// </summary>
+        /// <returns>either a valid object or System.DBNull</returns>
+        public static System.Object GetSafeValue(DataRow ADataRow, String AColumnName, DataRowVersion AVersion)
+        {
+            System.Object ReturnValue;
+
+            // special treatment for mono: sometimes the value can be nil
+            ReturnValue = System.DBNull.Value;
+
+            if (ADataRow[AColumnName, AVersion] != null)
+            {
+                ReturnValue = ADataRow[AColumnName, AVersion];
+            }
+
+            return ReturnValue;
+        }
+
+        /// <summary>
+        /// Compare the original and the current value of a column in a datarow.
+        /// Make sure some mono specific troubles are worked around.
+        ///
+        /// </summary>
+        /// <returns>result of comparison</returns>
+        public static bool NotEquals(DataRow ADataRow, System.Int32 AColumnNr, ref System.Object ACurrentValue)
+        {
+            bool ReturnValue;
+
+            System.Object CurrentValue;
+            System.Object OriginalValue;
+            double CurrentValueDouble;
+            double OriginalValueDouble;
+
+            // special treatment for mono: sometimes the value can be nil
+            OriginalValue = GetSafeValue(ADataRow, AColumnNr, DataRowVersion.Original);
+            CurrentValue = GetSafeValue(ADataRow, AColumnNr, DataRowVersion.Current);
+
+            if ((CurrentValue == System.DBNull.Value) && (OriginalValue == System.DBNull.Value))
+            {
+                ReturnValue = false;
+            }
+            else if ((CurrentValue == System.DBNull.Value) || (OriginalValue == System.DBNull.Value))
+            {
+                ReturnValue = true;
+            }
+            // simple comparison of the System.Object objects does not work;
+            // mono has trouble with comparing objects of different types (e.g. decimals and integers)
+            // result := OriginalValue <> CurrentValue;
+            else if (OriginalValue.GetType() != CurrentValue.GetType())
+            {
+                if ((OriginalValue.GetType() == typeof(System.Int32)) || (OriginalValue.GetType() == typeof(double))
+                    || (OriginalValue.GetType() == typeof(System.Decimal)))
+                {
+                    // convert all to double
+                    CurrentValueDouble = Convert.ToDouble(CurrentValue);
+                    OriginalValueDouble = Convert.ToDouble(OriginalValue);
+                    ReturnValue = OriginalValueDouble != CurrentValueDouble;
+                }
+                else
+                {
+                    // cannot guarantuee for correct result; probably a bug
+                    throw new Exception(
+                        "TTypedDataAccess.NotEquals: cannot compare types " + OriginalValue.GetType().ToString() + " and " +
+                        CurrentValue.GetType().ToString());
+                }
+            }
+            else
+            {
+                ReturnValue = (!OriginalValue.Equals(CurrentValue));
+            }
+
+            ACurrentValue = CurrentValue;
+            return ReturnValue;
+        }
+
+        /// <summary>
+        /// This function provides the actual parameters for the GenerateWhereClause
+        /// uses only the values that are not DBNULL
+        /// </summary>
+        /// <returns>an array of OdbcParameters
+        /// </returns>
+        public static OdbcParameter[] GetParametersForWhereClause(DataRow ADataRow)
+        {
+            OdbcParameter[] ReturnValue;
+            System.Int32 Counter;
+            System.Int32 ColumnCounter;
+
+            Counter = 0;
+
+            // find out how many template values there are, to be able to create the array in one go
+            foreach (object i in ADataRow.ItemArray)
+            {
+                if (i != System.DBNull.Value)
+                {
+                    Counter = Counter + 1;
+                }
+            }
+
+            ReturnValue = new OdbcParameter[Counter];
+            Counter = 0;
+            ColumnCounter = 0;
+
+            foreach (object item in ADataRow.ItemArray)
+            {
+                if (item != System.DBNull.Value)
+                {
+                    ReturnValue[Counter] = CreateOdbcParameter(ADataRow.Table, ColumnCounter, item);
+                    ReturnValue[Counter].Value = item;
+                    Counter = Counter + 1;
+                }
+
+                ColumnCounter = ColumnCounter + 1;
+            }
+
+            return ReturnValue;
+        }
+
+        /// <summary>
+        /// This function provides the actual parameters for the GenerateWhereClause
+        /// uses only the values that are not DBNULL
+        /// </summary>
+        /// <param name="ADataRow">values that are used as parameters</param>
+        /// <param name="APrimaryKeyColumnOrd">is needed for the SELECT COUNT statement; it has the order numbers of the columns that make up the primary key</param>
+        /// <returns>an array of OdbcParameters
+        /// </returns>
+        public static OdbcParameter[] GetParametersForWhereClause(DataRow ADataRow, int[] APrimaryKeyColumnOrd)
+        {
+            OdbcParameter[] ReturnValue;
+            System.Int32 Counter;
+            System.Int32 i;
+            System.Object CurrentValue = null;
+            Boolean First;
+            Counter = 0;
+            First = true;
+
+            // find out how many template values there are, to be able to create the array in one go
+            for (i = 0; i <= ADataRow.ItemArray.Length - 1; i += 1)
+            {
+                if (NotEquals(ADataRow, i, ref CurrentValue))
+                {
+                    First = false;
+
+                    // problem with mono: NULL is printed directly in the statement, no odbc parameter
+                    if ((CurrentValue != System.DBNull.Value) && (CurrentValue.GetType() != typeof(double)))
+                    {
+                        Counter = Counter + 1;
+                    }
+                }
+            }
+
+            if (First == true)
+            {
+                // we need at least 1 column, otherwise the SQL statement will be invalid...
+                Counter = 1;
+            }
+
+            if (APrimaryKeyColumnOrd != null)
+            {
+                Counter = Counter + APrimaryKeyColumnOrd.Length;
+            }
+
+            ReturnValue = new OdbcParameter[Counter];
+
+            Counter = 0;
+            First = true;
+
+            for (i = 0; i <= ADataRow.ItemArray.Length - 1; i += 1)
+            {
+                if (NotEquals(ADataRow, i, ref CurrentValue))
+                {
+                    First = false;
+
+                    // problem with mono: NULL is printed directly in the statement, no odbc parameter
+                    if ((CurrentValue != System.DBNull.Value) && (CurrentValue.GetType() != typeof(double)))
+                    {
+                        ReturnValue[Counter] = CreateOdbcParameter(ADataRow.Table, i, CurrentValue);
+                        ReturnValue[Counter].Value = CurrentValue;
+                        Counter = Counter + 1;
+                    }
+                }
+            }
+
+            if (First == true)
+            {
+                // we need at least 1 column, otherwise the SQL statement will be invalid...
+                CurrentValue = ADataRow.ItemArray[0];
+                ReturnValue[Counter] = CreateOdbcParameter(ADataRow.Table, 0, CurrentValue);
+                ReturnValue[Counter].Value = CurrentValue;
+                Counter = 1;
+            }
+
+            // for the SELECT COUNT statement
+            if (APrimaryKeyColumnOrd != null)
+            {
+                foreach (int item in APrimaryKeyColumnOrd)
+                {
+                    ReturnValue[Counter] = CreateOdbcParameter(ADataRow.Table, item, ADataRow[item]);
+                    ReturnValue[Counter].Value = ADataRow[item, DataRowVersion.Original];
+                    Counter = Counter + 1;
+                }
+            }
+
+            return ReturnValue;
+        }
+
+        /// <summary>
+        /// This function provides the actual parameters for the GenerateInsertClause
+        /// uses only the values that are not DBNULL
+        /// adds the next modification ID
+        /// </summary>
+        /// <param name="ADataRow">values that are used as parameters</param>
+        /// <param name="ANumberDBColumns">the number of columns of this row that should be stored in the database; that allows some columns to be added temporarily, e.g. PPartnerLocation.BestAddress in PartnerEdit Dataset</param>
+        /// <param name="ATransaction">need a transaction for getting the next modification id</param>
+        /// <param name="ACurrentUser">for setting modified by</param>
+        /// <returns>an array of OdbcParameters
+        /// </returns>
+        public static OdbcParameter[] GetParametersForInsertClause(ref DataRow ADataRow,
+            Int32 ANumberDBColumns,
+            DB.TDBTransaction ATransaction,
+            String ACurrentUser)
+        {
+            OdbcParameter[] ReturnValue;
+            System.Int32 i;
+            System.Int32 Counter;
+            System.Object item;
+            System.Object CurrentValue;
+            Counter = 0;
+
+            // find out how many template values there are, to be able to create the array in one go
+            for (i = 0; i <= ANumberDBColumns - 1; i += 1)
+            {
+                item = ADataRow.ItemArray[i];
+
+                if ((item != System.DBNull.Value) && NoDefaultColumn(ADataRow.Table.Columns[i].ColumnName))
+                {
+                    CurrentValue = GetSafeValue(ADataRow, i, DataRowVersion.Current);
+
+                    // problem with mono: Decimal is printed directly in the statement, no odbc parameter
+                    if (CurrentValue.GetType() != typeof(double))
+                    {
+                        Counter = Counter + 1;
+                    }
+                }
+            }
+
+            // for the modification ID, createdby and datecreated
+            Counter = Counter + 3;
+            ReturnValue = new OdbcParameter[Counter];
+            Counter = 0;
+
+            for (i = 0; i <= ANumberDBColumns - 1; i += 1)
+            {
+                item = ADataRow.ItemArray[i];
+
+                if ((item != System.DBNull.Value) && NoDefaultColumn(ADataRow.Table.Columns[i].ColumnName))
+                {
+                    // problem with mono: Decimal is printed directly in the statement, no odbc parameter
+                    CurrentValue = GetSafeValue(ADataRow, i, DataRowVersion.Current);
+
+                    if (CurrentValue.GetType() != typeof(double))
+                    {
+                        ReturnValue[Counter] = CreateOdbcParameter(ADataRow.Table, i, item);
+                        ReturnValue[Counter].Value = item;
+                        Counter = Counter + 1;
+                    }
+                }
+            }
+
+            ReturnValue[Counter] = new OdbcParameter("", OdbcType.VarChar, 150);
+            ReturnValue[Counter].Value = GetNextModificationID(ATransaction);
+            ADataRow[MODIFICATION_ID] = ReturnValue[Counter].Value;
+            Counter = Counter + 1;
+            ReturnValue[Counter] = new OdbcParameter("", OdbcType.VarChar, 20);
+            ReturnValue[Counter].Value = ACurrentUser;
+            ADataRow[CREATED_BY] = ReturnValue[Counter].Value;
+            Counter = Counter + 1;
+            ReturnValue[Counter] = new OdbcParameter("", OdbcType.Date);
+            ReturnValue[Counter].Value = DateTime.Now;
+            ADataRow[CREATED_DATE] = ReturnValue[Counter].Value;
+
+            return ReturnValue;
+        }
+
+        /// <summary>
+        /// This function provides the actual parameters for the GenerateUpdateClause
+        /// uses only the values that are changed (comparing the current and the original version of the row)
+        /// </summary>
+        /// <param name="ADataRow">values that are used as parameters</param>
+        /// <param name="APrimaryKeyColumnOrd">can be empty; is needed for the UPDATE WHERE statement; it has the order numbers of the columns that make up the primary key</param>
+        /// <param name="ANumberDBColumns">the number of columns of this row that should be stored in the database; that allows some columns to be added temporarily, e.g. PPartnerLocation.BestAddress in PartnerEdit Dataset</param>
+        /// <param name="ATransaction">required for increasing the modification id</param>
+        /// <param name="ACurrentUser">for setting modified by</param>
+        /// <returns>an array of OdbcParameters
+        /// </returns>
+        public static OdbcParameter[] GetParametersForUpdateClause(ref DataRow ADataRow,
+            int[] APrimaryKeyColumnOrd,
+            Int32 ANumberDBColumns,
+            DB.TDBTransaction ATransaction,
+            String ACurrentUser)
+        {
+            OdbcParameter[] ReturnValue;
+            System.Int32 Counter;
+            System.Int32 i;
+            System.Object CurrentValue = null;
+            Counter = 0;
+
+            // find out how many template values there are, to be able to create the array in one go
+            // only consider the first columns of the row, that exist in the database
+            for (i = 0; i <= ANumberDBColumns - 1; i += 1)
+            {
+                if (NoDefaultColumn(ADataRow.Table.Columns[i].ColumnName))
+                {
+                    if (NotEquals(ADataRow, i, ref CurrentValue))
+                    {
+                        // problem with mono: NULL is printed directly in the statement, no odbc parameter
+                        if ((CurrentValue != System.DBNull.Value) && (CurrentValue.GetType() != typeof(double)))
+                        {
+                            Counter = Counter + 1;
+                        }
+                    }
+                }
+            }
+
+            // for the modification id, the modified by and date modified
+            Counter = Counter + 3;
+
+            if (APrimaryKeyColumnOrd != null)
+            {
+                Counter = Counter + APrimaryKeyColumnOrd.Length;
+            }
+
+            ReturnValue = new OdbcParameter[Counter];
+            Counter = 0;
+
+            for (i = 0; i <= ANumberDBColumns - 1; i += 1)
+            {
+                if (NoDefaultColumn(ADataRow.Table.Columns[i].ColumnName))
+                {
+                    if (NotEquals(ADataRow, i, ref CurrentValue))
+                    {
+                        // problem with mono: NULL is printed directly in the statement, no odbc parameter
+                        if ((CurrentValue != System.DBNull.Value) && (CurrentValue.GetType() != typeof(double)))
+                        {
+                            ReturnValue[Counter] = CreateOdbcParameter(ADataRow.Table, i, CurrentValue);
+                            ReturnValue[Counter].Value = CurrentValue;
+                            Counter = Counter + 1;
+                        }
+                    }
+                }
+            }
+
+            // modification id
+            ReturnValue[Counter] = new OdbcParameter("", OdbcType.VarChar, 150);
+            ReturnValue[Counter].Value = GetNextModificationID(ATransaction);
+            ADataRow[MODIFICATION_ID] = ReturnValue[Counter].Value;
+            Counter = Counter + 1;
+            ReturnValue[Counter] = new OdbcParameter("", OdbcType.VarChar, 20);
+            ReturnValue[Counter].Value = ACurrentUser;
+            ADataRow[MODIFIED_BY] = ReturnValue[Counter].Value;
+            Counter = Counter + 1;
+            ReturnValue[Counter] = new OdbcParameter("", OdbcType.Date);
+            ReturnValue[Counter].Value = DateTime.Now;
+            ADataRow[MODIFIED_DATE] = ReturnValue[Counter].Value;
+            Counter = Counter + 1;
+
+            // for the UPDATE WHERE statement
+            if (APrimaryKeyColumnOrd != null)
+            {
+                foreach (int pki in APrimaryKeyColumnOrd)
+                {
+                    ReturnValue[Counter] = CreateOdbcParameter(ADataRow.Table, pki, ADataRow[pki]);
+                    ReturnValue[Counter].Value = ADataRow[pki, DataRowVersion.Original];
+                    Counter = Counter + 1;
+                }
+            }
+
+            return ReturnValue;
+        }
+
+        /// <summary>
+        /// This function provides the actual parameters for the GenerateDeleteClause
+        /// it uses the OriginalVersion of the primary key values
+        /// </summary>
+        /// <param name="ADataRow">values that are used as parameters</param>
+        /// <param name="APrimaryKeyColumnOrd">has the order numbers of the columns that make up the primary key</param>
+        /// <returns>an array of OdbcParameters
+        /// </returns>
+        public static OdbcParameter[] GetParametersForDeleteClause(DataRow ADataRow, int[] APrimaryKeyColumnOrd)
+        {
+            OdbcParameter[] ReturnValue;
+            System.Int32 Counter;
+            ReturnValue = new OdbcParameter[APrimaryKeyColumnOrd.Length];
+
+            Counter = 0;
+
+            foreach (int i in APrimaryKeyColumnOrd)
+            {
+                ReturnValue[Counter] = CreateOdbcParameter(ADataRow.Table, i, ADataRow[i, DataRowVersion.Original]);
+                ReturnValue[Counter].Value = ADataRow[i, DataRowVersion.Original];
+                Counter = Counter + 1;
+            }
+
+            return ReturnValue;
+        }
+
+        /// <summary>
+        /// This function expects an empty table that contains all existing columns,
+        /// and a datarow that has a value or an empty value for each column.
+        /// It will return a complete INSERT Clause.
+        ///
+        /// </summary>
+        /// <returns>the INSERT statement
+        /// </returns>
+        public static String GenerateInsertClause(String ATableName, string[] AColumnNames, DataRow ADataRow)
+        {
+            String ReturnValue;
+            Int32 Counter;
+            Boolean First;
+
+            System.Object CurrentValue;
+
+            ReturnValue = "INSERT INTO " + ATableName + " (";
+            First = true;
+
+            // should ignore additional fields at the end of the row
+            for (Counter = 0; Counter <= AColumnNames.Length - 1; Counter += 1)
+            {
+                if ((ADataRow[Counter] != System.DBNull.Value) && NoDefaultColumn(AColumnNames[Counter]))
+                {
+                    if ((!First))
+                    {
+                        ReturnValue = ReturnValue + ", ";
+                    }
+                    else
+                    {
+                        First = false;
+                    }
+
+                    ReturnValue = ReturnValue + AColumnNames[Counter];
+                }
+            }
+
+            ReturnValue = ReturnValue + ", " + MODIFICATION_ID + ", " + CREATED_BY + ", " + CREATED_DATE;
+            ReturnValue = ReturnValue + ") VALUES (";
+            First = true;
+
+            for (Counter = 0; Counter <= AColumnNames.Length - 1; Counter += 1)
+            {
+                if ((ADataRow[Counter] != System.DBNull.Value) && NoDefaultColumn(AColumnNames[Counter]))
+                {
+                    if ((!First))
+                    {
+                        ReturnValue = ReturnValue + ", ";
+                    }
+                    else
+                    {
+                        First = false;
+                    }
+
+                    // problem with mono: Decimal is printed directly in the statement, no odbc parameter
+                    CurrentValue = GetSafeValue(ADataRow, Counter, DataRowVersion.Current);
+
+                    if (CurrentValue.GetType() == typeof(double))
+                    {
+                        ReturnValue = ReturnValue + CurrentValue.ToString();
+                    }
+                    else
+                    {
+                        ReturnValue = ReturnValue + '?';
+                    }
+                }
+            }
+
+            if ((!First))
+            {
+                ReturnValue = ReturnValue + ", ";
+            }
+
+            // add modification id, created by, date created
+            ReturnValue = ReturnValue + "?, ?, ?";
+            return ReturnValue + ")";
+        }
+
+        /// <summary>
+        /// This function expects an empty table that contains all existing columns,
+        /// and a datarow that has a value or an empty value for each column.
+        ///
+        /// </summary>
+        /// <returns>the UPDATE statement
+        /// </returns>
+        public static String GenerateUpdateClause(String ATableName, string[] AColumnNames, DataRow ADataRow, int[] APrimKeyColumnOrdList)
+        {
+            String ReturnValue;
+            Int32 Counter;
+
+            //Int32 PrimKeyOrd;
+            Boolean First;
+
+            System.Object CurrentValue = null;
+            ReturnValue = "UPDATE " + ATableName + " SET ";
+            First = true;
+
+            // should ignore additional fields at the end of the row
+            if (ADataRow.ItemArray.Length >= AColumnNames.Length)
+            {
+                for (Counter = 0; Counter <= AColumnNames.Length - 1; Counter += 1)
+                {
+                    if (NoDefaultColumn(AColumnNames[Counter]))
+                    {
+                        if (NotEquals(ADataRow, Counter, ref CurrentValue))
+                        {
+                            if ((!First))
+                            {
+                                ReturnValue = ReturnValue + ", ";
+                            }
+                            else
+                            {
+                                First = false;
+                            }
+
+                            // problem with mono: NULL is printed directly in the statement, no odbc parameter
+                            if (CurrentValue == System.DBNull.Value)
+                            {
+                                ReturnValue = ReturnValue + AColumnNames[Counter] + " = NULL";
+                            }
+                            // problem with mono: Decimal is printed directly in the statement, no odbc parameter
+                            else if (CurrentValue.GetType() == typeof(double))
+                            {
+                                ReturnValue = ReturnValue + AColumnNames[Counter] + " = " + CurrentValue.ToString();
+                            }
+                            else
+                            {
+                                ReturnValue = ReturnValue + AColumnNames[Counter] + " = ?";
+                            }
+                        }
+                    }
+                }
+
+                if ((!First))
+                {
+                    ReturnValue = ReturnValue + ", ";
+                }
+
+                ReturnValue = ReturnValue + MODIFICATION_ID + " = ?, ";
+                ReturnValue = ReturnValue + MODIFIED_BY + " = ?, ";
+                ReturnValue = ReturnValue + MODIFIED_DATE + " = ? ";
+
+                // WHERE clause, consisting of primary key
+                ReturnValue = ReturnValue + " WHERE ";
+                First = true;
+
+                foreach (int PrimKeyOrd in APrimKeyColumnOrdList)
+                {
+                    if (First == true)
+                    {
+                        First = false;
+                    }
+                    else
+                    {
+                        ReturnValue = ReturnValue + " AND ";
+                    }
+
+                    ReturnValue = ReturnValue + AColumnNames[PrimKeyOrd] + " = ?";
+                }
+            }
+            else
+            {
+                throw new ApplicationException(
+                    "Cannot generate UPDATE Clause for Table '" + ATableName + "' because the submitted DataTable has more columns (" +
+                    Convert.ToString(ADataRow.ItemArray.Length) + ") than the Table in the DB (" + Convert.ToString(AColumnNames.Length) + ")!");
+            }
+
+            return ReturnValue;
+        }
+
+        /// <summary>
+        /// This function will build a DELETE statement using the DataRowVersion.Original values of the primary key columns
+        /// </summary>
+        /// <returns>the DELETE statement
+        /// </returns>
+        public static String GenerateDeleteClause(String ATableName, string[] AColumnNames, DataRow ADataRow, int[] APrimKeyColumnOrdList)
+        {
+            String ReturnValue;
+            Boolean First;
+
+            ReturnValue = "DELETE FROM " + ATableName + " WHERE ";
+
+            // WHERE clause, consisting of primary key
+            First = true;
+
+            foreach (int PrimKeyOrd in APrimKeyColumnOrdList)
+            {
+                if (First == true)
+                {
+                    First = false;
+                }
+                else
+                {
+                    ReturnValue = ReturnValue + " AND ";
+                }
+
+                ReturnValue = ReturnValue + AColumnNames[PrimKeyOrd] + " = ?";
+            }
+
+            return ReturnValue;
+        }
+    }
+}

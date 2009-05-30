@@ -1,0 +1,149 @@
+﻿/*************************************************************************
+ *
+ * DO NOT REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
+ *
+ * @Authors:
+ *       christiank
+ *
+ * Copyright 2004-2009 by OM International
+ *
+ * This file is part of OpenPetra.org.
+ *
+ * OpenPetra.org is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * OpenPetra.org is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with OpenPetra.org.  If not, see <http://www.gnu.org/licenses/>.
+ *
+ ************************************************************************/
+using System;
+using System.Data;
+using System.Data.Odbc;
+
+using Ict.Common;
+using Ict.Common.DB;
+using Ict.Common.Verification;
+
+using Ict.Petra.Shared;
+using Ict.Petra.Shared.MSysMan.Data;
+using Ict.Petra.Shared.MSysMan.Data.Access;
+
+
+namespace Ict.Petra.Server.App.Core.Security
+{
+    /// <summary>
+    /// Reads and saves entries in the Login Log table.
+    /// </summary>
+    public class TLoginLog
+    {
+        /// <summary>
+        /// todoComment
+        /// </summary>
+        /// <param name="AUserID"></param>
+        /// <param name="ALoginStatus"></param>
+        /// <param name="AProcessID"></param>
+        /// <param name="AVerificationResult"></param>
+        /// <returns></returns>
+        public static Boolean AddLoginLogEntry(String AUserID,
+            String ALoginStatus,
+            out Int32 AProcessID,
+            out TVerificationResultCollection AVerificationResult)
+        {
+            return AddLoginLogEntry(AUserID, ALoginStatus, false, out AProcessID, out AVerificationResult);
+        }
+
+        /// <summary>
+        /// todoComment
+        /// </summary>
+        /// <param name="AUserID"></param>
+        /// <param name="ALoginStatus"></param>
+        /// <param name="AImmediateLogout"></param>
+        /// <param name="AProcessID"></param>
+        /// <param name="AVerificationResult"></param>
+        /// <returns></returns>
+        public static Boolean AddLoginLogEntry(String AUserID,
+            String ALoginStatus,
+            Boolean AImmediateLogout,
+            out Int32 AProcessID,
+            out TVerificationResultCollection AVerificationResult)
+        {
+            TDBTransaction ReadTransaction;
+            TDBTransaction WriteTransaction;
+            Boolean SubmissionOK;
+            SLoginTable LoginTable;
+            SLoginRow NewLoginRow;
+
+            OdbcParameter[] ParametersArray;
+            DateTime LoginDateTime;
+            LoginTable = new SLoginTable();
+            NewLoginRow = LoginTable.NewRowTyped(false);
+            LoginDateTime = DateTime.Now;
+
+            // Set DataRow values
+            NewLoginRow.UserId = AUserID.ToUpper();
+            NewLoginRow.LoginStatus = ALoginStatus;
+            NewLoginRow.LoginDate = LoginDateTime;
+            NewLoginRow.LoginTime = Conversions.DateTimeToInt32Time(LoginDateTime);
+
+            if (AImmediateLogout)
+            {
+                NewLoginRow.LogoutDate = LoginDateTime;
+                NewLoginRow.LogoutTime = Conversions.DateTimeToInt32Time(LoginDateTime);
+            }
+
+            LoginTable.Rows.Add(NewLoginRow);
+
+            // Save DataRow
+            WriteTransaction = DBAccess.GDBAccessObj.BeginTransaction(IsolationLevel.Serializable);
+            SubmissionOK = SLoginAccess.SubmitChanges(LoginTable, WriteTransaction, out AVerificationResult);
+
+            if (SubmissionOK)
+            {
+                DBAccess.GDBAccessObj.CommitTransaction();
+            }
+            else
+            {
+                DBAccess.GDBAccessObj.RollbackTransaction();
+            }
+
+            // Retrieve ROWID of the SLogin record
+
+            ParametersArray = new OdbcParameter[4];
+            ParametersArray[0] = new OdbcParameter("", OdbcType.VarChar, 20);
+            ParametersArray[0].Value = (System.Object)(AUserID);
+            ParametersArray[1] = new OdbcParameter("", OdbcType.Date);
+            ParametersArray[1].Value = (System.Object)(LoginDateTime);
+            ParametersArray[2] = new OdbcParameter("", OdbcType.Int);
+            ParametersArray[2].Value = (System.Object)(NewLoginRow.LoginTime);
+            ParametersArray[3] = new OdbcParameter("", OdbcType.VarChar, 50);
+            ParametersArray[3].Value = (System.Object)(ALoginStatus);
+            try
+            {
+                ReadTransaction = DBAccess.GDBAccessObj.BeginTransaction(IsolationLevel.ReadCommitted);
+
+                // ROWID for postgresql: see http://archives.postgresql.org/sydpug/2005-05/msg00002.php
+                AProcessID =
+                    Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar("SELECT s_login_process_id_r FROM PUB_" + SLoginTable.GetTableDBName() +
+                            ' ' +
+                            "WHERE " + SLoginTable.GetUserIdDBName() + " = ? AND " + SLoginTable.GetLoginDateDBName() + " = ? AND " +
+                            SLoginTable.GetLoginTimeDBName() + " = ? AND " + SLoginTable.GetLoginStatusDBName() + " = ?", ReadTransaction,
+                            ParametersArray));
+            }
+            catch
+            {
+                throw;
+            }
+
+            // $IFDEF DEBUGMODE Console.WriteLine('SLogin RowID: ' + AProcessID.ToString);$ENDIF
+            DBAccess.GDBAccessObj.CommitTransaction();
+            return SubmissionOK;
+        }
+    }
+}

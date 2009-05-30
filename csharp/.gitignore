@@ -1,0 +1,4 @@
+*.bak
+_bin
+app.config
+*.yaml.xml

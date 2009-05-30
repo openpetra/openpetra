@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="ISO-8859-1" ?>
+
+<database>
+	<group name="PartnerEdit">
+		<tablename name="p_country"/>
+		<tablename name="p_partner_status"/>
+		<tablename name="p_addressee_type"/>
+		<tablename name="p_title"/>
+		<tablename name="p_partner_classes"/>
+		<tablename name="p_partner"/>
+		<tablename name="p_location"/>
+		<tablename name="p_location_type"/>
+		<tablename name="p_partner_location"/>
+		<tablename name="p_partner_attribute_type"/>
+		<tablename name="p_partner_attribute"/>
+		<tablename name="u_unit_type"/>
+		<tablename name="p_unit"/>
+		<tablename name="p_family"/>
+		<tablename name="p_occupation"/>
+		<tablename name="p_person"/>
+		<tablename name="p_denomination"/>
+		<tablename name="p_church"/>
+		<tablename name="p_business"/>
+		<tablename name="p_organisation"/>
+		<tablename name="p_bank"/>
+		<tablename name="p_venue"/>
+		<tablename name="p_partner_type"/>
+		<tablename name="p_relation_category"/>
+		<tablename name="p_relation"/>
+		<tablename name="p_partner_relationship"/>
+		<tablename name="p_postcode_range"/>
+		<tablename name="p_postcode_region"/>
+		<tablename name="p_email"/>
+		<tablename name="p_interest_category"/>
+		<tablename name="p_interest"/>
+		<tablename name="p_partner_interest"/>
+		<tablename name="p_partner_merge"/>
+		<tablename name="p_partner_short_code"/>
+		<tablename name="p_partner_state"/>
+		<tablename name="p_partner_comment"/>
+		<tablename name="p_foundation"/>
+		<tablename name="p_partner_file"/>
+		<tablename name="p_partner_contact_file"/>
+	</group>
+	<group name="PartnerClasses">
+		<tablename name="p_partner_classes"/>
+		<tablename name="p_partner"/>
+		<tablename name="p_unit"/>
+		<tablename name="p_family"/>
+		<tablename name="p_person"/>
+		<tablename name="p_church"/>
+		<tablename name="p_business"/>
+		<tablename name="p_organisation"/>
+		<tablename name="p_bank"/>
+		<tablename name="p_venue"/>
+		<tablename name="p_foundation"/>
+	</group>
+</database>

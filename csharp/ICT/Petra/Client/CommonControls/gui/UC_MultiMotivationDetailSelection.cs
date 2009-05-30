@@ -1,0 +1,223 @@
+﻿/*************************************************************************
+ *
+ * DO NOT REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
+ *
+ * @Authors:
+ *       timop
+ *
+ * Copyright 2004-2009 by OM International
+ *
+ * This file is part of OpenPetra.org.
+ *
+ * OpenPetra.org is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * OpenPetra.org is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with OpenPetra.org.  If not, see <http://www.gnu.org/licenses/>.
+ *
+ ************************************************************************/
+using System;
+using System.Drawing;
+using System.Collections;
+using System.ComponentModel;
+using System.Windows.Forms;
+using System.Data;
+using Ict.Common.Controls;
+using Ict.Petra.Client.App.Core;
+using Ict.Petra.Shared.MFinance;
+using SourceGrid;
+using System.Collections.Specialized;
+using System.Globalization;
+using Ict.Petra.Shared.MFinance.Gift.Data;
+
+namespace Ict.Petra.Client.CommonControls
+{
+    /// <summary>
+    /// A UserControl that allows to select several combinations
+    /// of Motivation Group and Detail entries
+    ///
+    /// This could be implemented with 2 comboboxes and a
+    /// list box to its right that displays the selected Motivations, and 2 buttons to add and remove.
+    /// For the moment it is just implemented as a Checkedlistbox
+    ///
+    /// This is not used anywhere, but could be used in future as a starting point
+    ///
+    /// @Comment This was copied and modified from UC_MultiMotivationDetailSelection.pas
+    /// </summary>
+    public class TUC_MultiMotivationDetailSelection : System.Windows.Forms.UserControl
+    {
+        /// <summary> Required designer variable. </summary>
+        private System.ComponentModel.IContainer components = null;
+        private TClbVersatile clbMotivations;
+
+        //private DataTable FDataCache_MotivationDetailsTable;
+
+        #region Windows Form Designer generated code
+
+        /// <summary>
+        /// <summary> Required method for Designer support  do not modify the contents of this method with the code editor. </summary> <summary> Required method for Designer support  do not modify the contents of this method with the code editor.
+        /// </summary>
+        /// </summary>
+        /// <returns>void</returns>
+        private void InitializeComponent()
+        {
+            this.clbMotivations = new TClbVersatile();
+            this.SuspendLayout();
+
+            //
+            // clbMotivations
+            //
+            this.clbMotivations.AlternatingBackgroundColour = System.Drawing.Color.FromArgb(230, 230, 230);
+            this.clbMotivations.Anchor = System.Windows.Forms.AnchorStyles.Top |
+                                         System.Windows.Forms.AnchorStyles.Bottom |
+                                         System.Windows.Forms.AnchorStyles.Left |
+                                         System.Windows.Forms.AnchorStyles.Right;
+            this.clbMotivations.BackColor = System.Drawing.SystemColors.ControlDark;
+            this.clbMotivations.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
+            this.clbMotivations.DeleteQuestionMessage = "You have chosen to delete t" + "his record.'#13#10#13#10'Do you really want to delete it?";
+            this.clbMotivations.FixedRows = 1;
+            this.clbMotivations.Location = new System.Drawing.Point(192, 103);
+            this.clbMotivations.MinimumHeight = 19;
+            this.clbMotivations.Name = "clbMotivations";
+            this.clbMotivations.Size = new System.Drawing.Size(337, 119);
+            this.clbMotivations.SpecialKeys = SourceGrid.GridSpecialKeys.Arrows |
+                                              SourceGrid.GridSpecialKeys.PageDownUp |
+                                              SourceGrid.GridSpecialKeys.Enter |
+                                              SourceGrid.GridSpecialKeys.Escape |
+                                              SourceGrid.GridSpecialKeys.Control |
+                                              SourceGrid.GridSpecialKeys.Shift;
+            this.clbMotivations.TabIndex = 4;
+            this.clbMotivations.TabStop = true;
+
+            //
+            // TUC_MultiMotivationDetailSelection
+            //
+            this.BackColor = System.Drawing.SystemColors.Control;
+            this.Controls.Add(this.clbMotivations);
+            this.Font = new System.Drawing.Font("Verdana", 8.25f, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, (Byte)0);
+            this.Name = "TUC_MultiMotivationDetailSelection";
+            this.Size = new System.Drawing.Size(242, 22);
+            this.ResumeLayout(false);
+        }
+
+        #endregion
+
+        /// <summary>
+        /// constructor
+        /// </summary>
+        public TUC_MultiMotivationDetailSelection()
+            : base()
+        {
+            //
+            // Required for Windows Form Designer support
+            //
+            InitializeComponent();
+            this.clbMotivations.BindingContext = this.BindingContext;
+        }
+
+        /// <summary>
+        /// todoComment
+        /// </summary>
+        /// <param name="ALedgerNumber"></param>
+        public void InitialiseUserControl(Int32 ALedgerNumber)
+        {
+            DataTable Table;
+            String CheckedMember = "";
+            String ValueMember = "";
+            String DisplayMember = "";
+
+            // load the motivation details of this ledger
+            Table = GetMotivationDetails(ALedgerNumber,
+                ref CheckedMember,
+                ref DisplayMember,
+                ref ValueMember, true);
+
+            // AExcludeInactive
+            // Columns for the CostCentre checked listbox (grid)
+            this.clbMotivations.Columns.Clear();
+            this.clbMotivations.AddCheckBoxColumn("", Table.Columns[CheckedMember], 17);
+            this.clbMotivations.AddTextColumn("Test1", Table.Columns[ValueMember], 60);
+            this.clbMotivations.AddTextColumn("Test2", Table.Columns[DisplayMember], 200);
+            this.clbMotivations.DataBindGrid(Table, ValueMember, CheckedMember, ValueMember, DisplayMember, false, true, false);
+        }
+
+        /// <summary>
+        /// todoComment
+        /// </summary>
+        public void CustomDisable()
+        {
+            CustomEnablingDisabling.DisableControl(this, clbMotivations);
+        }
+
+        /// <summary>
+        /// todoComment
+        /// </summary>
+        public void CustomEnable()
+        {
+            CustomEnablingDisabling.EnableControl(this, clbMotivations);
+        }
+
+        /// <summary>
+        /// todoComment
+        /// </summary>
+        /// <param name="ALedgerNr"></param>
+        /// <param name="ACheckedMember"></param>
+        /// <param name="ADisplayMember"></param>
+        /// <param name="AValueMember"></param>
+        /// <param name="AExcludeInactive"></param>
+        /// <returns></returns>
+        public static System.Data.DataTable GetMotivationDetails(System.Int32 ALedgerNr,
+            ref String ACheckedMember,
+            ref String ADisplayMember,
+            ref String AValueMember,
+            bool AExcludeInactive)
+        {
+            System.Data.DataTable ReturnValue;
+            DataTable CachedDataTable;
+            String whereClause;
+            DataRow[] filteredRows;
+            CachedDataTable = TDataCache.TMFinance.GetCacheableFinanceTable(TCacheableFinanceTablesEnum.MotivationList, ALedgerNr);
+            whereClause = AMotivationDetailTable.GetLedgerNumberDBName() + " = " + ALedgerNr.ToString();
+
+            if (AExcludeInactive)
+            {
+                whereClause = whereClause + " AND " + AMotivationDetailTable.GetMotivationStatusDBName() + " = 1";
+            }
+
+            filteredRows = CachedDataTable.Select(whereClause,
+                AMotivationDetailTable.GetMotivationGroupCodeDBName() + ',' + AMotivationDetailTable.GetMotivationDetailCodeDBName());
+            ReturnValue = CachedDataTable.Clone();
+
+            foreach (DataRow oldDr in filteredRows)
+            {
+                ReturnValue.ImportRow(oldDr);
+            }
+
+            ACheckedMember = "CHECKED";
+            ADisplayMember = "DISPLAY";
+            AValueMember = "VALUE";
+            ReturnValue.Columns.Add(new DataColumn(ACheckedMember, typeof(bool)));
+            ReturnValue.Columns.Add(new DataColumn(AValueMember, typeof(String)));
+            ReturnValue.Columns.Add(new DataColumn(ADisplayMember, typeof(String)));
+
+            foreach (DataRow oldDr in ReturnValue.Rows)
+            {
+                oldDr[AValueMember] =
+                    (System.Object)(oldDr[AMotivationDetailTable.GetMotivationGroupCodeDBName()].ToString() + ", " +
+                        oldDr[AMotivationDetailTable.GetMotivationDetailCodeDBName()].ToString());
+                oldDr[ADisplayMember] =
+                    (System.Object)(oldDr[AMotivationDetailTable.GetMotivationGroupCodeDBName()].ToString() + " - " +
+                        oldDr[AMotivationDetailTable.GetMotivationDetailCodeDBName()].ToString());
+            }
+
+            return ReturnValue;
+        }
+    }
+}

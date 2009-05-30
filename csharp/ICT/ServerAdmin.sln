@@ -1,0 +1,24 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 9.00
+# Visual Studio 2005
+# SharpDevelop 3.0.0.3800
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Ict.Petra.ServerAdmin.App.Core", "Petra\ServerAdmin\app\core\Ict.Petra.ServerAdmin.App.Core.csproj", "{BC8061E2-9434-4912-8E29-83F7E5052092}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PetraServerAdminConsole", "Petra\ServerAdmin\app\PetraServerAdminConsole\PetraServerAdminConsole.csproj", "{EED131C6-3FF9-4BEC-9BFE-27570FAC47CB}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{BC8061E2-9434-4912-8E29-83F7E5052092}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{BC8061E2-9434-4912-8E29-83F7E5052092}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{BC8061E2-9434-4912-8E29-83F7E5052092}.Release|Any CPU.Build.0 = Release|Any CPU
+		{BC8061E2-9434-4912-8E29-83F7E5052092}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{EED131C6-3FF9-4BEC-9BFE-27570FAC47CB}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{EED131C6-3FF9-4BEC-9BFE-27570FAC47CB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{EED131C6-3FF9-4BEC-9BFE-27570FAC47CB}.Release|Any CPU.Build.0 = Release|Any CPU
+		{EED131C6-3FF9-4BEC-9BFE-27570FAC47CB}.Release|Any CPU.ActiveCfg = Release|Any CPU
+	EndGlobalSection
+EndGlobal
