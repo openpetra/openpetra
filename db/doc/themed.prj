@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="ISO-8859-1" ?>
 
-<database>
+<database ColorIgnoreReferencedTables="[s_user]">
 	<group name="PartnerEdit">
 		<tablename name="p_country"/>
 		<tablename name="p_partner_status"/>

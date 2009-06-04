@@ -1300,7 +1300,7 @@
 <dia:point val="22.45,24.05" /> 
 <dia:point val="21.83,24.05" /> 
 <dia:point val="21.83,77.40" /> 
-<dia:point val="20.43,77.40" /> 
+<dia:point val="20.44,77.40" /> 
 </dia:attribute>
 <dia:attribute name="orth_orient">
 <dia:enum val="0" /> 
@@ -1402,7 +1402,7 @@
 <dia:object type="UML - Association" version="0" id="a_ap_supplier_a_ap_supplier_fk1">
 	<dia:attribute name="obj_pos"><dia:point val="20.43,79.2" /></dia:attribute>	<dia:attribute name="obj_bb"><dia:rectangle val="19.54,46;23.15,80.8" /> </dia:attribute>
 <dia:attribute name="orth_points">
-<dia:point val="20.43,79.20" /> 
+<dia:point val="20.44,79.20" /> 
 <dia:point val="23.05,79.20" /> 
 <dia:point val="23.05,46.05" /> 
 <dia:point val="19.59,46.05" /> 
@@ -1423,7 +1423,7 @@
 <dia:object type="UML - Association" version="0" id="a_ap_supplier_a_ap_supplier_fk2">
 	<dia:attribute name="obj_pos"><dia:point val="20.43,83.2" /></dia:attribute>	<dia:attribute name="obj_bb"><dia:rectangle val="20.38,83.15;59,86.55" /> </dia:attribute>
 <dia:attribute name="orth_points">
-<dia:point val="20.43,83.20" /> 
+<dia:point val="20.44,83.20" /> 
 <dia:point val="22.7,83.20" /> 
 <dia:point val="22.7,84.95" /> 
 <dia:point val="58.95,84.95" /> 
