@@ -55,4 +55,29 @@
 		<tablename name="p_venue"/>
 		<tablename name="p_foundation"/>
 	</group>
+	<group name="AccountsPayable">
+		<tablename name="a_ledger"/>
+		<tablename name="a_batch"/>
+		<tablename name="a_journal"/>
+		<tablename name="a_transaction"/>
+		<tablename name="a_ap_anal_attrib"/>
+        <tablename name="a_analysis_type"/>
+        <tablename name="a_analysis_attribute"/>
+        <tablename name="a_freeform_analysis"/>
+		<tablename name="a_ap_document"/>
+		<tablename name="a_ap_document_detail"/>
+		<tablename name="a_ap_document_payment"/>
+		<tablename name="a_ap_payment"/>
+		<tablename name="a_ap_supplier"/>
+		<tablename name="a_crdt_note_invoice_link"/>
+		<tablename name="a_ep_document_payment"/>
+		<tablename name="a_ep_payment"/>
+        <tablename name="p_partner"/>
+        <tablename name="p_bank"/>
+        <tablename name="p_banking_details"/>
+        <tablename name="p_banking_type"/>
+        <tablename name="a_currency"/>
+        <tablename name="a_account"/>
+        <tablename name="a_cost_centre"/>
+	</group>
 </database>
