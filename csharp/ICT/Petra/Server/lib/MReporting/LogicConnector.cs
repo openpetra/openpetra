@@ -50,6 +50,11 @@ namespace Ict.Petra.Server.MReporting.LogicConnectors
         private String FErrorMessage;
         private Boolean FSuccess;
 
+        /// constructor needed for the interface
+        public TReportGeneratorLogicConnector()
+        {
+        }
+
         /// <summary>
         /// to show the progress of the report calculation;
         /// prints the current id of the row that is being calculated

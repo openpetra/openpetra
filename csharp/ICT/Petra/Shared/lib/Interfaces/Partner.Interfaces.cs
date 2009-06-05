@@ -111,10 +111,10 @@ namespace Ict.Petra.Shared.Interfaces.MPartner.Extracts.UIConnectors
     /// <summary>auto generated</summary>
     public interface IExtractsUIConnectorsNamespace : IInterface
     {
-        /// <summary>auto generated from Instantiator (Ict.Petra.Server.MPartner.Instantiator.Extracts.UIConnectors.TExtractsUIConnectorsNamespace)</summary>
-        IPartnerUIConnectorsPartnerNewExtract PartnerNewExtract();
-        /// <summary>auto generated from Instantiator (Ict.Petra.Server.MPartner.Instantiator.Extracts.UIConnectors.TExtractsUIConnectorsNamespace)</summary>
+        /// <summary>auto generated from Connector constructor (Ict.Petra.Server.MPartner.Extracts.UIConnectors.TExtractsAddSubscriptionsUIConnector)</summary>
         IPartnerUIConnectorsExtractsAddSubscriptions ExtractsAddSubscriptions(System.Int32 AExtractID);
+        /// <summary>auto generated from Connector constructor (Ict.Petra.Server.MPartner.Extracts.UIConnectors.TPartnerNewExtractUIConnector)</summary>
+        IPartnerUIConnectorsPartnerNewExtract PartnerNewExtract();
     }
 
     /// <summary>auto generated</summary>
@@ -302,12 +302,9 @@ namespace Ict.Petra.Shared.Interfaces.MPartner.Partner.DataElements.UIConnectors
     public interface IPartnerDataElementsUIConnectorsNamespace : IInterface
     {
         /// <summary>auto generated from Instantiator (Ict.Petra.Server.MPartner.Instantiator.Partner.DataElements.UIConnectors.TPartnerDataElementsUIConnectorsNamespace)</summary>
-        Ict.Petra.Shared.Interfaces.MCommon.UIConnectors.IPartnerDataElementsUIConnectorsOfficeSpecificDataLabels OfficeSpecificDataLabels(
-                                                                                                                                           System.Int64 APartnerKey,
-                                                                                                                                           
-                                                                                                                                           Ict.Petra.Shared.MCommon.TOfficeSpecificDataLabelUseEnum AOfficeSpecificDataLabelUse,
-                                                                                                                                           
-                                                                                                                                           out Ict.Petra.Shared.MCommon.Data.OfficeSpecificDataLabelsTDS AOfficeSpecificDataLabelsDataSet);
+        Ict.Petra.Shared.Interfaces.MCommon.UIConnectors.IDataElementsUIConnectorsOfficeSpecificDataLabels OfficeSpecificDataLabels(System.Int64 APartnerKey,
+                                                                                                                                    Ict.Petra.Shared.MCommon.TOfficeSpecificDataLabelUseEnum AOfficeSpecificDataLabelUse,
+                                                                                                                                    out Ict.Petra.Shared.MCommon.Data.OfficeSpecificDataLabelsTDS AOfficeSpecificDataLabelsDataSet);
     }
 
 }
@@ -377,33 +374,33 @@ namespace Ict.Petra.Shared.Interfaces.MPartner.Partner.UIConnectors
     /// <summary>auto generated</summary>
     public interface IPartnerUIConnectorsNamespace : IInterface
     {
-        /// <summary>auto generated from Instantiator (Ict.Petra.Server.MPartner.Instantiator.Partner.UIConnectors.TPartnerUIConnectorsNamespace)</summary>
-        Ict.Petra.Shared.Interfaces.MPartner.Partner.UIConnectors.IPartnerUIConnectorsPartnerEdit PartnerEdit(System.Int64 APartnerKey,
-                                                                                                              
-                                                                                                              ref Ict.Petra.Shared.MPartner.Partner.Data.PartnerEditTDS APartnerDataSet,
-                                                                                                              System.Boolean ADelayedDataLoading,
-                                                                                                              
-                                                                                                              Ict.Petra.Shared.MPartner.TPartnerEditTabPageEnum ATabPage);
-        /// <summary>auto generated from Instantiator (Ict.Petra.Server.MPartner.Instantiator.Partner.UIConnectors.TPartnerUIConnectorsNamespace)</summary>
-        Ict.Petra.Shared.Interfaces.MPartner.Partner.UIConnectors.IPartnerUIConnectorsPartnerEdit PartnerEdit(System.Int64 APartnerKey,
-                                                                                                              System.Int64 ASiteKey,
-                                                                                                              System.Int32 ALocationKey,
-                                                                                                              
-                                                                                                              ref Ict.Petra.Shared.MPartner.Partner.Data.PartnerEditTDS APartnerDataSet,
-                                                                                                              System.Boolean ADelayedDataLoading,
-                                                                                                              
-                                                                                                              Ict.Petra.Shared.MPartner.TPartnerEditTabPageEnum ATabPage);
-        /// <summary>auto generated from Instantiator (Ict.Petra.Server.MPartner.Instantiator.Partner.UIConnectors.TPartnerUIConnectorsNamespace)</summary>
+        /// <summary>auto generated from Connector constructor (Ict.Petra.Server.MPartner.Partner.UIConnectors.TPartnerEditUIConnector)</summary>
         IPartnerUIConnectorsPartnerEdit PartnerEdit(System.Int64 APartnerKey);
-        /// <summary>auto generated from Instantiator (Ict.Petra.Server.MPartner.Instantiator.Partner.UIConnectors.TPartnerUIConnectorsNamespace)</summary>
+        /// <summary>auto generated from Connector constructor and GetData (Ict.Petra.Server.MPartner.Partner.UIConnectors.TPartnerEditUIConnector)</summary>
+        IPartnerUIConnectorsPartnerEdit PartnerEdit(System.Int64 APartnerKey,
+                                                    ref PartnerEditTDS ADataSet,
+                                                    Boolean ADelayedDataLoading,
+                                                    TPartnerEditTabPageEnum ATabPage);
+        /// <summary>auto generated from Connector constructor (Ict.Petra.Server.MPartner.Partner.UIConnectors.TPartnerEditUIConnector)</summary>
         IPartnerUIConnectorsPartnerEdit PartnerEdit(Int64 APartnerKey,
                                                     Int64 ASiteKey,
                                                     Int32 ALocationKey);
-        /// <summary>auto generated from Instantiator (Ict.Petra.Server.MPartner.Instantiator.Partner.UIConnectors.TPartnerUIConnectorsNamespace)</summary>
+        /// <summary>auto generated from Connector constructor and GetData (Ict.Petra.Server.MPartner.Partner.UIConnectors.TPartnerEditUIConnector)</summary>
+        IPartnerUIConnectorsPartnerEdit PartnerEdit(Int64 APartnerKey,
+                                                    Int64 ASiteKey,
+                                                    Int32 ALocationKey,
+                                                    ref PartnerEditTDS ADataSet,
+                                                    Boolean ADelayedDataLoading,
+                                                    TPartnerEditTabPageEnum ATabPage);
+        /// <summary>auto generated from Connector constructor (Ict.Petra.Server.MPartner.Partner.UIConnectors.TPartnerEditUIConnector)</summary>
         IPartnerUIConnectorsPartnerEdit PartnerEdit();
-        /// <summary>auto generated from Instantiator (Ict.Petra.Server.MPartner.Instantiator.Partner.UIConnectors.TPartnerUIConnectorsNamespace)</summary>
+        /// <summary>auto generated from Connector constructor and GetData (Ict.Petra.Server.MPartner.Partner.UIConnectors.TPartnerEditUIConnector)</summary>
+        IPartnerUIConnectorsPartnerEdit PartnerEdit(ref PartnerEditTDS ADataSet,
+                                                    Boolean ADelayedDataLoading,
+                                                    TPartnerEditTabPageEnum ATabPage);
+        /// <summary>auto generated from Connector constructor (Ict.Petra.Server.MPartner.Partner.UIConnectors.TPartnerFindUIConnector)</summary>
         IPartnerUIConnectorsPartnerFind PartnerFind();
-        /// <summary>auto generated from Instantiator (Ict.Petra.Server.MPartner.Instantiator.Partner.UIConnectors.TPartnerUIConnectorsNamespace)</summary>
+        /// <summary>auto generated from Connector constructor (Ict.Petra.Server.MPartner.Partner.UIConnectors.TPartnerLocationFindUIConnector)</summary>
         IPartnerUIConnectorsPartnerLocationFind PartnerLocationFind(DataTable ACriteriaData);
     }
 

@@ -252,12 +252,10 @@
         <exec program="${PetraToolsExe.dir}\GenerateORM.exe" commandline="-do:dataset -petraxml:${PetraXML.file} -input:${OpenPetraRoot.dir}/csharp/ICT/Petra/Shared/lib/MPartner/data/PartnerTypedDataSets.xml -outputNamespace:Ict.Petra.Shared.MPartner.Partner.Data.DataSets -outputFilename:Partner.DataSets"/>
         <exec program="${PetraToolsExe.dir}\GenerateORM.exe" commandline="-do:dataset -petraxml:${PetraXML.file} -input:${OpenPetraRoot.dir}/csharp/ICT/Petra/Shared/lib/MPersonnel/data/PersonnelTypedDataSets.xml -outputNamespace:Ict.Petra.Shared.MPersonnel.Personnel.Data.DataSets -outputFilename:Personnel.DataSets"/>
         <exec program="${PetraToolsExe.dir}\GenerateORM.exe" commandline="-do:dataset -petraxml:${PetraXML.file} -input:${OpenPetraRoot.dir}/csharp/ICT/Petra/Shared/lib/MHospitality/data/TypedDataSets.xml -outputNamespace:Ict.Petra.Shared.MHospitality.Data.DataSets -outputFilename:Hospitality.DataSets"/>
-        <echo message="please run uncrustifyShared before committing"/>
     </target>
     
     <target name="generateGlue" depends="compilePetraTools" description="Generate the glue between client and server, ie. interfaces and instantiators">
         <exec program="${PetraToolsExe.dir}\GenerateSharedCode.exe" commandline="-xmlfile:${OpenPetraRoot.dir}/csharp/ICT/Petra/Definitions/NamespaceHierarchy.xml -outputdir:${OpenPetraRoot.dir}/csharp/ICT/Petra"/>
-        <echo message="please run uncrustify before committing"/>
     </target>
 
     <target name="generateGTK" depends="compilePetraTools" description="Generate GTK User Interface">
@@ -365,7 +363,7 @@
         <call target="uncrustifyTemplate"/>
     </target>
     
-    <target name="uncrustify" depends="uncrustifyCommon, uncrustifyShared, uncrustifyServer, uncrustifyClient, uncrustifyServerAdmin, uncrustifyExperimenting"/>
+    <target name="uncrustify" depends="uncrustifyCommon, uncrustifyShared, uncrustifyServer, uncrustifyClient, uncrustifyServerAdmin, uncrustifyExperimenting, uncrustifyPetraTools"/>
     
     <target name="checkCode" description="check for correct file headers, missing xml comment generation, copyright, licensing, etc">
         <foreach item="File" property="filename">

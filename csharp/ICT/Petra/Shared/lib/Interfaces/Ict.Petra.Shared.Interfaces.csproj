@@ -49,6 +49,9 @@
       <HintPath>..\..\..\..\Common\_bin\Debug\Ict.Common.Data.dll</HintPath>
       <SpecificVersion>False</SpecificVersion>
     </Reference>
+    <Reference Include="Ict.Common.DB">
+      <HintPath>..\..\..\..\Common\_bin\Debug\Ict.Common.DB.dll</HintPath>
+    </Reference>
     <Reference Include="Ict.Common.Verification">
       <HintPath>..\..\..\..\Common\_bin\Debug\Ict.Common.Verification.dll</HintPath>
       <SpecificVersion>False</SpecificVersion>
@@ -70,7 +73,6 @@
     <Compile Include="Personnel.Interfaces.cs" />
     <Compile Include="Reporting.Interfaces.cs" />
     <Compile Include="SysMan.Interfaces.cs" />
-    <None Include="Client.sln" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\Ict.Petra.Shared.csproj">

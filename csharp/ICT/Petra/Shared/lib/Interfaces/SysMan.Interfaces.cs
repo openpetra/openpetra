@@ -204,8 +204,11 @@ namespace Ict.Petra.Shared.Interfaces.MSysMan.TableMaintenance.UIConnectors
     /// <summary>auto generated</summary>
     public interface ITableMaintenanceUIConnectorsNamespace : IInterface
     {
-        /// <summary>auto generated from Instantiator (Ict.Petra.Server.MSysMan.Instantiator.TableMaintenance.UIConnectors.TTableMaintenanceUIConnectorsNamespace)</summary>
+        /// <summary>auto generated from Connector constructor (Ict.Petra.Server.MSysMan.TableMaintenance.UIConnectors.TSysManTableMaintenanceUIConnector)</summary>
         ISysManUIConnectorsTableMaintenance SysManTableMaintenance();
+        /// <summary>auto generated from Connector constructor and GetData (Ict.Petra.Server.MSysMan.TableMaintenance.UIConnectors.TSysManTableMaintenanceUIConnector)</summary>
+        ISysManUIConnectorsTableMaintenance SysManTableMaintenance(ref DataTable ADataSet,
+                                                                   string ATableName);
     }
 
     /// <summary>auto generated</summary>

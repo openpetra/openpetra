@@ -306,7 +306,7 @@ namespace Ict.Common.IO
         /// <returns>void</returns>
         public TExcel() : base()
         {
-            // eg HKEY_CLASSES_ROOT\Excel.Application.11 'Excel.Application.11' 
+            // eg HKEY_CLASSES_ROOT\Excel.Application.11 'Excel.Application.11'
             MSExcelType = System.Type.GetTypeFromProgID("Excel.Application", true);
 
             if (MSExcelType == null)
@@ -316,8 +316,8 @@ namespace Ict.Common.IO
 
             MSExcel = Activator.CreateInstance(MSExcelType);
 
-            // Get a new workbook. 
-            // oWB = (Excel._Workbook)(oXL.Workbooks.Add( Missing.Value )); 
+            // Get a new workbook.
+            // oWB = (Excel._Workbook)(oXL.Workbooks.Add( Missing.Value ));
             workbooks = MSExcelType.InvokeMember("Workbooks", BindingFlags.GetProperty, null, MSExcel, null);
             workbook = MSExcelType.InvokeMember("Add", BindingFlags.InvokeMethod, null, workbooks, null);
             countFixedSheets = 0;
@@ -334,12 +334,12 @@ namespace Ict.Common.IO
                 sheetName = sheetName.Substring(1, 29) + countFixedSheets.ToString();
             }
 
-            // TODO : fix name of sheet 
-            // countFixedSheets := countFixedSheets + 1; 
-            // sheetName := 'MySheet ' + countFixedSheets.tostring(); 
+            // TODO : fix name of sheet
+            // countFixedSheets := countFixedSheets + 1;
+            // sheetName := 'MySheet ' + countFixedSheets.tostring();
             return sheetName;
 
-            // TLogging.Log('sheetname: ' + result); 
+            // TLogging.Log('sheetname: ' + result);
         }
 
         /// <summary>
@@ -351,7 +351,7 @@ namespace Ict.Common.IO
         {
             System.Object sheets;
 
-            // thisWorkbook.Sheets.Add(Missing.Value, Missing.Value, 1, Missing.Value); 
+            // thisWorkbook.Sheets.Add(Missing.Value, Missing.Value, 1, Missing.Value);
             sheets = MSExcelType.InvokeMember("Sheets", BindingFlags.GetProperty, null, workbook, null);
 
             object[] parameters = new object[4];
@@ -361,7 +361,7 @@ namespace Ict.Common.IO
             parameters[3] = Missing.Value;
             MSExcelType.InvokeMember("Add", BindingFlags.GetProperty, null, sheets, parameters);
 
-            // oSheet = (Excel._Worksheet)oWB.ActiveSheet; 
+            // oSheet = (Excel._Worksheet)oWB.ActiveSheet;
             sheet = MSExcelType.InvokeMember("ActiveSheet", BindingFlags.GetProperty, null, workbook, null);
             sheetName = FixSheetName(sheetName);
 
@@ -405,7 +405,7 @@ namespace Ict.Common.IO
         /// <returns>void</returns>
         public void SetValue(System.Object range, System.Object value)
         {
-            // Write value in cell. 
+            // Write value in cell.
             object[] parameters = new object[1];
             parameters[0] = value;
             MSExcelType.InvokeMember("Value", BindingFlags.SetProperty, null, range, parameters);
@@ -420,10 +420,10 @@ namespace Ict.Common.IO
             object[] parameters = new object[1];
             parameters[0] = formula;
 
-            // rng.Formula = "=@Sum(B5..B8)"; 
+            // rng.Formula = "=@Sum(B5..B8)";
             MSExcelType.InvokeMember("Formula", BindingFlags.SetProperty, null, range, parameters);
 
-            // rng.Calculate(); 
+            // rng.Calculate();
             MSExcelType.InvokeMember("Calculate", BindingFlags.InvokeMethod, null, range, null);
         }
 
@@ -460,19 +460,19 @@ namespace Ict.Common.IO
             parameters[2] = (Object)(x2);
             parameters[3] = (Object)(y2);
 
-            // office.ChartObjects charts = (office.ChartObjects)ws.ChartObjects(missing); 
-            // office.ChartObjectchartObj = charts.Add(150, 20, 500, 300); 
+            // office.ChartObjects charts = (office.ChartObjects)ws.ChartObjects(missing);
+            // office.ChartObjectchartObj = charts.Add(150, 20, 500, 300);
             charts = MSExcelType.InvokeMember("ChartObjects", BindingFlags.GetProperty, null, sheet, null);
             chartObj = MSExcelType.InvokeMember("Add", BindingFlags.InvokeMethod, null, charts, parameters);
             chart = MSExcelType.InvokeMember("Chart", BindingFlags.GetProperty, null, chartObj, null);
 
-            // chartObj.Chart.ChartType = office.XlChartType.xlLine; 
+            // chartObj.Chart.ChartType = office.XlChartType.xlLine;
 
             parameters = new object[1];
             parameters[0] = (Object)(typeOfChart);
             MSExcelType.InvokeMember("ChartType", BindingFlags.SetProperty, null, chart, parameters);
 
-            // chartObj.Chart.SetSourceData(chartRange, missing); 
+            // chartObj.Chart.SetSourceData(chartRange, missing);
             parameters = new object[2];
             parameters[0] = valueRange;
             parameters[1] = Missing.Value;
@@ -497,7 +497,7 @@ namespace Ict.Common.IO
              * parameters[9] := Missing.Value; // separator
              */
 
-            // for Office 2000: 
+            // for Office 2000:
             parameters = new object[1];
 
             // Type, XlDataLabelsType
@@ -518,17 +518,17 @@ namespace Ict.Common.IO
              * 'Name', BindingFlags.SetProperty, nil, series, parameters);
              */
 
-            // chartObj.Chart.HasLegend := true; 
+            // chartObj.Chart.HasLegend := true;
             parameters = new object[1];
             parameters[0] = (Object)(true);
             chart.GetType().InvokeMember("HasLegend", BindingFlags.SetProperty, null, chart, parameters);
 
-            // chartObj.Chart.HasTitle := true; 
+            // chartObj.Chart.HasTitle := true;
             parameters = new object[1];
             parameters[0] = (Object)(true);
             chart.GetType().InvokeMember("HasTitle", BindingFlags.SetProperty, null, chart, parameters);
 
-            // chartObj.Chart.ChartTitle.Characters.Text := title; 
+            // chartObj.Chart.ChartTitle.Characters.Text := title;
             chartTitle = chart.GetType().InvokeMember("ChartTitle", BindingFlags.GetProperty, null, chart, null);
             parameters = new object[2];
             parameters[0] = Missing.Value;
@@ -538,8 +538,8 @@ namespace Ict.Common.IO
             parameters[0] = title;
             characters.GetType().InvokeMember("Text", BindingFlags.SetProperty, null, characters, parameters);
 
-            // move into its own sheet, must be called last (!!!) 
-            // chart.Location((Excel.XlChartLocation)xlLocationAsNewSheet, "test"); 
+            // move into its own sheet, must be called last (!!!)
+            // chart.Location((Excel.XlChartLocation)xlLocationAsNewSheet, "test");
             parameters = new object[2];
             chartSheetName = FixSheetName(chartSheetName);
             parameters[0] = (Object)XlChartLocation.xlLocationAsNewSheet;
@@ -605,8 +605,8 @@ namespace Ict.Common.IO
         /// <returns>void</returns>
         public void GiveUserControl()
         {
-            // Make sure Excel is visible and give the user control 
-            // of Microsoft Excel's lifetime. 
+            // Make sure Excel is visible and give the user control
+            // of Microsoft Excel's lifetime.
             Show();
             MSExcelType.InvokeMember("UserControl", BindingFlags.SetProperty, null, MSExcel, new object[] { true });
             MSExcel = null;

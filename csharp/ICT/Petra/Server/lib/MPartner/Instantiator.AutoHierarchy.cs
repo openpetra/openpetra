@@ -668,15 +668,15 @@ namespace Ict.Petra.Server.MPartner.Instantiator.Extracts.UIConnectors
 
 
         /// generated method from interface
-        public IPartnerUIConnectorsPartnerNewExtract PartnerNewExtract()
-        {
-            return new TPartnerNewExtractUIConnector();
-        }
-
-        /// generated method from interface
         public IPartnerUIConnectorsExtractsAddSubscriptions ExtractsAddSubscriptions(System.Int32 AExtractID)
         {
             return new TExtractsAddSubscriptionsUIConnector(AExtractID);
+        }
+
+        /// generated method from interface
+        public IPartnerUIConnectorsPartnerNewExtract PartnerNewExtract()
+        {
+            return new TPartnerNewExtractUIConnector();
         }
 
     }
@@ -1883,12 +1883,10 @@ namespace Ict.Petra.Server.MPartner.Instantiator.Partner.DataElements.UIConnecto
 
 
         /// generated method from interface
-        public Ict.Petra.Shared.Interfaces.MCommon.UIConnectors.IPartnerDataElementsUIConnectorsOfficeSpecificDataLabels OfficeSpecificDataLabels(
-                                                                                                                                                  System.Int64 APartnerKey,
-                                                                                                                                                  
-                                                                                                                                                  Ict.Petra.Shared.MCommon.TOfficeSpecificDataLabelUseEnum AOfficeSpecificDataLabelUse,
-                                                                                                                                                  
-                                                                                                                                                  out Ict.Petra.Shared.MCommon.Data.OfficeSpecificDataLabelsTDS AOfficeSpecificDataLabelsDataSet)
+        public Ict.Petra.Shared.Interfaces.MCommon.UIConnectors.IDataElementsUIConnectorsOfficeSpecificDataLabels OfficeSpecificDataLabels(
+                                                                                                                                           System.Int64 APartnerKey,
+                                                                                                                                           Ict.Petra.Shared.MCommon.TOfficeSpecificDataLabelUseEnum AOfficeSpecificDataLabelUse,
+                                                                                                                                           out Ict.Petra.Shared.MCommon.Data.OfficeSpecificDataLabelsTDS AOfficeSpecificDataLabelsDataSet)
         {
 #if DEBUGMODE
             if (TSrvSetting.DL >= 9)
@@ -2202,12 +2200,16 @@ namespace Ict.Petra.Server.MPartner.Instantiator.Partner.UIConnectors
 
 
         /// generated method from interface
-        public Ict.Petra.Shared.Interfaces.MPartner.Partner.UIConnectors.IPartnerUIConnectorsPartnerEdit PartnerEdit(System.Int64 APartnerKey,
-                                                                                                                     
-                                                                                                                     ref Ict.Petra.Shared.MPartner.Partner.Data.PartnerEditTDS APartnerDataSet,
-                                                                                                                     System.Boolean ADelayedDataLoading,
-                                                                                                                     
-                                                                                                                     Ict.Petra.Shared.MPartner.TPartnerEditTabPageEnum ATabPage)
+        public IPartnerUIConnectorsPartnerEdit PartnerEdit(System.Int64 APartnerKey)
+        {
+            return new TPartnerEditUIConnector(APartnerKey);
+        }
+
+        /// generated method from interface
+        public IPartnerUIConnectorsPartnerEdit PartnerEdit(System.Int64 APartnerKey,
+                                                           ref PartnerEditTDS ADataSet,
+                                                           Boolean ADelayedDataLoading,
+                                                           TPartnerEditTabPageEnum ATabPage)
         {
 #if DEBUGMODE
             if (TSrvSetting.DL >= 9)
@@ -2224,7 +2226,7 @@ namespace Ict.Petra.Server.MPartner.Instantiator.Partner.UIConnectors
             }
 
 #endif
-            APartnerDataSet = ReturnValue.GetData(ADelayedDataLoading, ATabPage);
+            ADataSet = ReturnValue.GetData(ADelayedDataLoading, ATabPage);
 #if DEBUGMODE
             if (TSrvSetting.DL >= 9)
             {
@@ -2236,14 +2238,20 @@ namespace Ict.Petra.Server.MPartner.Instantiator.Partner.UIConnectors
         }
 
         /// generated method from interface
-        public Ict.Petra.Shared.Interfaces.MPartner.Partner.UIConnectors.IPartnerUIConnectorsPartnerEdit PartnerEdit(System.Int64 APartnerKey,
-                                                                                                                     System.Int64 ASiteKey,
-                                                                                                                     System.Int32 ALocationKey,
-                                                                                                                     
-                                                                                                                     ref Ict.Petra.Shared.MPartner.Partner.Data.PartnerEditTDS APartnerDataSet,
-                                                                                                                     System.Boolean ADelayedDataLoading,
-                                                                                                                     
-                                                                                                                     Ict.Petra.Shared.MPartner.TPartnerEditTabPageEnum ATabPage)
+        public IPartnerUIConnectorsPartnerEdit PartnerEdit(Int64 APartnerKey,
+                                                           Int64 ASiteKey,
+                                                           Int32 ALocationKey)
+        {
+            return new TPartnerEditUIConnector(APartnerKey, ASiteKey, ALocationKey);
+        }
+
+        /// generated method from interface
+        public IPartnerUIConnectorsPartnerEdit PartnerEdit(Int64 APartnerKey,
+                                                           Int64 ASiteKey,
+                                                           Int32 ALocationKey,
+                                                           ref PartnerEditTDS ADataSet,
+                                                           Boolean ADelayedDataLoading,
+                                                           TPartnerEditTabPageEnum ATabPage)
         {
 #if DEBUGMODE
             if (TSrvSetting.DL >= 9)
@@ -2260,7 +2268,7 @@ namespace Ict.Petra.Server.MPartner.Instantiator.Partner.UIConnectors
             }
 
 #endif
-            APartnerDataSet = ReturnValue.GetData(ADelayedDataLoading, ATabPage);
+            ADataSet = ReturnValue.GetData(ADelayedDataLoading, ATabPage);
 #if DEBUGMODE
             if (TSrvSetting.DL >= 9)
             {
@@ -2272,23 +2280,40 @@ namespace Ict.Petra.Server.MPartner.Instantiator.Partner.UIConnectors
         }
 
         /// generated method from interface
-        public IPartnerUIConnectorsPartnerEdit PartnerEdit(System.Int64 APartnerKey)
-        {
-            return new TPartnerEditUIConnector(APartnerKey);
-        }
-
-        /// generated method from interface
-        public IPartnerUIConnectorsPartnerEdit PartnerEdit(Int64 APartnerKey,
-                                                           Int64 ASiteKey,
-                                                           Int32 ALocationKey)
-        {
-            return new TPartnerEditUIConnector(APartnerKey, ASiteKey, ALocationKey);
-        }
-
-        /// generated method from interface
         public IPartnerUIConnectorsPartnerEdit PartnerEdit()
         {
             return new TPartnerEditUIConnector();
+        }
+
+        /// generated method from interface
+        public IPartnerUIConnectorsPartnerEdit PartnerEdit(ref PartnerEditTDS ADataSet,
+                                                           Boolean ADelayedDataLoading,
+                                                           TPartnerEditTabPageEnum ATabPage)
+        {
+#if DEBUGMODE
+            if (TSrvSetting.DL >= 9)
+            {
+                Console.WriteLine(this.GetType().FullName + ": Creating TPartnerEditUIConnector...");
+            }
+
+#endif
+            TPartnerEditUIConnector ReturnValue = new TPartnerEditUIConnector();
+#if DEBUGMODE
+            if (TSrvSetting.DL >= 9)
+            {
+                Console.WriteLine(this.GetType().FullName + ": Calling TPartnerEditUIConnector.GetData...");
+            }
+
+#endif
+            ADataSet = ReturnValue.GetData(ADelayedDataLoading, ATabPage);
+#if DEBUGMODE
+            if (TSrvSetting.DL >= 9)
+            {
+                Console.WriteLine(this.GetType().FullName + ": Calling TPartnerEditUIConnector.GetData finished.");
+            }
+
+#endif
+            return ReturnValue;
         }
 
         /// generated method from interface

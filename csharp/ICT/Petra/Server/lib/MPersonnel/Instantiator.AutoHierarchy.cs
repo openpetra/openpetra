@@ -959,16 +959,12 @@ namespace Ict.Petra.Server.MPersonnel.Instantiator.Person.DataElements.Applicati
 
 
         /// generated method from interface
-        public Ict.Petra.Shared.Interfaces.MCommon.UIConnectors.IPersonDataElementsUIConnectorsOfficeSpecificDataLabels OfficeSpecificDataLabels(
-                                                                                                                                                 System.Int64 APartnerKey,
-                                                                                                                                                 
-                                                                                                                                                 System.Int32 AApplicationKey,
-                                                                                                                                                 
-                                                                                                                                                 System.Int64 ARegistrationOffice,
-                                                                                                                                                 
-                                                                                                                                                 Ict.Petra.Shared.MCommon.TOfficeSpecificDataLabelUseEnum AOfficeSpecificDataLabelUse,
-                                                                                                                                                 
-                                                                                                                                                 out Ict.Petra.Shared.MCommon.Data.OfficeSpecificDataLabelsTDS AOfficeSpecificDataLabelsDataSet)
+        public Ict.Petra.Shared.Interfaces.MCommon.UIConnectors.IDataElementsUIConnectorsOfficeSpecificDataLabels OfficeSpecificDataLabels(
+                                                                                                                                           System.Int64 APartnerKey,
+                                                                                                                                           System.Int32 AApplicationKey,
+                                                                                                                                           System.Int64 ARegistrationOffice,
+                                                                                                                                           Ict.Petra.Shared.MCommon.TOfficeSpecificDataLabelUseEnum AOfficeSpecificDataLabelUse,
+                                                                                                                                           out Ict.Petra.Shared.MCommon.Data.OfficeSpecificDataLabelsTDS AOfficeSpecificDataLabelsDataSet)
         {
 #if DEBUGMODE
             if (TSrvSetting.DL >= 9)
@@ -1166,12 +1162,10 @@ namespace Ict.Petra.Server.MPersonnel.Instantiator.Person.DataElements.UIConnect
 
 
         /// generated method from interface
-        public Ict.Petra.Shared.Interfaces.MCommon.UIConnectors.IPersonDataElementsUIConnectorsOfficeSpecificDataLabels OfficeSpecificDataLabels(
-                                                                                                                                                 System.Int64 APartnerKey,
-                                                                                                                                                 
-                                                                                                                                                 Ict.Petra.Shared.MCommon.TOfficeSpecificDataLabelUseEnum AOfficeSpecificDataLabelUse,
-                                                                                                                                                 
-                                                                                                                                                 out Ict.Petra.Shared.MCommon.Data.OfficeSpecificDataLabelsTDS AOfficeSpecificDataLabelsDataSet)
+        public Ict.Petra.Shared.Interfaces.MCommon.UIConnectors.IDataElementsUIConnectorsOfficeSpecificDataLabels OfficeSpecificDataLabels(
+                                                                                                                                           System.Int64 APartnerKey,
+                                                                                                                                           Ict.Petra.Shared.MCommon.TOfficeSpecificDataLabelUseEnum AOfficeSpecificDataLabelUse,
+                                                                                                                                           out Ict.Petra.Shared.MCommon.Data.OfficeSpecificDataLabelsTDS AOfficeSpecificDataLabelsDataSet)
         {
 #if DEBUGMODE
             if (TSrvSetting.DL >= 9)

@@ -117,9 +117,7 @@ namespace Ict.Petra.Server.MSysMan.Maintenance
                 }
                 catch (Exception exp)
                 {
-#if DEBUGMODE
                     TLogging.Log("TMaintenanceLogonMessage.GetLogonMessage: Error loading Logon Message! " + "Possible cause: " + exp.ToString());
-#endif
                     return "";
                 }
             }

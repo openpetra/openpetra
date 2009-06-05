@@ -343,16 +343,22 @@ namespace Ict.Petra.Server.MSysMan.Maintenance
 #endif
                 }
             }
+#if DEBUGMODE
             catch (Exception exp)
             {
-#if DEBUGMODE
                 if (TSrvSetting.DL >= 7)
                 {
                     Console.WriteLine("Exception in TMaintenanceUserDefaults.GetUserDefaults: " + exp.ToString());
                 }
-#endif
+
                 throw;
             }
+#else
+            catch (Exception)
+            {
+                throw;
+            }
+#endif
         }
 
         /// <summary>
@@ -471,13 +477,18 @@ namespace Ict.Petra.Server.MSysMan.Maintenance
                     }
                 }
             }
+#if DEBUGMODE
             catch (Exception exp)
             {
-#if DEBUGMODE
                 Console.WriteLine("TMaintenanceUserDefaults.LoadUserDefaultsTable: Error loading UserDefaults! " + "Possible cause: " + exp.ToString());
-#endif
                 throw;
             }
+#else
+            catch (Exception)
+            {
+                throw;
+            }
+#endif
             return ReturnValue;
         }
 
@@ -606,8 +617,6 @@ namespace Ict.Petra.Server.MSysMan.Maintenance
             Boolean SubmissionOK;
             Int16 Counter;
             SUserDefaultsRow UserDefaultServerSideRow;
-            DataTable TmpChangesDT;
-            int TmpRow;
 
             AVerificationResult = null;
             SubmissionOK = true;
@@ -674,7 +683,7 @@ namespace Ict.Petra.Server.MSysMan.Maintenance
 #if DEBUGMODE
                             if (TSrvSetting.DL >= 7)
                             {
-                                TmpChangesDT = UUserDefaultsDT.GetChangesTyped();
+                                DataTable TmpChangesDT = UUserDefaultsDT.GetChangesTyped();
 
                                 if (TmpChangesDT != null)
                                 {
@@ -695,7 +704,7 @@ namespace Ict.Petra.Server.MSysMan.Maintenance
 #if DEBUGMODE
                             if (TSrvSetting.DL >= 7)
                             {
-                                TmpChangesDT = UUserDefaultsDT.GetChangesTyped();
+                                DataTable TmpChangesDT = UUserDefaultsDT.GetChangesTyped();
 
                                 if (TmpChangesDT != null)
                                 {
@@ -704,7 +713,7 @@ namespace Ict.Petra.Server.MSysMan.Maintenance
                             }
 #endif
 #if DEBUGMODE
-                            TmpRow = UUserDefaultsDV.Find("MailroomLastPerson");
+                            int TmpRow = UUserDefaultsDV.Find("MailroomLastPerson");
 
                             if (TmpRow != -1)
                             {
@@ -911,16 +920,17 @@ namespace Ict.Petra.Server.MSysMan.Maintenance
                                 SavingAttempts = SavingAttempts + 1;
                                 ASendUpdateInfoToClient = true;
                             }
+#if DEBUGMODE
                             catch (Exception Exp)
                             {
-#if DEBUGMODE
                                 if (TSrvSetting.DL >= 8)
                                 {
                                     Console.WriteLine("TMaintenanceUserDefaults.SaveUserDefaultsTable: Exception occured: " + Exp.ToString());
                                 }
-#endif
+
                                 throw;
                             }
+#endif
                         } while (!((SavingAttempts > 1) || SubmissionOK));
 
 #if DEBUGMODE
@@ -996,16 +1006,17 @@ namespace Ict.Petra.Server.MSysMan.Maintenance
                         }
 #endif
                     }
+#if DEBUGMODE
                     catch (Exception Exp)
                     {
-#if DEBUGMODE
                         if (TSrvSetting.DL >= 8)
                         {
                             Console.WriteLine("TMaintenanceUserDefaults.SaveUserDefaultsTable: Exception occured: " + Exp.ToString());
                         }
-#endif
+
                         throw;
                     }
+#endif
                     finally
                     {
                         if (NewTransaction)

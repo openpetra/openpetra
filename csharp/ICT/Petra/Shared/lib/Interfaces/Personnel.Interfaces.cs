@@ -142,16 +142,11 @@ namespace Ict.Petra.Shared.Interfaces.MPersonnel.Person.DataElements.Application
     public interface IPersonDataElementsApplicationsUIConnectorsNamespace : IInterface
     {
         /// <summary>auto generated from Instantiator (Ict.Petra.Server.MPersonnel.Instantiator.Person.DataElements.Applications.UIConnectors.TPersonDataElementsApplicationsUIConnectorsNamespace)</summary>
-        Ict.Petra.Shared.Interfaces.MCommon.UIConnectors.IPersonDataElementsUIConnectorsOfficeSpecificDataLabels OfficeSpecificDataLabels(
-                                                                                                                                          System.Int64 APartnerKey,
-                                                                                                                                          
-                                                                                                                                          System.Int32 AApplicationKey,
-                                                                                                                                          
-                                                                                                                                          System.Int64 ARegistrationOffice,
-                                                                                                                                          
-                                                                                                                                          Ict.Petra.Shared.MCommon.TOfficeSpecificDataLabelUseEnum AOfficeSpecificDataLabelUse,
-                                                                                                                                          
-                                                                                                                                          out Ict.Petra.Shared.MCommon.Data.OfficeSpecificDataLabelsTDS AOfficeSpecificDataLabelsDataSet);
+        Ict.Petra.Shared.Interfaces.MCommon.UIConnectors.IDataElementsUIConnectorsOfficeSpecificDataLabels OfficeSpecificDataLabels(System.Int64 APartnerKey,
+                                                                                                                                    System.Int32 AApplicationKey,
+                                                                                                                                    System.Int64 ARegistrationOffice,
+                                                                                                                                    Ict.Petra.Shared.MCommon.TOfficeSpecificDataLabelUseEnum AOfficeSpecificDataLabelUse,
+                                                                                                                                    out Ict.Petra.Shared.MCommon.Data.OfficeSpecificDataLabelsTDS AOfficeSpecificDataLabelsDataSet);
     }
 
 }
@@ -175,12 +170,9 @@ namespace Ict.Petra.Shared.Interfaces.MPersonnel.Person.DataElements.UIConnector
     public interface IPersonDataElementsUIConnectorsNamespace : IInterface
     {
         /// <summary>auto generated from Instantiator (Ict.Petra.Server.MPersonnel.Instantiator.Person.DataElements.UIConnectors.TPersonDataElementsUIConnectorsNamespace)</summary>
-        Ict.Petra.Shared.Interfaces.MCommon.UIConnectors.IPersonDataElementsUIConnectorsOfficeSpecificDataLabels OfficeSpecificDataLabels(
-                                                                                                                                          System.Int64 APartnerKey,
-                                                                                                                                          
-                                                                                                                                          Ict.Petra.Shared.MCommon.TOfficeSpecificDataLabelUseEnum AOfficeSpecificDataLabelUse,
-                                                                                                                                          
-                                                                                                                                          out Ict.Petra.Shared.MCommon.Data.OfficeSpecificDataLabelsTDS AOfficeSpecificDataLabelsDataSet);
+        Ict.Petra.Shared.Interfaces.MCommon.UIConnectors.IDataElementsUIConnectorsOfficeSpecificDataLabels OfficeSpecificDataLabels(System.Int64 APartnerKey,
+                                                                                                                                    Ict.Petra.Shared.MCommon.TOfficeSpecificDataLabelUseEnum AOfficeSpecificDataLabelUse,
+                                                                                                                                    out Ict.Petra.Shared.MCommon.Data.OfficeSpecificDataLabelsTDS AOfficeSpecificDataLabelsDataSet);
     }
 
 }

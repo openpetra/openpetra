@@ -1982,8 +1982,6 @@ namespace Ict.Petra.Server.MPartner.DataAggregates
             out PartnerAddressAggregateTDSChangePromotionParametersTable AChangeLocationParametersDT,
             out PartnerAddressAggregateTDSAddressAddedOrChangedPromotionTable AAddressAddedOrChangedPromotionParametersDT)
         {
-            Int16 TmpRowCounter;
-
             if (AInspectDS != null)
             {
                 if (AInspectDS.Tables.Contains(MPartnerConstants.EXISTINGLOCATIONPARAMETERS_TABLENAME))
@@ -2005,7 +2003,7 @@ namespace Ict.Petra.Server.MPartner.DataAggregates
 #if DEBUGMODE
                         if (TSrvSetting.DL >= 8)
                         {
-                            for (TmpRowCounter = 0; TmpRowCounter <= AExistingLocationParametersDT.Rows.Count - 1; TmpRowCounter += 1)
+                            for (Int16 TmpRowCounter = 0; TmpRowCounter <= AExistingLocationParametersDT.Rows.Count - 1; TmpRowCounter += 1)
                             {
                                 Console.WriteLine(
                                     "CheckParameterTables: AExistingLocationParametersDT: Row[" + TmpRowCounter.ToString() + "]: PLocationKey: " +
@@ -2475,8 +2473,6 @@ namespace Ict.Petra.Server.MPartner.DataAggregates
             Boolean CreateLocationFlag;
             PLocationRow ReUsedLocationDR;
             PPartnerLocationRow ReUsedPartnerLocationDR;
-            Int16 TmpRowCounter;
-            String TmpDebugString = "";
             Boolean ReUseSimilarLocation;
             Boolean PerformPropagation;
             TLocationPK OriginalLocationKey;
@@ -2522,11 +2518,15 @@ namespace Ict.Petra.Server.MPartner.DataAggregates
 
                 #region Debugging - what comes into the function in Location and PartnerLocation
 #if DEBUGMODE
+                string TmpDebugString = "";
+
                 if (TSrvSetting.DL >= 8)
                 {
                     if (AInspectDS.Tables.Contains(PLocationTable.GetTableName()))
                     {
-                        for (TmpRowCounter = 0; TmpRowCounter <= AInspectDS.Tables[PLocationTable.GetTableName()].Rows.Count - 1; TmpRowCounter += 1)
+                        for (Int16 TmpRowCounter = 0;
+                             TmpRowCounter <= AInspectDS.Tables[PLocationTable.GetTableName()].Rows.Count - 1;
+                             TmpRowCounter += 1)
                         {
                             if (AInspectDS.Tables[PLocationTable.GetTableName()].Rows[TmpRowCounter].RowState != DataRowState.Deleted)
                             {
@@ -2557,7 +2557,7 @@ namespace Ict.Petra.Server.MPartner.DataAggregates
                     {
                         TmpDebugString = TmpDebugString + Environment.NewLine;
 
-                        for (TmpRowCounter = 0;
+                        for (Int16 TmpRowCounter = 0;
                              TmpRowCounter <= AInspectDS.Tables[PPartnerLocationTable.GetTableName()].Rows.Count - 1;
                              TmpRowCounter += 1)
                         {
@@ -3597,7 +3597,6 @@ namespace Ict.Petra.Server.MPartner.DataAggregates
         {
             DataView AddressAddedOrChangedParametersDV;
             PartnerAddressAggregateTDSAddressAddedOrChangedPromotionRow AddressAddedOrChangedRow;
-            Int16 TmpRowCounter;
 
 #if DEBUGMODE
             if (TSrvSetting.DL >= 9)
@@ -3610,7 +3609,7 @@ namespace Ict.Petra.Server.MPartner.DataAggregates
 #if DEBUGMODE
             if (TSrvSetting.DL >= 8)
             {
-                for (TmpRowCounter = 0; TmpRowCounter <= AAddressAddedPromotionDT.Rows.Count - 1; TmpRowCounter += 1)
+                for (int TmpRowCounter = 0; TmpRowCounter <= AAddressAddedPromotionDT.Rows.Count - 1; TmpRowCounter += 1)
                 {
                     Console.WriteLine("Checking Row: " + TmpRowCounter.ToString());
                     Console.WriteLine(
@@ -3666,7 +3665,6 @@ namespace Ict.Petra.Server.MPartner.DataAggregates
         {
             DataView ExistingLocationParametersDV;
             PartnerAddressAggregateTDSSimilarLocationParametersRow SimilarLocationParameterRow;
-            Int16 TmpRowCounter;
 
 #if DEBUGMODE
             if (TSrvSetting.DL >= 9)
@@ -3680,7 +3678,7 @@ namespace Ict.Petra.Server.MPartner.DataAggregates
 #if DEBUGMODE
             if (TSrvSetting.DL >= 8)
             {
-                for (TmpRowCounter = 0; TmpRowCounter <= AExistingLocationParametersDT.Rows.Count - 1; TmpRowCounter += 1)
+                for (int TmpRowCounter = 0; TmpRowCounter <= AExistingLocationParametersDT.Rows.Count - 1; TmpRowCounter += 1)
                 {
                     Console.WriteLine("Checking Row: " + TmpRowCounter.ToString());
                     Console.WriteLine("ModifyExistingLocationParameters: SimilarLocationParameterRow[" + TmpRowCounter.ToString() + ".RowState: " +

@@ -1366,6 +1366,36 @@ namespace Ict.Petra.Server.MSysMan.Instantiator.TableMaintenance.UIConnectors
             return new TSysManTableMaintenanceUIConnector();
         }
 
+        /// generated method from interface
+        public ISysManUIConnectorsTableMaintenance SysManTableMaintenance(ref DataTable ADataSet,
+                                                                          string ATableName)
+        {
+#if DEBUGMODE
+            if (TSrvSetting.DL >= 9)
+            {
+                Console.WriteLine(this.GetType().FullName + ": Creating TSysManTableMaintenanceUIConnector...");
+            }
+
+#endif
+            TSysManTableMaintenanceUIConnector ReturnValue = new TSysManTableMaintenanceUIConnector();
+#if DEBUGMODE
+            if (TSrvSetting.DL >= 9)
+            {
+                Console.WriteLine(this.GetType().FullName + ": Calling TSysManTableMaintenanceUIConnector.GetData...");
+            }
+
+#endif
+            ADataSet = ReturnValue.GetData(ATableName);
+#if DEBUGMODE
+            if (TSrvSetting.DL >= 9)
+            {
+                Console.WriteLine(this.GetType().FullName + ": Calling TSysManTableMaintenanceUIConnector.GetData finished.");
+            }
+
+#endif
+            return ReturnValue;
+        }
+
     }
 }
 

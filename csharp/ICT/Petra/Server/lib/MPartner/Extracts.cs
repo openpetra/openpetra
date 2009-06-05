@@ -122,19 +122,26 @@ namespace Ict.Petra.Server.MPartner.Extracts
                     ReturnValue = false;
                 }
             }
+#if DEBUGMODE
             catch (Exception e)
             {
                 DBAccess.GDBAccessObj.RollbackTransaction();
                 ReturnValue = false;
-#if DEBUGMODE
+
                 if (TSrvSetting.DL >= 8)
                 {
                     Console.WriteLine(
                         "TExtractsHandling.CreateNewExtract: Exception occured, Transaction ROLLED BACK. Exception: " +
                         e.ToString());
                 }
-#endif
             }
+#else
+            catch (Exception)
+            {
+                DBAccess.GDBAccessObj.RollbackTransaction();
+                ReturnValue = false;
+            }
+#endif
 
             return ReturnValue;
         }
@@ -193,17 +200,17 @@ namespace Ict.Petra.Server.MPartner.Extracts
                     Success = false;
                 }
             }
+#if DEBUGMODE
             catch (Exception Exp)
             {
-#if DEBUGMODE
                 if (TSrvSetting.DL >= 8)
                 {
                     Console.WriteLine("TExtractsHandling.DeleteExtract: Exception occured. Exception: " + Exp.ToString());
                 }
-#endif
-                Success = false;
+
                 throw;
             }
+#endif
             finally
             {
                 if (Success)
@@ -265,16 +272,17 @@ namespace Ict.Petra.Server.MPartner.Extracts
                     ReturnValue = true;
                 }
             }
+#if DEBUGMODE
             catch (Exception Exp)
             {
-#if DEBUGMODE
                 if (TSrvSetting.DL >= 8)
                 {
                     Console.WriteLine("TExtractsHandling.CheckExtractExists(AExtractName): Exception occured. Exception: " + Exp.ToString());
                 }
-#endif
+
                 throw;
             }
+#endif
             finally
             {
                 if (NewTransaction)
@@ -403,17 +411,17 @@ namespace Ict.Petra.Server.MPartner.Extracts
                     Success = false;
                 }
             }
+#if DEBUGMODE
             catch (Exception Exp)
             {
-#if DEBUGMODE
                 if (TSrvSetting.DL >= 8)
                 {
                     Console.WriteLine("TExtractsHandling.UpdateExtractCount: Exception occured. Exception: " + Exp.ToString());
                 }
-#endif
-                Success = false;
+
                 throw;
             }
+#endif
             finally
             {
                 if (Success)
@@ -557,17 +565,17 @@ namespace Ict.Petra.Server.MPartner.Extracts
                         return false;
                     }
                 }
+#if DEBUGMODE
                 catch (Exception Exp)
                 {
-#if DEBUGMODE
                     if (TSrvSetting.DL >= 8)
                     {
                         Console.WriteLine("TExtractsHandling.AddPartnerToExtract: Exception occured. Exception: " + Exp.ToString());
                     }
-                    Success = false;
-#endif
+
                     throw;
                 }
+#endif
                 finally
                 {
                     if (Success)

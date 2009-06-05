@@ -34,6 +34,8 @@ namespace Ict.Petra.Shared.Interfaces.MReporting.LogicConnectors
     /// <summary>auto generated</summary>
     public interface ILogicConnectorsNamespace : IInterface
     {
+        /// <summary>auto generated from Connector constructor (Ict.Petra.Server.MReporting.LogicConnectors.TReportGeneratorLogicConnector)</summary>
+        IReportGeneratorLogicConnector ReportGenerator();
     }
 
     /// <summary>auto generated</summary>

@@ -127,7 +127,7 @@ class CreateInstantiators : AutoGenerationWriter
         EndBlock();
     }
 
-    private void CreateInstanceOfUIConnector(InterfaceMethodNode m)
+    private void CreateInstanceOfConnector(InterfaceMethodNode m, string ATypeConnector)
     {
         bool outHasBeenFound = false;
         bool firstParameter;
@@ -144,7 +144,7 @@ class CreateInstantiators : AutoGenerationWriter
         {
             // simple: no need to call GetData
 
-            String createObject = "return new T" + CSParser.GetName(m.Names) + "UIConnector(";
+            String createObject = "return new T" + CSParser.GetName(m.Names) + ATypeConnector + "(";
             firstParameter = true;
 
             foreach (ParamDeclNode p in m.Params)
@@ -170,11 +170,12 @@ class CreateInstantiators : AutoGenerationWriter
             WriteLine("#if DEBUGMODE");
             StartBlock("if (TSrvSetting.DL >= 9)");
             WriteLine("Console.WriteLine(this.GetType().FullName + \": Creating " +
-                "T" + CSParser.GetName(m.Names) + "UIConnector...\");");
+                "T" + CSParser.GetName(m.Names) + ATypeConnector + "...\");");
             EndBlock();
             WriteLine("#endif");
 
-            String createObject = "T" + CSParser.GetName(m.Names) + "UIConnector ReturnValue = new T" + CSParser.GetName(m.Names) + "UIConnector(";
+            String createObject = "T" + CSParser.GetName(m.Names) + ATypeConnector + " ReturnValue = new T" + CSParser.GetName(m.Names) +
+                                  ATypeConnector + "(";
             StringCollection parameters = new StringCollection();
 
             foreach (ParamDeclNode p in m.Params)
@@ -194,7 +195,7 @@ class CreateInstantiators : AutoGenerationWriter
             WriteLine("#if DEBUGMODE");
             StartBlock("if (TSrvSetting.DL >= 9)");
             WriteLine("Console.WriteLine(this.GetType().FullName + \": Calling " +
-                "T" + CSParser.GetName(m.Names) + "UIConnector.GetData...\");");
+                "T" + CSParser.GetName(m.Names) + ATypeConnector + ".GetData...\");");
             EndBlock();
             WriteLine("#endif");
 
@@ -229,7 +230,7 @@ class CreateInstantiators : AutoGenerationWriter
             WriteLine("#if DEBUGMODE");
             StartBlock("if (TSrvSetting.DL >= 9)");
             WriteLine("Console.WriteLine(this.GetType().FullName + \": Calling " +
-                "T" + CSParser.GetName(m.Names) + "UIConnector.GetData finished.\");");
+                "T" + CSParser.GetName(m.Names) + ATypeConnector + ".GetData finished.\");");
             EndBlock();
             WriteLine("#endif");
 
@@ -278,48 +279,22 @@ class CreateInstantiators : AutoGenerationWriter
 
             foreach (ParamDeclNode p in m.Params)
             {
-                if (!firstParameter)
-                {
-                    WriteLine(formattedMethod + ",");
-                    formattedMethod = new String(' ', align);
-                }
-
-                firstParameter = false;
-                String parameterType = CSParser.GetName(p.Type);
-                string StrParameter = "";
-
-                if ((p.Modifiers & Modifier.Ref) != 0)
-                {
-                    StrParameter += "ref ";
-                }
-                else if ((p.Modifiers & Modifier.Out) != 0)
-                {
-                    StrParameter += "out ";
-                }
-                else if ((p.Modifiers & Modifier.Ref) != 0)
-                {
-                    StrParameter += "ref ";
-                }
-
-                StrParameter += parameterType + (parameterType.EndsWith(">") ? "" : " ") + p.Name;
-
-                if (StrParameter.Length + formattedMethod.Length > CODE_LENGTH_UNCRUSTIFY)
-                {
-                    WriteLine(formattedMethod);
-                    formattedMethod = new String(' ', align);
-                }
-
-                formattedMethod += StrParameter;
+                AddParameter(ref formattedMethod, ref firstParameter, align, p.Name, p.Modifiers, p.Type);
             }
 
             formattedMethod += ")";
 
             StartBlock(formattedMethod);
 
+            // TODO: there is a manual exception for TReportingUIConnectorsNamespace: better do a generic way
             if (AInterfaceName.EndsWith("UIConnectorsNamespace")
-                && !AInterfaceName.EndsWith("ReportingUIConnectorsNamespace"))
+                && (AInterfaceName != "IReportingUIConnectorsNamespace"))
             {
-                CreateInstanceOfUIConnector(m);
+                CreateInstanceOfConnector(m, "UIConnector");
+            }
+            else if (AInterfaceName.EndsWith("LogicConnectorsNamespace"))
+            {
+                CreateInstanceOfConnector(m, "LogicConnector");
             }
 
             // what about them?
@@ -624,7 +599,7 @@ class CreateInstantiators : AutoGenerationWriter
         foreach (TopNamespace tn in ANamespaces)
         {
             // for testing:
-//        if (tn.Name != "SysMan") continue;
+//        if (tn.Name != "Reporting") continue;
             CreateAutoHierarchy(tn, AOutputPath, AXmlFileName);
         }
     }

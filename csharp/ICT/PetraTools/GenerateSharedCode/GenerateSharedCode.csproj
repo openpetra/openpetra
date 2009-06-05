@@ -55,7 +55,6 @@
     <Compile Include="CreateInterfaces.cs" />
     <Compile Include="NamespaceItem.cs" />
     <Compile Include="Program.cs" />
-    <None Include="PetraTools.sln" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\Common\Ict.Common.csproj">

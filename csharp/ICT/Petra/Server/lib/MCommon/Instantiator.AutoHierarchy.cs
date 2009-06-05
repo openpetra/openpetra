@@ -29,6 +29,8 @@ using Ict.Petra.Server.MCommon.UIConnectors;
 
 #region ManualCode
 using Ict.Petra.Shared.MCommon;
+using Ict.Petra.Shared.MCommon.Data;
+using Ict.Common.DB;
 #endregion ManualCode
 namespace Ict.Petra.Server.MCommon.Instantiator
 {
@@ -304,25 +306,124 @@ namespace Ict.Petra.Server.MCommon.Instantiator.UIConnectors
 
 
         /// generated method from interface
+        public IDataElementsUIConnectorsOfficeSpecificDataLabels OfficeSpecificDataLabels(Int64 APartnerKey,
+                                                                                          TOfficeSpecificDataLabelUseEnum AOfficeSpecificDataLabelUse)
+        {
+            return new TOfficeSpecificDataLabelsUIConnector(APartnerKey, AOfficeSpecificDataLabelUse);
+        }
+
+        /// generated method from interface
+        public IDataElementsUIConnectorsOfficeSpecificDataLabels OfficeSpecificDataLabels(Int64 APartnerKey,
+                                                                                          TOfficeSpecificDataLabelUseEnum AOfficeSpecificDataLabelUse,
+                                                                                          ref OfficeSpecificDataLabelsTDS ADataSet,
+                                                                                          TDBTransaction AReadTransaction)
+        {
+#if DEBUGMODE
+            if (TSrvSetting.DL >= 9)
+            {
+                Console.WriteLine(this.GetType().FullName + ": Creating TOfficeSpecificDataLabelsUIConnector...");
+            }
+
+#endif
+            TOfficeSpecificDataLabelsUIConnector ReturnValue = new TOfficeSpecificDataLabelsUIConnector(APartnerKey, AOfficeSpecificDataLabelUse);
+#if DEBUGMODE
+            if (TSrvSetting.DL >= 9)
+            {
+                Console.WriteLine(this.GetType().FullName + ": Calling TOfficeSpecificDataLabelsUIConnector.GetData...");
+            }
+
+#endif
+            ADataSet = ReturnValue.GetData(AReadTransaction);
+#if DEBUGMODE
+            if (TSrvSetting.DL >= 9)
+            {
+                Console.WriteLine(this.GetType().FullName + ": Calling TOfficeSpecificDataLabelsUIConnector.GetData finished.");
+            }
+
+#endif
+            return ReturnValue;
+        }
+
+        /// generated method from interface
+        public IDataElementsUIConnectorsOfficeSpecificDataLabels OfficeSpecificDataLabels(Int64 APartnerKey,
+                                                                                          Int32 AApplicationKey,
+                                                                                          Int64 ARegistrationOffice,
+                                                                                          TOfficeSpecificDataLabelUseEnum AOfficeSpecificDataLabelUse)
+        {
+            return new TOfficeSpecificDataLabelsUIConnector(APartnerKey, AApplicationKey, ARegistrationOffice, AOfficeSpecificDataLabelUse);
+        }
+
+        /// generated method from interface
+        public IDataElementsUIConnectorsOfficeSpecificDataLabels OfficeSpecificDataLabels(Int64 APartnerKey,
+                                                                                          Int32 AApplicationKey,
+                                                                                          Int64 ARegistrationOffice,
+                                                                                          TOfficeSpecificDataLabelUseEnum AOfficeSpecificDataLabelUse,
+                                                                                          ref OfficeSpecificDataLabelsTDS ADataSet,
+                                                                                          TDBTransaction AReadTransaction)
+        {
+#if DEBUGMODE
+            if (TSrvSetting.DL >= 9)
+            {
+                Console.WriteLine(this.GetType().FullName + ": Creating TOfficeSpecificDataLabelsUIConnector...");
+            }
+
+#endif
+            TOfficeSpecificDataLabelsUIConnector ReturnValue = new TOfficeSpecificDataLabelsUIConnector(APartnerKey, 
+               AApplicationKey, 
+               ARegistrationOffice, 
+               AOfficeSpecificDataLabelUse);
+#if DEBUGMODE
+            if (TSrvSetting.DL >= 9)
+            {
+                Console.WriteLine(this.GetType().FullName + ": Calling TOfficeSpecificDataLabelsUIConnector.GetData...");
+            }
+
+#endif
+            ADataSet = ReturnValue.GetData(AReadTransaction);
+#if DEBUGMODE
+            if (TSrvSetting.DL >= 9)
+            {
+                Console.WriteLine(this.GetType().FullName + ": Calling TOfficeSpecificDataLabelsUIConnector.GetData finished.");
+            }
+
+#endif
+            return ReturnValue;
+        }
+
+        /// generated method from interface
         public IPartnerUIConnectorsFieldOfService FieldOfService(Int64 APartnerKey)
         {
             return new TFieldOfServiceUIConnector(APartnerKey);
         }
 
         /// generated method from interface
-        public IPersonDataElementsUIConnectorsOfficeSpecificDataLabels OfficeSpecificDataLabels(Int64 APartnerKey,
-                                                                                                TOfficeSpecificDataLabelUseEnum AOfficeSpecificDataLabelUse)
+        public IPartnerUIConnectorsFieldOfService FieldOfService(Int64 APartnerKey,
+                                                                 ref FieldOfServiceTDS ADataSet)
         {
-            return new TOfficeSpecificDataLabelsUIConnector(APartnerKey, AOfficeSpecificDataLabelUse);
-        }
+#if DEBUGMODE
+            if (TSrvSetting.DL >= 9)
+            {
+                Console.WriteLine(this.GetType().FullName + ": Creating TFieldOfServiceUIConnector...");
+            }
 
-        /// generated method from interface
-        public IPersonDataElementsUIConnectorsOfficeSpecificDataLabels OfficeSpecificDataLabels(Int64 APartnerKey,
-                                                                                                Int32 AApplicationKey,
-                                                                                                Int64 ARegistrationOffice,
-                                                                                                TOfficeSpecificDataLabelUseEnum AOfficeSpecificDataLabelUse)
-        {
-            return new TOfficeSpecificDataLabelsUIConnector(APartnerKey, AApplicationKey, ARegistrationOffice, AOfficeSpecificDataLabelUse);
+#endif
+            TFieldOfServiceUIConnector ReturnValue = new TFieldOfServiceUIConnector(APartnerKey);
+#if DEBUGMODE
+            if (TSrvSetting.DL >= 9)
+            {
+                Console.WriteLine(this.GetType().FullName + ": Calling TFieldOfServiceUIConnector.GetData...");
+            }
+
+#endif
+            ADataSet = ReturnValue.GetData();
+#if DEBUGMODE
+            if (TSrvSetting.DL >= 9)
+            {
+                Console.WriteLine(this.GetType().FullName + ": Calling TFieldOfServiceUIConnector.GetData finished.");
+            }
+
+#endif
+            return ReturnValue;
         }
 
     }

@@ -32,6 +32,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Ict.Petra.Client.MPartner.V
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Ict.Petra.Client.MPartner.Logic", "Petra\Client\lib\MPartner\logic\Ict.Petra.Client.MPartner.Logic.csproj", "A6A4782D-DD84-4C0C-9F6E-552EAEDDB797"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Ict.Petra.Client.MReporting.Logic", "Petra\Client\lib\MReporting\logic\Ict.Petra.Client.MReporting.Logic.csproj", "E5D87C50-783C-4516-84A9-CF1D37894C9C"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -98,5 +100,9 @@ Global
 		A6A4782D-DD84-4C0C-9F6E-552EAEDDB797.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		A6A4782D-DD84-4C0C-9F6E-552EAEDDB797.Release|Any CPU.Build.0 = Release|Any CPU
 		A6A4782D-DD84-4C0C-9F6E-552EAEDDB797.Release|Any CPU.ActiveCfg = Release|Any CPU
+		E5D87C50-783C-4516-84A9-CF1D37894C9C.Debug|Any CPU.Build.0 = Debug|Any CPU
+		E5D87C50-783C-4516-84A9-CF1D37894C9C.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		E5D87C50-783C-4516-84A9-CF1D37894C9C.Release|Any CPU.Build.0 = Release|Any CPU
+		E5D87C50-783C-4516-84A9-CF1D37894C9C.Release|Any CPU.ActiveCfg = Release|Any CPU
 	EndGlobalSection
 EndGlobal

@@ -101,7 +101,7 @@ namespace Ict.Common.Printing
             bool HasOtherCharacters;
             FCurrentYPos = FCurrentYPos + 1;
 
-            // check if line is only a marking line; in that case, jump over it 
+            // check if line is only a marking line; in that case, jump over it
             s = GetLine(Convert.ToInt32(FCurrentYPos)).Trim();
             HasDash = false;
             HasOtherCharacters = false;
@@ -177,7 +177,7 @@ namespace Ict.Common.Printing
         /// <returns>void</returns>
         public override Boolean ValidYPos()
         {
-            // todo: no page processing for text printing yet 
+            // todo: no page processing for text printing yet
             return true;
         }
 
@@ -200,7 +200,7 @@ namespace Ict.Common.Printing
         /// <returns>void</returns>
         public override void SetPageFooterSpace(System.Int32 ANumberOfLines, eFont AFont)
         {
-            // just to tell that we accept a page footer; not fully implemented (regarding page breaks etc) 
+            // just to tell that we accept a page footer; not fully implemented (regarding page breaks etc)
             if (ANumberOfLines != 0)
             {
                 FPageFooterSpace = 1;
@@ -214,7 +214,7 @@ namespace Ict.Common.Printing
         /// <returns>void</returns>
         public override void SetHasMorePages(bool AHasMorePages)
         {
-            // not implemented 
+            // not implemented
         }
 
         #endregion
@@ -230,10 +230,10 @@ namespace Ict.Common.Printing
         {
             float ReturnValue;
 
-            // valueInCm / 29.7 = valueInLetters / NumberOfCharactersPerLinePortrait 
+            // valueInCm / 29.7 = valueInLetters / NumberOfCharactersPerLinePortrait
             ReturnValue = (AValueInCm / 29.7f) * NumberOfCharactersPerLinePortrait;
 
-            // the cm in the xml file are targeted towards graphics output, the text output needs more space 
+            // the cm in the xml file are targeted towards graphics output, the text output needs more space
             return ReturnValue * FACTOR_CM_2_LETTER;
         }
 
@@ -504,7 +504,7 @@ namespace Ict.Common.Printing
         {
             if (ALinePosition == eLinePosition.eAbove)
             {
-                // to deal with things already printed in the beginning of the line (e.g. descr) 
+                // to deal with things already printed in the beginning of the line (e.g. descr)
                 InsertLineForMarkingLine(FCurrentYPos);
             }
             else if (ALinePosition == eLinePosition.eBelow)
@@ -514,7 +514,7 @@ namespace Ict.Common.Printing
 
             if (AXPos1 != 0)
             {
-                // lines above/below columns should not touch 
+                // lines above/below columns should not touch
                 AXPos1 = AXPos1 + 1;
                 AXPos2 = AXPos2 - 1;
             }
@@ -541,7 +541,7 @@ namespace Ict.Common.Printing
             System.Int32 currentLineLength;
             System.Int32 y;
 
-            // go through all lines, and get the maximum length, apart from the separating lines 
+            // go through all lines, and get the maximum length, apart from the separating lines
             maxLength = 1;
 
             foreach (String line in FText)
@@ -554,7 +554,7 @@ namespace Ict.Common.Printing
                 }
             }
 
-            // shorten the lines to that maximum length 
+            // shorten the lines to that maximum length
             for (y = 0; y <= FText.Count - 1; y += 1)
             {
                 String line = GetLine(y);

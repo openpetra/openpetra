@@ -445,9 +445,18 @@ namespace Ict.Tools.CodeGeneration
 
                         if (File.Exists(filename))
                         {
-                            CSParser csfile = new CSParser(
-                                filename);
-                            ACSFiles.Add(csfile);
+                            try
+                            {
+                                CSParser csfile = new CSParser(
+                                    filename);
+                                ACSFiles.Add(csfile);
+                            }
+                            catch (Exception e)
+                            {
+                                Console.WriteLine("Exception while parsing " + filename);
+                                Console.WriteLine(e.Message);
+                                throw e;
+                            }
                         }
 
                         compileNode = compileNode.NextSibling;

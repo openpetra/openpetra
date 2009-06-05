@@ -253,6 +253,19 @@ public class CreateInterfaces : AutoGenerationWriter
         foreach (ClassNode t in AConnectorClasses)
         {
             string ConnectorClassName = CSParser.GetName(t.Name);
+            MethodNode GetDataMethod = null;
+
+            foreach (MethodNode m in t.Methods)
+            {
+                if (CSParser.GetName(m.Names) == "GetData")
+                {
+                    // there might be overloads of GetData; use the method with the most parameters
+                    if ((GetDataMethod == null) || (GetDataMethod.Params.Count < m.Params.Count))
+                    {
+                        GetDataMethod = m;
+                    }
+                }
+            }
 
             // cacheable will not work yet; careful: when building MethodName, connectorName does not have a plural s
             // but that cacheable constructor is not needed anyways???
@@ -276,7 +289,9 @@ public class CreateInterfaces : AutoGenerationWriter
 
                 foreach (IType ti in t.BaseClasses)
                 {
-                    if (CSParser.GetName(ti) != "TConfigurableMBRObject")
+                    // problem, eg. in MCommon, TOfficeSpecificDataLabelsUIConnector implements 2 interfaces
+                    if ((CSParser.GetName(ti) != "TConfigurableMBRObject")
+                        && (CSParser.GetName(ti) == AInterfaceName))
                     {
                         MethodType = CSParser.GetName(ti);
                     }
@@ -288,49 +303,64 @@ public class CreateInterfaces : AutoGenerationWriter
                     continue;
                 }
 
-                // find constructor and copy the parameters
-                foreach (ConstructorNode m in t.Constructors)
+                if (t.Constructors.Count == 0)
                 {
-                    WriteLine("/// <summary>auto generated from Connector constructor (" + ServerNamespace + "." + ConnectorClassName + ")</summary>");
-                    AMethodsAlreadyWritten.Add(MethodName);
-                    string MethodDeclaration = MethodType + " " + MethodName + "(";
-                    int align = MethodDeclaration.Length;
-                    bool firstParameter = true;
+                    // will cause compile error if the constructor is missing, because it is not implementing the interface completely
+                    throw new Exception("missing a connector constructor in " + ServerNamespace + "." + ConnectorClassName);
 
-                    foreach (ParamDeclNode p in m.Params)
+//                    WriteLine("/// <summary>auto generated - there was no Connector constructor (" + ServerNamespace + "." + ConnectorClassName + ")</summary>");
+//                    AMethodsAlreadyWritten.Add(MethodName);
+//                    string MethodDeclaration = MethodType + " " + MethodName + "();";
+//                    WriteLine(MethodDeclaration);
+                }
+                else
+                {
+                    // find constructor and copy the parameters
+                    foreach (ConstructorNode m in t.Constructors)
                     {
-                        if (!firstParameter)
+                        WriteLine(
+                            "/// <summary>auto generated from Connector constructor (" + ServerNamespace + "." + ConnectorClassName + ")</summary>");
+                        AMethodsAlreadyWritten.Add(MethodName);
+                        string MethodDeclaration = MethodType + " " + MethodName + "(";
+                        int align = MethodDeclaration.Length;
+                        bool firstParameter = true;
+
+                        foreach (ParamDeclNode p in m.Params)
                         {
-                            WriteLine(MethodDeclaration + ",");
-                            MethodDeclaration = new String(' ', align);
+                            AddParameter(ref MethodDeclaration, ref firstParameter, align, p.Name, p.Modifiers, p.Type);
                         }
 
-                        firstParameter = false;
-                        String parameterType = CSParser.GetName(p.Type);
-                        String StrParameter = "";
+                        MethodDeclaration += ");";
+                        WriteLine(MethodDeclaration);
 
-                        if ((p.Modifiers & Modifier.Ref) != 0)
+                        if (GetDataMethod != null)
                         {
-                            StrParameter += "ref ";
-                        }
-                        else if ((p.Modifiers & Modifier.Out) != 0)
-                        {
-                            StrParameter += "out ";
-                        }
+                            WriteLine(
+                                "/// <summary>auto generated from Connector constructor and GetData (" + ServerNamespace + "." + ConnectorClassName +
+                                ")</summary>");
+                            MethodDeclaration = MethodType + " " + MethodName + "(";
+                            align = MethodDeclaration.Length;
+                            firstParameter = true;
 
-                        StrParameter += parameterType + (parameterType.EndsWith(">") ? "" : " ") + p.Name;
+                            // first add the parameters of the constructor
+                            foreach (ParamDeclNode p in m.Params)
+                            {
+                                AddParameter(ref MethodDeclaration, ref firstParameter, align, p.Name, p.Modifiers, p.Type);
+                            }
 
-                        if (StrParameter.Length + MethodDeclaration.Length > CODE_LENGTH_UNCRUSTIFY)
-                        {
+                            // then add the return value of GetData as a ref parameter
+                            AddParameter(ref MethodDeclaration, ref firstParameter, align, "ADataSet", Modifier.Ref, GetDataMethod.Type);
+
+                            // then add the parameters of GetData, if they have not been added yet with the parameters of the constructor
+                            foreach (ParamDeclNode p in GetDataMethod.Params)
+                            {
+                                AddParameter(ref MethodDeclaration, ref firstParameter, align, p.Name, p.Modifiers, p.Type);
+                            }
+
+                            MethodDeclaration += ");";
                             WriteLine(MethodDeclaration);
-                            MethodDeclaration = new String(' ', align);
                         }
-
-                        MethodDeclaration += StrParameter;
                     }
-
-                    MethodDeclaration += ");";
-                    WriteLine(MethodDeclaration);
                 }
             }
         }
@@ -372,34 +402,7 @@ public class CreateInterfaces : AutoGenerationWriter
 
                     foreach (ParamDeclNode p in m.Params)
                     {
-                        if (!firstParameter)
-                        {
-                            WriteLine(MethodDeclaration + ",");
-                            MethodDeclaration = new String(' ', align);
-                        }
-
-                        firstParameter = false;
-                        String parameterType = CSParser.GetName(p.Type);
-                        String StrParameter = "";
-
-                        if ((p.Modifiers & Modifier.Ref) != 0)
-                        {
-                            StrParameter += "ref ";
-                        }
-                        else if ((p.Modifiers & Modifier.Out) != 0)
-                        {
-                            StrParameter += "out ";
-                        }
-
-                        StrParameter += parameterType + (parameterType.EndsWith(">") ? "" : " ") + p.Name;
-
-                        if (StrParameter.Length + MethodDeclaration.Length > CODE_LENGTH_UNCRUSTIFY)
-                        {
-                            WriteLine(MethodDeclaration);
-                            MethodDeclaration = new String(' ', align);
-                        }
-
-                        MethodDeclaration += StrParameter;
+                        AddParameter(ref MethodDeclaration, ref firstParameter, align, p.Name, p.Modifiers, p.Type);
                     }
 
                     MethodDeclaration += ");";
@@ -433,9 +436,40 @@ public class CreateInterfaces : AutoGenerationWriter
 
         //this should return the Connector classes; the instantiator classes are in a different namespace
         string ServerConnectorNamespace = ParentNamespace.Replace("Ict.Petra.Shared.Interfaces", "Ict.Petra.Server");
-        List <ClassNode>ConnectorClasses = GetClassesThatImplementInterface(
+
+        // don't write methods twice, once from Connector, and then again from Instantiator
+        StringCollection MethodsAlreadyWritten = new StringCollection();
+
+        StringCollection InterfacesInNamespace = GetInterfacesInNamespace(ParentNamespace, InterfaceNames);
+
+        foreach (string ChildInterface in InterfacesInNamespace)
+        {
+            List <ClassNode>ConnectorClasses = GetClassesThatImplementInterface(
+                ACSFiles,
+                ChildInterface,
+                ServerConnectorNamespace);
+
+            if (AInterfaceName.EndsWith("Namespace"))
+            {
+                WriteConnectorConstructors(
+                    ref MethodsAlreadyWritten,
+                    ConnectorClasses,
+                    ChildInterface,
+                    ParentNamespace,
+                    ServerConnectorNamespace);
+            }
+        }
+
+        List <ClassNode>ConnectorClasses2 = GetClassesThatImplementInterface(
             ACSFiles,
             AInterfaceName,
+            ServerConnectorNamespace);
+
+        WriteConnectorMethods(
+            ref MethodsAlreadyWritten,
+            ConnectorClasses2,
+            AInterfaceName,
+            ParentNamespace,
             ServerConnectorNamespace);
 
         // this is for the instantiator classes
@@ -451,34 +485,49 @@ public class CreateInterfaces : AutoGenerationWriter
             AInterfaceName,
             ServerInstantiatorNamespace);
 
-        // don't write methods twice, once from Connector, and then again from Instantiator
-        StringCollection MethodsAlreadyWritten = new StringCollection();
-
-        if (ParentNamespace.EndsWith("Namespace"))
-        {
-            WriteConnectorConstructors(
-                ref MethodsAlreadyWritten,
-                ConnectorClasses,
-                AInterfaceName,
-                ParentNamespace,
-                ServerConnectorNamespace);
-        }
-
-        WriteConnectorMethods(
-            ref MethodsAlreadyWritten,
-            ConnectorClasses,
-            AInterfaceName,
-            ParentNamespace,
-            ServerConnectorNamespace);
         WriteInstantiatorMethods(
             MethodsAlreadyWritten,
             InstantiatorClasses,
             AInterfaceName,
             ParentNamespace,
             ServerInstantiatorNamespace);
+
         EndBlock();
     }
 
+    private StringCollection GetInterfacesInNamespace(string ANamespace, SortedList AInterfaceNames)
+    {
+        // get all the interfaces in the current namespace
+        StringCollection InterfacesInNamespace = new StringCollection();
+
+        foreach (String InterfaceName in AInterfaceNames.GetKeyList())
+        {
+            // see if the class that is implementing the interface is in the current namespace (considering the difference of Shared and Server)
+            if ((AInterfaceNames[InterfaceName].ToString().Substring(0,
+                     AInterfaceNames[InterfaceName].ToString().LastIndexOf(".")).Replace("Instantiator.", "")
+                 == ANamespace.Replace("Ict.Petra.Shared.Interfaces", "Ict.Petra.Server"))
+
+                /*&& (InterfaceName != "I" + ANamespace + "Namespace")*/)
+            {
+                InterfacesInNamespace.Add(InterfaceName);
+            }
+        }
+
+        return InterfacesInNamespace;
+    }
+
+    /// <summary>
+    /// write the namespace for an interface
+    /// this includes all the interfaces in this namespace
+    /// it calls itself recursively for sub namespaces
+    /// </summary>
+    /// <param name="ParentNamespace"></param>
+    /// <param name="ParentInterfaceName"></param>
+    /// <param name="tn"></param>
+    /// <param name="sn"></param>
+    /// <param name="children"></param>
+    /// <param name="InterfaceNames"></param>
+    /// <param name="ACSFiles"></param>
     private void WriteNamespace(String ParentNamespace,
         String ParentInterfaceName,
         TopNamespace tn,
@@ -495,29 +544,17 @@ public class CreateInterfaces : AutoGenerationWriter
             "I" + ParentInterfaceName + "Namespace",
             tn, sn, children, InterfaceNames, ACSFiles);
 
-        foreach (String InterfaceName in InterfaceNames.GetKeyList())
-        {
-            // see if the class that is implementing the interface is in the current namespace (considering the difference of Shared and Server)
-            if ((InterfaceNames[InterfaceName].ToString().Substring(0, InterfaceNames[InterfaceName].ToString().LastIndexOf("."))
-                 == ParentNamespace.
-                 Replace("Ict.Petra.Shared.Interfaces", "Ict.Petra.Server"))
-                && (InterfaceName != "I" + ParentNamespace + "Namespace"))
-            {
-                WriteInterface(ParentNamespace,
-                    ParentInterfaceName,
-                    InterfaceName,
-                    tn, sn, children, InterfaceNames, ACSFiles);
+        StringCollection InterfacesInNamespace = GetInterfacesInNamespace(ParentNamespace, InterfaceNames);
 
-//          WriteLine("/// <summary>auto generated</summary>");
-//          StartBlock("public interface " + InterfaceName + " : IInterface");
-//
-//          WriteImplementedMethodsOfClass(
-//                ACSFiles,
-//                InterfaceNames[InterfaceName].ToString(),
-//                "");
-//
-//          EndBlock();
-            }
+        // has been written already; we want to keep the order of the interfaces this way
+        InterfacesInNamespace.Remove("I" + ParentInterfaceName + "Namespace");
+
+        foreach (String InterfaceName in InterfacesInNamespace)
+        {
+            WriteInterface(ParentNamespace,
+                ParentInterfaceName,
+                InterfaceName,
+                tn, sn, children, InterfaceNames, ACSFiles);
         }
 
         EndBlock();

@@ -300,6 +300,12 @@ namespace Ict.Petra.Server.MReporting.Instantiator.LogicConnectors
         }
 
 
+        /// generated method from interface
+        public IReportGeneratorLogicConnector ReportGenerator()
+        {
+            return new TReportGeneratorLogicConnector();
+        }
+
     }
 }
 

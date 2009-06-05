@@ -28,6 +28,7 @@ using System.Collections;
 using System.Collections.Specialized;
 using System.IO;
 using Ict.Common;
+using DDW;
 
 namespace Ict.Tools.CodeGeneration
 {
@@ -399,6 +400,50 @@ namespace Ict.Tools.CodeGeneration
         public void DeIndent()
         {
             indent--;
+        }
+
+        /// <summary>
+        /// prepare the method declaration for another parameter;
+        /// this is useful for writing method declarations
+        /// </summary>
+        /// <param name="MethodDeclaration"></param>
+        /// <param name="firstParameter"></param>
+        /// <param name="align"></param>
+        /// <param name="AParamName"></param>
+        /// <param name="AParamModifier"></param>
+        /// <param name="AParamType"></param>
+        public void AddParameter(ref string MethodDeclaration, ref bool firstParameter, int align,
+            string AParamName, Modifier AParamModifier, IType AParamType)
+        {
+            if (!firstParameter)
+            {
+                WriteLine(MethodDeclaration + ",");
+                MethodDeclaration = new String(' ', align);
+            }
+
+            firstParameter = false;
+
+            String parameterType = CSParser.GetName(AParamType);
+            String StrParameter = "";
+
+            if ((AParamModifier & Modifier.Ref) != 0)
+            {
+                StrParameter += "ref ";
+            }
+            else if ((AParamModifier & Modifier.Out) != 0)
+            {
+                StrParameter += "out ";
+            }
+
+            StrParameter += parameterType + (parameterType.EndsWith(">") ? "" : " ") + AParamName;
+
+            if ((StrParameter.Length + MethodDeclaration.Length > CODE_LENGTH_UNCRUSTIFY) && (MethodDeclaration.Trim().Length > 0))
+            {
+                WriteLine(MethodDeclaration);
+                MethodDeclaration = new String(' ', align);
+            }
+
+            MethodDeclaration += StrParameter;
         }
 
         public AutoGenerationWriter()

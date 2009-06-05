@@ -69,10 +69,6 @@
       <HintPath>..\..\..\..\Shared\_bin\Server_Client\Debug\Ict.Petra.Shared.MPartner.DataTables.dll</HintPath>
       <SpecificVersion>False</SpecificVersion>
     </Reference>
-    <Reference Include="Ict.Petra.Shared.Verification">
-      <HintPath>..\..\..\..\Shared\_bin\Server_Client\Debug\Ict.Petra.Shared.Verification.dll</HintPath>
-      <SpecificVersion>False</SpecificVersion>
-    </Reference>
     <Reference Include="Mono.Posix">
       <HintPath>..\..\..\..\..\..\ThirdParty\Mono\Mono.Posix.dll</HintPath>
       <SpecificVersion>False</SpecificVersion>

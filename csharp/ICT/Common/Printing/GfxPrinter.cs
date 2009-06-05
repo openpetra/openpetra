@@ -114,12 +114,12 @@ namespace Ict.Common.Printing
                 FDocument.DefaultPageSettings.Margins.Bottom = Convert.ToInt32(Cm2Inch(0.5f) * 100);
             }
 
-            // Associate the eventhandling method with the 
-            // document's PrintPage event. 
+            // Associate the eventhandling method with the
+            // document's PrintPage event.
             FDocument.PrintPage += new PrintPageEventHandler(this.PrintPage);
             FDocument.BeginPrint += new PrintEventHandler(this.BeginPrint);
 
-            // include(FDocument.EndPrint, EndPrint); 
+            // include(FDocument.EndPrint, EndPrint);
             FDocument.DefaultPageSettings.Landscape = (FOrientation == eOrientation.eLandscape);
         }
 
@@ -416,7 +416,7 @@ namespace Ict.Common.Printing
 
             if (AXPos1 != LeftMargin)
             {
-                // lines above/below columns should not touch 
+                // lines above/below columns should not touch
                 AXPos1 = AXPos1 + Cm(0.3f);
             }
 
@@ -520,7 +520,7 @@ namespace Ict.Common.Printing
         /// <returns>void</returns>
         public override void SetPageFooterSpace(System.Int32 ANumberOfLines, eFont AFont)
         {
-            // half a line for the drawn line, to separate the report body from the footer 
+            // half a line for the drawn line, to separate the report body from the footer
             if (ANumberOfLines != 0)
             {
                 FPageFooterSpace = ((float)Convert.ToDouble(ANumberOfLines) + 0.5f) * GetFont(AFont).GetHeight(FEv.Graphics) + FDefaultFont.GetHeight(
@@ -557,7 +557,7 @@ namespace Ict.Common.Printing
         /// <returns>void</returns>
         public override Boolean ValidYPos()
         {
-            // MessageBox.Show(CurrentYPos.ToString() + ' ' + Height.ToString()); 
+            // MessageBox.Show(CurrentYPos.ToString() + ' ' + Height.ToString());
             return FCurrentYPos < FTopMargin + FHeight - FPageFooterSpace;
         }
 
@@ -629,13 +629,13 @@ namespace Ict.Common.Printing
         {
             this.FEv = AEv;
 
-            // ev.Graphics.PageUnit := GraphicsUnit.Point;  twips 
-            // ev.Graphics.PageUnit := GraphicsUnit.Millimeter; 
-            // u := ev.Graphics.PageUnit;  default world ??? 
+            // ev.Graphics.PageUnit := GraphicsUnit.Point;  twips
+            // ev.Graphics.PageUnit := GraphicsUnit.Millimeter;
+            // u := ev.Graphics.PageUnit;  default world ???
             FEv.Graphics.PageUnit = GraphicsUnit.Inch;
             FEv.Graphics.TranslateTransform(0, 0);
 
-            // first page? then we should store some settings 
+            // first page? then we should store some settings
             if (FCurrentPageNr == 0)
             {
                 FLeftMargin = FEv.MarginBounds.Left / 100.0f;
@@ -646,13 +646,13 @@ namespace Ict.Common.Printing
                 FHeight = FEv.MarginBounds.Height / 100.0f;
                 FBlackPen = new Pen(Color.Black, Cm(0.05f));
 
-                // Calculate the number of lines per page. 
+                // Calculate the number of lines per page.
                 FLinesPerPage = (float)FHeight / (float)FDefaultFont.GetHeight(FEv.Graphics);
 
-                // estimate the number of pages needed 
-                // todo: use the height of the header, the number of linesPerPage, and the expected number of result lines. 
-                // if the last page does not match the predicted number of pages, print again, with the correct number as a parameter 
-                // prepare the columns 
+                // estimate the number of pages needed
+                // todo: use the height of the header, the number of linesPerPage, and the expected number of result lines.
+                // if the last page does not match the predicted number of pages, print again, with the correct number as a parameter
+                // prepare the columns
 
                 /*
                  * if (FColumns = nil) then

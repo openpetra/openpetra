@@ -406,6 +406,7 @@ namespace Ict.Petra.Client.App.PetraClient
 #endif
 
 
+
         /// <summary>
         /// Checks if the current user has Administrator rights
         /// </summary>
