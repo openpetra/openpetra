@@ -432,7 +432,6 @@ namespace Ict.Common.Printing
             FCurrentPageNr = 0;
             FNumberOfPages = 0;
 
-            /* FColumns := nil; */
             FPageFooterSpace = 0;
         }
 
@@ -498,21 +497,6 @@ namespace Ict.Common.Printing
         public float Inch(float AValueInInch)
         {
             return Cm(Inch2Cm(AValueInInch));
-        }
-
-        /// <summary>
-        /// prints into the current line, into the given column
-        ///
-        /// </summary>
-        /// <returns>void</returns>
-        public Boolean PrintString(int AColumnNr, String ATxt, eFont AFont, eAlignment AAlign)
-        {
-            /*
-             * PrintString(ATxt, AFont, (FColumns[AColumnNr] as RectangleF).Left,
-             * (FColumns[AColumnNr] as RectangleF).Width,
-             * AAlign);
-             */
-            return false;
         }
 
         /// <summary>
