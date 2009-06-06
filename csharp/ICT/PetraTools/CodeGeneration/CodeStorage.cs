@@ -46,7 +46,7 @@ namespace Ict.Tools.CodeGeneration
     public class TCodeStorage
     {
         /// contains all controls, ie also menus etc; this is a dictionary for easily finding values, but also keep them ordered
-        public Dictionary <string, TControlDef>FControlList = new Dictionary <string, TControlDef>();
+        public SortedList <string, TControlDef>FControlList = new SortedList <string, TControlDef>();
         public Dictionary <string, TEventHandler>FEventList = new Dictionary <string, TEventHandler>();
         public Dictionary <string, TActionHandler>FActionList = new Dictionary <string, TActionHandler>();
 
@@ -105,7 +105,7 @@ namespace Ict.Tools.CodeGeneration
                 }
 
                 if ((APrefix == "content")
-                    && ((ctrl.controlTypePrefix == "tpg")
+                    && ((ctrl.controlTypePrefix == "tab")
                         || (ctrl.controlTypePrefix == "grp")
                         || (ctrl.controlTypePrefix == "uco")
                         || (ctrl.controlTypePrefix == "pnl")))

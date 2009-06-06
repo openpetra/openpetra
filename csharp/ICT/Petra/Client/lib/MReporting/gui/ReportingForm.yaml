@@ -1,0 +1,51 @@
+RootNode:
+    BaseYaml: ../../../CommonForms/PetraForm.yaml
+    UtilObjectClass: TFrmPetraReportingUtils
+    #don't generate this file with designer code, because it should not have the menuitems and toolbar
+    FormType: abstract
+    Controls:
+        tabReportSettings:
+            Dock: Fill
+            Controls: [tpgReportSpecific, tpgColumns, tpgSorting, tpgOutputDestinations]
+        tpgReportSpecific:
+            Order: AlwaysFirst
+        tpgOutputDestinations:
+            Controls: [ucoReportDestinations]
+            Order: AlwaysLast
+        tpgSorting:
+            Controls: [ucoReportSorting]
+            Order: AlwaysLast
+        tpgColumns:
+            Controls: [ucoReportColumns]
+            Order: AlwaysLast
+        ucoReportDestinations:
+            Type: Ict.Petra.Client.MReporting.Gui.UC_Output
+            Dock: Fill
+        ucoReportSorting:
+            Type: Ict.Petra.Client.MReporting.Gui.UC_Sorting
+            Dock: Fill
+        ucoReportColumns:
+            Type: Ict.Petra.Client.MReporting.Gui.UC_Columns
+            Dock: Fill
+    Menu:
+        mniFile:
+            mniLoadSettings:
+                Label: &Load Settings
+                mniLoadSettingsDialog: {Label=&Open...}
+                mniSeparator: {Label=-}
+                mniLoadSettings1: {Label=RecentSettings}
+                mniLoadSettings2: {Label=RecentSettings}
+                mniLoadSettings3: {Label=RecentSettings}
+                mniLoadSettings4: {Label=RecentSettings}
+                mniLoadSettings5: {Label=RecentSettings}
+            mniSaveSettings: {Label=&Save Settings}
+            mniSaveSettingsAs: {Label=Save Settings &As...}
+            mniMaintainSettings: {Label=&Maintain Settings...}
+            mniSeparator: {Label=-}
+            mniGenerateReport: {Label=&Generate Report...}
+            mniSeparator: {Label=-}
+    Toolbar:
+        tbbGenerate: {Action=actGenerate, Image=Go.ico}
+        tbbSave: {Action=actSave, Image=Save.ico}
+        tbbSaveAs: {Action=actSaveAs, Image=SaveAs.ico}
+#todo: toolbar, actions

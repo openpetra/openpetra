@@ -50,9 +50,10 @@ class Program
             ProcessXAML processor = new ProcessXAML(opts.GetValue("ymlfile", true));
             processor.AddWriter("navigation", typeof(TWinFormsWriter));
             processor.AddWriter("edit", typeof(TWinFormsWriter));
+            processor.AddWriter("report", typeof(TWinFormsWriter));
 
             //processor.AddWriter("browse", typeof(TWinFormsWriter));
-            // could add instead: TGtkWriter
+            // could add instead of TWinformsWriter: TGtkWriter
             processor.ProcessDocument();
         }
         catch (Exception e)

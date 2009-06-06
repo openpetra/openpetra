@@ -76,7 +76,7 @@
   <ItemGroup>
     <Compile Include="Calculator.cs" />
     <Compile Include="Excel.cs" />
-    <Compile Include="Ict.Petra.Client.MReporting.Logic.AssemblyInfo.cs" />
+    <Compile Include="AssemblyInfo.cs" />
     <Compile Include="PrinterCommon.cs" />
     <Compile Include="PrinterLayout.cs" />
     <Compile Include="StoredSettings.cs" />

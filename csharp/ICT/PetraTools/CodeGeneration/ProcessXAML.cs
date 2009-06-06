@@ -66,7 +66,7 @@ namespace Ict.Tools.CodeGeneration
 
             if (formTypeClass == null)
             {
-                throw new Exception("cannot find form processor " + AFormType);
+                throw new Exception("cannot find form processor \"" + AFormType + "\"");
             }
 
             return (IFormWriter)Activator.CreateInstance(formTypeClass);

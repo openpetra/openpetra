@@ -75,6 +75,8 @@ namespace Ict.Tools.CodeGeneration.Winforms
             AvailableControlGenerators.Add(new UserControlGenerator());
             AvailableControlGenerators.Add(new LabelGenerator());
             AvailableControlGenerators.Add(new ButtonGenerator());
+            AvailableControlGenerators.Add(new CheckBoxGenerator());
+            AvailableControlGenerators.Add(new DateTimePickerGenerator());
         }
 
         public TCodeStorage CodeStorage
