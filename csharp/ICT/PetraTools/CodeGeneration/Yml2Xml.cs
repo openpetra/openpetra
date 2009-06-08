@@ -877,9 +877,42 @@ namespace Ict.Tools.CodeGeneration
         #endregion
     }
 
-    class YamlItemOrderComparer : IComparer <XmlNode>
+    public class YamlItemOrderComparer : IComparer <XmlNode>
     {
+        private static int CheckOrderAttribute(string order1, string order2)
+        {
+            if (order1 == "AlwaysFirst")
+            {
+                return -1;
+            }
+            else if (order2 == "AlwaysFirst")
+            {
+                return +1;
+            }
+            else if (order1 == "AlwaysLast")
+            {
+                return +1;
+            }
+            else if (order2 == "AlwaysLast")
+            {
+                return -1;
+            }
+
+            return 0;
+        }
+
         public int Compare(XmlNode node1, XmlNode node2)
+        {
+            return CompareNodes(node1, node2);
+        }
+
+        /// <summary>
+        /// compare two nodes; considering base nodes and depth of the node, and the order attribute
+        /// </summary>
+        /// <param name="node1"></param>
+        /// <param name="node2"></param>
+        /// <returns>+1 if node1 is greater than node2, -1 if node1 is less than node2, and 0 if they are the same or identical</returns>
+        public static int CompareNodes(XmlNode node1, XmlNode node2)
         {
             int returnValue = 0;
 
@@ -893,7 +926,22 @@ namespace Ict.Tools.CodeGeneration
                 if (order1 == order2)
                 {
                     returnValue = 0;
+                    XmlNode realParentNode1 = node1.ParentNode;
 
+                    while (realParentNode1 != null && realParentNode1.Name == "base")
+                    {
+                        realParentNode1 = realParentNode1.ParentNode;
+                    }
+
+                    XmlNode realParentNode2 = node2.ParentNode;
+
+                    while (realParentNode2 != null && realParentNode2.Name == "base")
+                    {
+                        realParentNode2 = realParentNode2.ParentNode;
+                    }
+
+                    // order of both objects is the same, but depending on the depth it has a different priority
+                    // deeper depth (negative numbers) has more priority
                     if (depth1 < depth2)
                     {
                         if (order1 == "AlwaysFirst")
@@ -916,7 +964,7 @@ namespace Ict.Tools.CodeGeneration
                             returnValue = -1;
                         }
                     }
-                    else if (node1.ParentNode == node2.ParentNode)
+                    else if (realParentNode1 == realParentNode2)
                     {
                         // are the nodes siblings? then keep the order
 
@@ -939,25 +987,36 @@ namespace Ict.Tools.CodeGeneration
                         Console.WriteLine("problem sorting " + node1.Name + " " + node2.Name);
                     }
                 }
-                else if (order1 == "AlwaysFirst")
+                else
                 {
-                    returnValue = -1;
+                    returnValue = CheckOrderAttribute(order1, order2);
                 }
-                else if (order2 == "AlwaysFirst")
-                {
-                    returnValue = +1;
-                }
-                else if (order1 == "AlwaysLast")
-                {
-                    returnValue = +1;
-                }
-                else if (order2 == "AlwaysLast")
-                {
-                    returnValue = -1;
-                }
+
+/*
+ *                      if (node1.Name == "tpgReportSpecific" || node2.Name == "tpgReportSpecific"
+ || node1.Name == "tpgOutputDestinations" || node2.Name == "tpgOutputDestinations"
+ || node1.Name == "tpgSorting" || node2.Name == "tpgSorting"
+ *                        )
+ *          Console.WriteLine("sorting " + node1.Name + " " + (returnValue == 0? "==": (returnValue == -1? "<":">")) +
+ *                                        " " + node2.Name +
+ *                                        " depth: " + depth1.ToString() + " " + depth2.ToString());
+ */
             }
 
             return returnValue;
+        }
+    }
+    public class CtrlItemOrderComparer : IComparer <TControlDef>
+    {
+        /// <summary>
+        /// compare two nodes; considering base nodes and depth of the node, and the order attribute
+        /// </summary>
+        /// <param name="node1"></param>
+        /// <param name="node2"></param>
+        /// <returns>+1 if node1 is greater than node2, -1 if node1 is less than node2, and 0 if they are the same or identical</returns>
+        public int Compare(TControlDef node1, TControlDef node2)
+        {
+            return YamlItemOrderComparer.CompareNodes(node1.xmlNode, node2.xmlNode);
         }
     }
 }

@@ -145,9 +145,9 @@ namespace Ict.Tools.CodeGeneration.Winforms
         /// <param name="APropertyName"></param>
         public void SetControlProperty(TControlDef ACtrl, string APropertyName)
         {
-            if (TXMLParser.HasAttribute(ACtrl.xmlNode, APropertyName))
+            if (TYml2Xml.HasAttribute(ACtrl.xmlNode, APropertyName))
             {
-                SetControlProperty(ACtrl.controlName, APropertyName, TXMLParser.GetAttribute(ACtrl.xmlNode, APropertyName));
+                SetControlProperty(ACtrl.controlName, APropertyName, TYml2Xml.GetAttribute(ACtrl.xmlNode, APropertyName));
             }
         }
 
@@ -416,9 +416,9 @@ namespace Ict.Tools.CodeGeneration.Winforms
         {
             string InitialiseCodelet = ProcessDataSource(curNode, AControlName);
 
-            if (TXMLParser.HasAttribute(curNode, "DependsOn"))
+            if (TYml2Xml.HasAttribute(curNode, "DependsOn"))
             {
-                string dependsOn = TXMLParser.GetAttribute(curNode, "DependsOn");
+                string dependsOn = TYml2Xml.GetAttribute(curNode, "DependsOn");
                 int index = FControlDataTypes.IndexOfKey(dependsOn);
 
                 if (index == -1)
@@ -439,9 +439,9 @@ namespace Ict.Tools.CodeGeneration.Winforms
                 FTemplate.AddToCodelet("INITIALISESCREEN", InitialiseCodelet);
             }
 
-            if (TXMLParser.HasAttribute(curNode, "OnChangeDataType"))
+            if (TYml2Xml.HasAttribute(curNode, "OnChangeDataType"))
             {
-                FControlDataTypes.Add(curNode.Name, TXMLParser.GetAttribute(curNode, "OnChangeDataType"));
+                FControlDataTypes.Add(curNode.Name, TYml2Xml.GetAttribute(curNode, "OnChangeDataType"));
             }
         }
 

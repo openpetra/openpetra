@@ -26,6 +26,7 @@
 using System;
 using System.Xml;
 using System.Collections.Specialized;
+using System.Collections.Generic;
 using System.Windows.Forms;
 using Ict.Tools.CodeGeneration;
 
@@ -301,14 +302,23 @@ namespace Ict.Tools.CodeGeneration.Winforms
             base.SetControlProperties(writer, container);
 
             // add all the children
+            List <TControlDef>children = new List <TControlDef>();
+
             foreach (TControlDef child in container.FCodeStorage.FControlList.Values)
             {
                 if (child.parentName == container.controlName)
                 {
-                    writer.CallControlFunction(container.controlName,
-                        "Controls.Add(this." +
-                        child.controlName + ")");
+                    children.Add(child);
                 }
+            }
+
+            children.Sort(new CtrlItemOrderComparer());
+
+            foreach (TControlDef child in children)
+            {
+                writer.CallControlFunction(container.controlName,
+                    "Controls.Add(this." +
+                    child.controlName + ")");
             }
         }
     }
