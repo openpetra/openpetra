@@ -70,6 +70,7 @@
     <Compile Include="ControlGeneratorBase.cs" />
     <Compile Include="ControlGeneratorLayout.cs" />
     <Compile Include="FormWriter.cs" />
+    <Compile Include="ReportControlGenerator.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\..\Common\Ict.Common.csproj">

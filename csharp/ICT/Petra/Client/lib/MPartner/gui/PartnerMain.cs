@@ -78,6 +78,11 @@ namespace Ict.Petra.Client.MPartner.Gui
         PartnerFind();
     }
 
+    private void mniReportPartnerByCityClick(object sender, EventArgs e)
+    {
+        PartnerByCityReport();
+    }
+
     private void mniNewPartnerClick(object sender, EventArgs e)
     {
         NewPartner();
@@ -190,7 +195,6 @@ namespace Ict.Petra.Client.MPartner.Gui
         mniLastPartners.Enabled = false;
         mniSeparator2.Enabled = false;
         mniExtracts.Enabled = false;
-        mniReports.Enabled = false;
         mniSeparator3.Enabled = false;
         mniNewPerson.Enabled = false;
         mniNewFamily.Enabled = false;

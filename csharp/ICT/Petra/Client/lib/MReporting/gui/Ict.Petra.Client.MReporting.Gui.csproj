@@ -111,6 +111,7 @@
     <Compile Include="PrintPreview.Designer.cs">
       <DependentUpon>PrintPreview.cs</DependentUpon>
     </Compile>
+    <Compile Include="ReportingForm.cs" />
     <Compile Include="SettingsLoad.cs" />
     <EmbeddedResource Include="PrintPreview.resx">
       <DependentUpon>PrintPreview.cs</DependentUpon>

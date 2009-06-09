@@ -86,7 +86,12 @@ namespace Ict.Common.DB
 
             if (AConnectionString == "")
             {
-                AConnectionString = "Data Source=" + AServer + ";Password=";
+                AConnectionString = "Data Source=" + AServer;
+
+                if (APassword.Length > 0)
+                {
+                    AConnectionString += ";Password=";
+                }
             }
 
             try
@@ -144,8 +149,13 @@ namespace Ict.Common.DB
             ReturnValue = ReturnValue.Replace("pub.", "");
             ReturnValue = ReturnValue.Replace("\"", "'");
 
-            // TODO PostgreSQL's 'LIKE' command is case-sensitive, but we prefer case insensitive search
-            // ReturnValue = ReturnValue.Replace("LIKE", "ILIKE");
+            ReturnValue = ReturnValue.Replace("= false", "= 0");
+            ReturnValue = ReturnValue.Replace("= true", "= 1");
+            ReturnValue = ReturnValue.Replace("=false", "=0");
+            ReturnValue = ReturnValue.Replace("=true", "=1");
+
+            // LIKE of sqlite is always case insensitive, so no modification needed (eg ILIKE for postgresql)
+
             return ReturnValue;
         }
 
@@ -193,6 +203,11 @@ namespace Ict.Common.DB
             IDbCommand ObjReturn = null;
 
             ACommandText = FormatQueryRDBMSSpecific(ACommandText);
+
+            if (DBAccess.GDBAccessObj.DebugLevel >= DBAccess.DB_DEBUGLEVEL_TRACE)
+            {
+                TLogging.Log("Query formatted for SQLite: " + ACommandText);
+            }
 
             SQLiteParameter[] SQLiteParametersArray = null;
 

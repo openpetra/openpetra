@@ -84,6 +84,7 @@ namespace Ict.Petra.Client.MPartner.Gui
             this.mniSeparator2 = new System.Windows.Forms.ToolStripSeparator();
             this.mniExtracts = new System.Windows.Forms.ToolStripMenuItem();
             this.mniReports = new System.Windows.Forms.ToolStripMenuItem();
+            this.mniReportPartnerByCity = new System.Windows.Forms.ToolStripMenuItem();
             this.mniSeparator3 = new System.Windows.Forms.ToolStripSeparator();
             this.mniNewPartner = new System.Windows.Forms.ToolStripMenuItem();
             this.mniNewPartnerAssistant = new System.Windows.Forms.ToolStripMenuItem();
@@ -208,10 +209,19 @@ namespace Ict.Petra.Client.MPartner.Gui
             this.mniExtracts.AutoSize = true;
             this.mniExtracts.Text = Catalog.GetString("&Extracts...");
             //
+            // mniReportPartnerByCity
+            //
+            this.mniReportPartnerByCity.Name = "mniReportPartnerByCity";
+            this.mniReportPartnerByCity.AutoSize = true;
+            this.mniReportPartnerByCity.Click += new System.EventHandler(this.mniReportPartnerByCityClick);
+            this.mniReportPartnerByCity.Text = Catalog.GetString("&Partner By City Report (experiment)");
+            //
             // mniReports
             //
             this.mniReports.Name = "mniReports";
             this.mniReports.AutoSize = true;
+            this.mniReports.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+                           mniReportPartnerByCity});
             this.mniReports.Text = Catalog.GetString("&Reports...");
             //
             // mniSeparator3
@@ -560,6 +570,7 @@ namespace Ict.Petra.Client.MPartner.Gui
         private System.Windows.Forms.ToolStripSeparator mniSeparator2;
         private System.Windows.Forms.ToolStripMenuItem mniExtracts;
         private System.Windows.Forms.ToolStripMenuItem mniReports;
+        private System.Windows.Forms.ToolStripMenuItem mniReportPartnerByCity;
         private System.Windows.Forms.ToolStripSeparator mniSeparator3;
         private System.Windows.Forms.ToolStripMenuItem mniNewPartner;
         private System.Windows.Forms.ToolStripMenuItem mniNewPartnerAssistant;

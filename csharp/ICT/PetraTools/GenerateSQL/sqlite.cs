@@ -55,7 +55,7 @@ public class TSQLiteWriter
         System.Console.WriteLine("Writing file to {0}...", ADBFilename);
 
         // see also tutorial http://sqlite.phxsoftware.com/forums/p/130/452.aspx#452
-        SQLiteConnection conn = new SQLiteConnection("Data Source=" + ADBFilename + ";Password=" + ADBPwd);
+        SQLiteConnection conn = new SQLiteConnection("Data Source=" + ADBFilename + (ADBPwd.Length > 0 ? ";Password=" + ADBPwd : ""));
         conn.Open();
 
         foreach (TTable table in ADataDefinition.GetTables())
@@ -106,7 +106,8 @@ public class TSQLiteWriter
     static public bool ExecuteLoadScript(TDataDefinitionStore ADataDefinition, string ADBFilename, string APath, string ASqlfile, string ADBPwd)
     {
         // see tutorial for fast bulk loads: http://sqlite.phxsoftware.com/forums/t/134.aspx
-        SQLiteConnection conn = new SQLiteConnection("Data Source=" + ADBFilename + ";Password=" + ADBPwd);
+        SQLiteConnection conn = new SQLiteConnection("Data Source=" + ADBFilename +
+            (ADBPwd.Length > 0 ? ";Password=" + ADBPwd : ""));
 
         conn.Open();
 

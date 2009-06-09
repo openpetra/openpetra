@@ -1,0 +1,137 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!ELEMENT reports (report)+ >
+
+<!ELEMENT report (description, reportparameters, reportheader, pageheader, detailreports?, calculations, levels) >
+<!ATTLIST report
+   id            CDATA  #REQUIRED
+>
+
+<!ELEMENT description (#PCDATA)>
+
+<!ELEMENT pageheader (field*, switch*, if*) >
+<!ATTLIST pageheader
+>
+
+<!ELEMENT reportheader (field*, switch*, if*) >
+<!ATTLIST reportheader
+>
+
+<!ELEMENT levels (level)* >
+<!ELEMENT level (header?, detail, footer?) >
+<!ATTLIST level
+	name CDATA #REQUIRED 
+	identification CDATA #IMPLIED 
+	condition CDATA #IMPLIED
+>
+
+<!ELEMENT header (field*, (switch*| if*)?) >
+<!ELEMENT footer (field*, (switch*| if*)?) >
+
+<!ATTLIST footer
+	line (above_below|below|above|none) #IMPLIED
+	space (above_below|below|above|none) #IMPLIED
+>
+
+<!ELEMENT field (value* | fielddetail*)>
+	<!-- fielddetail only in reportheader and pageheader; is directly evaluated -->
+<!ELEMENT fielddetail (switch | if | value*)>
+
+<!ATTLIST fielddetail
+	condition CDATA #IMPLIED
+>	
+
+<!ELEMENT caption (value)*>
+<!ELEMENT shortcaption (value)*>
+
+<!ATTLIST field
+	whichfield CDATA #IMPLIED
+	calculation CDATA #IMPLIED
+	pos	CDATA #IMPLIED
+	width CDATA #IMPLIED
+	format CDATA #IMPLIED
+	align (left|right|center) #IMPLIED
+	line (above_below|below|above|none) #IMPLIED
+>
+
+<!ELEMENT value (#PCDATA)>
+<!ATTLIST value
+	condition CDATA #IMPLIED
+	format CDATA #IMPLIED
+	function CDATA #IMPLIED
+	variable CDATA #IMPLIED
+	text CDATA #IMPLIED
+	calculation CDATA #IMPLIED
+>
+
+<!ELEMENT detail (switch | if | (lowerLevelReport*) |(field)*) >
+
+<!ELEMENT switch (case*, default?)>
+<!ELEMENT if ((lowerLevelReport|field*|value*),switch?) >
+<!ELEMENT case ((lowerLevelReport*|field*|value*),switch?) >
+<!ELEMENT default ((lowerLevelReport|field*|value*),switch?) >  
+	<!-- value only inside reportHeader and pageHeader; 
+		 lowerLevelReport only inside level
+	-->
+
+<!ATTLIST case
+	condition CDATA #REQUIRED
+>	
+
+<!ATTLIST if
+	condition CDATA #REQUIRED
+>	
+
+<!ELEMENT reportparameters (reportparameter)* >
+
+<!ELEMENT reportparameter (option*) >
+<!ATTLIST reportparameter
+	name CDATA #REQUIRED
+	comment CDATA #IMPLIED
+	condition CDATA #IMPLIED
+>
+
+<!ELEMENT option EMPTY>
+<!ATTLIST option
+	name CDATA #REQUIRED
+	condition CDATA #IMPLIED
+	calculation CDATA #IMPLIED
+>
+
+<!ELEMENT calculations (calculation)+>
+<!ELEMENT calculation (caption?, shortcaption?, template?, query)>
+<!ATTLIST calculation 
+	id CDATA #REQUIRED
+	returnsFormat CDATA #REQUIRED
+	returns CDATA #REQUIRED
+	align (left|right|center) #IMPLIED
+>
+
+<!ELEMENT lowerLevelReport (parameter*)>
+<!ATTLIST lowerLevelReport
+	level CDATA #REQUIRED
+	calculation CDATA #IMPLIED
+	condition CDATA #IMPLIED
+>
+
+<!ELEMENT parameter (value)*>
+<!ATTLIST parameter
+	name CDATA #REQUIRED
+	value CDATA #IMPLIED
+>
+<!ELEMENT query (queryDetail)*>
+<!ELEMENT queryDetail (value*, parameter*, switch*)>
+<!ATTLIST queryDetail
+	condition CDATA #IMPLIED
+>
+
+<!ELEMENT template (queryDetail*)>
+
+<!ELEMENT detailreports (detailreport*)>
+<!ELEMENT detailreport (parameter*,detailreportquery)>
+<!ATTLIST detailreport
+    id CDATA #REQUIRED
+    action CDATA #REQUIRED
+>
+
+<!ELEMENT detailreportquery (#PCDATA)>

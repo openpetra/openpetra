@@ -49,7 +49,7 @@ namespace Ict.Tools.CodeGeneration.Winforms
         public String FResourceDirectory = "";
         private XmlDocument FImageResources;
 
-        public TWinFormsWriter()
+        public TWinFormsWriter(string AFormType)
         {
             TAppSettingsManager settings = new TAppSettingsManager(false);
 
@@ -58,25 +58,50 @@ namespace Ict.Tools.CodeGeneration.Winforms
             FImageResources = new XmlDocument();
             XmlElement root = FImageResources.CreateElement("root");
             FImageResources.AppendChild(root);
-            AvailableControlGenerators.Add(new TabControlGenerator());
-            AvailableControlGenerators.Add(new TabPageGenerator());
-            AvailableControlGenerators.Add(new MenuGenerator());
-            AvailableControlGenerators.Add(new MenuItemGenerator());
-            AvailableControlGenerators.Add(new MenuItemSeparatorGenerator());
-            AvailableControlGenerators.Add(new ToolbarButtonGenerator());
-            AvailableControlGenerators.Add(new ToolbarSeparatorGenerator());
-            AvailableControlGenerators.Add(new StatusBarGenerator());
 
-//			AvailableControlGenerators.Add(new StatusBarTextGenerator());
-            AvailableControlGenerators.Add(new ToolBarGenerator());
-            AvailableControlGenerators.Add(new GroupBoxGenerator());
-            AvailableControlGenerators.Add(new RangeGenerator());
-            AvailableControlGenerators.Add(new PanelGenerator());
-            AvailableControlGenerators.Add(new UserControlGenerator());
-            AvailableControlGenerators.Add(new LabelGenerator());
-            AvailableControlGenerators.Add(new ButtonGenerator());
-            AvailableControlGenerators.Add(new CheckBoxGenerator());
-            AvailableControlGenerators.Add(new DateTimePickerGenerator());
+            if (AFormType == "report")
+            {
+                AvailableControlGenerators.Add(new TabControlGenerator());
+                AvailableControlGenerators.Add(new TabPageGenerator());
+                AvailableControlGenerators.Add(new MenuGenerator());
+                AvailableControlGenerators.Add(new MenuItemGenerator());
+                AvailableControlGenerators.Add(new MenuItemSeparatorGenerator());
+                AvailableControlGenerators.Add(new ToolbarButtonGenerator());
+                AvailableControlGenerators.Add(new ToolbarSeparatorGenerator());
+                AvailableControlGenerators.Add(new StatusBarGenerator());
+
+                //			AvailableControlGenerators.Add(new StatusBarTextGenerator());
+                AvailableControlGenerators.Add(new ToolBarGenerator());
+                AvailableControlGenerators.Add(new GroupBoxGenerator());
+                AvailableControlGenerators.Add(new RangeGenerator());
+                AvailableControlGenerators.Add(new PanelGenerator());
+                AvailableControlGenerators.Add(new CheckBoxReportGenerator());
+                AvailableControlGenerators.Add(new DateTimePickerReportGenerator());
+                AvailableControlGenerators.Add(new TextBoxReportGenerator());
+            }
+            else
+            {
+                AvailableControlGenerators.Add(new TabControlGenerator());
+                AvailableControlGenerators.Add(new TabPageGenerator());
+                AvailableControlGenerators.Add(new MenuGenerator());
+                AvailableControlGenerators.Add(new MenuItemGenerator());
+                AvailableControlGenerators.Add(new MenuItemSeparatorGenerator());
+                AvailableControlGenerators.Add(new ToolbarButtonGenerator());
+                AvailableControlGenerators.Add(new ToolbarSeparatorGenerator());
+                AvailableControlGenerators.Add(new StatusBarGenerator());
+
+                //			AvailableControlGenerators.Add(new StatusBarTextGenerator());
+                AvailableControlGenerators.Add(new ToolBarGenerator());
+                AvailableControlGenerators.Add(new GroupBoxGenerator());
+                AvailableControlGenerators.Add(new RangeGenerator());
+                AvailableControlGenerators.Add(new PanelGenerator());
+                AvailableControlGenerators.Add(new UserControlGenerator());
+                AvailableControlGenerators.Add(new LabelGenerator());
+                AvailableControlGenerators.Add(new ButtonGenerator());
+                AvailableControlGenerators.Add(new CheckBoxGenerator());
+                AvailableControlGenerators.Add(new DateTimePickerGenerator());
+                AvailableControlGenerators.Add(new TextBoxGenerator());
+            }
         }
 
         public TCodeStorage CodeStorage

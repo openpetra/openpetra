@@ -30,6 +30,7 @@ using System.Windows.Forms;
 using System.Collections;
 using Ict.Petra.Shared.MReporting;
 using Ict.Petra.Client.MReporting.Logic;
+using Ict.Petra.Client.CommonForms;
 
 namespace Ict.Petra.Client.MReporting.Gui
 {
@@ -52,6 +53,23 @@ namespace Ict.Petra.Client.MReporting.Gui
             // TODO: Add constructor code after the InitializeComponent() call.
             //
         }
+
+        private TFrmPetraUtils FPetraUtilsObject;
+        /// <summary>
+        /// utilities for Petra forms
+        /// </summary>
+        public TFrmPetraUtils PetraUtilsObject
+        {
+        	get
+        	{
+        		return FPetraUtilsObject;
+        	}
+        	set
+        	{
+        		FPetraUtilsObject = value;
+        	}
+        }
+        
         private void BtnCSVDestination_Click(System.Object sender, System.EventArgs e)
         {
             if (SaveFileDialogCSV.ShowDialog() == System.Windows.Forms.DialogResult.OK)

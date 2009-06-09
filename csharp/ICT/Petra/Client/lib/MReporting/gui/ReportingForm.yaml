@@ -1,29 +1,34 @@
 RootNode:
     BaseYaml: ../../../CommonForms/PetraForm.yaml
     UtilObjectClass: TFrmPetraReportingUtils
+    InterfaceName: IFrmReporting
+    Template: reportwindow
     #don't generate this file with designer code, because it should not have the menuitems and toolbar
     FormType: abstract
+    Actions:
+        actGenerate: {Label=&Generate, Tooltip=Generate the report, Image=Go.ico, ActionClick=FPetraUtilsObject.MI_GenerateReport_Click}
     Controls:
         tabReportSettings:
             Dock: Fill
-            Controls: [tpgReportSpecific, tpgColumns, tpgSorting, tpgOutputDestinations]
+            # add tpgSorting and tpgOutputDestinations and tpgColumns later
+            Controls: [tpgReportSpecific]
         tpgReportSpecific:
             Order: AlwaysFirst
-        tpgOutputDestinations:
-            Controls: [ucoReportDestinations]
-            Order: AlwaysLast
-        tpgSorting:
-            Controls: [ucoReportSorting]
-            Order: AlwaysLast
-        tpgColumns:
-            Controls: [ucoReportColumns]
-            Order: AlwaysLast
-        ucoReportDestinations:
-            Type: Ict.Petra.Client.MReporting.Gui.UC_Output
-            Dock: Fill
-        ucoReportSorting:
-            Type: Ict.Petra.Client.MReporting.Gui.UC_Sorting
-            Dock: Fill
+#        tpgColumns:
+#            Controls: [ucoReportColumns]
+#            Order: AlwaysLast
+#        tpgSorting:
+#            Controls: [ucoReportSorting]
+#            Order: AlwaysLast
+#        tpgOutputDestinations:
+#            Controls: [ucoReportDestinations]
+#            Order: AlwaysLast
+#        ucoReportDestinations:
+#            Type: Ict.Petra.Client.MReporting.Gui.UC_Output
+#            Dock: Fill
+#        ucoReportSorting:
+#            Type: Ict.Petra.Client.MReporting.Gui.UC_Sorting
+#            Dock: Fill
         ucoReportColumns:
             Type: Ict.Petra.Client.MReporting.Gui.UC_Columns
             Dock: Fill
@@ -45,7 +50,6 @@ RootNode:
             mniGenerateReport: {Label=&Generate Report...}
             mniSeparator: {Label=-}
     Toolbar:
-        tbbGenerate: {Action=actGenerate, Image=Go.ico}
-        tbbSave: {Action=actSave, Image=Save.ico}
-        tbbSaveAs: {Action=actSaveAs, Image=SaveAs.ico}
-#todo: toolbar, actions
+        tbbGenerate: {Action=actGenerate}
+        tbbSave: {Action=actSaveSetting, Image=Save.ico}
+        tbbSaveAs: {Action=actSaveSettingAs, Image=SaveAs.ico}

@@ -54,7 +54,14 @@ class Program
                     if (dbms == TWriteSQL.eDatabaseType.Sqlite)
                     {
                         // we want to write directly to the database
-                        TSQLiteWriter.CreateDatabase(store, outputfile, cmdLine.GetOptValue("password"));
+                        string password = "";
+
+                        if (cmdLine.IsFlagSet("password"))
+                        {
+                            password = cmdLine.GetOptValue("password");
+                        }
+
+                        TSQLiteWriter.CreateDatabase(store, outputfile, password);
                     }
                     else
                     {
@@ -75,10 +82,17 @@ class Program
                     if (dbms == TWriteSQL.eDatabaseType.Sqlite)
                     {
                         // we want to write directly to the database
+                        string password = "";
+
+                        if (cmdLine.IsFlagSet("password"))
+                        {
+                            password = cmdLine.GetOptValue("password");
+                        }
+
                         TSQLiteWriter.ExecuteLoadScript(store, outputfile,
                             cmdLine.GetOptValue("datapath"),
                             cmdLine.GetOptValue("sqlfile"),
-                            cmdLine.GetOptValue("password"));
+                            password);
                     }
                 }
             }

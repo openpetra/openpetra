@@ -71,9 +71,9 @@ namespace Ict.Petra.Client.MPartner.Gui
 
             this.pnlMain = new System.Windows.Forms.Panel();
             this.tabPartnerFindMethods = new System.Windows.Forms.TabControl();
+            this.tpgFindBankDetails = new System.Windows.Forms.TabPage();
             this.tpgFindPartner = new System.Windows.Forms.TabPage();
             this.ucoFindByPartnerDetails = new Ict.Petra.Client.MPartner.Gui.TUC_PartnerFind_ByPartnerDetails();
-            this.tpgFindBankDetails = new System.Windows.Forms.TabPage();
             this.pnlModalButtons = new System.Windows.Forms.Panel();
             this.tableLayoutPanel1 = new System.Windows.Forms.TableLayoutPanel();
             this.btnHelp = new System.Windows.Forms.Button();
@@ -162,8 +162,8 @@ namespace Ict.Petra.Client.MPartner.Gui
 
             this.pnlMain.SuspendLayout();
             this.tabPartnerFindMethods.SuspendLayout();
-            this.tpgFindPartner.SuspendLayout();
             this.tpgFindBankDetails.SuspendLayout();
+            this.tpgFindPartner.SuspendLayout();
             this.pnlModalButtons.SuspendLayout();
             this.tableLayoutPanel1.SuspendLayout();
             this.mnuMain.SuspendLayout();
@@ -175,6 +175,13 @@ namespace Ict.Petra.Client.MPartner.Gui
             this.pnlMain.Dock = System.Windows.Forms.DockStyle.Fill;
             this.pnlMain.Controls.Add(this.tabPartnerFindMethods);
             this.pnlMain.Controls.Add(this.pnlModalButtons);
+            //
+            // tpgFindBankDetails
+            //
+            this.tpgFindBankDetails.Location = new System.Drawing.Point(2,2);
+            this.tpgFindBankDetails.Name = "tpgFindBankDetails";
+            this.tpgFindBankDetails.AutoSize = true;
+            this.tpgFindBankDetails.Text = Catalog.GetString("Find by Bank Details");
             //
             // tpgFindPartner
             //
@@ -188,13 +195,6 @@ namespace Ict.Petra.Client.MPartner.Gui
             this.ucoFindByPartnerDetails.Name = "ucoFindByPartnerDetails";
             this.ucoFindByPartnerDetails.Dock = System.Windows.Forms.DockStyle.Fill;
             this.tpgFindPartner.Text = Catalog.GetString("Find by Partner Details");
-            //
-            // tpgFindBankDetails
-            //
-            this.tpgFindBankDetails.Location = new System.Drawing.Point(2,2);
-            this.tpgFindBankDetails.Name = "tpgFindBankDetails";
-            this.tpgFindBankDetails.AutoSize = true;
-            this.tpgFindBankDetails.Text = Catalog.GetString("Find by Bank Details");
             //
             // tabPartnerFindMethods
             //
@@ -842,16 +842,16 @@ namespace Ict.Petra.Client.MPartner.Gui
             this.Name = "TPartnerFindScreen";
             this.Text = "Partner Find OpenPetra.org";
 
-	        this.Load += new System.EventHandler(this.TPartnerFindScreen_Load);
 	        this.Activated += new System.EventHandler(this.TFrmPetra_Activated);
 	        this.Closing += new System.ComponentModel.CancelEventHandler(this.TFrmPetra_Closing);
 	        this.KeyDown += new System.Windows.Forms.KeyEventHandler(this.Form_KeyDown);
+	        this.Load += new System.EventHandler(this.TPartnerFindScreen_Load);
 	
             this.mnuMain.ResumeLayout(false);
             this.tableLayoutPanel1.ResumeLayout(false);
             this.pnlModalButtons.ResumeLayout(false);
-            this.tpgFindBankDetails.ResumeLayout(false);
             this.tpgFindPartner.ResumeLayout(false);
+            this.tpgFindBankDetails.ResumeLayout(false);
             this.tabPartnerFindMethods.ResumeLayout(false);
             this.pnlMain.ResumeLayout(false);
             this.ResumeLayout(false);
@@ -859,9 +859,9 @@ namespace Ict.Petra.Client.MPartner.Gui
         }
         private System.Windows.Forms.Panel pnlMain;
         private System.Windows.Forms.TabControl tabPartnerFindMethods;
+        private System.Windows.Forms.TabPage tpgFindBankDetails;
         private System.Windows.Forms.TabPage tpgFindPartner;
         private Ict.Petra.Client.MPartner.Gui.TUC_PartnerFind_ByPartnerDetails ucoFindByPartnerDetails;
-        private System.Windows.Forms.TabPage tpgFindBankDetails;
         private System.Windows.Forms.Panel pnlModalButtons;
         private System.Windows.Forms.TableLayoutPanel tableLayoutPanel1;
         private System.Windows.Forms.Button btnHelp;

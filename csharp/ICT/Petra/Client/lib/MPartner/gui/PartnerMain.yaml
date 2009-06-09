@@ -20,7 +20,9 @@ RootNode:
            mniLastPartners: {Label=&Recent Partners...}
            mniSeparator: {Label=-}
            mniExtracts: {Label=&Extracts...}
-           mniReports: {Label=&Reports...}
+           mniReports: 
+               Label: &Reports...
+               mniReportPartnerByCity: {Label=&Partner By City Report (experiment), ActionClick=PartnerByCityReport)
            mniSeparator: {Label=-}
            mniNewPartner: {Label=New &Partner..., ShortCut=CTRL-N, ActionClick=NewPartner}
            mniNewPartnerAssistant: 

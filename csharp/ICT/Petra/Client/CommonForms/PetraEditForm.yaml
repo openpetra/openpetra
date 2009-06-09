@@ -1,6 +1,7 @@
 RootNode:
     BaseYaml: PetraForm.yaml
     UtilObjectClass: TFrmPetraEditUtils
+    InterfaceName: IFrmPetraEdit
     #don't generate this file with designer code, because it should not have the menuitems and toolbar
     FormType: abstract
     Actions:

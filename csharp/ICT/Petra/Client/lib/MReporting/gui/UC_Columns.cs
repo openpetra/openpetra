@@ -33,6 +33,7 @@ using SourceGrid.Selection;
 using Ict.Petra.Shared.MReporting;
 using Ict.Common.Controls;
 using Ict.Common;
+using Ict.Petra.Client.CommonForms;
 
 namespace Ict.Petra.Client.MReporting.Gui
 {
@@ -79,6 +80,22 @@ namespace Ict.Petra.Client.MReporting.Gui
             grdColumns.Selection.CellGotFocus += new ChangeActivePositionEventHandler(this.GrdColumns_CellGotFocus);
         }
 
+        private TFrmPetraUtils FPetraUtilsObject;
+        /// <summary>
+        /// utilities for Petra forms
+        /// </summary>
+        public TFrmPetraUtils PetraUtilsObject
+        {
+        	get
+        	{
+        		return FPetraUtilsObject;
+        	}
+        	set
+        	{
+        		FPetraUtilsObject = value;
+        	}
+        }
+        
         /// <summary>
         /// the current list of parameters
         /// </summary>

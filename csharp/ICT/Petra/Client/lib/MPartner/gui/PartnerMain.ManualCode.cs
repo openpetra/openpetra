@@ -27,6 +27,7 @@ using System;
 using System.Windows.Forms;
 using Ict.Petra.Client.CommonForms;
 using Ict.Petra.Client.App.Gui;
+using Ict.Petra.Client.MReporting.Gui.MPartner;
 
 namespace Ict.Petra.Client.MPartner.Gui
 {
@@ -50,6 +51,16 @@ namespace Ict.Petra.Client.MPartner.Gui
             TPartnerEditDSWinForm frm = new TPartnerEditDSWinForm(this.Handle);
 
             frm.SetParameters(TScreenMode.smNew, "FAMILY", -1, -1, "");
+            frm.Show();
+        }
+
+        /// <summary>
+        /// for the moment just an experiment to show the reports
+        /// </summary>
+        public void PartnerByCityReport()
+        {
+            TFrmPartnerByCity frm = new TFrmPartnerByCity(this.Handle);
+
             frm.Show();
         }
 

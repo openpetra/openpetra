@@ -54,11 +54,11 @@ namespace Ict.Petra.Server.MReporting
         }
 
         /// <summary>
-        /// converts "dd/mm/yy" to "mm/dd/yy"
+        /// format a date in a form that sqlite understands (correct order of month/day etc)
         /// </summary>
         /// <param name="value"></param>
         /// <returns></returns>
-        public static TVariant ProgressDate(TVariant value)
+        public static TVariant SqliteDate(TVariant value)
         {
             String list;
             String day;
@@ -68,10 +68,11 @@ namespace Ict.Petra.Server.MReporting
 
             if (value.TypeVariant == eVariantTypes.eDateTime)
             {
-                resultString = value.DateToString("MM/dd/yyyy");
+                // see also http://www.nabble.com/Best-way-to-do-a-date-comparison--td23431265.html
+                resultString = "'" + value.DateToString("yyyy/MM/dd") + "'";
 
                 // it seems, the separators (e.g. , /, .) are not considered
-                resultString = resultString.Replace(resultString[2], '/');
+                resultString = resultString.Replace(value.DateToString("yyyy/MM/dd")[4], '-');
             }
             else
             {
@@ -270,7 +271,11 @@ namespace Ict.Petra.Server.MReporting
             // todo: Integer;  need to make it work for postgresql as well
             ReturnValue = new TVariant(s);
             ReturnValue = ReplaceVariablesPattern(ReturnValue, "{{", "}}", "", "", new TConvertProc(Id));
-            ReturnValue = ReplaceVariablesPattern(ReturnValue, "{#", "#}", "\"", "\"", new TConvertProc(ProgressDate));
+
+            // TODO: need to know which database is used
+            ReturnValue = ReplaceVariablesPattern(ReturnValue, "{#", "#}", "", "", new TConvertProc(SqliteDate));
+
+            // TODO: postgresql
 
             if (withQuotes)
             {

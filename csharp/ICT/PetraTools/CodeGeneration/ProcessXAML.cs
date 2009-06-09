@@ -69,7 +69,7 @@ namespace Ict.Tools.CodeGeneration
                 throw new Exception("cannot find form processor \"" + AFormType + "\"");
             }
 
-            return (IFormWriter)Activator.CreateInstance(formTypeClass);
+            return (IFormWriter)Activator.CreateInstance(formTypeClass, new Object[] { AFormType });
         }
 
         public Boolean ProcessDocument()
@@ -176,7 +176,7 @@ namespace Ict.Tools.CodeGeneration
                     writer.WriteFile(designerFile, designerTemplate);
                 }
 
-                string template = "window";
+                string template = TYml2Xml.GetAttribute(rootNode, "Template");
 
                 if (template.Length > 0)
                 {

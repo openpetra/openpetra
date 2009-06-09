@@ -2,7 +2,6 @@ RootNode:
     BaseYaml: ../../../CommonForms/PetraEditForm.yaml
     FormTitle: Partner Edit
     ClassName: TPartnerEditDSWinForm
-    InterfaceName: IFrmPetraEdit
     Namespace: Ict.Petra.Client.MPartner
     FormType: edit
     HasManualCodeInOtherFile: true

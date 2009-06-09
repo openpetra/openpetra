@@ -32,6 +32,7 @@ using System.Collections.Specialized;
 using Ict.Common.Controls;
 using Ict.Petra.Client.MReporting.Logic;
 using Ict.Petra.Shared.MReporting;
+using Ict.Petra.Client.CommonForms;
 
 namespace Ict.Petra.Client.MReporting.Gui
 {
@@ -61,6 +62,22 @@ namespace Ict.Petra.Client.MReporting.Gui
             FSortByComboboxes[0] = cmbSortby1;
             FSortByComboboxes[1] = cmbSortby2;
             FSortByComboboxes[2] = cmbSortby3;
+        }
+
+        private TFrmPetraUtils FPetraUtilsObject;
+        /// <summary>
+        /// utilities for Petra forms
+        /// </summary>
+        public TFrmPetraUtils PetraUtilsObject
+        {
+        	get
+        	{
+        		return FPetraUtilsObject;
+        	}
+        	set
+        	{
+        		FPetraUtilsObject = value;
+        	}
         }
 
         private void CmbSortby_SelectedIndexChanged(System.Object sender, System.EventArgs e)

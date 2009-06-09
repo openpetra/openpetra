@@ -682,10 +682,10 @@ namespace Ict.Petra.Client.MPartner
             this.Name = "TPartnerEditDSWinForm";
             this.Text = "Partner Edit";
 
-	        this.Closing += new System.ComponentModel.CancelEventHandler(this.TPartnerEditDSWinForm_Closing);
 	        this.Activated += new System.EventHandler(this.TFrmPetra_Activated);
-	        this.Load += new System.EventHandler(this.TPartnerEditDSWinForm_Load);
 	        this.KeyDown += new System.Windows.Forms.KeyEventHandler(this.Form_KeyDown);
+	        this.Load += new System.EventHandler(this.TPartnerEditDSWinForm_Load);
+	        this.Closing += new System.ComponentModel.CancelEventHandler(this.TPartnerEditDSWinForm_Closing);
 	
             this.mnuMain.ResumeLayout(false);
             this.tbrMain.ResumeLayout(false);

@@ -155,7 +155,7 @@
     <target name="recreateDatabase" depends="createSQLStatements">
         <if test="${DBMS.Type=='sqlite'}">
              <delete file="${SQLitedb.file}" if="${file::exists(SQLitedb.file)}"/>
-             <exec program="${PetraToolsExe.dir}\GenerateSQL.exe" commandline="-do:sql -dbms:${DBMS.Type} -petraxml:${PetraXML.file} -outputFile:${SQLitedb.file} -password:CHANGEME" failonerror="true"/>
+             <exec program="${PetraToolsExe.dir}\GenerateSQL.exe" commandline="-do:sql -dbms:${DBMS.Type} -petraxml:${PetraXML.file} -outputFile:${SQLitedb.file}" failonerror="true"/> <!-- -password:CHANGEME -->
         </if>
         <if test="${DBMS.Type=='postgresql'}">
              <exec program="cmd.exe" commandline="/C &quot;echo DROP DATABASE IF EXISTS petra; | &quot;${PostgreSQL.dir}\bin\psql.exe&quot; template1&quot;"/>
@@ -196,7 +196,7 @@
          <echo message='${script::ReplaceInFile(BaseData.file, toReplace, passwordsalt)}'/>
          
         <if test="${DBMS.Type=='sqlite'}">
-             <exec program="${PetraToolsExe.dir}\GenerateSQL.exe" commandline="-do:load -dbms:${DBMS.Type} -petraxml:${PetraXML.file} -outputFile:${SQLitedb.file} -password:CHANGEME -datapath:${OpenPetraRoot.dir}/db/basedata -sqlfile:${BaseData.file}" failonerror="true"/>
+             <exec program="${PetraToolsExe.dir}\GenerateSQL.exe" commandline="-do:load -dbms:${DBMS.Type} -petraxml:${PetraXML.file} -outputFile:${SQLitedb.file} -datapath:${OpenPetraRoot.dir}/db/basedata -sqlfile:${BaseData.file}" failonerror="true"/> <!--  -password:CHANGEME  -->
         </if>
         <if test="${DBMS.Type=='postgresql'}">
              <exec program="cmd.exe" commandline="/C &quot;echo DROP OWNED BY petraserver; DROP USER IF EXISTS petraserver; | &quot;${PostgreSQL.dir}\bin\psql.exe&quot; petra&quot;"/>
@@ -267,6 +267,7 @@
         <exec program="${PetraToolsExe.dir}\GenerateWinforms.exe" commandline="-ymlfile:${OpenPetraRoot.dir}/csharp/ICT/Petra/Client/lib/MPartner/gui/PartnerMain.yaml -TemplateDir:${OpenPetraRoot.dir}/csharp/ICT/PetraTools/Templates/Winforms -ResourceDir:${OpenPetraRoot.dir}/resources"/>
         <exec program="${PetraToolsExe.dir}\GenerateWinforms.exe" commandline="-ymlfile:${OpenPetraRoot.dir}/csharp/ICT/Petra/Client/lib/MPartner/gui/PartnerEdit.yaml -TemplateDir:${OpenPetraRoot.dir}/csharp/ICT/PetraTools/Templates/Winforms -ResourceDir:${OpenPetraRoot.dir}/resources"/>
         <exec program="${PetraToolsExe.dir}\GenerateWinforms.exe" commandline="-ymlfile:${OpenPetraRoot.dir}/csharp/ICT/Petra/Client/lib/MPartner/gui/PartnerFind.yaml -TemplateDir:${OpenPetraRoot.dir}/csharp/ICT/PetraTools/Templates/Winforms -ResourceDir:${OpenPetraRoot.dir}/resources"/>
+        <exec program="${PetraToolsExe.dir}\GenerateWinforms.exe" commandline="-ymlfile:${OpenPetraRoot.dir}/csharp/ICT/Petra/Client/lib/MReporting/gui/MPartner/PartnerByCity.yaml -TemplateDir:${OpenPetraRoot.dir}/csharp/ICT/PetraTools/Templates/Winforms -ResourceDir:${OpenPetraRoot.dir}/resources"/>
     </target>
 
     <target name="translation">

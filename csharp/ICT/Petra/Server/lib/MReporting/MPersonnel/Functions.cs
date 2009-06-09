@@ -97,8 +97,8 @@ namespace Ict.Petra.Server.MReporting.MPersonnel
             DataTable tab;
 
             ReturnValue = "";
-            strSql = "SELECT p_partner_short_name_c " + "FROM PUB_s_system_parameter, PUB_p_partner " +
-                     "WHERE PUB_p_partner.p_partner_key_n = PUB_s_system_parameter.s_site_key_n ";
+            strSql = "SELECT p_partner_short_name_c " + "FROM PUB_s_system_defaults, PUB_p_partner " +
+                     "WHERE PUB_p_partner.p_partner_key_n = PUB_s_system_defaults.s_default_value_c AND PUB_s_system_defaults.s_default_code_c = 'SiteKey'";
             tab = situation.GetDatabaseConnection().SelectDT(strSql, "", situation.GetDatabaseConnection().Transaction);
 
             if (tab.Rows.Count > 0)

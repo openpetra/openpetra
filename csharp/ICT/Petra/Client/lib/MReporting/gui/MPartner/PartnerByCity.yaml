@@ -1,0 +1,23 @@
+﻿RootNode:
+    BaseYaml: ../ReportingForm.yaml
+    FormType: report
+    FormTitle: Partner by City
+    Namespace: Ict.Petra.Client.MReporting.Gui.MPartner
+    TemplateParameters:
+        XMLFILES: [partnerbycity.xml]
+        REPORTNAME: Partner by City
+        CURRENTREPORT: Partner by City
+        SETAVAILABLEFUNCTIONS: BLANK
+        CONTROLSUSPENDLAYOUT: BLANK
+        CONTROLRESUMELAYOUT: BLANK
+        READCONTROLSVERIFICATION: BLANK
+        # TODO: the following things have to be set by generator
+        READCONTROLSLOCALVARS: ACalc.AddParameter("param_today", new TVariant(DateTime.Now));
+        SETCONTROLSLOCALVARS: BLANK
+    Security:
+        ModulePermissionRequired: [PTNRUSER]
+    Controls:
+        tpgReportSpecific:
+            Label: Report parameters
+            Controls: [txtCityName]
+        txtCityName: {Label=Name of City, ParameterName=param_city}

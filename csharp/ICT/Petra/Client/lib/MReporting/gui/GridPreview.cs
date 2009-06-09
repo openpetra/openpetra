@@ -177,9 +177,9 @@ namespace Ict.Petra.Client.MReporting.Gui
             }
 
             FGridView.DataSource = new DevAge.ComponentModel.BoundDataView(new DataView(t));
-            ((DataView)FGridView.DataSource).AllowEdit = false;
-            ((DataView)FGridView.DataSource).AllowNew = false;
-            ((DataView)FGridView.DataSource).AllowDelete = false;
+            ((DevAge.ComponentModel.BoundDataView)FGridView.DataSource).AllowEdit = false;
+            ((DevAge.ComponentModel.BoundDataView)FGridView.DataSource).AllowNew = false;
+            ((DevAge.ComponentModel.BoundDataView)FGridView.DataSource).AllowDelete = false;
             FGridView.AutoSizeCells();
 
             // FGridView.Width := 576;   it is necessary to reassign the width because the columns don't take up the maximum width 
