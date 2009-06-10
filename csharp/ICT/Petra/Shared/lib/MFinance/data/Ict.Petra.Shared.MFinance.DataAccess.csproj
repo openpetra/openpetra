@@ -1,6 +1,6 @@
-﻿<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
-    <ProjectGuid>{69E21FFC-F815-451A-96BB-66499CDDEB6E}</ProjectGuid>
+    <ProjectGuid>FD074084-1FB7-4C92-BD2A-09E7369EC81D</ProjectGuid>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <OutputType>Library</OutputType>
@@ -39,7 +39,7 @@
     <PlatformTarget>AnyCPU</PlatformTarget>
     <FileAlignment>4096</FileAlignment>
   </PropertyGroup>
-  <Import Project="$(SharpDevelopBinPath)\SharpDevelop.Build.CSharp.targets" />
+  <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.Targets" />
   <ItemGroup>
     <Reference Include="Ict.Common">
       <HintPath>..\..\..\..\..\Common\_bin\Debug\Ict.Common.dll</HintPath>
@@ -78,7 +78,7 @@
       <Name>Ict.Petra.Shared.UserInfo</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\MCommon\data\Ict.Petra.Shared.MCommon.DataTables.csproj">
-      <Project>{69E21FFC-F815-451A-96BB-66499CDDEB6E}</Project>
+      <Project>EAF53CA5-2E91-4AE2-B412-8292DA40FE93</Project>
       <Name>Ict.Petra.Shared.MCommon.DataTables</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\MPartner\data\Ict.Petra.Shared.MPartner.DataTables.csproj">

@@ -16,7 +16,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Ict.Common.Verification", "
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Ict.Common.GTK", "Common\GTK\Ict.Common.GTK.csproj", "{E21483C9-DCA1-4B2F-95A1-98A4DEEE7FCD}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Ict.Common.Printing", "Common\Printing\Ict.Common.Printing.csproj", "954F91D9-263A-49F3-942D-6D85A2C13DB8"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Ict.Common.Printing", "Common\Printing\Ict.Common.Printing.csproj", "{954F91D9-263A-49F3-942D-6D85A2C13DB8}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

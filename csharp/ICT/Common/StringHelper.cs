@@ -3,7 +3,7 @@
  * DO NOT REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
  *
  * @Authors:
- *       christiank
+ *       christiank, timop
  *
  * Copyright 2004-2009 by OM International
  *
@@ -276,6 +276,34 @@ namespace Ict.Common
             }
 
             return ReturnValue;
+        }
+
+        /// <summary>
+        /// return the string without the quotes at the start and the end of the string
+        /// </summary>
+        /// <param name="s"></param>
+        /// <returns></returns>
+        public static string TrimQuotes(string s)
+        {
+            string result = s;
+
+            if (result.Length > 0)
+            {
+                if (result[0] == '"')
+                {
+                    result = result.Substring(1);
+                }
+            }
+
+            if (result.Length > 0)
+            {
+                if (result[result.Length - 1] == '"')
+                {
+                    result = result.Substring(0, result.Length - 1);
+                }
+            }
+
+            return result;
         }
 
         /// <summary>

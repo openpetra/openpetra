@@ -24,6 +24,7 @@
         <echo message="uncrustify: beautify the code according to coding style guide"/>
         <echo message="checkcode: todo"/>
         <echo message="translation: todo"/>
+        <echo message="fixProjectFiles: use this for broken GUIDs in sln and csproj files"/>
         <echo message="recreateDatabase: needed after changes in table structure in petra.xml"/>
         <echo message="resetDatabase: just resets the data, resets the permissions"/>
         <echo message="translation: creates and updates the .po files, and compiles the .mo files for delivery"/>
@@ -40,16 +41,14 @@
     </target>
     
     <target name="compilePetraTools" description="compile the PetraTools">
-        <!-- alternatively could use solution task: http://nant.sourceforge.net/release/latest/help/tasks/solution.html -->
-        <exec program="${MSBUILD}" commandline=" ${OpenPetraRoot.dir}\csharp\ICT\PetraTools.sln /property:SharpDevelopBinPath=&quot;${SharpDevelop.dir}/bin&quot; /t:BUILD /p:Configuration=${Configuration}"/>
+        <solution configuration="${Configuration}" solutionfile="${OpenPetraRoot.dir}\csharp\ICT\PetraTools.sln" />
     </target>
     <target name="compilePetra" description="compile the whole of Petra" depends="compileCommon, compilePetraShared, compilePetraServer, compilePetraServerAdmin, compilePetraClient"/>
     <target name="compileCommon" description="compile Ict/Common">
-        <!-- alternatively could use solution task: http://nant.sourceforge.net/release/latest/help/tasks/solution.html -->
-        <exec program="${MSBUILD}" commandline=" ${OpenPetraRoot.dir}\csharp\ICT\Common.sln /property:SharpDevelopBinPath=&quot;${SharpDevelop.dir}/bin&quot; /t:BUILD /p:Configuration=${Configuration}"/>
+        <solution configuration="${Configuration}" solutionfile="${OpenPetraRoot.dir}\csharp\ICT\Common.sln" />
     </target>
     <target name="compilePetraShared" description="compile Ict/Petra/Shared">
-        <exec program="${MSBUILD}" commandline=" ${OpenPetraRoot.dir}\csharp\ICT\Shared.sln /property:SharpDevelopBinPath=&quot;${SharpDevelop.dir}/bin&quot; /t:BUILD /p:Configuration=${Configuration}"/>
+        <solution configuration="${Configuration}" solutionfile="${OpenPetraRoot.dir}\csharp\ICT\Shared.sln" />
     </target>
     <target name="compilePetraServer" description="compile Ict/Petra/Server">
         <property name="appconfigfile" value="${OpenPetraRoot.dir}\csharp\ICT\Petra\Server\app\PetraServerConsole\app.config"/>
@@ -58,7 +57,7 @@
                 tofile="${appconfigfile}"/>
             <!-- app.config is part of the PetraServerConsole project and will be copied to _bin\${Output.dir}\PetraServerConsole.exe.config -->
         </if>
-        <exec program="${MSBUILD}" commandline=" ${OpenPetraRoot.dir}\csharp\ICT\Server.sln /property:SharpDevelopBinPath=&quot;${SharpDevelop.dir}/bin&quot; /t:BUILD /p:Configuration=${Configuration}"/>
+        <solution configuration="${Configuration}" solutionfile="${OpenPetraRoot.dir}\csharp\ICT\Server.sln" />
         <copy todir="${OpenPetraRoot.dir}\csharp\ICT\Petra\Server\_bin\${Output.dir}">
             <fileset basedir="${ThirdParty.dir}\Mono">
                 <include name="intl.dll" />
@@ -73,7 +72,7 @@
                 tofile="${appconfigfile}"/>
             <!-- app.config is part of the PetraServerAdminConsole project and will be copied to _bin\${Output.dir}\PetraServerAdminConsole.exe.config -->
         </if>
-        <exec program="${MSBUILD}" commandline=" ${OpenPetraRoot.dir}\csharp\ICT\ServerAdmin.sln /property:SharpDevelopBinPath=&quot;${SharpDevelop.dir}/bin&quot; /t:BUILD /p:Configuration=${Configuration}"/>
+        <solution configuration="${Configuration}" solutionfile="${OpenPetraRoot.dir}\csharp\ICT\ServerAdmin.sln" />
     </target>
     <target name="compilePetraClient" description="compile Ict/Petra/Client">
         <property name="appconfigfile" value="${OpenPetraRoot.dir}\csharp\ICT\Petra\Client\app\PetraClient\app.config"/>
@@ -82,7 +81,7 @@
                 tofile="${appconfigfile}"/>
             <!-- app.config is part of the PetraClient project and will be copied to _bin\${Output.dir}\PetraClient.exe.config -->
         </if>
-        <exec program="${MSBUILD}" commandline=" ${OpenPetraRoot.dir}\csharp\ICT\Client.sln /property:SharpDevelopBinPath=&quot;${SharpDevelop.dir}/bin&quot; /t:BUILD /p:Configuration=${Configuration}"/>
+        <solution configuration="${Configuration}" solutionfile="${OpenPetraRoot.dir}\csharp\ICT\Client.sln" />
         <copy todir="${OpenPetraRoot.dir}\csharp\ICT\Petra\Client\_bin\${Output.dir}">
             <fileset basedir="${ThirdParty.dir}\Mono">
                 <include name="intl.dll" />
@@ -100,11 +99,19 @@
     </target>
     <target name="cleanPetra" description="remove all compiled code of Petra">
         <!-- alternatively could use solution task: http://nant.sourceforge.net/release/latest/help/tasks/solution.html -->
-        <exec program="${MSBUILD}" commandline=" ${OpenPetraRoot.dir}\csharp\ICT\Common.sln /property:SharpDevelopBinPath=&quot;${SharpDevelop.dir}/bin&quot; /t:CLEAN /p:Configuration=${Configuration}"/>
-        <exec program="${MSBUILD}" commandline=" ${OpenPetraRoot.dir}\csharp\ICT\Shared.sln /property:SharpDevelopBinPath=&quot;${SharpDevelop.dir}/bin&quot; /t:CLEAN /p:Configuration=${Configuration}"/>
-        <exec program="${MSBUILD}" commandline=" ${OpenPetraRoot.dir}\csharp\ICT\Server.sln /property:SharpDevelopBinPath=&quot;${SharpDevelop.dir}/bin&quot; /t:CLEAN /p:Configuration=${Configuration}"/>
-        <exec program="${MSBUILD}" commandline=" ${OpenPetraRoot.dir}\csharp\ICT\ServerAdmin.sln /property:SharpDevelopBinPath=&quot;${SharpDevelop.dir}/bin&quot; /t:CLEAN /p:Configuration=${Configuration}"/>
-        <exec program="${MSBUILD}" commandline=" ${OpenPetraRoot.dir}\csharp\ICT\Client.sln /property:SharpDevelopBinPath=&quot;${SharpDevelop.dir}/bin&quot; /t:CLEAN /p:Configuration=${Configuration}"/>
+        <!-- but the clean task is not implemented yet: see https://sourceforge.net/tracker/?func=detail&atid=402868&aid=1534755&group_id=31650 -->
+        <property name="Delete.dir" value="${OpenPetraRoot.dir}\csharp\ICT\Common\_bin"/>
+        <delete dir="${Delete.dir}" if="${directory::exists(Delete.dir)}" />
+        <property name="Delete.dir" value="${OpenPetraRoot.dir}\csharp\ICT\Shared\_bin"/>
+        <delete dir="${Delete.dir}" if="${directory::exists(Delete.dir)}" />
+        <property name="Delete.dir" value="${OpenPetraRoot.dir}\csharp\ICT\Server\_bin"/>
+        <delete dir="${Delete.dir}" if="${directory::exists(Delete.dir)}" />
+        <property name="Delete.dir" value="${OpenPetraRoot.dir}\csharp\ICT\ServerAdmin\_bin"/>
+        <delete dir="${Delete.dir}" if="${directory::exists(Delete.dir)}" />
+        <property name="Delete.dir" value="${OpenPetraRoot.dir}\csharp\ICT\Client\_bin"/>
+        <delete dir="${Delete.dir}" if="${directory::exists(Delete.dir)}" />
+        <property name="Delete.dir" value="${OpenPetraRoot.dir}\csharp\ICT\PetraTools\_bin"/>
+        <delete dir="${Delete.dir}" if="${directory::exists(Delete.dir)}" />
     </target>
     
     <target name="createSQLStatements" depends="compilePetraTools" description="Create the SQL files.">
@@ -158,16 +165,16 @@
              <exec program="${PetraToolsExe.dir}\GenerateSQL.exe" commandline="-do:sql -dbms:${DBMS.Type} -petraxml:${PetraXML.file} -outputFile:${SQLitedb.file}" failonerror="true"/> <!-- -password:CHANGEME -->
         </if>
         <if test="${DBMS.Type=='postgresql'}">
-             <exec program="cmd.exe" commandline="/C &quot;echo DROP DATABASE IF EXISTS petra; | &quot;${PostgreSQL.dir}\bin\psql.exe&quot; template1&quot;"/>
-             <exec program="cmd.exe" commandline="/C &quot;echo CREATE DATABASE petra; | &quot;${PostgreSQL.dir}\bin\psql.exe&quot;&quot; template1"/>
-             <exec program="cmd.exe" commandline="/C &quot;${PostgreSQL.dir}\bin\psql.exe&quot; petra &lt; ${OpenPetraRoot.dir}/setup/petra${PetraRelease}/petra.sql"/>
+             <exec program="cmd.exe" commandline="/C &quot;echo DROP DATABASE IF EXISTS petra; | &quot;${PostgreSQL.exe}&quot; template1&quot;"/>
+             <exec program="cmd.exe" commandline="/C &quot;echo CREATE DATABASE petra; | &quot;${PostgreSQL.exe}&quot;&quot; template1"/>
+             <exec program="cmd.exe" commandline="/C &quot;${PostgreSQL.exe}&quot; petra &lt; ${OpenPetraRoot.dir}/setup/petra${PetraRelease}/petra.sql"/>
         </if>
         <if test="${DBMS.Type=='mysql'}">
              <echo message="this will now take a while..."/>
-             <exec program="cmd.exe" commandline="/C &quot;echo drop database if exists petra; | ${MySQL.dir}\bin\mysql.exe -u root&quot;"/>
-             <exec program="cmd.exe" commandline="/C &quot;echo create database if not exists petra; | ${MySQL.dir}\bin\mysql.exe -u root&quot;"/>
+             <exec program="cmd.exe" commandline="/C &quot;echo drop database if exists petra; | ${MySQL.exe} -u root&quot;"/>
+             <exec program="cmd.exe" commandline="/C &quot;echo create database if not exists petra; | ${MySQL.exe} -u root&quot;"/>
              <!-- add -v before -u if you want to see the sql commands... -->
-             <exec program="cmd.exe" commandline="/C &quot;${MySQL.dir}/bin/mysql&quot; -u root petra &lt; ${OpenPetraRoot.dir}/setup/petra${PetraRelease}/petra.sql"/>
+             <exec program="cmd.exe" commandline="/C &quot;${MySQL.exe}&quot; -u root petra &lt; ${OpenPetraRoot.dir}/setup/petra${PetraRelease}/petra.sql"/>
         </if>
     </target>
 
@@ -199,18 +206,18 @@
              <exec program="${PetraToolsExe.dir}\GenerateSQL.exe" commandline="-do:load -dbms:${DBMS.Type} -petraxml:${PetraXML.file} -outputFile:${SQLitedb.file} -datapath:${OpenPetraRoot.dir}/db/basedata -sqlfile:${BaseData.file}" failonerror="true"/> <!--  -password:CHANGEME  -->
         </if>
         <if test="${DBMS.Type=='postgresql'}">
-             <exec program="cmd.exe" commandline="/C &quot;echo DROP OWNED BY petraserver; DROP USER IF EXISTS petraserver; | &quot;${PostgreSQL.dir}\bin\psql.exe&quot; petra&quot;"/>
-             <exec program="cmd.exe" commandline="/C &quot;echo CREATE USER petraserver PASSWORD 'TOBESETBYINSTALLER'; | &quot;${PostgreSQL.dir}\bin\psql.exe&quot; petra&quot;"/>
+             <exec program="cmd.exe" commandline="/C &quot;echo DROP OWNED BY petraserver; DROP USER IF EXISTS petraserver; | &quot;${PostgreSQL.exe}&quot; petra&quot;"/>
+             <exec program="cmd.exe" commandline="/C &quot;echo CREATE USER petraserver PASSWORD 'TOBESETBYINSTALLER'; | &quot;${PostgreSQL.exe}&quot; petra&quot;"/>
              
-             <exec program="cmd.exe" commandline="/C &quot;&quot;${PostgreSQL.dir}\bin\psql.exe&quot; -t -o &quot;${OpenPetraRoot.dir}/setup/petra${PetraRelease}/userpermissions.sql&quot; -c &quot;select 'GRANT SELECT,UPDATE,DELETE,INSERT ON ' || c.relname || ' TO petraserver;' from pg_class AS c LEFT JOIN pg_namespace n ON n.oid = c.relnamespace where c.relkind = 'r' and n.nspname NOT IN('pg_catalog', 'pg_toast') and pg_table_is_visible(c.oid);&quot; petra &quot;" />
-             <exec program="cmd.exe" commandline="/C &quot;&quot;${PostgreSQL.dir}\bin\psql.exe&quot; -c &quot;\i ${OpenPetraRoot.dir}/setup/petra${PetraRelease}/userpermissions.sql&quot; petra &quot;"/>
+             <exec program="cmd.exe" commandline="/C &quot;&quot;${PostgreSQL.exe}&quot; -t -o &quot;${OpenPetraRoot.dir}/setup/petra${PetraRelease}/userpermissions.sql&quot; -c &quot;select 'GRANT SELECT,UPDATE,DELETE,INSERT ON ' || c.relname || ' TO petraserver;' from pg_class AS c LEFT JOIN pg_namespace n ON n.oid = c.relnamespace where c.relkind = 'r' and n.nspname NOT IN('pg_catalog', 'pg_toast') and pg_table_is_visible(c.oid);&quot; petra &quot;" />
+             <exec program="cmd.exe" commandline="/C &quot;&quot;${PostgreSQL.exe}&quot; -c &quot;\i ${OpenPetraRoot.dir}/setup/petra${PetraRelease}/userpermissions.sql&quot; petra &quot;"/>
              
-             <exec program="cmd.exe" commandline="/C &quot;echo GRANT SELECT,UPDATE,USAGE ON seq_modification1 TO petraserver; | &quot;${PostgreSQL.dir}\bin\psql.exe&quot; petra&quot;"/>
-             <exec program="cmd.exe" commandline="/C &quot;echo GRANT SELECT,UPDATE,USAGE ON seq_modification2 TO petraserver; | &quot;${PostgreSQL.dir}\bin\psql.exe&quot; petra&quot;"/>
-             <exec program="cmd.exe" commandline="/C &quot;echo GRANT SELECT,UPDATE,USAGE ON s_login_s_login_process_id_r_seq TO petraserver; | &quot;${PostgreSQL.dir}\bin\psql.exe&quot; petra&quot;"/>
-             <exec program="cmd.exe" commandline="/C &quot;echo GRANT SELECT,UPDATE,USAGE ON seq_location_number TO petraserver; | &quot;${PostgreSQL.dir}\bin\psql.exe&quot; petra&quot;"/>
+             <exec program="cmd.exe" commandline="/C &quot;echo GRANT SELECT,UPDATE,USAGE ON seq_modification1 TO petraserver; | &quot;${PostgreSQL.exe}&quot; petra&quot;"/>
+             <exec program="cmd.exe" commandline="/C &quot;echo GRANT SELECT,UPDATE,USAGE ON seq_modification2 TO petraserver; | &quot;${PostgreSQL.exe}&quot; petra&quot;"/>
+             <exec program="cmd.exe" commandline="/C &quot;echo GRANT SELECT,UPDATE,USAGE ON s_login_s_login_process_id_r_seq TO petraserver; | &quot;${PostgreSQL.exe}&quot; petra&quot;"/>
+             <exec program="cmd.exe" commandline="/C &quot;echo GRANT SELECT,UPDATE,USAGE ON seq_location_number TO petraserver; | &quot;${PostgreSQL.exe}&quot; petra&quot;"/>
              
-             <exec program="cmd.exe" workingdir="${OpenPetraRoot.dir}/db"  commandline="/C &quot;${PostgreSQL.dir}\bin\psql.exe&quot; petra &lt; basedata/init.sql.local"/>
+             <exec program="cmd.exe" workingdir="${OpenPetraRoot.dir}/db"  commandline="/C &quot;${PostgreSQL.exe}&quot; petra &lt; basedata/init.sql.local"/>
         </if>
         <if test="${DBMS.Type=='mysql'}">
              <!-- todo -->
@@ -272,7 +279,7 @@
 
     <target name="translation">
         <if test="${not file::exists(TargetLanguage.Pofile)}">
-            <exec program="${Poedit.dir}\bin\xgettext.exe" commandline="--force-po --no-location --from-code=UTF-8 ${OpenPetraRoot.dir}\csharp\ICT\Common\StringHelper.cs -o ${TargetLanguage.Pofile}"/>
+            <exec program="${Poedit.gettext}" commandline="--force-po --no-location --from-code=UTF-8 ${OpenPetraRoot.dir}\csharp\ICT\Common\StringHelper.cs -o ${TargetLanguage.Pofile}"/>
             <property name="toReplace" value="Content-Type: text/plain; charset=CHARSET\n"/>
             <property name="newValue" value="Content-Type: text/plain; charset=UTF-8\n"/>
             <echo message='${script::ReplaceInFile(TargetLanguage.Pofile, toReplace, newValue)}'/>
@@ -285,7 +292,7 @@
             </in>
             <do>
                 <!-- todo: exclude the files in Testing? -->
-                <exec program="${Poedit.dir}\bin\xgettext.exe" commandline="-j --add-comments=/// --no-location --from-code=UTF-8 ${filename} -o ${TargetLanguage.Pofile}"/>
+                <exec program="${Poedit.gettext}" commandline="-j --add-comments=/// --no-location --from-code=UTF-8 ${filename} -o ${TargetLanguage.Pofile}"/>
             </do>
         </foreach>
         <foreach item="File" property="filename">
@@ -296,7 +303,7 @@
             </in>
             <do>
                 <!-- todo: exclude the files in Testing? -->
-                <exec program="${Poedit.dir}\bin\xgettext.exe" commandline="-j --add-comments=/// --no-location --from-code=UTF-8 ${filename} -o ${TargetLanguage.Pofile}"/>
+                <exec program="${Poedit.gettext}" commandline="-j --add-comments=/// --no-location --from-code=UTF-8 ${filename} -o ${TargetLanguage.Pofile}"/>
             </do>
         </foreach>
         <foreach item="File" property="filename">
@@ -307,11 +314,11 @@
             </in>
             <do>
                 <!-- todo: exclude the files in Testing? -add-comments=///  -->
-                <exec program="${Poedit.dir}\bin\xgettext.exe" commandline="-j --keyword=GetString --no-location --from-code=UTF-8 ${filename} -o ${TargetLanguage.Pofile}"/>
+                <exec program="${Poedit.gettext}" commandline="-j --keyword=GetString --no-location --from-code=UTF-8 ${filename} -o ${TargetLanguage.Pofile}"/>
             </do>
         </foreach>
         <mkdir dir="${OpenPetraRoot.dir}/setup/petra${PetraRelease}/i18n/locale/${Translation.TargetLanguage}/LC_MESSAGES" failonerror="false"/>
-        <exec program="${Poedit.dir}\bin\msgfmt.exe" commandline="${TargetLanguage.Pofile} -o ${OpenPetraRoot.dir}/setup/petra${PetraRelease}/i18n/locale/${Translation.TargetLanguage}/LC_MESSAGES/i18n.mo"/>
+        <exec program="${Poedit.msgfmt}" commandline="${TargetLanguage.Pofile} -o ${OpenPetraRoot.dir}/setup/petra${PetraRelease}/i18n/locale/${Translation.TargetLanguage}/LC_MESSAGES/i18n.mo"/>
     </target>
     
     <target name="uncrustifyTemplate">
@@ -330,7 +337,7 @@
             </in>
             <do>
                 <if test="${not script::IsAutoGeneratedFile(filename)}">
-                    <exec program="${Uncrustify.dir}\uncrustify.exe" workingdir="${OpenPetraRoot.dir}/csharp/ICT/PetraTools/CodeBeautifier" commandline="-c uncrustify-petra.cfg --no-backup &quot;${filename}&quot;"/>
+                    <exec program="${Uncrustify.exe}" workingdir="${OpenPetraRoot.dir}/csharp/ICT/PetraTools/CodeBeautifier" commandline="-c uncrustify-petra.cfg --no-backup &quot;${filename}&quot;"/>
                 </if>
             </do>
         </foreach>
@@ -383,6 +390,10 @@
         </foreach>
     </target>
 
+    <target name="fixProjectFiles">
+        <exec program="${PetraToolsExe.dir}\FixProjectFiles.exe" commandline="-solutionpath:${OpenPetraRoot.dir}/csharp/ICT -solutions:Common,Shared,Client,Server,ServerAdmin,PetraTools"/>
+    </target>
+    
     <target name="buildRelease">
         <!-- need to change the paths in all project files from _bin/Debug to _bin/Release -->
         <attrib normal="true">
@@ -454,7 +465,7 @@
     </target>
     
     <target name="setupStandalone" depends="resetDatabase, buildRelease">
-        <exec program="${Innosetup.dir}\ISCC.exe" commandline=" ${OpenPetraRoot.dir}/setup/petra${PetraRelease}/standalone/standalone.iss"
+        <exec program="${Innosetup.ISCC}" commandline=" ${OpenPetraRoot.dir}/setup/petra${PetraRelease}/standalone/standalone.iss"
               workingdir="${OpenPetraRoot.dir}/setup/petra${PetraRelease}/standalone"/>
     </target>
 </project>

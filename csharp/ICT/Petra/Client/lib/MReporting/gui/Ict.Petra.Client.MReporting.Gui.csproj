@@ -1,6 +1,6 @@
-﻿<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
-    <ProjectGuid>{69E21FFC-F815-451A-96BB-66499CDDEB6E}</ProjectGuid>
+    <ProjectGuid>4DCB81E4-7B19-43D5-BEFC-351706003550</ProjectGuid>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <OutputType>Library</OutputType>
@@ -40,7 +40,7 @@
     <PlatformTarget>AnyCPU</PlatformTarget>
     <FileAlignment>4096</FileAlignment>
   </PropertyGroup>
-  <Import Project="$(SharpDevelopBinPath)\SharpDevelop.Build.CSharp.targets" />
+  <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.Targets" />
   <ItemGroup>
     <Reference Include="DevAge.Core">
       <HintPath>..\..\..\..\..\Common\_bin\Debug\DevAge.Core.dll</HintPath>
@@ -149,15 +149,15 @@
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\..\CommonControls\gui\Ict.Petra.Client.CommonControls.Gui.csproj">
-      <Project>C87922D0-2EFE-472A-8349-8B6E71AA28C4</Project>
+      <Project>7B102B6E-0873-45EE-85D7-BD37126EAE21</Project>
       <Name>Ict.Petra.Client.CommonControls.Gui</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\..\CommonControls\logic\Ict.Petra.Client.CommonControls.Logic.csproj">
-      <Project>6E9F60AB-49F3-45E3-9080-705B4E42B62B</Project>
+      <Project>FD174C01-3423-4604-A7FF-4348969D57CF</Project>
       <Name>Ict.Petra.Client.CommonControls.Logic</Name>
     </ProjectReference>
     <ProjectReference Include="..\logic\Ict.Petra.Client.MReporting.Logic.csproj">
-      <Project>749C732E-1BAD-47EF-81FF-280B058F0FB4</Project>
+      <Project>E5D87C50-783C-4516-84A9-CF1D37894C9C</Project>
       <Name>Ict.Petra.Client.MReporting.Logic</Name>
     </ProjectReference>
   </ItemGroup>
