@@ -618,7 +618,7 @@ namespace Ict.Petra.Server.MPartner.Partner.UIConnectors
                                 {
                                     throw new ESecurityScreenAccessDeniedException(
                                         Catalog.GetString(
-                                            "You do not have access to Partners of Partner Class 'ORGANISATION'\r\nthat are 'Foundations'!"));
+                                            "You do not have access to Partners of Partner Class 'ORGANISATION' that are 'Foundations'!"));
                                 }
                                 else
                                 {
@@ -1920,7 +1920,7 @@ namespace Ict.Petra.Server.MPartner.Partner.UIConnectors
                                         "(); PSiteKey: " +
                                         AInspectDS.Tables[PLocationTable.GetTableName()].Rows[TmpCounter][PLocationTable.GetSiteKeyDBName()].ToString(
                                             ) +
-                                        "\r\n");
+                                        Environment.NewLine);
                                 }
                                 else
                                 {
@@ -1931,7 +1931,7 @@ namespace Ict.Petra.Server.MPartner.Partner.UIConnectors
                                         "(); PSiteKey: " +
                                         AInspectDS.Tables[PLocationTable.GetTableName()].Rows[TmpCounter][PLocationTable.GetSiteKeyDBName(),
                                                                                                           DataRowVersion.Original].ToString() +
-                                        "\r\n");
+                                        Environment.NewLine);
                                 }
                             }
                         }
@@ -1956,7 +1956,8 @@ namespace Ict.Petra.Server.MPartner.Partner.UIConnectors
                                         .ToString() + "(); PPartnerKey: " +
                                         AInspectDS.Tables[PPartnerLocationTable.GetTableName()].Rows[TmpCounter][PPartnerLocationTable.
                                                                                                                  GetPartnerKeyDBName(
-                                                                                                                     )].ToString() + "\r\n");
+                                                                                                                     )].ToString() +
+                                        Environment.NewLine);
                                 }
                                 else
                                 {
@@ -1971,7 +1972,7 @@ namespace Ict.Petra.Server.MPartner.Partner.UIConnectors
                                                                                                                  GetSiteKeyDBName(),
                                                                                                                  DataRowVersion.Original].ToString()
                                         +
-                                        "\r\n");
+                                        Environment.NewLine);
                                 }
                             }
                         }

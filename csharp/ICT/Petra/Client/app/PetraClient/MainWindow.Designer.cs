@@ -103,8 +103,8 @@ namespace Ict.Petra.Client.App.PetraClient
             this.mniClose.AutoSize = true;
             this.mniClose.Click += new System.EventHandler(this.mniCloseClick);
             this.mniClose.Image = ((System.Drawing.Bitmap)resources.GetObject("mniClose.Glyph"));
-            this.mniClose.ToolTipText = Catalog.GetString("Closes this window");
-            this.mniClose.Text = Catalog.GetString("&Close");
+            this.mniClose.ToolTipText = "Closes this window";
+            this.mniClose.Text = "&Close";
             //
             // mniFile
             //
@@ -112,56 +112,56 @@ namespace Ict.Petra.Client.App.PetraClient
             this.mniFile.AutoSize = true;
             this.mniFile.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
                            mniClose});
-            this.mniFile.Text = Catalog.GetString("&File");
+            this.mniFile.Text = "&File";
             //
             // mniPetraMainMenu
             //
             this.mniPetraMainMenu.Name = "mniPetraMainMenu";
             this.mniPetraMainMenu.AutoSize = true;
             this.mniPetraMainMenu.Click += new System.EventHandler(this.mniPetraMainMenuClick);
-            this.mniPetraMainMenu.Text = Catalog.GetString("Petra &Main Menu");
+            this.mniPetraMainMenu.Text = "Petra &Main Menu";
             //
             // mniPetraPartnerModule
             //
             this.mniPetraPartnerModule.Name = "mniPetraPartnerModule";
             this.mniPetraPartnerModule.AutoSize = true;
             this.mniPetraPartnerModule.Click += new System.EventHandler(this.mniPetraPartnerModuleClick);
-            this.mniPetraPartnerModule.Text = Catalog.GetString("Pa&rtner");
+            this.mniPetraPartnerModule.Text = "Pa&rtner";
             //
             // mniPetraFinanceModule
             //
             this.mniPetraFinanceModule.Name = "mniPetraFinanceModule";
             this.mniPetraFinanceModule.AutoSize = true;
             this.mniPetraFinanceModule.Click += new System.EventHandler(this.mniPetraFinanceModuleClick);
-            this.mniPetraFinanceModule.Text = Catalog.GetString("&Finance");
+            this.mniPetraFinanceModule.Text = "&Finance";
             //
             // mniPetraPersonnelModule
             //
             this.mniPetraPersonnelModule.Name = "mniPetraPersonnelModule";
             this.mniPetraPersonnelModule.AutoSize = true;
             this.mniPetraPersonnelModule.Click += new System.EventHandler(this.mniPetraPersonnelModuleClick);
-            this.mniPetraPersonnelModule.Text = Catalog.GetString("P&ersonnel");
+            this.mniPetraPersonnelModule.Text = "P&ersonnel";
             //
             // mniPetraConferenceModule
             //
             this.mniPetraConferenceModule.Name = "mniPetraConferenceModule";
             this.mniPetraConferenceModule.AutoSize = true;
             this.mniPetraConferenceModule.Click += new System.EventHandler(this.mniPetraConferenceModuleClick);
-            this.mniPetraConferenceModule.Text = Catalog.GetString("C&onference");
+            this.mniPetraConferenceModule.Text = "C&onference";
             //
             // mniPetraFinDevModule
             //
             this.mniPetraFinDevModule.Name = "mniPetraFinDevModule";
             this.mniPetraFinDevModule.AutoSize = true;
             this.mniPetraFinDevModule.Click += new System.EventHandler(this.mniPetraFinDevModuleClick);
-            this.mniPetraFinDevModule.Text = Catalog.GetString("Financial &Development");
+            this.mniPetraFinDevModule.Text = "Financial &Development";
             //
             // mniPetraSysManModule
             //
             this.mniPetraSysManModule.Name = "mniPetraSysManModule";
             this.mniPetraSysManModule.AutoSize = true;
             this.mniPetraSysManModule.Click += new System.EventHandler(this.mniPetraSysManModuleClick);
-            this.mniPetraSysManModule.Text = Catalog.GetString("&System Manager");
+            this.mniPetraSysManModule.Text = "&System Manager";
             //
             // mniPetraModules
             //
@@ -175,43 +175,43 @@ namespace Ict.Petra.Client.App.PetraClient
                         mniPetraConferenceModule,
                         mniPetraFinDevModule,
                         mniPetraSysManModule});
-            this.mniPetraModules.Text = Catalog.GetString("&Petra");
+            this.mniPetraModules.Text = "&Petra";
             //
             // mniHelpPetraHelp
             //
             this.mniHelpPetraHelp.Name = "mniHelpPetraHelp";
             this.mniHelpPetraHelp.AutoSize = true;
-            this.mniHelpPetraHelp.Text = Catalog.GetString("&Petra Help");
+            this.mniHelpPetraHelp.Text = "&Petra Help";
             //
             // mniSeparator0
             //
             this.mniSeparator0.Name = "mniSeparator0";
             this.mniSeparator0.AutoSize = true;
-            this.mniSeparator0.Text = Catalog.GetString("-");
+            this.mniSeparator0.Text = "-";
             //
             // mniHelpBugReport
             //
             this.mniHelpBugReport.Name = "mniHelpBugReport";
             this.mniHelpBugReport.AutoSize = true;
-            this.mniHelpBugReport.Text = Catalog.GetString("Bug &Report");
+            this.mniHelpBugReport.Text = "Bug &Report";
             //
             // mniSeparator1
             //
             this.mniSeparator1.Name = "mniSeparator1";
             this.mniSeparator1.AutoSize = true;
-            this.mniSeparator1.Text = Catalog.GetString("-");
+            this.mniSeparator1.Text = "-";
             //
             // mniHelpAboutPetra
             //
             this.mniHelpAboutPetra.Name = "mniHelpAboutPetra";
             this.mniHelpAboutPetra.AutoSize = true;
-            this.mniHelpAboutPetra.Text = Catalog.GetString("&About Petra");
+            this.mniHelpAboutPetra.Text = "&About Petra";
             //
             // mniHelpDevelopmentTeam
             //
             this.mniHelpDevelopmentTeam.Name = "mniHelpDevelopmentTeam";
             this.mniHelpDevelopmentTeam.AutoSize = true;
-            this.mniHelpDevelopmentTeam.Text = Catalog.GetString("&The Development Team...");
+            this.mniHelpDevelopmentTeam.Text = "&The Development Team...";
             //
             // mniHelp
             //
@@ -224,7 +224,7 @@ namespace Ict.Petra.Client.App.PetraClient
                         mniSeparator1,
                         mniHelpAboutPetra,
                         mniHelpDevelopmentTeam});
-            this.mniHelp.Text = Catalog.GetString("&Help");
+            this.mniHelp.Text = "&Help";
             //
             // mnuMain
             //

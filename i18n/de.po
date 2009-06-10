@@ -8,39 +8,47 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2009-04-07 15:49+0200\n"
+"POT-Creation-Date: 2009-06-10 12:19+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+
 #
 msgid "Invalid date entered."
 msgstr "Ein ungültiges Datum wurde eingegeben."
+
 #
 #, csharp-format
 msgid "'{0}' cannot be later than '{1}'."
 msgstr "'{0}' darf nicht nach dem '{1}' sein."
+
 #
 msgid "Invalid Data"
 msgstr "Ungültige Eingabe"
+
 #
 #, csharp-format
 msgid "'{0}' cannot be later or equal than '{1}'."
 msgstr "'{0}' darf nicht nach order gleich dem '{1}' sein."
+
 #
 #, csharp-format
 msgid "{0} must be a date.'"
 msgstr "{0} muss ein gültiges Datum sein."
+
 #
 #, csharp-format
 msgid "'{0}' may not be a past date.'"
 msgstr "'{0}' darf nicht in der Vergangenheit liegen."
+
 #
 #, csharp-format
 msgid "'{0}' may not be a future date.'"
 msgstr "'{0}' darf nicht in der Zukunft liegen."
+
 #
 #, csharp-format
 msgid "'{0}' may not be empty.'"
@@ -55,10 +63,1341 @@ msgstr "'{0}' darf nicht vor dem {1} sein."
 #, csharp-format
 msgid "'{0}' cannot be earlier or equal than '{1}'."
 msgstr "'{0}' darf nicht vor oder gleich dem {1} sein."
+
 #
 msgid "Invalid number entered."
 msgstr "Ungültige Zahleingabe."
+
 #
 #, csharp-format
 msgid "'{0}' must be an Integer (= a number without a fraction)."
 msgstr "'{0}' muss eine Ganzzahl sein (dh. keine Dezimalstellen)."
+
+msgid "Error"
+msgstr ""
+
+msgid "Close"
+msgstr ""
+
+msgid "Save"
+msgstr ""
+
+msgid "Edit"
+msgstr ""
+
+msgid "Add"
+msgstr ""
+
+msgid "Delete"
+msgstr ""
+
+msgid "Hello World!"
+msgstr ""
+
+msgid "Press any key to continue . . . "
+msgstr ""
+
+msgid "invalid database system"
+msgstr ""
+
+msgid "DBTable"
+msgstr ""
+
+msgid "DBOperation"
+msgstr ""
+
+msgid "LastModificationUser"
+msgstr ""
+
+msgid "AccessRight"
+msgstr ""
+
+msgid "PartnerShortName"
+msgstr ""
+
+msgid "Login to Petra"
+msgstr ""
+
+msgid "User name"
+msgstr ""
+
+msgid "Password"
+msgstr ""
+
+msgid "Login"
+msgstr ""
+
+msgid "Cancel"
+msgstr ""
+
+msgid "Petra Login"
+msgstr ""
+
+msgid "For details see the log file."
+msgstr ""
+
+msgid " P E T R A "
+msgstr ""
+
+msgid "Version"
+msgstr ""
+
+msgid "© 1995 - 2009 by ICT Software"
+msgstr ""
+
+msgid "Standalone / Network / Remote"
+msgstr ""
+
+msgid "You need to finish editing by choosing the 'Done' button"
+msgstr ""
+
+msgid "before you can close the window!"
+msgstr ""
+
+msgid "Need to Finish Editing!"
+msgstr ""
+
+msgid "New Petra Screen"
+msgstr ""
+
+msgid "Security Violation"
+msgstr ""
+
+#, csharp-format
+msgid "You do not have permission to {0} {1} records."
+msgstr ""
+
+msgid "Hospitality"
+msgstr ""
+
+msgid "Pa&rtner"
+msgstr ""
+
+msgid "F&inance"
+msgstr ""
+
+msgid "&Personnel"
+msgstr ""
+
+msgid "C&onference Management"
+msgstr ""
+
+msgid "Financial &Development"
+msgstr ""
+
+msgid "&System Manager"
+msgstr ""
+
+msgid "Form &List"
+msgstr ""
+
+msgid "USERNAME"
+msgstr ""
+
+msgid "01-JAN-1900 00:00:00"
+msgstr ""
+
+msgid "Failed Logins:"
+msgstr ""
+
+msgid "0"
+msgstr ""
+
+msgid "User:"
+msgstr ""
+
+msgid "Last Failed Login:"
+msgstr ""
+
+msgid "Last Login:"
+msgstr ""
+
+msgid "Loading..."
+msgstr ""
+
+msgid "Custom Text can be displayed here..."
+msgstr ""
+
+msgid "Closes this window"
+msgstr ""
+
+msgid "&Close"
+msgstr ""
+
+msgid "&File"
+msgstr ""
+
+msgid "Petra &Main Menu"
+msgstr ""
+
+msgid "&Finance"
+msgstr ""
+
+msgid "P&ersonnel"
+msgstr ""
+
+msgid "C&onference"
+msgstr ""
+
+msgid "&Petra"
+msgstr ""
+
+msgid "&Petra Help"
+msgstr ""
+
+msgid "Bug &Report"
+msgstr ""
+
+msgid "&About Petra"
+msgstr ""
+
+msgid "&The Development Team..."
+msgstr ""
+
+msgid "&Help"
+msgstr ""
+
+#, csharp-format
+msgid "OpenPetra.org {0} Main Menu"
+msgstr ""
+
+msgid "Test button"
+msgstr ""
+
+msgid "PartnerKey"
+msgstr ""
+
+msgid "Partner Name"
+msgstr ""
+
+msgid "Partner Name:"
+msgstr ""
+
+msgid "PartnerKey:"
+msgstr ""
+
+msgid "Field Of Service"
+msgstr ""
+
+msgid "lblFoundationDetailsDynamicLoadInfo.Text"
+msgstr ""
+
+msgid "Select Address &Layout:"
+msgstr ""
+
+msgid "Preview of Copied Address"
+msgstr ""
+
+msgid "Copy Partner's Address"
+msgstr ""
+
+msgid "&OK"
+msgstr ""
+
+msgid "These partners already have a Subscription for"
+msgstr ""
+
+msgid "The Subscription was not added to the following Partners:"
+msgstr ""
+
+msgid "Partners Who Were Already Subscribed"
+msgstr ""
+
+msgid "First Record"
+msgstr ""
+
+msgid "Last Record"
+msgstr ""
+
+msgid "Previous Record"
+msgstr ""
+
+msgid "Next Record"
+msgstr ""
+
+msgid "-"
+msgstr ""
+
+msgid "Extract Name:"
+msgstr ""
+
+msgid "Extract ID:"
+msgstr ""
+
+msgid "&Cancel"
+msgstr ""
+
+msgid "Add Subscription"
+msgstr ""
+
+msgid "&More >>"
+msgstr ""
+
+msgid "Move &Up"
+msgstr ""
+
+msgid "Rearrange Find Criteria"
+msgstr ""
+
+msgid "R.List Items"
+msgstr ""
+
+msgid "L.List Items"
+msgstr ""
+
+msgid "Move &Down"
+msgstr ""
+
+msgid "Move To &Left"
+msgstr ""
+
+msgid "Move To &Right"
+msgstr ""
+
+msgid "Displayed Find Criteria"
+msgstr ""
+
+msgid "&Partner Find Criteria:"
+msgstr ""
+
+msgid "&Address Find Criteria:"
+msgstr ""
+
+msgid "O&ther Find Criteria:"
+msgstr ""
+
+msgid "Sho&w 'Matching Pattern' buttons"
+msgstr ""
+
+msgid "Exact Partner &Key Match"
+msgstr ""
+
+msgid "&Reset"
+msgstr ""
+
+msgid "Find Options"
+msgstr ""
+
+msgid "&Accept"
+msgstr ""
+
+msgid "Clea&r"
+msgstr ""
+
+msgid "&Find Criteria:"
+msgstr ""
+
+msgid "P&ost Code:"
+msgstr ""
+
+msgid "Co&unty:"
+msgstr ""
+
+msgid "Cou&ntry:"
+msgstr ""
+
+msgid "Location &Key:"
+msgstr ""
+
+msgid "Ci&ty:"
+msgstr ""
+
+msgid "Address &2:"
+msgstr ""
+
+msgid "Address &3:"
+msgstr ""
+
+msgid "Address &1:"
+msgstr ""
+
+msgid " &Search"
+msgstr ""
+
+msgid "Find R&esult"
+msgstr ""
+
+msgid "Location Find"
+msgstr ""
+
+msgid "The Partner that you have selected,"
+msgstr ""
+
+msgid "was Merged into another Partner and is therefore no longer accessible."
+msgstr ""
+
+msgid "Merged, Partner, A   [PERSON]"
+msgstr ""
+
+msgid "Merge Date:"
+msgstr ""
+
+msgid "Partner Class:"
+msgstr ""
+
+msgid "Merged-Into, Partner, A"
+msgstr ""
+
+msgid "Partner Key && Name:"
+msgstr ""
+
+msgid "PERSON"
+msgstr ""
+
+msgid "Merged By:"
+msgstr ""
+
+msgid "DUMMY"
+msgstr ""
+
+msgid "17-FEB-2009"
+msgstr ""
+
+msgid "This is the Partner that it got merged into:"
+msgstr ""
+
+msgid ""
+"Choose 'OK' to accept the Merged-Into Partner, or 'Cancel' to stop the "
+"operation "
+msgstr ""
+
+msgid "Merged Partner Information"
+msgstr ""
+
+msgid "Extract &Name:"
+msgstr ""
+
+msgid "&Description:"
+msgstr ""
+
+msgid "New Extract"
+msgstr ""
+
+msgid "Detailed Results"
+msgstr ""
+
+msgid "Find Criteria"
+msgstr ""
+
+msgid "Custom Criteria Demo"
+msgstr ""
+
+msgid "Fin&d Result"
+msgstr ""
+
+msgid "Searching..."
+msgstr ""
+
+msgid "Partner Info"
+msgstr ""
+
+msgid "v"
+msgstr ""
+
+msgid "Saves changed data"
+msgstr ""
+
+msgid "New Partner"
+msgstr ""
+
+msgid "Partner Data"
+msgstr ""
+
+msgid "Personnel Data"
+msgstr ""
+
+msgid "Finance Data"
+msgstr ""
+
+msgid "&New Partner..."
+msgstr ""
+
+msgid "Deacti&vate Partner..."
+msgstr ""
+
+msgid "&Delete THIS Partner..."
+msgstr ""
+
+msgid "Copy Partner's Partner &Key"
+msgstr ""
+
+msgid "Copy Partner's &Address..."
+msgstr ""
+
+msgid "&Send Email"
+msgstr ""
+
+msgid "P&rint Section..."
+msgstr ""
+
+msgid "&Export Partner"
+msgstr ""
+
+msgid "&Save"
+msgstr ""
+
+msgid "&Print..."
+msgstr ""
+
+msgid "Find New &Address..."
+msgstr ""
+
+msgid "Undo &Current Field"
+msgstr ""
+
+msgid "&Undo Screen"
+msgstr ""
+
+msgid "&Find..."
+msgstr ""
+
+msgid "&Edit"
+msgstr ""
+
+msgid "&Partner Data"
+msgstr ""
+
+msgid "P&ersonnel Data"
+msgstr ""
+
+msgid "&Finance Data"
+msgstr ""
+
+msgid "&Expanded"
+msgstr ""
+
+msgid "&Collapsed"
+msgstr ""
+
+msgid "&Upper Screen Part"
+msgstr ""
+
+msgid "View"
+msgstr ""
+
+msgid "&Addresses"
+msgstr ""
+
+msgid "Partner &Details"
+msgstr ""
+
+msgid "Foundation Details"
+msgstr ""
+
+msgid "&Subscriptions"
+msgstr ""
+
+msgid "Special &Types"
+msgstr ""
+
+msgid "&Contacts..."
+msgstr ""
+
+msgid "Family &Members..."
+msgstr ""
+
+msgid "&Relationships..."
+msgstr ""
+
+msgid "&Interests..."
+msgstr ""
+
+msgid "R&eminders..."
+msgstr ""
+
+msgid "&Notes"
+msgstr ""
+
+msgid "&Local Partner Data"
+msgstr ""
+
+msgid "&Worker Field..."
+msgstr ""
+
+msgid "&Personnel/Individual Data"
+msgstr ""
+
+msgid "Donor &History..."
+msgstr ""
+
+msgid "Recipient Histor&y..."
+msgstr ""
+
+msgid "Finance Reports"
+msgstr ""
+
+msgid "Ban&k Accounts"
+msgstr ""
+
+msgid "&Gift Receipting"
+msgstr ""
+
+msgid "&Finance Details..."
+msgstr ""
+
+msgid "Maintain"
+msgstr ""
+
+msgid "Partner Edit"
+msgstr ""
+
+msgid "Partner Key:"
+msgstr ""
+
+msgid "Acquired:"
+msgstr ""
+
+msgid "Status:"
+msgstr ""
+
+msgid "Name:"
+msgstr ""
+
+msgid "Address"
+msgstr ""
+
+msgid "Details of the selected Address"
+msgstr ""
+
+msgid "Fax:"
+msgstr ""
+
+msgid "0732 / 12345 Ext. 78"
+msgstr ""
+
+msgid "Telephone:"
+msgstr ""
+
+msgid "Alternate:"
+msgstr ""
+
+msgid "Mobile:"
+msgstr ""
+
+msgid "Email:"
+msgstr ""
+
+msgid "0732 / 2345678"
+msgstr ""
+
+msgid "hans-peter@testinger.com"
+msgstr ""
+
+msgid "Location Type:"
+msgstr ""
+
+msgid "HOME"
+msgstr ""
+
+msgid "0699 / 107223892"
+msgstr ""
+
+msgid "Mailing Addr.:"
+msgstr ""
+
+msgid "Yes"
+msgstr ""
+
+msgid "URL:"
+msgstr ""
+
+msgid "http://www.testinger.com"
+msgstr ""
+
+msgid "Valid From:"
+msgstr ""
+
+msgid "31-JUL-2000"
+msgstr ""
+
+msgid "Valid To:"
+msgstr ""
+
+msgid "30-DEC-2008"
+msgstr ""
+
+msgid "0732 / 12345 Ext. 56"
+msgstr ""
+
+msgid "Types && Subscriptions"
+msgstr ""
+
+msgid "Subscriptions and Special Types of the Partner"
+msgstr ""
+
+msgid "WORKER, AIRMILES"
+msgstr ""
+
+msgid "Special Types:"
+msgstr ""
+
+msgid "GLOBAL, INDIA, CURRENTS, MONTHLY, VERWER"
+msgstr ""
+
+msgid "Subscriptions:"
+msgstr ""
+
+msgid "Other"
+msgstr ""
+
+msgid "Other details of the Partner"
+msgstr ""
+
+msgid "This is a Very Important Partner. Very pleasant to speak to."
+msgstr ""
+
+msgid "Other Information:"
+msgstr ""
+
+msgid "My previous name"
+msgstr ""
+
+msgid "Previous Name:"
+msgstr ""
+
+msgid "Central European Area"
+msgstr ""
+
+msgid "Parent Unit:"
+msgstr ""
+
+msgid "Austria"
+msgstr ""
+
+msgid "Field:"
+msgstr ""
+
+msgid "31-JUN-2000"
+msgstr ""
+
+msgid "Partner Updated:"
+msgstr ""
+
+msgid "guages):"
+msgstr ""
+
+msgid "Speaks (Lan-"
+msgstr ""
+
+msgid "Last Contact:"
+msgstr ""
+
+msgid "German, English, Ukrainian, Mandarin"
+msgstr ""
+
+msgid "31-JUN-2008"
+msgstr ""
+
+msgid "Person / Family"
+msgstr ""
+
+msgid "Testinger, A   [0123456789]"
+msgstr ""
+
+msgid "Family:"
+msgstr ""
+
+msgid "Date of Birth:"
+msgstr ""
+
+msgid "Family Members:"
+msgstr ""
+
+msgid "Testinger, Hans-Peter, Mr   (PERSON)"
+msgstr ""
+
+msgid "Markus' World"
+msgstr ""
+
+msgid "PRIVATE {MARLENE}"
+msgstr ""
+
+msgid "MAILROOM"
+msgstr ""
+
+msgid "No Partner to display."
+msgstr ""
+
+msgid "Please wait."
+msgstr ""
+
+msgid "&Import"
+msgstr ""
+
+msgid "&Export"
+msgstr ""
+
+msgid "&Find && Maintain..."
+msgstr ""
+
+msgid "Work with &Last Partner..."
+msgstr ""
+
+msgid "&Recent Partners..."
+msgstr ""
+
+msgid "&Extracts..."
+msgstr ""
+
+msgid "&Partner By City Report (experiment)"
+msgstr ""
+
+msgid "&Reports..."
+msgstr ""
+
+msgid "New &Partner..."
+msgstr ""
+
+msgid "Add &Person"
+msgstr ""
+
+msgid "Add &Family"
+msgstr ""
+
+msgid "Add &Church"
+msgstr ""
+
+msgid "&New Partner (assistant)"
+msgstr ""
+
+msgid "&Merge Partners"
+msgstr ""
+
+msgid "D&elete Partner"
+msgstr ""
+
+msgid "&Duplicate Address Check"
+msgstr ""
+
+msgid "Mer&ge Addresses"
+msgstr ""
+
+msgid "&View Partners at Location"
+msgstr ""
+
+msgid "P&artner"
+msgstr ""
+
+msgid "&Label Print"
+msgstr ""
+
+msgid "Mails&ort Label Print"
+msgstr ""
+
+msgid "Subscription Expiry &Notices"
+msgstr ""
+
+msgid "Subscription &Cancellation"
+msgstr ""
+
+msgid "&Form Letter Print"
+msgstr ""
+
+msgid "Extrac&t Mail Merge"
+msgstr ""
+
+msgid "Mailin&g"
+msgstr ""
+
+msgid "Todo"
+msgstr ""
+
+msgid "Maintain &Tables"
+msgstr ""
+
+msgid "Partner Module OpenPetra.org"
+msgstr ""
+
+msgid "Find by Bank Details"
+msgstr ""
+
+msgid "Find by Partner Details"
+msgstr ""
+
+msgid "Fully load Data"
+msgstr ""
+
+msgid "&Search"
+msgstr ""
+
+msgid "&Work with Last Partner..."
+msgstr ""
+
+msgid "1"
+msgstr ""
+
+msgid "2"
+msgstr ""
+
+msgid "3"
+msgstr ""
+
+msgid "4"
+msgstr ""
+
+msgid "5"
+msgstr ""
+
+msgid "6"
+msgstr ""
+
+msgid "7"
+msgstr ""
+
+msgid "8"
+msgstr ""
+
+msgid "9"
+msgstr ""
+
+msgid "&Recent Partners"
+msgstr ""
+
+msgid "&View Partner"
+msgstr ""
+
+msgid "&Edit Partner"
+msgstr ""
+
+msgid "Mer&ge Partners..."
+msgstr ""
+
+msgid "&Delete Partner"
+msgstr ""
+
+msgid "Send E&mail to Partner"
+msgstr ""
+
+msgid "&Print Partner"
+msgstr ""
+
+msgid "E&xport Partner"
+msgstr ""
+
+msgid "&Import Partner"
+msgstr ""
+
+msgid "&Addresses..."
+msgstr ""
+
+msgid "Partner &Details..."
+msgstr ""
+
+msgid "Foundation Details..."
+msgstr ""
+
+msgid "&Subscriptions..."
+msgstr ""
+
+msgid "Special &Types..."
+msgstr ""
+
+msgid "&Notes..."
+msgstr ""
+
+msgid "&Local Partner Data..."
+msgstr ""
+
+msgid "&Personnel/Individual Data..."
+msgstr ""
+
+msgid "Donor  &History..."
+msgstr ""
+
+msgid "Recipient  Histor&y..."
+msgstr ""
+
+msgid "&Generate Extract From Found Partners..."
+msgstr ""
+
+msgid "&Duplicate  Address Check..."
+msgstr ""
+
+msgid "&Merge  Addresses..."
+msgstr ""
+
+msgid "Find Partners at &Location..."
+msgstr ""
+
+msgid "Subscription Expiry &Notices..."
+msgstr ""
+
+msgid "Subscription  &Cancellation..."
+msgstr ""
+
+msgid "&Mailing"
+msgstr ""
+
+msgid "&Tools"
+msgstr ""
+
+msgid "Partner Find OpenPetra.org"
+msgstr ""
+
+msgid "No e-mail address for this Partner in the selected address record."
+msgstr ""
+
+msgid "Cannot Send E-mail To Partner"
+msgstr ""
+
+msgid ""
+"No valid e-mail address for this Partner in the selected address record."
+msgstr ""
+
+msgid "Details: "
+msgstr ""
+
+msgid "Maintain Users"
+msgstr ""
+
+msgid "Item 1"
+msgstr ""
+
+msgid "Item 2"
+msgstr ""
+
+msgid "Item 3"
+msgstr ""
+
+msgid "Item 4"
+msgstr ""
+
+msgid "Item 5"
+msgstr ""
+
+msgid "&Load Settings"
+msgstr ""
+
+msgid "&Open..."
+msgstr ""
+
+msgid "&Save Settings"
+msgstr ""
+
+msgid "Save Settings &As..."
+msgstr ""
+
+msgid "&Maintain Settings..."
+msgstr ""
+
+msgid "&Generate Report..."
+msgstr ""
+
+msgid "&Reporting Tool Manual"
+msgstr ""
+
+msgid "General Settings"
+msgstr ""
+
+msgid "Sort By"
+msgstr ""
+
+msgid "Sort last by:"
+msgstr ""
+
+msgid "Sort then by:"
+msgstr ""
+
+msgid "Sort first by:"
+msgstr ""
+
+msgid "Additional Settings 2"
+msgstr ""
+
+msgid "Additional Settings 1"
+msgstr ""
+
+msgid "Column Settings"
+msgstr ""
+
+msgid "Define Column"
+msgstr ""
+
+msgid "Apply"
+msgstr ""
+
+msgid "&Remove"
+msgstr ""
+
+msgid "&Add"
+msgstr ""
+
+msgid "Output"
+msgstr ""
+
+msgid "Export to CSV"
+msgstr ""
+
+msgid ""
+"Hint: If you don't want quotes around your values, please choose a delimiter "
+"that"
+msgstr ""
+
+msgid "(e.g. , or ; or : or Space; or type TAB for tabulator)"
+msgstr ""
+
+msgid "Delimiter:"
+msgstr ""
+
+msgid "Only save as CSV, don't print Report"
+msgstr ""
+
+msgid "..."
+msgstr ""
+
+msgid "Destination file"
+msgstr ""
+
+msgid "Generate"
+msgstr ""
+
+msgid "Generate a report and display the preview"
+msgstr ""
+
+msgid "Save As"
+msgstr ""
+
+msgid "Save the current selections under a new name"
+msgstr ""
+
+msgid "Load"
+msgstr ""
+
+msgid "Load previously saved report settings"
+msgstr ""
+
+msgid "Template for Reporting Forms"
+msgstr ""
+
+msgid "SaveCSVFilename"
+msgstr ""
+
+msgid "orderby"
+msgstr ""
+
+msgid "CSV_separator"
+msgstr ""
+
+msgid "param_email_address"
+msgstr ""
+
+msgid "param_selection"
+msgstr ""
+
+msgid "param_partnerkey"
+msgstr ""
+
+msgid "param_extract"
+msgstr ""
+
+msgid "param_calculation"
+msgstr ""
+
+msgid "param_label"
+msgstr ""
+
+msgid "Additional Settings"
+msgstr ""
+
+msgid "Address Details"
+msgstr ""
+
+msgid "Address on Second Line"
+msgstr ""
+
+msgid "PartnerAddressReportingForm"
+msgstr ""
+
+msgid "param_address_on_second_line"
+msgstr ""
+
+msgid "Name of City:"
+msgstr ""
+
+msgid "Report parameters"
+msgstr ""
+
+msgid "Generate the report"
+msgstr ""
+
+msgid "SaveAs"
+msgstr ""
+
+msgid "RecentSettings"
+msgstr ""
+
+msgid "Partner by City"
+msgstr ""
+
+msgid "Width of column:"
+msgstr ""
+
+msgid "cm"
+msgstr ""
+
+msgid "ComboBox1"
+msgstr ""
+
+msgid "from:"
+msgstr ""
+
+msgid "to:"
+msgstr ""
+
+msgid "Use Date Range:"
+msgstr ""
+
+msgid "Birthday List"
+msgstr ""
+
+msgid "Close the preview"
+msgstr ""
+
+msgid "&About Petra..."
+msgstr ""
+
+msgid "Status Bar"
+msgstr ""
+
+msgid "Ready"
+msgstr ""
+
+msgid "Print Preview"
+msgstr ""
+
+msgid "Text Preview"
+msgstr ""
+
+msgid "Text Output"
+msgstr ""
+
+msgid ""
+"Unfortunately this function is disabled. Please install a printer to use "
+"this page."
+msgstr ""
+
+msgid "Select Zoom"
+msgstr ""
+
+msgid "Previous Page"
+msgstr ""
+
+msgid "Next Page"
+msgstr ""
+
+msgid "Detail Reports"
+msgstr ""
+
+msgid "Print"
+msgstr ""
+
+msgid "Print the report"
+msgstr ""
+
+msgid "Export to CSV or directly into Excel, if it is available"
+msgstr ""
+
+msgid "Save as Text file"
+msgstr ""
+
+msgid "Save as a text file (e.g. for email)"
+msgstr ""
+
+msgid "Generate Chart"
+msgstr ""
+
+msgid ""
+"Generates a chart in Excel (only available yet for few reports at the moment)"
+msgstr ""
+
+#, csharp-format
+msgid "You do not have permission to access {0}."
+msgstr ""
+
+msgid "Invalid User ID/Password."
+msgstr ""
+
+msgid ""
+"  ID | Client          | Status           | Computer    | IP Address      | "
+"Type"
+msgstr ""
+
+msgid ""
+"     | Connected since | Last activity    | Server Port |                 |"
+msgstr ""
+
+msgid " * no connected Clients *"
+msgstr ""
+
+msgid " * no disconnected Clients *"
+msgstr ""
+
+#, csharp-format
+msgid ""
+"  (Currently connected Clients: {0}; client connections since Server start: "
+"{1})"
+msgstr ""
+
+#, csharp-format
+msgid "PETRAServer {0} Build {1}  (OS: {2})"
+msgstr ""
+
+#, csharp-format
+msgid "PETRAServer is running and listening @ {0}:{1}"
+msgstr ""
+
+msgid "SERVER STOPPED!"
+msgstr ""
+
+msgid "SHUTDOWN PROCEDURE INITIATED"
+msgstr ""
+
+msgid "SHUTDOWN: Executing step 1 of 2..."
+msgstr ""
+
+msgid "SHUTDOWN: Executing step 2 of 2..."
+msgstr ""
+
+msgid "SHUTDOWN PROCEDURE FINISHED"
+msgstr ""
+
+msgid "Connecting to Database..."
+msgstr ""
+
+msgid "Connected to Database."
+msgstr ""
+
+#, csharp-format
+msgid "Exception occured during manual load of Client AppDomain: {0}"
+msgstr ""
+
+msgid "SERVER>"
+msgstr ""
+
+msgid "Reading server remote configuration from config file..."
+msgstr ""
+
+msgid "-> Press \"m\" for menu."
+msgstr ""
+
+#, csharp-format
+msgid "Client connections since Server start: {0}"
+msgstr ""
+
+#, csharp-format
+msgid "Clients currently connected: "
+msgstr ""
+
+msgid "** confidential **"
+msgstr ""
+
+msgid "** restricted **"
+msgstr ""
+
+msgid "99"
+msgstr ""
+
+msgid ""
+"You do not have access to Partners of Partner Class 'ORGANISATION' that are "
+"'Foundations'!"
+msgstr ""

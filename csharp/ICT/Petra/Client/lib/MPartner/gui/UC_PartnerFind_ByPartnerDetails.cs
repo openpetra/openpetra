@@ -101,6 +101,17 @@ namespace Ict.Petra.Client.MPartner.Gui
             // The InitializeComponent() call is required for Windows Forms designer support.
             //
             InitializeComponent();
+            #region CATALOGI18N
+
+// this code has been inserted by GenerateI18N, all changes in this region will be overwritten by GenerateI18N
+            this.btnSearch.Text = Catalog.GetString(" &Search");
+            this.chkDetailedResults.Text = Catalog.GetString("Detailed Results");
+            this.btnClearCriteria.Text = Catalog.GetString("Clea&r");
+            this.grpCriteria.Text = Catalog.GetString("Find Criteria");
+            this.btnCustomCriteriaDemo.Text = Catalog.GetString("Custom Criteria Demo");
+            this.grpResult.Text = Catalog.GetString("Fin&d Result");
+            this.lblSearchInfo.Text = Catalog.GetString("Searching...");
+            #endregion
 
             // Define the screen's Logic
             FLogic = new TPartnerFindScreenLogic();

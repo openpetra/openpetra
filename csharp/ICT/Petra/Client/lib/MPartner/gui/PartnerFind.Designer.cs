@@ -181,7 +181,7 @@ namespace Ict.Petra.Client.MPartner.Gui
             this.tpgFindBankDetails.Location = new System.Drawing.Point(2,2);
             this.tpgFindBankDetails.Name = "tpgFindBankDetails";
             this.tpgFindBankDetails.AutoSize = true;
-            this.tpgFindBankDetails.Text = Catalog.GetString("Find by Bank Details");
+            this.tpgFindBankDetails.Text = "Find by Bank Details";
             //
             // tpgFindPartner
             //
@@ -194,7 +194,7 @@ namespace Ict.Petra.Client.MPartner.Gui
             //
             this.ucoFindByPartnerDetails.Name = "ucoFindByPartnerDetails";
             this.ucoFindByPartnerDetails.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.tpgFindPartner.Text = Catalog.GetString("Find by Partner Details");
+            this.tpgFindPartner.Text = "Find by Partner Details";
             //
             // tabPartnerFindMethods
             //
@@ -230,7 +230,7 @@ namespace Ict.Petra.Client.MPartner.Gui
             this.btnHelp.Location = new System.Drawing.Point(2,2);
             this.btnHelp.Name = "btnHelp";
             this.btnHelp.AutoSize = true;
-            this.btnHelp.Text = Catalog.GetString("&Help");
+            this.btnHelp.Text = "&Help";
             this.tableLayoutPanel1.Controls.Add(this.btnHelp, 0, 0);
             this.tableLayoutPanel1.SetColumnSpan(this.btnHelp, 2);
             //
@@ -239,7 +239,7 @@ namespace Ict.Petra.Client.MPartner.Gui
             this.btnCancel.Location = new System.Drawing.Point(2,2);
             this.btnCancel.Name = "btnCancel";
             this.btnCancel.AutoSize = true;
-            this.btnCancel.Text = Catalog.GetString("&Cancel");
+            this.btnCancel.Text = "&Cancel";
             this.tableLayoutPanel1.Controls.Add(this.btnCancel, 0, 1);
             this.tableLayoutPanel1.SetColumnSpan(this.btnCancel, 2);
             //
@@ -248,7 +248,7 @@ namespace Ict.Petra.Client.MPartner.Gui
             this.btnFullyLoadData.Location = new System.Drawing.Point(2,2);
             this.btnFullyLoadData.Name = "btnFullyLoadData";
             this.btnFullyLoadData.AutoSize = true;
-            this.btnFullyLoadData.Text = Catalog.GetString("Fully load Data");
+            this.btnFullyLoadData.Text = "Fully load Data";
             this.tableLayoutPanel1.Controls.Add(this.btnFullyLoadData, 0, 2);
             this.tableLayoutPanel1.SetColumnSpan(this.btnFullyLoadData, 2);
             //
@@ -257,7 +257,7 @@ namespace Ict.Petra.Client.MPartner.Gui
             this.btnAccept.Location = new System.Drawing.Point(2,2);
             this.btnAccept.Name = "btnAccept";
             this.btnAccept.AutoSize = true;
-            this.btnAccept.Text = Catalog.GetString("&Accept");
+            this.btnAccept.Text = "&Accept";
             this.tableLayoutPanel1.Controls.Add(this.btnAccept, 0, 3);
             this.tableLayoutPanel1.SetColumnSpan(this.btnAccept, 2);
             //
@@ -265,79 +265,79 @@ namespace Ict.Petra.Client.MPartner.Gui
             //
             this.mniFileSearch.Name = "mniFileSearch";
             this.mniFileSearch.AutoSize = true;
-            this.mniFileSearch.Text = Catalog.GetString("&Search");
+            this.mniFileSearch.Text = "&Search";
             //
             // mniFileSeparator1
             //
             this.mniFileSeparator1.Name = "mniFileSeparator1";
             this.mniFileSeparator1.AutoSize = true;
-            this.mniFileSeparator1.Text = Catalog.GetString("-");
+            this.mniFileSeparator1.Text = "-";
             //
             // mniFileWorkWithLastPartner
             //
             this.mniFileWorkWithLastPartner.Name = "mniFileWorkWithLastPartner";
             this.mniFileWorkWithLastPartner.AutoSize = true;
-            this.mniFileWorkWithLastPartner.Text = Catalog.GetString("&Work with Last Partner...");
+            this.mniFileWorkWithLastPartner.Text = "&Work with Last Partner...";
             //
             // mniFileRecentPartner1
             //
             this.mniFileRecentPartner1.Name = "mniFileRecentPartner1";
             this.mniFileRecentPartner1.AutoSize = true;
-            this.mniFileRecentPartner1.Text = Catalog.GetString("0");
+            this.mniFileRecentPartner1.Text = "0";
             //
             // mniFileRecentPartner2
             //
             this.mniFileRecentPartner2.Name = "mniFileRecentPartner2";
             this.mniFileRecentPartner2.AutoSize = true;
-            this.mniFileRecentPartner2.Text = Catalog.GetString("1");
+            this.mniFileRecentPartner2.Text = "1";
             //
             // mniFileRecentPartner3
             //
             this.mniFileRecentPartner3.Name = "mniFileRecentPartner3";
             this.mniFileRecentPartner3.AutoSize = true;
-            this.mniFileRecentPartner3.Text = Catalog.GetString("2");
+            this.mniFileRecentPartner3.Text = "2";
             //
             // mniFileRecentPartner4
             //
             this.mniFileRecentPartner4.Name = "mniFileRecentPartner4";
             this.mniFileRecentPartner4.AutoSize = true;
-            this.mniFileRecentPartner4.Text = Catalog.GetString("3");
+            this.mniFileRecentPartner4.Text = "3";
             //
             // mniFileRecentPartner5
             //
             this.mniFileRecentPartner5.Name = "mniFileRecentPartner5";
             this.mniFileRecentPartner5.AutoSize = true;
-            this.mniFileRecentPartner5.Text = Catalog.GetString("4");
+            this.mniFileRecentPartner5.Text = "4";
             //
             // mniFileRecentPartner6
             //
             this.mniFileRecentPartner6.Name = "mniFileRecentPartner6";
             this.mniFileRecentPartner6.AutoSize = true;
-            this.mniFileRecentPartner6.Text = Catalog.GetString("5");
+            this.mniFileRecentPartner6.Text = "5";
             //
             // mniFileRecentPartner7
             //
             this.mniFileRecentPartner7.Name = "mniFileRecentPartner7";
             this.mniFileRecentPartner7.AutoSize = true;
-            this.mniFileRecentPartner7.Text = Catalog.GetString("6");
+            this.mniFileRecentPartner7.Text = "6";
             //
             // mniFileRecentPartner8
             //
             this.mniFileRecentPartner8.Name = "mniFileRecentPartner8";
             this.mniFileRecentPartner8.AutoSize = true;
-            this.mniFileRecentPartner8.Text = Catalog.GetString("7");
+            this.mniFileRecentPartner8.Text = "7";
             //
             // mniFileRecentPartner9
             //
             this.mniFileRecentPartner9.Name = "mniFileRecentPartner9";
             this.mniFileRecentPartner9.AutoSize = true;
-            this.mniFileRecentPartner9.Text = Catalog.GetString("8");
+            this.mniFileRecentPartner9.Text = "8";
             //
             // mniFileRecentPartner10
             //
             this.mniFileRecentPartner10.Name = "mniFileRecentPartner10";
             this.mniFileRecentPartner10.AutoSize = true;
-            this.mniFileRecentPartner10.Text = Catalog.GetString("9");
+            this.mniFileRecentPartner10.Text = "9";
             //
             // mniFileRecentPartners
             //
@@ -354,103 +354,103 @@ namespace Ict.Petra.Client.MPartner.Gui
                         mniFileRecentPartner8,
                         mniFileRecentPartner9,
                         mniFileRecentPartner10});
-            this.mniFileRecentPartners.Text = Catalog.GetString("&Recent Partners");
+            this.mniFileRecentPartners.Text = "&Recent Partners";
             //
             // mniFileSeparator2
             //
             this.mniFileSeparator2.Name = "mniFileSeparator2";
             this.mniFileSeparator2.AutoSize = true;
-            this.mniFileSeparator2.Text = Catalog.GetString("-");
+            this.mniFileSeparator2.Text = "-";
             //
             // mniFileNewPartner
             //
             this.mniFileNewPartner.Name = "mniFileNewPartner";
             this.mniFileNewPartner.AutoSize = true;
-            this.mniFileNewPartner.Text = Catalog.GetString("&New Partner...");
+            this.mniFileNewPartner.Text = "&New Partner...";
             //
             // mniFileViewPartner
             //
             this.mniFileViewPartner.Name = "mniFileViewPartner";
             this.mniFileViewPartner.AutoSize = true;
-            this.mniFileViewPartner.Text = Catalog.GetString("&View Partner");
+            this.mniFileViewPartner.Text = "&View Partner";
             //
             // mniFileEditPartner
             //
             this.mniFileEditPartner.Name = "mniFileEditPartner";
             this.mniFileEditPartner.AutoSize = true;
-            this.mniFileEditPartner.Text = Catalog.GetString("&Edit Partner");
+            this.mniFileEditPartner.Text = "&Edit Partner";
             //
             // mniFileMergePartners
             //
             this.mniFileMergePartners.Name = "mniFileMergePartners";
             this.mniFileMergePartners.AutoSize = true;
-            this.mniFileMergePartners.Text = Catalog.GetString("Mer&ge Partners...");
+            this.mniFileMergePartners.Text = "Mer&ge Partners...";
             //
             // mniFileDeletePartner
             //
             this.mniFileDeletePartner.Name = "mniFileDeletePartner";
             this.mniFileDeletePartner.AutoSize = true;
-            this.mniFileDeletePartner.Text = Catalog.GetString("&Delete Partner");
+            this.mniFileDeletePartner.Text = "&Delete Partner";
             //
             // mniFileSeparator3
             //
             this.mniFileSeparator3.Name = "mniFileSeparator3";
             this.mniFileSeparator3.AutoSize = true;
-            this.mniFileSeparator3.Text = Catalog.GetString("-");
+            this.mniFileSeparator3.Text = "-";
             //
             // mniFileCopyAddress
             //
             this.mniFileCopyAddress.Name = "mniFileCopyAddress";
             this.mniFileCopyAddress.AutoSize = true;
-            this.mniFileCopyAddress.Text = Catalog.GetString("Copy Partner's &Address...");
+            this.mniFileCopyAddress.Text = "Copy Partner's &Address...";
             //
             // mniFileCopyPartnerKey
             //
             this.mniFileCopyPartnerKey.Name = "mniFileCopyPartnerKey";
             this.mniFileCopyPartnerKey.AutoSize = true;
-            this.mniFileCopyPartnerKey.Text = Catalog.GetString("Copy Partner's Partner &Key");
+            this.mniFileCopyPartnerKey.Text = "Copy Partner's Partner &Key";
             //
             // mniFileSendEmail
             //
             this.mniFileSendEmail.Name = "mniFileSendEmail";
             this.mniFileSendEmail.AutoSize = true;
-            this.mniFileSendEmail.Text = Catalog.GetString("Send E&mail to Partner");
+            this.mniFileSendEmail.Text = "Send E&mail to Partner";
             //
             // mniFileSeparator4
             //
             this.mniFileSeparator4.Name = "mniFileSeparator4";
             this.mniFileSeparator4.AutoSize = true;
-            this.mniFileSeparator4.Text = Catalog.GetString("-");
+            this.mniFileSeparator4.Text = "-";
             //
             // mniFilePrintPartner
             //
             this.mniFilePrintPartner.Name = "mniFilePrintPartner";
             this.mniFilePrintPartner.AutoSize = true;
-            this.mniFilePrintPartner.Text = Catalog.GetString("&Print Partner");
+            this.mniFilePrintPartner.Text = "&Print Partner";
             //
             // mniFileSeparator5
             //
             this.mniFileSeparator5.Name = "mniFileSeparator5";
             this.mniFileSeparator5.AutoSize = true;
-            this.mniFileSeparator5.Text = Catalog.GetString("-");
+            this.mniFileSeparator5.Text = "-";
             //
             // mniFileExportPartner
             //
             this.mniFileExportPartner.Name = "mniFileExportPartner";
             this.mniFileExportPartner.AutoSize = true;
-            this.mniFileExportPartner.Text = Catalog.GetString("E&xport Partner");
+            this.mniFileExportPartner.Text = "E&xport Partner";
             //
             // mniFileImportPartner
             //
             this.mniFileImportPartner.Name = "mniFileImportPartner";
             this.mniFileImportPartner.AutoSize = true;
-            this.mniFileImportPartner.Text = Catalog.GetString("&Import Partner");
+            this.mniFileImportPartner.Text = "&Import Partner";
             //
             // mniFileSeparator6
             //
             this.mniFileSeparator6.Name = "mniFileSeparator6";
             this.mniFileSeparator6.AutoSize = true;
-            this.mniFileSeparator6.Text = Catalog.GetString("-");
+            this.mniFileSeparator6.Text = "-";
             //
             // mniClose
             //
@@ -458,8 +458,8 @@ namespace Ict.Petra.Client.MPartner.Gui
             this.mniClose.AutoSize = true;
             this.mniClose.Click += new System.EventHandler(this.mniCloseClick);
             this.mniClose.Image = ((System.Drawing.Bitmap)resources.GetObject("mniClose.Glyph"));
-            this.mniClose.ToolTipText = Catalog.GetString("Closes this window");
-            this.mniClose.Text = Catalog.GetString("&Close");
+            this.mniClose.ToolTipText = "Closes this window";
+            this.mniClose.Text = "&Close";
             //
             // mniFile
             //
@@ -487,121 +487,121 @@ namespace Ict.Petra.Client.MPartner.Gui
                         mniFileImportPartner,
                         mniFileSeparator6,
                         mniClose});
-            this.mniFile.Text = Catalog.GetString("&File");
+            this.mniFile.Text = "&File";
             //
             // mniMaintainAddresses
             //
             this.mniMaintainAddresses.Name = "mniMaintainAddresses";
             this.mniMaintainAddresses.AutoSize = true;
-            this.mniMaintainAddresses.Text = Catalog.GetString("&Addresses...");
+            this.mniMaintainAddresses.Text = "&Addresses...";
             //
             // mniMaintainPartnerDetails
             //
             this.mniMaintainPartnerDetails.Name = "mniMaintainPartnerDetails";
             this.mniMaintainPartnerDetails.AutoSize = true;
-            this.mniMaintainPartnerDetails.Text = Catalog.GetString("Partner &Details...");
+            this.mniMaintainPartnerDetails.Text = "Partner &Details...";
             //
             // mniMaintainFoundationDetails
             //
             this.mniMaintainFoundationDetails.Name = "mniMaintainFoundationDetails";
             this.mniMaintainFoundationDetails.AutoSize = true;
-            this.mniMaintainFoundationDetails.Text = Catalog.GetString("Foundation Details...");
+            this.mniMaintainFoundationDetails.Text = "Foundation Details...";
             //
             // mniMaintainSubscriptions
             //
             this.mniMaintainSubscriptions.Name = "mniMaintainSubscriptions";
             this.mniMaintainSubscriptions.AutoSize = true;
-            this.mniMaintainSubscriptions.Text = Catalog.GetString("&Subscriptions...");
+            this.mniMaintainSubscriptions.Text = "&Subscriptions...";
             //
             // mniMaintainSpecialTypes
             //
             this.mniMaintainSpecialTypes.Name = "mniMaintainSpecialTypes";
             this.mniMaintainSpecialTypes.AutoSize = true;
-            this.mniMaintainSpecialTypes.Text = Catalog.GetString("Special &Types...");
+            this.mniMaintainSpecialTypes.Text = "Special &Types...";
             //
             // mniMaintainContacts
             //
             this.mniMaintainContacts.Name = "mniMaintainContacts";
             this.mniMaintainContacts.AutoSize = true;
-            this.mniMaintainContacts.Text = Catalog.GetString("&Contacts...");
+            this.mniMaintainContacts.Text = "&Contacts...";
             //
             // mniMaintainFamilyMembers
             //
             this.mniMaintainFamilyMembers.Name = "mniMaintainFamilyMembers";
             this.mniMaintainFamilyMembers.AutoSize = true;
-            this.mniMaintainFamilyMembers.Text = Catalog.GetString("Family &Members...");
+            this.mniMaintainFamilyMembers.Text = "Family &Members...";
             //
             // mniMaintainRelationships
             //
             this.mniMaintainRelationships.Name = "mniMaintainRelationships";
             this.mniMaintainRelationships.AutoSize = true;
-            this.mniMaintainRelationships.Text = Catalog.GetString("&Relationships...");
+            this.mniMaintainRelationships.Text = "&Relationships...";
             //
             // mniMaintainInterests
             //
             this.mniMaintainInterests.Name = "mniMaintainInterests";
             this.mniMaintainInterests.AutoSize = true;
-            this.mniMaintainInterests.Text = Catalog.GetString("&Interests...");
+            this.mniMaintainInterests.Text = "&Interests...";
             //
             // mniMaintainReminders
             //
             this.mniMaintainReminders.Name = "mniMaintainReminders";
             this.mniMaintainReminders.AutoSize = true;
-            this.mniMaintainReminders.Text = Catalog.GetString("R&eminders...");
+            this.mniMaintainReminders.Text = "R&eminders...";
             //
             // mniMaintainNotes
             //
             this.mniMaintainNotes.Name = "mniMaintainNotes";
             this.mniMaintainNotes.AutoSize = true;
-            this.mniMaintainNotes.Text = Catalog.GetString("&Notes...");
+            this.mniMaintainNotes.Text = "&Notes...";
             //
             // mniMaintainOfficeSpecific
             //
             this.mniMaintainOfficeSpecific.Name = "mniMaintainOfficeSpecific";
             this.mniMaintainOfficeSpecific.AutoSize = true;
-            this.mniMaintainOfficeSpecific.Text = Catalog.GetString("&Local Partner Data...");
+            this.mniMaintainOfficeSpecific.Text = "&Local Partner Data...";
             //
             // mniMaintainOMerField
             //
             this.mniMaintainOMerField.Name = "mniMaintainOMerField";
             this.mniMaintainOMerField.AutoSize = true;
-            this.mniMaintainOMerField.Text = Catalog.GetString("&OMer Field...");
+            this.mniMaintainOMerField.Text = "&Worker Field...";
             //
             // mniMaintainSeparator1
             //
             this.mniMaintainSeparator1.Name = "mniMaintainSeparator1";
             this.mniMaintainSeparator1.AutoSize = true;
-            this.mniMaintainSeparator1.Text = Catalog.GetString("-");
+            this.mniMaintainSeparator1.Text = "-";
             //
             // mniMaintainPersonnelIndividualData
             //
             this.mniMaintainPersonnelIndividualData.Name = "mniMaintainPersonnelIndividualData";
             this.mniMaintainPersonnelIndividualData.AutoSize = true;
-            this.mniMaintainPersonnelIndividualData.Text = Catalog.GetString("&Personnel/Individual Data...");
+            this.mniMaintainPersonnelIndividualData.Text = "&Personnel/Individual Data...";
             //
             // mniMaintainSeparator2
             //
             this.mniMaintainSeparator2.Name = "mniMaintainSeparator2";
             this.mniMaintainSeparator2.AutoSize = true;
-            this.mniMaintainSeparator2.Text = Catalog.GetString("-");
+            this.mniMaintainSeparator2.Text = "-";
             //
             // mniMaintainDonorHistory
             //
             this.mniMaintainDonorHistory.Name = "mniMaintainDonorHistory";
             this.mniMaintainDonorHistory.AutoSize = true;
-            this.mniMaintainDonorHistory.Text = Catalog.GetString("Donor  &History...");
+            this.mniMaintainDonorHistory.Text = "Donor  &History...";
             //
             // mniMaintainRecipientHistory
             //
             this.mniMaintainRecipientHistory.Name = "mniMaintainRecipientHistory";
             this.mniMaintainRecipientHistory.AutoSize = true;
-            this.mniMaintainRecipientHistory.Text = Catalog.GetString("Recipient  Histor&y...");
+            this.mniMaintainRecipientHistory.Text = "Recipient  Histor&y...";
             //
             // mniMaintainFinanceDetails
             //
             this.mniMaintainFinanceDetails.Name = "mniMaintainFinanceDetails";
             this.mniMaintainFinanceDetails.AutoSize = true;
-            this.mniMaintainFinanceDetails.Text = Catalog.GetString("&Finance Details...");
+            this.mniMaintainFinanceDetails.Text = "&Finance Details...";
             //
             // mniMaintain
             //
@@ -627,61 +627,61 @@ namespace Ict.Petra.Client.MPartner.Gui
                         mniMaintainDonorHistory,
                         mniMaintainRecipientHistory,
                         mniMaintainFinanceDetails});
-            this.mniMaintain.Text = Catalog.GetString("Maintain");
+            this.mniMaintain.Text = "Maintain";
             //
             // mniMailingGenerateExtract
             //
             this.mniMailingGenerateExtract.Name = "mniMailingGenerateExtract";
             this.mniMailingGenerateExtract.AutoSize = true;
-            this.mniMailingGenerateExtract.Text = Catalog.GetString("&Generate Extract From Found Partners...");
+            this.mniMailingGenerateExtract.Text = "&Generate Extract From Found Partners...";
             //
             // mniMailingExtracts
             //
             this.mniMailingExtracts.Name = "mniMailingExtracts";
             this.mniMailingExtracts.AutoSize = true;
-            this.mniMailingExtracts.Text = Catalog.GetString("&Extracts...");
+            this.mniMailingExtracts.Text = "&Extracts...";
             //
             // mniMailingSeparator1
             //
             this.mniMailingSeparator1.Name = "mniMailingSeparator1";
             this.mniMailingSeparator1.AutoSize = true;
-            this.mniMailingSeparator1.Text = Catalog.GetString("-");
+            this.mniMailingSeparator1.Text = "-";
             //
             // mniMailingDuplicateAddressCheck
             //
             this.mniMailingDuplicateAddressCheck.Name = "mniMailingDuplicateAddressCheck";
             this.mniMailingDuplicateAddressCheck.AutoSize = true;
-            this.mniMailingDuplicateAddressCheck.Text = Catalog.GetString("&Duplicate  Address Check...");
+            this.mniMailingDuplicateAddressCheck.Text = "&Duplicate  Address Check...";
             //
             // mniMailingMergeAddresses
             //
             this.mniMailingMergeAddresses.Name = "mniMailingMergeAddresses";
             this.mniMailingMergeAddresses.AutoSize = true;
-            this.mniMailingMergeAddresses.Text = Catalog.GetString("&Merge  Addresses...");
+            this.mniMailingMergeAddresses.Text = "&Merge  Addresses...";
             //
             // mniMailingPartnersAtLocation
             //
             this.mniMailingPartnersAtLocation.Name = "mniMailingPartnersAtLocation";
             this.mniMailingPartnersAtLocation.AutoSize = true;
-            this.mniMailingPartnersAtLocation.Text = Catalog.GetString("Find Partners at &Location...");
+            this.mniMailingPartnersAtLocation.Text = "Find Partners at &Location...";
             //
             // mniMailingSeparator2
             //
             this.mniMailingSeparator2.Name = "mniMailingSeparator2";
             this.mniMailingSeparator2.AutoSize = true;
-            this.mniMailingSeparator2.Text = Catalog.GetString("-");
+            this.mniMailingSeparator2.Text = "-";
             //
             // mniMailingSubscriptionExpNotice
             //
             this.mniMailingSubscriptionExpNotice.Name = "mniMailingSubscriptionExpNotice";
             this.mniMailingSubscriptionExpNotice.AutoSize = true;
-            this.mniMailingSubscriptionExpNotice.Text = Catalog.GetString("Subscription Expiry &Notices...");
+            this.mniMailingSubscriptionExpNotice.Text = "Subscription Expiry &Notices...";
             //
             // mniMailingSubscriptionCancellation
             //
             this.mniMailingSubscriptionCancellation.Name = "mniMailingSubscriptionCancellation";
             this.mniMailingSubscriptionCancellation.AutoSize = true;
-            this.mniMailingSubscriptionCancellation.Text = Catalog.GetString("Subscription  &Cancellation...");
+            this.mniMailingSubscriptionCancellation.Text = "Subscription  &Cancellation...";
             //
             // mniMailing
             //
@@ -697,62 +697,62 @@ namespace Ict.Petra.Client.MPartner.Gui
                         mniMailingSeparator2,
                         mniMailingSubscriptionExpNotice,
                         mniMailingSubscriptionCancellation});
-            this.mniMailing.Text = Catalog.GetString("&Mailing");
+            this.mniMailing.Text = "&Mailing";
             //
             // mniTools
             //
             this.mniTools.Name = "mniTools";
             this.mniTools.AutoSize = true;
-            this.mniTools.Text = Catalog.GetString("&Tools");
+            this.mniTools.Text = "&Tools";
             //
             // mniPetraMainMenu
             //
             this.mniPetraMainMenu.Name = "mniPetraMainMenu";
             this.mniPetraMainMenu.AutoSize = true;
             this.mniPetraMainMenu.Click += new System.EventHandler(this.mniPetraMainMenuClick);
-            this.mniPetraMainMenu.Text = Catalog.GetString("Petra &Main Menu");
+            this.mniPetraMainMenu.Text = "Petra &Main Menu";
             //
             // mniPetraPartnerModule
             //
             this.mniPetraPartnerModule.Name = "mniPetraPartnerModule";
             this.mniPetraPartnerModule.AutoSize = true;
             this.mniPetraPartnerModule.Click += new System.EventHandler(this.mniPetraPartnerModuleClick);
-            this.mniPetraPartnerModule.Text = Catalog.GetString("Pa&rtner");
+            this.mniPetraPartnerModule.Text = "Pa&rtner";
             //
             // mniPetraFinanceModule
             //
             this.mniPetraFinanceModule.Name = "mniPetraFinanceModule";
             this.mniPetraFinanceModule.AutoSize = true;
             this.mniPetraFinanceModule.Click += new System.EventHandler(this.mniPetraFinanceModuleClick);
-            this.mniPetraFinanceModule.Text = Catalog.GetString("&Finance");
+            this.mniPetraFinanceModule.Text = "&Finance";
             //
             // mniPetraPersonnelModule
             //
             this.mniPetraPersonnelModule.Name = "mniPetraPersonnelModule";
             this.mniPetraPersonnelModule.AutoSize = true;
             this.mniPetraPersonnelModule.Click += new System.EventHandler(this.mniPetraPersonnelModuleClick);
-            this.mniPetraPersonnelModule.Text = Catalog.GetString("P&ersonnel");
+            this.mniPetraPersonnelModule.Text = "P&ersonnel";
             //
             // mniPetraConferenceModule
             //
             this.mniPetraConferenceModule.Name = "mniPetraConferenceModule";
             this.mniPetraConferenceModule.AutoSize = true;
             this.mniPetraConferenceModule.Click += new System.EventHandler(this.mniPetraConferenceModuleClick);
-            this.mniPetraConferenceModule.Text = Catalog.GetString("C&onference");
+            this.mniPetraConferenceModule.Text = "C&onference";
             //
             // mniPetraFinDevModule
             //
             this.mniPetraFinDevModule.Name = "mniPetraFinDevModule";
             this.mniPetraFinDevModule.AutoSize = true;
             this.mniPetraFinDevModule.Click += new System.EventHandler(this.mniPetraFinDevModuleClick);
-            this.mniPetraFinDevModule.Text = Catalog.GetString("Financial &Development");
+            this.mniPetraFinDevModule.Text = "Financial &Development";
             //
             // mniPetraSysManModule
             //
             this.mniPetraSysManModule.Name = "mniPetraSysManModule";
             this.mniPetraSysManModule.AutoSize = true;
             this.mniPetraSysManModule.Click += new System.EventHandler(this.mniPetraSysManModuleClick);
-            this.mniPetraSysManModule.Text = Catalog.GetString("&System Manager");
+            this.mniPetraSysManModule.Text = "&System Manager";
             //
             // mniPetraModules
             //
@@ -766,43 +766,43 @@ namespace Ict.Petra.Client.MPartner.Gui
                         mniPetraConferenceModule,
                         mniPetraFinDevModule,
                         mniPetraSysManModule});
-            this.mniPetraModules.Text = Catalog.GetString("&Petra");
+            this.mniPetraModules.Text = "&Petra";
             //
             // mniHelpPetraHelp
             //
             this.mniHelpPetraHelp.Name = "mniHelpPetraHelp";
             this.mniHelpPetraHelp.AutoSize = true;
-            this.mniHelpPetraHelp.Text = Catalog.GetString("&Petra Help");
+            this.mniHelpPetraHelp.Text = "&Petra Help";
             //
             // mniSeparator0
             //
             this.mniSeparator0.Name = "mniSeparator0";
             this.mniSeparator0.AutoSize = true;
-            this.mniSeparator0.Text = Catalog.GetString("-");
+            this.mniSeparator0.Text = "-";
             //
             // mniHelpBugReport
             //
             this.mniHelpBugReport.Name = "mniHelpBugReport";
             this.mniHelpBugReport.AutoSize = true;
-            this.mniHelpBugReport.Text = Catalog.GetString("Bug &Report");
+            this.mniHelpBugReport.Text = "Bug &Report";
             //
             // mniSeparator1
             //
             this.mniSeparator1.Name = "mniSeparator1";
             this.mniSeparator1.AutoSize = true;
-            this.mniSeparator1.Text = Catalog.GetString("-");
+            this.mniSeparator1.Text = "-";
             //
             // mniHelpAboutPetra
             //
             this.mniHelpAboutPetra.Name = "mniHelpAboutPetra";
             this.mniHelpAboutPetra.AutoSize = true;
-            this.mniHelpAboutPetra.Text = Catalog.GetString("&About Petra");
+            this.mniHelpAboutPetra.Text = "&About Petra";
             //
             // mniHelpDevelopmentTeam
             //
             this.mniHelpDevelopmentTeam.Name = "mniHelpDevelopmentTeam";
             this.mniHelpDevelopmentTeam.AutoSize = true;
-            this.mniHelpDevelopmentTeam.Text = Catalog.GetString("&The Development Team...");
+            this.mniHelpDevelopmentTeam.Text = "&The Development Team...";
             //
             // mniHelp
             //
@@ -815,7 +815,7 @@ namespace Ict.Petra.Client.MPartner.Gui
                         mniSeparator1,
                         mniHelpAboutPetra,
                         mniHelpDevelopmentTeam});
-            this.mniHelp.Text = Catalog.GetString("&Help");
+            this.mniHelp.Text = "&Help";
             //
             // mnuMain
             //

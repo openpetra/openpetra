@@ -1,4 +1,4 @@
-﻿/*************************************************************************
+/*************************************************************************
  *
  * DO NOT REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
  *
@@ -46,6 +46,13 @@ namespace Ict.Petra.Client.MPartner
             // The InitializeComponent() call is required for Windows Forms designer support.
             //
             InitializeComponent();
+            #region CATALOGI18N
+
+// this code has been inserted by GenerateI18N, all changes in this region will be overwritten by GenerateI18N
+            this.lblAddressLayout.Text = Catalog.GetString("Select Address &Layout:");
+            this.grpPreview.Text = Catalog.GetString("Preview of Copied Address");
+            this.Text = Catalog.GetString("Copy Partner\'s Address");
+            #endregion
         }
 
         public void SetParameters(Int64 APartnerKey, Int64 ASiteKey, Int32 ALocationKey)

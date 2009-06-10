@@ -209,7 +209,7 @@ namespace Ict.Tools.CodeGeneration.Winforms
 
             if (AActionHandler.actionTooltip.Length > 0)
             {
-                writer.SetControlProperty(ctrl.controlName, "ToolTipText", "Catalog.GetString(\"" + AActionHandler.actionTooltip + "\")");
+                writer.SetControlProperty(ctrl.controlName, "ToolTipText", "\"" + AActionHandler.actionTooltip + "\"");
             }
         }
 

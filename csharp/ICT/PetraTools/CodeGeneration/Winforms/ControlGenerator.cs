@@ -65,7 +65,7 @@ namespace Ict.Tools.CodeGeneration.Winforms
                 labelText = ctrl.Label + ":";
             }
 
-            writer.SetControlProperty(ctrl.controlName, "Text", "Catalog.GetString(\"" + labelText + "\")");
+            writer.SetControlProperty(ctrl.controlName, "Text", "\"" + labelText + "\"");
         }
     }
     public class ButtonGenerator : TControlGenerator
@@ -91,7 +91,7 @@ namespace Ict.Tools.CodeGeneration.Winforms
                 labelText = ActionHandler.actionLabel;
             }
 
-            writer.SetControlProperty(ctrl.controlName, "Text", "Catalog.GetString(\"" + labelText + "\")");
+            writer.SetControlProperty(ctrl.controlName, "Text", "\"" + labelText + "\"");
         }
     }
     public class TabPageGenerator : GroupBoxGenerator
@@ -155,7 +155,7 @@ namespace Ict.Tools.CodeGeneration.Winforms
             string controlName = base.FPrefix + ctrl.controlName.Substring(3);
 
             base.SetControlProperties(writer, ctrl);
-            writer.SetControlProperty(ctrl.controlName, "Text", "Catalog.GetString(\"" + ctrl.Label + "\")");
+            writer.SetControlProperty(ctrl.controlName, "Text", "\"" + ctrl.Label + "\"");
 
             if (TXMLParser.HasAttribute(ctrl.xmlNode, "RadioChecked"))
             {
@@ -227,7 +227,7 @@ namespace Ict.Tools.CodeGeneration.Winforms
                 }
             }
 
-            writer.SetControlProperty(ctrl.controlName, "Text", "Catalog.GetString(\"" + ctrl.Label + "\")");
+            writer.SetControlProperty(ctrl.controlName, "Text", "\"" + ctrl.Label + "\"");
         }
     }
     public class TClbVersatileGenerator : TControlGenerator
@@ -486,7 +486,7 @@ namespace Ict.Tools.CodeGeneration.Winforms
 
             if ((base.FPrefix == "grp") || (base.FPrefix == "rgr") || (base.FPrefix == "tpg"))
             {
-                writer.SetControlProperty(ControlName, "Text", "Catalog.GetString(\"" + ctrl.Label + "\")");
+                writer.SetControlProperty(ControlName, "Text", "\"" + ctrl.Label + "\"");
             }
         }
     }
@@ -689,7 +689,7 @@ namespace Ict.Tools.CodeGeneration.Winforms
                 writer.Template.AddToCodelet("ACTIONENABLING", ActionEnabling);
             }
 
-            writer.SetControlProperty(ctrl.controlName, "Text", "Catalog.GetString(\"" + mnuLabel + "\")");
+            writer.SetControlProperty(ctrl.controlName, "Text", "\"" + mnuLabel + "\"");
 
             // todo: this.toolStripMenuItem1.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
         }
@@ -787,7 +787,7 @@ namespace Ict.Tools.CodeGeneration.Winforms
         public override void SetControlProperties(IFormWriter writer, TControlDef ctrl)
         {
             base.SetControlProperties(writer, ctrl);
-            writer.SetControlProperty(ctrl.controlName, "Text", "Catalog.GetString(\"" + ctrl.Label + "\")");
+            writer.SetControlProperty(ctrl.controlName, "Text", "\"" + ctrl.Label + "\"");
             string ActionToPerform = ctrl.GetAttribute("Action");
 
             if (writer.CodeStorage.FActionList.ContainsKey(ActionToPerform))

@@ -59,6 +59,25 @@ namespace Ict.Petra.Client.App.PetraClient
       // Required for Windows Form Designer support
       //
       InitializeComponent();
+#region CATALOGI18N
+// this code has been inserted by GenerateI18N, all changes in this region will be overwritten by GenerateI18N
+            this.mniClose.ToolTipText = Catalog.GetString("Closes this window");
+            this.mniClose.Text = Catalog.GetString("&Close");
+            this.mniFile.Text = Catalog.GetString("&File");
+            this.mniPetraMainMenu.Text = Catalog.GetString("Petra &Main Menu");
+            this.mniPetraPartnerModule.Text = Catalog.GetString("Pa&rtner");
+            this.mniPetraFinanceModule.Text = Catalog.GetString("&Finance");
+            this.mniPetraPersonnelModule.Text = Catalog.GetString("P&ersonnel");
+            this.mniPetraConferenceModule.Text = Catalog.GetString("C&onference");
+            this.mniPetraFinDevModule.Text = Catalog.GetString("Financial &Development");
+            this.mniPetraSysManModule.Text = Catalog.GetString("&System Manager");
+            this.mniPetraModules.Text = Catalog.GetString("&Petra");
+            this.mniHelpPetraHelp.Text = Catalog.GetString("&Petra Help");
+            this.mniHelpBugReport.Text = Catalog.GetString("Bug &Report");
+            this.mniHelpAboutPetra.Text = Catalog.GetString("&About Petra");
+            this.mniHelpDevelopmentTeam.Text = Catalog.GetString("&The Development Team...");
+            this.mniHelp.Text = Catalog.GetString("&Help");
+#endregion
 
       FPetraUtilsObject = new TFrmPetraModuleUtils(AParentFormHandle, this);
       ucoMainWindowContent.PetraUtilsObject = FPetraUtilsObject;

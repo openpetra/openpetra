@@ -1,4 +1,4 @@
-﻿/*************************************************************************
+/*************************************************************************
  *
  * DO NOT REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
  *
@@ -82,6 +82,40 @@ namespace Ict.Petra.Client.MReporting.Gui
             // Required for Windows Form Designer support 
             //  
             InitializeComponent();
+#region CATALOGI18N
+// this code has been inserted by GenerateI18N, all changes in this region will be overwritten by GenerateI18N
+            this.mniFile.Text = Catalog.GetString("&File");
+            this.mniFileClose.Text = Catalog.GetString("&Close");
+            this.mniFileClose.ToolTipText = Catalog.GetString("Close the preview");
+            this.mniHelp.Text = Catalog.GetString("&Help");
+            this.mniHelpPetraHelp.Text = Catalog.GetString("&Petra Help");
+            this.mniHelpDivider1.Text = Catalog.GetString("-");
+            this.mniHelpBugReport.Text = Catalog.GetString("Bug &Report");
+            this.mniHelpAboutPetra.Text = Catalog.GetString("&About Petra...");
+            this.mniHelpDevelopmentTeam.Text = Catalog.GetString("&The Development Team...");
+            this.stbMain.Text = Catalog.GetString("Status Bar");
+            this.stpInfo.Text = Catalog.GetString("Ready");
+            this.tbbClose.Text = Catalog.GetString("Close");
+            this.tbbClose.ToolTipText = Catalog.GetString("Closes this window");
+            this.Text = Catalog.GetString("Print Preview");
+            this.tbpText.Text = Catalog.GetString("Text Preview");
+            this.txtOutput.Text = Catalog.GetString("Text Output");
+            this.tbpPreview.Text = Catalog.GetString("Print Preview");
+            this.lblNoPrinter.Text = Catalog.GetString("Unfortunately this function is disabled. Please" + " install a printer to use this page.");
+            this.CbB_Zoom.Text = Catalog.GetString("Select Zoom");
+            this.Btn_PreviousPage.Text = Catalog.GetString("Previous Page");
+            this.Btn_NextPage.Text = Catalog.GetString("Next Page");
+            this.tbpGridView.Text = Catalog.GetString("Detail Reports");
+            this.tbtPrint.Text = Catalog.GetString("Print");
+            this.tbtPrint.ToolTipText = Catalog.GetString("Print the report");
+            this.tbtExportCSV.Text = Catalog.GetString("Export to CSV");
+            this.tbtExportCSV.ToolTipText = Catalog.GetString("Export to CSV or directly into Excel, if" + " it is available");
+            this.tbtExportText.Text = Catalog.GetString("Save as Text file");
+            this.tbtExportText.ToolTipText = Catalog.GetString("Save as a text file (e.g. for email)");
+            this.tbtGenerateChart.Text = Catalog.GetString("Generate Chart");
+            this.tbtGenerateChart.ToolTipText = Catalog.GetString("Generates a chart in Excel (only ava" + "ilable yet for few reports at the moment)");
+            this.Text = Catalog.GetString("Print Preview");
+#endregion
             
 			System.Windows.Forms.TabPage SelectedTab;
 			String durationText;

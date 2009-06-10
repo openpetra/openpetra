@@ -44,6 +44,7 @@ class Program
                 Console.WriteLine("call: GenerateWinForms -ymlfile:c:\\test.yaml");
                 Console.Write("Press any key to continue . . . ");
                 Console.ReadLine();
+                Environment.Exit(-1);
                 return;
             }
 
@@ -74,6 +75,7 @@ class Program
             }
 
             Console.WriteLine(e.StackTrace);
+            Environment.Exit(-1);
         }
     }
 }

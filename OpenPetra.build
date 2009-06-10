@@ -27,10 +27,11 @@
         <echo message="fixProjectFiles: use this for broken GUIDs in sln and csproj files"/>
         <echo message="recreateDatabase: needed after changes in table structure in petra.xml"/>
         <echo message="resetDatabase: just resets the data, resets the permissions"/>
-        <echo message="translation: creates and updates the .po files, and compiles the .mo files for delivery"/>
+        <echo message="translation: extracts string in winforms, creates and updates the .po files, and compiles the .mo files for delivery"/>
         <echo message="generateORM: generates the typed tables and typed datastore from the petra.xml"/>
         <echo message="generateGlue: generates the interfaces and instantiators, which is the glue between client and server"/>
         <echo message="generateGTK: generates the User Interface using GTK"/>
+        <echo message="generateWinforms: generates the User Interface using System.Windows.Forms"/>
         <echo message="cleanPetra: prepare for a clean build"/>
         <echo message="compilePetra: build all Petra C# code"/>
         <echo message="startPetraServer: run a local Petra Server"/>
@@ -270,11 +271,31 @@
     </target>
 
     <target name="generateWinforms" depends="compilePetraTools" description="Generate Winforms User Interface">
+        <!-- todo: go through all yaml files that have FormType different from abstract -->
+        <!-- todo: run generateI18N for each generated winform file as well? -->
         <exec program="${PetraToolsExe.dir}\GenerateWinforms.exe" commandline="-ymlfile:${OpenPetraRoot.dir}/csharp/ICT/Petra/Client/app/PetraClient/MainWindow.yaml -TemplateDir:${OpenPetraRoot.dir}/csharp/ICT/PetraTools/Templates/Winforms -ResourceDir:${OpenPetraRoot.dir}/resources"/>
         <exec program="${PetraToolsExe.dir}\GenerateWinforms.exe" commandline="-ymlfile:${OpenPetraRoot.dir}/csharp/ICT/Petra/Client/lib/MPartner/gui/PartnerMain.yaml -TemplateDir:${OpenPetraRoot.dir}/csharp/ICT/PetraTools/Templates/Winforms -ResourceDir:${OpenPetraRoot.dir}/resources"/>
         <exec program="${PetraToolsExe.dir}\GenerateWinforms.exe" commandline="-ymlfile:${OpenPetraRoot.dir}/csharp/ICT/Petra/Client/lib/MPartner/gui/PartnerEdit.yaml -TemplateDir:${OpenPetraRoot.dir}/csharp/ICT/PetraTools/Templates/Winforms -ResourceDir:${OpenPetraRoot.dir}/resources"/>
         <exec program="${PetraToolsExe.dir}\GenerateWinforms.exe" commandline="-ymlfile:${OpenPetraRoot.dir}/csharp/ICT/Petra/Client/lib/MPartner/gui/PartnerFind.yaml -TemplateDir:${OpenPetraRoot.dir}/csharp/ICT/PetraTools/Templates/Winforms -ResourceDir:${OpenPetraRoot.dir}/resources"/>
         <exec program="${PetraToolsExe.dir}\GenerateWinforms.exe" commandline="-ymlfile:${OpenPetraRoot.dir}/csharp/ICT/Petra/Client/lib/MReporting/gui/MPartner/PartnerByCity.yaml -TemplateDir:${OpenPetraRoot.dir}/csharp/ICT/PetraTools/Templates/Winforms -ResourceDir:${OpenPetraRoot.dir}/resources"/>
+    </target>
+
+    <target name="translationTemplate">
+        <foreach item="File" property="filename">
+            <in>
+                <items>
+                    <include name="${sourcecode.dir}\**.cs" />
+                </items>
+            </in>
+            <do>
+                <property name="designerFilename" value="${script::GetDesignerFilename(filename)}"/>
+                <if test="${file::exists(designerFilename)}">
+                    <exec program="${PetraToolsExe.dir}\GenerateI18N.exe" commandline="-file:${filename}"/>
+                </if>
+                <!-- todo: exclude the files in Testing? -->
+                <exec program="${Poedit.gettext}" commandline="-j --add-comments=/// --no-location --from-code=UTF-8 ${filename} -o ${TargetLanguage.Pofile}"/>
+            </do>
+        </foreach>
     </target>
 
     <target name="translation">
@@ -284,39 +305,16 @@
             <property name="newValue" value="Content-Type: text/plain; charset=UTF-8\n"/>
             <echo message='${script::ReplaceInFile(TargetLanguage.Pofile, toReplace, newValue)}'/>
         </if>
-        <foreach item="File" property="filename">
-            <in>
-                <items>
-                    <include name="${OpenPetraRoot.dir}\csharp\ICT\Common\**.cs" />
-                </items>
-            </in>
-            <do>
-                <!-- todo: exclude the files in Testing? -->
-                <exec program="${Poedit.gettext}" commandline="-j --add-comments=/// --no-location --from-code=UTF-8 ${filename} -o ${TargetLanguage.Pofile}"/>
-            </do>
-        </foreach>
-        <foreach item="File" property="filename">
-            <in>
-                <items>
-                    <include name="${OpenPetraRoot.dir}\csharp\ICT\Petra\Shared\**.cs" />
-                </items>
-            </in>
-            <do>
-                <!-- todo: exclude the files in Testing? -->
-                <exec program="${Poedit.gettext}" commandline="-j --add-comments=/// --no-location --from-code=UTF-8 ${filename} -o ${TargetLanguage.Pofile}"/>
-            </do>
-        </foreach>
-        <foreach item="File" property="filename">
-            <in>
-                <items>
-                    <include name="${OpenPetraRoot.dir}\csharp\ICT\Petra\Server\**.cs" />
-                </items>
-            </in>
-            <do>
-                <!-- todo: exclude the files in Testing? -add-comments=///  -->
-                <exec program="${Poedit.gettext}" commandline="-j --keyword=GetString --no-location --from-code=UTF-8 ${filename} -o ${TargetLanguage.Pofile}"/>
-            </do>
-        </foreach>
+        <property name="sourcecode.dir" value="${OpenPetraRoot.dir}\csharp\ICT\Common"/>
+        <call target="translationTemplate"/>
+        <property name="sourcecode.dir" value="${OpenPetraRoot.dir}\csharp\ICT\Petra\Shared"/>
+        <call target="translationTemplate"/>
+        <property name="sourcecode.dir" value="${OpenPetraRoot.dir}\csharp\ICT\Petra\Client"/>
+        <call target="translationTemplate"/>
+        <property name="sourcecode.dir" value="${OpenPetraRoot.dir}\csharp\ICT\Petra\ServerAdmin"/>
+        <call target="translationTemplate"/>
+        <property name="sourcecode.dir" value="${OpenPetraRoot.dir}\csharp\ICT\Petra\Server"/>
+        <call target="translationTemplate"/>
         <mkdir dir="${OpenPetraRoot.dir}/setup/petra${PetraRelease}/i18n/locale/${Translation.TargetLanguage}/LC_MESSAGES" failonerror="false"/>
         <exec program="${Poedit.msgfmt}" commandline="${TargetLanguage.Pofile} -o ${OpenPetraRoot.dir}/setup/petra${PetraRelease}/i18n/locale/${Translation.TargetLanguage}/LC_MESSAGES/i18n.mo"/>
     </target>

@@ -1,4 +1,4 @@
-﻿/*************************************************************************
+/*************************************************************************
  *
  * DO NOT REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
  *
@@ -57,6 +57,12 @@ namespace Ict.Petra.Client.MReporting.Gui
             // The InitializeComponent() call is required for Windows Forms designer support.
             //
             InitializeComponent();
+#region CATALOGI18N
+// this code has been inserted by GenerateI18N, all changes in this region will be overwritten by GenerateI18N
+            this.lblSortBy3.Text = Catalog.GetString("Sort last by:");
+            this.lblSortBy2.Text = Catalog.GetString("Sort then by:");
+            this.LblSortBy1.Text = Catalog.GetString("Sort first by:");
+#endregion
             
             FSortByComboboxes = new TCmbAutoComplete[NUMBER_SORTBY];
             FSortByComboboxes[0] = cmbSortby1;

@@ -1,4 +1,4 @@
-﻿/*************************************************************************
+/*************************************************************************
  *
  * DO NOT REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
  *
@@ -105,6 +105,15 @@ namespace Ict.Petra.Client.MPartner
             // Required for Windows Form Designer support
             //
             InitializeComponent();
+            #region CATALOGI18N
+
+// this code has been inserted by GenerateI18N, all changes in this region will be overwritten by GenerateI18N
+            this.btnOK.Text = Catalog.GetString("&OK");
+            this.lbltop.Text = Catalog.GetString("These partners already have a Subscription for");
+            this.lblBottom.Text = Catalog.GetString("The Subscription was not added to the following Partners:");
+            this.btnHelp.Text = Catalog.GetString("&Help");
+            this.Text = Catalog.GetString("Partners Who Were Already Subscribed");
+            #endregion
 
             //
             // TODO: Add any constructor code after InitializeComponent call

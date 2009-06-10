@@ -565,7 +565,7 @@ namespace Ict.Petra.Client.MPartner
             this.txtAddress1.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
             this.txtAddress1.Size = new System.Drawing.Size(240, 151);
             this.txtAddress1.TabIndex = 0;
-            this.txtAddress1.Text = "Teststr. 1\r\nA-4840 Attnang-Puchheim\r\nAUSTRIA";
+            this.txtAddress1.Text = "";
 
             //
             // lblLoadingPartnerLocation
@@ -580,7 +580,7 @@ namespace Ict.Petra.Client.MPartner
             this.lblLoadingPartnerLocation.Name = "lblLoadingPartnerLocation";
             this.lblLoadingPartnerLocation.Size = new System.Drawing.Size(545, 151);
             this.lblLoadingPartnerLocation.TabIndex = 7;
-            this.lblLoadingPartnerLocation.Text = "Loading...\r\nPlease wait.";
+            this.lblLoadingPartnerLocation.Text = "Loading...\r\nPlease wait.MANUALTRANSLATION";
             this.lblLoadingPartnerLocation.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             this.lblLoadingPartnerLocation.Visible = false;
 
@@ -600,7 +600,7 @@ namespace Ict.Petra.Client.MPartner
             this.lblLoadingAddress.Name = "lblLoadingAddress";
             this.lblLoadingAddress.Size = new System.Drawing.Size(556, 157);
             this.lblLoadingAddress.TabIndex = 32;
-            this.lblLoadingAddress.Text = "Loading...\r\nPlease wait.";
+            this.lblLoadingAddress.Text = "Loading...\r\nPlease wait.MANUALTRANSLATION";
             this.lblLoadingAddress.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             this.lblLoadingAddress.Visible = false;
 
@@ -732,7 +732,7 @@ namespace Ict.Petra.Client.MPartner
             this.lblLoadingTypesSubscr.Name = "lblLoadingTypesSubscr";
             this.lblLoadingTypesSubscr.Size = new System.Drawing.Size(556, 157);
             this.lblLoadingTypesSubscr.TabIndex = 6;
-            this.lblLoadingTypesSubscr.Text = "Loading...\r\nPlease wait.";
+            this.lblLoadingTypesSubscr.Text = "Loading...\r\nPlease wait.MANUALTRANSLATION";
             this.lblLoadingTypesSubscr.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             this.lblLoadingTypesSubscr.Visible = false;
 
@@ -1016,7 +1016,7 @@ namespace Ict.Petra.Client.MPartner
             this.lblLoadingOther.Name = "lblLoadingOther";
             this.lblLoadingOther.Size = new System.Drawing.Size(556, 157);
             this.lblLoadingOther.TabIndex = 27;
-            this.lblLoadingOther.Text = "Loading...\r\nPlease wait.";
+            this.lblLoadingOther.Text = "Loading...\r\nPlease wait.MANUALTRANSLATION";
             this.lblLoadingOther.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             this.lblLoadingOther.Visible = false;
 
@@ -1144,8 +1144,7 @@ namespace Ict.Petra.Client.MPartner
             this.txtFamilyMembers.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
             this.txtFamilyMembers.Size = new System.Drawing.Size(270, 138);
             this.txtFamilyMembers.TabIndex = 32;
-            this.txtFamilyMembers.Text = "Testinger, Mary, Mrs\r\nTestinger, Hans, Mr\r\nTestinger, Andrew, Mr\r\nTestinger, Anna" +
-                                         ", Miss";
+            this.txtFamilyMembers.Text = "";
 
             //
             // lblFamilyMembers
@@ -1173,7 +1172,7 @@ namespace Ict.Petra.Client.MPartner
             this.lblLoadingPersonFamily.Name = "lblLoadingPersonFamily";
             this.lblLoadingPersonFamily.Size = new System.Drawing.Size(556, 157);
             this.lblLoadingPersonFamily.TabIndex = 31;
-            this.lblLoadingPersonFamily.Text = "Loading...\r\nPlease wait.";
+            this.lblLoadingPersonFamily.Text = "Loading...\r\nPlease wait.MANUALTRANSLATION";
             this.lblLoadingPersonFamily.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             this.lblLoadingPersonFamily.Visible = false;
 

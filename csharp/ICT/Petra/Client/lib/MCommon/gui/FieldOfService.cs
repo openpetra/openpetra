@@ -1,4 +1,4 @@
-﻿/*************************************************************************
+/*************************************************************************
  *
  * DO NOT REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
  *
@@ -74,6 +74,15 @@ namespace Ict.Petra.Client.MCommon
             // Required for Windows Form Designer support
             //
             InitializeComponent();
+            #region CATALOGI18N
+
+// this code has been inserted by GenerateI18N, all changes in this region will be overwritten by GenerateI18N
+            this.lblPartnerKey.Text = Catalog.GetString("PartnerKey");
+            this.lblPartnerName.Text = Catalog.GetString("Partner Name");
+            this.Label3.Text = Catalog.GetString("Partner Name:");
+            this.Label4.Text = Catalog.GetString("PartnerKey:");
+            this.Text = Catalog.GetString("Field Of Service");
+            #endregion
 
             // Initialise Screen Logic
             FLogic = new TFieldOfServiceLogic();

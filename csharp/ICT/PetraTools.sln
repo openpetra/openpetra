@@ -22,6 +22,10 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GenerateWinForms", "PetraTo
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Ict.Tools.CodeGeneration.Winforms", "PetraTools\CodeGeneration\Winforms\Ict.Tools.CodeGeneration.Winforms.csproj", "{4034693D-4D16-4123-9FCC-C990448E63F3}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GenerateI18N", "PetraTools\GenerateI18N\GenerateI18N.csproj", "{9105DC3E-6718-45D4-807E-61A73998D17E}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FixProjectFiles", "PetraTools\FixProjectFiles\FixProjectFiles.csproj", "{252FBC9E-4B7E-4EB0-84EB-D60B922A6111}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -68,5 +72,13 @@ Global
 		{4034693D-4D16-4123-9FCC-C990448E63F3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{4034693D-4D16-4123-9FCC-C990448E63F3}.Release|Any CPU.Build.0 = Release|Any CPU
 		{4034693D-4D16-4123-9FCC-C990448E63F3}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{9105DC3E-6718-45D4-807E-61A73998D17E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{9105DC3E-6718-45D4-807E-61A73998D17E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{9105DC3E-6718-45D4-807E-61A73998D17E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{9105DC3E-6718-45D4-807E-61A73998D17E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{252FBC9E-4B7E-4EB0-84EB-D60B922A6111}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{252FBC9E-4B7E-4EB0-84EB-D60B922A6111}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{252FBC9E-4B7E-4EB0-84EB-D60B922A6111}.Release|Any CPU.Build.0 = Release|Any CPU
+		{252FBC9E-4B7E-4EB0-84EB-D60B922A6111}.Release|Any CPU.ActiveCfg = Release|Any CPU
 	EndGlobalSection
 EndGlobal

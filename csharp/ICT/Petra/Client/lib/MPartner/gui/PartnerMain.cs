@@ -59,6 +59,54 @@ namespace Ict.Petra.Client.MPartner.Gui
       // Required for Windows Form Designer support
       //
       InitializeComponent();
+#region CATALOGI18N
+// this code has been inserted by GenerateI18N, all changes in this region will be overwritten by GenerateI18N
+            this.mniImport.Text = Catalog.GetString("&Import");
+            this.mniExport.Text = Catalog.GetString("&Export");
+            this.mniClose.ToolTipText = Catalog.GetString("Closes this window");
+            this.mniClose.Text = Catalog.GetString("&Close");
+            this.mniFile.Text = Catalog.GetString("&File");
+            this.mniFindMaintain.Text = Catalog.GetString("&Find && Maintain...");
+            this.mniLastPartner.Text = Catalog.GetString("Work with &Last Partner...");
+            this.mniLastPartners.Text = Catalog.GetString("&Recent Partners...");
+            this.mniExtracts.Text = Catalog.GetString("&Extracts...");
+            this.mniReportPartnerByCity.Text = Catalog.GetString("&Partner By City Report (experiment)");
+            this.mniReports.Text = Catalog.GetString("&Reports...");
+            this.mniNewPartner.Text = Catalog.GetString("New &Partner...");
+            this.mniNewPerson.Text = Catalog.GetString("Add &Person");
+            this.mniNewFamily.Text = Catalog.GetString("Add &Family");
+            this.mniNewChurch.Text = Catalog.GetString("Add &Church");
+            this.mniNewPartnerAssistant.Text = Catalog.GetString("&New Partner (assistant)");
+            this.mniMergePartners.Text = Catalog.GetString("&Merge Partners");
+            this.mniDeletePartner.Text = Catalog.GetString("D&elete Partner");
+            this.mniCheckDuplicateAddresses.Text = Catalog.GetString("&Duplicate Address Check");
+            this.mniMergeAddresses.Text = Catalog.GetString("Mer&ge Addresses");
+            this.mniViewPartnersAtLocation.Text = Catalog.GetString("&View Partners at Location");
+            this.mniPartner.Text = Catalog.GetString("P&artner");
+            this.mniLabelPrint.Text = Catalog.GetString("&Label Print");
+            this.mniMailsortLabelPrint.Text = Catalog.GetString("Mails&ort Label Print");
+            this.mniSubscriptionExpiryNotices.Text = Catalog.GetString("Subscription Expiry &Notices");
+            this.mniSubscriptionCancellation.Text = Catalog.GetString("Subscription &Cancellation");
+            this.mniFormLetterPrint.Text = Catalog.GetString("&Form Letter Print");
+            this.mniExtractMailMerge.Text = Catalog.GetString("Extrac&t Mail Merge");
+            this.mniMailing.Text = Catalog.GetString("Mailin&g");
+            this.mniTodo.Text = Catalog.GetString("Todo");
+            this.mniMaintainTables.Text = Catalog.GetString("Maintain &Tables");
+            this.mniPetraMainMenu.Text = Catalog.GetString("Petra &Main Menu");
+            this.mniPetraPartnerModule.Text = Catalog.GetString("Pa&rtner");
+            this.mniPetraFinanceModule.Text = Catalog.GetString("&Finance");
+            this.mniPetraPersonnelModule.Text = Catalog.GetString("P&ersonnel");
+            this.mniPetraConferenceModule.Text = Catalog.GetString("C&onference");
+            this.mniPetraFinDevModule.Text = Catalog.GetString("Financial &Development");
+            this.mniPetraSysManModule.Text = Catalog.GetString("&System Manager");
+            this.mniPetraModules.Text = Catalog.GetString("&Petra");
+            this.mniHelpPetraHelp.Text = Catalog.GetString("&Petra Help");
+            this.mniHelpBugReport.Text = Catalog.GetString("Bug &Report");
+            this.mniHelpAboutPetra.Text = Catalog.GetString("&About Petra");
+            this.mniHelpDevelopmentTeam.Text = Catalog.GetString("&The Development Team...");
+            this.mniHelp.Text = Catalog.GetString("&Help");
+            this.Text = Catalog.GetString("Partner Module OpenPetra.org");
+#endregion
 
       FPetraUtilsObject = new TFrmPetraModuleUtils(AParentFormHandle, this);
 

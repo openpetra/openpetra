@@ -1,4 +1,4 @@
-﻿/*************************************************************************
+/*************************************************************************
  *
  * DO NOT REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
  *
@@ -65,6 +65,14 @@ namespace Ict.Petra.Client.MReporting.Gui
             // The InitializeComponent() call is required for Windows Forms designer support.
             //
             InitializeComponent();
+#region CATALOGI18N
+// this code has been inserted by GenerateI18N, all changes in this region will be overwritten by GenerateI18N
+            this.GBx_ChooseColCont.Text = Catalog.GetString("Define Column");
+            this.Btn_Cancel.Text = Catalog.GetString("Cancel");
+            this.BtnApply.Text = Catalog.GetString("Apply");
+            this.Btn_RemoveColumn.Text = Catalog.GetString("&Remove");
+            this.Btn_AddColumn.Text = Catalog.GetString("&Add");
+#endregion
             
             FSelectedColumn = -1;
             FDuringApplyOrCancel = false;

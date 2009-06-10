@@ -78,6 +78,26 @@ namespace Ict.Petra.Client.MPartner
             // Required for Windows Form Designer support
             //
             InitializeComponent();
+            #region CATALOGI18N
+
+// this code has been inserted by GenerateI18N, all changes in this region will be overwritten by GenerateI18N
+            this.btnMore.Text = Catalog.GetString("&More >>");
+            this.btnMoveUp.Text = Catalog.GetString("Move &Up");
+            this.grpMoreOptions.Text = Catalog.GetString("Rearrange Find Criteria");
+            this.btnShowRightListItems.Text = Catalog.GetString("R.List Items");
+            this.btnShowLeftListItems.Text = Catalog.GetString("L.List Items");
+            this.btnMoveDown.Text = Catalog.GetString("Move &Down");
+            this.btnMoveToLeftColumn.Text = Catalog.GetString("Move To &Left");
+            this.btnMoveToRightColumn.Text = Catalog.GetString("Move To &Right");
+            this.grpDisplayedSearchCriteria.Text = Catalog.GetString("Displayed Find Criteria");
+            this.Label1.Text = Catalog.GetString("&Partner Find Criteria:");
+            this.Label2.Text = Catalog.GetString("&Address Find Criteria:");
+            this.Label3.Text = Catalog.GetString("O&ther Find Criteria:");
+            this.chkShowMatchButtons.Text = Catalog.GetString("Sho&w \'Matching Pattern\' buttons");
+            this.chkExactPartnerKeyMatchSearch.Text = Catalog.GetString("Exact Partner &Key Match");
+            this.btnReset.Text = Catalog.GetString("&Reset");
+            this.Text = Catalog.GetString("Find Options");
+            #endregion
 
             grpMoreOptions.Visible = false;
         }

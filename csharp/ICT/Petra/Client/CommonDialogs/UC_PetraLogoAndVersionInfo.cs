@@ -1,4 +1,4 @@
-﻿/*************************************************************************
+/*************************************************************************
  *
  * DO NOT REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
  *
@@ -45,6 +45,14 @@ namespace Ict.Petra.Client.CommonDialogs
             // The InitializeComponent() call is required for Windows Forms designer support.
             //
             InitializeComponent();
+            #region CATALOGI18N
+
+// this code has been inserted by GenerateI18N, all changes in this region will be overwritten by GenerateI18N
+            this.lblPetra.Text = Catalog.GetString(" P E T R A ");
+            this.lblPetraVersion.Text = Catalog.GetString("Version");
+            this.lblCopyrightNotice.Text = Catalog.GetString("© 1995 - 2009 by ICT Software");
+            this.lblInstallationKind.Text = Catalog.GetString("Standalone / Network / Remote");
+            #endregion
         }
 
         /// <summary>todoComment</summary>

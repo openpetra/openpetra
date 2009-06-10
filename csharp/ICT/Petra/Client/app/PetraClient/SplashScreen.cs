@@ -1,4 +1,4 @@
-﻿/*************************************************************************
+/*************************************************************************
  *
  * DO NOT REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
  *
@@ -58,6 +58,12 @@ public partial class frmSplashScreen : Form
         // The InitializeComponent() call is required for Windows Forms designer support.
         //
         InitializeComponent();
+        #region CATALOGI18N
+
+// this code has been inserted by GenerateI18N, all changes in this region will be overwritten by GenerateI18N
+        this.lblProgressText.Text = Catalog.GetString("Loading...");
+        this.lblCustomText.Text = Catalog.GetString("Custom Text can be displayed here...");
+        #endregion
 
         ucoPetraLogoAndVersionInfo.PetraVersion = "";
         ucoPetraLogoAndVersionInfo.InstallationKind = "";

@@ -72,6 +72,13 @@ namespace Ict.Petra.Client.MPartner
             // The InitializeComponent() call is required for Windows Forms designer support.
             //
             InitializeComponent();
+            #region CATALOGI18N
+
+// this code has been inserted by GenerateI18N, all changes in this region will be overwritten by GenerateI18N
+            this.lblExtractName.Text = Catalog.GetString("Extract &Name:");
+            this.lblDescription.Text = Catalog.GetString("&Description:");
+            this.Text = Catalog.GetString("New Extract");
+            #endregion
 
             txtExtractName.MaxLength = MExtractMasterTable.GetExtractNameLength();
             txtExtractDescription.MaxLength = MExtractMasterTable.GetExtractDescLength();

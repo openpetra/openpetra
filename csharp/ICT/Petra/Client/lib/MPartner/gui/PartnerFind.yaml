@@ -79,7 +79,7 @@ RootNode:
             mniMaintainReminders: {Label=R&eminders...}
             mniMaintainNotes: {Label=&Notes...}
             mniMaintainOfficeSpecific: {Label=&Local Partner Data...}
-            mniMaintainOMerField: {Label=&OMer Field...}
+            mniMaintainOMerField: {Label=&Worker Field...}
             mniMaintainSeparator1: {Label=-}
             mniMaintainPersonnelIndividualData: {Label=&Personnel/Individual Data...}
             mniMaintainSeparator2: {Label=-}
