@@ -28,6 +28,7 @@ using System.ComponentModel;
 using System.Drawing;
 using System.Windows.Forms;
 using Ict.Petra.Client.App.Core;
+using Mono.Unix;
 
 namespace Ict.Petra.Client.CommonDialogs
 {

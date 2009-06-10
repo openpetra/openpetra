@@ -1,4 +1,4 @@
-<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+﻿<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
     <ProjectGuid>4DCB81E4-7B19-43D5-BEFC-351706003550</ProjectGuid>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
@@ -45,6 +45,9 @@
     <Reference Include="DevAge.Core">
       <HintPath>..\..\..\..\..\Common\_bin\Debug\DevAge.Core.dll</HintPath>
       <SpecificVersion>False</SpecificVersion>
+    </Reference>
+    <Reference Include="Mono.Posix">
+      <HintPath>..\..\..\..\..\..\ThirdParty\Mono\Mono.Posix.dll</HintPath>
     </Reference>
     <Reference Include="SourceGrid">
       <HintPath>..\..\..\..\..\Common\_bin\Debug\SourceGrid.dll</HintPath>

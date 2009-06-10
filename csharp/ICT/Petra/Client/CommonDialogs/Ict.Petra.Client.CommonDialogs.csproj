@@ -1,4 +1,4 @@
-<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+﻿<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
     <ProjectGuid>BE0FD127-A9A9-4291-A5E0-71A45AC2FDBD</ProjectGuid>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
@@ -69,8 +69,7 @@
       <HintPath>..\..\Shared\_bin\Server_Client\Debug\Ict.Petra.Shared.UserInfo.dll</HintPath>
     </Reference>
     <Reference Include="Mono.Posix">
-      <HintPath>..\..\..\..\..\ThirdParty\Mono\Mono.Posix.dll</HintPath>
-      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\..\ThirdParty\Mono\Mono.Posix.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Drawing" />
