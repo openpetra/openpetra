@@ -1,6 +1,6 @@
 <Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
-    <ProjectGuid>A6A4782D-DD84-4C0C-9F6E-552EAEDDB797</ProjectGuid>
+    <ProjectGuid>{A6A4782D-DD84-4C0C-9F6E-552EAEDDB797}</ProjectGuid>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <OutputType>Library</OutputType>
@@ -126,15 +126,15 @@
       <Name>Ict.Petra.Client.App.Core</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\..\app\Core\Ict.Petra.Client.App.Core.RemoteObjects.csproj">
-      <Project>A3E8D62A-D07D-44D9-A286-68220B3AA94F</Project>
+      <Project>{A3E8D62A-D07D-44D9-A286-68220B3AA94F}</Project>
       <Name>Ict.Petra.Client.App.Core.RemoteObjects</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\..\app\Gui\Ict.Petra.Client.App.Gui.csproj">
-      <Project>7C72F5ED-C494-4B58-AA90-2B948D4CF1D7</Project>
+      <Project>{7C72F5ED-C494-4B58-AA90-2B948D4CF1D7}</Project>
       <Name>Ict.Petra.Client.App.Gui</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\MCommon\logic\Ict.Petra.Client.MCommon.Logic.csproj">
-      <Project>0BC4E544-F1E7-48AC-869C-71312E31AC2D</Project>
+      <Project>{0BC4E544-F1E7-48AC-869C-71312E31AC2D}</Project>
       <Name>Ict.Petra.Client.MCommon.Logic</Name>
     </ProjectReference>
   </ItemGroup>

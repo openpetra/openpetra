@@ -1,6 +1,6 @@
 <Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
-    <ProjectGuid>7B102B6E-0873-45EE-85D7-BD37126EAE21</ProjectGuid>
+    <ProjectGuid>{7B102B6E-0873-45EE-85D7-BD37126EAE21}</ProjectGuid>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <OutputType>Library</OutputType>
@@ -151,15 +151,15 @@
       <Name>Ict.Petra.Client.App.Core</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\app\Formatting\Ict.Petra.Client.App.Formatting.csproj">
-      <Project>03ED55AE-5526-4F37-B4D7-1498877CFB7F</Project>
+      <Project>{03ED55AE-5526-4F37-B4D7-1498877CFB7F}</Project>
       <Name>Ict.Petra.Client.App.Formatting</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\app\Gui\Ict.Petra.Client.App.Gui.csproj">
-      <Project>7C72F5ED-C494-4B58-AA90-2B948D4CF1D7</Project>
+      <Project>{7C72F5ED-C494-4B58-AA90-2B948D4CF1D7}</Project>
       <Name>Ict.Petra.Client.App.Gui</Name>
     </ProjectReference>
     <ProjectReference Include="..\logic\Ict.Petra.Client.CommonControls.Logic.csproj">
-      <Project>FD174C01-3423-4604-A7FF-4348969D57CF</Project>
+      <Project>{FD174C01-3423-4604-A7FF-4348969D57CF}</Project>
       <Name>Ict.Petra.Client.CommonControls.Logic</Name>
     </ProjectReference>
   </ItemGroup>

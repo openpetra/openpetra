@@ -2,21 +2,21 @@
 Microsoft Visual Studio Solution File, Format Version 9.00
 # Visual Studio 2005
 # SharpDevelop 3.0.0.3800
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Ict.Common", "Common\Ict.Common.csproj", "{ED73B0A3-AC08-4FB0-A18C-2816C9AC5588}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Ict.Common", "Common/Ict.Common.csproj", "{ED73B0A3-AC08-4FB0-A18C-2816C9AC5588}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Ict.Common.IO", "Common\IO\Ict.Common.IO.csproj", "{31A5F128-F78F-4957-AA0E-B0F6005A2614}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Ict.Common.IO", "Common/IO/Ict.Common.IO.csproj", "{31A5F128-F78F-4957-AA0E-B0F6005A2614}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Ict.Common.Data", "Common\Data\Ict.Common.Data.csproj", "{3CCC0D2C-4367-4A9D-A4F8-3BE6F81D87B3}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Ict.Common.Data", "Common/Data/Ict.Common.Data.csproj", "{3CCC0D2C-4367-4A9D-A4F8-3BE6F81D87B3}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Ict.Common.DB", "Common\DB\Ict.Common.DB.csproj", "{20ADC145-9621-4EDB-B5F6-6FFF07AD6EFB}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Ict.Common.DB", "Common/DB/Ict.Common.DB.csproj", "{20ADC145-9621-4EDB-B5F6-6FFF07AD6EFB}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Ict.Common.Controls", "Common\Controls\Ict.Common.Controls.csproj", "{69E21FFC-F815-451A-96BB-66499CDDEB6E}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Ict.Common.Controls", "Common/Controls/Ict.Common.Controls.csproj", "{69E21FFC-F815-451A-96BB-66499CDDEB6E}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Ict.Common.Verification", "Common\Verification\Ict.Common.Verification.csproj", "{6DC5901F-3F0A-4B87-A258-80FD0794A4DB}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Ict.Common.Verification", "Common/Verification/Ict.Common.Verification.csproj", "{6DC5901F-3F0A-4B87-A258-80FD0794A4DB}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Ict.Common.GTK", "Common\GTK\Ict.Common.GTK.csproj", "{E21483C9-DCA1-4B2F-95A1-98A4DEEE7FCD}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Ict.Common.GTK", "Common/GTK/Ict.Common.GTK.csproj", "{E21483C9-DCA1-4B2F-95A1-98A4DEEE7FCD}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Ict.Common.Printing", "Common\Printing\Ict.Common.Printing.csproj", "{954F91D9-263A-49F3-942D-6D85A2C13DB8}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Ict.Common.Printing", "Common/Printing/Ict.Common.Printing.csproj", "{954F91D9-263A-49F3-942D-6D85A2C13DB8}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -52,9 +52,9 @@ Global
 		{E21483C9-DCA1-4B2F-95A1-98A4DEEE7FCD}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{E21483C9-DCA1-4B2F-95A1-98A4DEEE7FCD}.Release|Any CPU.Build.0 = Release|Any CPU
 		{E21483C9-DCA1-4B2F-95A1-98A4DEEE7FCD}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		954F91D9-263A-49F3-942D-6D85A2C13DB8.Debug|Any CPU.Build.0 = Debug|Any CPU
-		954F91D9-263A-49F3-942D-6D85A2C13DB8.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		954F91D9-263A-49F3-942D-6D85A2C13DB8.Release|Any CPU.Build.0 = Release|Any CPU
-		954F91D9-263A-49F3-942D-6D85A2C13DB8.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{954F91D9-263A-49F3-942D-6D85A2C13DB8}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{954F91D9-263A-49F3-942D-6D85A2C13DB8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{954F91D9-263A-49F3-942D-6D85A2C13DB8}.Release|Any CPU.Build.0 = Release|Any CPU
+		{954F91D9-263A-49F3-942D-6D85A2C13DB8}.Release|Any CPU.ActiveCfg = Release|Any CPU
 	EndGlobalSection
 EndGlobal

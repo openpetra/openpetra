@@ -1,6 +1,6 @@
 <Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
-    <ProjectGuid>422514A8-712E-4A39-8CEC-AB76F6B6B68E</ProjectGuid>
+    <ProjectGuid>{422514A8-712E-4A39-8CEC-AB76F6B6B68E}</ProjectGuid>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <OutputType>Library</OutputType>
@@ -59,11 +59,11 @@
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\MPersonnel\data\Ict.Petra.Shared.MPersonnel.DataTables.csproj">
-      <Project>5B6D2B12-84D0-4B62-AF1F-B8365FBF68D1</Project>
+      <Project>{5B6D2B12-84D0-4B62-AF1F-B8365FBF68D1}</Project>
       <Name>Ict.Petra.Shared.MPersonnel.DataTables</Name>
     </ProjectReference>
     <ProjectReference Include="Ict.Petra.Shared.MPartner.DataTables.csproj">
-      <Project>6A8AF588-522A-469E-BEC4-C154CBC8866A</Project>
+      <Project>{6A8AF588-522A-469E-BEC4-C154CBC8866A}</Project>
       <Name>Ict.Petra.Shared.MPartner.DataTables</Name>
     </ProjectReference>
   </ItemGroup>

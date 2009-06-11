@@ -1,6 +1,6 @@
 <Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
-    <ProjectGuid>AE6D48F3-AF3A-4E3D-B221-D73FC5CCA688</ProjectGuid>
+    <ProjectGuid>{AE6D48F3-AF3A-4E3D-B221-D73FC5CCA688}</ProjectGuid>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <OutputType>Library</OutputType>
@@ -63,7 +63,7 @@
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Ict.Petra.Server.MReporting.csproj">
-      <Project>1532B4C2-5A04-4FFC-B383-E147A2377370</Project>
+      <Project>{1532B4C2-5A04-4FFC-B383-E147A2377370}</Project>
       <Name>Ict.Petra.Server.MReporting</Name>
     </ProjectReference>
   </ItemGroup>

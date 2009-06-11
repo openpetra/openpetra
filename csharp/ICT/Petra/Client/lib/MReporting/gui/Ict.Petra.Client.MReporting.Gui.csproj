@@ -1,6 +1,6 @@
-﻿<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
-    <ProjectGuid>4DCB81E4-7B19-43D5-BEFC-351706003550</ProjectGuid>
+    <ProjectGuid>{4DCB81E4-7B19-43D5-BEFC-351706003550}</ProjectGuid>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <OutputType>Library</OutputType>
@@ -152,15 +152,15 @@
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\..\CommonControls\gui\Ict.Petra.Client.CommonControls.Gui.csproj">
-      <Project>7B102B6E-0873-45EE-85D7-BD37126EAE21</Project>
+      <Project>{7B102B6E-0873-45EE-85D7-BD37126EAE21}</Project>
       <Name>Ict.Petra.Client.CommonControls.Gui</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\..\CommonControls\logic\Ict.Petra.Client.CommonControls.Logic.csproj">
-      <Project>FD174C01-3423-4604-A7FF-4348969D57CF</Project>
+      <Project>{FD174C01-3423-4604-A7FF-4348969D57CF}</Project>
       <Name>Ict.Petra.Client.CommonControls.Logic</Name>
     </ProjectReference>
     <ProjectReference Include="..\logic\Ict.Petra.Client.MReporting.Logic.csproj">
-      <Project>E5D87C50-783C-4516-84A9-CF1D37894C9C</Project>
+      <Project>{E5D87C50-783C-4516-84A9-CF1D37894C9C}</Project>
       <Name>Ict.Petra.Client.MReporting.Logic</Name>
     </ProjectReference>
   </ItemGroup>

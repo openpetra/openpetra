@@ -1,4 +1,4 @@
-﻿<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
     <ProjectGuid>{F1A7A1DF-BF17-4E23-87AD-95C38EC25D03}</ProjectGuid>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
@@ -80,11 +80,11 @@
       <Name>Ict.Petra.Shared</Name>
     </ProjectReference>
     <ProjectReference Include="..\MCommon\data\Ict.Petra.Shared.MCommon.DataSets.csproj">
-      <Project>7009B78A-4870-44C6-B8C9-30DFC36FD410</Project>
+      <Project>{7009B78A-4870-44C6-B8C9-30DFC36FD410}</Project>
       <Name>Ict.Petra.Shared.MCommon.DataSets</Name>
     </ProjectReference>
     <ProjectReference Include="..\MCommon\Ict.Petra.Shared.MCommon.csproj">
-      <Project>2ED62D43-A6DF-4DA1-B18D-F051BB019CE0</Project>
+      <Project>{2ED62D43-A6DF-4DA1-B18D-F051BB019CE0}</Project>
       <Name>Ict.Petra.Shared.MCommon</Name>
     </ProjectReference>
     <ProjectReference Include="..\MFinance\Ict.Petra.Shared.MFinance.csproj">
@@ -92,15 +92,15 @@
       <Name>Ict.Petra.Shared.MFinance</Name>
     </ProjectReference>
     <ProjectReference Include="..\MPartner\data\Ict.Petra.Shared.MPartner.DataSets.csproj">
-      <Project>422514A8-712E-4A39-8CEC-AB76F6B6B68E</Project>
+      <Project>{422514A8-712E-4A39-8CEC-AB76F6B6B68E}</Project>
       <Name>Ict.Petra.Shared.MPartner.DataSets</Name>
     </ProjectReference>
     <ProjectReference Include="..\MPartner\data\Ict.Petra.Shared.MPartner.DataTables.csproj">
-      <Project>6A8AF588-522A-469E-BEC4-C154CBC8866A</Project>
+      <Project>{6A8AF588-522A-469E-BEC4-C154CBC8866A}</Project>
       <Name>Ict.Petra.Shared.MPartner.DataTables</Name>
     </ProjectReference>
     <ProjectReference Include="..\MPartner\Ict.Petra.Shared.MPartner.csproj">
-      <Project>A46CC6F2-FC2E-4585-9FF1-C83B941C30C5</Project>
+      <Project>{A46CC6F2-FC2E-4585-9FF1-C83B941C30C5}</Project>
       <Name>Ict.Petra.Shared.MPartner</Name>
     </ProjectReference>
     <ProjectReference Include="..\MPersonnel\Ict.Petra.Shared.MPersonnel.csproj">
@@ -108,7 +108,7 @@
       <Name>Ict.Petra.Shared.MPersonnel</Name>
     </ProjectReference>
     <ProjectReference Include="..\MSysMan\data\Ict.Petra.Shared.MSysMan.DataTables.csproj">
-      <Project>E5C3D047-F530-4AAA-B7BE-3CEE79A45BCE</Project>
+      <Project>{E5C3D047-F530-4AAA-B7BE-3CEE79A45BCE}</Project>
       <Name>Ict.Petra.Shared.MSysMan.DataTables</Name>
     </ProjectReference>
   </ItemGroup>

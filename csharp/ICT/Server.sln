@@ -2,65 +2,65 @@
 Microsoft Visual Studio Solution File, Format Version 9.00
 # Visual Studio 2005
 # SharpDevelop 3.0.0.3800
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Ict.Petra.Server.App.Core", "Petra\Server\app\Core\Ict.Petra.Server.App.Core.csproj", "{F053BB7D-E40D-4434-B99C-FC803F65E10A}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Ict.Petra.Server.App.Core", "Petra/Server/app/Core/Ict.Petra.Server.App.Core.csproj", "{F053BB7D-E40D-4434-B99C-FC803F65E10A}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Ict.Petra.Server.MCommon", "Petra\Server\lib\MCommon\Ict.Petra.Server.MCommon.csproj", "{1F2FFC91-5C00-44ED-8EFD-3940426793CF}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Ict.Petra.Server.MCommon", "Petra/Server/lib/MCommon/Ict.Petra.Server.MCommon.csproj", "{1F2FFC91-5C00-44ED-8EFD-3940426793CF}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Ict.Petra.Server.MPartner.Instantiator", "Petra\Server\lib\MPartner\Ict.Petra.Server.MPartner.Instantiator.csproj", "{69E21FFC-F815-451A-96BB-66499CDDEB6E}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Ict.Petra.Server.MPartner.Instantiator", "Petra/Server/lib/MPartner/Ict.Petra.Server.MPartner.Instantiator.csproj", "{69E21FFC-F815-451A-96BB-66499CDDEB6E}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Ict.Petra.Server.MPersonnel.Instantiator", "Petra\Server\lib\MPersonnel\Ict.Petra.Server.MPersonnel.Instantiator.csproj", "F37641A0-702F-48F8-A810-6075C3B29F6B"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Ict.Petra.Server.MPersonnel.Instantiator", "Petra/Server/lib/MPersonnel/Ict.Petra.Server.MPersonnel.Instantiator.csproj", "{F37641A0-702F-48F8-A810-6075C3B29F6B}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Ict.Petra.Server.App.ClientDomain.CallForwarder", "Petra\Server\app\ClientDomain\Ict.Petra.Server.App.ClientDomain.CallForwarder.csproj", "4F3F60C9-AC5E-4023-922A-FB616B53A2C0"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Ict.Petra.Server.App.ClientDomain.CallForwarder", "Petra/Server/app/ClientDomain/Ict.Petra.Server.App.ClientDomain.CallForwarder.csproj", "{4F3F60C9-AC5E-4023-922A-FB616B53A2C0}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Ict.Petra.Server.App.ClientDomain", "Petra\Server\app\ClientDomain\Ict.Petra.Server.App.ClientDomain.csproj", "DC487150-0555-4C05-A13F-91588D9D750D"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Ict.Petra.Server.App.ClientDomain", "Petra/Server/app/ClientDomain/Ict.Petra.Server.App.ClientDomain.csproj", "{DC487150-0555-4C05-A13F-91588D9D750D}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Ict.Petra.Server.MSysMan", "Petra\Server\lib\MSysMan\Ict.Petra.Server.MSysMan.csproj", "{5DF56B61-41A0-4E7E-A918-5AF595A023A2}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Ict.Petra.Server.MSysMan", "Petra/Server/lib/MSysMan/Ict.Petra.Server.MSysMan.csproj", "{5DF56B61-41A0-4E7E-A918-5AF595A023A2}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Ict.Petra.Server.App.Main", "Petra\Server\app\Main\Ict.Petra.Server.App.Main.csproj", "476D1409-E5EA-4E2A-A3FB-743F4832AE7A"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Ict.Petra.Server.App.Main", "Petra/Server/app/Main/Ict.Petra.Server.App.Main.csproj", "{476D1409-E5EA-4E2A-A3FB-743F4832AE7A}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PetraServerConsole", "Petra\Server\app\PetraServerConsole\PetraServerConsole.csproj", "279D5FBA-A4FA-42F6-9737-2E4F60623917"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PetraServerConsole", "Petra/Server/app/PetraServerConsole/PetraServerConsole.csproj", "{279D5FBA-A4FA-42F6-9737-2E4F60623917}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Ict.Petra.Server.MFinance", "Petra\Server\lib\MFinance\Ict.Petra.Server.MFinance.csproj", "{9571C77F-4E2B-4C19-B573-40E61918197C}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Ict.Petra.Server.MFinance", "Petra/Server/lib/MFinance/Ict.Petra.Server.MFinance.csproj", "{9571C77F-4E2B-4C19-B573-40E61918197C}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Ict.Petra.Server.MCommon.UIConnectors", "Petra\Server\lib\MCommon\Ict.Petra.Server.MCommon.UIConnectors.csproj", "76E4431D-7374-41A6-9708-59104F895D51"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Ict.Petra.Server.MCommon.UIConnectors", "Petra/Server/lib/MCommon/Ict.Petra.Server.MCommon.UIConnectors.csproj", "{76E4431D-7374-41A6-9708-59104F895D51}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Ict.Petra.Server.MFinance.Instantiator", "Petra\Server\lib\MFinance\Ict.Petra.Server.MFinance.Instantiator.csproj", "637D2388-7922-42C1-BDD6-8DD578B62833"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Ict.Petra.Server.MFinance.Instantiator", "Petra/Server/lib/MFinance/Ict.Petra.Server.MFinance.Instantiator.csproj", "{637D2388-7922-42C1-BDD6-8DD578B62833}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Ict.Petra.Server.MFinDev.Instantiator", "Petra\Server\lib\MFinDev\Ict.Petra.Server.MFinDev.Instantiator.csproj", "43B6A87D-79E4-477E-8FEE-BE5D8826413B"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Ict.Petra.Server.MFinDev.Instantiator", "Petra/Server/lib/MFinDev/Ict.Petra.Server.MFinDev.Instantiator.csproj", "{43B6A87D-79E4-477E-8FEE-BE5D8826413B}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Ict.Petra.Server.MReporting.Instantiator", "Petra\Server\lib\MReporting\Ict.Petra.Server.MReporting.Instantiator.csproj", "75A3A363-7EFE-4833-9E0F-33DF4967F6F6"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Ict.Petra.Server.MReporting.Instantiator", "Petra/Server/lib/MReporting/Ict.Petra.Server.MReporting.Instantiator.csproj", "{75A3A363-7EFE-4833-9E0F-33DF4967F6F6}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Ict.Petra.Server.MSysMan.Instantiator", "Petra\Server\lib\MSysMan\Ict.Petra.Server.MSysMan.Instantiator.csproj", "65837962-CBC5-4E5A-B75E-9ADCBD9DDD49"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Ict.Petra.Server.MSysMan.Instantiator", "Petra/Server/lib/MSysMan/Ict.Petra.Server.MSysMan.Instantiator.csproj", "{65837962-CBC5-4E5A-B75E-9ADCBD9DDD49}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Ict.Petra.Server.MPartner", "Petra\Server\lib\MPartner\Ict.Petra.Server.MPartner.csproj", "{5AF07F51-C0B4-4AC7-9007-8CB607F9DA03}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Ict.Petra.Server.MPartner", "Petra/Server/lib/MPartner/Ict.Petra.Server.MPartner.csproj", "{5AF07F51-C0B4-4AC7-9007-8CB607F9DA03}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Ict.Petra.Server.MPartner.UIConnectors", "Petra\Server\lib\MPartner\Ict.Petra.Server.MPartner.UIConnectors.csproj", "{C9D92B0D-06CE-4580-A03F-8E0C54C3038D}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Ict.Petra.Server.MPartner.UIConnectors", "Petra/Server/lib/MPartner/Ict.Petra.Server.MPartner.UIConnectors.csproj", "{C9D92B0D-06CE-4580-A03F-8E0C54C3038D}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Ict.Petra.Server.MPersonnel.UIConnectors", "Petra\Server\lib\MPersonnel\Ict.Petra.Server.MPersonnel.UIConnectors.csproj", "{F2C85B76-E712-4C7B-9BB2-8F063C68D56B}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Ict.Petra.Server.MPersonnel.UIConnectors", "Petra/Server/lib/MPersonnel/Ict.Petra.Server.MPersonnel.UIConnectors.csproj", "{F2C85B76-E712-4C7B-9BB2-8F063C68D56B}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Ict.Petra.Server.MFinance.UIConnectors", "Petra\Server\lib\MFinance\Ict.Petra.Server.MFinance.UIConnectors.csproj", "{0E47E3BD-3905-4105-B78F-060F7B9D0943}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Ict.Petra.Server.MFinance.UIConnectors", "Petra/Server/lib/MFinance/Ict.Petra.Server.MFinance.UIConnectors.csproj", "{0E47E3BD-3905-4105-B78F-060F7B9D0943}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Ict.Petra.Server.MReporting", "Petra\Server\lib\MReporting\Ict.Petra.Server.MReporting.csproj", "1532B4C2-5A04-4FFC-B383-E147A2377370"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Ict.Petra.Server.MReporting", "Petra/Server/lib/MReporting/Ict.Petra.Server.MReporting.csproj", "{1532B4C2-5A04-4FFC-B383-E147A2377370}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Ict.Petra.Server.MReporting.MFinance", "Petra\Server\lib\MReporting\MFinance\Ict.Petra.Server.MReporting.MFinance.csproj", "53C927CB-7CFF-4BA4-B457-9AAC2A239272"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Ict.Petra.Server.MReporting.MFinance", "Petra/Server/lib/MReporting/MFinance/Ict.Petra.Server.MReporting.MFinance.csproj", "{53C927CB-7CFF-4BA4-B457-9AAC2A239272}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Ict.Petra.Server.MReporting.MConference", "Petra\Server\lib\MReporting\MConference\Ict.Petra.Server.MReporting.MConference.csproj", "31D61A52-7E35-4224-B713-03C408AE6DF9"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Ict.Petra.Server.MReporting.MConference", "Petra/Server/lib/MReporting/MConference/Ict.Petra.Server.MReporting.MConference.csproj", "{31D61A52-7E35-4224-B713-03C408AE6DF9}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Ict.Petra.Server.MReporting.MFinDev", "Petra\Server\lib\MReporting\MFinDev\Ict.Petra.Server.MReporting.MFinDev.csproj", "6D1D1DCD-F80D-4394-8308-6DFF8907CD93"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Ict.Petra.Server.MReporting.MFinDev", "Petra/Server/lib/MReporting/MFinDev/Ict.Petra.Server.MReporting.MFinDev.csproj", "{6D1D1DCD-F80D-4394-8308-6DFF8907CD93}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Ict.Petra.Server.MReporting.MPartner", "Petra\Server\lib\MReporting\MPartner\Ict.Petra.Server.MReporting.MPartner.csproj", "1A88A039-A817-40AF-A71A-A636AF5B7D1D"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Ict.Petra.Server.MReporting.MPartner", "Petra/Server/lib/MReporting/MPartner/Ict.Petra.Server.MReporting.MPartner.csproj", "{1A88A039-A817-40AF-A71A-A636AF5B7D1D}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Ict.Petra.Server.MReporting.MPersonnel", "Petra\Server\lib\MReporting\MPersonnel\Ict.Petra.Server.MReporting.MPersonnel.csproj", "AE6D48F3-AF3A-4E3D-B221-D73FC5CCA688"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Ict.Petra.Server.MReporting.MPersonnel", "Petra/Server/lib/MReporting/MPersonnel/Ict.Petra.Server.MReporting.MPersonnel.csproj", "{AE6D48F3-AF3A-4E3D-B221-D73FC5CCA688}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Ict.Petra.Server.MReporting.LogicConnectors", "Petra\Server\lib\MReporting\Ict.Petra.Server.MReporting.LogicConnectors.csproj", "2D87F665-5D74-40C3-A5AF-C766D1C0A409"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Ict.Petra.Server.MReporting.LogicConnectors", "Petra/Server/lib/MReporting/Ict.Petra.Server.MReporting.LogicConnectors.csproj", "{2D87F665-5D74-40C3-A5AF-C766D1C0A409}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Ict.Petra.Server.MHospitality.Instantiator", "Petra\Server\lib\MHospitality\Ict.Petra.Server.MHospitality.Instantiator.csproj", "{1C37FE17-B314-4EC6-91A7-EAF27D301130}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Ict.Petra.Server.MHospitality.Instantiator", "Petra/Server/lib/MHospitality/Ict.Petra.Server.MHospitality.Instantiator.csproj", "{1C37FE17-B314-4EC6-91A7-EAF27D301130}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Ict.Petra.Server.MHospitality.UIConnectors", "Petra\Server\lib\MHospitality\Ict.Petra.Server.MHospitality.UIConnectors.csproj", "{B0B33FB6-8D8E-4BAA-B496-6AA5E558D3B8}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Ict.Petra.Server.MHospitality.UIConnectors", "Petra/Server/lib/MHospitality/Ict.Petra.Server.MHospitality.UIConnectors.csproj", "{B0B33FB6-8D8E-4BAA-B496-6AA5E558D3B8}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Ict.Petra.Server.MSysMan.UIConnectors", "Petra\Server\lib\MSysMan\Ict.Petra.Server.MSysMan.UIConnectors.csproj", "{1403E8FE-F02E-4BF9-8648-D803397A26E0}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Ict.Petra.Server.MSysMan.UIConnectors", "Petra/Server/lib/MSysMan/Ict.Petra.Server.MSysMan.UIConnectors.csproj", "{1403E8FE-F02E-4BF9-8648-D803397A26E0}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Ict.Petra.Server.MCommon.Instantiator", "Petra\Server\lib\MCommon\Ict.Petra.Server.MCommon.Instantiator.csproj", "{77F89220-F616-4732-97EC-3EEC72E11DEC}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Ict.Petra.Server.MCommon.Instantiator", "Petra/Server/lib/MCommon/Ict.Petra.Server.MCommon.Instantiator.csproj", "{77F89220-F616-4732-97EC-3EEC72E11DEC}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -80,54 +80,54 @@ Global
 		{69E21FFC-F815-451A-96BB-66499CDDEB6E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{69E21FFC-F815-451A-96BB-66499CDDEB6E}.Release|Any CPU.Build.0 = Release|Any CPU
 		{69E21FFC-F815-451A-96BB-66499CDDEB6E}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		F37641A0-702F-48F8-A810-6075C3B29F6B.Debug|Any CPU.Build.0 = Debug|Any CPU
-		F37641A0-702F-48F8-A810-6075C3B29F6B.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		F37641A0-702F-48F8-A810-6075C3B29F6B.Release|Any CPU.Build.0 = Release|Any CPU
-		F37641A0-702F-48F8-A810-6075C3B29F6B.Release|Any CPU.ActiveCfg = Release|Any CPU
-		4F3F60C9-AC5E-4023-922A-FB616B53A2C0.Debug|Any CPU.Build.0 = Debug|Any CPU
-		4F3F60C9-AC5E-4023-922A-FB616B53A2C0.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		4F3F60C9-AC5E-4023-922A-FB616B53A2C0.Release|Any CPU.Build.0 = Release|Any CPU
-		4F3F60C9-AC5E-4023-922A-FB616B53A2C0.Release|Any CPU.ActiveCfg = Release|Any CPU
-		DC487150-0555-4C05-A13F-91588D9D750D.Debug|Any CPU.Build.0 = Debug|Any CPU
-		DC487150-0555-4C05-A13F-91588D9D750D.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		DC487150-0555-4C05-A13F-91588D9D750D.Release|Any CPU.Build.0 = Release|Any CPU
-		DC487150-0555-4C05-A13F-91588D9D750D.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F37641A0-702F-48F8-A810-6075C3B29F6B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F37641A0-702F-48F8-A810-6075C3B29F6B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F37641A0-702F-48F8-A810-6075C3B29F6B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F37641A0-702F-48F8-A810-6075C3B29F6B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4F3F60C9-AC5E-4023-922A-FB616B53A2C0}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4F3F60C9-AC5E-4023-922A-FB616B53A2C0}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4F3F60C9-AC5E-4023-922A-FB616B53A2C0}.Release|Any CPU.Build.0 = Release|Any CPU
+		{4F3F60C9-AC5E-4023-922A-FB616B53A2C0}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{DC487150-0555-4C05-A13F-91588D9D750D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{DC487150-0555-4C05-A13F-91588D9D750D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{DC487150-0555-4C05-A13F-91588D9D750D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{DC487150-0555-4C05-A13F-91588D9D750D}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{5DF56B61-41A0-4E7E-A918-5AF595A023A2}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{5DF56B61-41A0-4E7E-A918-5AF595A023A2}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{5DF56B61-41A0-4E7E-A918-5AF595A023A2}.Release|Any CPU.Build.0 = Release|Any CPU
 		{5DF56B61-41A0-4E7E-A918-5AF595A023A2}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		476D1409-E5EA-4E2A-A3FB-743F4832AE7A.Debug|Any CPU.Build.0 = Debug|Any CPU
-		476D1409-E5EA-4E2A-A3FB-743F4832AE7A.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		476D1409-E5EA-4E2A-A3FB-743F4832AE7A.Release|Any CPU.Build.0 = Release|Any CPU
-		476D1409-E5EA-4E2A-A3FB-743F4832AE7A.Release|Any CPU.ActiveCfg = Release|Any CPU
-		279D5FBA-A4FA-42F6-9737-2E4F60623917.Debug|Any CPU.Build.0 = Debug|Any CPU
-		279D5FBA-A4FA-42F6-9737-2E4F60623917.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		279D5FBA-A4FA-42F6-9737-2E4F60623917.Release|Any CPU.Build.0 = Release|Any CPU
-		279D5FBA-A4FA-42F6-9737-2E4F60623917.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{476D1409-E5EA-4E2A-A3FB-743F4832AE7A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{476D1409-E5EA-4E2A-A3FB-743F4832AE7A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{476D1409-E5EA-4E2A-A3FB-743F4832AE7A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{476D1409-E5EA-4E2A-A3FB-743F4832AE7A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{279D5FBA-A4FA-42F6-9737-2E4F60623917}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{279D5FBA-A4FA-42F6-9737-2E4F60623917}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{279D5FBA-A4FA-42F6-9737-2E4F60623917}.Release|Any CPU.Build.0 = Release|Any CPU
+		{279D5FBA-A4FA-42F6-9737-2E4F60623917}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{9571C77F-4E2B-4C19-B573-40E61918197C}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{9571C77F-4E2B-4C19-B573-40E61918197C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{9571C77F-4E2B-4C19-B573-40E61918197C}.Release|Any CPU.Build.0 = Release|Any CPU
 		{9571C77F-4E2B-4C19-B573-40E61918197C}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		76E4431D-7374-41A6-9708-59104F895D51.Debug|Any CPU.Build.0 = Debug|Any CPU
-		76E4431D-7374-41A6-9708-59104F895D51.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		76E4431D-7374-41A6-9708-59104F895D51.Release|Any CPU.Build.0 = Release|Any CPU
-		76E4431D-7374-41A6-9708-59104F895D51.Release|Any CPU.ActiveCfg = Release|Any CPU
-		637D2388-7922-42C1-BDD6-8DD578B62833.Debug|Any CPU.Build.0 = Debug|Any CPU
-		637D2388-7922-42C1-BDD6-8DD578B62833.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		637D2388-7922-42C1-BDD6-8DD578B62833.Release|Any CPU.Build.0 = Release|Any CPU
-		637D2388-7922-42C1-BDD6-8DD578B62833.Release|Any CPU.ActiveCfg = Release|Any CPU
-		43B6A87D-79E4-477E-8FEE-BE5D8826413B.Debug|Any CPU.Build.0 = Debug|Any CPU
-		43B6A87D-79E4-477E-8FEE-BE5D8826413B.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		43B6A87D-79E4-477E-8FEE-BE5D8826413B.Release|Any CPU.Build.0 = Release|Any CPU
-		43B6A87D-79E4-477E-8FEE-BE5D8826413B.Release|Any CPU.ActiveCfg = Release|Any CPU
-		75A3A363-7EFE-4833-9E0F-33DF4967F6F6.Debug|Any CPU.Build.0 = Debug|Any CPU
-		75A3A363-7EFE-4833-9E0F-33DF4967F6F6.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		75A3A363-7EFE-4833-9E0F-33DF4967F6F6.Release|Any CPU.Build.0 = Release|Any CPU
-		75A3A363-7EFE-4833-9E0F-33DF4967F6F6.Release|Any CPU.ActiveCfg = Release|Any CPU
-		65837962-CBC5-4E5A-B75E-9ADCBD9DDD49.Debug|Any CPU.Build.0 = Debug|Any CPU
-		65837962-CBC5-4E5A-B75E-9ADCBD9DDD49.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		65837962-CBC5-4E5A-B75E-9ADCBD9DDD49.Release|Any CPU.Build.0 = Release|Any CPU
-		65837962-CBC5-4E5A-B75E-9ADCBD9DDD49.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{76E4431D-7374-41A6-9708-59104F895D51}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{76E4431D-7374-41A6-9708-59104F895D51}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{76E4431D-7374-41A6-9708-59104F895D51}.Release|Any CPU.Build.0 = Release|Any CPU
+		{76E4431D-7374-41A6-9708-59104F895D51}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{637D2388-7922-42C1-BDD6-8DD578B62833}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{637D2388-7922-42C1-BDD6-8DD578B62833}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{637D2388-7922-42C1-BDD6-8DD578B62833}.Release|Any CPU.Build.0 = Release|Any CPU
+		{637D2388-7922-42C1-BDD6-8DD578B62833}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{43B6A87D-79E4-477E-8FEE-BE5D8826413B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{43B6A87D-79E4-477E-8FEE-BE5D8826413B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{43B6A87D-79E4-477E-8FEE-BE5D8826413B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{43B6A87D-79E4-477E-8FEE-BE5D8826413B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{75A3A363-7EFE-4833-9E0F-33DF4967F6F6}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{75A3A363-7EFE-4833-9E0F-33DF4967F6F6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{75A3A363-7EFE-4833-9E0F-33DF4967F6F6}.Release|Any CPU.Build.0 = Release|Any CPU
+		{75A3A363-7EFE-4833-9E0F-33DF4967F6F6}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{65837962-CBC5-4E5A-B75E-9ADCBD9DDD49}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{65837962-CBC5-4E5A-B75E-9ADCBD9DDD49}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{65837962-CBC5-4E5A-B75E-9ADCBD9DDD49}.Release|Any CPU.Build.0 = Release|Any CPU
+		{65837962-CBC5-4E5A-B75E-9ADCBD9DDD49}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{5AF07F51-C0B4-4AC7-9007-8CB607F9DA03}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{5AF07F51-C0B4-4AC7-9007-8CB607F9DA03}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{5AF07F51-C0B4-4AC7-9007-8CB607F9DA03}.Release|Any CPU.Build.0 = Release|Any CPU
@@ -144,34 +144,34 @@ Global
 		{0E47E3BD-3905-4105-B78F-060F7B9D0943}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{0E47E3BD-3905-4105-B78F-060F7B9D0943}.Release|Any CPU.Build.0 = Release|Any CPU
 		{0E47E3BD-3905-4105-B78F-060F7B9D0943}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		1532B4C2-5A04-4FFC-B383-E147A2377370.Debug|Any CPU.Build.0 = Debug|Any CPU
-		1532B4C2-5A04-4FFC-B383-E147A2377370.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		1532B4C2-5A04-4FFC-B383-E147A2377370.Release|Any CPU.Build.0 = Release|Any CPU
-		1532B4C2-5A04-4FFC-B383-E147A2377370.Release|Any CPU.ActiveCfg = Release|Any CPU
-		53C927CB-7CFF-4BA4-B457-9AAC2A239272.Debug|Any CPU.Build.0 = Debug|Any CPU
-		53C927CB-7CFF-4BA4-B457-9AAC2A239272.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		53C927CB-7CFF-4BA4-B457-9AAC2A239272.Release|Any CPU.Build.0 = Release|Any CPU
-		53C927CB-7CFF-4BA4-B457-9AAC2A239272.Release|Any CPU.ActiveCfg = Release|Any CPU
-		31D61A52-7E35-4224-B713-03C408AE6DF9.Debug|Any CPU.Build.0 = Debug|Any CPU
-		31D61A52-7E35-4224-B713-03C408AE6DF9.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		31D61A52-7E35-4224-B713-03C408AE6DF9.Release|Any CPU.Build.0 = Release|Any CPU
-		31D61A52-7E35-4224-B713-03C408AE6DF9.Release|Any CPU.ActiveCfg = Release|Any CPU
-		6D1D1DCD-F80D-4394-8308-6DFF8907CD93.Debug|Any CPU.Build.0 = Debug|Any CPU
-		6D1D1DCD-F80D-4394-8308-6DFF8907CD93.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		6D1D1DCD-F80D-4394-8308-6DFF8907CD93.Release|Any CPU.Build.0 = Release|Any CPU
-		6D1D1DCD-F80D-4394-8308-6DFF8907CD93.Release|Any CPU.ActiveCfg = Release|Any CPU
-		1A88A039-A817-40AF-A71A-A636AF5B7D1D.Debug|Any CPU.Build.0 = Debug|Any CPU
-		1A88A039-A817-40AF-A71A-A636AF5B7D1D.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		1A88A039-A817-40AF-A71A-A636AF5B7D1D.Release|Any CPU.Build.0 = Release|Any CPU
-		1A88A039-A817-40AF-A71A-A636AF5B7D1D.Release|Any CPU.ActiveCfg = Release|Any CPU
-		AE6D48F3-AF3A-4E3D-B221-D73FC5CCA688.Debug|Any CPU.Build.0 = Debug|Any CPU
-		AE6D48F3-AF3A-4E3D-B221-D73FC5CCA688.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		AE6D48F3-AF3A-4E3D-B221-D73FC5CCA688.Release|Any CPU.Build.0 = Release|Any CPU
-		AE6D48F3-AF3A-4E3D-B221-D73FC5CCA688.Release|Any CPU.ActiveCfg = Release|Any CPU
-		2D87F665-5D74-40C3-A5AF-C766D1C0A409.Debug|Any CPU.Build.0 = Debug|Any CPU
-		2D87F665-5D74-40C3-A5AF-C766D1C0A409.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		2D87F665-5D74-40C3-A5AF-C766D1C0A409.Release|Any CPU.Build.0 = Release|Any CPU
-		2D87F665-5D74-40C3-A5AF-C766D1C0A409.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1532B4C2-5A04-4FFC-B383-E147A2377370}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1532B4C2-5A04-4FFC-B383-E147A2377370}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1532B4C2-5A04-4FFC-B383-E147A2377370}.Release|Any CPU.Build.0 = Release|Any CPU
+		{1532B4C2-5A04-4FFC-B383-E147A2377370}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{53C927CB-7CFF-4BA4-B457-9AAC2A239272}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{53C927CB-7CFF-4BA4-B457-9AAC2A239272}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{53C927CB-7CFF-4BA4-B457-9AAC2A239272}.Release|Any CPU.Build.0 = Release|Any CPU
+		{53C927CB-7CFF-4BA4-B457-9AAC2A239272}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{31D61A52-7E35-4224-B713-03C408AE6DF9}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{31D61A52-7E35-4224-B713-03C408AE6DF9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{31D61A52-7E35-4224-B713-03C408AE6DF9}.Release|Any CPU.Build.0 = Release|Any CPU
+		{31D61A52-7E35-4224-B713-03C408AE6DF9}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6D1D1DCD-F80D-4394-8308-6DFF8907CD93}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6D1D1DCD-F80D-4394-8308-6DFF8907CD93}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6D1D1DCD-F80D-4394-8308-6DFF8907CD93}.Release|Any CPU.Build.0 = Release|Any CPU
+		{6D1D1DCD-F80D-4394-8308-6DFF8907CD93}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1A88A039-A817-40AF-A71A-A636AF5B7D1D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1A88A039-A817-40AF-A71A-A636AF5B7D1D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1A88A039-A817-40AF-A71A-A636AF5B7D1D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{1A88A039-A817-40AF-A71A-A636AF5B7D1D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{AE6D48F3-AF3A-4E3D-B221-D73FC5CCA688}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{AE6D48F3-AF3A-4E3D-B221-D73FC5CCA688}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{AE6D48F3-AF3A-4E3D-B221-D73FC5CCA688}.Release|Any CPU.Build.0 = Release|Any CPU
+		{AE6D48F3-AF3A-4E3D-B221-D73FC5CCA688}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2D87F665-5D74-40C3-A5AF-C766D1C0A409}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2D87F665-5D74-40C3-A5AF-C766D1C0A409}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2D87F665-5D74-40C3-A5AF-C766D1C0A409}.Release|Any CPU.Build.0 = Release|Any CPU
+		{2D87F665-5D74-40C3-A5AF-C766D1C0A409}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{1C37FE17-B314-4EC6-91A7-EAF27D301130}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{1C37FE17-B314-4EC6-91A7-EAF27D301130}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{1C37FE17-B314-4EC6-91A7-EAF27D301130}.Release|Any CPU.Build.0 = Release|Any CPU

@@ -1,6 +1,6 @@
 <Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
-    <ProjectGuid>115F2398-E0E0-4F79-854C-BBFC5DEB076F</ProjectGuid>
+    <ProjectGuid>{115F2398-E0E0-4F79-854C-BBFC5DEB076F}</ProjectGuid>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <OutputType>Library</OutputType>
@@ -88,7 +88,7 @@
       <Name>Ict.Petra.Client.App.Core</Name>
     </ProjectReference>
     <ProjectReference Include="..\app\Gui\Ict.Petra.Client.App.Gui.csproj">
-      <Project>7C72F5ED-C494-4B58-AA90-2B948D4CF1D7</Project>
+      <Project>{7C72F5ED-C494-4B58-AA90-2B948D4CF1D7}</Project>
       <Name>Ict.Petra.Client.App.Gui</Name>
     </ProjectReference>
   </ItemGroup>

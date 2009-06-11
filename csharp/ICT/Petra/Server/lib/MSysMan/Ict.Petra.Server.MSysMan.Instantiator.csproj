@@ -1,6 +1,6 @@
 <Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
-    <ProjectGuid>65837962-CBC5-4E5A-B75E-9ADCBD9DDD49</ProjectGuid>
+    <ProjectGuid>{65837962-CBC5-4E5A-B75E-9ADCBD9DDD49}</ProjectGuid>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <OutputType>Library</OutputType>

@@ -1,6 +1,6 @@
 <Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
-    <ProjectGuid>2D87F665-5D74-40C3-A5AF-C766D1C0A409</ProjectGuid>
+    <ProjectGuid>{2D87F665-5D74-40C3-A5AF-C766D1C0A409}</ProjectGuid>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <OutputType>Library</OutputType>
@@ -81,27 +81,27 @@
       <Name>Ict.Petra.Server.MCommon</Name>
     </ProjectReference>
     <ProjectReference Include="Ict.Petra.Server.MReporting.csproj">
-      <Project>1532B4C2-5A04-4FFC-B383-E147A2377370</Project>
+      <Project>{1532B4C2-5A04-4FFC-B383-E147A2377370}</Project>
       <Name>Ict.Petra.Server.MReporting</Name>
     </ProjectReference>
     <ProjectReference Include="MConference\Ict.Petra.Server.MReporting.MConference.csproj">
-      <Project>31D61A52-7E35-4224-B713-03C408AE6DF9</Project>
+      <Project>{31D61A52-7E35-4224-B713-03C408AE6DF9}</Project>
       <Name>Ict.Petra.Server.MReporting.MConference</Name>
     </ProjectReference>
     <ProjectReference Include="MFinance\Ict.Petra.Server.MReporting.MFinance.csproj">
-      <Project>53C927CB-7CFF-4BA4-B457-9AAC2A239272</Project>
+      <Project>{53C927CB-7CFF-4BA4-B457-9AAC2A239272}</Project>
       <Name>Ict.Petra.Server.MReporting.MFinance</Name>
     </ProjectReference>
     <ProjectReference Include="MFinDev\Ict.Petra.Server.MReporting.MFinDev.csproj">
-      <Project>6D1D1DCD-F80D-4394-8308-6DFF8907CD93</Project>
+      <Project>{6D1D1DCD-F80D-4394-8308-6DFF8907CD93}</Project>
       <Name>Ict.Petra.Server.MReporting.MFinDev</Name>
     </ProjectReference>
     <ProjectReference Include="MPartner\Ict.Petra.Server.MReporting.MPartner.csproj">
-      <Project>1A88A039-A817-40AF-A71A-A636AF5B7D1D</Project>
+      <Project>{1A88A039-A817-40AF-A71A-A636AF5B7D1D}</Project>
       <Name>Ict.Petra.Server.MReporting.MPartner</Name>
     </ProjectReference>
     <ProjectReference Include="MPersonnel\Ict.Petra.Server.MReporting.MPersonnel.csproj">
-      <Project>AE6D48F3-AF3A-4E3D-B221-D73FC5CCA688</Project>
+      <Project>{AE6D48F3-AF3A-4E3D-B221-D73FC5CCA688}</Project>
       <Name>Ict.Petra.Server.MReporting.MPersonnel</Name>
     </ProjectReference>
   </ItemGroup>

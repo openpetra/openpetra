@@ -1,6 +1,6 @@
 <Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
-    <ProjectGuid>FD074084-1FB7-4C92-BD2A-09E7369EC81D</ProjectGuid>
+    <ProjectGuid>{FD074084-1FB7-4C92-BD2A-09E7369EC81D}</ProjectGuid>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <OutputType>Library</OutputType>
@@ -74,23 +74,23 @@
       <Name>Ict.Petra.Shared</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\..\Ict.Petra.Shared.UserInfo.csproj">
-      <Project>ECC6EB7E-E269-4735-8989-4243ABC58379</Project>
+      <Project>{ECC6EB7E-E269-4735-8989-4243ABC58379}</Project>
       <Name>Ict.Petra.Shared.UserInfo</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\MCommon\data\Ict.Petra.Shared.MCommon.DataTables.csproj">
-      <Project>EAF53CA5-2E91-4AE2-B412-8292DA40FE93</Project>
+      <Project>{EAF53CA5-2E91-4AE2-B412-8292DA40FE93}</Project>
       <Name>Ict.Petra.Shared.MCommon.DataTables</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\MPartner\data\Ict.Petra.Shared.MPartner.DataTables.csproj">
-      <Project>6A8AF588-522A-469E-BEC4-C154CBC8866A</Project>
+      <Project>{6A8AF588-522A-469E-BEC4-C154CBC8866A}</Project>
       <Name>Ict.Petra.Shared.MPartner.DataTables</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\MSysMan\data\Ict.Petra.Shared.MSysMan.DataTables.csproj">
-      <Project>E5C3D047-F530-4AAA-B7BE-3CEE79A45BCE</Project>
+      <Project>{E5C3D047-F530-4AAA-B7BE-3CEE79A45BCE}</Project>
       <Name>Ict.Petra.Shared.MSysMan.DataTables</Name>
     </ProjectReference>
     <ProjectReference Include="Ict.Petra.Shared.MFinance.DataTables.csproj">
-      <Project>17586D04-2FFF-478C-A1AD-7DCDA49FB1FA</Project>
+      <Project>{17586D04-2FFF-478C-A1AD-7DCDA49FB1FA}</Project>
       <Name>Ict.Petra.Shared.MFinance.DataTables</Name>
     </ProjectReference>
   </ItemGroup>

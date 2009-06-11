@@ -1,6 +1,6 @@
 <Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
-    <ProjectGuid>F37641A0-702F-48F8-A810-6075C3B29F6B</ProjectGuid>
+    <ProjectGuid>{F37641A0-702F-48F8-A810-6075C3B29F6B}</ProjectGuid>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <OutputType>Library</OutputType>
@@ -79,7 +79,7 @@
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\MCommon\Ict.Petra.Server.MCommon.UIConnectors.csproj">
-      <Project>76E4431D-7374-41A6-9708-59104F895D51</Project>
+      <Project>{76E4431D-7374-41A6-9708-59104F895D51}</Project>
       <Name>Ict.Petra.Server.MCommon.UIConnectors</Name>
     </ProjectReference>
     <ProjectReference Include="Ict.Petra.Server.MPersonnel.UIConnectors.csproj">

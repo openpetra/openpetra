@@ -1,4 +1,4 @@
-﻿<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
     <ProjectGuid>{48360C9E-52F7-484C-944C-B1142AEED924}</ProjectGuid>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
@@ -57,11 +57,11 @@
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\MConference\data\Ict.Petra.Shared.MConference.DataTables.csproj">
-      <Project>6877C414-A72F-4E48-A5ED-E100787641D3</Project>
+      <Project>{6877C414-A72F-4E48-A5ED-E100787641D3}</Project>
       <Name>Ict.Petra.Shared.MConference.DataTables</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\MPartner\data\Ict.Petra.Shared.MPartner.DataTables.csproj">
-      <Project>6A8AF588-522A-469E-BEC4-C154CBC8866A</Project>
+      <Project>{6A8AF588-522A-469E-BEC4-C154CBC8866A}</Project>
       <Name>Ict.Petra.Shared.MPartner.DataTables</Name>
     </ProjectReference>
     <ProjectReference Include="Ict.Petra.Shared.MHospitality.DataTables.csproj">

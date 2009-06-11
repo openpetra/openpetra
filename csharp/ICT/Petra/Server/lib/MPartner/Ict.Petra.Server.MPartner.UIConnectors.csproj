@@ -1,4 +1,4 @@
-﻿<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
     <ProjectGuid>{C9D92B0D-06CE-4580-A03F-8E0C54C3038D}</ProjectGuid>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
@@ -114,7 +114,7 @@
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\app\ClientDomain\Ict.Petra.Server.App.ClientDomain.csproj">
-      <Project>DC487150-0555-4C05-A13F-91588D9D750D</Project>
+      <Project>{DC487150-0555-4C05-A13F-91588D9D750D}</Project>
       <Name>Ict.Petra.Server.App.ClientDomain</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\app\Core\Ict.Petra.Server.App.Core.csproj">
@@ -126,7 +126,7 @@
       <Name>Ict.Petra.Server.MCommon</Name>
     </ProjectReference>
     <ProjectReference Include="..\MCommon\Ict.Petra.Server.MCommon.UIConnectors.csproj">
-      <Project>76E4431D-7374-41A6-9708-59104F895D51</Project>
+      <Project>{76E4431D-7374-41A6-9708-59104F895D51}</Project>
       <Name>Ict.Petra.Server.MCommon.UIConnectors</Name>
     </ProjectReference>
     <ProjectReference Include="..\MFinance\Ict.Petra.Server.MFinance.csproj">

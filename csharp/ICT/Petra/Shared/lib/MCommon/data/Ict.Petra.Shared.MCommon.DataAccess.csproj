@@ -1,4 +1,4 @@
-﻿<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
     <ProjectGuid>{69E21FFC-F815-451A-96BB-66499CDDEB6E}</ProjectGuid>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
@@ -75,15 +75,15 @@
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\..\Ict.Petra.Shared.UserInfo.csproj">
-      <Project>ECC6EB7E-E269-4735-8989-4243ABC58379</Project>
+      <Project>{ECC6EB7E-E269-4735-8989-4243ABC58379}</Project>
       <Name>Ict.Petra.Shared.UserInfo</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\MPartner\data\Ict.Petra.Shared.MPartner.DataTables.csproj">
-      <Project>6A8AF588-522A-469E-BEC4-C154CBC8866A</Project>
+      <Project>{6A8AF588-522A-469E-BEC4-C154CBC8866A}</Project>
       <Name>Ict.Petra.Shared.MPartner.DataTables</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\MPersonnel\data\Ict.Petra.Shared.MPersonnel.DataTables.csproj">
-      <Project>5B6D2B12-84D0-4B62-AF1F-B8365FBF68D1</Project>
+      <Project>{5B6D2B12-84D0-4B62-AF1F-B8365FBF68D1}</Project>
       <Name>Ict.Petra.Shared.MPersonnel.DataTables</Name>
     </ProjectReference>
   </ItemGroup>

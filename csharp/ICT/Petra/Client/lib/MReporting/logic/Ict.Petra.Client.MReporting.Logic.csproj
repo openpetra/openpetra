@@ -1,6 +1,6 @@
 <Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
-    <ProjectGuid>E5D87C50-783C-4516-84A9-CF1D37894C9C</ProjectGuid>
+    <ProjectGuid>{E5D87C50-783C-4516-84A9-CF1D37894C9C}</ProjectGuid>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <OutputType>Library</OutputType>
@@ -87,7 +87,7 @@
       <Name>Ict.Petra.Client.App.Core</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\..\app\Core\Ict.Petra.Client.App.Core.RemoteObjects.csproj">
-      <Project>A3E8D62A-D07D-44D9-A286-68220B3AA94F</Project>
+      <Project>{A3E8D62A-D07D-44D9-A286-68220B3AA94F}</Project>
       <Name>Ict.Petra.Client.App.Core.RemoteObjects</Name>
     </ProjectReference>
   </ItemGroup>

@@ -1,4 +1,4 @@
-﻿<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
     <ProjectGuid>{8B8EEEE1-C72B-48AD-9BD6-D79DC83D68D8}</ProjectGuid>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
@@ -139,23 +139,23 @@
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\CommonControls\logic\Ict.Petra.Client.CommonControls.Logic.csproj">
-      <Project>FD174C01-3423-4604-A7FF-4348969D57CF</Project>
+      <Project>{FD174C01-3423-4604-A7FF-4348969D57CF}</Project>
       <Name>Ict.Petra.Client.CommonControls.Logic</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\CommonDialogs\Ict.Petra.Client.CommonDialogs.csproj">
-      <Project>BE0FD127-A9A9-4291-A5E0-71A45AC2FDBD</Project>
+      <Project>{BE0FD127-A9A9-4291-A5E0-71A45AC2FDBD}</Project>
       <Name>Ict.Petra.Client.CommonDialogs</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\CommonForms\Ict.Petra.Client.CommonForms.csproj">
-      <Project>115F2398-E0E0-4F79-854C-BBFC5DEB076F</Project>
+      <Project>{115F2398-E0E0-4F79-854C-BBFC5DEB076F}</Project>
       <Name>Ict.Petra.Client.CommonForms</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\lib\MCommon\gui\Ict.Petra.Client.MCommon.Gui.csproj">
-      <Project>F1D473DD-F831-4662-A3F9-EE5016D4C625</Project>
+      <Project>{F1D473DD-F831-4662-A3F9-EE5016D4C625}</Project>
       <Name>Ict.Petra.Client.MCommon.Gui</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\lib\MPartner\gui\Ict.Petra.Client.MPartner.Gui.csproj">
-      <Project>2B06F76C-A8FE-4F0A-A312-B53055F9E77A</Project>
+      <Project>{2B06F76C-A8FE-4F0A-A312-B53055F9E77A}</Project>
       <Name>Ict.Petra.Client.MPartner.Gui</Name>
     </ProjectReference>
     <ProjectReference Include="..\Core\Ict.Petra.Client.App.Core.csproj">
@@ -163,7 +163,7 @@
       <Name>Ict.Petra.Client.App.Core</Name>
     </ProjectReference>
     <ProjectReference Include="..\Core\Ict.Petra.Client.App.Core.RemoteObjects.csproj">
-      <Project>A3E8D62A-D07D-44D9-A286-68220B3AA94F</Project>
+      <Project>{A3E8D62A-D07D-44D9-A286-68220B3AA94F}</Project>
       <Name>Ict.Petra.Client.App.Core.RemoteObjects</Name>
     </ProjectReference>
   </ItemGroup>

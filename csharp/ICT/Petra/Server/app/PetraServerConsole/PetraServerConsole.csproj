@@ -1,6 +1,6 @@
 <Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
-    <ProjectGuid>279D5FBA-A4FA-42F6-9737-2E4F60623917</ProjectGuid>
+    <ProjectGuid>{279D5FBA-A4FA-42F6-9737-2E4F60623917}</ProjectGuid>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <OutputType>Exe</OutputType>
@@ -84,7 +84,7 @@
       <Name>Ict.Petra.Server.MPartner.Instantiator</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\lib\MPersonnel\Ict.Petra.Server.MPersonnel.Instantiator.csproj">
-      <Project>F37641A0-702F-48F8-A810-6075C3B29F6B</Project>
+      <Project>{F37641A0-702F-48F8-A810-6075C3B29F6B}</Project>
       <Name>Ict.Petra.Server.MPersonnel.Instantiator</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\lib\MSysMan\Ict.Petra.Server.MSysMan.csproj">
@@ -92,11 +92,11 @@
       <Name>Ict.Petra.Server.MSysMan</Name>
     </ProjectReference>
     <ProjectReference Include="..\ClientDomain\Ict.Petra.Server.App.ClientDomain.CallForwarder.csproj">
-      <Project>4F3F60C9-AC5E-4023-922A-FB616B53A2C0</Project>
+      <Project>{4F3F60C9-AC5E-4023-922A-FB616B53A2C0}</Project>
       <Name>Ict.Petra.Server.App.ClientDomain.CallForwarder</Name>
     </ProjectReference>
     <ProjectReference Include="..\ClientDomain\Ict.Petra.Server.App.ClientDomain.csproj">
-      <Project>DC487150-0555-4C05-A13F-91588D9D750D</Project>
+      <Project>{DC487150-0555-4C05-A13F-91588D9D750D}</Project>
       <Name>Ict.Petra.Server.App.ClientDomain</Name>
     </ProjectReference>
     <ProjectReference Include="..\Core\Ict.Petra.Server.App.Core.csproj">
@@ -104,7 +104,7 @@
       <Name>Ict.Petra.Server.App.Core</Name>
     </ProjectReference>
     <ProjectReference Include="..\Main\Ict.Petra.Server.App.Main.csproj">
-      <Project>476D1409-E5EA-4E2A-A3FB-743F4832AE7A</Project>
+      <Project>{476D1409-E5EA-4E2A-A3FB-743F4832AE7A}</Project>
       <Name>Ict.Petra.Server.App.Main</Name>
     </ProjectReference>
   </ItemGroup>
