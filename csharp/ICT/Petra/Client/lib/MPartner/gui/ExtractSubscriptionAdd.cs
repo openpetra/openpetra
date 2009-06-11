@@ -92,13 +92,11 @@ namespace Ict.Petra.Client.MPartner
             InitializeComponent();
             #region CATALOGI18N
 
-// this code has been inserted by GenerateI18N, all changes in this region will be overwritten by GenerateI18N
+            // this code has been inserted by GenerateI18N, all changes in this region will be overwritten by GenerateI18N
             this.MenuItem2.Text = Catalog.GetString("First Record");
             this.MenuItem3.Text = Catalog.GetString("Last Record");
             this.MenuItem4.Text = Catalog.GetString("Previous Record");
             this.MenuItem5.Text = Catalog.GetString("Next Record");
-            this.MenuItem6.Text = Catalog.GetString("-");
-            this.MenuItem7.Text = Catalog.GetString("-");
             this.lblExtractNameinfo.Text = Catalog.GetString("Extract Name:");
             this.lblExctractIDinfo.Text = Catalog.GetString("Extract ID:");
             this.btnCancel.Text = Catalog.GetString("&Cancel");

@@ -70,7 +70,7 @@ namespace Ict.Petra.Client.MPartner
             InitializeComponent();
             #region CATALOGI18N
 
-// this code has been inserted by GenerateI18N, all changes in this region will be overwritten by GenerateI18N
+            // this code has been inserted by GenerateI18N, all changes in this region will be overwritten by GenerateI18N
             this.btnOK.Text = Catalog.GetString("&Accept");
             this.btnClearCriteria.Text = Catalog.GetString("Clea&r");
             this.grpCriteria.Text = Catalog.GetString("&Find Criteria:");

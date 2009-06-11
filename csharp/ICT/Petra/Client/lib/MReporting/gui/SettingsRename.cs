@@ -32,9 +32,9 @@ using System.Data;
 
 namespace Ict.Petra.Client.MReporting.Gui
 {
-	/// <summary>
-	/// form that helps with renaming report settings
-	/// </summary>
+    /// <summary>
+    /// form that helps with renaming report settings
+    /// </summary>
     public class TFrmSettingsRename : System.Windows.Forms.Form
     {
         /// <summary> Required designer variable. </summary>
@@ -45,7 +45,7 @@ namespace Ict.Petra.Client.MReporting.Gui
         private System.Windows.Forms.TextBox txtOldName;
         private System.Windows.Forms.Button BtnOk;
         private System.Windows.Forms.Button BtnCancel;
-        
+
         /// <summary>
         /// the new name after renaming
         /// </summary>
@@ -96,36 +96,36 @@ namespace Ict.Petra.Client.MReporting.Gui
             this.BtnCancel = new System.Windows.Forms.Button();
             this.SuspendLayout();
 
-            //  
-            // lblNewName 
-            //  
+            //
+            // lblNewName
+            //
             this.lblNewName.Location = new System.Drawing.Point(8, 64);
             this.lblNewName.Name = "lblNewName";
             this.lblNewName.Size = new System.Drawing.Size(72, 23);
             this.lblNewName.TabIndex = 2;
             this.lblNewName.Text = "New Name:";
 
-            //  
-            // lblOldName 
-            //  
+            //
+            // lblOldName
+            //
             this.lblOldName.Location = new System.Drawing.Point(8, 24);
             this.lblOldName.Name = "lblOldName";
             this.lblOldName.Size = new System.Drawing.Size(64, 23);
             this.lblOldName.TabIndex = 0;
             this.lblOldName.Text = "Old Name:";
 
-            //  
-            // txtNewName 
-            //  
+            //
+            // txtNewName
+            //
             this.txtNewName.Location = new System.Drawing.Point(88, 64);
             this.txtNewName.Name = "txtNewName";
             this.txtNewName.Size = new System.Drawing.Size(256, 20);
             this.txtNewName.TabIndex = 3;
             this.txtNewName.Text = "New Name";
 
-            //  
-            // txtOldName 
-            //  
+            //
+            // txtOldName
+            //
             this.txtOldName.Enabled = false;
             this.txtOldName.Location = new System.Drawing.Point(88, 24);
             this.txtOldName.Name = "txtOldName";
@@ -133,27 +133,27 @@ namespace Ict.Petra.Client.MReporting.Gui
             this.txtOldName.TabIndex = 1;
             this.txtOldName.Text = "OldName";
 
-            //  
-            // BtnOk 
-            //  
+            //
+            // BtnOk
+            //
             this.BtnOk.DialogResult = System.Windows.Forms.DialogResult.OK;
             this.BtnOk.Location = new System.Drawing.Point(88, 96);
             this.BtnOk.Name = "BtnOk";
             this.BtnOk.TabIndex = 4;
             this.BtnOk.Text = "&Ok";
 
-            //  
-            // BtnCancel 
-            //  
+            //
+            // BtnCancel
+            //
             this.BtnCancel.DialogResult = System.Windows.Forms.DialogResult.Cancel;
             this.BtnCancel.Location = new System.Drawing.Point(192, 96);
             this.BtnCancel.Name = "BtnCancel";
             this.BtnCancel.TabIndex = 5;
             this.BtnCancel.Text = "&Cancel";
 
-            //  
-            // TFrmSettingsRename 
-            //  
+            //
+            // TFrmSettingsRename
+            //
             this.AutoScaleBaseSize = new System.Drawing.Size(5, 13);
             this.ClientSize = new System.Drawing.Size(376, 133);
             this.Controls.Add(this.BtnCancel);
@@ -192,9 +192,9 @@ namespace Ict.Petra.Client.MReporting.Gui
         /// <returns>void</returns>
         public TFrmSettingsRename() : base()
         {
-            //  
-            // Required for Windows Form Designer support 
-            //  
+            //
+            // Required for Windows Form Designer support
+            //
             InitializeComponent();
         }
     }

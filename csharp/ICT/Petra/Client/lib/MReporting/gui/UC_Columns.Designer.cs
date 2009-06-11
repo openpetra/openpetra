@@ -34,21 +34,24 @@ namespace Ict.Petra.Client.MReporting.Gui
         /// Designer variable used to keep track of non-visual components.
         /// </summary>
         private System.ComponentModel.IContainer components = null;
-        
+
         /// <summary>
         /// Disposes resources used by the control.
         /// </summary>
         /// <param name="disposing">true if managed resources should be disposed; otherwise, false.</param>
         protected override void Dispose(bool disposing)
         {
-            if (disposing) {
-                if (components != null) {
+            if (disposing)
+            {
+                if (components != null)
+                {
                     components.Dispose();
                 }
             }
+
             base.Dispose(disposing);
         }
-        
+
         /// <summary>
         /// This method is required for Windows Forms designer support.
         /// Do not change the method contents inside the source code editor. The Forms designer might
@@ -58,7 +61,7 @@ namespace Ict.Petra.Client.MReporting.Gui
         {
             this.components = new System.ComponentModel.Container();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(UC_Columns));
-            
+
             this.grdColumns = new Ict.Common.Controls.TSgrdDataGrid();
             this.Btn_MoveColumn2Right = new System.Windows.Forms.Button();
             this.ImL_MoveRight = new System.Windows.Forms.ImageList(this.components);
@@ -70,9 +73,9 @@ namespace Ict.Petra.Client.MReporting.Gui
             this.Btn_RemoveColumn = new System.Windows.Forms.Button();
             this.Btn_AddColumn = new System.Windows.Forms.Button();
 
-            // 
+            //
             // grdColumns
-            // 
+            //
             this.grdColumns.AlternatingBackgroundColour = System.Drawing.SystemColors.InactiveBorder;
             this.grdColumns.Anchor =
                 ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) |
@@ -83,7 +86,7 @@ namespace Ict.Petra.Client.MReporting.Gui
             this.grdColumns.BackColor = System.Drawing.SystemColors.ControlDark;
             this.grdColumns.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
             this.grdColumns.DeleteQuestionMessage = "You have chosen to delete this record.\'#13#10#13#10\'Do you really want to delete " +
-            "it?";
+                                                    "it?";
             this.grdColumns.FixedRows = 1;
             this.grdColumns.KeepRowSelectedAfterSort = true;
             this.grdColumns.Location = new System.Drawing.Point(10, 8);
@@ -101,9 +104,9 @@ namespace Ict.Petra.Client.MReporting.Gui
             this.grdColumns.TabStop = true;
             this.grdColumns.ToolTipTextDelegate = null;
 
-            // 
+            //
             // Btn_MoveColumn2Right
-            // 
+            //
             this.Btn_MoveColumn2Right.AccessibleDescription = "";
             this.Btn_MoveColumn2Right.Anchor =
                 ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
@@ -117,17 +120,17 @@ namespace Ict.Petra.Client.MReporting.Gui
             this.Btn_MoveColumn2Right.TabIndex = 26;
             this.Btn_MoveColumn2Right.Click += new System.EventHandler(this.Btn_MoveColumn2Right_Click);
 
-            // 
+            //
             // ImL_MoveRight
-            // 
+            //
             this.ImL_MoveRight.ImageStream = ((System.Windows.Forms.ImageListStreamer)(resources.GetObject("ImL_MoveRight.ImageStream")));
             this.ImL_MoveRight.TransparentColor = System.Drawing.Color.Transparent;
             this.ImL_MoveRight.Images.SetKeyName(0, "");
             this.ImL_MoveRight.Images.SetKeyName(1, "");
 
-            // 
+            //
             // Btn_MoveColumn2Left
-            // 
+            //
             this.Btn_MoveColumn2Left.AccessibleDescription = "";
             this.Btn_MoveColumn2Left.Anchor =
                 ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
@@ -140,17 +143,17 @@ namespace Ict.Petra.Client.MReporting.Gui
             this.Btn_MoveColumn2Left.TabIndex = 25;
             this.Btn_MoveColumn2Left.Click += new System.EventHandler(this.Btn_MoveColumn2Left_Click);
 
-            // 
+            //
             // ImL_MoveLeft
-            // 
+            //
             this.ImL_MoveLeft.ImageStream = ((System.Windows.Forms.ImageListStreamer)(resources.GetObject("ImL_MoveLeft.ImageStream")));
             this.ImL_MoveLeft.TransparentColor = System.Drawing.Color.Transparent;
             this.ImL_MoveLeft.Images.SetKeyName(0, "");
             this.ImL_MoveLeft.Images.SetKeyName(1, "");
 
-            // 
+            //
             // GBx_ChooseColCont
-            // 
+            //
             this.GBx_ChooseColCont.Controls.Add(this.Btn_Cancel);
             this.GBx_ChooseColCont.Controls.Add(this.BtnApply);
             this.GBx_ChooseColCont.Location = new System.Drawing.Point(10, 181);
@@ -160,9 +163,9 @@ namespace Ict.Petra.Client.MReporting.Gui
             this.GBx_ChooseColCont.TabStop = false;
             this.GBx_ChooseColCont.Text = "Define Column";
 
-            // 
+            //
             // Btn_Cancel
-            // 
+            //
             this.Btn_Cancel.Location = new System.Drawing.Point(288, 155);
             this.Btn_Cancel.Name = "Btn_Cancel";
             this.Btn_Cancel.Size = new System.Drawing.Size(90, 25);
@@ -170,9 +173,9 @@ namespace Ict.Petra.Client.MReporting.Gui
             this.Btn_Cancel.Text = "Cancel";
             this.Btn_Cancel.Click += new System.EventHandler(this.Btn_Cancel_Click);
 
-            // 
+            //
             // BtnApply
-            // 
+            //
             this.BtnApply.Location = new System.Drawing.Point(394, 155);
             this.BtnApply.Name = "BtnApply";
             this.BtnApply.Size = new System.Drawing.Size(90, 25);
@@ -180,9 +183,9 @@ namespace Ict.Petra.Client.MReporting.Gui
             this.BtnApply.Text = "Apply";
             this.BtnApply.Click += new System.EventHandler(this.BtnApply_Click);
 
-            // 
+            //
             // Btn_RemoveColumn
-            // 
+            //
             this.Btn_RemoveColumn.Enabled = false;
             this.Btn_RemoveColumn.Location = new System.Drawing.Point(115, 146);
             this.Btn_RemoveColumn.Name = "Btn_RemoveColumn";
@@ -191,19 +194,19 @@ namespace Ict.Petra.Client.MReporting.Gui
             this.Btn_RemoveColumn.Text = "&Remove";
             this.Btn_RemoveColumn.Click += new System.EventHandler(this.Btn_RemoveColumn_Click);
 
-            // 
+            //
             // Btn_AddColumn
-            // 
+            //
             this.Btn_AddColumn.Location = new System.Drawing.Point(10, 146);
             this.Btn_AddColumn.Name = "Btn_AddColumn";
             this.Btn_AddColumn.Size = new System.Drawing.Size(76, 26);
             this.Btn_AddColumn.TabIndex = 18;
             this.Btn_AddColumn.Text = "&Add";
             this.Btn_AddColumn.Click += new System.EventHandler(this.Btn_AddColumn_Click);
-            
-            // 
+
+            //
             // UC_Columns
-            // 
+            //
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.Name = "UC_Columns";
             this.Controls.Add(this.grdColumns);
@@ -215,6 +218,7 @@ namespace Ict.Petra.Client.MReporting.Gui
             this.Size = new System.Drawing.Size(650, 386);
             this.ResumeLayout(false);
         }
+
         private TSgrdDataGrid grdColumns;
         private System.Windows.Forms.Button Btn_Cancel;
         private System.Windows.Forms.GroupBox GBx_ChooseColCont;
@@ -225,5 +229,5 @@ namespace Ict.Petra.Client.MReporting.Gui
         private System.Windows.Forms.ImageList ImL_MoveLeft;
         private System.Windows.Forms.Button Btn_MoveColumn2Right;
         private System.Windows.Forms.Button Btn_MoveColumn2Left;
-   }
+    }
 }

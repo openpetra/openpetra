@@ -37,22 +37,27 @@ using Ict.Petra.Client.App.Core;
 
 namespace Ict.Petra.Client.MReporting.Logic
 {
- 	/// <summary>
- 	/// Here the specific layout of the report is defined.
- 	/// It is independent of the printer, so it works both for graphics and text.
- 	/// </summary>
- 	public class TReportPrinterLayout : TReportPrinterCommon
+    /// <summary>
+    /// Here the specific layout of the report is defined.
+    /// It is independent of the printer, so it works both for graphics and text.
+    /// </summary>
+    public class TReportPrinterLayout : TReportPrinterCommon
     {
         /// <summary>default value for position; they can be overwritten by the report definition</summary>
         public const Int32 HEADERPAGELEFT1_POS = 0;
+
         /// <summary>default value for position; they can be overwritten by the report definition</summary>
         public const Int32 HEADERPAGELEFT2_POS = 2;
+
         /// <summary>default value for position; they can be overwritten by the report definition</summary>
         public const Int32 COLUMNDATASTART_POS = 4;
+
         /// <summary>default value for position; they can be overwritten by the report definition</summary>
         public const Int32 COLUMN_WIDTH = 3;
+
         /// <summary>default value for position; they can be overwritten by the report definition</summary>
         public const float COLUMNLEFT1_POS = 0.5f;
+
         /// <summary>default value for position; they can be overwritten by the report definition</summary>
         public const float COLUMNLEFT2_POS = 2.5f;
 
@@ -62,7 +67,7 @@ namespace Ict.Petra.Client.MReporting.Logic
         /// <param name="AResult"></param>
         /// <param name="AParameters"></param>
         /// <param name="APrinter"></param>
-        public TReportPrinterLayout(TResultList AResult, TParameterList AParameters, TPrinter APrinter) : base (AResult, AParameters, APrinter)
+        public TReportPrinterLayout(TResultList AResult, TParameterList AParameters, TPrinter APrinter) : base(AResult, AParameters, APrinter)
         {
             if (AParameters.Get("ReportWidth").ToDouble() > 20)
             {
@@ -77,7 +82,7 @@ namespace Ict.Petra.Client.MReporting.Logic
         /// <summary>
         /// Print a report, initialise the page numbers, print header, body and footer;
         /// At the moment, this is only used for the TxtPrinter.
-        /// 
+        ///
         /// </summary>
         /// <returns>void</returns>
         public void PrintReport()
@@ -99,9 +104,9 @@ namespace Ict.Petra.Client.MReporting.Logic
             FPrinter.PrintString(Get("ControlSource", ReportingConsts.HEADERTITLE1), eFont.eHeadingFont, eAlignment.eCenter);
             FPrinter.PrintString(StringHelper.DateToLocalizedString(FTimePrinted), eFont.eDefaultFont, eAlignment.eRight);
 
-            // todo: 
-            // should page, title, sitename, date be bold, as in Petra 2.1? 
-            // requested by, petra version, is not bold 
+            // todo:
+            // should page, title, sitename, date be bold, as in Petra 2.1?
+            // requested by, petra version, is not bold
             if (FPrinter.NumberOfPages == 0)
             {
                 pages = "Page " + FPrinter.CurrentPageNr.ToString();
@@ -149,7 +154,7 @@ namespace Ict.Petra.Client.MReporting.Logic
         /// prints the captions of the columns;
         /// prepare the footer lines for long captions;
         /// is called by PrintPageHeader
-        /// 
+        ///
         /// </summary>
         /// <returns>void</returns>
         protected override void PrintColumnCaptions()
@@ -187,12 +192,12 @@ namespace Ict.Petra.Client.MReporting.Logic
 
             for (columnNr = 0; columnNr <= FNumberColumns - 1; columnNr += 1)
             {
-                // go back to top of the caption rows. 
+                // go back to top of the caption rows.
                 FPrinter.CurrentYPos = YPosStartCaptions;
                 NeedCaptionInFooter = false;
 
-                // should we use the normal or the short version of the caption? 
-                // if a short version exists, it will be used, and the long version will be printed in the footer of the page 
+                // should we use the normal or the short version of the caption?
+                // if a short version exists, it will be used, and the long version will be printed in the footer of the page
                 CaptionParameter = "ColumnCaption";
 
                 if (FParameters.Exists("ColumnShortCaption", columnNr))
@@ -212,11 +217,10 @@ namespace Ict.Petra.Client.MReporting.Logic
 
                 if ((!FPrinter.PrintStringAndFits(Caption, eFont.eDefaultBoldFont, GetPosition(columnNr, -1, 0),
                          GetWidth(columnNr, -1, 0), CaptionAlignment)))
-
-                // (Columns[columnNr] as RectangleF).Left 
-                // (Columns[columnNr] as RectangleF).Width 
                 {
-                    // if the text is still too long, add a line to the footer 
+                    // (Columns[columnNr] as RectangleF).Left
+                    // (Columns[columnNr] as RectangleF).Width
+                    // if the text is still too long, add a line to the footer
                     NeedCaptionInFooter = true;
                 }
 
@@ -227,18 +231,17 @@ namespace Ict.Petra.Client.MReporting.Logic
                 {
                     if ((!FPrinter.PrintStringAndFits(Caption, eFont.eDefaultFont,
                              GetPosition(columnNr, -1, 0), GetWidth(columnNr, -1, 0), eAlignment.eCenter)))
-
-                    // (Columns[columnNr] as RectangleF).Left 
-                    // (Columns[columnNr] as RectangleF).Width 
                     {
-                        // if the text is still too long, add a line to the footer 
+                        // (Columns[columnNr] as RectangleF).Left
+                        // (Columns[columnNr] as RectangleF).Width
+                        // if the text is still too long, add a line to the footer
                         NeedCaptionInFooter = true;
                     }
 
                     FPrinter.LineFeed(eFont.eDefaultFont);
                 }
 
-                // 3rd header line 
+                // 3rd header line
                 Caption = Get(CaptionParameter + "3", columnNr);
 
                 if (Caption.Length > 0)
@@ -247,11 +250,10 @@ namespace Ict.Petra.Client.MReporting.Logic
                              GetPosition(columnNr, -1, 0),
                              GetWidth(columnNr, -1, 0),
                              eAlignment.eCenter)))
-
-                    // (Columns[columnNr] as RectangleF).Left 
-                    // (Columns[columnNr] as RectangleF).Width 
                     {
-                        // if the text is still too long, add a line to the footer 
+                        // (Columns[columnNr] as RectangleF).Left
+                        // (Columns[columnNr] as RectangleF).Width
+                        // if the text is still too long, add a line to the footer
                         NeedCaptionInFooter = true;
                     }
 
@@ -262,13 +264,13 @@ namespace Ict.Petra.Client.MReporting.Logic
                 {
                     NumberFootNotes = NumberFootNotes + 1;
 
-                    // save current lowest point 
+                    // save current lowest point
                     if (FPrinter.CurrentYPos > LowestYPosCaptions)
                     {
                         LowestYPosCaptions = FPrinter.CurrentYPos;
                     }
 
-                    // go back into the first line of the caption 
+                    // go back into the first line of the caption
                     FPrinter.CurrentYPos = YPosStartCaptions;
                     FPrinter.PrintString("(" + NumberFootNotes.ToString() + ")",
                         eFont.eSmallPrintFont,
@@ -276,15 +278,15 @@ namespace Ict.Petra.Client.MReporting.Logic
                         GetWidth(columnNr, -1, 0),
                         eAlignment.eRight);
 
-                    // (Columns[columnNr] as RectangleF).Left 
-                    // (Columns[columnNr] as RectangleF).Width 
+                    // (Columns[columnNr] as RectangleF).Left
+                    // (Columns[columnNr] as RectangleF).Width
                     Caption = Convert.ToString(NumberFootNotes) + ": " +
                               Get("ColumnCaption", columnNr) + " " +
                               Get("ColumnCaption2", columnNr) + " " +
                               Get("ColumnCaption3", columnNr);
                     FParameters.Add("LongCaption", new TVariant(Caption), columnNr);
 
-                    // simulate the printing of the footer, to know how many rows are needed in the footer 
+                    // simulate the printing of the footer, to know how many rows are needed in the footer
                     StringWidth = FPrinter.GetWidthString(Caption, eFont.eSmallPrintFont);
 
                     if (!FPrinter.ValidXPos(FooterXPos + StringWidth))
@@ -296,17 +298,17 @@ namespace Ict.Petra.Client.MReporting.Logic
                     FooterXPos = FooterXPos + StringWidth + FPrinter.GetWidthString("a", eFont.eSmallPrintFont) * 7;
                 }
 
-                // store the highest caption 
+                // store the highest caption
                 if (FPrinter.CurrentYPos > LowestYPosCaptions)
                 {
                     LowestYPosCaptions = FPrinter.CurrentYPos;
                 }
             }
 
-            // feed forward to the lowest position after the captions 
+            // feed forward to the lowest position after the captions
             FPrinter.CurrentYPos = LowestYPosCaptions;
 
-            // if the line has not just begun, then add one more line 
+            // if the line has not just begun, then add one more line
             if (FooterXPos != FPrinter.LeftMargin)
             {
                 NumberFooterLines = NumberFooterLines + 1;
@@ -333,10 +335,10 @@ namespace Ict.Petra.Client.MReporting.Logic
             linePrinted = false;
             position = GetPosition(columnNr, level, 0);
 
-            // (Columns[columnNr] as RectangleF).Left 
+            // (Columns[columnNr] as RectangleF).Left
             width = GetWidth(columnNr, level, 0);
 
-            // (Columns[columnNr] as RectangleF).Width 
+            // (Columns[columnNr] as RectangleF).Width
             s = column.ToString();
 
             if (s.Length != 0)
@@ -380,7 +382,7 @@ namespace Ict.Petra.Client.MReporting.Logic
                 FPrinter.CurrentYPos = YPosBefore;
                 PrintColumn(columnNr, ARow.depth, ARow.column[columnNr]);
 
-                // store the highest column 
+                // store the highest column
                 if (FPrinter.CurrentYPos > LowestYPos)
                 {
                     LowestYPos = FPrinter.CurrentYPos;
@@ -403,16 +405,15 @@ namespace Ict.Petra.Client.MReporting.Logic
             String descr1 = "";
 
             if (!FPrinter.ValidYPos())
-
-            // not enoughSpace 
             {
+                // not enoughSpace
                 ReturnValue = false;
                 FNextElementToPrint = row.childRow;
                 FNextElementLineToPrint[row.depth] = eStageElementPrinting.eDetails;
             }
             else
             {
-                // can either print descr or header 
+                // can either print descr or header
                 if ((row.descr != null) && (row.descr[0].ToString().Length > 0))
                 {
                     descr0 = row.descr[0].ToString();
@@ -464,9 +465,8 @@ namespace Ict.Petra.Client.MReporting.Logic
             Boolean linePrinted;
 
             if (!FPrinter.ValidYPos())
-
-            // not enoughSpace 
             {
+                // not enoughSpace
                 FNextElementToPrint = row.childRow;
                 FNextElementLineToPrint[row.depth] = eStageElementPrinting.eHeader;
                 ReturnValue = false;
@@ -512,7 +512,7 @@ namespace Ict.Petra.Client.MReporting.Logic
 
             linePrinted = false;
 
-            // footer 
+            // footer
             if (FParameters.Get("SpaceLineAbove", -1, row.depth, eParameterFit.eExact).ToBool() == true)
             {
                 FPrinter.LineSpaceFeed(eFont.eDefaultFont);
@@ -570,7 +570,7 @@ namespace Ict.Petra.Client.MReporting.Logic
 
             if (FPrinter.PageFooterSpace == 0)
             {
-                // this printer does not support page footers 
+                // this printer does not support page footers
                 return;
             }
 
@@ -599,7 +599,7 @@ namespace Ict.Petra.Client.MReporting.Logic
 
                     if (FPrinter.ValidXPos(CurrentXPos + StringWidth))
                     {
-                        // can print in same line 
+                        // can print in same line
                         FPrinter.PrintString(Caption, eFont.eSmallPrintFont, CurrentXPos);
                     }
                     else

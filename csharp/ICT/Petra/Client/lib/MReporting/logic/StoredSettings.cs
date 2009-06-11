@@ -39,7 +39,7 @@ namespace Ict.Petra.Client.MReporting.Logic
     /// </summary>
     public class TStoredSettings
     {
-    	/// <summary>constant for the number of how many settings should be in the menu</summary>
+        /// <summary>constant for the number of how many settings should be in the menu</summary>
         public const Int32 MAX_NUMBER_OF_RECENT_SETTINGS = 5;
 
         /// <summary>the path where the application is started from.</summary>
@@ -51,7 +51,7 @@ namespace Ict.Petra.Client.MReporting.Logic
 
         /// <summary>
         /// The constructor sets the name of the report and the name of the user
-        /// 
+        ///
         /// </summary>
         /// <param name="AReportName">the name of the report (to know where to search/store settings)</param>
         /// <param name="ASettingsDirectory">this is where the settings are stored (in subdirectories for each report type)
@@ -66,7 +66,7 @@ namespace Ict.Petra.Client.MReporting.Logic
         /// <summary>
         /// This returns a StringCollection with the names of available settings
         /// for the given report
-        /// 
+        ///
         /// </summary>
         /// <returns>the list of names of settings, which exist at the moment
         /// </returns>
@@ -79,13 +79,13 @@ namespace Ict.Petra.Client.MReporting.Logic
             ReturnValue = new StringCollection();
             try
             {
-                // need to switch back to the application directory, because the path names might be relative to the application 
+                // need to switch back to the application directory, because the path names might be relative to the application
                 Environment.CurrentDirectory = FApplicationDirectory;
                 StringArray = System.IO.Directory.GetFiles(FSettingsDirectory + FReportName, "*.xml");
             }
             catch (System.Exception)
             {
-                // Messagebox.show('Error: Xmlfiles could not be found!!!'); 
+                // Messagebox.show('Error: Xmlfiles could not be found!!!');
             }
 
             if (StringArray != null)
@@ -103,7 +103,7 @@ namespace Ict.Petra.Client.MReporting.Logic
         /// <summary>
         /// This returns a StringCollection with the names of recently used settings
         /// for the given report
-        /// 
+        ///
         /// </summary>
         /// <returns>the list of names of recently used settings, which exist at the moment
         /// </returns>
@@ -121,10 +121,10 @@ namespace Ict.Petra.Client.MReporting.Logic
                 throw new Exception("Report name is too long for the settings");
             }
 
-            // get names of recently used settings from the database 
+            // get names of recently used settings from the database
             ReturnValue = StringHelper.StrSplit(TUserDefaults.GetStringDefault("RptStg" + FReportName, ""), ",");
 
-            // remove settings that are not available anymore 
+            // remove settings that are not available anymore
             AvailableSettings = GetAvailableSettings();
             Counter = 0;
 
@@ -142,7 +142,7 @@ namespace Ict.Petra.Client.MReporting.Logic
                 }
             }
 
-            // we might to fill up with reports from the directory, that have not been used yet 
+            // we might to fill up with reports from the directory, that have not been used yet
             Counter = 0;
 
             while ((Counter < AvailableSettings.Count) && (ReturnValue.Count < MAX_NUMBER_OF_RECENT_SETTINGS))
@@ -162,7 +162,7 @@ namespace Ict.Petra.Client.MReporting.Logic
 
         /// <summary>
         /// This adds a setting to the top of the list of recently used settings.
-        /// 
+        ///
         /// </summary>
         /// <param name="ASettingsName">the name of the setting, which should be most recent</param>
         /// <returns>the list of names of recently used settings, which exist at the moment
@@ -173,22 +173,22 @@ namespace Ict.Petra.Client.MReporting.Logic
 
             RecentlyUsedSettings = GetRecentlyUsedSettings();
 
-            // is the setting already the most recent one? then exit 
+            // is the setting already the most recent one? then exit
             if (RecentlyUsedSettings.IndexOf(ASettingsName) == 0)
             {
                 return RecentlyUsedSettings;
             }
 
-            // remove the current setting if it is already there 
+            // remove the current setting if it is already there
             if (RecentlyUsedSettings.Contains(ASettingsName))
             {
                 RecentlyUsedSettings.Remove(ASettingsName);
             }
 
-            // add the current setting at the front 
+            // add the current setting at the front
             RecentlyUsedSettings.Insert(0, ASettingsName);
 
-            // if too many settings, then remove the last one 
+            // if too many settings, then remove the last one
             if (RecentlyUsedSettings.Count > MAX_NUMBER_OF_RECENT_SETTINGS)
             {
                 RecentlyUsedSettings.RemoveAt(RecentlyUsedSettings.Count - 1);
@@ -201,7 +201,7 @@ namespace Ict.Petra.Client.MReporting.Logic
         /// <summary>
         /// This will check, if the set of settings with the given name is already existing
         /// and if it is a system settings; ie. it is provided by ICT and should not be overwritten
-        /// 
+        ///
         /// </summary>
         /// <returns>void</returns>
         public bool IsSystemSettings(String ASettingsName)
@@ -212,7 +212,7 @@ namespace Ict.Petra.Client.MReporting.Logic
 
             ReturnValue = false;
 
-            // need to switch back to the application directory, because the path names might be relative to the application 
+            // need to switch back to the application directory, because the path names might be relative to the application
             Environment.CurrentDirectory = FApplicationDirectory;
             Filename = FSettingsDirectory + FReportName + System.IO.Path.DirectorySeparatorChar + ASettingsName + ".xml";
 
@@ -228,9 +228,11 @@ namespace Ict.Petra.Client.MReporting.Logic
                         ReturnValue = true;
                     }
                 }
-                finally { }
+                finally
+                {
+                }
 
-                // nothing 
+                // nothing
             }
 
             return ReturnValue;
@@ -247,8 +249,8 @@ namespace Ict.Petra.Client.MReporting.Logic
         {
             if (IsSystemSettings(ASettingsName))
             {
-                // cannot store/modify system settings, they are only provided by ICT 
-                // they can be saved as another setting 
+                // cannot store/modify system settings, they are only provided by ICT
+                // they can be saved as another setting
                 return null;
             }
 
@@ -265,7 +267,7 @@ namespace Ict.Petra.Client.MReporting.Logic
         /// Load stored options and parameters from a file;
         /// this will automatically make this setting the most recent
         /// if the setting does not exist, it is removed from the list of recent settings, and ASettingsName is cleared
-        /// 
+        ///
         /// </summary>
         /// <returns>void</returns>
         public StringCollection LoadSettings(ref String ASettingsName, ref TParameterList AParameters)
@@ -273,7 +275,7 @@ namespace Ict.Petra.Client.MReporting.Logic
             StringCollection ReturnValue;
             String path;
 
-            // need to switch back to the application directory, because the path names might be relative to the application 
+            // need to switch back to the application directory, because the path names might be relative to the application
             Environment.CurrentDirectory = FApplicationDirectory;
             path = FSettingsDirectory + FReportName + System.IO.Path.DirectorySeparatorChar + ASettingsName + ".xml";
 
@@ -282,7 +284,7 @@ namespace Ict.Petra.Client.MReporting.Logic
                 AParameters.Load(path);
                 AParameters.RemoveVariable("systemsettings");
 
-                // nobody needs to see this variable 
+                // nobody needs to see this variable
                 ReturnValue = UpdateRecentlyUsedSettings(ASettingsName);
             }
             else
@@ -297,7 +299,7 @@ namespace Ict.Petra.Client.MReporting.Logic
 
         /// <summary>
         /// Delete a setting
-        /// 
+        ///
         /// </summary>
         /// <returns>void</returns>
         public void DeleteSettings(String ASettingsName)
@@ -321,13 +323,13 @@ namespace Ict.Petra.Client.MReporting.Logic
             {
                 TLogging.Log("Could not delete " + Filename);
 
-                // Messagebox.show('Error: Setting file could not be deleted!!!'); 
+                // Messagebox.show('Error: Setting file could not be deleted!!!');
             }
         }
 
         /// <summary>
         /// Rename a setting
-        /// 
+        ///
         /// </summary>
         /// <returns>void</returns>
         public bool RenameSettings(String AOldSettingsName, String ANewSettingsName)

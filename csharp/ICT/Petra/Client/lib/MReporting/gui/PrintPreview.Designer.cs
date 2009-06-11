@@ -45,9 +45,9 @@ namespace Ict.Petra.Client.MReporting.Gui
         /// <param name="disposing">true if managed resources should be disposed; otherwise, false.</param>
         protected override void Dispose(bool disposing)
         {
-            if (disposing) 
+            if (disposing)
             {
-                if (components != null) 
+                if (components != null)
                 {
                     components.Dispose();
                 }
@@ -75,7 +75,7 @@ namespace Ict.Petra.Client.MReporting.Gui
             this.stpInfo = new System.Windows.Forms.ToolStripStatusLabel();
             this.tbrMain = new System.Windows.Forms.ToolStrip();
             this.tbbClose = new System.Windows.Forms.ToolStripButton();
-        
+
             this.mnuMain.SuspendLayout();
             this.tbrMain.SuspendLayout();
             this.stbMain.SuspendLayout();
@@ -111,7 +111,7 @@ namespace Ict.Petra.Client.MReporting.Gui
             this.mniFileClose.Name = "mniFileClose";
             this.mniFileClose.Image = ((System.Drawing.Bitmap)resources.GetObject("mniClose.Glyph"));
             this.mniFileClose.ToolTipText = "Close the preview";
-            
+
             //
             // mniHelp
             //
@@ -193,7 +193,7 @@ namespace Ict.Petra.Client.MReporting.Gui
             this.tbrMain.Location = new System.Drawing.Point(2, 2);
             this.tbrMain.Name = "tbrMain";
             this.tbrMain.Size = new System.Drawing.Size(74, 25);
-            
+
             //
             // tbbClose
             //
@@ -218,18 +218,18 @@ namespace Ict.Petra.Client.MReporting.Gui
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.KeyPreview = true;
 
-	        this.Activated += new System.EventHandler(this.FPetraUtilsObject.TFrmPetra_Activated);
-	        this.Load += new System.EventHandler(this.FPetraUtilsObject.TFrmPetra_Load);
-	        this.Closing += new System.ComponentModel.CancelEventHandler(this.FPetraUtilsObject.TFrmPetra_Closing);
-	        this.KeyDown += new System.Windows.Forms.KeyEventHandler(this.FPetraUtilsObject.Form_KeyDown);
-	     
+            this.Activated += new System.EventHandler(this.FPetraUtilsObject.TFrmPetra_Activated);
+            this.Load += new System.EventHandler(this.FPetraUtilsObject.TFrmPetra_Load);
+            this.Closing += new System.ComponentModel.CancelEventHandler(this.FPetraUtilsObject.TFrmPetra_Closing);
+            this.KeyDown += new System.Windows.Forms.KeyEventHandler(this.FPetraUtilsObject.Form_KeyDown);
+
             this.stbMain.ResumeLayout(false);
             this.mnuMain.ResumeLayout(false);
             this.tbrMain.ResumeLayout(false);
             this.ResumeLayout(false);
-            this.PerformLayout(); 
+            this.PerformLayout();
         }
-        
+
         private System.Windows.Forms.MenuStrip mnuMain;
         private System.Windows.Forms.ToolStripMenuItem mniFile;
         private System.Windows.Forms.ToolStripMenuItem mniFileClose;
@@ -284,51 +284,52 @@ namespace Ict.Petra.Client.MReporting.Gui
             this.tbpGridView.SuspendLayout();
             this.SuspendLayout();
 
-            //  
-            // tbrMain 
-            //  
+            //
+            // tbrMain
+            //
             this.tbrMain.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-                                          	this.tbtPrint, 
-                                          	this.XPToolBarSeparator1, 
-                                          	this.tbtExportCSV,
-                                          	this.tbtExportText,
-                                          	this.tbtGenerateChart });
+                    this.tbtPrint,
+                    this.XPToolBarSeparator1,
+                    this.tbtExportCSV,
+                    this.tbtExportText,
+                    this.tbtGenerateChart
+                });
             this.tbrMain.Name = "tbrMain";
             this.tbrMain.Size = new System.Drawing.Size(10, 24);
             this.tbrMain.Dock = System.Windows.Forms.DockStyle.Top;
 
-            //  
-            // stpInfo 
-            //  
+            //
+            // stpInfo
+            //
             this.stpInfo.Width = 672;
 
-            //  
-            // PrintDocument 
-            //  
+            //
+            // PrintDocument
+            //
             this.PrintDocument.EndPrint += new PrintEventHandler(this.PrintDocument_EndPrint);
 
-            //  
-            // dlgSaveTextFile 
-            //  
+            //
+            // dlgSaveTextFile
+            //
             this.dlgSaveTextFile.DefaultExt = "txt";
             this.dlgSaveTextFile.Filter = "Text file|*.txt";
             this.dlgSaveTextFile.Title = "Save report as Text file";
 
-            //  
-            // dlgSaveCSVFile 
-            //  
+            //
+            // dlgSaveCSVFile
+            //
             this.dlgSaveCSVFile.DefaultExt = "csv";
             this.dlgSaveCSVFile.Title = "Save report as CSV file";
 
-            //  
-            // ImageList1 
-            //  
+            //
+            // ImageList1
+            //
             this.ImageList1.ImageSize = new System.Drawing.Size(1, 1);
             this.ImageList1.TransparentColor = System.Drawing.Color.Transparent;
 
-            //  
-            // tabPreview 
-            //  
+            //
+            // tabPreview
+            //
             this.tabPreview.Controls.Add(this.tbpText);
             this.tabPreview.Controls.Add(this.tbpPreview);
             this.tabPreview.Controls.Add(this.tbpGridView);
@@ -339,9 +340,9 @@ namespace Ict.Petra.Client.MReporting.Gui
             this.tabPreview.Size = new System.Drawing.Size(688, 535);
             this.tabPreview.TabIndex = 12;
 
-            //  
-            // tbpText 
-            //  
+            //
+            // tbpText
+            //
             this.tbpText.Controls.Add(this.txtOutput);
             this.tbpText.Location = new System.Drawing.Point(4, 22);
             this.tbpText.Name = "tbpText";
@@ -349,9 +350,9 @@ namespace Ict.Petra.Client.MReporting.Gui
             this.tbpText.TabIndex = 0;
             this.tbpText.Text = "Text Preview";
 
-            //  
-            // txtOutput 
-            //  
+            //
+            // txtOutput
+            //
             this.txtOutput.BackColor = System.Drawing.SystemColors.Window;
             this.txtOutput.Dock = System.Windows.Forms.DockStyle.Fill;
             this.txtOutput.Font =
@@ -366,9 +367,9 @@ namespace Ict.Petra.Client.MReporting.Gui
             this.txtOutput.Text = "Text Output";
             this.txtOutput.WordWrap = false;
 
-            //  
-            // tbpPreview 
-            //  
+            //
+            // tbpPreview
+            //
             this.tbpPreview.Controls.Add(this.lblNoPrinter);
             this.tbpPreview.Controls.Add(this.PrintPreviewControl);
             this.tbpPreview.Controls.Add(this.pnlNavigatePreview);
@@ -378,9 +379,9 @@ namespace Ict.Petra.Client.MReporting.Gui
             this.tbpPreview.TabIndex = 1;
             this.tbpPreview.Text = "Print Preview";
 
-            //  
-            // lblNoPrinter 
-            //  
+            //
+            // lblNoPrinter
+            //
             this.lblNoPrinter.Font = new System.Drawing.Font("Tahoma",
                 12,
                 System.Drawing.FontStyle.Regular,
@@ -392,9 +393,9 @@ namespace Ict.Petra.Client.MReporting.Gui
             this.lblNoPrinter.TabIndex = 16;
             this.lblNoPrinter.Text = "Unfortunately this function is disabled. Please" + " install a printer to use this page.";
 
-            //  
-            // PrintPreviewControl 
-            //  
+            //
+            // PrintPreviewControl
+            //
             this.PrintPreviewControl.AutoZoom = false;
             this.PrintPreviewControl.Dock = System.Windows.Forms.DockStyle.Fill;
             this.PrintPreviewControl.Font =
@@ -405,9 +406,9 @@ namespace Ict.Petra.Client.MReporting.Gui
             this.PrintPreviewControl.TabIndex = 11;
             this.PrintPreviewControl.Zoom = 0.300000011920929;
 
-            //  
-            // pnlNavigatePreview 
-            //  
+            //
+            // pnlNavigatePreview
+            //
             this.pnlNavigatePreview.Controls.Add(this.CbB_Zoom);
             this.pnlNavigatePreview.Controls.Add(this.Btn_PreviousPage);
             this.pnlNavigatePreview.Controls.Add(this.Btn_NextPage);
@@ -417,9 +418,9 @@ namespace Ict.Petra.Client.MReporting.Gui
             this.pnlNavigatePreview.Size = new System.Drawing.Size(680, 43);
             this.pnlNavigatePreview.TabIndex = 15;
 
-            //  
-            // CbB_Zoom 
-            //  
+            //
+            // CbB_Zoom
+            //
             this.CbB_Zoom.Items.AddRange(new object[] { "Fit to Window", "100%", "75%", "50%" });
             this.CbB_Zoom.Location = new System.Drawing.Point(8, 9);
             this.CbB_Zoom.Name = "CbB_Zoom";
@@ -427,9 +428,9 @@ namespace Ict.Petra.Client.MReporting.Gui
             this.CbB_Zoom.Text = "Select Zoom";
             this.CbB_Zoom.SelectedIndexChanged += new System.EventHandler(this.CbB_Zoom_SelectedIndexChanged);
 
-            //  
-            // Btn_PreviousPage 
-            //  
+            //
+            // Btn_PreviousPage
+            //
             this.Btn_PreviousPage.Location = new System.Drawing.Point(144, 9);
             this.Btn_PreviousPage.Name = "Btn_PreviousPage";
             this.Btn_PreviousPage.Size = new System.Drawing.Size(96, 24);
@@ -437,9 +438,9 @@ namespace Ict.Petra.Client.MReporting.Gui
             this.Btn_PreviousPage.Text = "Previous Page";
             this.Btn_PreviousPage.Click += new System.EventHandler(this.Btn_PreviousPage_Click);
 
-            //  
-            // Btn_NextPage 
-            //  
+            //
+            // Btn_NextPage
+            //
             this.Btn_NextPage.Location = new System.Drawing.Point(248, 9);
             this.Btn_NextPage.Name = "Btn_NextPage";
             this.Btn_NextPage.Size = new System.Drawing.Size(80, 24);
@@ -447,9 +448,9 @@ namespace Ict.Petra.Client.MReporting.Gui
             this.Btn_NextPage.Text = "Next Page";
             this.Btn_NextPage.Click += new System.EventHandler(this.Btn_NextPage_Click);
 
-            //  
-            // tbpGridView 
-            //  
+            //
+            // tbpGridView
+            //
             this.tbpGridView.Controls.Add(this.sgGridView);
             this.tbpGridView.Location = new System.Drawing.Point(4, 22);
             this.tbpGridView.Name = "tbpGridView";
@@ -457,9 +458,9 @@ namespace Ict.Petra.Client.MReporting.Gui
             this.tbpGridView.TabIndex = 2;
             this.tbpGridView.Text = "Detail Reports";
 
-            //  
-            // sgGridView 
-            //  
+            //
+            // sgGridView
+            //
             this.sgGridView.AlternatingBackgroundColour = System.Drawing.Color.FromArgb(230, 230, 230);
             this.sgGridView.Anchor =
                 ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top |
@@ -483,40 +484,40 @@ namespace Ict.Petra.Client.MReporting.Gui
             this.sgGridView.TabIndex = 0;
             this.sgGridView.TabStop = true;
 
-            //  
-            // tbtPrint 
-            //  
+            //
+            // tbtPrint
+            //
             this.tbtPrint.Text = "Print";
             this.tbtPrint.ToolTipText = "Print the report";
             this.tbtPrint.Click += new System.EventHandler(this.tbtPrintClick);
 
-            //  
-            // tbtExportCSV 
-            //  
+            //
+            // tbtExportCSV
+            //
             this.tbtExportCSV.Text = "Export to CSV";
             this.tbtExportCSV.ToolTipText = "Export to CSV or directly into Excel, if" + " it is available";
             this.tbtExportCSV.Click += new System.EventHandler(this.tbtExportCSVClick);
             this.tbtExportCSV.Width = 60;
 
-            //  
-            // tbtExportText 
-            //  
+            //
+            // tbtExportText
+            //
             this.tbtExportText.Text = "Save as Text file";
             this.tbtExportText.ToolTipText = "Save as a text file (e.g. for email)";
             this.tbtExportText.Click += new System.EventHandler(this.tbtExportTextClick);
             this.tbtExportText.Width = 70;
 
-            //  
-            // tbtGenerateChart 
-            //  
+            //
+            // tbtGenerateChart
+            //
             this.tbtGenerateChart.Text = "Generate Chart";
             this.tbtGenerateChart.ToolTipText = "Generates a chart in Excel (only ava" + "ilable yet for few reports at the moment)";
             this.tbtGenerateChart.Click += new System.EventHandler(this.tbtGenerateChartClick);
             this.tbtGenerateChart.Width = 60;
 
-            //  
-            // TPrintPreview 
-            //  
+            //
+            // TPrintPreview
+            //
             this.AutoScaleBaseSize = new System.Drawing.Size(5, 14);
             this.ClientSize = new System.Drawing.Size(688, 585);
             this.Controls.Add(this.tabPreview);
@@ -526,7 +527,7 @@ namespace Ict.Petra.Client.MReporting.Gui
             this.WindowState = System.Windows.Forms.FormWindowState.Maximized;
             this.Controls.SetChildIndex(this.stbMain, 0);
             this.Controls.SetChildIndex(this.tabPreview, 0);
-            
+
             this.stbMain.ResumeLayout(false);
             this.tabPreview.ResumeLayout(false);
             this.tbpText.ResumeLayout(false);
@@ -535,7 +536,7 @@ namespace Ict.Petra.Client.MReporting.Gui
             this.tbpGridView.ResumeLayout(false);
             this.ResumeLayout(false);
         }
-        
+
         private System.Windows.Forms.PrintPreviewControl PrintPreviewControl;
         private System.Windows.Forms.Button Btn_NextPage;
         private System.Windows.Forms.Button Btn_PreviousPage;

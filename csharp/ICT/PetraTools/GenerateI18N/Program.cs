@@ -24,11 +24,9 @@
  *
  ************************************************************************/
 using System;
-using System.IO;
-using System.Collections.Specialized;
 using Ict.Common;
 
-namespace FixProjectFiles
+namespace GenerateI18N
 {
 class Program
 {
@@ -38,14 +36,7 @@ class Program
 
         try
         {
-            TFixProjectReferences FixReferences = new TFixProjectReferences();
-            string SolutionPath = settings.GetValue("solutionpath", true);
-            StringCollection SolutionFiles = StringHelper.StrSplit(settings.GetValue("solutions", true), ",");
-
-            foreach (string solutionFilename in SolutionFiles)
-            {
-                FixReferences.FixAllProjectFiles(SolutionPath + Path.DirectorySeparatorChar + solutionFilename + ".sln");
-            }
+            TGenerateCatalogStrings.Execute(settings.GetValue("file"));
         }
         catch (Exception e)
         {

@@ -63,7 +63,7 @@ namespace Ict.Petra.Client.MPartner
             InitializeComponent();
             #region CATALOGI18N
 
-// this code has been inserted by GenerateI18N, all changes in this region will be overwritten by GenerateI18N
+            // this code has been inserted by GenerateI18N, all changes in this region will be overwritten by GenerateI18N
             this.lblHeading.Text = Catalog.GetString("The Partner that you have selected,");
             this.lblHeading2.Text = Catalog.GetString("was Merged into another Partner and is therefore no longer accessible.");
             this.txtMergedPartner.LabelText = Catalog.GetString("Merged, Partner, A   [PERSON]");

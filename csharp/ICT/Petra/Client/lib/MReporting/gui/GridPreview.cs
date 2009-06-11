@@ -38,12 +38,12 @@ using Ict.Petra.Client.App.Core;
 
 namespace Ict.Petra.Client.MReporting.Gui
 {
-	/// <summary>todoComment</summary>
+    /// <summary>todoComment</summary>
     public delegate void TPreviewDelegate(TRptCalculator ACalculator);
 
     /// <summary>
-	/// This has some functions to fill the Grid on the report Print Preview screen.
-	/// It allows to open detail reports
+    /// This has some functions to fill the Grid on the report Print Preview screen.
+    /// It allows to open detail reports
     /// </summary>
     public class TGridPreview
     {
@@ -65,7 +65,11 @@ namespace Ict.Petra.Client.MReporting.Gui
         /// <summary>
         /// constructor
         /// </summary>
-        public TGridPreview(Form APreviewForm, TFrmPetraUtils APetraUtilsObject, TPreviewDelegate APreviewDelegate, TResultList AResultList, TParameterList AParameters)
+        public TGridPreview(Form APreviewForm,
+            TFrmPetraUtils APetraUtilsObject,
+            TPreviewDelegate APreviewDelegate,
+            TResultList AResultList,
+            TParameterList AParameters)
         {
             results = AResultList.ConvertToFormattedStrings(AParameters);
             FOrigParameters = AParameters;
@@ -96,8 +100,8 @@ namespace Ict.Petra.Client.MReporting.Gui
             ReturnValue = true;
             FGridView = ASgGridView;
 
-            // only do this if there are detail reports available 
-            // this is to prevent bugs that are still happening (same column caption etc) 
+            // only do this if there are detail reports available
+            // this is to prevent bugs that are still happening (same column caption etc)
             if (!parameters.Exists("param_detail_report_0"))
             {
                 return false;
@@ -107,9 +111,9 @@ namespace Ict.Petra.Client.MReporting.Gui
             sortedList = new ArrayList();
             results.CreateSortedListByMaster(sortedList, 0);
 
-            // create columns 
-            // todo: header left 
-            // todo: indented columns 
+            // create columns
+            // todo: header left
+            // todo: indented columns
             t = new DataTable();
             columnCounter = 0;
             t.Columns.Add("id");
@@ -123,7 +127,7 @@ namespace Ict.Petra.Client.MReporting.Gui
                              i).ToString() + ' ' +
                          parameters.Get("ColumnCaption2", i).ToString(false) + ' ' + parameters.Get("ColumnCaption3", i).ToString(false)).Trim();
 
-                    // todo: add i for preventing same name columns (finance reports, long captions) 
+                    // todo: add i for preventing same name columns (finance reports, long captions)
                     if (t.Columns.Contains(caption))
                     {
                         caption = caption + i.ToString();
@@ -182,7 +186,7 @@ namespace Ict.Petra.Client.MReporting.Gui
             ((DevAge.ComponentModel.BoundDataView)FGridView.DataSource).AllowDelete = false;
             FGridView.AutoSizeCells();
 
-            // FGridView.Width := 576;   it is necessary to reassign the width because the columns don't take up the maximum width 
+            // FGridView.Width := 576;   it is necessary to reassign the width because the columns don't take up the maximum width
             return ReturnValue;
         }
 
@@ -197,7 +201,7 @@ namespace Ict.Petra.Client.MReporting.Gui
 
             while (parameters.Exists("param_detail_report_" + Counter.ToString()) == true)
             {
-            	String detailReportCSV = parameters.Get("param_detail_report_" + Counter.ToString()).ToString();
+                String detailReportCSV = parameters.Get("param_detail_report_" + Counter.ToString()).ToString();
 
                 MenuItem mnuItem = new MenuItem();
                 mnuItem.Tag = detailReportCSV;
@@ -233,7 +237,7 @@ namespace Ict.Petra.Client.MReporting.Gui
 
             if (TheDataRowViewArray.Length <= 0)
             {
-                // no row is selected 
+                // no row is selected
                 return;
             }
 
@@ -251,16 +255,16 @@ namespace Ict.Petra.Client.MReporting.Gui
             detailReportCSV = (String)ClickedMenuItem.Tag;
             StringHelper.GetNextCSV(ref detailReportCSV, ",");
 
-            // get rid of the name 
+            // get rid of the name
             action = StringHelper.GetNextCSV(ref detailReportCSV, ",");
 
             if (action == "PartnerEditScreen")
             {
-                // get the partner key 
+                // get the partner key
                 PartnerKey = Convert.ToInt64(SelectedResult.column[Convert.ToInt32(detailReportCSV)].ToString());
 #if TODO
-				// TODO: open Partner Edit screen with the given partner key
-#endif                
+                // TODO: open Partner Edit screen with the given partner key
+#endif
             }
             else if (action.IndexOf(".xml") != -1)
             {
@@ -268,7 +272,7 @@ namespace Ict.Petra.Client.MReporting.Gui
                 FDetailParameters = new TParameterList(FOrigParameters);
                 FDetailParameters.Add("param_whereSQL", query);
 
-                // get the parameter names and values 
+                // get the parameter names and values
                 while (detailReportCSV.Length > 0)
                 {
                     paramName = StringHelper.GetNextCSV(ref detailReportCSV, ",");
@@ -276,15 +280,15 @@ namespace Ict.Petra.Client.MReporting.Gui
                     FDetailParameters.Add(paramName, new TVariant(paramValue));
                 }
 
-                // add the values of the selected column (in this example the first one) 
+                // add the values of the selected column (in this example the first one)
                 for (columnCounter = 0; columnCounter <= FDetailParameters.Get("MaxDisplayColumns").ToInt() - 1; columnCounter += 1)
                 {
                     FDetailParameters.Add("param_" +
-                	                      FDetailParameters.Get("param_calculation", columnCounter).ToString(), SelectedResult.column[columnCounter]);
+                        FDetailParameters.Get("param_calculation", columnCounter).ToString(), SelectedResult.column[columnCounter]);
                 }
 
-                // action is a link to a settings file; it contains e.g. xmlfiles, currentReport, and column settings 
-                // TParameterList.Load adds the new parameters to the existing parameters 
+                // action is a link to a settings file; it contains e.g. xmlfiles, currentReport, and column settings
+                // TParameterList.Load adds the new parameters to the existing parameters
                 SettingsDirectory = TClientSettings.ReportingPathReportSettings;
                 FDetailParameters.Load(SettingsDirectory + '/' + action);
                 GenerateReportInThread();
@@ -305,10 +309,10 @@ namespace Ict.Petra.Client.MReporting.Gui
         {
             try
             {
-            	FPreviewForm.Cursor = Cursors.WaitCursor;
-            	TLogging.SetStatusBarProcedure(FPetraUtilsObject.WriteToStatusBar);
+                FPreviewForm.Cursor = Cursors.WaitCursor;
+                TLogging.SetStatusBarProcedure(FPetraUtilsObject.WriteToStatusBar);
 
-                // calculate the report 
+                // calculate the report
                 FCalculator = new TRptCalculator();
                 FCalculator.GetParameters().LoadFromDataTable(FDetailParameters.ToDataTable());
 
@@ -326,10 +330,10 @@ namespace Ict.Petra.Client.MReporting.Gui
                 }
                 else
                 {
-                    // if generateResult failed 
+                    // if generateResult failed
                     FPreviewForm.Cursor = Cursors.Default;
 
-                    // EnableDisableToolbar(true); 
+                    // EnableDisableToolbar(true);
                 }
             }
 #if DEBUGMODE
@@ -338,12 +342,12 @@ namespace Ict.Petra.Client.MReporting.Gui
                 MessageBox.Show(e.ToString());
                 MessageBox.Show(e.Message);
 
-                // EnableDisableToolbar(true); 
+                // EnableDisableToolbar(true);
             }
 #else
             catch (Exception)
             {
-                // EnableDisableToolbar(true); 
+                // EnableDisableToolbar(true);
             }
 #endif
         }

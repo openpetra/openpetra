@@ -40,17 +40,18 @@ namespace Ict.Petra.Client.MReporting.Gui
     /// </summary>
     public partial class UC_Output : UserControl
     {
-    	/// <summary>
-    	/// constructor
-    	/// </summary>
+        /// <summary>
+        /// constructor
+        /// </summary>
         public UC_Output()
         {
             //
             // The InitializeComponent() call is required for Windows Forms designer support.
             //
             InitializeComponent();
-#region CATALOGI18N
-// this code has been inserted by GenerateI18N, all changes in this region will be overwritten by GenerateI18N
+            #region CATALOGI18N
+
+            // this code has been inserted by GenerateI18N, all changes in this region will be overwritten by GenerateI18N
             this.grpCSVOutput.Text = Catalog.GetString("Export to CSV");
             this.Label2.Text = Catalog.GetString("Hint: If you don\'t want quotes around your values, please choose a delimiter that");
             this.Label1.Text = Catalog.GetString("(e.g. , or ; or : or Space; or type TAB for tabulator)");
@@ -58,29 +59,30 @@ namespace Ict.Petra.Client.MReporting.Gui
             this.chbExportToCSVOnly.Text = Catalog.GetString("Only save as CSV, don\'t print Report");
             this.BtnCSVDestination.Text = Catalog.GetString("...");
             this.lblCSVDestination.Text = Catalog.GetString("Destination file");
-#endregion
-            
+            #endregion
+
             //
             // TODO: Add constructor code after the InitializeComponent() call.
             //
         }
 
         private TFrmPetraUtils FPetraUtilsObject;
+
         /// <summary>
         /// utilities for Petra forms
         /// </summary>
         public TFrmPetraUtils PetraUtilsObject
         {
-        	get
-        	{
-        		return FPetraUtilsObject;
-        	}
-        	set
-        	{
-        		FPetraUtilsObject = value;
-        	}
+            get
+            {
+                return FPetraUtilsObject;
+            }
+            set
+            {
+                FPetraUtilsObject = value;
+            }
         }
-        
+
         private void BtnCSVDestination_Click(System.Object sender, System.EventArgs e)
         {
             if (SaveFileDialogCSV.ShowDialog() == System.Windows.Forms.DialogResult.OK)
@@ -88,7 +90,7 @@ namespace Ict.Petra.Client.MReporting.Gui
                 txtCSVDestination.Text = SaveFileDialogCSV.FileName;
             }
         }
-        
+
         /// <summary>
         /// read the values from the controls and give them to the calculator
         /// </summary>
@@ -96,25 +98,24 @@ namespace Ict.Petra.Client.MReporting.Gui
         public void ReadControls(TRptCalculator ACalculator)
         {
             ACalculator.AddParameter("SaveCSVFilename", txtCSVDestination.Text);
-    
+
             if (txtCSVSeparator.Text.Length > 0)
             {
                 ACalculator.AddParameter("CSV_separator", txtCSVSeparator.Text);
             }
-    
+
             ACalculator.AddParameter("OnlySaveCSV", chbExportToCSVOnly.Checked);
         }
-        
+
         /// <summary>
         /// initialise the controls using the parameters
         /// </summary>
         /// <param name="AParameters"></param>
         public void SetControls(TParameterList AParameters)
         {
-        	txtCSVDestination.Text = AParameters.Get("SaveCSVFilename").ToString();
+            txtCSVDestination.Text = AParameters.Get("SaveCSVFilename").ToString();
             chbExportToCSVOnly.Checked = AParameters.Get("OnlySaveCSV").ToBool();
             txtCSVSeparator.Text = AParameters.Get("CSV_separator").ToString();
-            
         }
     }
 }

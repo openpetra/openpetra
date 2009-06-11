@@ -47,12 +47,12 @@ using Ict.Common.Controls;
 
 namespace Ict.Petra.Client.MReporting.Gui
 {
-	/// <summary>
-	/// useful functions for report screens
-	/// </summary>
-	public class TFrmPetraReportingUtils: TFrmPetraUtils
+    /// <summary>
+    /// useful functions for report screens
+    /// </summary>
+    public class TFrmPetraReportingUtils : TFrmPetraUtils
     {
-		/// <summary>number of columns that can be sorted</summary>
+        /// <summary>number of columns that can be sorted</summary>
         public const Int32 NUMBER_SORTBY = 3;
 
         /// <summary>helper variable to unselect the column in the grid after cancel or apply</summary>
@@ -93,6 +93,7 @@ namespace Ict.Petra.Client.MReporting.Gui
 
         /// <summary>List of functions between columns, that are available for this report; is set by SetAvailableFunctions</summary>
         protected ArrayList FAvailableFunctions;
+
         /// <summary>list of verification results; ReadControls should add all errors to this list; ReadControlsWithErrorHandling will tell the user</summary>
         protected TVerificationResultCollection FVerificationResults;
 
@@ -138,6 +139,7 @@ namespace Ict.Petra.Client.MReporting.Gui
         {
             return true;
         }
+
 #if TODO
         private void BtnCSVDestination_Click(System.Object sender, System.EventArgs e)
         {
@@ -177,6 +179,7 @@ namespace Ict.Petra.Client.MReporting.Gui
         }
 #endif
 
+
         #region Screen Initialisation
 
         /// <summary>
@@ -199,15 +202,16 @@ namespace Ict.Petra.Client.MReporting.Gui
             FColumnParameters = new TParameterList();
             FColumnParameters.Add("MaxDisplayColumns", 0);
 
-            #if TODO
+#if TODO
             FWindowCaption = this.Text;
             string SettingsDirectory = TClientSettings.ReportingPathReportSettings;
             this.FStoredSettings = new TStoredSettings(FReportName, SettingsDirectory);
             UpdateLoadingMenu(this.FStoredSettings.GetRecentlyUsedSettings());
             FSelectedColumn = -1;
-			#endif            
+#endif
             return ReturnValue;
         }
+
         #endregion
 
 
@@ -220,8 +224,8 @@ namespace Ict.Petra.Client.MReporting.Gui
         public new bool CanClose()
         {
             bool ReturnValue = true;
-#if TODO        	
 
+#if TODO
             System.Windows.Forms.DialogResult answer;
             ReturnValue = base.CanClose();
 
@@ -259,8 +263,7 @@ namespace Ict.Petra.Client.MReporting.Gui
                     this.Owner.Focus();
                 }
             }
-
-#endif            
+#endif
             return ReturnValue;
         }
 
@@ -294,6 +297,7 @@ namespace Ict.Petra.Client.MReporting.Gui
                 SelectColumn(-1);
             }
 #endif
+
             if ((FGenerateReportThread == null) || (!FGenerateReportThread.IsAlive))
             {
 // TODO                EnableDisableToolbar(false);
@@ -322,7 +326,7 @@ namespace Ict.Petra.Client.MReporting.Gui
             delim = "\"";
             return s.Split(delim.ToCharArray())[1];
         }
- 
+
         /// <summary>
         /// This procedure does the calculation of the report, including fetching the parameters from the GUI, verifying them, and providing error messages This should be called in a different thread, by MI_GenerateReport_Click
         /// </summary>
@@ -356,9 +360,10 @@ namespace Ict.Petra.Client.MReporting.Gui
 #endif
                     this.FWinForm.Cursor = Cursors.Default;
 
-                    if (FCalculator.GetParameters().Exists("SaveCSVFilename") && (FCalculator.GetParameters().Get("SaveCSVFilename").ToString().Length > 0))
+                    if (FCalculator.GetParameters().Exists("SaveCSVFilename")
+                        && (FCalculator.GetParameters().Get("SaveCSVFilename").ToString().Length > 0))
                     {
-                    	FCalculator.GetResults().WriteCSV(FCalculator.GetParameters(), FCalculator.GetParameters().Get("SaveCSVFilename").ToString());
+                        FCalculator.GetResults().WriteCSV(FCalculator.GetParameters(), FCalculator.GetParameters().Get("SaveCSVFilename").ToString());
                     }
 
                     if (FCalculator.GetParameters().GetOrDefault("OnlySaveCSV", -1, new TVariant(false)).ToBool() == true)
@@ -385,6 +390,7 @@ namespace Ict.Petra.Client.MReporting.Gui
                 {
                     // if generateResult failed or was cancelled
                     this.FWinForm.Cursor = Cursors.Default;
+
                     // TODO EnableDisableToolbar(true);
                 }
             }
@@ -394,6 +400,7 @@ namespace Ict.Petra.Client.MReporting.Gui
                 MessageBox.Show(e.ToString());
                 MessageBox.Show(e.Message);
 #endif
+
                 // TODO EnableDisableToolbar(true);
             }
         }
@@ -405,15 +412,20 @@ namespace Ict.Petra.Client.MReporting.Gui
         protected void PreviewReport()
         {
             // show a print window with all kinds of output options
-            TFrmPrintPreview printWindow = new TFrmPrintPreview(FWinForm.Handle, FReportName, FCalculator.GetDuration(), FCalculator.GetResults(), FCalculator.GetParameters());
+            TFrmPrintPreview printWindow = new TFrmPrintPreview(FWinForm.Handle, FReportName, FCalculator.GetDuration(),
+                FCalculator.GetResults(), FCalculator.GetParameters());
+
             this.FWinForm.AddOwnedForm(printWindow);
             printWindow.Owner = FWinForm;
+
 // TODO            printWindow.SetPrintChartProcedure(GenerateChart);
             printWindow.ShowDialog();
+
 // TODO            EnableDisableToolbar(true);
         }
 
         #region Parameter/Settings Handling
+
         /// <summary>
         /// to be called from outside
         /// </summary>
@@ -481,12 +493,12 @@ namespace Ict.Petra.Client.MReporting.Gui
         /// <returns>void</returns>
         public virtual void ReadControls()
         {
-        	// TODO
+            // TODO
             FCalculator.ResetParameters();
             FCalculator.AddParameter("xmlfiles", FXMLFiles);
             FCalculator.AddParameter("currentReport", FCurrentReport);
-            
-            ((IFrmReporting)this.FTheForm).ReadControls(FCalculator);
+
+            ((IFrmReporting) this.FTheForm).ReadControls(FCalculator);
         }
 
         /// <summary>
@@ -496,11 +508,12 @@ namespace Ict.Petra.Client.MReporting.Gui
         /// <returns>void</returns>
         public virtual void SetControls(TParameterList AParameters)
         {
-        	// TODO
-        	((IFrmReporting)this.FTheForm).SetControls(AParameters);
+            // TODO
+            ((IFrmReporting) this.FTheForm).SetControls(AParameters);
         }
+
         #endregion
-        
+
         #region Column Functions and Calculations
 
         /// <summary>
@@ -609,25 +622,26 @@ namespace Ict.Petra.Client.MReporting.Gui
         }
 
         #endregion
-   }
+    }
 
-	/// <summary>
-	/// a delegate for running the report preview window
-	/// </summary>
+    /// <summary>
+    /// a delegate for running the report preview window
+    /// </summary>
     public delegate void TMyUpdateDelegate();
-    
+
     /// for accessing the reporting form from the TFrmPetraReportingUtils object
-    public interface IFrmReporting: IFrmPetra
+    public interface IFrmReporting : IFrmPetra
     {
-    	/// <summary>
-    	/// read the values from the controls on the form
-    	/// </summary>
-    	/// <param name="ACalc"></param>
-    	void ReadControls(TRptCalculator ACalc);
-    	/// <summary>
-    	/// set the values of the controls on the form
-    	/// </summary>
-    	/// <param name="AParameters"></param>
-		void SetControls(TParameterList AParameters);
+        /// <summary>
+        /// read the values from the controls on the form
+        /// </summary>
+        /// <param name="ACalc"></param>
+        void ReadControls(TRptCalculator ACalc);
+
+        /// <summary>
+        /// set the values of the controls on the form
+        /// </summary>
+        /// <param name="AParameters"></param>
+        void SetControls(TParameterList AParameters);
     }
 }

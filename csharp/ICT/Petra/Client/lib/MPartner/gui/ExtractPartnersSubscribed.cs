@@ -107,7 +107,7 @@ namespace Ict.Petra.Client.MPartner
             InitializeComponent();
             #region CATALOGI18N
 
-// this code has been inserted by GenerateI18N, all changes in this region will be overwritten by GenerateI18N
+            // this code has been inserted by GenerateI18N, all changes in this region will be overwritten by GenerateI18N
             this.btnOK.Text = Catalog.GetString("&OK");
             this.lbltop.Text = Catalog.GetString("These partners already have a Subscription for");
             this.lblBottom.Text = Catalog.GetString("The Subscription was not added to the following Partners:");

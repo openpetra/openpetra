@@ -74,7 +74,7 @@ namespace Ict.Petra.Client.MPartner
             InitializeComponent();
             #region CATALOGI18N
 
-// this code has been inserted by GenerateI18N, all changes in this region will be overwritten by GenerateI18N
+            // this code has been inserted by GenerateI18N, all changes in this region will be overwritten by GenerateI18N
             this.lblExtractName.Text = Catalog.GetString("Extract &Name:");
             this.lblDescription.Text = Catalog.GetString("&Description:");
             this.Text = Catalog.GetString("New Extract");

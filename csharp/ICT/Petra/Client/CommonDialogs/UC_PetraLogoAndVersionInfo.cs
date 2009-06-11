@@ -48,7 +48,7 @@ namespace Ict.Petra.Client.CommonDialogs
             InitializeComponent();
             #region CATALOGI18N
 
-// this code has been inserted by GenerateI18N, all changes in this region will be overwritten by GenerateI18N
+            // this code has been inserted by GenerateI18N, all changes in this region will be overwritten by GenerateI18N
             this.lblPetra.Text = Catalog.GetString(" P E T R A ");
             this.lblPetraVersion.Text = Catalog.GetString("Version");
             this.lblCopyrightNotice.Text = Catalog.GetString("© 1995 - 2009 by ICT Software");

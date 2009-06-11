@@ -36,9 +36,9 @@ using System.IO;
 
 namespace Ict.Petra.Client.MReporting.Gui
 {
-	/// <summary>
-	/// form for saving the current set of settings
-	/// </summary>
+    /// <summary>
+    /// form for saving the current set of settings
+    /// </summary>
     public class TFrmSettingsSave : System.Windows.Forms.Form
     {
         /// <summary> Required designer variable. </summary>
@@ -69,18 +69,18 @@ namespace Ict.Petra.Client.MReporting.Gui
             this.Lbl_SavedFileName = new System.Windows.Forms.Label();
             this.SuspendLayout();
 
-            //  
-            // Label1 
-            //  
+            //
+            // Label1
+            //
             this.Label1.Location = new System.Drawing.Point(16, 8);
             this.Label1.Name = "Label1";
             this.Label1.Size = new System.Drawing.Size(128, 16);
             this.Label1.TabIndex = 0;
             this.Label1.Text = "Existing stored Settings:";
 
-            //  
-            // LB_ExistingSettings 
-            //  
+            //
+            // LB_ExistingSettings
+            //
             this.LB_ExistingSettings.Items.AddRange(new object[] { "My d" + "efault I&E statement", "OM Standard I&E report",
                                                                    "Board Month End R" + "eport" });
             this.LB_ExistingSettings.Location = new System.Drawing.Point(16, 24);
@@ -90,18 +90,18 @@ namespace Ict.Petra.Client.MReporting.Gui
             this.LB_ExistingSettings.DoubleClick += new System.EventHandler(this.LB_ExistingSettings_DoubleClick);
             this.LB_ExistingSettings.SelectedIndexChanged += new System.EventHandler(this.LB_ExistingSettings_SelectedIndexChanged);
 
-            //  
-            // TBx_NewName 
-            //  
+            //
+            // TBx_NewName
+            //
             this.TBx_NewName.Location = new System.Drawing.Point(136, 136);
             this.TBx_NewName.Name = "TBx_NewName";
             this.TBx_NewName.Size = new System.Drawing.Size(216, 20);
             this.TBx_NewName.TabIndex = 3;
             this.TBx_NewName.Text = "";
 
-            //  
-            // Btn_Cancel 
-            //  
+            //
+            // Btn_Cancel
+            //
             this.Btn_Cancel.DialogResult = System.Windows.Forms.DialogResult.Cancel;
             this.Btn_Cancel.Location = new System.Drawing.Point(192, 168);
             this.Btn_Cancel.Name = "Btn_Cancel";
@@ -110,9 +110,9 @@ namespace Ict.Petra.Client.MReporting.Gui
             this.Btn_Cancel.Text = "Cancel";
             this.Btn_Cancel.Click += new System.EventHandler(this.Btn_Cancel_Click);
 
-            //  
-            // Btn_SaveFile 
-            //  
+            //
+            // Btn_SaveFile
+            //
             this.Btn_SaveFile.DialogResult = System.Windows.Forms.DialogResult.OK;
             this.Btn_SaveFile.Location = new System.Drawing.Point(280, 168);
             this.Btn_SaveFile.Name = "Btn_SaveFile";
@@ -121,18 +121,18 @@ namespace Ict.Petra.Client.MReporting.Gui
             this.Btn_SaveFile.Text = "Save";
             this.Btn_SaveFile.Click += new System.EventHandler(this.Btn_SaveFile_Click);
 
-            //  
-            // Lbl_SavedFileName 
-            //  
+            //
+            // Lbl_SavedFileName
+            //
             this.Lbl_SavedFileName.Location = new System.Drawing.Point(16, 136);
             this.Lbl_SavedFileName.Name = "Lbl_SavedFileName";
             this.Lbl_SavedFileName.Size = new System.Drawing.Size(112, 23);
             this.Lbl_SavedFileName.TabIndex = 2;
             this.Lbl_SavedFileName.Text = "Please enter a name:";
 
-            //  
-            // TFrmSettingsSave 
-            //  
+            //
+            // TFrmSettingsSave
+            //
             this.AutoScaleBaseSize = new System.Drawing.Size(5, 13);
             this.ClientSize = new System.Drawing.Size(368, 205);
             this.Controls.Add(this.Label1);
@@ -171,9 +171,9 @@ namespace Ict.Petra.Client.MReporting.Gui
         /// <returns>void</returns>
         public TFrmSettingsSave(TStoredSettings AStoredSettings, String ASettingsName)
         {
-            //  
-            // Required for Windows Form Designer support 
-            //  
+            //
+            // Required for Windows Form Designer support
+            //
             InitializeComponent();
             FStoredSettings = AStoredSettings;
             FSettingsName = ASettingsName;
@@ -210,13 +210,13 @@ namespace Ict.Petra.Client.MReporting.Gui
         {
             DialogResult = System.Windows.Forms.DialogResult.None;
 
-            // don't allow empty name 
+            // don't allow empty name
             if (this.TBx_NewName.Text.Length == 0)
             {
                 return;
             }
 
-            // check if the name already exists in the list 
+            // check if the name already exists in the list
             if (this.LB_ExistingSettings.FindStringExact(this.TBx_NewName.Text) == ListBox.NoMatches)
             {
                 FSettingsName = this.TBx_NewName.Text;
@@ -235,7 +235,7 @@ namespace Ict.Petra.Client.MReporting.Gui
                 }
                 else
                 {
-                    // ask if it should be overwritten 
+                    // ask if it should be overwritten
                     if (MessageBox.Show("This name already exists. Do you still want to use this name and overwrite the existing settings?",
                             "Overwrite existing Settings?", MessageBoxButtons.YesNo) == System.Windows.Forms.DialogResult.Yes)
                     {
@@ -244,7 +244,7 @@ namespace Ict.Petra.Client.MReporting.Gui
                     }
                     else
                     {
-                        // cancel overwriting 
+                        // cancel overwriting
                         FSettingsName = "";
                     }
                 }

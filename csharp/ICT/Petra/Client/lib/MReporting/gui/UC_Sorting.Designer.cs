@@ -25,7 +25,7 @@
  ************************************************************************/
 using System;
 using Ict.Common.Controls;
- 
+
 namespace Ict.Petra.Client.MReporting.Gui
 {
     partial class UC_Sorting
@@ -34,21 +34,24 @@ namespace Ict.Petra.Client.MReporting.Gui
         /// Designer variable used to keep track of non-visual components.
         /// </summary>
         private System.ComponentModel.IContainer components = null;
-        
+
         /// <summary>
         /// Disposes resources used by the control.
         /// </summary>
         /// <param name="disposing">true if managed resources should be disposed; otherwise, false.</param>
         protected override void Dispose(bool disposing)
         {
-            if (disposing) {
-                if (components != null) {
+            if (disposing)
+            {
+                if (components != null)
+                {
                     components.Dispose();
                 }
             }
+
             base.Dispose(disposing);
         }
-        
+
         /// <summary>
         /// This method is required for Windows Forms designer support.
         /// Do not change the method contents inside the source code editor. The Forms designer might
@@ -64,7 +67,7 @@ namespace Ict.Petra.Client.MReporting.Gui
             this.LblSortBy1 = new System.Windows.Forms.Label();
 
             this.SuspendLayout();
-            
+
             //
             // cmbSortby3
             //
@@ -130,10 +133,10 @@ namespace Ict.Petra.Client.MReporting.Gui
             this.LblSortBy1.Size = new System.Drawing.Size(120, 25);
             this.LblSortBy1.TabIndex = 6;
             this.LblSortBy1.Text = "Sort first by:";
-            
-            // 
+
+            //
             // UC_Sorting
-            // 
+            //
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.Name = "UC_Sorting";
             this.Size = new System.Drawing.Size(650, 386);
@@ -145,6 +148,7 @@ namespace Ict.Petra.Client.MReporting.Gui
             this.Controls.Add(lblSortBy3);
             this.ResumeLayout(false);
         }
+
         private TCmbAutoComplete cmbSortby3;
         private System.Windows.Forms.Label lblSortBy3;
         private TCmbAutoComplete cmbSortby2;

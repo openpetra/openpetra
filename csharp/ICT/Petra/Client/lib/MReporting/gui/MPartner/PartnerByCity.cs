@@ -66,35 +66,36 @@ namespace Ict.Petra.Client.MReporting.Gui.MPartner
       // Required for Windows Form Designer support
       //
       InitializeComponent();
-#region CATALOGI18N
-// this code has been inserted by GenerateI18N, all changes in this region will be overwritten by GenerateI18N
-            this.lblCityName.Text = Catalog.GetString("Name of City:");
-            this.tpgReportSpecific.Text = Catalog.GetString("Report parameters");
-            this.tbbGenerate.Text = Catalog.GetString("Generate");
-            this.tbbGenerate.ToolTipText = Catalog.GetString("Generate the report");
-            this.tbbSave.Text = Catalog.GetString("Save");
-            this.tbbSaveAs.Text = Catalog.GetString("SaveAs");
-            this.mniSaveSettings.Text = Catalog.GetString("&Save Settings");
-            this.mniSaveSettingsAs.Text = Catalog.GetString("Save Settings &As...");
-            this.mniMaintainSettings.Text = Catalog.GetString("&Maintain Settings...");
-            this.mniLoadSettingsDialog.Text = Catalog.GetString("&Open...");
-            this.mniLoadSettings1.Text = Catalog.GetString("RecentSettings");
-            this.mniLoadSettings2.Text = Catalog.GetString("RecentSettings");
-            this.mniLoadSettings3.Text = Catalog.GetString("RecentSettings");
-            this.mniLoadSettings4.Text = Catalog.GetString("RecentSettings");
-            this.mniLoadSettings5.Text = Catalog.GetString("RecentSettings");
-            this.mniLoadSettings.Text = Catalog.GetString("&Load Settings");
-            this.mniGenerateReport.Text = Catalog.GetString("&Generate Report...");
-            this.mniClose.ToolTipText = Catalog.GetString("Closes this window");
-            this.mniClose.Text = Catalog.GetString("&Close");
-            this.mniFile.Text = Catalog.GetString("&File");
-            this.mniHelpPetraHelp.Text = Catalog.GetString("&Petra Help");
-            this.mniHelpBugReport.Text = Catalog.GetString("Bug &Report");
-            this.mniHelpAboutPetra.Text = Catalog.GetString("&About Petra");
-            this.mniHelpDevelopmentTeam.Text = Catalog.GetString("&The Development Team...");
-            this.mniHelp.Text = Catalog.GetString("&Help");
-            this.Text = Catalog.GetString("Partner by City");
-#endregion
+      #region CATALOGI18N
+
+      // this code has been inserted by GenerateI18N, all changes in this region will be overwritten by GenerateI18N
+      this.lblCityName.Text = Catalog.GetString("Name of City:");
+      this.tpgReportSpecific.Text = Catalog.GetString("Report parameters");
+      this.tbbGenerate.Text = Catalog.GetString("Generate");
+      this.tbbGenerate.ToolTipText = Catalog.GetString("Generate the report");
+      this.tbbSave.Text = Catalog.GetString("Save");
+      this.tbbSaveAs.Text = Catalog.GetString("SaveAs");
+      this.mniSaveSettings.Text = Catalog.GetString("&Save Settings");
+      this.mniSaveSettingsAs.Text = Catalog.GetString("Save Settings &As...");
+      this.mniMaintainSettings.Text = Catalog.GetString("&Maintain Settings...");
+      this.mniLoadSettingsDialog.Text = Catalog.GetString("&Open...");
+      this.mniLoadSettings1.Text = Catalog.GetString("RecentSettings");
+      this.mniLoadSettings2.Text = Catalog.GetString("RecentSettings");
+      this.mniLoadSettings3.Text = Catalog.GetString("RecentSettings");
+      this.mniLoadSettings4.Text = Catalog.GetString("RecentSettings");
+      this.mniLoadSettings5.Text = Catalog.GetString("RecentSettings");
+      this.mniLoadSettings.Text = Catalog.GetString("&Load Settings");
+      this.mniGenerateReport.Text = Catalog.GetString("&Generate Report...");
+      this.mniClose.ToolTipText = Catalog.GetString("Closes this window");
+      this.mniClose.Text = Catalog.GetString("&Close");
+      this.mniFile.Text = Catalog.GetString("&File");
+      this.mniHelpPetraHelp.Text = Catalog.GetString("&Petra Help");
+      this.mniHelpBugReport.Text = Catalog.GetString("Bug &Report");
+      this.mniHelpAboutPetra.Text = Catalog.GetString("&About Petra");
+      this.mniHelpDevelopmentTeam.Text = Catalog.GetString("&The Development Team...");
+      this.mniHelp.Text = Catalog.GetString("&Help");
+      this.Text = Catalog.GetString("Partner by City");
+      #endregion
 
       FPetraUtilsObject = new TFrmPetraReportingUtils(AParentFormHandle, this);
 

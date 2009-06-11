@@ -31,9 +31,9 @@ using Ict.Common;
 
 namespace Ict.Petra.Client.MReporting.Logic
 {
-	/// <summary>
-	/// special logic for exporting report to Excel for graphs etc
-	/// </summary>
+    /// <summary>
+    /// special logic for exporting report to Excel for graphs etc
+    /// </summary>
     public class TReportExcel : TExcel
     {
         private TResultList results;
@@ -101,7 +101,7 @@ namespace Ict.Petra.Client.MReporting.Logic
 
         /// <summary>
         /// Draw one chart in form of a pie on the current sheet, with the grand child lines of the given line as the parts of the pie
-        /// 
+        ///
         /// </summary>
         /// <returns>void</returns>
         public void DrawChartPieAccountBreakdown(System.Int16 columnNr, String masterLineCode, String chartSheetName)
@@ -186,7 +186,7 @@ namespace Ict.Petra.Client.MReporting.Logic
 
         /// <summary>
         /// Draw one chart in form of a line diagram, each line for one of the given account codes
-        /// 
+        ///
         /// </summary>
         /// <returns>void</returns>
         public void DrawChartLineCompareAccounts(String costCentreCode, System.Collections.ArrayList accountCodeList, String chartSheetName)
@@ -246,7 +246,7 @@ namespace Ict.Petra.Client.MReporting.Logic
 
         /// <summary>
         /// Draw one chart in form of a line diagram, each line for one of the given costcentre codes
-        /// 
+        ///
         /// </summary>
         /// <returns>void</returns>
         public void DrawChartLineCompareCostCentres(String accountCode, System.Collections.ArrayList costCentreCodeList, String chartSheetName)
@@ -310,7 +310,7 @@ namespace Ict.Petra.Client.MReporting.Logic
         /// <summary>
         /// Export the full result to Excel
         /// it is a modification of TResult.writeCSV
-        /// 
+        ///
         /// </summary>
         /// <returns>void</returns>
         public void ExportResult()
@@ -323,7 +323,7 @@ namespace Ict.Petra.Client.MReporting.Logic
             System.Int32 rowCounter;
             bool useIndented;
 
-            // write headings 
+            // write headings
             rowCounter = 1;
             columnCounter = 1;
             SetValue(GetRange(columnCounter, rowCounter), "id");
@@ -343,7 +343,7 @@ namespace Ict.Petra.Client.MReporting.Logic
 
             parameters.Add("CurrentSubReport", 0);
 
-            // otherwise 'indented' cannot be read 
+            // otherwise 'indented' cannot be read
             useIndented = false;
 
             for (i = 0; i <= parameters.Get("lowestLevel").ToInt(); i += 1)
@@ -378,7 +378,7 @@ namespace Ict.Petra.Client.MReporting.Logic
             sortedList = new ArrayList();
             results.CreateSortedListByMaster(sortedList, 0);
 
-            // write each row to CSV file 
+            // write each row to CSV file
             foreach (TResult element in sortedList)
             {
                 if (element.display)
@@ -433,10 +433,10 @@ namespace Ict.Petra.Client.MReporting.Logic
                 }
             }
 
-            // todo: autofit all columns after the export to Excel 
-            // VBA: 
-            // Cells.Select 
-            // Cells.EntireColumn.AutoFit 
+            // todo: autofit all columns after the export to Excel
+            // VBA:
+            // Cells.Select
+            // Cells.EntireColumn.AutoFit
         }
     }
 }

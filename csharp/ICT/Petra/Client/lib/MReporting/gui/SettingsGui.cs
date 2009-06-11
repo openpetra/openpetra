@@ -33,7 +33,7 @@ using Ict.Petra.Shared.MReporting;
 namespace Ict.Petra.Client.MReporting.Gui
 {
     public delegate void TSetControlsEventHandler(TParameterList AParameters);
-    
+
     /// <summary>
     /// todoComment
     /// </summary>
@@ -58,13 +58,17 @@ namespace Ict.Petra.Client.MReporting.Gui
 
         /// <param name="AMniLoadSettings">this is the File/Load settings submenu</param>
         /// <param name="AMnuLoadSettings">this is the context menu from the toolbar button Load settings</param>
-        public void InitialiseData(TRptCalculator ACalculator, string AReportName, UC_Columns AUcoReportColumns, MenuItem AMniLoadSettings, ContextMenu AMnuLoadSettings)
+        public void InitialiseData(TRptCalculator ACalculator,
+            string AReportName,
+            UC_Columns AUcoReportColumns,
+            MenuItem AMniLoadSettings,
+            ContextMenu AMnuLoadSettings)
         {
             FCalculator = ACalculator;
             FUcoReportColumns = AUcoReportColumns;
             FMniLoadSettings = AMniLoadSettings;
             FMnuLoadSettings = AMnuLoadSettings;
-            
+
             string SettingsDirectory = TClientSettings.ReportingPathReportSettings;
             this.FStoredSettings = new TStoredSettings(AReportName, SettingsDirectory);
             UpdateLoadingMenu(this.FStoredSettings.GetRecentlyUsedSettings());
@@ -78,12 +82,14 @@ namespace Ict.Petra.Client.MReporting.Gui
             {
                 return LoadSettings(FUcoReportColumns, SettingsDialog.GetNewName());
             }
+
             return AWindowCaption;
         }
 
         public string SaveSettingsAs(string AWindowCaption, string ACurrentReport)
         {
             TFrmSettingsSave SettingsDialog;
+
             if (FCurrentSettingsName == "")
             {
                 SettingsDialog = new TFrmSettingsSave(FStoredSettings, ACurrentReport);
@@ -97,7 +103,7 @@ namespace Ict.Petra.Client.MReporting.Gui
             {
                 FCurrentSettingsName = SettingsDialog.GetNewName();
 
-                // set the title of the window 
+                // set the title of the window
                 string newWindowCaption = AWindowCaption + ": " + FCurrentSettingsName;
                 StringCollection RecentlyUsedSettings = null;
                 try
@@ -114,8 +120,10 @@ namespace Ict.Petra.Client.MReporting.Gui
                 {
                     UpdateLoadingMenu(RecentlyUsedSettings);
                 }
+
                 return newWindowCaption;
             }
+
             return AWindowCaption;
         }
 
@@ -127,7 +135,7 @@ namespace Ict.Petra.Client.MReporting.Gui
             }
             else
             {
-                StringCollection RecentlyUsedSettings = 
+                StringCollection RecentlyUsedSettings =
                     this.FStoredSettings.SaveSettings(FCurrentSettingsName, FCalculator.GetParameters());
 
                 if (RecentlyUsedSettings != null)
@@ -135,12 +143,14 @@ namespace Ict.Petra.Client.MReporting.Gui
                     UpdateLoadingMenu(RecentlyUsedSettings);
                 }
             }
+
             return AWindowCaption;
         }
 
         public void MaintainSettings()
         {
             TFrmSettingsMaintain SettingsDialog = new TFrmSettingsMaintain(FStoredSettings);
+
             SettingsDialog.ShowDialog();
             UpdateLoadingMenu(this.FStoredSettings.GetRecentlyUsedSettings());
         }
@@ -157,7 +167,9 @@ namespace Ict.Petra.Client.MReporting.Gui
             {
                 return;
             }
+
             Counter = 0;
+
             foreach (MenuItem item in FMnuLoadSettings.MenuItems)
             {
                 if (Counter <= ARecentlyUsedSettings.Count - 1)
@@ -169,9 +181,12 @@ namespace Ict.Petra.Client.MReporting.Gui
                 {
                     item.Visible = false;
                 }
-                Counter ++;
+
+                Counter++;
             }
+
             Counter = 0;
+
             foreach (MenuItem item in FMniLoadSettings.MenuItems)
             {
                 if (Counter <= ARecentlyUsedSettings.Count - 1)
@@ -183,7 +198,8 @@ namespace Ict.Petra.Client.MReporting.Gui
                 {
                     item.Visible = false;
                 }
-                Counter ++;
+
+                Counter++;
             }
         }
 
@@ -200,7 +216,7 @@ namespace Ict.Petra.Client.MReporting.Gui
                 SetControlsEventHandler(AParameters);
             }
         }
-        
+
         /// <summary>
         /// This procedure loads the parameters of the given settings
         /// </summary>
@@ -213,6 +229,7 @@ namespace Ict.Petra.Client.MReporting.Gui
             }
 
             string SettingsName = "";
+
             // do a loop, just need the main menu item for load settings, or the context menu
             foreach (MenuItem item in FMnuLoadSettings.MenuItems)
             {
@@ -221,6 +238,7 @@ namespace Ict.Petra.Client.MReporting.Gui
                     SettingsName = item.Text;
                 }
             }
+
             foreach (MenuItem item in FMniLoadSettings.MenuItems)
             {
                 if (sender == item)
@@ -228,19 +246,20 @@ namespace Ict.Petra.Client.MReporting.Gui
                     SettingsName = item.Text;
                 }
             }
+
             return LoadSettings(SettingsName, AWindowCaption);
         }
-        
 
         protected string LoadSettings(string ASettingsName, string AWindowCaption)
         {
             FCurrentSettingsName = ASettingsName;
-            
+
             TParameterList Parameters = new TParameterList();
             StringCollection RecentlyUsedSettings = FStoredSettings.LoadSettings(ref FCurrentSettingsName, ref Parameters);
-            
+
             string newWindowCaption = AWindowCaption;
-            // set the title of the window 
+
+            // set the title of the window
             if (FCurrentSettingsName.Length > 0)
             {
                 newWindowCaption = AWindowCaption + ": " + FCurrentSettingsName;
@@ -268,8 +287,8 @@ namespace Ict.Petra.Client.MReporting.Gui
             {
                 return LoadSettings(RecentlyUsedSettings[0], AWindowCaption);
             }
+
             return AWindowCaption;
         }
-        
     }
 }

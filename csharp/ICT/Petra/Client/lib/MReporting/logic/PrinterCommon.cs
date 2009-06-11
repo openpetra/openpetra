@@ -32,23 +32,26 @@ using System.Collections;
 namespace Ict.Petra.Client.MReporting.Logic
 {
     /// <summary>
- 	/// Functions that deal with getting the right rows from the result;
- 	/// Accessing common parameters;
- 	/// keep track of the current row to be printed, and therefore cope with page breaks
- 	/// 
+    /// Functions that deal with getting the right rows from the result;
+    /// Accessing common parameters;
+    /// keep track of the current row to be printed, and therefore cope with page breaks
+    ///
     /// This class deals with the hierarchy of the results;
     /// it is able to walk through the master/child line,
     /// and to deal with page breaks.
-    /// 
+    ///
     /// </summary>
     public abstract class TReportPrinterCommon : TPrinterLayout
     {
         /// <summary>the settings for this report</summary>
         protected TParameterList FParameters;
+
         /// <summary>the data for this report</summary>
         protected TResultList FResultList;
+
         /// <summary>direct access to the results (data for report)</summary>
         protected ArrayList FResults;
+
         /// <summary>where to print; can be graphics or text</summary>
         protected TPrinter FPrinter;
 
@@ -63,10 +66,13 @@ namespace Ict.Petra.Client.MReporting.Logic
 
         /// <summary>used for simulating</summary>
         protected ArrayList FNextElementLineToPrintBackup;
+
         /// <summary>what is the level of the deepest level</summary>
         protected Int32 FLowestLevel;
+
         /// <summary>number of columns for the report</summary>
         protected Int32 FNumberColumns;
+
         /// <summary>the time the document was printed</summary>
         protected System.DateTime FTimePrinted;
 
@@ -113,7 +119,7 @@ namespace Ict.Petra.Client.MReporting.Logic
         /// prints the captions of the columns;
         /// prepare the footer lines for long captions;
         /// is called by PrintPageHeader
-        /// 
+        ///
         /// </summary>
         /// <returns>void</returns>
         protected virtual void PrintColumnCaptions()
@@ -128,8 +134,8 @@ namespace Ict.Petra.Client.MReporting.Logic
         /// <param name="APrinter"></param>
         public TReportPrinterCommon(TResultList AResult, TParameterList AParameters, TPrinter APrinter)
         {
-            // go through all results and parameters and replace the unformatted and encoded date 
-            // the whole point is to format the dates differently, depending on the output (printer vs. CSV) 
+            // go through all results and parameters and replace the unformatted and encoded date
+            // the whole point is to format the dates differently, depending on the output (printer vs. CSV)
             FParameters = AParameters.ConvertToFormattedStrings("Localized");
             FResultList = AResult.ConvertToFormattedStrings(FParameters, "Localized");
             FResults = FResultList.GetResults();
@@ -138,7 +144,7 @@ namespace Ict.Petra.Client.MReporting.Logic
 #if DEBUGMODE
             if (System.Reflection.Assembly.GetAssembly(typeof(TReportPrinterCommon)).GetName().Version == new Version(0, 0, 9, 0))
             {
-                // to be able to compare the text output 
+                // to be able to compare the text output
                 FTimePrinted = new DateTime(1978, 11, 27, 1, 23, 45);
             }
 #endif
@@ -164,7 +170,7 @@ namespace Ict.Petra.Client.MReporting.Logic
             FNextElementLineToPrint[FLowestLevel] = eStageElementPrinting.eDetails;
             FNextElementToPrint = 1;
 
-            // it might be that the first row is not printable 
+            // it might be that the first row is not printable
             firstElement = FindNextSibling(null);
 
             if (firstElement != null)
@@ -179,7 +185,7 @@ namespace Ict.Petra.Client.MReporting.Logic
 
         /// <summary>
         /// the rows have a unique child number, even if they have different master rows
-        /// 
+        ///
         /// </summary>
         /// <returns>void</returns>
         protected TResult FindRow(Int32 childNr)
@@ -232,7 +238,7 @@ namespace Ict.Petra.Client.MReporting.Logic
             Int32 masterRow;
             Int32 childRow;
 
-            // if currentRow is nil assume the root (needed to find first printable element) 
+            // if currentRow is nil assume the root (needed to find first printable element)
             if (currentRow != null)
             {
                 masterRow = currentRow.masterRow;
@@ -255,9 +261,9 @@ namespace Ict.Petra.Client.MReporting.Logic
                         if ((row.depth == 1) && (FLowestLevel != 1)
                             && (FParameters.GetOrDefault("HasSubReports", -1, new TVariant(false)).ToBool() == true))
                         {
-                            // reset the FLowestLevel, because this is basically a new report (several lowerlevelreports in main level) 
-                            // todo: be careful: some reports have several rows in the main level, I just assumed one total for the finance reports 
-                            // it works now for reports with just one row depth, for others this still needs to be sorted properly. another parameter? 
+                            // reset the FLowestLevel, because this is basically a new report (several lowerlevelreports in main level)
+                            // todo: be careful: some reports have several rows in the main level, I just assumed one total for the finance reports
+                            // it works now for reports with just one row depth, for others this still needs to be sorted properly. another parameter?
                             FLowestLevel = FResultList.GetDeepestVisibleLevel(row.childRow);
                             FPrinter.LineSpaceFeed(eFont.eDefaultFont);
                             FPrinter.DrawLine(FPrinter.LeftMargin, FPrinter.RightMargin, eLinePosition.eAbove, eFont.eDefaultBoldFont);
@@ -309,7 +315,7 @@ namespace Ict.Petra.Client.MReporting.Logic
         /// find the next sibling of currentRow.
         /// if there is none, then try to find the next row up one hierarchy
         /// if currentRow is the last row, return nil
-        /// 
+        ///
         /// </summary>
         /// <returns>void</returns>
         protected TResult FindNextRow(TResult currentRow)
@@ -320,7 +326,7 @@ namespace Ict.Petra.Client.MReporting.Logic
 
             if ((ReturnValue == null) && (currentRow.masterRow != 0))
             {
-                // see if the father is already fully printed 
+                // see if the father is already fully printed
                 ReturnValue = FindRow(currentRow.masterRow);
 
                 if (ReturnValue != null)
@@ -347,6 +353,7 @@ namespace Ict.Petra.Client.MReporting.Logic
         #endregion
 
         #region Parameter related functions
+
         /// <summary>
         /// Get the value of a parameter
         /// </summary>
@@ -406,7 +413,7 @@ namespace Ict.Petra.Client.MReporting.Logic
         /// This function returns the position of the column in the current measurement unit
         /// (ie. letter for textmode, or inch for graphics; see implementation of function FPrinter.Cm);
         /// using ColumnPosition and ColumnPositionIndented from the FParameters
-        /// 
+        ///
         /// </summary>
         /// <param name="columnNr"></param>
         /// <param name="level"></param>
@@ -422,9 +429,9 @@ namespace Ict.Petra.Client.MReporting.Logic
             indented = 0.0f;
 
             if ((columnNr > -1) && (columnNr < ReportingConsts.MAX_COLUMNS))
-
-            // only for data columns 
             {
+                // only for data columns
+
                 if (FParameters.Get("indented", columnNr, level, eParameterFit.eAllColumnFit).ToBool() == true)
                 {
                     value = FParameters.Get("ColumnPositionIndented", columnNr, level);
@@ -454,7 +461,7 @@ namespace Ict.Petra.Client.MReporting.Logic
         /// This function returns the width of the column in in the current measurement unit;
         /// (ie. letter for textmode, or inch for graphics; see implementation of function FPrinter.Cm);
         /// using ColumnWidth and ColumnPositionIndented from the FParameters
-        /// 
+        ///
         /// </summary>
         /// <param name="columnNr"></param>
         /// <param name="level"></param>
@@ -478,9 +485,8 @@ namespace Ict.Petra.Client.MReporting.Logic
             }
 
             if (level == -1)
-
-            // page header, width of column 
             {
+                // page header, width of column
                 value = FParameters.Get("ColumnPositionIndented", columnNr, level);
 
                 if (!value.IsZeroOrNull())
@@ -530,7 +536,7 @@ namespace Ict.Petra.Client.MReporting.Logic
         #endregion
 
         #region Walk through the report hierarchy (output side)
-        
+
         /// <summary>
         /// print the details of a normal level (not lowest level)
         /// </summary>
@@ -586,14 +592,13 @@ namespace Ict.Petra.Client.MReporting.Logic
 
             if ((eStageElementPrinting)FNextElementLineToPrint[row.depth] == eStageElementPrinting.eFooter)
             {
-                // try if footer will still fit on the page; it can consist of 2 lines, and there is no page length check in there 
+                // try if footer will still fit on the page; it can consist of 2 lines, and there is no page length check in there
                 FPrinter.StartSimulatePrinting();
                 PrintNormalLevelFooter(row);
 
                 if (!FPrinter.ValidYPos())
-
-                // not enoughSpace 
                 {
+                    // not enoughSpace
                     FPrinter.FinishSimulatePrinting();
                     FNextElementLineToPrint[row.depth] = eStageElementPrinting.eFooter;
                     FNextElementToPrint = row.childRow;
@@ -622,11 +627,11 @@ namespace Ict.Petra.Client.MReporting.Logic
 
             if (FindFirstChild(row) == null)
             {
-                // if both descr and header are set, don't use lowestlevel, but normal level 
-                // to print both. 
-                // situations to test: 
-                // a) Account Detail, acc/cc with no transaction, but a balance 
-                // b) some situation with analysis attributes on account detail 
+                // if both descr and header are set, don't use lowestlevel, but normal level
+                // to print both.
+                // situations to test:
+                // a) Account Detail, acc/cc with no transaction, but a balance
+                // b) some situation with analysis attributes on account detail
                 if ((row.descr == null) || (row.header == null))
                 {
                     LowestLevel = true;
@@ -667,7 +672,7 @@ namespace Ict.Petra.Client.MReporting.Logic
 
             if (FResults.Count == 0)
             {
-                // nothing to be printed 
+                // nothing to be printed
                 return;
             }
 
@@ -686,7 +691,7 @@ namespace Ict.Petra.Client.MReporting.Logic
             {
                 TLogging.Log(E.Message);
 
-                // MessageBox.Show(E.StackTrace); 
+                // MessageBox.Show(E.StackTrace);
                 System.Console.WriteLine(E.StackTrace);
             }
         }

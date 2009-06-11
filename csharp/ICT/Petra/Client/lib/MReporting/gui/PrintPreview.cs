@@ -43,19 +43,19 @@ using Ict.Petra.Shared.MReporting;
 
 namespace Ict.Petra.Client.MReporting.Gui
 {
-	/// <summary>
-	/// 
-	/// </summary>
+    /// <summary>
+    ///
+    /// </summary>
     public partial class TFrmPrintPreview : System.Windows.Forms.Form, Ict.Petra.Client.CommonForms.IFrmPetra
     {
-#region private members
+        #region private members
 
-		private TGridPreview FGridPreview;
+        private TGridPreview FGridPreview;
         private bool FPrinterInstalled;
-		
+
         private TReportPrinterLayout ReportGfxPrinter;
-		private TReportPrinterLayout ReportTxtPrinter;
-		private TGfxPrinter FGfxPrinter;
+        private TReportPrinterLayout ReportTxtPrinter;
+        private TGfxPrinter FGfxPrinter;
         private TTxtPrinter FTxtPrinter;
         private TResultList Results;
         private TParameterList Parameters;
@@ -63,34 +63,34 @@ namespace Ict.Petra.Client.MReporting.Gui
         private TPrintChartCallbackProcedure PrintChartProcedure;
         private bool PrintChartProcedureValid;
         private TFrmPetraUtils FPetraUtilsObject;
-        
-#endregion
 
-		/// <summary>
-		/// constructor
-		/// </summary>
-		/// <param name="ACallerWindowHandle"></param>
-		/// <param name="caption">caption of the dialog</param>
-		/// <param name="duration"></param>
-		/// <param name="results"></param>
-		/// <param name="parameters"></param>
+        #endregion
+
+        /// <summary>
+        /// constructor
+        /// </summary>
+        /// <param name="ACallerWindowHandle"></param>
+        /// <param name="caption">caption of the dialog</param>
+        /// <param name="duration"></param>
+        /// <param name="results"></param>
+        /// <param name="parameters"></param>
         public TFrmPrintPreview(IntPtr ACallerWindowHandle, String caption, TimeSpan duration, TResultList results, TParameterList parameters)
-        	: base()
+            : base()
         {
-        	FPetraUtilsObject = new Ict.Petra.Client.CommonForms.TFrmPetraUtils(ACallerWindowHandle, this);
-			
-            //  
-            // Required for Windows Form Designer support 
-            //  
+            FPetraUtilsObject = new Ict.Petra.Client.CommonForms.TFrmPetraUtils(ACallerWindowHandle, this);
+
+            //
+            // Required for Windows Form Designer support
+            //
             InitializeComponent();
-#region CATALOGI18N
-// this code has been inserted by GenerateI18N, all changes in this region will be overwritten by GenerateI18N
+            #region CATALOGI18N
+
+            // this code has been inserted by GenerateI18N, all changes in this region will be overwritten by GenerateI18N
             this.mniFile.Text = Catalog.GetString("&File");
             this.mniFileClose.Text = Catalog.GetString("&Close");
             this.mniFileClose.ToolTipText = Catalog.GetString("Close the preview");
             this.mniHelp.Text = Catalog.GetString("&Help");
             this.mniHelpPetraHelp.Text = Catalog.GetString("&Petra Help");
-            this.mniHelpDivider1.Text = Catalog.GetString("-");
             this.mniHelpBugReport.Text = Catalog.GetString("Bug &Report");
             this.mniHelpAboutPetra.Text = Catalog.GetString("&About Petra...");
             this.mniHelpDevelopmentTeam.Text = Catalog.GetString("&The Development Team...");
@@ -114,21 +114,22 @@ namespace Ict.Petra.Client.MReporting.Gui
             this.tbtExportText.Text = Catalog.GetString("Save as Text file");
             this.tbtExportText.ToolTipText = Catalog.GetString("Save as a text file (e.g. for email)");
             this.tbtGenerateChart.Text = Catalog.GetString("Generate Chart");
-            this.tbtGenerateChart.ToolTipText = Catalog.GetString("Generates a chart in Excel (only ava" + "ilable yet for few reports at the moment)");
+            this.tbtGenerateChart.ToolTipText = Catalog.GetString(
+                "Generates a chart in Excel (only ava" + "ilable yet for few reports at the moment)");
             this.Text = Catalog.GetString("Print Preview");
-#endregion
-            
-			System.Windows.Forms.TabPage SelectedTab;
-			String durationText;
-			
-			this.Text = this.Text + ": " + caption;
+            #endregion
+
+            System.Windows.Forms.TabPage SelectedTab;
+            String durationText;
+
+            this.Text = this.Text + ": " + caption;
             this.ReportName = caption;
             this.Results = results;
             this.Parameters = parameters;
             FTxtPrinter = new TTxtPrinter();
             this.ReportTxtPrinter = new TReportPrinterLayout(Results, Parameters, FTxtPrinter);
             ReportTxtPrinter.PrintReport();
-            
+
             this.txtOutput.Lines = FTxtPrinter.GetArrayOfString();
             FPrinterInstalled = this.PrintDocument.PrinterSettings.IsValid;
 
@@ -144,7 +145,7 @@ namespace Ict.Petra.Client.MReporting.Gui
             }
             else
             {
-                // PrintPreviewControl.CalculatePageInfo will throw InvalidPrinterException 
+                // PrintPreviewControl.CalculatePageInfo will throw InvalidPrinterException
                 this.tabPreview.SelectedTab = tbpText;
                 this.PrintPreviewControl.Visible = false;
                 this.CbB_Zoom.Enabled = false;
@@ -172,88 +173,87 @@ namespace Ict.Petra.Client.MReporting.Gui
             }
 
             durationText = String.Format("It took {0} to calculate the report", FormatDuration(duration));
+
             // TODO statusbar this.sbtForm.InstanceDefaultText = durationText;
         }
 
+        #region Event Handlers
 
+        /// <summary>
+        ///
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        protected void MniFile_Click(System.Object sender, System.EventArgs e)
+        {
+            if (sender == mniFileClose)
+            {
+                FPetraUtilsObject.ExecuteAction(eActionId.eClose);
+            }
+        }
 
-#region Event Handlers
+        /// <summary>
+        ///
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        protected void MniHelpPetra_Click(System.Object sender, System.EventArgs e)
+        {
+            FPetraUtilsObject.ExecuteAction(eActionId.eHelp);
+        }
 
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="sender"></param>
-		/// <param name="e"></param>
-		protected void MniFile_Click(System.Object sender, System.EventArgs e)
-		{
-		    if (sender == mniFileClose)
-		    {
-		    	FPetraUtilsObject.ExecuteAction(eActionId.eClose);
-		    }
-		}
-		
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="sender"></param>
-		/// <param name="e"></param>
-		protected void MniHelpPetra_Click(System.Object sender, System.EventArgs e)
-		{
-			FPetraUtilsObject.ExecuteAction(eActionId.eHelp);
-		}
-		
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="sender"></param>
-		/// <param name="e"></param>
-		protected void MniHelpAboutPetra_Click(System.Object sender, System.EventArgs e)
-		{
-			FPetraUtilsObject.ExecuteAction(eActionId.eHelpAbout);
-		}
-		
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="sender"></param>
-		/// <param name="e"></param>
-		protected void MniHelpDevelopmentTeam_Click(System.Object sender, System.EventArgs e)
-		{
-			FPetraUtilsObject.ExecuteAction(eActionId.eHelpDevelopmentTeam);
-		}
-	
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="sender"></param>
-		/// <param name="e"></param>
-		protected void MniHelpBugReport_Click(System.Object sender, System.EventArgs e)
-		{
-			FPetraUtilsObject.ExecuteAction(eActionId.eBugReport);
-		}
+        /// <summary>
+        ///
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        protected void MniHelpAboutPetra_Click(System.Object sender, System.EventArgs e)
+        {
+            FPetraUtilsObject.ExecuteAction(eActionId.eHelpAbout);
+        }
 
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="sender"></param>
-		/// <param name="e"></param>
-		protected void Btn_NextPage_Click(System.Object sender, System.EventArgs e)
+        /// <summary>
+        ///
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        protected void MniHelpDevelopmentTeam_Click(System.Object sender, System.EventArgs e)
+        {
+            FPetraUtilsObject.ExecuteAction(eActionId.eHelpDevelopmentTeam);
+        }
+
+        /// <summary>
+        ///
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        protected void MniHelpBugReport_Click(System.Object sender, System.EventArgs e)
+        {
+            FPetraUtilsObject.ExecuteAction(eActionId.eBugReport);
+        }
+
+        /// <summary>
+        ///
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        protected void Btn_NextPage_Click(System.Object sender, System.EventArgs e)
         {
             this.PrintPreviewControl.StartPage = this.PrintPreviewControl.StartPage + 1;
         }
 
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="sender"></param>
-		/// <param name="e"></param>
+        /// <summary>
+        ///
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         protected void Btn_PreviousPage_Click(System.Object sender, System.EventArgs e)
         {
             this.PrintPreviewControl.StartPage = this.PrintPreviewControl.StartPage - 1;
         }
-        
+
         /// <summary>
-        /// 
+        ///
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
@@ -268,23 +268,23 @@ namespace Ict.Petra.Client.MReporting.Gui
         }
 
         /// <summary>
-        /// 
+        ///
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
         protected void tbbCloseClick(object sender, EventArgs e)
-	    {
-        	FPetraUtilsObject.ExecuteAction(eActionId.eClose);
-	    }
-	    
+        {
+            FPetraUtilsObject.ExecuteAction(eActionId.eClose);
+        }
+
         /// <summary>
-        /// 
+        ///
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
         protected void tbtExportTextClick(System.Object sender, System.EventArgs e)
         {
-        	if (dlgSaveTextFile.FileName.Length == 0)
+            if (dlgSaveTextFile.FileName.Length == 0)
             {
                 dlgSaveTextFile.FileName = this.ReportName + '.' + dlgSaveTextFile.DefaultExt;
             }
@@ -294,28 +294,28 @@ namespace Ict.Petra.Client.MReporting.Gui
                 FTxtPrinter.WriteToFile(dlgSaveTextFile.FileName);
             }
         }
-        
+
         /// <summary>
-        /// 
+        ///
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
         protected void tbtExportCSVClick(System.Object sender, System.EventArgs e)
         {
-        	if (!ExportToExcel())
+            if (!ExportToExcel())
             {
                 ExportToCSV();
             }
         }
 
         /// <summary>
-        /// 
+        ///
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
         protected void tbtGenerateChartClick(System.Object sender, System.EventArgs e)
         {
-        	if (PrintChartProcedureValid)
+            if (PrintChartProcedureValid)
             {
                 PrintChartProcedure();
             }
@@ -324,15 +324,15 @@ namespace Ict.Petra.Client.MReporting.Gui
                 MessageBox.Show("There are no charts available for this report!");
             }
         }
-        
+
         /// <summary>
-        /// 
+        ///
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
         protected void tbtPrintClick(System.Object sender, System.EventArgs e)
         {
-        	PrintDialog printerSelectionDlg;
+            PrintDialog printerSelectionDlg;
 
             if (!FPrinterInstalled)
             {
@@ -370,68 +370,69 @@ namespace Ict.Petra.Client.MReporting.Gui
                 }
             }
         }
-        
+
         /// <summary>
-        /// 
+        ///
         /// </summary>
         /// <param name="ACalculator"></param>
-		protected void PreviewDetailReport(TRptCalculator ACalculator)
+        protected void PreviewDetailReport(TRptCalculator ACalculator)
         {
             TFrmPrintPreview printWindow;
 
-            // show a print window with all kinds of output options 
-            printWindow = new TFrmPrintPreview(this.Handle, ACalculator.GetParameters().Get("currentReport").ToString(), ACalculator.GetDuration(), ACalculator.GetResults(
+            // show a print window with all kinds of output options
+            printWindow = new TFrmPrintPreview(this.Handle, ACalculator.GetParameters().Get("currentReport").ToString(),
+                ACalculator.GetDuration(), ACalculator.GetResults(
                     ), ACalculator.GetParameters());
             this.AddOwnedForm(printWindow);
             printWindow.Owner = this;
 
-            // printWindow.SetPrintChartProcedure(GenerateChart); 
+            // printWindow.SetPrintChartProcedure(GenerateChart);
             printWindow.ShowDialog();
 
-            // EnableDisableToolbar(true); 
+            // EnableDisableToolbar(true);
         }
-		
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="printChartProcedure"></param>
-		public void SetPrintChartProcedure(TPrintChartCallbackProcedure printChartProcedure)
+
+        /// <summary>
+        ///
+        /// </summary>
+        /// <param name="printChartProcedure"></param>
+        public void SetPrintChartProcedure(TPrintChartCallbackProcedure printChartProcedure)
         {
             this.PrintChartProcedure = printChartProcedure;
             this.PrintChartProcedureValid = true;
         }
-		
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="Sender"></param>
-		/// <param name="e"></param>
-		protected void SgGridView_DoubleClickCell(System.Object Sender, SourceGrid.CellContextEventArgs e)
+
+        /// <summary>
+        ///
+        /// </summary>
+        /// <param name="Sender"></param>
+        /// <param name="e"></param>
+        protected void SgGridView_DoubleClickCell(System.Object Sender, SourceGrid.CellContextEventArgs e)
         {
-            // double click on grid row activates the first menu item from the context menu 
+            // double click on grid row activates the first menu item from the context menu
             if (ContextMenu1.MenuItems.Count > 0)
             {
                 FGridPreview.MenuItemClick(ContextMenu1.MenuItems[0], null);
             }
         }
-		
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="sender"></param>
-		/// <param name="e"></param>
-		protected void PrintDocument_EndPrint(System.Object sender, System.Drawing.Printing.PrintEventArgs e)
+
+        /// <summary>
+        ///
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        protected void PrintDocument_EndPrint(System.Object sender, System.Drawing.Printing.PrintEventArgs e)
         {
             FGfxPrinter.EndPrint(sender, e);
             EnablePageButtons();
         }
 
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="sender"></param>
-		/// <param name="e"></param>
-		protected void CbB_Zoom_SelectedIndexChanged(System.Object sender, System.EventArgs e)
+        /// <summary>
+        ///
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        protected void CbB_Zoom_SelectedIndexChanged(System.Object sender, System.EventArgs e)
         {
             if (CbB_Zoom.SelectedItem.ToString() == "100%")
             {
@@ -456,7 +457,7 @@ namespace Ict.Petra.Client.MReporting.Gui
             EnablePageButtons();
         }
 
-#endregion
+        #endregion
 
         /// <summary>
         /// should this go into StringHelper?
@@ -527,10 +528,10 @@ namespace Ict.Petra.Client.MReporting.Gui
             myExcel.GiveUserControl();
             return ReturnValue;
         }
-		
-		/// <summary>
+
+        /// <summary>
         /// export the full result to a CSV file
-        /// 
+        ///
         /// </summary>
         /// <returns>void</returns>
         public void ExportToCSV()
@@ -559,7 +560,7 @@ namespace Ict.Petra.Client.MReporting.Gui
                 }
             }
         }
-        
+
         /// <summary>
         /// Depending on the setting of zoom, several pages are displayed, or just one 100% or AutoZoom, will display only one page, and enable the previous/next page buttons otherwise display all pages, and scroll through
         /// </summary>
@@ -581,28 +582,26 @@ namespace Ict.Petra.Client.MReporting.Gui
             }
         }
 
-        
-#region interface implementation
+        #region interface implementation
 
-		/// <summary>
-		/// This function tells the caller whether the window can be closed.
-		/// It can be used to find out if something is still edited, for example.
-		/// </summary>
-		/// <returns>true if window can be closed
-		/// </returns>
-		public bool CanClose()
-		{
-		    return true;
-		}
-		
-		/// <summary>
-		/// 
-		/// </summary>
+        /// <summary>
+        /// This function tells the caller whether the window can be closed.
+        /// It can be used to find out if something is still edited, for example.
+        /// </summary>
+        /// <returns>true if window can be closed
+        /// </returns>
+        public bool CanClose()
+        {
+            return true;
+        }
+
+        /// <summary>
+        ///
+        /// </summary>
         public void HookupAllControls()
-	    {
-        	
-	    }
-         
+        {
+        }
+
         /// <summary>
         /// todoComment
         /// </summary>
@@ -614,18 +613,17 @@ namespace Ict.Petra.Client.MReporting.Gui
                 return (TFrmPetraUtils)FPetraUtilsObject;
             }
         }
-        
+
         /// <summary>
         /// todoComment
         /// </summary>
         public void RunOnceOnActivation()
-	    {
-	
-	    }
-        
-#endregion
+        {
+        }
+
+        #endregion
     }
-    
+
     /// <summary> </summary>
     public delegate void TPrintChartCallbackProcedure();
 }

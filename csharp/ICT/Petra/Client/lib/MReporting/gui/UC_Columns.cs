@@ -38,11 +38,11 @@ using Ict.Petra.Client.CommonForms;
 
 namespace Ict.Petra.Client.MReporting.Gui
 {
-	/// <summary>
-	/// used to tell the main form to fill the column grid
-	/// </summary>
+    /// <summary>
+    /// used to tell the main form to fill the column grid
+    /// </summary>
     public delegate void TFillColumnGridEventHandler(System.Object Sender);
-    
+
     /// <summary>
     /// A control that offers managing the columns and calculations per column for the output of a report
     /// </summary>
@@ -50,13 +50,13 @@ namespace Ict.Petra.Client.MReporting.Gui
     {
         /// List of functions between columns, that are available for this report; is set by SetAvailableFunctions
         protected ArrayList FAvailableFunctions = null;
-        
+
         /// this shows which column is currently selected; it is 1 if no column is selected
         protected int FSelectedColumn;
 
         /// helper variable to unselect the column in the grid after cancel or apply
         private bool FDuringApplyOrCancel;
-        
+
         /// <summary>
         /// constructor
         /// </summary>
@@ -66,50 +66,52 @@ namespace Ict.Petra.Client.MReporting.Gui
             // The InitializeComponent() call is required for Windows Forms designer support.
             //
             InitializeComponent();
-#region CATALOGI18N
-// this code has been inserted by GenerateI18N, all changes in this region will be overwritten by GenerateI18N
+            #region CATALOGI18N
+
+            // this code has been inserted by GenerateI18N, all changes in this region will be overwritten by GenerateI18N
             this.GBx_ChooseColCont.Text = Catalog.GetString("Define Column");
             this.Btn_Cancel.Text = Catalog.GetString("Cancel");
             this.BtnApply.Text = Catalog.GetString("Apply");
             this.Btn_RemoveColumn.Text = Catalog.GetString("&Remove");
             this.Btn_AddColumn.Text = Catalog.GetString("&Add");
-#endregion
-            
+            #endregion
+
             FSelectedColumn = -1;
             FDuringApplyOrCancel = false;
-            
+
             grdColumns.AlternatingBackgroundColour = Color.Empty;
             grdColumns.SortableHeaders = false;
             grdColumns.SelectionMode = SourceGrid.GridSelectionMode.Column;
             grdColumns.AutoStretchColumnsToFitWidth = false;
 
-            // Hook up event that fires when a different row is selected 
+            // Hook up event that fires when a different row is selected
             grdColumns.Selection.FocusColumnEntered += new ColumnEventHandler(this.GrdColumns_FocusColumnEntered);
             grdColumns.Selection.CellLostFocus += new ChangeActivePositionEventHandler(this.GrdColumns_CellLostFocus);
             grdColumns.Selection.CellGotFocus += new ChangeActivePositionEventHandler(this.GrdColumns_CellGotFocus);
         }
 
         private TFrmPetraUtils FPetraUtilsObject;
+
         /// <summary>
         /// utilities for Petra forms
         /// </summary>
         public TFrmPetraUtils PetraUtilsObject
         {
-        	get
-        	{
-        		return FPetraUtilsObject;
-        	}
-        	set
-        	{
-        		FPetraUtilsObject = value;
-        	}
+            get
+            {
+                return FPetraUtilsObject;
+            }
+            set
+            {
+                FPetraUtilsObject = value;
+            }
         }
-        
+
         /// <summary>
         /// the current list of parameters
         /// </summary>
         protected TParameterList FColumnParameters;
-        
+
         /// <summary>
         /// init the control with the parameters
         /// </summary>
@@ -134,7 +136,7 @@ namespace Ict.Petra.Client.MReporting.Gui
                 FillColumnGridEventHandler(this);
             }
         }
-        
+
         private void GrdColumns_CellLostFocus(SelectionBase ASender, ChangeActivePositionEventArgs AEventArgs)
         {
             System.Int32 newcolumn;
@@ -181,7 +183,7 @@ namespace Ict.Petra.Client.MReporting.Gui
 
             if ((column != -1) && (column != FSelectedColumn))
             {
-                // select the picked column 
+                // select the picked column
                 SelectColumn(column);
             }
         }
@@ -230,9 +232,9 @@ namespace Ict.Petra.Client.MReporting.Gui
          */
         public virtual bool SelectColumn(System.Int32 ASelectedColumn)
         {
-            // first check if currently selected column is unchanged; 
-            // this check needs to happen in a derived class 
-            // select column 
+            // first check if currently selected column is unchanged;
+            // this check needs to happen in a derived class
+            // select column
             if (ASelectedColumn > -1)
             {
                 grdColumns.Selection.ResetSelection(false);
@@ -240,18 +242,19 @@ namespace Ict.Petra.Client.MReporting.Gui
                 this.Btn_RemoveColumn.Enabled = true;
                 this.BtnApply.Enabled = true;
                 this.Btn_Cancel.Enabled = true;
+
                 // Btn_AddColumn: should be able to add a column after the selected column
                 this.Btn_AddColumn.Enabled = true;
                 this.Btn_MoveColumn2Right.Enabled = (ASelectedColumn < -1);
                 this.Btn_MoveColumn2Left.Enabled = (ASelectedColumn > 0);
             }
             else
-
-            // unselect the column 
             {
+                // unselect the column
+
                 if (FSelectedColumn != -1)
                 {
-                    // grdColumns.Selection.SelectColumn(FSelectedColumn, false); 
+                    // grdColumns.Selection.SelectColumn(FSelectedColumn, false);
                     grdColumns.Selection.ResetSelection(false);
                     Btn_AddColumn.Focus();
                 }
@@ -297,7 +300,7 @@ namespace Ict.Petra.Client.MReporting.Gui
             {
                 if (ASelectedColumn == -1)
                 {
-                	NewMaxColumn = FColumnParameters.Get("MaxDisplayColumns").ToInt();
+                    NewMaxColumn = FColumnParameters.Get("MaxDisplayColumns").ToInt();
                     NewColumn = NewMaxColumn;
                     FColumnParameters.Add("MaxDisplayColumns", NewColumn + 1);
                 }
@@ -307,7 +310,7 @@ namespace Ict.Petra.Client.MReporting.Gui
                     NewMaxColumn = FColumnParameters.Get("MaxDisplayColumns").ToInt() + 1;
                     FColumnParameters.Add("MaxDisplayColumns", NewMaxColumn);
 
-                    // need to move the columns to the right 
+                    // need to move the columns to the right
                     for (Counter = NewMaxColumn - 1; Counter <= NewColumn + 1; Counter -= 1)
                     {
                         FColumnParameters.MoveColumn(Counter - 1, Counter);
@@ -366,7 +369,7 @@ namespace Ict.Petra.Client.MReporting.Gui
         /// <returns>true if there is no changed column </returns>
         public bool CheckForUnchangedColumn(string AErrorMessage)
         {
-            // has anything changed in the currently selected column? 
+            // has anything changed in the currently selected column?
             if (SelectedColumnChanged())
             {
                 MessageBox.Show(
@@ -380,9 +383,10 @@ namespace Ict.Petra.Client.MReporting.Gui
             {
                 SelectColumn(-1);
             }
+
             return true;
         }
-        
+
         /// <summary>
         /// the currently selected column in the grid
         /// </summary>
@@ -392,12 +396,12 @@ namespace Ict.Petra.Client.MReporting.Gui
             {
                 return FSelectedColumn;
             }
-            set 
+            set
             {
                 SelectColumn(SelectedColumn);
             }
         }
-        
+
         /**
          * This procedure will compare the current settings of the currently selected column with the settings stored in FColumnParameters
          * @return true if the column has changed, ie. the settings are different
@@ -407,7 +411,7 @@ namespace Ict.Petra.Client.MReporting.Gui
         {
             return ColumnChanged(FSelectedColumn);
         }
-        
+
         /**
          * This procedure will undo the current settings of the column,
          * and then will unselect the column
@@ -439,7 +443,7 @@ namespace Ict.Petra.Client.MReporting.Gui
             {
                 FColumnParameters.RemoveColumn(ASelectedColumn);
 
-                // need to move the following columns to the left 
+                // need to move the following columns to the left
                 MaxColumn = FColumnParameters.Get("MaxDisplayColumns").ToInt();
 
                 for (Counter = ASelectedColumn + 1; Counter <= MaxColumn - 1; Counter += 1)
@@ -485,7 +489,7 @@ namespace Ict.Petra.Client.MReporting.Gui
                 {
                     FColumnParameters.SwitchColumn(ASelectedColumn, ANewColumnPosition);
 
-                    // switch the referenced columns in calculation 
+                    // switch the referenced columns in calculation
                     MaxDisplayColumns = FColumnParameters.Get("MaxDisplayColumns").ToInt();
 
                     for (Counter = 0; Counter <= MaxDisplayColumns - 1; Counter += 1)
@@ -598,15 +602,15 @@ namespace Ict.Petra.Client.MReporting.Gui
 
             if (ReturnValue == null)
             {
-                // this might be a general function that has a parameter, that is displayed 
+                // this might be a general function that has a parameter, that is displayed
                 if (FAvailableFunctions != null)
                 {
                     foreach (TColumnFunction Func in FAvailableFunctions)
                     {
                         if (Func.FDescription == ACalculationName)
                         {
-                            // found an entry with e.g. DataLabelColumn 
-                            // now need to check if this columns FCalculationParameterValue is used 
+                            // found an entry with e.g. DataLabelColumn
+                            // now need to check if this columns FCalculationParameterValue is used
                             if (AParameterList.Get(Func.FCalculationParameterName, AColumnNr).ToString() == Func.FCalculationParameterValue)
                             {
                                 return Func;
@@ -625,9 +629,8 @@ namespace Ict.Petra.Client.MReporting.Gui
         /// </summary>
         public virtual void InitialiseFunctions()
         {
-            
         }
-        
+
         #endregion
 
         /// <summary>

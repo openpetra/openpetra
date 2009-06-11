@@ -45,10 +45,10 @@ namespace Ict.Petra.Client.MReporting.Gui
     {
         /// the number of columns that can be sorted is hard coded at the moment
         public const Int32 NUMBER_SORTBY = 3;
-        
+
         /// this holds the references to the comboboxes, that way it is easier to program a flexible number of comboboxes
         protected TCmbAutoComplete[] FSortByComboboxes;
-        
+
         /// <summary>
         /// constructor
         /// </summary>
@@ -58,13 +58,14 @@ namespace Ict.Petra.Client.MReporting.Gui
             // The InitializeComponent() call is required for Windows Forms designer support.
             //
             InitializeComponent();
-#region CATALOGI18N
-// this code has been inserted by GenerateI18N, all changes in this region will be overwritten by GenerateI18N
+            #region CATALOGI18N
+
+            // this code has been inserted by GenerateI18N, all changes in this region will be overwritten by GenerateI18N
             this.lblSortBy3.Text = Catalog.GetString("Sort last by:");
             this.lblSortBy2.Text = Catalog.GetString("Sort then by:");
             this.LblSortBy1.Text = Catalog.GetString("Sort first by:");
-#endregion
-            
+            #endregion
+
             FSortByComboboxes = new TCmbAutoComplete[NUMBER_SORTBY];
             FSortByComboboxes[0] = cmbSortby1;
             FSortByComboboxes[1] = cmbSortby2;
@@ -72,28 +73,30 @@ namespace Ict.Petra.Client.MReporting.Gui
         }
 
         private TFrmPetraUtils FPetraUtilsObject;
+
         /// <summary>
         /// utilities for Petra forms
         /// </summary>
         public TFrmPetraUtils PetraUtilsObject
         {
-        	get
-        	{
-        		return FPetraUtilsObject;
-        	}
-        	set
-        	{
-        		FPetraUtilsObject = value;
-        	}
+            get
+            {
+                return FPetraUtilsObject;
+            }
+            set
+            {
+                FPetraUtilsObject = value;
+            }
         }
 
         private void CmbSortby_SelectedIndexChanged(System.Object sender, System.EventArgs e)
         {
             UpdateSortingDetails(sender);
         }
-        
+
         /// the functions and column names that should be displayed in the sorting boxes
         protected ArrayList FAvailableFunctions;
+
         /// <summary>
         /// set the functions and column names that are available
         /// </summary>
@@ -102,7 +105,7 @@ namespace Ict.Petra.Client.MReporting.Gui
         {
             FAvailableFunctions = AAvailableFunctions;
         }
-        
+
         /**
          * This will return a string list of available functions
          *
@@ -121,7 +124,6 @@ namespace Ict.Petra.Client.MReporting.Gui
             return ReturnValue;
         }
 
-        
         /**
          * This will make the correct options available in the sort comboboxes
          *
@@ -133,11 +135,11 @@ namespace Ict.Petra.Client.MReporting.Gui
             System.Int32 CurrentIndex;
             bool SelectedAbove;
 
-            // the idea is, that the first combobox offers all possibilities, 
-            // the following combobox offer all but the ones selected above; 
-            // if a entry gets selected, the comboboxes below lose that entry, 
-            // and gain the one that was selected before 
-            // just fill all the comboboxes 
+            // the idea is, that the first combobox offers all possibilities,
+            // the following combobox offer all but the ones selected above;
+            // if a entry gets selected, the comboboxes below lose that entry,
+            // and gain the one that was selected before
+            // just fill all the comboboxes
             if (ASender == null)
             {
                 for (counter = 0; counter <= NUMBER_SORTBY - 1; counter += 1)
@@ -161,15 +163,15 @@ namespace Ict.Petra.Client.MReporting.Gui
                     }
                 }
 
-                // if the combobox ASender had a previous selection, this needs to be added to the other comboboxes 
+                // if the combobox ASender had a previous selection, this needs to be added to the other comboboxes
                 foreach (TColumnFunction Func in FAvailableFunctions)
                 {
-                    // add previous selection to the other comboboxes 
+                    // add previous selection to the other comboboxes
                     for (counter = CurrentIndex + 1; counter <= NUMBER_SORTBY - 1; counter += 1)
                     {
                         if (FSortByComboboxes[counter].FindStringInComboBox(Func.GetDisplayValue()) == -1)
                         {
-                            // is not selected above 
+                            // is not selected above
                             SelectedAbove = false;
 
                             for (counter2 = 0; counter2 <= counter - 1; counter2 += 1)
@@ -188,7 +190,7 @@ namespace Ict.Petra.Client.MReporting.Gui
                     }
                 }
 
-                // remove the selection of ASender from the comboboxes below 
+                // remove the selection of ASender from the comboboxes below
                 for (counter = CurrentIndex + 1; counter <= NUMBER_SORTBY - 1; counter += 1)
                 {
                     FSortByComboboxes[counter].RemoveStringItem(((TCmbAutoComplete)ASender).GetSelectedString());
@@ -208,11 +210,12 @@ namespace Ict.Petra.Client.MReporting.Gui
             {
                 OrderByArray[counter] = FSortByComboboxes[counter].GetSelectedString();
 
-                // MessageBox.Show('Sort by '+Counter.ToString+': '+FSortByComboboxes[counter].GetSelectedString()); 
-                // have to encode the number of "order by" in the variable name instead of the column, 
-                // otherwise the meaning would be changed when columns are switched or deleted 
+                // MessageBox.Show('Sort by '+Counter.ToString+': '+FSortByComboboxes[counter].GetSelectedString());
+                // have to encode the number of "order by" in the variable name instead of the column,
+                // otherwise the meaning would be changed when columns are switched or deleted
                 ACalculator.AddParameter("orderby" + counter.ToString(), OrderByArray[counter]);
             }
+
             String OrderByReadable = "";
 
             for (Int32 counter = 0; counter <= NUMBER_SORTBY - 1; counter += 1)
@@ -243,6 +246,5 @@ namespace Ict.Petra.Client.MReporting.Gui
                 FSortByComboboxes[counter].SetSelectedString(AParameters.Get("orderby" + counter.ToString()).ToString());
             }
         }
-        
     }
 }
