@@ -88,8 +88,10 @@ namespace Ict.Petra.Client.App.PetraClient
             this.mniSeparator1 = new System.Windows.Forms.ToolStripSeparator();
             this.mniHelpAboutPetra = new System.Windows.Forms.ToolStripMenuItem();
             this.mniHelpDevelopmentTeam = new System.Windows.Forms.ToolStripMenuItem();
+            this.stbMain = new Ict.Common.Controls.TExtStatusBarHelp();
 
             this.mnuMain.SuspendLayout();
+            this.stbMain.SuspendLayout();
 
             //
             // ucoMainWindowContent
@@ -234,6 +236,11 @@ namespace Ict.Petra.Client.App.PetraClient
                            mniFile,
                         mniPetraModules,
                         mniHelp});
+            //
+            // stbMain
+            //
+            this.stbMain.Name = "stbMain";
+            this.stbMain.Dock = System.Windows.Forms.DockStyle.Bottom;
 
             //
             // TFrmMainWindow
@@ -244,6 +251,7 @@ namespace Ict.Petra.Client.App.PetraClient
             this.Controls.Add(this.ucoMainWindowContent);
             this.Controls.Add(this.mnuMain);
             this.MainMenuStrip = mnuMain;
+            this.Controls.Add(this.stbMain);
             this.Icon = (System.Drawing.Icon)resources.GetObject("$this.Icon");
             this.Name = "TFrmMainWindow";
             this.Text = "";
@@ -253,6 +261,7 @@ namespace Ict.Petra.Client.App.PetraClient
 	        this.Closing += new System.ComponentModel.CancelEventHandler(this.TFrmPetra_Closing);
 	        this.KeyDown += new System.Windows.Forms.KeyEventHandler(this.Form_KeyDown);
 	
+            this.stbMain.ResumeLayout(false);
             this.mnuMain.ResumeLayout(false);
             this.ResumeLayout(false);
             this.PerformLayout();
@@ -276,5 +285,6 @@ namespace Ict.Petra.Client.App.PetraClient
         private System.Windows.Forms.ToolStripSeparator mniSeparator1;
         private System.Windows.Forms.ToolStripMenuItem mniHelpAboutPetra;
         private System.Windows.Forms.ToolStripMenuItem mniHelpDevelopmentTeam;
+        private Ict.Common.Controls.TExtStatusBarHelp stbMain;
     }
 }

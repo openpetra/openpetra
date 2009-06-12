@@ -39,14 +39,15 @@ using System.Runtime.Remoting;
 
 namespace Ict.Petra.Client.MReporting.Logic
 {
-	/// <summary>
-	/// this provides the calculation to the client; 
-	/// connects to the server to prepare the report
-	/// </summary>
+    /// <summary>
+    /// this provides the calculation to the client;
+    /// connects to the server to prepare the report
+    /// </summary>
     public class TRptCalculator
     {
-    	/// <summary>the settings and parameters for the report</summary>
+        /// <summary>the settings and parameters for the report</summary>
         protected TParameterList Parameters;
+
         /// <summary>this will contain the data returned from the server</summary>
         protected TResultList Results;
 
@@ -55,6 +56,7 @@ namespace Ict.Petra.Client.MReporting.Logic
 
         /// <summary>will be set by SetMaxDisplayColumns;</summary>
         protected Int32 MaxDisplayColumns;
+
         /// <summary>how long did it take to calculate the report</summary>
         protected TimeSpan Duration;
         private IReportGeneratorLogicConnector FReportingGenerator;
@@ -74,7 +76,7 @@ namespace Ict.Petra.Client.MReporting.Logic
         /// Uses the param_sortby_readable, and adds missing columns to be calculated, but not displayed
         /// builds param_sortby_columns, which is a list of the column numbers
         /// based on these numbers the rows should be sorted, starting with the last number
-        /// 
+        ///
         /// </summary>
         /// <returns>void</returns>
         public void SetupSorting()
@@ -95,21 +97,21 @@ namespace Ict.Petra.Client.MReporting.Logic
                 SortByColumnNumber = "";
                 Calculations = StringHelper.StrSplit(Parameters.Get("param_sortby_readable").ToString(), ",");
 
-                // go through all calculations, that have been selected for sorting 
+                // go through all calculations, that have been selected for sorting
                 foreach (String calculation in Calculations)
                 {
-                    // is the calculation displayed in a column? 
+                    // is the calculation displayed in a column?
                     ColumnPos = -1;
 
                     for (Counter = 0; Counter <= MaxDisplayColumns - 1; Counter += 1)
                     {
-                    	if (Parameters.Get("param_calculation", Counter).ToString() == calculation)
+                        if (Parameters.Get("param_calculation", Counter).ToString() == calculation)
                         {
                             ColumnPos = Counter;
                         }
                     }
 
-                    // if the column is not displayed, add it beyond the MaxDisplayColumns 
+                    // if the column is not displayed, add it beyond the MaxDisplayColumns
                     if (ColumnPos == -1)
                     {
                         AddColumnCalculation(NewTempColumn, calculation);
@@ -131,29 +133,29 @@ namespace Ict.Petra.Client.MReporting.Logic
 
         /// <summary>
         /// Add a column that uses a calculation defined in the xml file
-        /// 
+        ///
         /// </summary>
         /// <returns>void</returns>
         public void AddColumnCalculation(int column, String calculation)
         {
-        	Parameters.Add("param_calculation", new TVariant(calculation), column);
+            Parameters.Add("param_calculation", new TVariant(calculation), column);
         }
 
         /// <summary>
         /// Add a column containing financial data
-        /// 
+        ///
         /// </summary>
         /// <returns>void</returns>
         public void AddColumnFinancial(int column, System.Int32 ledgerNr, String calculation, bool ytd)
         {
-        	if (Parameters.Get("param_ledger_number_i").ToInt() != ledgerNr)
+            if (Parameters.Get("param_ledger_number_i").ToInt() != ledgerNr)
             {
-        		Parameters.Add("param_ledger_number_i", new TVariant(ledgerNr), column);
+                Parameters.Add("param_ledger_number_i", new TVariant(ledgerNr), column);
             }
 
             if (!Parameters.Exists("param_ytd", -1, -1, eParameterFit.eExact))
             {
-            	Parameters.Add("param_ytd", new TVariant(ytd), column);
+                Parameters.Add("param_ytd", new TVariant(ytd), column);
             }
 
             Parameters.Add("param_calculation", new TVariant(calculation), column);
@@ -197,9 +199,9 @@ namespace Ict.Petra.Client.MReporting.Logic
                     for (counterColumn = 0; counterColumn <= MaxDisplayColumns - 1; counterColumn += 1)
                     {
                         if ((Parameters.Get("param_calculation", counterColumn, -1,
-                    	                    eParameterFit.eExact).ToString() == calculation)
+                                 eParameterFit.eExact).ToString() == calculation)
                             && (Parameters.Get("param_ledger_number_i",
-                    	                    counterColumn).ToInt() == ledgerNr) && (AColumn != counterColumn)
+                                    counterColumn).ToInt() == ledgerNr) && (AColumn != counterColumn)
                             && (Parameters.Get("param_ytd", counterColumn).ToBool() == ytd))
                         {
                             calculationAlreadyExists = true;
@@ -232,11 +234,11 @@ namespace Ict.Petra.Client.MReporting.Logic
 
                 if (!Parameters.Exists("param_calculation", AColumn))
                 {
-                	Parameters.Add("param_calculation", new TVariant(functioncall), AColumn);
+                    Parameters.Add("param_calculation", new TVariant(functioncall), AColumn);
                 }
                 else
                 {
-                	Parameters.Add("param_formula", new TVariant(functioncall), AColumn);
+                    Parameters.Add("param_formula", new TVariant(functioncall), AColumn);
                 }
             }
         }
@@ -249,19 +251,19 @@ namespace Ict.Petra.Client.MReporting.Logic
         /// <returns>void</returns>
         public void AddColumnFunction(int column, String f)
         {
-        	Parameters.Add("param_calculation", new TVariant(f), column);
+            Parameters.Add("param_calculation", new TVariant(f), column);
         }
 
         /// <summary>
         /// Set the layout for a column for printing
-        /// 
+        ///
         /// </summary>
         /// <returns>void</returns>
         public void AddColumnLayout(int column, double position, double positionIndented, double width)
         {
-        	Parameters.Add("ColumnPosition", new TVariant(position), column);
-        	Parameters.Add("ColumnPositionIndented", new TVariant(positionIndented), column);
-        	Parameters.Add("ColumnWidth", new TVariant(width), column);
+            Parameters.Add("ColumnPosition", new TVariant(position), column);
+            Parameters.Add("ColumnPositionIndented", new TVariant(positionIndented), column);
+            Parameters.Add("ColumnWidth", new TVariant(width), column);
         }
 
         /// <summary>
@@ -315,7 +317,7 @@ namespace Ict.Petra.Client.MReporting.Logic
         /// <returns>void</returns>
         public void AddParameter(String parameterId, String value, int column)
         {
-        	Parameters.Add(parameterId, new TVariant(value), column);
+            Parameters.Add(parameterId, new TVariant(value), column);
         }
 
         /// <summary>
@@ -398,7 +400,7 @@ namespace Ict.Petra.Client.MReporting.Logic
             FReportingGenerator = TRemote.MReporting.LogicConnectors.ReportGenerator();
             FKeepUpProgressCheck = true;
 
-            // Register Object with the TEnsureKeepAlive Class so that it doesn't get GC'd 
+            // Register Object with the TEnsureKeepAlive Class so that it doesn't get GC'd
             TEnsureKeepAlive.Register(FReportingGenerator);
             try
             {
@@ -411,11 +413,11 @@ namespace Ict.Petra.Client.MReporting.Logic
             {
                 TLogging.Log(e.Message);
 
-                // UnRegister Object from the TEnsureKeepAlive Class so that the Object can get GC'd on the PetraServer 
+                // UnRegister Object from the TEnsureKeepAlive Class so that the Object can get GC'd on the PetraServer
                 TEnsureKeepAlive.UnRegister(FReportingGenerator);
             }
 
-            // todo: allow canceling of the calculation of a report 
+            // todo: allow canceling of the calculation of a report
             while (FKeepUpProgressCheck)
             {
                 Thread.Sleep(500);
@@ -462,7 +464,7 @@ namespace Ict.Petra.Client.MReporting.Logic
                             TLogging.Log(FReportingGenerator.ErrorMessage);
                         }
 
-                        // UnRegister Object from the TEnsureKeepAlive Class so that the Object can get GC'd on the PetraServer 
+                        // UnRegister Object from the TEnsureKeepAlive Class so that the Object can get GC'd on the PetraServer
                         TEnsureKeepAlive.UnRegister(FReportingGenerator);
                         FKeepUpProgressCheck = false;
                         break;
@@ -480,7 +482,7 @@ namespace Ict.Petra.Client.MReporting.Logic
 
                 if (FKeepUpProgressCheck)
                 {
-                    // Sleep for some time. Then check again for latest progress information 
+                    // Sleep for some time. Then check again for latest progress information
                     Thread.Sleep(500);
                 }
             }

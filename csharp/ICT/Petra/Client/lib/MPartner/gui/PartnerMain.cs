@@ -109,7 +109,7 @@ namespace Ict.Petra.Client.MPartner.Gui
       this.Text = Catalog.GetString("Partner Module OpenPetra.org");
       #endregion
 
-      FPetraUtilsObject = new TFrmPetraModuleUtils(AParentFormHandle, this);
+      FPetraUtilsObject = new TFrmPetraModuleUtils(AParentFormHandle, this, stbMain);
 
       InitializeManualCode();
       FPetraUtilsObject.ActionEnablingEvent += ActionEnabledEvent;

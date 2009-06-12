@@ -88,7 +88,7 @@ namespace Ict.Petra.Client.MCommon
             // Initialise Screen Logic
             FLogic = new TFieldOfServiceLogic();
 
-            FTheObject = new TFrmPetraEditUtils(AParentForm.Handle, this);
+            FTheObject = new TFrmPetraEditUtils(AParentForm.Handle, this, stbMain);
 
             // TODO FTheObject.ActionEnablingEvent += ActionEnabledEvent;
             FTheObject.InitActionState();

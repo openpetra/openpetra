@@ -35,8 +35,13 @@ namespace {#NAMESPACE}
       // Required for Windows Form Designer support
       //
       InitializeComponent();
+      #region CATALOGI18N
 
-      FPetraUtilsObject = new {#UTILOBJECTCLASS}(AParentFormHandle, this);
+      // this code has been inserted by GenerateI18N, all changes in this region will be overwritten by GenerateI18N
+      {#CATALOGI18N}
+      #endregion
+
+      FPetraUtilsObject = new {#UTILOBJECTCLASS}(AParentFormHandle, this, stbMain);
       {#INITUSERCONTROLS}
       {#INITMANUALCODE}
       FPetraUtilsObject.ActionEnablingEvent += ActionEnabledEvent;

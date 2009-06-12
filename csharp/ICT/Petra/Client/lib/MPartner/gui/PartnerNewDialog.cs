@@ -87,6 +87,7 @@ namespace Ict.Petra.Client.MPartner
         private System.Windows.Forms.Panel pnlBtnOKCancelHelpLayout;
         private System.Windows.Forms.Button btnCancel;
         private System.Windows.Forms.Button btnHelp;
+        private TExtStatusBarHelp stbMain;
 
         private TPartnerNewDialogScreenLogic FLogic;
 
@@ -130,7 +131,9 @@ namespace Ict.Petra.Client.MPartner
             this.btnCancel = new System.Windows.Forms.Button();
             this.btnHelp = new System.Windows.Forms.Button();
             this.pnlBtnOKCancelHelpLayout = new System.Windows.Forms.Panel();
+            this.stbMain = new TExtStatusBarHelp();
             this.pnlBtnOKCancelHelpLayout.SuspendLayout();
+            this.stbMain.SuspendLayout();
             this.SuspendLayout();
 
             //
@@ -321,6 +324,12 @@ namespace Ict.Petra.Client.MPartner
             this.txtFamilyPartnerBox.PartnerFound += new TDelegatePartnerFound(this.TxtFamilyPartnerBox_PartnerFound);
 
             //
+            // stbMain
+            //
+            this.stbMain.Name = "stbMain";
+            this.stbMain.Dock = System.Windows.Forms.DockStyle.Bottom;
+
+            //
             // TPartnerNewDialogWinForm
             //
             this.AutoScaleBaseSize = new System.Drawing.Size(6, 14);
@@ -336,6 +345,7 @@ namespace Ict.Petra.Client.MPartner
             this.Controls.Add(this.cmbPartnerClass);
             this.Controls.Add(this.chkPrivatePartner);
             this.Controls.Add(this.pnlBtnOKCancelHelpLayout);
+            this.Controls.Add(this.stbMain);
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.Name = "TPartnerNewDialogWinForm";
             this.Text = "New Partner";
@@ -351,6 +361,7 @@ namespace Ict.Petra.Client.MPartner
             this.Controls.SetChildIndex(this.grdInstalledSites, 0);
             this.Controls.SetChildIndex(this.txtPartnerKey, 0);
             this.Controls.SetChildIndex(this.txtFamilyPartnerBox, 0);
+            this.stbMain.ResumeLayout(false);
             this.pnlBtnOKCancelHelpLayout.ResumeLayout(false);
             this.ResumeLayout(false);
         }
@@ -452,7 +463,7 @@ namespace Ict.Petra.Client.MPartner
             //
             InitializeComponent();
 
-            FPetraUtilsObject = new TFrmPetraUtils(AParentFormHandle, this);
+            FPetraUtilsObject = new TFrmPetraUtils(AParentFormHandle, this, stbMain);
             this.FPetraUtilsObject.SetStatusBarText(this.btnOK, "Accept data and continue");
             this.FPetraUtilsObject.SetStatusBarText(this.btnCancel, "Cancel data entry and close");
             this.FPetraUtilsObject.SetStatusBarText(this.btnHelp, "Help");

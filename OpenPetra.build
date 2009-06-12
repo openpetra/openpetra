@@ -41,7 +41,8 @@
     </target>
     
     <target name="compilePetraTools" description="compile the PetraTools">
-        <solution configuration="${Configuration}" solutionfile="${OpenPetraRoot.dir}/csharp/ICT/PetraTools.sln" />
+        <property name="solution.file" value="${OpenPetraRoot.dir}/csharp/ICT/PetraTools.sln"/>
+        <call target="compileTemplate"/>
     </target>
     <target name="compilePetra" description="compile the whole of Petra" depends="compileCommon, compilePetraShared, compilePetraServerAdmin, compilePetraServer, compilePetraClient"/>
     <target name="compileTemplate">

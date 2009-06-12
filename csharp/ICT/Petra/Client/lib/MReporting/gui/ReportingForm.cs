@@ -108,7 +108,10 @@ namespace Ict.Petra.Client.MReporting.Gui
         /// </summary>
         /// <param name="ACallerWindowHandle">the int handle of the form that has opened this window; needed for focusing when this window is closed later</param>
         /// <param name="ATheForm"></param>
-        public TFrmPetraReportingUtils(IntPtr ACallerWindowHandle, IFrmPetra ATheForm) : base(ACallerWindowHandle, (IFrmPetra)ATheForm)
+        /// <param name="AStatusBar"></param>
+        public TFrmPetraReportingUtils(IntPtr ACallerWindowHandle, IFrmPetra ATheForm, TExtStatusBarHelp AStatusBar) : base(ACallerWindowHandle,
+                                                                                                                           (IFrmPetra)ATheForm,
+                                                                                                                           AStatusBar)
         {
             FCurrentSettingsName = "";
             FSelectedColumn = -1;
@@ -178,6 +181,7 @@ namespace Ict.Petra.Client.MReporting.Gui
             }
         }
 #endif
+
 
 
         #region Screen Initialisation

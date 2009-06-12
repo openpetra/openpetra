@@ -72,6 +72,7 @@
     <Compile Include="cmbLabelled.cs" />
     <Compile Include="cmbVersatile.cs" />
     <Compile Include="Controls.Utilities.cs" />
+    <Compile Include="extStatusBarHelp.cs" />
     <Compile Include="grpCollapsible.cs" />
     <Compile Include="Ict.Common.Controls.AssemblyInfo.cs" />
     <Compile Include="lblVarioText.cs" />

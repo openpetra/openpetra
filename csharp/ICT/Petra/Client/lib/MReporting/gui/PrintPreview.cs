@@ -77,7 +77,7 @@ namespace Ict.Petra.Client.MReporting.Gui
         public TFrmPrintPreview(IntPtr ACallerWindowHandle, String caption, TimeSpan duration, TResultList results, TParameterList parameters)
             : base()
         {
-            FPetraUtilsObject = new Ict.Petra.Client.CommonForms.TFrmPetraUtils(ACallerWindowHandle, this);
+            FPetraUtilsObject = new Ict.Petra.Client.CommonForms.TFrmPetraUtils(ACallerWindowHandle, this, stbMain);
 
             //
             // Required for Windows Form Designer support

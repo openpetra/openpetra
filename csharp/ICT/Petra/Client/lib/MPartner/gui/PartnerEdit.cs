@@ -123,7 +123,7 @@ namespace Ict.Petra.Client.MPartner
       this.Text = Catalog.GetString("Partner Edit");
       #endregion
 
-      FPetraUtilsObject = new TFrmPetraEditUtils(AParentFormHandle, this);
+      FPetraUtilsObject = new TFrmPetraEditUtils(AParentFormHandle, this, stbMain);
       ucoUpperPart.PetraUtilsObject = FPetraUtilsObject;
       ucoPartnerTabSet.PetraUtilsObject = FPetraUtilsObject;
       InitializeManualCode();

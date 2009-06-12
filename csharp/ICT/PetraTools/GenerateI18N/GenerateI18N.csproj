@@ -60,5 +60,9 @@
       <Project>{B153089B-B8BF-421C-A6F4-BA672885720A}</Project>
       <Name>Ict.Tools.CodeGeneration</Name>
     </ProjectReference>
+    <ProjectReference Include="..\CodeGeneration\Winforms\Ict.Tools.CodeGeneration.Winforms.csproj">
+      <Project>{4034693D-4D16-4123-9FCC-C990448E63F3}</Project>
+      <Name>Ict.Tools.CodeGeneration.Winforms</Name>
+    </ProjectReference>
   </ItemGroup>
 </Project>

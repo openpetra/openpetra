@@ -84,6 +84,9 @@ namespace Ict.Petra.Client.App.PetraClient
             {
                 FPetraUtilsObject = (TFrmPetraModuleUtils)value;
                 FPetraUtilsObject.ActionEnablingEvent += ActionEnabledEvent;
+
+                FPetraUtilsObject.SetStatusBarText(btnAccounts, Catalog.GetString("Go to Finance Module"));
+                FPetraUtilsObject.SetStatusBarText(btnPartner, Catalog.GetString("Go to Partner Module"));
             }
         }
 

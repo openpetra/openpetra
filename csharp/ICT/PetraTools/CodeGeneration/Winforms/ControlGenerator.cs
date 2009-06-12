@@ -727,7 +727,7 @@ namespace Ict.Tools.CodeGeneration.Winforms
     public class StatusBarGenerator : ToolStripGenerator
     {
         public StatusBarGenerator()
-            : base("stb", typeof(System.Windows.Forms.StatusStrip))
+            : base("stb", typeof(Ict.Common.Controls.TExtStatusBarHelp))
         {
             FDocking = "Bottom";
         }
@@ -737,7 +737,6 @@ namespace Ict.Tools.CodeGeneration.Winforms
             string controlName = ctrl.controlName;
 
             base.SetControlProperties(writer, ctrl);
-            writer.SetControlProperty(controlName, "ShowItemToolTips", "true");
         }
     }
 

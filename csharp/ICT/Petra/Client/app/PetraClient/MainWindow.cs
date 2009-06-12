@@ -80,7 +80,7 @@ namespace Ict.Petra.Client.App.PetraClient
       this.mniHelp.Text = Catalog.GetString("&Help");
       #endregion
 
-      FPetraUtilsObject = new TFrmPetraModuleUtils(AParentFormHandle, this);
+      FPetraUtilsObject = new TFrmPetraModuleUtils(AParentFormHandle, this, stbMain);
       ucoMainWindowContent.PetraUtilsObject = FPetraUtilsObject;
 
       FPetraUtilsObject.ActionEnablingEvent += ActionEnabledEvent;

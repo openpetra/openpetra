@@ -27,6 +27,7 @@ using System;
 using System.IO;
 using Ict.Common;
 using Ict.Tools.CodeGeneration;
+using Ict.Tools.CodeGeneration.Winforms;
 
 namespace GenerateI18N
 {
@@ -84,37 +85,26 @@ public class TGenerateCatalogStrings
                 string content = designerLine.Substring(
                     designerLine.IndexOf("\"") + 1, designerLine.LastIndexOf("\"") - designerLine.IndexOf("\"") - 1);
 
-                bool skipThisString = false;
-
-                // if there is MANUALTRANSLATION then don't translate; that is a workaround for \r\n in labels;
-                // see eg. Client\lib\MPartner\gui\UC_PartnerInfo.Designer.cs, lblLoadingPartnerLocation.Text
-                if (content.Contains("MANUALTRANSLATION"))
+                // see also FormWriter.cs, SetControlProperty; it also calls ProperI18NCatalogGetString
+                try
                 {
-                    skipThisString = true;
+                    if (TWinFormsWriter.ProperI18NCatalogGetString(content))
+                    {
+                        writer.WriteLine(identation +
+                            designerLine.Substring(0, designerLine.IndexOf(" = ")).Trim() +
+                            " = Catalog.GetString(\"" + content + "\");");
+                    }
                 }
-
-                if (content.Trim().Length == 0)
+                catch (Exception e)
                 {
-                    skipThisString = true;
-                }
-
-                if (content.Trim() == "-")
-                {
-                    // menu separators etc
-                    skipThisString = true;
-                }
-
-                if (!skipThisString)
-                {
-                    // careful with \n and \r in the string; that is not allowed by gettext
-                    if (content.Contains("\\r") || content.Contains("\\n"))
+                    if (e.Message == "Problem with \\r or \\n")
                     {
                         throw new Exception("Problem with \\r or \\n in file " + DesignerFileName + ": " + designerLine);
                     }
-
-                    writer.WriteLine(identation +
-                        designerLine.Substring(0, designerLine.IndexOf(" = ")).Trim() +
-                        " = Catalog.GetString(\"" + content + "\");");
+                    else
+                    {
+                        throw;
+                    }
                 }
             }
         }

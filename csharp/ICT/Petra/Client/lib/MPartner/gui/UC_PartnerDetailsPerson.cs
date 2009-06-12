@@ -76,10 +76,10 @@ namespace Ict.Petra.Client.MPartner
         private TCmbAutoPopulated cmbAcquisitionCode;
         private System.Windows.Forms.Label lblMaritalStatusSince;
         private System.Windows.Forms.TextBox txtMaritalStatusSince;
-        private System.Windows.Forms.GroupBox grpChristianSince;
-        private System.Windows.Forms.Label lblChristianSince;
-        private System.Windows.Forms.TextBox txtChristianSince;
-        private System.Windows.Forms.TextBox txtChristianComment;
+        private System.Windows.Forms.GroupBox grpBelieverSince;
+        private System.Windows.Forms.Label lblBelieverSince;
+        private System.Windows.Forms.TextBox txtBelieverSince;
+        private System.Windows.Forms.TextBox txtBelieverComment;
         private System.Windows.Forms.Panel pnlBirthDecoration;
         private System.Windows.Forms.Panel pnlPreferedPreviousName;
         private System.Windows.Forms.Panel pnlLocalName;
@@ -88,7 +88,7 @@ namespace Ict.Petra.Client.MPartner
         private System.Windows.Forms.Panel pnlLanguageCode;
         private System.Windows.Forms.Panel pnlAcquisition;
         private System.Windows.Forms.Panel pnlOccupation;
-        private System.Windows.Forms.Panel pnlChristianSinceYear;
+        private System.Windows.Forms.Panel pnlBelieverSinceYear;
         private System.Windows.Forms.Label lblComment;
         private TtxtAutoPopulatedButtonLabel txtOccupationCode;
         private System.Windows.Forms.Label lblMaritalStatusComment;
@@ -163,12 +163,12 @@ namespace Ict.Petra.Client.MPartner
             this.txtPreferredName = new System.Windows.Forms.TextBox();
             this.lblPreviousName = new System.Windows.Forms.Label();
             this.txtPreviousName = new System.Windows.Forms.TextBox();
-            this.grpChristianSince = new System.Windows.Forms.GroupBox();
-            this.pnlChristianSinceYear = new System.Windows.Forms.Panel();
-            this.txtChristianSince = new System.Windows.Forms.TextBox();
-            this.lblChristianSince = new System.Windows.Forms.Label();
+            this.grpBelieverSince = new System.Windows.Forms.GroupBox();
+            this.pnlBelieverSinceYear = new System.Windows.Forms.Panel();
+            this.txtBelieverSince = new System.Windows.Forms.TextBox();
+            this.lblBelieverSince = new System.Windows.Forms.Label();
             this.lblComment = new System.Windows.Forms.Label();
-            this.txtChristianComment = new System.Windows.Forms.TextBox();
+            this.txtBelieverComment = new System.Windows.Forms.TextBox();
             this.expStringLengthCheckPerson = new Ict.Petra.Client.CommonControls.TexpTextBoxStringLengthCheck(this.components);
             this.pnlPartnerDetailsPerson.SuspendLayout();
             this.grpMisc.SuspendLayout();
@@ -181,8 +181,8 @@ namespace Ict.Petra.Client.MPartner
             this.grpNames.SuspendLayout();
             this.pnlLocalName.SuspendLayout();
             this.pnlPreferedPreviousName.SuspendLayout();
-            this.grpChristianSince.SuspendLayout();
-            this.pnlChristianSinceYear.SuspendLayout();
+            this.grpBelieverSince.SuspendLayout();
+            this.pnlBelieverSinceYear.SuspendLayout();
             this.SuspendLayout();
 
             //
@@ -196,7 +196,7 @@ namespace Ict.Petra.Client.MPartner
             this.pnlPartnerDetailsPerson.Controls.Add(this.btnCreatedPerson);
             this.pnlPartnerDetailsPerson.Controls.Add(this.grpMisc);
             this.pnlPartnerDetailsPerson.Controls.Add(this.grpNames);
-            this.pnlPartnerDetailsPerson.Controls.Add(this.grpChristianSince);
+            this.pnlPartnerDetailsPerson.Controls.Add(this.grpBelieverSince);
             this.pnlPartnerDetailsPerson.Location = new System.Drawing.Point(0, 0);
             this.pnlPartnerDetailsPerson.Name = "pnlPartnerDetailsPerson";
             this.pnlPartnerDetailsPerson.Size = new System.Drawing.Size(634, 342);
@@ -667,55 +667,55 @@ namespace Ict.Petra.Client.MPartner
             this.txtPreviousName.Text = "";
 
             //
-            // grpChristianSince
+            // grpBelieverSince
             //
-            this.grpChristianSince.Anchor =
+            this.grpBelieverSince.Anchor =
                 ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top |
                                                        System.Windows.Forms.AnchorStyles.Left) | System.Windows.Forms.AnchorStyles.Right)));
-            this.grpChristianSince.Controls.Add(this.pnlChristianSinceYear);
-            this.grpChristianSince.FlatStyle = System.Windows.Forms.FlatStyle.System;
-            this.grpChristianSince.Location = new System.Drawing.Point(4, 276);
-            this.grpChristianSince.Name = "grpChristianSince";
-            this.grpChristianSince.Size = new System.Drawing.Size(610, 66);
-            this.grpChristianSince.TabIndex = 2;
-            this.grpChristianSince.TabStop = false;
-            this.grpChristianSince.Text = "Christian since";
-            this.grpChristianSince.Visible = false;
+            this.grpBelieverSince.Controls.Add(this.pnlBelieverSinceYear);
+            this.grpBelieverSince.FlatStyle = System.Windows.Forms.FlatStyle.System;
+            this.grpBelieverSince.Location = new System.Drawing.Point(4, 276);
+            this.grpBelieverSince.Name = "grpBelieverSince";
+            this.grpBelieverSince.Size = new System.Drawing.Size(610, 66);
+            this.grpBelieverSince.TabIndex = 2;
+            this.grpBelieverSince.TabStop = false;
+            this.grpBelieverSince.Text = "Believer since";
+            this.grpBelieverSince.Visible = false;
 
             //
-            // pnlChristianSinceYear
+            // pnlBelieverSinceYear
             //
-            this.pnlChristianSinceYear.Controls.Add(this.txtChristianSince);
-            this.pnlChristianSinceYear.Controls.Add(this.lblChristianSince);
-            this.pnlChristianSinceYear.Controls.Add(this.lblComment);
-            this.pnlChristianSinceYear.Controls.Add(this.txtChristianComment);
-            this.pnlChristianSinceYear.Dock = System.Windows.Forms.DockStyle.Top;
-            this.pnlChristianSinceYear.Location = new System.Drawing.Point(3, 17);
-            this.pnlChristianSinceYear.Name = "pnlChristianSinceYear";
-            this.pnlChristianSinceYear.Size = new System.Drawing.Size(604, 46);
-            this.pnlChristianSinceYear.TabIndex = 5;
+            this.pnlBelieverSinceYear.Controls.Add(this.txtBelieverSince);
+            this.pnlBelieverSinceYear.Controls.Add(this.lblBelieverSince);
+            this.pnlBelieverSinceYear.Controls.Add(this.lblComment);
+            this.pnlBelieverSinceYear.Controls.Add(this.txtBelieverComment);
+            this.pnlBelieverSinceYear.Dock = System.Windows.Forms.DockStyle.Top;
+            this.pnlBelieverSinceYear.Location = new System.Drawing.Point(3, 17);
+            this.pnlBelieverSinceYear.Name = "pnlBelieverSinceYear";
+            this.pnlBelieverSinceYear.Size = new System.Drawing.Size(604, 46);
+            this.pnlBelieverSinceYear.TabIndex = 5;
 
             //
-            // txtChristianSince
+            // txtBelieverSince
             //
-            this.txtChristianSince.Font =
+            this.txtBelieverSince.Font =
                 new System.Drawing.Font("Verdana", 8.25f, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, (byte)0);
-            this.txtChristianSince.Location = new System.Drawing.Point(84, 0);
-            this.txtChristianSince.MaxLength = 4;
-            this.txtChristianSince.Name = "txtChristianSince";
-            this.txtChristianSince.Size = new System.Drawing.Size(39, 21);
-            this.txtChristianSince.TabIndex = 1;
-            this.txtChristianSince.Text = "8888";
+            this.txtBelieverSince.Location = new System.Drawing.Point(84, 0);
+            this.txtBelieverSince.MaxLength = 4;
+            this.txtBelieverSince.Name = "txtBelieverSince";
+            this.txtBelieverSince.Size = new System.Drawing.Size(39, 21);
+            this.txtBelieverSince.TabIndex = 1;
+            this.txtBelieverSince.Text = "8888";
 
             //
-            // lblChristianSince
+            // lblBelieverSince
             //
-            this.lblChristianSince.Location = new System.Drawing.Point(1, 0);
-            this.lblChristianSince.Name = "lblChristianSince";
-            this.lblChristianSince.Size = new System.Drawing.Size(82, 21);
-            this.lblChristianSince.TabIndex = 0;
-            this.lblChristianSince.Text = "&Year:";
-            this.lblChristianSince.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
+            this.lblBelieverSince.Location = new System.Drawing.Point(1, 0);
+            this.lblBelieverSince.Name = "lblBelieverSince";
+            this.lblBelieverSince.Size = new System.Drawing.Size(82, 21);
+            this.lblBelieverSince.TabIndex = 0;
+            this.lblBelieverSince.Text = "&Year:";
+            this.lblBelieverSince.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
 
             //
             // lblComment
@@ -728,25 +728,25 @@ namespace Ict.Petra.Client.MPartner
             this.lblComment.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
 
             //
-            // txtChristianComment
+            // txtBelieverComment
             //
-            this.txtChristianComment.Anchor =
+            this.txtBelieverComment.Anchor =
                 ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top |
                                                        System.Windows.Forms.AnchorStyles.Left) | System.Windows.Forms.AnchorStyles.Right)));
-            this.txtChristianComment.Font = new System.Drawing.Font("Verdana",
+            this.txtBelieverComment.Font = new System.Drawing.Font("Verdana",
                 8.25f,
                 System.Drawing.FontStyle.Bold,
                 System.Drawing.GraphicsUnit.Point,
                 (byte)0);
-            this.txtChristianComment.Location = new System.Drawing.Point(195, 0);
-            this.txtChristianComment.MaxLength = 500;
-            this.txtChristianComment.Multiline = true;
-            this.txtChristianComment.Name = "txtChristianComment";
-            this.txtChristianComment.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
-            this.txtChristianComment.Size = new System.Drawing.Size(405, 42);
-            this.txtChristianComment.TabIndex = 2;
-            this.txtChristianComment.Text = "";
-            this.txtChristianComment.TextChanged += new System.EventHandler(this.TxtChristianComment_TextChanged);
+            this.txtBelieverComment.Location = new System.Drawing.Point(195, 0);
+            this.txtBelieverComment.MaxLength = 500;
+            this.txtBelieverComment.Multiline = true;
+            this.txtBelieverComment.Name = "txtBelieverComment";
+            this.txtBelieverComment.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
+            this.txtBelieverComment.Size = new System.Drawing.Size(405, 42);
+            this.txtBelieverComment.TabIndex = 2;
+            this.txtBelieverComment.Text = "";
+            this.txtBelieverComment.TextChanged += new System.EventHandler(this.TxtBelieverComment_TextChanged);
 
             //
             // TUC_PartnerDetailsPerson
@@ -766,8 +766,8 @@ namespace Ict.Petra.Client.MPartner
             this.grpNames.ResumeLayout(false);
             this.pnlLocalName.ResumeLayout(false);
             this.pnlPreferedPreviousName.ResumeLayout(false);
-            this.grpChristianSince.ResumeLayout(false);
-            this.pnlChristianSinceYear.ResumeLayout(false);
+            this.grpBelieverSince.ResumeLayout(false);
+            this.pnlBelieverSinceYear.ResumeLayout(false);
             this.ResumeLayout(false);
         }
 
@@ -856,12 +856,12 @@ namespace Ict.Petra.Client.MPartner
             cmbMaritalStatus.PerformDataBinding(FMainDS.PPerson, PPersonTable.GetMaritalStatusDBName());
             cmbLanguageCode.PerformDataBinding(FMainDS.PPartner, PPartnerTable.GetLanguageCodeDBName());
 
-            // Christian since GroupBox
-            this.txtChristianComment.DataBindings.Add("Text", FMainDS.PPerson, PPersonTable.GetBelieverSinceCommentDBName());
+            // Believer since GroupBox
+            this.txtBelieverComment.DataBindings.Add("Text", FMainDS.PPerson, PPersonTable.GetBelieverSinceCommentDBName());
             NullableNumberFormatBinding = new Binding("Text", FMainDS.PPerson, PPersonTable.GetBelieverSinceYearDBName());
             NullableNumberFormatBinding.Format += new ConvertEventHandler(DataBinding.Int32ToNullableNumber_2);
             NullableNumberFormatBinding.Parse += new ConvertEventHandler(DataBinding.NullableNumberToInt32);
-            this.txtChristianSince.DataBindings.Add(NullableNumberFormatBinding);
+            this.txtBelieverSince.DataBindings.Add(NullableNumberFormatBinding);
             this.txtMaritalStatusComment.DataBindings.Add("Text", FMainDS,
                 PPersonTable.GetTableName() + "." + PFamilyTable.GetMaritalStatusCommentDBName());
             btnCreatedPerson.UpdateFields(FMainDS.PPerson);
@@ -881,8 +881,8 @@ namespace Ict.Petra.Client.MPartner
             FPetraUtilsObject.SetStatusBarText(cmbAcquisitionCode, PPartnerTable.GetAcquisitionCodeHelp());
             FPetraUtilsObject.SetStatusBarText(cmbMaritalStatus, PPersonTable.GetMaritalStatusHelp());
             FPetraUtilsObject.SetStatusBarText(cmbLanguageCode, PPartnerTable.GetLanguageCodeHelp());
-            FPetraUtilsObject.SetStatusBarText(txtChristianSince, PPersonTable.GetBelieverSinceYearHelp());
-            FPetraUtilsObject.SetStatusBarText(txtChristianComment, PPersonTable.GetBelieverSinceCommentHelp());
+            FPetraUtilsObject.SetStatusBarText(txtBelieverSince, PPersonTable.GetBelieverSinceYearHelp());
+            FPetraUtilsObject.SetStatusBarText(txtBelieverComment, PPersonTable.GetBelieverSinceCommentHelp());
             #region Verification
             txtOccupationCode.VerificationResultCollection = FPetraUtilsObject.VerificationResultCollection;
             #endregion
@@ -911,7 +911,7 @@ namespace Ict.Petra.Client.MPartner
                 CustomEnablingDisabling.DisableControlGroup(pnlMaritalAcademic);
                 CustomEnablingDisabling.DisableControlGroup(pnlMaritalSince);
                 CustomEnablingDisabling.DisableControlGroup(pnlOccupation);
-                CustomEnablingDisabling.DisableControlGroup(pnlChristianSinceYear);
+                CustomEnablingDisabling.DisableControlGroup(pnlBelieverSinceYear);
                 CustomEnablingDisabling.DisableControl(pnlPreferedPreviousName, txtPreferredName);
             }
         }
@@ -941,9 +941,9 @@ namespace Ict.Petra.Client.MPartner
 #endif
         }
 
-        private void TxtChristianComment_TextChanged(System.Object sender, System.EventArgs e)
+        private void TxtBelieverComment_TextChanged(System.Object sender, System.EventArgs e)
         {
-            // messagebox.Show('MaxLength: ' + this.txtChristianComment.MaxLength.ToString + this.txtChristianComment.Text);
+            // messagebox.Show('MaxLength: ' + this.txtBelieverComment.MaxLength.ToString + this.txtBelieverComment.Text);
         }
 
         /// <summary>

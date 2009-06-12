@@ -148,6 +148,43 @@ namespace Ict.Tools.CodeGeneration.Winforms
 
         #endregion
 
+        /// <summary>
+        /// check if the label should be translated;
+        /// e.g. separators for menu items and empty strings cannot be translated;
+        /// special workarounds for linebreaks are required;
+        /// also called by GenerateI18N, class TGenerateCatalogStrings
+        /// </summary>
+        /// <param name="ALabelText">the label in english</param>
+        /// <returns>true if this is a proper string</returns>
+        public static bool ProperI18NCatalogGetString(string ALabelText)
+        {
+            // if there is MANUALTRANSLATION then don't translate; that is a workaround for \r\n in labels;
+            // see eg. Client\lib\MPartner\gui\UC_PartnerInfo.Designer.cs, lblLoadingPartnerLocation.Text
+            if (ALabelText.Contains("MANUALTRANSLATION"))
+            {
+                return false;
+            }
+
+            if (ALabelText.Trim().Length == 0)
+            {
+                return false;
+            }
+
+            if (ALabelText.Trim() == "-")
+            {
+                // menu separators etc
+                return false;
+            }
+
+            // careful with \n and \r in the string; that is not allowed by gettext
+            if (ALabelText.Contains("\\r") || ALabelText.Contains("\\n"))
+            {
+                throw new Exception("Problem with \\r or \\n");
+            }
+
+            return true;
+        }
+
         public void SetControlProperty(string AControlName, string APropertyName, string APropertyValue)
         {
             if (APropertyName == "Dock")
@@ -160,6 +197,15 @@ namespace Ict.Tools.CodeGeneration.Winforms
 
             FTemplate.AddToCodelet("CONTROLINITIALISATION",
                 "this." + AControlName + "." + APropertyName + " = " + APropertyValue + ";" + Environment.NewLine);
+
+            if (APropertyName.EndsWith("Text"))
+            {
+                if (ProperI18NCatalogGetString(StringHelper.TrimQuotes(APropertyValue)))
+                {
+                    FTemplate.AddToCodelet("CATALOGI18N",
+                        "this." + AControlName + "." + APropertyName + " = Catalog.GetString(" + APropertyValue + ");" + Environment.NewLine);
+                }
+            }
         }
 
         /// <summary>
@@ -576,7 +622,7 @@ namespace Ict.Tools.CodeGeneration.Winforms
             AddRootControl("mnu");
 
             // Statusbar
-            //TODO: AddRootControl("stb");
+            AddRootControl("stb");
 
             // add form events
             foreach (TEventHandler handler in FCodeStorage.FEventList.Values)
@@ -592,6 +638,13 @@ namespace Ict.Tools.CodeGeneration.Winforms
                 FTemplate.AddToCodelet("ADDMAINCONTROLS",
                     "this.Icon = (System.Drawing.Icon)resources.GetObject(\"$this.Icon\");" + Environment.NewLine);
                 AddImageToResource("$this.Icon", iconFileName, "Icon");
+            }
+
+            // add title
+            if (ProperI18NCatalogGetString(FCodeStorage.FFormTitle))
+            {
+                FTemplate.AddToCodelet("CATALOGI18N",
+                    "this.Text = Catalog.GetString(\"" + FCodeStorage.FFormTitle + "\");" + Environment.NewLine);
             }
 
             // add actions

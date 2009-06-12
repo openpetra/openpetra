@@ -71,7 +71,7 @@ namespace Ict.Petra.Client.MReporting.Gui
             this.mniHelpBugReport = new System.Windows.Forms.ToolStripMenuItem();
             this.mniHelpAboutPetra = new System.Windows.Forms.ToolStripMenuItem();
             this.mniHelpDevelopmentTeam = new System.Windows.Forms.ToolStripMenuItem();
-            this.stbMain = new System.Windows.Forms.StatusStrip();
+            this.stbMain = new TExtStatusBarHelp();
             this.stpInfo = new System.Windows.Forms.ToolStripStatusLabel();
             this.tbrMain = new System.Windows.Forms.ToolStrip();
             this.tbbClose = new System.Windows.Forms.ToolStripButton();
@@ -241,7 +241,7 @@ namespace Ict.Petra.Client.MReporting.Gui
         private System.Windows.Forms.ToolStripMenuItem mniHelpDevelopmentTeam;
         private System.Windows.Forms.ToolStrip tbrMain;
         private System.Windows.Forms.ToolStripButton tbbClose;
-        private System.Windows.Forms.StatusStrip stbMain;
+        private TExtStatusBarHelp stbMain;
         private System.Windows.Forms.ToolStripStatusLabel stpInfo;
 
         /// <summary>

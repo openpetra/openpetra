@@ -32,6 +32,7 @@ using System.Windows.Forms;
 using System.Data;
 using System.Resources;
 using Ict.Petra.Shared;
+using Ict.Common.Controls;
 
 namespace Ict.Petra.Client.CommonForms
 {
@@ -82,8 +83,9 @@ namespace Ict.Petra.Client.CommonForms
         /// </summary>
         /// <param name="ACallerWindowHandle">the int handle of the form that has opened this window; needed for focusing when this window is closed later</param>
         /// <param name="ATheForm"></param>
-        public TFrmPetraModuleUtils(IntPtr ACallerWindowHandle, IFrmPetra ATheForm)
-            : base(ACallerWindowHandle, ATheForm)
+        /// <param name="AStatusBar"></param>
+        public TFrmPetraModuleUtils(IntPtr ACallerWindowHandle, IFrmPetra ATheForm, TExtStatusBarHelp AStatusBar)
+            : base(ACallerWindowHandle, ATheForm, AStatusBar)
         {
         }
 

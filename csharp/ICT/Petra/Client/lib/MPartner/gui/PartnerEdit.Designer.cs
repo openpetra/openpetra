@@ -142,11 +142,13 @@ namespace Ict.Petra.Client.MPartner
             this.mniSeparator9 = new System.Windows.Forms.ToolStripSeparator();
             this.mniHelpAboutPetra = new System.Windows.Forms.ToolStripMenuItem();
             this.mniHelpDevelopmentTeam = new System.Windows.Forms.ToolStripMenuItem();
+            this.stbMain = new Ict.Common.Controls.TExtStatusBarHelp();
 
             this.pnlContent.SuspendLayout();
             this.pnlLowerPart.SuspendLayout();
             this.tbrMain.SuspendLayout();
             this.mnuMain.SuspendLayout();
+            this.stbMain.SuspendLayout();
 
             //
             // pnlContent
@@ -667,6 +669,11 @@ namespace Ict.Petra.Client.MPartner
                         mniView,
                         mniMaintain,
                         mniHelp});
+            //
+            // stbMain
+            //
+            this.stbMain.Name = "stbMain";
+            this.stbMain.Dock = System.Windows.Forms.DockStyle.Bottom;
 
             //
             // TPartnerEditDSWinForm
@@ -678,6 +685,7 @@ namespace Ict.Petra.Client.MPartner
             this.Controls.Add(this.tbrMain);
             this.Controls.Add(this.mnuMain);
             this.MainMenuStrip = mnuMain;
+            this.Controls.Add(this.stbMain);
             this.Icon = (System.Drawing.Icon)resources.GetObject("$this.Icon");
             this.Name = "TPartnerEditDSWinForm";
             this.Text = "Partner Edit";
@@ -687,6 +695,7 @@ namespace Ict.Petra.Client.MPartner
 	        this.Load += new System.EventHandler(this.TPartnerEditDSWinForm_Load);
 	        this.Closing += new System.ComponentModel.CancelEventHandler(this.TPartnerEditDSWinForm_Closing);
 	
+            this.stbMain.ResumeLayout(false);
             this.mnuMain.ResumeLayout(false);
             this.tbrMain.ResumeLayout(false);
             this.pnlLowerPart.ResumeLayout(false);
@@ -767,5 +776,6 @@ namespace Ict.Petra.Client.MPartner
         private System.Windows.Forms.ToolStripSeparator mniSeparator9;
         private System.Windows.Forms.ToolStripMenuItem mniHelpAboutPetra;
         private System.Windows.Forms.ToolStripMenuItem mniHelpDevelopmentTeam;
+        private Ict.Common.Controls.TExtStatusBarHelp stbMain;
     }
 }

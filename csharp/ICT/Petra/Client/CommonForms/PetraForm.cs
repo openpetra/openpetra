@@ -33,6 +33,7 @@ using System.Resources;
 using System.Threading;
 using Ict.Petra.Shared;
 using Ict.Petra.Client.App.Core;
+using Ict.Common.Controls;
 
 //using Ict.Petra.Client.CommonDialogs;
 using Ict.Common;
@@ -98,6 +99,11 @@ namespace Ict.Petra.Client.CommonForms
     public class TFrmPetraUtils
     {
         /// <summary>
+        /// will set the help text for each control, when it gets the focus
+        /// </summary>
+        private TExtStatusBarHelp FStatusBar;
+
+        /// <summary>
         /// This is a reference to the WinForm that contains this Petra object
         /// this object implements the IFrmPetra interface
         /// </summary>
@@ -122,12 +128,14 @@ namespace Ict.Petra.Client.CommonForms
         /// </summary>
         /// <param name="ACallerWindowHandle">the int handle of the form that has opened this window; needed for focusing when this window is closed later</param>
         /// <param name="ATheForm"></param>
-        public TFrmPetraUtils(IntPtr ACallerWindowHandle, IFrmPetra ATheForm)
+        /// <param name="AStatusBar"></param>
+        public TFrmPetraUtils(IntPtr ACallerWindowHandle, IFrmPetra ATheForm, TExtStatusBarHelp AStatusBar)
         {
             FFormActivatedForFirstTime = true;
 
             FTheForm = ATheForm;
             FWinForm = (Form)ATheForm;
+            FStatusBar = AStatusBar;
 
             TFormsList.GFormsList.NotifyWindowOpened(ACallerWindowHandle, FWinForm.Handle);
 
@@ -450,7 +458,7 @@ namespace Ict.Petra.Client.CommonForms
         /// <param name="AHelpText"></param>
         public void SetStatusBarText(Control AControl, string AHelpText)
         {
-            // TODO set status bar text
+            FStatusBar.SetHelpText(AControl, AHelpText);
         }
     }
 

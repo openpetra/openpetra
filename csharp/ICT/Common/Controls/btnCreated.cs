@@ -37,10 +37,6 @@ using System.Globalization;
 
 namespace Ict.Common.Controls
 {
-    class btnCreated
-    {
-    }
-
     /// <summary>
     /// The Class provides the image for the TbtnCreated class.
     /// </summary>

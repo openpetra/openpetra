@@ -124,9 +124,11 @@ namespace Ict.Petra.Client.MPartner.Gui
             this.mniSeparator9 = new System.Windows.Forms.ToolStripSeparator();
             this.mniHelpAboutPetra = new System.Windows.Forms.ToolStripMenuItem();
             this.mniHelpDevelopmentTeam = new System.Windows.Forms.ToolStripMenuItem();
+            this.stbMain = new Ict.Common.Controls.TExtStatusBarHelp();
 
             this.pnlTODO.SuspendLayout();
             this.mnuMain.SuspendLayout();
+            this.stbMain.SuspendLayout();
 
             //
             // pnlTODO
@@ -531,6 +533,11 @@ namespace Ict.Petra.Client.MPartner.Gui
                         mniMaintainTables,
                         mniPetraModules,
                         mniHelp});
+            //
+            // stbMain
+            //
+            this.stbMain.Name = "stbMain";
+            this.stbMain.Dock = System.Windows.Forms.DockStyle.Bottom;
 
             //
             // TFrmPartnerMain
@@ -541,6 +548,7 @@ namespace Ict.Petra.Client.MPartner.Gui
             this.Controls.Add(this.pnlTODO);
             this.Controls.Add(this.mnuMain);
             this.MainMenuStrip = mnuMain;
+            this.Controls.Add(this.stbMain);
             this.Icon = (System.Drawing.Icon)resources.GetObject("$this.Icon");
             this.Name = "TFrmPartnerMain";
             this.Text = "Partner Module OpenPetra.org";
@@ -550,6 +558,7 @@ namespace Ict.Petra.Client.MPartner.Gui
 	        this.Closing += new System.ComponentModel.CancelEventHandler(this.TFrmPetra_Closing);
 	        this.KeyDown += new System.Windows.Forms.KeyEventHandler(this.Form_KeyDown);
 	
+            this.stbMain.ResumeLayout(false);
             this.mnuMain.ResumeLayout(false);
             this.pnlTODO.ResumeLayout(false);
             this.ResumeLayout(false);
@@ -610,5 +619,6 @@ namespace Ict.Petra.Client.MPartner.Gui
         private System.Windows.Forms.ToolStripSeparator mniSeparator9;
         private System.Windows.Forms.ToolStripMenuItem mniHelpAboutPetra;
         private System.Windows.Forms.ToolStripMenuItem mniHelpDevelopmentTeam;
+        private Ict.Common.Controls.TExtStatusBarHelp stbMain;
     }
 }

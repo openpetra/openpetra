@@ -49,7 +49,6 @@
     </Reference>
     <Reference Include="Ict.Common.Controls">
       <HintPath>..\..\..\Common\_bin\Debug\Ict.Common.Controls.dll</HintPath>
-      <SpecificVersion>False</SpecificVersion>
     </Reference>
     <Reference Include="SourceGrid">
       <HintPath>..\..\..\..\ThirdParty\DevAge\SourceGrid.dll</HintPath>

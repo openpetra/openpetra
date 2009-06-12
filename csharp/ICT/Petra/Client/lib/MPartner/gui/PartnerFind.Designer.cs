@@ -159,6 +159,7 @@ namespace Ict.Petra.Client.MPartner.Gui
             this.mniSeparator1 = new System.Windows.Forms.ToolStripSeparator();
             this.mniHelpAboutPetra = new System.Windows.Forms.ToolStripMenuItem();
             this.mniHelpDevelopmentTeam = new System.Windows.Forms.ToolStripMenuItem();
+            this.stbMain = new Ict.Common.Controls.TExtStatusBarHelp();
 
             this.pnlMain.SuspendLayout();
             this.tabPartnerFindMethods.SuspendLayout();
@@ -167,6 +168,7 @@ namespace Ict.Petra.Client.MPartner.Gui
             this.pnlModalButtons.SuspendLayout();
             this.tableLayoutPanel1.SuspendLayout();
             this.mnuMain.SuspendLayout();
+            this.stbMain.SuspendLayout();
 
             //
             // pnlMain
@@ -828,6 +830,11 @@ namespace Ict.Petra.Client.MPartner.Gui
                         mniTools,
                         mniPetraModules,
                         mniHelp});
+            //
+            // stbMain
+            //
+            this.stbMain.Name = "stbMain";
+            this.stbMain.Dock = System.Windows.Forms.DockStyle.Bottom;
 
             //
             // TPartnerFindScreen
@@ -838,6 +845,7 @@ namespace Ict.Petra.Client.MPartner.Gui
             this.Controls.Add(this.pnlMain);
             this.Controls.Add(this.mnuMain);
             this.MainMenuStrip = mnuMain;
+            this.Controls.Add(this.stbMain);
             this.Icon = (System.Drawing.Icon)resources.GetObject("$this.Icon");
             this.Name = "TPartnerFindScreen";
             this.Text = "Partner Find OpenPetra.org";
@@ -847,6 +855,7 @@ namespace Ict.Petra.Client.MPartner.Gui
 	        this.KeyDown += new System.Windows.Forms.KeyEventHandler(this.Form_KeyDown);
 	        this.Load += new System.EventHandler(this.TPartnerFindScreen_Load);
 	
+            this.stbMain.ResumeLayout(false);
             this.mnuMain.ResumeLayout(false);
             this.tableLayoutPanel1.ResumeLayout(false);
             this.pnlModalButtons.ResumeLayout(false);
@@ -947,5 +956,6 @@ namespace Ict.Petra.Client.MPartner.Gui
         private System.Windows.Forms.ToolStripSeparator mniSeparator1;
         private System.Windows.Forms.ToolStripMenuItem mniHelpAboutPetra;
         private System.Windows.Forms.ToolStripMenuItem mniHelpDevelopmentTeam;
+        private Ict.Common.Controls.TExtStatusBarHelp stbMain;
     }
 }

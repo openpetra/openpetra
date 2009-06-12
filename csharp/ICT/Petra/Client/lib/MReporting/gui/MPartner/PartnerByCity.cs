@@ -97,7 +97,7 @@ namespace Ict.Petra.Client.MReporting.Gui.MPartner
       this.Text = Catalog.GetString("Partner by City");
       #endregion
 
-      FPetraUtilsObject = new TFrmPetraReportingUtils(AParentFormHandle, this);
+      FPetraUtilsObject = new TFrmPetraReportingUtils(AParentFormHandle, this, stbMain);
 
       FPetraUtilsObject.FXMLFiles = "partnerbycity.xml";
       FPetraUtilsObject.FReportName = "Partner by City";

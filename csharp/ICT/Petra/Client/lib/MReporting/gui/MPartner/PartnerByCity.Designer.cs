@@ -102,12 +102,14 @@ namespace Ict.Petra.Client.MReporting.Gui.MPartner
             this.mniSeparator4 = new System.Windows.Forms.ToolStripSeparator();
             this.mniHelpAboutPetra = new System.Windows.Forms.ToolStripMenuItem();
             this.mniHelpDevelopmentTeam = new System.Windows.Forms.ToolStripMenuItem();
+            this.stbMain = new Ict.Common.Controls.TExtStatusBarHelp();
 
             this.tabReportSettings.SuspendLayout();
             this.tpgReportSpecific.SuspendLayout();
             this.tableLayoutPanel1.SuspendLayout();
             this.tbrMain.SuspendLayout();
             this.mnuMain.SuspendLayout();
+            this.stbMain.SuspendLayout();
 
             //
             // tpgReportSpecific
@@ -355,6 +357,11 @@ namespace Ict.Petra.Client.MReporting.Gui.MPartner
             this.mnuMain.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
                            mniFile,
                         mniHelp});
+            //
+            // stbMain
+            //
+            this.stbMain.Name = "stbMain";
+            this.stbMain.Dock = System.Windows.Forms.DockStyle.Bottom;
 
             //
             // TFrmPartnerByCity
@@ -366,6 +373,7 @@ namespace Ict.Petra.Client.MReporting.Gui.MPartner
             this.Controls.Add(this.tbrMain);
             this.Controls.Add(this.mnuMain);
             this.MainMenuStrip = mnuMain;
+            this.Controls.Add(this.stbMain);
             this.Icon = (System.Drawing.Icon)resources.GetObject("$this.Icon");
             this.Name = "TFrmPartnerByCity";
             this.Text = "Partner by City";
@@ -375,6 +383,7 @@ namespace Ict.Petra.Client.MReporting.Gui.MPartner
 	        this.Closing += new System.ComponentModel.CancelEventHandler(this.TFrmPetra_Closing);
 	        this.KeyDown += new System.Windows.Forms.KeyEventHandler(this.Form_KeyDown);
 	
+            this.stbMain.ResumeLayout(false);
             this.mnuMain.ResumeLayout(false);
             this.tbrMain.ResumeLayout(false);
             this.tableLayoutPanel1.ResumeLayout(false);
@@ -416,5 +425,6 @@ namespace Ict.Petra.Client.MReporting.Gui.MPartner
         private System.Windows.Forms.ToolStripSeparator mniSeparator4;
         private System.Windows.Forms.ToolStripMenuItem mniHelpAboutPetra;
         private System.Windows.Forms.ToolStripMenuItem mniHelpDevelopmentTeam;
+        private Ict.Common.Controls.TExtStatusBarHelp stbMain;
     }
 }

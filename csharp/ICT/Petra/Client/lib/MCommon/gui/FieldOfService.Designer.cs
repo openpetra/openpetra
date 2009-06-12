@@ -48,6 +48,7 @@ namespace Ict.Petra.Client.MCommon
             this.lblPartnerName = new System.Windows.Forms.Label();
             this.Label3 = new System.Windows.Forms.Label();
             this.Label4 = new System.Windows.Forms.Label();
+            this.stbMain = new Ict.Common.Controls.TExtStatusBarHelp();
             this.SuspendLayout();
 
             //
@@ -84,10 +85,20 @@ namespace Ict.Petra.Client.MCommon
             this.Label4.Text = "PartnerKey:";
 
             //
+            // stbMain
+            //
+            this.stbMain.Location = new System.Drawing.Point(0, 264);
+            this.stbMain.Name = "stbMain";
+            this.stbMain.Size = new System.Drawing.Size(470, 22);
+            this.stbMain.TabIndex = 4;
+            this.stbMain.Text = "tExtStatusBarHelp1";
+
+            //
             // TFieldOfServiceWinForm
             //
             this.AutoScaleBaseSize = new System.Drawing.Size(6, 14);
             this.ClientSize = new System.Drawing.Size(470, 286);
+            this.Controls.Add(this.stbMain);
             this.Controls.Add(this.Label4);
             this.Controls.Add(this.Label3);
             this.Controls.Add(this.lblPartnerKey);
@@ -103,6 +114,7 @@ namespace Ict.Petra.Client.MCommon
             this.ResumeLayout(false);
         }
 
+        private Ict.Common.Controls.TExtStatusBarHelp stbMain;
         private System.Windows.Forms.Label lblPartnerKey;
         private System.Windows.Forms.Label lblPartnerName;
         private System.Windows.Forms.Label Label3;
