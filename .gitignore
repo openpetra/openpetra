@@ -7,3 +7,5 @@ setup/petra0300/*.db
 db/basedb_progress
 *.ico.gif
 *.local
+OpenPetra.build.config
+*.exe.config

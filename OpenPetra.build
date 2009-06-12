@@ -43,7 +43,7 @@
     <target name="compilePetraTools" description="compile the PetraTools">
         <solution configuration="${Configuration}" solutionfile="${OpenPetraRoot.dir}/csharp/ICT/PetraTools.sln" />
     </target>
-    <target name="compilePetra" description="compile the whole of Petra" depends="compileCommon, compilePetraShared, compilePetraServer, compilePetraServerAdmin, compilePetraClient"/>
+    <target name="compilePetra" description="compile the whole of Petra" depends="compileCommon, compilePetraShared, compilePetraServerAdmin, compilePetraServer, compilePetraClient"/>
     <target name="compileTemplate">
         <if test="${framework::get-runtime-framework() == 'mono-2.0'}" >
             <exec program="mdtool" commandline="build --buildfile:${solution.file}" />

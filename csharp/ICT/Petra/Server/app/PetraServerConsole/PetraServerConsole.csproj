@@ -1,4 +1,4 @@
-<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+﻿<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
     <ProjectGuid>{279D5FBA-A4FA-42F6-9737-2E4F60623917}</ProjectGuid>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
@@ -65,7 +65,7 @@
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Data" />
-    <Reference Include="System.Runtime.Remoting, Version=1.0.5000.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
+    <Reference Include="System.Runtime.Remoting" />
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
@@ -79,6 +79,14 @@
       <Project>{1F2FFC91-5C00-44ED-8EFD-3940426793CF}</Project>
       <Name>Ict.Petra.Server.MCommon</Name>
     </ProjectReference>
+    <ProjectReference Include="..\..\lib\MFinance\Ict.Petra.Server.MFinance.Instantiator.csproj">
+      <Project>{637D2388-7922-42C1-BDD6-8DD578B62833}</Project>
+      <Name>Ict.Petra.Server.MFinance.Instantiator</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\lib\MHospitality\Ict.Petra.Server.MHospitality.Instantiator.csproj">
+      <Project>{1C37FE17-B314-4EC6-91A7-EAF27D301130}</Project>
+      <Name>Ict.Petra.Server.MHospitality.Instantiator</Name>
+    </ProjectReference>
     <ProjectReference Include="..\..\lib\MPartner\Ict.Petra.Server.MPartner.Instantiator.csproj">
       <Project>{69E21FFC-F815-451A-96BB-66499CDDEB6E}</Project>
       <Name>Ict.Petra.Server.MPartner.Instantiator</Name>
@@ -87,9 +95,17 @@
       <Project>{F37641A0-702F-48F8-A810-6075C3B29F6B}</Project>
       <Name>Ict.Petra.Server.MPersonnel.Instantiator</Name>
     </ProjectReference>
+    <ProjectReference Include="..\..\lib\MReporting\Ict.Petra.Server.MReporting.Instantiator.csproj">
+      <Project>{75A3A363-7EFE-4833-9E0F-33DF4967F6F6}</Project>
+      <Name>Ict.Petra.Server.MReporting.Instantiator</Name>
+    </ProjectReference>
     <ProjectReference Include="..\..\lib\MSysMan\Ict.Petra.Server.MSysMan.csproj">
       <Project>{5DF56B61-41A0-4E7E-A918-5AF595A023A2}</Project>
       <Name>Ict.Petra.Server.MSysMan</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\lib\MSysMan\Ict.Petra.Server.MSysMan.Instantiator.csproj">
+      <Project>{65837962-CBC5-4E5A-B75E-9ADCBD9DDD49}</Project>
+      <Name>Ict.Petra.Server.MSysMan.Instantiator</Name>
     </ProjectReference>
     <ProjectReference Include="..\ClientDomain\Ict.Petra.Server.App.ClientDomain.CallForwarder.csproj">
       <Project>{4F3F60C9-AC5E-4023-922A-FB616B53A2C0}</Project>
