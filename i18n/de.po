@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2009-06-10 16:57+0200\n"
+"POT-Creation-Date: 2009-06-12 17:05+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -1400,4 +1400,31 @@ msgstr ""
 msgid ""
 "You do not have access to Partners of Partner Class 'ORGANISATION' that are "
 "'Foundations'!"
+msgstr ""
+
+msgid "Go to Finance Module"
+msgstr ""
+
+msgid "Go to Partner Module"
+msgstr ""
+
+msgid "S&ites Available:"
+msgstr ""
+
+msgid "Partner &Key:"
+msgstr ""
+
+msgid "Partner C&lass:"
+msgstr ""
+
+msgid "&Acquisition Code:"
+msgstr ""
+
+msgid "&Private Partner:"
+msgstr ""
+
+msgid "Partner Key"
+msgstr ""
+
+msgid "&Family..."
 msgstr ""

@@ -91,7 +91,6 @@ namespace Ict.Petra.Client.MCommon
             this.stbMain.Name = "stbMain";
             this.stbMain.Size = new System.Drawing.Size(470, 22);
             this.stbMain.TabIndex = 4;
-            this.stbMain.Text = "tExtStatusBarHelp1";
 
             //
             // TFieldOfServiceWinForm

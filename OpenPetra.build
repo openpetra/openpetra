@@ -12,7 +12,8 @@
     <property name="PetraXML.file" value="${OpenPetraRoot.dir}/db/petra.xml"/>
     <property name="DBDoc.Output.dir" value="${OpenPetraRoot.dir}/setup/petra${PetraRelease}/dbdoc"/>
     <property name="SQLitedb.file" value="${OpenPetraRoot.dir}/setup/petra${PetraRelease}/petra.db"/>
-    <property name="TargetLanguage.Pofile" value="${OpenPetraRoot.dir}/i18n/${Translation.TargetLanguage}.po"/>
+    <property name="TargetLanguage.Pofile" value="${Translation.TargetLanguage}.po"/>
+    <property name="TargetLanguage.PofileWithPath" value="${OpenPetraRoot.dir}/i18n/${Translation.TargetLanguage}.po"/>
 
     <target name="help" depends="" description="Displays the available targets and parameters.">
         <echo message="A list of available commands: TODO"/>
@@ -306,17 +307,17 @@
                     <exec program="${PetraToolsExe.dir}/GenerateI18N.exe" commandline="-file:${filename}"/>
                 </if>
                 <!-- todo: exclude the files in Testing? -->
-                <exec program="${Poedit.gettext}" commandline="-j --add-comments=/// --no-location --from-code=UTF-8 ${filename} -o ${TargetLanguage.Pofile}"/>
+                <exec program="${Poedit.gettext}" workingdir="${OpenPetraRoot.dir}/i18n/" commandline="-j --add-comments=/// --no-location --from-code=UTF-8 ${filename} -o ${TargetLanguage.Pofile}"/>
             </do>
         </foreach>
     </target>
 
     <target name="translation">
-        <if test="${not file::exists(TargetLanguage.Pofile)}">
-            <exec program="${Poedit.gettext}" commandline="--force-po --no-location --from-code=UTF-8 ${OpenPetraRoot.dir}/csharp/ICT/Common/StringHelper.cs -o ${TargetLanguage.Pofile}"/>
+        <if test="${not file::exists(TargetLanguage.PofileWithPath)}">
+            <exec program="${Poedit.gettext}" workingdir="${OpenPetraRoot.dir}/i18n/" commandline="--force-po --no-location --from-code=UTF-8 ${OpenPetraRoot.dir}/csharp/ICT/Common/StringHelper.cs -o ${TargetLanguage.Pofile}"/>
             <property name="toReplace" value="Content-Type: text/plain; charset=CHARSET/n"/>
             <property name="newValue" value="Content-Type: text/plain; charset=UTF-8/n"/>
-            <echo message='${script::ReplaceInFile(TargetLanguage.Pofile, toReplace, newValue)}'/>
+            <echo message='${script::ReplaceInFile(TargetLanguage.PofileWithPath, toReplace, newValue)}'/>
         </if>
         <property name="sourcecode.dir" value="${OpenPetraRoot.dir}/csharp/ICT/Common"/>
         <call target="translationTemplate"/>
@@ -329,7 +330,7 @@
         <property name="sourcecode.dir" value="${OpenPetraRoot.dir}/csharp/ICT/Petra/Server"/>
         <call target="translationTemplate"/>
         <mkdir dir="${OpenPetraRoot.dir}/setup/petra${PetraRelease}/i18n/locale/${Translation.TargetLanguage}/LC_MESSAGES" failonerror="false"/>
-        <exec program="${Poedit.msgfmt}" commandline="${TargetLanguage.Pofile} -o ${OpenPetraRoot.dir}/setup/petra${PetraRelease}/i18n/locale/${Translation.TargetLanguage}/LC_MESSAGES/i18n.mo"/>
+        <exec program="${Poedit.msgfmt}" commandline="${TargetLanguage.PofileWithPath} -o ${OpenPetraRoot.dir}/setup/petra${PetraRelease}/i18n/locale/${Translation.TargetLanguage}/LC_MESSAGES/i18n.mo"/>
     </target>
     
     <target name="uncrustifyTemplate">
