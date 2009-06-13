@@ -29,64 +29,38 @@ using System.IO;
 using System.Collections.Generic;
 using System.Collections.Specialized;
 using Ict.Common;
+using Ict.Tools.CodeGeneration;
 
 namespace FixProjectFiles
 {
 /// <summary>
 /// fix the project GUIDs and references, using the GUID from the sln files
 /// </summary>
-public class TFixProjectReferences
+public class TFixProjectReferences : TCSProjTools
 {
     /// <summary>
     /// all the projects GUIDs loaded from the solution files
     /// </summary>
     private SortedList <string, string>FProjectGUIDs = new SortedList <string, string>();
 
-    /// <summary>
-    /// add GUIDs of projects inside the solution;
-    /// fills FProjectGUIDs
-    /// </summary>
-    /// <param name="ASolutionFile"></param>
-    /// <returns>a list of paths of the projects that are part of this solution</returns>
-    public StringCollection LoadGUIDsFromSolution(string ASolutionFile)
+    protected override bool ProcessProjectDetails(string AProjectName, string ARelativePath, string AProjectGUID, string ASolutionFile)
     {
-        StringCollection result = new StringCollection();
-        StreamReader reader = new StreamReader(ASolutionFile);
-
-        while (!reader.EndOfStream)
+        if (!FProjectGUIDs.ContainsKey(AProjectName))
         {
-            string line = reader.ReadLine();
-
-            if (line.StartsWith("Project("))
-            {
-                StringCollection details = StringHelper.StrSplit(line.Substring(line.IndexOf("=") + 1), ",");
-
-                // name of project file (without path, without extension csproj)
-                string ProjectName = StringHelper.TrimQuotes(details[0]);
-
-                // relative path to project
-                string RelativePath = StringHelper.TrimQuotes(details[1]);
-
-                // GUID of project
-                string ProjectGUID = StringHelper.TrimQuotes(details[2]);
-
-                if (!FProjectGUIDs.ContainsKey(ProjectName))
-                {
-                    FProjectGUIDs.Add(ProjectName, ProjectGUID);
-                    result.Add(Path.GetFullPath(Path.GetDirectoryName(ASolutionFile) + Path.DirectorySeparatorChar + RelativePath));
-                }
-                else
-                {
-                    // some projects are part of several solutions; just make sure they have the same GUID
-                    if (FProjectGUIDs[ProjectName] != ProjectGUID)
-                    {
-                        throw new Exception("problem: wrong GUID for " + ProjectName + " in " + ASolutionFile);
-                    }
-                }
-            }
+            FProjectGUIDs.Add(AProjectName, AProjectGUID);
+            return true;
         }
+        else
+        {
+            // some projects are part of several solutions; just make sure they have the same GUID
+            if (FProjectGUIDs[AProjectName] != AProjectGUID)
+            {
+                throw new Exception("problem: wrong GUID for " + AProjectName + " in " + ASolutionFile);
+            }
 
-        return result;
+            // not a new project, don't run operations on it twice
+            return false;
+        }
     }
 
     /// <summary>

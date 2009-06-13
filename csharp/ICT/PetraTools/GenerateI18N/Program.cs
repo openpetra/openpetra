@@ -24,7 +24,11 @@
  *
  ************************************************************************/
 using System;
+using System.IO;
+using System.Collections.Specialized;
 using Ict.Common;
+using Ict.Tools.DBXML;
+using Ict.Tools.CodeGeneration;
 
 namespace GenerateI18N
 {
@@ -36,7 +40,46 @@ class Program
 
         try
         {
-            TGenerateCatalogStrings.Execute(settings.GetValue("file"));
+            if (settings.HasValue("file"))
+            {
+                TGenerateCatalogStrings.Execute(settings.GetValue("file"), null, null);
+            }
+            else if (settings.HasValue("solution"))
+            {
+                TDataDefinitionStore store = new TDataDefinitionStore();
+                Console.WriteLine("parsing " + settings.GetValue("petraxml", true));
+                TDataDefinitionParser parser = new TDataDefinitionParser(settings.GetValue("petraxml", true));
+                parser.ParseDocument(ref store, true, true);
+
+                string solutionFilename = settings.GetValue("solution");
+                string GettextFilename = Path.GetDirectoryName(solutionFilename) +
+                                         Path.DirectorySeparatorChar +
+                                         Path.GetFileNameWithoutExtension(solutionFilename) +
+                                         ".CollectedGettext.cs";
+                StreamWriter writerGettextFile = new StreamWriter(GettextFilename);
+
+                TCSProjTools projTools = new TCSProjTools();
+                StringCollection pathsProjectFiles = projTools.LoadGUIDsFromSolution(solutionFilename);
+
+                foreach (string pathProjectFile in pathsProjectFiles)
+                {
+                    Console.WriteLine(pathProjectFile);
+                    StringCollection codeFilePaths = TCSProjTools.LoadCodeFilesFromProject(pathProjectFile);
+
+                    foreach (string pathCodeFile in codeFilePaths)
+                    {
+                        TGenerateCatalogStrings.Execute(pathCodeFile, store, writerGettextFile);
+                    }
+                }
+
+                writerGettextFile.Close();
+
+                // delete the file if it is empty
+                if (File.ReadAllText(GettextFilename).Length == 0)
+                {
+                    File.Delete(GettextFilename);
+                }
+            }
         }
         catch (Exception e)
         {

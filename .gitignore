@@ -9,3 +9,4 @@ db/basedb_progress
 *.local
 OpenPetra.build.config
 *.exe.config
+*.CollectedGettext.cs

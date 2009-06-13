@@ -25,9 +25,11 @@
  ************************************************************************/
 using System;
 using System.IO;
+using System.Text.RegularExpressions;
 using Ict.Common;
 using Ict.Tools.CodeGeneration;
 using Ict.Tools.CodeGeneration.Winforms;
+using Ict.Tools.DBXML;
 
 namespace GenerateI18N
 {
@@ -40,13 +42,21 @@ public class TGenerateCatalogStrings
     /// read the designer file and add the strings to the main file
     /// </summary>
     /// <param name="AMainFilename"></param>
-    public static void Execute(string AMainFilename)
+    /// <param name="ADataDefinitionStore"></param>
+    /// <param name="ADbHelpTranslationWriter">dummy cs file that is used to provide the strings to gettext</param>
+    public static void Execute(string AMainFilename, TDataDefinitionStore ADataDefinitionStore, StreamWriter ADbHelpTranslationWriter)
     {
-        string DesignerFileName = Path.GetDirectoryName(AMainFilename) +
-                                  Path.DirectorySeparatorChar + Path.GetFileNameWithoutExtension(AMainFilename) + ".Designer.cs";
-        StreamReader readerDesignerFile = new StreamReader(DesignerFileName);
+        string DesignerFileName = TCSProjTools.GetDesignerFilename(AMainFilename);
+        StreamReader readerDesignerFile = null;
+        StreamWriter writer = null;
+
+        if (File.Exists(DesignerFileName))
+        {
+            readerDesignerFile = new StreamReader(DesignerFileName);
+            writer = new StreamWriter(AMainFilename + ".new");
+        }
+
         StreamReader readerMainFile = new StreamReader(AMainFilename);
-        StreamWriter writer = new StreamWriter(AMainFilename + ".new");
 
         // find the call to InitializeComponent
         string line = "";
@@ -54,7 +64,29 @@ public class TGenerateCatalogStrings
         while (!readerMainFile.EndOfStream && !line.Contains("InitializeComponent();"))
         {
             line = readerMainFile.ReadLine();
-            writer.WriteLine(line);
+            CheckLineAndAddDBHelp(line, ADataDefinitionStore, ADbHelpTranslationWriter);
+
+            if (writer != null)
+            {
+                writer.WriteLine(line);
+            }
+        }
+
+        if (readerDesignerFile == null)
+        {
+            // this is just a normal code file without designer code
+
+            if (!readerMainFile.EndOfStream)
+            {
+                // TODO: be more strict with missing designer file!
+                //readerMainFile.Close();
+                //throw new Exception("the file " + AMainFilename + " should have a designer file!");
+                Console.WriteLine("the file " + AMainFilename + " should have a designer file!");
+            }
+
+            readerMainFile.Close();
+
+            return;
         }
 
         if (readerMainFile.EndOfStream)
@@ -62,6 +94,7 @@ public class TGenerateCatalogStrings
             readerMainFile.Close();
             readerDesignerFile.Close();
             writer.Close();
+
             throw new Exception("Problem: cannot find InitializeComponent in " + AMainFilename);
         }
 
@@ -93,6 +126,8 @@ public class TGenerateCatalogStrings
                         writer.WriteLine(identation +
                             designerLine.Substring(0, designerLine.IndexOf(" = ")).Trim() +
                             " = Catalog.GetString(\"" + content + "\");");
+
+                        ADbHelpTranslationWriter.WriteLine("Catalog.GetString(\"" + content + "\");");
                     }
                 }
                 catch (Exception e)
@@ -126,6 +161,7 @@ public class TGenerateCatalogStrings
 
             if (!skip)
             {
+                CheckLineAndAddDBHelp(line, ADataDefinitionStore, ADbHelpTranslationWriter);
                 writer.WriteLine(line);
             }
 
@@ -139,6 +175,53 @@ public class TGenerateCatalogStrings
         readerMainFile.Close();
 
         TTextFile.UpdateFile(AMainFilename);
+    }
+
+    /// <summary>
+    /// check for Catalog.GetString("something" + 'a' + "single quotes"): throw exception;
+    /// also check for .SetStatusBarText([...]Table.Get[...]Help: add text from petra.xml to a separate dummy file so that it will be picked up by gettext
+    /// </summary>
+    /// <param name="ALine"></param>
+    /// <param name="store"></param>
+    /// <param name="ADbHelpTranslationWriter">dummy cs file that is used to provide the strings to gettext</param>
+    private static void CheckLineAndAddDBHelp(string ALine, TDataDefinitionStore store, StreamWriter ADbHelpTranslationWriter)
+    {
+        if (ALine.Contains("Catalog.GetString") && ALine.Contains(" + '"))
+        {
+            throw new Exception("problem with split string in call to Catalog.GetString: " + ALine);
+        }
+
+        // todo: what about several catalog.getstring in one line?
+
+        // question mark to find the smallest match (lazy vs greedy)
+        Match m = Regex.Match(ALine, "Catalog.GetString\\(\\\"(.*?)\\\"\\)");
+        string tempLine = ALine;
+
+        while (m.Success)
+        {
+            ADbHelpTranslationWriter.WriteLine("Catalog.GetString(\"" + m.Groups[1].Value + "\");");
+            tempLine = tempLine.Substring(m.Index + 5);
+            m = Regex.Match(tempLine, "Catalog.GetString\\(\\\"(.*?)\\\"\\)");
+        }
+
+        m = Regex.Match(ALine, ".*SetStatusBarText\\(.*, (.*)Table.Get(.*)Help\\(\\)");
+
+        if (m.Success)
+        {
+            // eg FPetraUtilsObject.SetStatusBarText(txtPreferredName, PPersonTable.GetPreferedNameHelp());
+            string tablename = m.Groups[1].Value;
+            string columnname = m.Groups[2].Value;
+
+            if ((store == null) || (ADbHelpTranslationWriter == null))
+            {
+                Console.WriteLine("please run the usual nant translation for the whole solution so that the help text for {0}.{1} will be added.",
+                    tablename, columnname);
+                return;
+            }
+
+            TTable table = store.GetTable(tablename);
+            ADbHelpTranslationWriter.WriteLine("Catalog.GetString(\"" + table.GetField(columnname).strHelp + "\");");
+        }
     }
 }
 }

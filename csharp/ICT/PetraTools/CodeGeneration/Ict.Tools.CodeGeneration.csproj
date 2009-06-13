@@ -57,6 +57,7 @@
     <Compile Include="CodeGeneration.cs" />
     <Compile Include="CodeStorage.cs" />
     <Compile Include="CSParser.cs" />
+    <Compile Include="CSProjTools.cs" />
     <Compile Include="ParseXAML.cs" />
     <Compile Include="ProcessTemplate.cs" />
     <Compile Include="ProcessXAML.cs" />

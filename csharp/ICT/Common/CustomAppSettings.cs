@@ -51,7 +51,7 @@ namespace Ict.Common
         private static String FConfigFileName = "";
 
         /// <summary>XML Element under which the AppSettings are found</summary>
-        private XmlElement FAppSettingsElement;
+        private XmlElement FAppSettingsElement = null;
         private TCmdOpts FCmdOpts;
 
         /// <summary>
@@ -200,7 +200,7 @@ namespace Ict.Common
             {
                 ReturnValue = true;
             }
-            else
+            else if (FAppSettingsElement != null)
             {
                 appsetting = (XmlElement)FAppSettingsElement.SelectSingleNode("add[@key='" + Key + "']");
 
