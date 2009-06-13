@@ -33,6 +33,7 @@ using System.Data;
 using Ict.Petra.Shared.MReporting;
 using Ict.Petra.Client.MReporting.Logic;
 using System.IO;
+using Mono.Unix;
 
 namespace Ict.Petra.Client.MReporting.Gui
 {
