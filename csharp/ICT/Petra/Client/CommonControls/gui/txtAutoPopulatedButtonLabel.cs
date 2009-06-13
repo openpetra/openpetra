@@ -97,7 +97,7 @@ namespace Ict.Petra.Client.CommonControls
     ///  8. Add the code for the Label display to the function "txtAutoPopulated_SetLabel"
     ///  9. Add the code for databinding to the function "PerformDataBinding"
     /// </summary>
-    public class TtxtAutoPopulatedButtonLabel : System.Windows.Forms.UserControl
+    public partial class TtxtAutoPopulatedButtonLabel : System.Windows.Forms.UserControl
     {
         /// <summary>
         /// Available Types for TtxtAutoPopulatedButtonLabel
@@ -131,11 +131,6 @@ namespace Ict.Petra.Client.CommonControls
 
         /// <summary>Error message</summary>
         public const String UNIT_DELIMITERS_PARTNERCLASS = ",";
-
-        /// <summary> Required designer variable. </summary>
-        private System.ComponentModel.IContainer components;
-        private TTxtButtonLabel txtAutoPopulated;
-        private System.Windows.Forms.Timer timerGetKey;
 
         /// <summary>private bool FAutomaticallyUpdateDataSource;</summary>
         protected TListTableEnum FListTable;
@@ -530,62 +525,6 @@ namespace Ict.Petra.Client.CommonControls
                 this.txtAutoPopulated.AutomaticallyUpdateDataSource = value;
             }
         }
-        #region Windows Form Designer generated code
-
-        /// <summary>
-        /// Required method for Designer support  do not modify the contents of this method with the code editor. </summary> <summary> Required method for Designer support  do not modify the contents of this method with the code editor.
-        /// </summary>
-        /// <returns>void</returns>
-        private void InitializeComponent()
-        {
-            this.components = new System.ComponentModel.Container();
-            this.txtAutoPopulated = new TTxtButtonLabel();
-            this.timerGetKey = new System.Windows.Forms.Timer(this.components);
-            this.SuspendLayout();
-
-            //
-            // txtAutoPopulated
-            //
-            this.txtAutoPopulated.Anchor = System.Windows.Forms.AnchorStyles.Top |
-                                           System.Windows.Forms.AnchorStyles.Left |
-                                           System.Windows.Forms.AnchorStyles.Right;
-            this.txtAutoPopulated.ButtonText = "btnButton";
-            this.txtAutoPopulated.ButtonTextAlign = System.Drawing.ContentAlignment.MiddleCenter;
-            this.txtAutoPopulated.ButtonWidth = 72;
-            this.txtAutoPopulated.KeyValues = TKeyValuesEnum.OnlyDigits;
-            this.txtAutoPopulated.LabelLookUpMember = "";
-            this.txtAutoPopulated.LabelSeparatorWidth = 6;
-            this.txtAutoPopulated.LabelText = "lblLabel";
-            this.txtAutoPopulated.Location = new System.Drawing.Point(0, 0);
-            this.txtAutoPopulated.LookUpDataSource = null;
-            this.txtAutoPopulated.MaxLength = 32767;
-            this.txtAutoPopulated.Name = "txtAutoPopulated";
-            this.txtAutoPopulated.ReadOnly = false;
-            this.txtAutoPopulated.SeparatorWidth = 4;
-            this.txtAutoPopulated.ShowLabel = true;
-            this.txtAutoPopulated.Size = new System.Drawing.Size(390, 23);
-            this.txtAutoPopulated.TabIndex = 0;
-            this.txtAutoPopulated.TextBoxLookUpMember = null;
-            this.txtAutoPopulated.TextBoxText = "txtTextBox";
-            this.txtAutoPopulated.TextBoxWidth = 100;
-            this.txtAutoPopulated.ButtonClick += new TDelegateButtonClick(this.TxtAutoPopulated_ButtonClick);
-
-            //
-            // timerGetKey
-            //
-            this.timerGetKey.Interval = 2000;
-            this.timerGetKey.Tick += new System.EventHandler(this.TimerGetKey_Tick);
-
-            //
-            // TtxtAutoPopulatedButtonLabel
-            //
-            this.Controls.Add(this.txtAutoPopulated);
-            this.Name = "TtxtAutoPopulatedButtonLabel";
-            this.Size = new System.Drawing.Size(390, 23);
-            this.ResumeLayout(false);
-        }
-
-        #endregion
 
         #region Creation and disposal
 
@@ -603,9 +542,6 @@ namespace Ict.Petra.Client.CommonControls
             this.FPreventFaultyLeaving = false;
             InitializeComponent();
 
-            //
-            // TODO: Add any constructor code after InitializeComponent call
-            //
             this.FUserControlInitialised = false;
             FDisplayLabelString = "";
             this.txtAutoPopulated.Anchor = System.Windows.Forms.AnchorStyles.Top |
@@ -753,24 +689,6 @@ namespace Ict.Petra.Client.CommonControls
 
                 // TLogging.Log('this.FASpecialSetting <> true  END');
             }
-        }
-
-        /// <summary>
-        /// function  txtAutoPopulated_FormatText(TextToFormat: string; out TextFormated: string; SelectionStart, SelectionLength: Integer): Boolean; <summary> Clean up any resources being used. </summary>
-        /// This is the destructor of this class.
-        /// </summary>
-        /// <returns>void</returns>
-        protected override void Dispose(Boolean Disposing)
-        {
-            if (Disposing)
-            {
-                if (components != null)
-                {
-                    components.Dispose();
-                }
-            }
-
-            base.Dispose(Disposing);
         }
 
         /// <summary>

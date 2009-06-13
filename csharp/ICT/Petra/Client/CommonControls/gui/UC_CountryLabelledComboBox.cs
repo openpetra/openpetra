@@ -51,12 +51,8 @@ namespace Ict.Petra.Client.CommonControls
     ///          DataTable - otherwise a changed Country selection will not be
     ///          automatically reflected in a DataTable/DataSet!
     /// </summary>
-    public class TUC_CountryLabelledComboBox : System.Windows.Forms.UserControl
+    public partial class TUC_CountryLabelledComboBox : System.Windows.Forms.UserControl
     {
-        /// <summary> Required designer variable. </summary>
-        private System.ComponentModel.IContainer components = null;
-        private System.Windows.Forms.ComboBox cmbCountry;
-        private System.Windows.Forms.Label lblCountryName;
         private DataTable FDataCache_CountryListTable;
         private bool FDataLoading;
         private string FText;
@@ -71,63 +67,6 @@ namespace Ict.Petra.Client.CommonControls
             }
         }
 
-        #region Windows Form Designer generated code
-
-        /// <summary>
-        /// <summary> Required method for Designer support  do not modify the contents of this method with the code editor. </summary> <summary> Required method for Designer support  do not modify the contents of this method with the code editor.
-        /// </summary>
-        /// </summary>
-        /// <returns>void</returns>
-        private void InitializeComponent()
-        {
-            this.cmbCountry = new System.Windows.Forms.ComboBox();
-            this.lblCountryName = new System.Windows.Forms.Label();
-            this.SuspendLayout();
-
-            //
-            // cmbCountry
-            //
-            this.cmbCountry.Font = new System.Drawing.Font("Verdana",
-                8.25f,
-                System.Drawing.FontStyle.Bold,
-                System.Drawing.GraphicsUnit.Point,
-                (Byte)0);
-            this.cmbCountry.Location = new System.Drawing.Point(0, 0);
-            this.cmbCountry.Name = "cmbCountry";
-            this.cmbCountry.Size = new System.Drawing.Size(52, 21);
-            this.cmbCountry.TabIndex = 85;
-            this.cmbCountry.SelectedValueChanged += new System.EventHandler(this.CmbCountry_SelectedValueChanged);
-            this.cmbCountry.Leave += new System.EventHandler(this.CmbCountry_Leave);
-
-            //
-            // lblCountryName
-            //
-            this.lblCountryName.Anchor = System.Windows.Forms.AnchorStyles.Top |
-                                         System.Windows.Forms.AnchorStyles.Left |
-                                         System.Windows.Forms.AnchorStyles.Right;
-            this.lblCountryName.BackColor = System.Drawing.Color.Transparent;
-            this.lblCountryName.Font =
-                new System.Drawing.Font("Verdana", 7.5f, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, (Byte)0);
-            this.lblCountryName.Location = new System.Drawing.Point(58, 4);
-            this.lblCountryName.Name = "lblCountryName";
-            this.lblCountryName.Size = new System.Drawing.Size(180, 15);
-            this.lblCountryName.TabIndex = 86;
-            this.lblCountryName.Text = "Country Name";
-
-            //
-            // TUC_CountryLabelledComboBox
-            //
-            this.BackColor = System.Drawing.SystemColors.Control;
-            this.Controls.Add(this.lblCountryName);
-            this.Controls.Add(this.cmbCountry);
-            this.Font = new System.Drawing.Font("Verdana", 8.25f, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, (Byte)0);
-            this.Name = "TUC_CountryLabelledComboBox";
-            this.Size = new System.Drawing.Size(242, 22);
-            this.ResumeLayout(false);
-        }
-
-        #endregion
-
         /// <summary>
         /// constructor
         /// </summary>
@@ -138,27 +77,6 @@ namespace Ict.Petra.Client.CommonControls
             // Required for Windows Form Designer support
             //
             InitializeComponent();
-
-            //
-            // TODO: Add any constructor code after InitializeComponent call
-            //
-        }
-
-        /// <summary>
-        /// <summary> Clean up any resources being used. </summary>
-        /// </summary>
-        /// <returns>void</returns>
-        protected override void Dispose(bool Disposing)
-        {
-            if (Disposing)
-            {
-                if (components != null)
-                {
-                    components.Dispose();
-                }
-            }
-
-            base.Dispose(Disposing);
         }
 
         /// <summary>

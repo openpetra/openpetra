@@ -36,7 +36,7 @@ using System.Drawing;
 using System.Windows;
 using System.Windows.Forms;
 
-namespace Ict.Petra.Client.MPartner
+namespace Ict.Petra.Client.MPartner.Gui
 {
     /// <summary>
     /// Dialog to create a new extract in m_extract_master.
@@ -247,6 +247,7 @@ namespace Ict.Petra.Client.MPartner
         /// <param name="AStatusBarText">Text to be displayed in the StatusBar.</param>
         public void ShowProgressAfterOK(string AStatusBarText)
         {
+TODO: what about translation ?
             this.sbtForm.SetStatusBarText(this.btnOK, AStatusBarText);
             btnCancel.Focus();
             btnOK.Focus();

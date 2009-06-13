@@ -48,7 +48,7 @@ namespace Ict.Petra.Client.CommonControls
     /// The control fetches its list entries on its own from the Client DataCache!
     /// The cached DataTable is selected with the ListTable property.
     /// </summary>
-    public class TCmbAutoPopulated : System.Windows.Forms.UserControl
+    public partial class TCmbAutoPopulated : System.Windows.Forms.UserControl
     {
         /// <summary>
         /// Enumeration for the Designer. Holds the possible values for ListTable.
@@ -138,8 +138,6 @@ namespace Ict.Petra.Client.CommonControls
             UnitTypeList
         };
 
-        private System.ComponentModel.IContainer components = null;
-        private TCmbLabelled cmbAutoPopulated;
         private DataTable FDataCache_ListTable;
         private DataView FDataView;
         private TListTableEnum FListTable;
@@ -242,56 +240,6 @@ namespace Ict.Petra.Client.CommonControls
          Description("Occurs when when the internal ComboBox throws the SelectedValueChanged Event.")]
         public event TSelectedValueChangedEventHandler SelectedValueChanged;
 
-        #region Windows Form Designer generated code
-
-        /// <summary>
-        /// <summary> Required method for Designer support  do not modify the contents of this method with the code editor. </summary> <summary> Required method for Designer support  do not modify the contents of this method with the code editor.
-        /// </summary>
-        /// </summary>
-        /// <returns>void</returns>
-        private void InitializeComponent()
-        {
-            this.cmbAutoPopulated = new Ict.Common.Controls.TCmbLabelled();
-            this.SuspendLayout();
-
-            //
-            // cmbAutoPopulated
-            //
-            this.cmbAutoPopulated.Anchor =
-                (System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right);
-            this.cmbAutoPopulated.BackColor = System.Drawing.SystemColors.Control;
-            this.cmbAutoPopulated.ColumnWidthCol1 = 121;
-            this.cmbAutoPopulated.ColumnWidthCol2 = 0;
-            this.cmbAutoPopulated.ColumnWidthCol3 = 0;
-            this.cmbAutoPopulated.ColumnWidthCol4 = 0;
-            this.cmbAutoPopulated.ComboBoxWidth = 121;
-            this.cmbAutoPopulated.DisplayInColumn1 = "";
-            this.cmbAutoPopulated.DisplayInColumn2 = null;
-            this.cmbAutoPopulated.DisplayInColumn3 = null;
-            this.cmbAutoPopulated.DisplayInColumn4 = null;
-            this.cmbAutoPopulated.DisplayMember = "";
-            this.cmbAutoPopulated.Font =
-                new System.Drawing.Font("Verdana", 8.25f, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, (Byte)0);
-            this.cmbAutoPopulated.ImageColumn = 0;
-            this.cmbAutoPopulated.Images = null;
-            this.cmbAutoPopulated.LabelDisplaysColumn = null;
-            this.cmbAutoPopulated.Location = new System.Drawing.Point(0, 0);
-            this.cmbAutoPopulated.Name = "cmbAutoPopulated";
-            this.cmbAutoPopulated.Size = new System.Drawing.Size(234, 22);
-            this.cmbAutoPopulated.TabIndex = 0;
-            this.cmbAutoPopulated.ValueMember = "";
-
-            //
-            // TCmbAutoPopulated
-            //
-            this.Controls.Add(this.cmbAutoPopulated);
-            this.Name = "TCmbAutoPopulated";
-            this.Size = new System.Drawing.Size(234, 22);
-            this.ResumeLayout(false);
-        }
-
-        #endregion
-
         private void CmbCombobox_SelectedValueChanged(System.Object sender, EventArgs e)
         {
             if (SelectedValueChanged != null)
@@ -310,23 +258,6 @@ namespace Ict.Petra.Client.CommonControls
             // Required for Windows Form Designer support
             //
             InitializeComponent();
-        }
-
-        /// <summary>
-        /// <summary> Clean up any resources being used. </summary>
-        /// </summary>
-        /// <returns>void</returns>
-        protected override void Dispose(Boolean Disposing)
-        {
-            if (Disposing)
-            {
-                if (components != null)
-                {
-                    components.Dispose();
-                }
-            }
-
-            base.Dispose(Disposing);
         }
 
         /// <summary>

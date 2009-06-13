@@ -33,7 +33,7 @@ using System.Resources;
 using Ict.Petra.Client.App.Core;
 using Ict.Common.Controls;
 
-namespace Ict.Petra.Client.MPartner
+namespace Ict.Petra.Client.MPartner.Gui
 {
     /// UserControl that makes up the TabControl for 'Finance Data' in Partner Edit
     /// screen.

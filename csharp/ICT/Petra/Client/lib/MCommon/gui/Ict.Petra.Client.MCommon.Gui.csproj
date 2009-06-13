@@ -1,4 +1,4 @@
-<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+﻿<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
     <ProjectGuid>{F1D473DD-F831-4662-A3F9-EE5016D4C625}</ProjectGuid>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
@@ -123,6 +123,18 @@
       <DependentUpon>FieldOfService.cs</DependentUpon>
     </Compile>
     <Compile Include="Ict.Petra.Client.MCommon.Gui.AssemblyInfo.cs" />
+    <Compile Include="UC_CollapsibleSearchPane.Designer.cs">
+      <DependentUpon>UC_CollapsibleSearchPane.cs</DependentUpon>
+    </Compile>
+    <Compile Include="UC_EditButtonPane.Designer.cs">
+      <DependentUpon>UC_EditButtonPane.cs</DependentUpon>
+    </Compile>
+    <Compile Include="UC_OfficeSpecificDataLabels.Designer.cs">
+      <DependentUpon>UC_OfficeSpecificDataLabels.cs</DependentUpon>
+    </Compile>
+    <Compile Include="UC_PartnerAddress.Designer.cs">
+      <DependentUpon>UC_PartnerAddress.cs</DependentUpon>
+    </Compile>
     <Compile Include="UC_PartnerAddresses.cs" />
     <EmbeddedResource Include="FieldOfService.resx">
       <DependentUpon>FieldOfService.cs</DependentUpon>
@@ -143,6 +155,9 @@
       <DependentUpon>UC_EditButtonPane.cs</DependentUpon>
     </EmbeddedResource>
     <Compile Include="UC_CollapsibleSearchPane.cs" />
+    <Compile Include="UC_PartnerAddresses.Designer.cs">
+      <DependentUpon>UC_PartnerAddresses.cs</DependentUpon>
+    </Compile>
     <EmbeddedResource Include="UC_CollapsibleSearchPane.resx">
       <DependentUpon>UC_CollapsibleSearchPane.cs</DependentUpon>
     </EmbeddedResource>

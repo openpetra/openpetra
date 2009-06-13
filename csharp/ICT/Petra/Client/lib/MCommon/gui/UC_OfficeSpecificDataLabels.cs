@@ -52,15 +52,8 @@ namespace Ict.Petra.Client.MCommon
     /// <summary>
     /// Contains User Control Office Specific Data Labels
     /// </summary>
-    public class TUCOfficeSpecificDataLabels : System.Windows.Forms.UserControl
+    public partial class TUCOfficeSpecificDataLabels : System.Windows.Forms.UserControl
     {
-        /// <summary> Required designer variable. </summary>
-        private System.ComponentModel.IContainer components;
-        private System.Windows.Forms.Label lblInfo;
-        private SourceGrid.Grid grdOfficeSpecificGrid;
-
-// TODO        private EWSoftware.StatusBarText.StatusBarTextProvider sbtUCOfficeSpecificDataLabels;
-
         /// <summary>Object that holds the logic for this screen</summary>
         private TUCOfficeSpecificDataLabelsLogic FLogic;
         private Int64 FPartnerKey;
@@ -68,59 +61,6 @@ namespace Ict.Petra.Client.MCommon
         private Int64 FRegistrationOffice;
         private Boolean FUserControlInitialised;
         private TDelegateGetPartnerShortName FDelegateGetPartnerShortName;
-
-        #region Windows Form Designer generated code
-
-        /// <summary>
-        /// <summary> Required method for Designer support  do not modify the contents of this method with the code editor. </summary> <summary> Required method for Designer support  do not modify the contents of this method with the code editor.
-        /// </summary>
-        /// </summary>
-        /// <returns>void</returns>
-        private void InitializeComponent()
-        {
-            this.components = new System.ComponentModel.Container();
-            this.lblInfo = new System.Windows.Forms.Label();
-            this.grdOfficeSpecificGrid = new SourceGrid.Grid();
-
-// TODO            this.sbtUCOfficeSpecificDataLabels = new EWSoftware.StatusBarText.StatusBarTextProvider(this.components);
-            this.SuspendLayout();
-
-            //
-            // lblInfo
-            //
-            this.lblInfo.Font = new System.Drawing.Font("Verdana", 8.25f, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, (byte)0);
-            this.lblInfo.Location = new System.Drawing.Point(6, 6);
-            this.lblInfo.Name = "lblInfo";
-            this.lblInfo.Size = new System.Drawing.Size(196, 14);
-            this.lblInfo.TabIndex = 0;
-            this.lblInfo.Text = "Office Specific Data Labels";
-
-            //
-            // grdOfficeSpecificGrid
-            //
-            this.grdOfficeSpecificGrid.Anchor =
-                ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top |
-                                                        System.Windows.Forms.AnchorStyles.Bottom) |
-                                                       System.Windows.Forms.AnchorStyles.Left) | System.Windows.Forms.AnchorStyles.Right)));
-            this.grdOfficeSpecificGrid.Location = new System.Drawing.Point(0, 0);
-            this.grdOfficeSpecificGrid.Name = "grdOfficeSpecificGrid";
-            this.grdOfficeSpecificGrid.Size = new System.Drawing.Size(512, 386);
-            this.grdOfficeSpecificGrid.SpecialKeys = SourceGrid.GridSpecialKeys.Default;
-            this.grdOfficeSpecificGrid.TabIndex = 0;
-
-            //
-            // TUCOfficeSpecificDataLabels
-            //
-            this.Controls.Add(this.grdOfficeSpecificGrid);
-            this.Controls.Add(this.lblInfo);
-            this.Font = new System.Drawing.Font("Verdana", 8.25f, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, (byte)0);
-            this.Name = "TUCOfficeSpecificDataLabels";
-            this.Size = new System.Drawing.Size(526, 400);
-            this.SizeChanged += new System.EventHandler(this.GrdOfficeSpecificGrid_SizeChanged);
-            this.ResumeLayout(false);
-        }
-
-        #endregion
 
         /// <summary>
         /// constructor
@@ -142,23 +82,9 @@ namespace Ict.Petra.Client.MCommon
             }
         }
 
-        /// <summary>
-        /// <summary> Clean up any resources being used. </summary>
-        /// </summary>
-        /// <returns>void</returns>
-        protected override void Dispose(Boolean Disposing)
+        protected void SpecialDispose(Boolean Disposing)
         {
-            if (Disposing)
-            {
-                if (components != null)
-                {
-                    components.Dispose();
-                }
-            }
-
             FLogic.FreeStaticObjects();
-
-            base.Dispose(Disposing);
         }
 
         /// <summary>

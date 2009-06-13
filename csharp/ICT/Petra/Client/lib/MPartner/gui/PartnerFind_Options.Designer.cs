@@ -6,7 +6,7 @@ using System;
 using System.ComponentModel;
 using System.Windows.Forms;
 
-namespace Ict.Petra.Client.MPartner
+namespace Ict.Petra.Client.MPartner.Gui
 {
     partial class TFindOptionsForm
     {
@@ -75,6 +75,7 @@ namespace Ict.Petra.Client.MPartner
                 ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
             this.btnOK.Location = new System.Drawing.Point(484, 5);
             this.btnOK.Size = new System.Drawing.Size(75, 23);
+TODO: move statusbar texts to constructor
             this.sbtForm.SetStatusBarText(this.btnOK, "Accept data and continue");
             this.btnOK.Click += new System.EventHandler(this.BtnOK_Click);
 

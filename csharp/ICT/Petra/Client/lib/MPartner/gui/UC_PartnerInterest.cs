@@ -45,7 +45,7 @@ using Ict.Petra.Client.App.Formatting;
 using Ict.Petra.Client.App.Core;
 using Ict.Petra.Shared.MPartner;
 
-namespace Ict.Petra.Client.MPartner
+namespace Ict.Petra.Client.MPartner.Gui
 {
     /// <summary>
     ///

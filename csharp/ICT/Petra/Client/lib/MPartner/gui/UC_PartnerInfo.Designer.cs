@@ -23,7 +23,7 @@
  * along with OpenPetra.org.  If not, see <http://www.gnu.org/licenses/>.
  *
  ************************************************************************/
-namespace Ict.Petra.Client.MPartner
+namespace Ict.Petra.Client.MPartner.Gui
 {
     /// UserControl for displaying Partner Info data.
     partial class TUC_PartnerInfo
@@ -217,7 +217,6 @@ namespace Ict.Petra.Client.MPartner
             this.tabPartnerDetailInfo.SelectedIndex = 0;
             this.tabPartnerDetailInfo.ShowToolTips = true;
             this.tabPartnerDetailInfo.Size = new System.Drawing.Size(561, 182);
-            this.SetStatusBarText(this.tabPartnerDetailInfo, "Select a Tab for more information about this Partner");
             this.tabPartnerDetailInfo.TabIndex = 12;
 
             //

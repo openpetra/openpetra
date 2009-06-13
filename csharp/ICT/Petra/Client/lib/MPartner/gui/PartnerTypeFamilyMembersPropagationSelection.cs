@@ -38,7 +38,7 @@ using Ict.Petra.Shared.Interfaces.MPartner.Partner;
 using Ict.Petra.Shared.MPartner.Partner.Data;
 using Ict.Petra.Shared;
 
-namespace Ict.Petra.Client.MPartner
+namespace Ict.Petra.Client.MPartner.Gui
 {
     /// PartnerType Add/Remove Family Members Propagation Selection Dialog.
     /// Called from Partner Edit screen/Partner Types tab (UC_PartnerTypes).
@@ -95,6 +95,7 @@ namespace Ict.Petra.Client.MPartner
                 ((System.Windows.Forms.AnchorStyles)(System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right));
             this.btnOK.Location = new System.Drawing.Point(440, 8);
             this.btnOK.Name = "btnOK";
+todo: move statusbar things to constructor
             this.sbtForm.SetStatusBarText(this.btnOK, "Accept selection and continue.");
             this.btnOK.Click += new System.EventHandler(this.BtnOK_Click);
 

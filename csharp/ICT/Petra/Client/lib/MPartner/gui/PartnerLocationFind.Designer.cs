@@ -6,7 +6,7 @@ using System;
 using Ict.Common.Controls;
 using Ict.Petra.Client.CommonControls;
 
-namespace Ict.Petra.Client.MPartner
+namespace Ict.Petra.Client.MPartner.Gui
 {
     partial class TPartnerLocationFind
     {
@@ -124,6 +124,7 @@ namespace Ict.Petra.Client.MPartner
             this.btnOK.Enabled = false;
             this.btnOK.Location = new System.Drawing.Point(434, 6);
             this.btnOK.Size = new System.Drawing.Size(83, 23);
+todo: move statusbar things to constructor
             this.sbtForm.SetStatusBarText(this.btnOK, "Accept data and continue");
             this.btnOK.Text = "&Accept";
 

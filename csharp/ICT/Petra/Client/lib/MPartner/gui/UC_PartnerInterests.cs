@@ -45,7 +45,7 @@ using System.Globalization;
 using Ict.Petra.Client.App.Core;
 using Ict.Petra.Shared;
 
-namespace Ict.Petra.Client.MPartner
+namespace Ict.Petra.Client.MPartner.Gui
 {
     /// <summary>
     /// UserControl for editing Partner Interest (List/Detail view).
@@ -232,6 +232,8 @@ namespace Ict.Petra.Client.MPartner
             this.btnDeleteRecord.Location = new System.Drawing.Point(664, 58);
             this.btnDeleteRecord.Name = "btnDeleteRecord";
             this.btnDeleteRecord.Size = new System.Drawing.Size(76, 23);
+            move SetStatusBarText to constructor
+            split designer file
             this.SetStatusBarText(this.btnDeleteRecord, "Delete current" + "ly selected Interest");
             this.btnDeleteRecord.TabIndex = 7;
             this.btnDeleteRecord.Text = "     &Delete";

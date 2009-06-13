@@ -40,6 +40,9 @@ using Ict.Petra.Shared;
 using Ict.Petra.Client.App.Core;
 using Ict.Petra.Client.App.Gui;
 
+TODO: split into PartnerAddressChangePropagationSelection.cs and PartnerAddressChangePropagationSelection.Designer.cs
+TODO: move SetStatusBarText calls to constructor; make sure that Catalog.GetString is used
+
 namespace Ict.Petra.Client.MCommon
 {
     /// Partner Address Change Propagation Selection Dialog.
@@ -97,14 +100,18 @@ namespace Ict.Petra.Client.MCommon
                 ((System.Windows.Forms.AnchorStyles)(System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right));
             this.btnOK.Name = "btnOK";
             this.btnOK.Size = new System.Drawing.Size(76, 20);
-            this.sbtForm.SetStatusBarText(this.btnOK, "Accept selection and continue.");
+            this.sbtForm.SetStatusBarText(this.btnOK,
+                Catalog.GetString("" Accept selection and continue.
+                    "));
             this.btnOK.Click += new System.EventHandler(this.BtnOK_Click);
 
             //
             // pnlBtnOKCancelHelpLayout
             //
             this.pnlBtnOKCancelHelpLayout.Location = new System.Drawing.Point(0, 367);
-            this.pnlBtnOKCancelHelpLayout.Name = "pnlBtnOKCancelHelpLayout";
+            this.pnlBtnOKCancelHelpLayout.Name = "
+                    pnlBtnOKCancelHelpLayout
+                    ";
             this.pnlBtnOKCancelHelpLayout.Size = new System.Drawing.Size(392, 34);
 
             //
@@ -113,9 +120,12 @@ namespace Ict.Petra.Client.MCommon
             this.btnCancel.Anchor =
                 ((System.Windows.Forms.AnchorStyles)(System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right));
             this.btnCancel.Location = new System.Drawing.Point(88, 8);
-            this.btnCancel.Name = "btnCancel";
+            this.btnCancel.Name = "
+                    btnCancel
+                    ";
             this.btnCancel.Size = new System.Drawing.Size(76, 20);
-            this.sbtForm.SetStatusBarText(this.btnCancel, "Ignore selection; don't ch" + "ange any Location of the listed Partners.");
+            this.sbtForm.SetStatusBarText(this.btnCancel, Catalog.GetString("
+                    "Ignore selection; don't ch" + "ange any Location of the listed Partners."));
 
             //
             // btnHelp

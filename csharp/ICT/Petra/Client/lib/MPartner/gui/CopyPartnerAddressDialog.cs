@@ -29,7 +29,7 @@ using System.Windows.Forms;
 using Ict.Petra.Client.CommonForms;
 using Ict.Petra.Client.MPartner.Applink;
 
-namespace Ict.Petra.Client.MPartner
+namespace Ict.Petra.Client.MPartner.Gui
 {
     /// <summary>
     /// Description of TCopyPartnerAddressDialogWinForm.

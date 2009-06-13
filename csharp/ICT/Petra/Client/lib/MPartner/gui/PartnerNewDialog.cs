@@ -30,6 +30,7 @@ using System.Collections;
 using System.ComponentModel;
 using System.Windows.Forms;
 using System.Resources;
+using Mono.Unix;
 using Ict.Petra.Client.CommonControls;
 using Ict.Common.Controls;
 using SourceGrid;
@@ -44,12 +45,12 @@ using Ict.Petra.Shared.MPartner.Partner.Data;
 using Ict.Petra.Client.App.Core;
 using Ict.Petra.Client.CommonForms;
 
-namespace Ict.Petra.Client.MPartner
+namespace Ict.Petra.Client.MPartner.Gui
 {
     /// <summary>
     /// Partner New Dialog. Called from Partner Edit screen.
     /// </summary>
-    public class TPartnerNewDialogWinForm : System.Windows.Forms.Form, IFrmPetra
+    public partial class TPartnerNewDialogWinForm : System.Windows.Forms.Form, IFrmPetra
     {
         /// <summary>todoComment</summary>
         public const String StrCantCreateNewPartner = "New Partner can't be created because there are " + "no Installed Sites available!" + "\r\n" +
@@ -182,14 +183,16 @@ namespace Ict.Petra.Client.MPartner
             #endregion
 
             FPetraUtilsObject = new TFrmPetraUtils(AParentFormHandle, this, stbMain);
-            this.FPetraUtilsObject.SetStatusBarText(this.btnOK, "Accept data and continue");
-            this.FPetraUtilsObject.SetStatusBarText(this.btnCancel, "Cancel data entry and close");
-            this.FPetraUtilsObject.SetStatusBarText(this.btnHelp, "Help");
-            this.FPetraUtilsObject.SetStatusBarText(this.cmbAcquisitionCode, "Please select an A" + "cquisition Code");
-            this.FPetraUtilsObject.SetStatusBarText(this.grdInstalledSites, "Please select a Sit" + 'e');
-            this.FPetraUtilsObject.SetStatusBarText(this.cmbPartnerClass, "Please select a Partn" + "er Class");
-            this.FPetraUtilsObject.SetStatusBarText(this.txtPartnerKey, "Please enter a Partner " + "Key or Accept the default Partner Key");
-            this.FPetraUtilsObject.SetStatusBarText(this.txtFamilyPartnerBox, "Please select a Fam" + "ily that the Person should belong to");
+            this.FPetraUtilsObject.SetStatusBarText(this.btnOK, Catalog.GetString("Accept data and continue"));
+            this.FPetraUtilsObject.SetStatusBarText(this.btnCancel, Catalog.GetString("Cancel data entry and close"));
+            this.FPetraUtilsObject.SetStatusBarText(this.btnHelp, Catalog.GetString("Help"));
+            this.FPetraUtilsObject.SetStatusBarText(this.cmbAcquisitionCode, Catalog.GetString("Please select an Acquisition Code"));
+            this.FPetraUtilsObject.SetStatusBarText(this.grdInstalledSites, Catalog.GetString("Please select a Site"));
+            this.FPetraUtilsObject.SetStatusBarText(this.cmbPartnerClass, Catalog.GetString("Please select a Partner Class"));
+            this.FPetraUtilsObject.SetStatusBarText(this.txtPartnerKey,
+                Catalog.GetString("Please enter a Partner Key or Accept the default Partner Key"));
+            this.FPetraUtilsObject.SetStatusBarText(this.txtFamilyPartnerBox,
+                Catalog.GetString("Please select a Family that the Person should belong to"));
 
             FFormSetupFinished = false;
         }

@@ -49,7 +49,7 @@ using Ict.Petra.Shared.RemotedExceptions;
 using Ict.Common.Controls;
 using Ict.Petra.Client.MPartner.Verification;
 
-namespace Ict.Petra.Client.MPartner
+namespace Ict.Petra.Client.MPartner.Gui
 {
     /// <summary>
     /// UserControl that holds the same fields as the Subscription part in the

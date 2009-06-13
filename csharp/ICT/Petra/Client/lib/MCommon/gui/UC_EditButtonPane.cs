@@ -39,7 +39,7 @@ namespace Ict.Petra.Client.MCommon
     /// <summary>
     /// todoComment
     /// </summary>
-    public class TUC_EditButtonPane : TPetraUserControl
+    public partial class TUC_EditButtonPane : TPetraUserControl
     {
         #region Button Texts
 
@@ -94,14 +94,6 @@ namespace Ict.Petra.Client.MCommon
 
         /// <summary>todoComment</summary>
         protected const Int32 constControlHeight = 95;
-
-        /// <summary> Required designer variable. </summary>
-        private System.ComponentModel.IContainer components;
-        private System.Windows.Forms.ImageList imlButtonIcons;
-        private System.Windows.Forms.Button btnResizeButton;
-        private System.Windows.Forms.Button btnLowerButton;
-        private System.Windows.Forms.Button btnMiddleButton;
-        private System.Windows.Forms.Button btnUpperButton;
 
         #region Variables
 
@@ -359,104 +351,6 @@ namespace Ict.Petra.Client.MCommon
         /// </summary>
         public event TEventHandlerButtonResizeClick ButtonResizeClick;
 
-        #region Windows Form Designer generated code
-
-        /// <summary>
-        /// <summary> Required method for Designer support  do not modify the contents of this method with the code editor. </summary>
-        /// </summary>
-        /// <returns>void</returns>
-        private void InitializeComponent()
-        {
-            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(TUC_EditButtonPane));
-            this.components = new  System.ComponentModel.Container();
-            this.imlButtonIcons = new System.Windows.Forms.ImageList(this.components);
-            this.btnResizeButton = new  System.Windows.Forms.Button();
-            this.btnLowerButton = new  System.Windows.Forms.Button();
-            this.btnMiddleButton = new  System.Windows.Forms.Button();
-            this.btnUpperButton = new  System.Windows.Forms.Button();
-            this.SuspendLayout();
-
-            //
-            // imlButtonIcons
-            //
-            this.imlButtonIcons.ImageSize = new System.Drawing.Size(16, 16);
-            this.imlButtonIcons.ImageStream = (System.Windows.Forms.ImageListStreamer)(resources.GetObject('i' + "mlButtonIcons.ImageStream"));
-            this.imlButtonIcons.TransparentColor = System.Drawing.Color.Transparent;
-
-            //
-            // btnResizeButton
-            //
-            this.btnResizeButton.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.btnResizeButton.ImageIndex = 6;
-            this.btnResizeButton.ImageList = this.imlButtonIcons;
-            this.btnResizeButton.Location = new System.Drawing.Point(0, 77);
-            this.btnResizeButton.Name = "btnResizeButton";
-            this.btnResizeButton.Size = new System.Drawing.Size(20, 18);
-            this.btnResizeButton.TabIndex = 3;
-            this.btnResizeButton.Text = "Resize Button";
-            this.btnResizeButton.Click += new System.EventHandler(this.BtnResizeButton_Click);
-            this.btnResizeButton.Enter += new System.EventHandler(this.BtnResizeButton_Enter);
-            this.btnResizeButton.Leave += new System.EventHandler(this.BtnResizeButton_Leave);
-
-            //
-            // btnLowerButton
-            //
-            this.btnLowerButton.ImageAlign = System.Drawing.ContentAlignment.BottomLeft;
-            this.btnLowerButton.ImageList = this.imlButtonIcons;
-            this.btnLowerButton.Location = new System.Drawing.Point(4, 48);
-            this.btnLowerButton.Name = "btnLowerButton";
-            this.btnLowerButton.Size = new System.Drawing.Size(76, 23);
-            this.btnLowerButton.TabIndex = 2;
-            this.btnLowerButton.Text = "    LowerButton";
-            this.btnLowerButton.Click += new System.EventHandler(this.BtnLowerButton_Click);
-            this.btnLowerButton.Enter += new System.EventHandler(this.BtnLowerButton_Enter);
-            this.btnLowerButton.Leave += new System.EventHandler(this.BtnLowerButton_Leave);
-
-            //
-            // btnMiddleButton
-            //
-            this.btnMiddleButton.ImageAlign = System.Drawing.ContentAlignment.BottomLeft;
-            this.btnMiddleButton.ImageList = this.imlButtonIcons;
-            this.btnMiddleButton.Location = new System.Drawing.Point(4, 24);
-            this.btnMiddleButton.Name = "btnMiddleButton";
-            this.btnMiddleButton.Size = new System.Drawing.Size(76, 23);
-            this.btnMiddleButton.TabIndex = 1;
-            this.btnMiddleButton.Text = "       MiddleButton";
-            this.btnMiddleButton.Click += new System.EventHandler(this.BtnMiddleButton_Click);
-            this.btnMiddleButton.Enter += new System.EventHandler(this.BtnMiddleButton_Enter);
-            this.btnMiddleButton.Leave += new System.EventHandler(this.BtnMiddleButton_Leave);
-
-            //
-            // btnUpperButton
-            //
-            this.btnUpperButton.ImageAlign = System.Drawing.ContentAlignment.BottomLeft;
-            this.btnUpperButton.ImageList = this.imlButtonIcons;
-            this.btnUpperButton.Location = new System.Drawing.Point(4, 0);
-            this.btnUpperButton.Name = "btnUpperButton";
-            this.btnUpperButton.Size = new System.Drawing.Size(76, 23);
-            this.btnUpperButton.TabIndex = 0;
-            this.btnUpperButton.Text = "        UpperButton";
-            this.btnUpperButton.Click += new System.EventHandler(this.BtnUpperButton_Click);
-            this.btnUpperButton.Enter += new System.EventHandler(this.BtnUpperButton_Enter);
-            this.btnUpperButton.Leave += new System.EventHandler(this.BtnUpperButton_Leave);
-
-            //
-            // TUC_EditButtonPane
-            //
-            this.BackColor = System.Drawing.SystemColors.Control;
-            this.Controls.Add(this.btnResizeButton);
-            this.Controls.Add(this.btnLowerButton);
-            this.Controls.Add(this.btnMiddleButton);
-            this.Controls.Add(this.btnUpperButton);
-            this.Font = new System.Drawing.Font("Verdana", 8.25f, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, (byte)0);
-            this.Name = "TUC_EditButtonPane";
-            this.Size = new System.Drawing.Size(80, 123);
-            this.Enter += new System.EventHandler(this.TUC_EditButtonPane_Enter);
-            this.ResumeLayout(false);
-        }
-
-        #endregion
-
         #region Creation and Disposal
 
         /// <summary>
@@ -469,27 +363,7 @@ namespace Ict.Petra.Client.MCommon
             //
             InitializeComponent();
 
-            //
-            // TODO: Add any constructor code after InitializeComponent call
-            //
             this.InitializeUserControl();
-        }
-
-        /// <summary>
-        /// <summary> Clean up any resources being used. </summary>
-        /// </summary>
-        /// <returns>void</returns>
-        protected override void Dispose(Boolean Disposing)
-        {
-            if (Disposing)
-            {
-                if (components != null)
-                {
-                    components.Dispose();
-                }
-            }
-
-            base.Dispose(Disposing);
         }
 
         /// <summary>

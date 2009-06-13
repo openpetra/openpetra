@@ -1,4 +1,4 @@
-<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+﻿<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
     <ProjectGuid>{115F2398-E0E0-4F79-854C-BBFC5DEB076F}</ProjectGuid>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
@@ -77,6 +77,9 @@
     <Compile Include="PetraModuleForm.cs" />
     <Compile Include="FormsList.cs" />
     <Compile Include="PetraUserControl.cs" />
+    <Compile Include="PetraUserControl.Designer.cs">
+      <DependentUpon>PetraUserControl.cs</DependentUpon>
+    </Compile>
     <Compile Include="WindowHandling.cs" />
     <EmbeddedResource Include="PetraUserControl.resx">
       <DependentUpon>PetraUserControl.cs</DependentUpon>

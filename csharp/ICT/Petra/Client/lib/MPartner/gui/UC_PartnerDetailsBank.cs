@@ -50,7 +50,7 @@ using Ict.Petra.Client.App.Formatting;
 using Ict.Petra.Client.CommonControls;
 using Ict.Common.Controls;
 
-namespace Ict.Petra.Client.MPartner
+namespace Ict.Petra.Client.MPartner.Gui
 {
     /// UserControl for editing Partner Details for a Partner of Partner Class BANK.
     public class TUC_PartnerDetailsBank : TPetraUserControl

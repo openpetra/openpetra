@@ -28,7 +28,7 @@ using Ict.Petra.Client.App.Gui;
 using Ict.Petra.Shared.MPartner;
 using System.Windows.Forms;
 
-namespace Ict.Petra.Client.MPartner
+namespace Ict.Petra.Client.MPartner.Gui
 {
     /// <summary>
     /// Allows opening the Partner Edit screen from within a Thread (can be a

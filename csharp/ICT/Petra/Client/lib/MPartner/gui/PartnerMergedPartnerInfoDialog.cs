@@ -30,7 +30,7 @@ using System.Windows.Forms;
 using Ict.Petra.Shared;
 using Ict.Petra.Client.CommonForms;
 
-namespace Ict.Petra.Client.MPartner
+namespace Ict.Petra.Client.MPartner.Gui
 {
     /// <summary>
     /// Dialog to display information about a Partner that was

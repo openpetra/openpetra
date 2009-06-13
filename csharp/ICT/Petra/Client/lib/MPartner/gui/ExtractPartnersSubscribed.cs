@@ -36,7 +36,7 @@ using Ict.Common.Controls;
 using Ict.Petra.Client.MCommon.Applink;
 using Ict.Petra.Client.CommonForms;
 
-namespace Ict.Petra.Client.MPartner
+namespace Ict.Petra.Client.MPartner.Gui
 {
     /// Form to show all Partners of an Extract that already are subscribed to the
     /// Publication.

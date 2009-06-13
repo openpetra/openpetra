@@ -49,7 +49,7 @@ using Ict.Common.Applink4GL;
 using Ict.Petra.Client.MCommon.Applink;
 using Ict.Petra.Client.App.Core.RemoteObjects;
 
-namespace Ict.Petra.Client.MPartner
+namespace Ict.Petra.Client.MPartner.Gui
 {
     /// UserControl for editing Partner Extracts (List/Detail view).
     public partial class TExtractSubscriptionAddWinForm : TFrmPetraEdit

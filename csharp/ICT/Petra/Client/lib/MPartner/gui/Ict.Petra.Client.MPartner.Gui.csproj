@@ -150,24 +150,45 @@
     <Compile Include="Threading.cs" />
     <Compile Include="Types.cs" />
     <Compile Include="UC_PartnerDetailsPerson.cs" />
+    <Compile Include="UC_PartnerDetailsPerson.Designer.cs">
+      <DependentUpon>UC_PartnerDetailsPerson.cs</DependentUpon>
+    </Compile>
     <Compile Include="UC_PartnerEdit_CollapsiblePart.cs" />
+    <Compile Include="UC_PartnerEdit_CollapsiblePart.Designer.cs">
+      <DependentUpon>UC_PartnerEdit_CollapsiblePart.cs</DependentUpon>
+    </Compile>
     <Compile Include="UC_PartnerEdit_PartnerTabSet.cs" />
+    <Compile Include="UC_PartnerEdit_PartnerTabSet.Designer.cs">
+      <DependentUpon>UC_PartnerEdit_PartnerTabSet.cs</DependentUpon>
+    </Compile>
     <Compile Include="UC_PartnerFind_ByPartnerDetails.cs" />
     <Compile Include="UC_PartnerFind_ByPartnerDetails.Designer.cs">
       <DependentUpon>UC_PartnerFind_ByPartnerDetails.cs</DependentUpon>
     </Compile>
     <Compile Include="UC_PartnerFind_Criteria.cs" />
+    <Compile Include="UC_PartnerFind_Criteria.Designer.cs">
+      <DependentUpon>UC_PartnerFind_Criteria.cs</DependentUpon>
+    </Compile>
     <Compile Include="UC_PartnerFind_PartnerInfo.cs" />
     <Compile Include="UC_PartnerFind_PartnerInfo.Designer.cs">
       <DependentUpon>UC_PartnerFind_PartnerInfo.cs</DependentUpon>
     </Compile>
     <Compile Include="UC_PartnerFind_PersonnelCriteria_CollapsiblePart.cs" />
+    <Compile Include="UC_PartnerFind_PersonnelCriteria_CollapsiblePart.Designer.cs">
+      <DependentUpon>UC_PartnerFind_PersonnelCriteria_CollapsiblePart.cs</DependentUpon>
+    </Compile>
     <Compile Include="UC_PartnerInfo.cs" />
     <Compile Include="UC_PartnerInfo.Designer.cs">
       <DependentUpon>UC_PartnerInfo.cs</DependentUpon>
     </Compile>
     <Compile Include="UC_PartnerNotes.cs" />
+    <Compile Include="UC_PartnerNotes.Designer.cs">
+      <DependentUpon>UC_PartnerNotes.cs</DependentUpon>
+    </Compile>
     <Compile Include="UC_PartnerTypes.cs" />
+    <Compile Include="UC_PartnerTypes.Designer.cs">
+      <DependentUpon>UC_PartnerTypes.cs</DependentUpon>
+    </Compile>
     <EmbeddedResource Include="PartnerEdit.resx">
       <DependentUpon>PartnerEdit.cs</DependentUpon>
     </EmbeddedResource>

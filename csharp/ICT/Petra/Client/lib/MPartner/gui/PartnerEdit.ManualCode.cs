@@ -57,7 +57,7 @@ using Ict.Common.Data;
 using Ict.Petra.Shared.RemotedExceptions;
 using Ict.Petra.Client.CommonForms;
 
-namespace Ict.Petra.Client.MPartner
+namespace Ict.Petra.Client.MPartner.Gui
 {
     /// <summary>
     /// Partner Edit screen.

@@ -58,6 +58,5 @@
   <ItemGroup>
     <Compile Include="Ict.Petra.Server.App.ClientDomain.CallForwarder.AssemblyInfo.cs" />
     <Compile Include="ClientManagerCallForwarder.cs" />
-    <None Include="Server.sln" />
   </ItemGroup>
 </Project>

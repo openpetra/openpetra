@@ -23,7 +23,7 @@
  * along with OpenPetra.org.  If not, see <http://www.gnu.org/licenses/>.
  *
  ************************************************************************/
-namespace Ict.Petra.Client.MPartner
+namespace Ict.Petra.Client.MPartner.Gui
 {
     /// UserControl for displaying Partner Info data in the Partner Find screen.
     partial class TUC_PartnerFind_PartnerInfo
@@ -58,7 +58,7 @@ namespace Ict.Petra.Client.MPartner
         private void InitializeComponent()
         {
             this.pnlPartnerDetails = new System.Windows.Forms.Panel();
-            this.ucoPartnerInfo = new Ict.Petra.Client.MPartner.TUC_PartnerInfo();
+            this.ucoPartnerInfo = new Ict.Petra.Client.MPartner.Gui.TUC_PartnerInfo();
             this.pnlPartnerDetailsTitle = new System.Windows.Forms.Panel();
             this.lblDetailHeading = new System.Windows.Forms.Label();
             this.btnTogglePartnerDetails = new System.Windows.Forms.Button();
@@ -159,7 +159,7 @@ namespace Ict.Petra.Client.MPartner
             this.ResumeLayout(false);
         }
 
-        private Ict.Petra.Client.MPartner.TUC_PartnerInfo ucoPartnerInfo;
+        private Ict.Petra.Client.MPartner.Gui.TUC_PartnerInfo ucoPartnerInfo;
         private System.Windows.Forms.Button btnTogglePartnerDetails;
         private System.Windows.Forms.Label lblDetailHeading;
         private System.Windows.Forms.Panel pnlPartnerDetailsTitle;

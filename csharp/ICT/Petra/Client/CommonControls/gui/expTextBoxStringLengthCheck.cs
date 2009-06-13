@@ -83,7 +83,7 @@ namespace Ict.Petra.Client.CommonControls
     ///
     /// 4 Recompile the project the UserControl belongs to.
     /// </summary>
-    public class TexpTextBoxStringLengthCheck : System.ComponentModel.Component, IExtenderProvider
+    public partial class TexpTextBoxStringLengthCheck : System.ComponentModel.Component, IExtenderProvider
     {
         /// <summary>todoComment</summary>
         public const String strFoundControlKey = "Key";
@@ -113,8 +113,6 @@ namespace Ict.Petra.Client.CommonControls
         /// <summary>todoComment</summary>
         public const String strUnknownControl = "Unkown control! Databinding System.Object could not be retreived!";
 
-        /// <summary> Required designer variable. </summary>
-        private System.ComponentModel.Container Components;
         private System.Windows.Forms.UserControl UExtenderHost;
         private System.Windows.Forms.Control.ControlCollection UExtenderControlCollection;
         private System.Data.DataTable UFoundControlTable;
@@ -148,20 +146,6 @@ namespace Ict.Petra.Client.CommonControls
             }
         }
 
-
-        #region Windows Form Designer generated code
-
-        /// <summary>
-        /// <summary> Required method for Designer support  do not modify the contents of this method with the code editor. </summary>
-        /// </summary>
-        /// <returns>void</returns>
-        private void InitializeComponent()
-        {
-            this.Components = new System.ComponentModel.Container();
-        }
-
-        #endregion
-
         #region Creation and Disposal
 
         /// <summary>
@@ -190,35 +174,13 @@ namespace Ict.Petra.Client.CommonControls
         public TexpTextBoxStringLengthCheck(System.ComponentModel.IContainer Container)
             : base()
         {
+            Container.Add(this);
+
             //
             // Required for Windows Form Designer support
             //
-            Container.Add(this);
             InitializeComponent();
             InitProvider();
-
-            //
-            // TODO: Add any constructor code after InitializeComponent call
-            //
-        }
-
-        /// <summary>
-        /// <summary> Clean up any resources being used. </summary>
-        /// This is the destructor of this class.
-        ///
-        /// </summary>
-        /// <returns>void</returns>
-        protected override void Dispose(Boolean Disposing)
-        {
-            if (Disposing)
-            {
-                if (Components != null)
-                {
-                    Components.Dispose();
-                }
-            }
-
-            base.Dispose(Disposing);
         }
 
         /// <summary>

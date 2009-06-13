@@ -46,7 +46,7 @@ using Ict.Common.Verification;
 using Ict.Petra.Client.App.Formatting;
 using Ict.Petra.Shared.RemotedExceptions;
 
-namespace Ict.Petra.Client.MPartner
+namespace Ict.Petra.Client.MPartner.Gui
 {
     /// UserControl for editing Partner Foundation Details for a Partner of Partner Class ORGANISATION that is a Foundation.
     public class TUC_PartnerFoundation : System.Windows.Forms.UserControl, IPetraEditUserControl
@@ -760,6 +760,8 @@ namespace Ict.Petra.Client.MPartner
             this.txtName.Location = new System.Drawing.Point(56, 16);
             this.txtName.Name = "txtName";
             this.txtName.Size = new System.Drawing.Size(152, 21);
+todo: split designer file
+todo: move setstatusbar to constructor
             this.FPetraUtilsObject.SetStatusBarText(this.txtName, "Name of the Key Contact");
             this.txtName.TabIndex = 1;
             this.txtName.Text = "TextBox1";

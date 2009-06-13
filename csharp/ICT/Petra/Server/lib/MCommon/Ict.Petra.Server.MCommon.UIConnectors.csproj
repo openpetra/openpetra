@@ -121,7 +121,6 @@
     <Compile Include="Ict.Petra.Server.MCommon.UIConnectors.AssemblyInfo.cs" />
     <Compile Include="FieldOfService.cs" />
     <Compile Include="OfficeSpecificDataLabels.cs" />
-    <None Include="Server.sln" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="Ict.Petra.Server.MCommon.csproj">

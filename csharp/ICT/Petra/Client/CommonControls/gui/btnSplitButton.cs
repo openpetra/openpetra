@@ -80,16 +80,8 @@ namespace Ict.Petra.Client.CommonControls
     ///   from outside the control.
     /// </summary>
     [System.ComponentModel.DefaultBindingPropertyAttribute("SelectedValue")]
-    public class SplitButton : System.Windows.Forms.UserControl
+    public partial class SplitButton : System.Windows.Forms.UserControl
     {
-        /// <summary> Required designer variable. </summary>
-        private System.ComponentModel.IContainer components = null;
-        private System.Windows.Forms.Button SplitButtonBase1;
-        private System.Windows.Forms.ContextMenu mnuMatchStyle;
-        private System.Windows.Forms.MenuItem mnuMatchStartsWith;
-        private System.Windows.Forms.MenuItem mnuMatchEndsWith;
-        private System.Windows.Forms.MenuItem mnuMatchContains;
-        private System.Windows.Forms.MenuItem mnuMatchExact;
         private TControlMode FControlMode;
         private System.Object FLastSelection;
         private bool FReturnToControl = false;
@@ -216,90 +208,6 @@ namespace Ict.Petra.Client.CommonControls
             }
         }
 
-
-        #region Windows Form Designer generated code
-
-        /// <summary>
-        /// <summary> Required method for Designer support  do not modify the contents of this method with the code editor. </summary> <summary> Required method for Designer support  do not modify the contents of this method with the code editor.
-        /// </summary>
-        /// </summary>
-        /// <returns>void</returns>
-        private void InitializeComponent()
-        {
-            this.SplitButtonBase1 = new System.Windows.Forms.Button();
-            this.mnuMatchStyle = new System.Windows.Forms.ContextMenu();
-            this.mnuMatchStartsWith = new System.Windows.Forms.MenuItem();
-            this.mnuMatchEndsWith = new System.Windows.Forms.MenuItem();
-            this.mnuMatchContains = new System.Windows.Forms.MenuItem();
-            this.mnuMatchExact = new System.Windows.Forms.MenuItem();
-            this.SuspendLayout();
-
-            //
-            // SplitButtonBase1
-            //
-//TODO            this.SplitButtonBase1.AlwaysDropDown = true;
-//            this.SplitButtonBase1.CalculateSplitRect = false;
-            this.SplitButtonBase1.Dock = System.Windows.Forms.DockStyle.Fill;
-
-//            this.SplitButtonBase1.HoverLuminosity = 10;
-            this.SplitButtonBase1.ImageAlign = System.Drawing.ContentAlignment.MiddleRight;
-            this.SplitButtonBase1.ImageIndex = 0;
-            this.SplitButtonBase1.Location = new System.Drawing.Point(0, 0);
-            this.SplitButtonBase1.Name = "SplitButtonBase1";
-            this.SplitButtonBase1.Size = new System.Drawing.Size(282, 76);
-
-//            this.SplitButtonBase1.SplitHeight = 76;
-//            this.SplitButtonBase1.SplitWidth = 12;
-            this.SplitButtonBase1.TabIndex = 0;
-            this.SplitButtonBase1.TabStop = false;
-            this.SplitButtonBase1.Text = "SplitButtonBase1";
-            this.SplitButtonBase1.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
-
-            //
-            // mnuMatchStyle
-            //
-            this.mnuMatchStyle.MenuItems.AddRange(new MenuItem[] { this.mnuMatchStartsWith, this.mnuMatchEndsWith, this.mnuMatchContains,
-                                                                   this.mnuMatchExact });
-
-            //
-            // mnuMatchStartsWith
-            //
-            this.mnuMatchStartsWith.Index = 0;
-            this.mnuMatchStartsWith.Text = "Starts with search term --*";
-            this.mnuMatchStartsWith.Click += new System.EventHandler(MnuMatchStartsWith_Click);
-
-            //
-            // mnuMatchEndsWith
-            //
-            this.mnuMatchEndsWith.Index = 1;
-            this.mnuMatchEndsWith.Text = "Ends with search term *--";
-            this.mnuMatchEndsWith.Click += new System.EventHandler(MnuMatchEndsWith_Click);
-
-            //
-            // mnuMatchContains
-            //
-            this.mnuMatchContains.Index = 2;
-            this.mnuMatchContains.Text = "Contains search term *-*";
-            this.mnuMatchContains.Click += new System.EventHandler(this.MnuMatchContains_Click);
-
-            //
-            // mnuMatchExact
-            //
-            this.mnuMatchExact.Index = 3;
-            this.mnuMatchExact.Text = "Exactly matches search term ---";
-            this.mnuMatchExact.Click += new System.EventHandler(this.MnuMatchExact_Click);
-
-            //
-            // SplitButton
-            //
-            this.Controls.Add(this.SplitButtonBase1);
-            this.Name = "SplitButton";
-            this.Size = new System.Drawing.Size(282, 76);
-            this.ResumeLayout(false);
-        }
-
-        #endregion
-
         #region Constructor
 
         /// <summary>
@@ -403,20 +311,5 @@ namespace Ict.Petra.Client.CommonControls
         }
 
         #endregion
-
-        /// <summary> Clean up any resources being used. </summary>
-        /// <returns>void</returns>
-        protected override void Dispose(Boolean Disposing)
-        {
-            if (Disposing)
-            {
-                if (components != null)
-                {
-                    components.Dispose();
-                }
-            }
-
-            base.Dispose(Disposing);
-        }
     }
 }

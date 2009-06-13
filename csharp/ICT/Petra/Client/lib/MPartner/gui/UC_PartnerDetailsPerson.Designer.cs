@@ -29,9 +29,9 @@ using Mono.Unix;
 using Ict.Common.Controls;
 using Ict.Petra.Client.CommonControls;
 
-namespace Ict.Petra.Client.MPartner
+namespace Ict.Petra.Client.MPartner.Gui
 {
-    partial class TPartnerNewDialogWinForm
+    partial class TUC_PartnerDetailsPerson
     {
         /// <summary>
         /// Designer variable used to keep track of non-visual components.
@@ -707,7 +707,7 @@ namespace Ict.Petra.Client.MPartner
             this.pnlBelieverSinceYear.ResumeLayout(false);
             this.ResumeLayout(false);
         }
-       
+
         private System.Windows.Forms.Panel pnlPartnerDetailsPerson;
         private System.Windows.Forms.Label lblAcademicTitle;
         private TCmbAutoPopulated cmbMaritalStatus;

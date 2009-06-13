@@ -23,7 +23,7 @@
  * along with OpenPetra.org.  If not, see <http://www.gnu.org/licenses/>.
  *
  ************************************************************************/
-namespace Ict.Petra.Client.MPartner
+namespace Ict.Petra.Client.MPartner.Gui
 {
     partial class TPartnerNewExtract
     {
@@ -71,6 +71,7 @@ namespace Ict.Petra.Client.MPartner
             //
             // btnOK
             //
+todo: move statusbar things to constructor
             this.sbtForm.SetStatusBarText(this.btnOK, "Accept data and continue");
             this.btnOK.TabIndex = 0;
             this.btnOK.Click += new System.EventHandler(this.BtnOKClick);

@@ -36,9 +36,9 @@ using System.Globalization;
 namespace Ict.Petra.Client.MCommon
 {
     /// <summary>
-    /// Class
+    /// todoComment
     /// </summary>
-    public class TUC_CollapsibleSearchPane : TGrpCollapsible
+    public partial class TUC_CollapsibleSearchPane : TGrpCollapsible
     {
         /// <summary>todoComment</summary>
         protected const Int32 constPanelMarginTop = 15;
@@ -78,21 +78,6 @@ namespace Ict.Petra.Client.MCommon
 
         /// <summary>todoComment</summary>
         protected const String constAND = " AND ";
-
-        /// <summary> Required designer variable. </summary>
-        private System.ComponentModel.IContainer components = null;
-        private System.Windows.Forms.Panel pnlCommonBackGround;
-        private System.Windows.Forms.Panel pnlPanelUpper;
-        private System.Windows.Forms.Panel pnlPanelMiddle;
-        private System.Windows.Forms.Panel pnlPanelLower;
-        private System.Windows.Forms.Panel pnlButtonPanel;
-        private System.Windows.Forms.Button btnInitiateSearch;
-        private System.Windows.Forms.Button btnResetSearch;
-        private System.Windows.Forms.Label lblPanelUpper;
-        private System.Windows.Forms.Label lblPanelMiddle;
-        private System.Windows.Forms.Label lblPanelLower;
-        private System.Windows.Forms.TextBox txtPanelMiddle;
-        private System.Windows.Forms.TextBox txtPanelLower;
 
         /// <summary>todoComment</summary>
         protected int FPanelMarginTop;
@@ -480,126 +465,6 @@ namespace Ict.Petra.Client.MCommon
         /// </summary>
         public event TTextBoxTextDeleted TextBoxTextDeleted;
 
-        #region Windows Form Designer generated code
-
-        /// <summary>
-        /// <summary> Required method for Designer support  do not modify the contents of this method with the code editor. </summary> <summary> Required method for Designer support  do not modify the contents of this method with the code editor.
-        /// </summary>
-        /// </summary>
-        /// <returns>void</returns>
-        private void InitializeComponent()
-        {
-            this.pnlCommonBackGround = new System.Windows.Forms.Panel();
-            this.pnlButtonPanel = new System.Windows.Forms.Panel();
-            this.btnResetSearch = new System.Windows.Forms.Button();
-            this.btnInitiateSearch = new System.Windows.Forms.Button();
-            this.pnlPanelLower = new System.Windows.Forms.Panel();
-            this.pnlPanelMiddle = new System.Windows.Forms.Panel();
-            this.pnlPanelUpper = new System.Windows.Forms.Panel();
-            this.pnlCommonBackGround.SuspendLayout();
-            this.pnlButtonPanel.SuspendLayout();
-            this.SuspendLayout();
-
-            //
-            // pnlCommonBackGround
-            //
-            this.pnlCommonBackGround.AccessibleDescription = " ";
-            this.pnlCommonBackGround.BackColor = System.Drawing.SystemColors.Control;
-            this.pnlCommonBackGround.Controls.Add(this.pnlButtonPanel);
-            this.pnlCommonBackGround.Controls.Add(this.pnlPanelLower);
-            this.pnlCommonBackGround.Controls.Add(this.pnlPanelMiddle);
-            this.pnlCommonBackGround.Controls.Add(this.pnlPanelUpper);
-            this.pnlCommonBackGround.Location = new System.Drawing.Point(5, 20);
-            this.pnlCommonBackGround.Name = "pnlCommonBackGround";
-            this.pnlCommonBackGround.Size = new System.Drawing.Size(440, 117);
-            this.pnlCommonBackGround.TabIndex = 3;
-
-            //
-            // pnlButtonPanel
-            //
-            this.pnlButtonPanel.Controls.Add(this.btnResetSearch);
-            this.pnlButtonPanel.Controls.Add(this.btnInitiateSearch);
-            this.pnlButtonPanel.Dock = System.Windows.Forms.DockStyle.Top;
-            this.pnlButtonPanel.Location = new System.Drawing.Point(0, 69);
-            this.pnlButtonPanel.Name = "pnlButtonPanel";
-            this.pnlButtonPanel.Size = new System.Drawing.Size(440, 23);
-            this.pnlButtonPanel.TabIndex = 3;
-            this.pnlButtonPanel.Resize += new System.EventHandler(this.PnlButtonPanel_Resize);
-
-            //
-            // btnResetSearch
-            //
-            this.btnResetSearch.Dock = System.Windows.Forms.DockStyle.Right;
-            this.btnResetSearch.Location = new System.Drawing.Point(340, 0);
-            this.btnResetSearch.Name = "btnResetSearch";
-            this.btnResetSearch.Size = new System.Drawing.Size(100, 23);
-            this.btnResetSearch.TabIndex = 1;
-            this.btnResetSearch.Text = "Reset Search";
-            this.btnResetSearch.Click += new System.EventHandler(this.BtnResetSearch_Click);
-
-            //
-            // btnInitiateSearch
-            //
-            this.btnInitiateSearch.Dock = System.Windows.Forms.DockStyle.Left;
-            this.btnInitiateSearch.Location = new System.Drawing.Point(0, 0);
-            this.btnInitiateSearch.Name = "btnInitiateSearch";
-            this.btnInitiateSearch.Size = new System.Drawing.Size(100, 23);
-            this.btnInitiateSearch.TabIndex = 0;
-            this.btnInitiateSearch.Text = "&Search";
-            this.btnInitiateSearch.Click += new System.EventHandler(this.BtnInitiateSearch_Click);
-
-            //
-            // pnlPanelLower
-            //
-            this.pnlPanelLower.BackColor = System.Drawing.SystemColors.Control;
-            this.pnlPanelLower.Dock = System.Windows.Forms.DockStyle.Top;
-            this.pnlPanelLower.Location = new System.Drawing.Point(0, 46);
-            this.pnlPanelLower.Name = "pnlPanelLower";
-            this.pnlPanelLower.Size = new System.Drawing.Size(440, 23);
-            this.pnlPanelLower.TabIndex = 2;
-            this.pnlPanelLower.Resize += new System.EventHandler(this.PnlPanelLower_Resize);
-
-            //
-            // pnlPanelMiddle
-            //
-            this.pnlPanelMiddle.BackColor = System.Drawing.SystemColors.Control;
-            this.pnlPanelMiddle.Dock = System.Windows.Forms.DockStyle.Top;
-            this.pnlPanelMiddle.Location = new System.Drawing.Point(0, 23);
-            this.pnlPanelMiddle.Name = "pnlPanelMiddle";
-            this.pnlPanelMiddle.Size = new System.Drawing.Size(440, 23);
-            this.pnlPanelMiddle.TabIndex = 1;
-            this.pnlPanelMiddle.Resize += new System.EventHandler(this.PnlPanelMiddle_Resize);
-
-            //
-            // pnlPanelUpper
-            //
-            this.pnlPanelUpper.BackColor = System.Drawing.SystemColors.Control;
-            this.pnlPanelUpper.Dock = System.Windows.Forms.DockStyle.Top;
-            this.pnlPanelUpper.Location = new System.Drawing.Point(0, 0);
-            this.pnlPanelUpper.Name = "pnlPanelUpper";
-            this.pnlPanelUpper.Size = new System.Drawing.Size(440, 23);
-            this.pnlPanelUpper.TabIndex = 0;
-            this.pnlPanelUpper.Resize += new System.EventHandler(this.PnlPanelUpper_Resize);
-
-            //
-            // TUC_CollapsibleSearchPane
-            //
-            this.BackColor = System.Drawing.SystemColors.Control;
-            this.Caption = "<Table 2 Maintain> ";
-            this.Controls.Add(this.pnlCommonBackGround);
-            this.Font = new System.Drawing.Font("Verdana", 8.25f, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, (byte)0);
-            this.Name = "TUC_CollapsibleSearchPane";
-            this.Size = new System.Drawing.Size(451, 152);
-            this.SubCaption = "Find";
-            this.CollapsingEvent += new CollapsingEventHandler(this.TUC_CollapsibleSearchPane_CollapsingEvent);
-            this.Controls.SetChildIndex(this.pnlCommonBackGround, 0);
-            this.pnlCommonBackGround.ResumeLayout(false);
-            this.pnlButtonPanel.ResumeLayout(false);
-            this.ResumeLayout(false);
-        }
-
-        #endregion
-
         #region Creation and Disposal
 
         /// <summary>
@@ -629,23 +494,6 @@ namespace Ict.Petra.Client.MCommon
             PanelVisibleButton = true;
             SelectWithEnter = true;
             PreventCollapsing = false;
-        }
-
-        /// <summary>
-        /// <summary> Clean up any resources being used. </summary>
-        /// </summary>
-        /// <returns>void</returns>
-        protected override void Dispose(Boolean Disposing)
-        {
-            if (Disposing)
-            {
-                if (components != null)
-                {
-                    components.Dispose();
-                }
-            }
-
-            base.Dispose(Disposing);
         }
 
         /// <summary>

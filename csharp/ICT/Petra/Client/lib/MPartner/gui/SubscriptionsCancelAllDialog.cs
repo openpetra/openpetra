@@ -39,7 +39,7 @@ using Ict.Common.Controls;
 using Ict.Petra.Client.CommonForms;
 using Ict.Common.Resources;
 
-namespace Ict.Petra.Client.MPartner
+namespace Ict.Petra.Client.MPartner.Gui
 {
     /// Cancel All Subscriptions Dialog. Called from Subscriptions Tab on Partner
     /// Edit screen and from 'Deactivate Partner' Dialog.
@@ -103,6 +103,7 @@ namespace Ict.Petra.Client.MPartner
             //
             // btnOK
             //
+todo: move statusbar things to constructor
             this.btnOK.Location = new System.Drawing.Point(376, 9);
             this.btnOK.Size = new System.Drawing.Size(90, 21);
             this.sbtForm.SetStatusBarText(this.btnOK, "Accept data and continue");

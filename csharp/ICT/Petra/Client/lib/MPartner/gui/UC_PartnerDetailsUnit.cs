@@ -42,7 +42,7 @@ using Ict.Petra.Shared.MPartner;
 using Ict.Petra.Client.App.Core;
 using Ict.Petra.Client.App.Formatting;
 
-namespace Ict.Petra.Client.MPartner
+namespace Ict.Petra.Client.MPartner.Gui
 {
     /// UserControl for editing Partner Details for a Partner of Partner Class UNIT.
     public class TUC_PartnerDetailsUnit : TPetraUserControl

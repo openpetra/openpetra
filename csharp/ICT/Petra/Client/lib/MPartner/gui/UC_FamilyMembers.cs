@@ -45,7 +45,7 @@ using Ict.Common.Controls;
 using Ict.Petra.Client.CommonControls;
 using Ict.Petra.Client.CommonForms;
 
-namespace Ict.Petra.Client.MPartner
+namespace Ict.Petra.Client.MPartner.Gui
 {
     /// UserControl for editing Family Members for a Partner of Partner Class FAMILY.
     public class TUC_FamilyMembers : System.Windows.Forms.UserControl, IPetraEditUserControl
@@ -269,6 +269,8 @@ namespace Ict.Petra.Client.MPartner
                                                   SourceGrid.GridSpecialKeys.Enter) |
                                                  SourceGrid.GridSpecialKeys.Escape) |
                                                 SourceGrid.GridSpecialKeys.Control) | SourceGrid.GridSpecialKeys.Shift)));
+todo: move statusbar things to constructor
+todo: split designer file
             this.FPetraUtilsObject.SetStatusBarText(this.grdFamilyMembers, "Family Me" + "mbers List");
             this.grdFamilyMembers.TabIndex = 0;
             this.grdFamilyMembers.TabStop = true;

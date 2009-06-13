@@ -38,7 +38,9 @@ using Ict.Common.Verification;
 using Ict.Petra.Shared;
 using Ict.Petra.Shared.MPartner.Partner.Data;
 
-namespace Ict.Petra.Client.MPartner
+TODO : move statusbar things to constructor
+TODO : split Designer File
+namespace Ict.Petra.Client.MPartner.Gui
 {
     /// Deactivate Partner Dialog.
     /// It allows the full 'deactivation' of a Partner in one go.

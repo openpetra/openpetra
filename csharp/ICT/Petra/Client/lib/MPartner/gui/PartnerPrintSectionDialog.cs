@@ -39,7 +39,7 @@ using Ict.Petra.Client.MPartner;
 using Ict.Petra.Client.CommonForms;
 using Ict.Common.Controls;
 
-namespace Ict.Petra.Client.MPartner
+namespace Ict.Petra.Client.MPartner.Gui
 {
     /// A Dialog screen via can be printed sections reports of PartnerEdit screen.
     /// This screen uses integers to identify the selected tab. Tabs are:
@@ -100,6 +100,7 @@ namespace Ict.Petra.Client.MPartner
             //
             // btnOK
             //
+todo: move statusbar things to constructor
             this.btnOK.Location = new System.Drawing.Point(184, 8);
             this.btnOK.Name = "btnOK";
             this.sbtForm.SetStatusBarText(this.btnOK, "Print All Selected Reports");

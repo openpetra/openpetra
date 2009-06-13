@@ -39,7 +39,7 @@ using Ict.Petra.Shared.MPartner;
 using Ict.Petra.Shared.MPartner.Mailroom.Data;
 using Ict.Petra.Shared.MPartner.Partner.Data;
 
-namespace Ict.Petra.Client.MPartner
+namespace Ict.Petra.Client.MPartner.Gui
 {
     interface IPartnerInfoMethods
     {
@@ -355,6 +355,10 @@ namespace Ict.Petra.Client.MPartner
             this.txtAcquisitionCode.Text = Catalog.GetString("MAILROOM");
             this.lblNoPartner.Text = Catalog.GetString("No Partner to display.");
             #endregion
+
+            // TODO: need PetraUtilsObject
+            // this.SetStatusBarText(this.tabPartnerDetailInfo, "Select a Tab for more information about this Partner");
+
 
             // manual translation is necessary because of line break
             lblLoadingPartnerLocation.Text = Catalog.GetString("Loading...") + Environment.NewLine + Catalog.GetString("Please wait.");

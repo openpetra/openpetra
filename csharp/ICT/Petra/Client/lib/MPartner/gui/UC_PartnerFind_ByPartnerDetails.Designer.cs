@@ -70,8 +70,8 @@ namespace Ict.Petra.Client.MPartner.Gui
             this.grpCriteria = new System.Windows.Forms.GroupBox();
             this.linCriteriaDivider = new DevAge.Windows.Forms.Line();
             this.btnCustomCriteriaDemo = new System.Windows.Forms.Button();
-            this.ucoPartnerFindCriteria = new Ict.Petra.Client.MPartner.TUC_PartnerFindCriteria();
-            this.ucoPartnerInfo = new Ict.Petra.Client.MPartner.TUC_PartnerFind_PartnerInfo();
+            this.ucoPartnerFindCriteria = new Ict.Petra.Client.MPartner.Gui.TUC_PartnerFindCriteria();
+            this.ucoPartnerInfo = new Ict.Petra.Client.MPartner.Gui.TUC_PartnerFind_PartnerInfo();
             this.grpResult = new System.Windows.Forms.GroupBox();
             this.grdResult = new Ict.Common.Controls.TSgrdDataGridPaged();
             this.pnlBlankSearchResult = new System.Windows.Forms.Panel();

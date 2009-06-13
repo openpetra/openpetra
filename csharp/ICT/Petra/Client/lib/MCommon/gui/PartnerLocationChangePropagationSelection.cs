@@ -41,6 +41,9 @@ using Ict.Petra.Shared;
 using Ict.Petra.Client.App.Core;
 using Ict.Petra.Client.App.Gui;
 
+TODO: split into PartnerAddressChangePropagationSelection.cs and PartnerAddressChangePropagationSelection.Designer.cs
+TODO: move SetStatusBarText calls to constructor; make sure that Catalog.GetString is used
+
 namespace Ict.Petra.Client.MCommon
 {
     /// Partner Location Change Propagation Selection Dialog.

@@ -40,7 +40,7 @@ using Ict.Common.Controls;
 using System.Globalization;
 using Ict.Petra.Shared.MPartner;
 
-namespace Ict.Petra.Client.MPartner
+namespace Ict.Petra.Client.MPartner.Gui
 {
     /// <summary>
     /// A UserControl that holds the same information as the Petra 4GL Partner Types
@@ -50,12 +50,8 @@ namespace Ict.Petra.Client.MPartner
     /// all the layout and fields and verification rules in other places than the
     /// Partner Edit screen.
     /// </summary>
-    public class TUCPartnerTypes : TPetraUserControl
+    public partial class TUCPartnerTypes : TPetraUserControl
     {
-        /// <summary> Required designer variable. </summary>
-        private System.ComponentModel.IContainer components;
-        private TSgrdDataGrid grdPartnerTypes;
-
         /// <summary>holds a reference to the Proxy System.Object of the Serverside UIConnector</summary>
         private IPartnerUIConnectorsPartnerEdit FPartnerEditUIConnector;
 
@@ -97,62 +93,6 @@ namespace Ict.Petra.Client.MPartner
         /// <summary>todoComment</summary>
         public event THookupPartnerEditDataChangeEventHandler HookupDataChange;
 
-        #region Windows Form Designer generated code
-
-        /// <summary>
-        /// <summary> Required method for Designer support  do not modify the contents of this method with the code editor. </summary> <summary> Required method for Designer support  do not modify the contents of this method with the code editor.
-        /// </summary>
-        /// </summary>
-        /// <returns>void</returns>
-        private void InitializeComponent()
-        {
-            this.components = new System.ComponentModel.Container();
-            this.grdPartnerTypes = new Ict.Common.Controls.TSgrdDataGrid();
-            this.SuspendLayout();
-
-            //
-            // grdPartnerTypes
-            //
-            this.grdPartnerTypes.AlternatingBackgroundColour = System.Drawing.Color.FromArgb(230, 230, 230);
-            this.grdPartnerTypes.Anchor =
-                ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top |
-                                                        System.Windows.Forms.AnchorStyles.Bottom) |
-                                                       System.Windows.Forms.AnchorStyles.Left) | System.Windows.Forms.AnchorStyles.Right)));
-            this.grdPartnerTypes.AutoFindColumn = ((Int16)(1));
-            this.grdPartnerTypes.AutoFindMode = Ict.Common.Controls.TAutoFindModeEnum.FirstCharacter;
-            this.grdPartnerTypes.BackColor = System.Drawing.SystemColors.ControlDark;
-            this.grdPartnerTypes.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
-            this.grdPartnerTypes.DeleteQuestionMessage = "You have chosen to delete t" + "his record.'#13#10#13#10'Dou you really want to delete it?";
-            this.grdPartnerTypes.FixedRows = 1;
-            this.grdPartnerTypes.Location = new System.Drawing.Point(4, 6);
-            this.grdPartnerTypes.MinimumHeight = 1;
-            this.grdPartnerTypes.Name = "grdPartnerTypes";
-            this.grdPartnerTypes.Size = new System.Drawing.Size(410, 316);
-            this.grdPartnerTypes.SpecialKeys =
-                ((SourceGrid.GridSpecialKeys)((((((SourceGrid.GridSpecialKeys.Arrows |
-                                                   SourceGrid.GridSpecialKeys.PageDownUp) |
-                                                  SourceGrid.GridSpecialKeys.Enter) |
-                                                 SourceGrid.GridSpecialKeys.Escape) |
-                                                SourceGrid.GridSpecialKeys.Control) | SourceGrid.GridSpecialKeys.Shift)));
-            this.SetStatusBarText(this.grdPartnerTypes,
-                "Special Types List. Tick/untick selected Special Type with <Enter> or <Space> key or by double-clicking desired Special Type.");
-            this.grdPartnerTypes.TabIndex = 0;
-            this.grdPartnerTypes.TabStop = true;
-            this.grdPartnerTypes.DoubleClickCell += new TDoubleClickCellEventHandler(this.GrdPartnerTypes_DoubleClickCell);
-            this.grdPartnerTypes.SpaceKeyPressed += new TKeyPressedEventHandler(this.GrdPartnerTypes_SpaceKeyPressed);
-            this.grdPartnerTypes.EnterKeyPressed += new TKeyPressedEventHandler(this.GrdPartnerTypes_EnterKeyPressed);
-
-            //
-            // TUCPartnerTypes
-            //
-            this.Controls.Add(this.grdPartnerTypes);
-            this.Name = "TUCPartnerTypes";
-            this.Size = new System.Drawing.Size(574, 336);
-            this.ResumeLayout(false);
-        }
-
-        #endregion
-
         /// <summary>
         /// constructor
         /// </summary>
@@ -165,23 +105,9 @@ namespace Ict.Petra.Client.MPartner
 
             // define the screen's logic
             FLogic = new TUCPartnerTypesLogic();
-        }
 
-        /// <summary>
-        /// <summary> Clean up any resources being used. </summary>
-        /// </summary>
-        /// <returns>void</returns>
-        protected override void Dispose(Boolean Disposing)
-        {
-            if (Disposing)
-            {
-                if (components != null)
-                {
-                    components.Dispose();
-                }
-            }
-
-            base.Dispose(Disposing);
+            // TODO: add PetraUtilsObject from parent form
+            //this.SetStatusBarText(this.grdPartnerTypes, "Special Types List. Tick/untick selected Special Type with <Enter> or <Space> key or by double-clicking desired Special Type.");
         }
 
         private void RethrowRecalculateScreenParts(System.Object sender, TRecalculateScreenPartsEventArgs e)

@@ -31,7 +31,7 @@ using System.Windows.Forms;
 using Mono.Unix;
 using Ict.Petra.Client.CommonForms;
 
-namespace Ict.Petra.Client.MPartner
+namespace Ict.Petra.Client.MPartner.Gui
 {
     /// <summary>
     /// UserControl for displaying Partner Info data in the Partner

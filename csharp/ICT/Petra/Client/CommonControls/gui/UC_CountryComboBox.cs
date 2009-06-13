@@ -50,11 +50,8 @@ namespace Ict.Petra.Client.CommonControls
     ///          DataTable - otherwise a changed Country selection will not be
     ///          automatically reflected in a DataTable/DataSet!
     /// </summary>
-    public class TUC_CountryComboBox : System.Windows.Forms.UserControl
+    public partial class TUC_CountryComboBox : System.Windows.Forms.UserControl
     {
-        /// <summary> Required designer variable. </summary>
-        private System.ComponentModel.IContainer components = null;
-        private TCmbLabelled cmbCountry;
         private DataTable FDataCache_CountryListTable;
         private Boolean FUserControlInitialised;
         private Boolean FAddNotSetValue = false;
@@ -81,60 +78,6 @@ namespace Ict.Petra.Client.CommonControls
         /// </summary>
         public event TSelectedValueChangedEventHandler SelectedValueChanged;
 
-        #region Windows Form Designer generated code
-
-        /// <summary>
-        /// <summary> Required method for Designer support  do not modify the contents of this method with the code editor. </summary> <summary> Required method for Designer support  do not modify the contents of this method with the code editor.
-        /// </summary>
-        /// </summary>
-        /// <returns>void</returns>
-        private void InitializeComponent()
-        {
-            this.cmbCountry = new TCmbLabelled();
-            this.SuspendLayout();
-
-            //
-            // cmbCountry
-            //
-            this.cmbCountry.Anchor = System.Windows.Forms.AnchorStyles.Top |
-                                     System.Windows.Forms.AnchorStyles.Left |
-                                     System.Windows.Forms.AnchorStyles.Right;
-            this.cmbCountry.BackColor = System.Drawing.SystemColors.Control;
-            this.cmbCountry.ColumnWidthCol1 = 50;
-            this.cmbCountry.ColumnWidthCol2 = 200;
-            this.cmbCountry.ColumnWidthCol3 = 0;
-            this.cmbCountry.ColumnWidthCol4 = 0;
-            this.cmbCountry.ComboBoxWidth = 50;
-            this.cmbCountry.DisplayInColumn1 = "p_country_code_c";
-            this.cmbCountry.DisplayInColumn2 = "p_country_name_c";
-            this.cmbCountry.DisplayInColumn3 = null;
-            this.cmbCountry.DisplayInColumn4 = null;
-            this.cmbCountry.DisplayMember = "";
-            this.cmbCountry.Font = new System.Drawing.Font("Verdana",
-                8.25f,
-                System.Drawing.FontStyle.Bold,
-                System.Drawing.GraphicsUnit.Point,
-                (Byte)0);
-            this.cmbCountry.ImageColumn = 0;
-            this.cmbCountry.Images = null;
-            this.cmbCountry.LabelDisplaysColumn = "p_country_name_c";
-            this.cmbCountry.Location = new System.Drawing.Point(0, 0);
-            this.cmbCountry.Name = "cmbCountry";
-            this.cmbCountry.Size = new System.Drawing.Size(388, 21);
-            this.cmbCountry.TabIndex = 0;
-            this.cmbCountry.ValueMember = "";
-
-            //
-            // TUC_CountryComboBox
-            //
-            this.Controls.Add(this.cmbCountry);
-            this.Name = "TUC_CountryComboBox";
-            this.Size = new System.Drawing.Size(388, 22);
-            this.ResumeLayout(false);
-        }
-
-        #endregion
-
         private void CmbCombobox_SelectedValueChanged(System.Object sender, EventArgs e)
         {
             if (SelectedValueChanged != null)
@@ -153,23 +96,6 @@ namespace Ict.Petra.Client.CommonControls
             // Required for Windows Form Designer support
             //
             InitializeComponent();
-        }
-
-        /// <summary>
-        /// <summary> Clean up any resources being used. </summary>
-        /// </summary>
-        /// <returns>void</returns>
-        protected override void Dispose(Boolean Disposing)
-        {
-            if (Disposing)
-            {
-                if (components != null)
-                {
-                    components.Dispose();
-                }
-            }
-
-            base.Dispose(Disposing);
         }
 
         /// <summary>

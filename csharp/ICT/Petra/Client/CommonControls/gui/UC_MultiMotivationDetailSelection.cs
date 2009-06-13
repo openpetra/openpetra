@@ -51,64 +51,8 @@ namespace Ict.Petra.Client.CommonControls
     ///
     /// @Comment This was copied and modified from UC_MultiMotivationDetailSelection.pas
     /// </summary>
-    public class TUC_MultiMotivationDetailSelection : System.Windows.Forms.UserControl
+    public partial class TUC_MultiMotivationDetailSelection : System.Windows.Forms.UserControl
     {
-        /// <summary> Required designer variable. </summary>
-        private System.ComponentModel.IContainer components = null;
-        private TClbVersatile clbMotivations;
-
-        //private DataTable FDataCache_MotivationDetailsTable;
-
-        #region Windows Form Designer generated code
-
-        /// <summary>
-        /// <summary> Required method for Designer support  do not modify the contents of this method with the code editor. </summary> <summary> Required method for Designer support  do not modify the contents of this method with the code editor.
-        /// </summary>
-        /// </summary>
-        /// <returns>void</returns>
-        private void InitializeComponent()
-        {
-            this.clbMotivations = new TClbVersatile();
-            this.SuspendLayout();
-
-            //
-            // clbMotivations
-            //
-            this.clbMotivations.AlternatingBackgroundColour = System.Drawing.Color.FromArgb(230, 230, 230);
-            this.clbMotivations.Anchor = System.Windows.Forms.AnchorStyles.Top |
-                                         System.Windows.Forms.AnchorStyles.Bottom |
-                                         System.Windows.Forms.AnchorStyles.Left |
-                                         System.Windows.Forms.AnchorStyles.Right;
-            this.clbMotivations.BackColor = System.Drawing.SystemColors.ControlDark;
-            this.clbMotivations.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
-            this.clbMotivations.DeleteQuestionMessage = "You have chosen to delete t" + "his record.'#13#10#13#10'Do you really want to delete it?";
-            this.clbMotivations.FixedRows = 1;
-            this.clbMotivations.Location = new System.Drawing.Point(192, 103);
-            this.clbMotivations.MinimumHeight = 19;
-            this.clbMotivations.Name = "clbMotivations";
-            this.clbMotivations.Size = new System.Drawing.Size(337, 119);
-            this.clbMotivations.SpecialKeys = SourceGrid.GridSpecialKeys.Arrows |
-                                              SourceGrid.GridSpecialKeys.PageDownUp |
-                                              SourceGrid.GridSpecialKeys.Enter |
-                                              SourceGrid.GridSpecialKeys.Escape |
-                                              SourceGrid.GridSpecialKeys.Control |
-                                              SourceGrid.GridSpecialKeys.Shift;
-            this.clbMotivations.TabIndex = 4;
-            this.clbMotivations.TabStop = true;
-
-            //
-            // TUC_MultiMotivationDetailSelection
-            //
-            this.BackColor = System.Drawing.SystemColors.Control;
-            this.Controls.Add(this.clbMotivations);
-            this.Font = new System.Drawing.Font("Verdana", 8.25f, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, (Byte)0);
-            this.Name = "TUC_MultiMotivationDetailSelection";
-            this.Size = new System.Drawing.Size(242, 22);
-            this.ResumeLayout(false);
-        }
-
-        #endregion
-
         /// <summary>
         /// constructor
         /// </summary>

@@ -35,7 +35,7 @@ using Ict.Petra.Client.CommonControls;
 using Ict.Petra.Client.App.Gui;
 using Ict.Petra.Client.CommonForms;
 
-namespace Ict.Petra.Client.MPartner
+namespace Ict.Petra.Client.MPartner.Gui
 {
     /// Partner Find screen Options dialog:
     ///   - allows dynamic adding/removing of search criteria fields such as

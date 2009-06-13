@@ -151,6 +151,8 @@ namespace Ict.Petra.Client.MPartner.Gui
             set
             {
                 FPetraUtilsObject = value;
+
+// todo: no resourcestrings
                 FPetraUtilsObject.SetStatusBarText(btnSearch, Resourcestrings.StrSearchButtonHelpText);
                 FPetraUtilsObject.SetStatusBarText(btnClearCriteria, Resourcestrings.StrClearCriteriaButtonHelpText);
                 FPetraUtilsObject.SetStatusBarText(grdResult, Resourcestrings.StrResultGridHelpText + Resourcestrings.StrPartnerFindSearchTargetText);

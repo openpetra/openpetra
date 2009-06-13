@@ -26,7 +26,7 @@
 using System;
 using Ict.Petra.Shared.MPartner;
 
-namespace Ict.Petra.Client.MPartner
+namespace Ict.Petra.Client.MPartner.Gui
 {
     /// <summary>Event Handlers</summary>
     public delegate void THookupPartnerEditDataChangeEventHandler(System.Object Sender, THookupPartnerEditDataChangeEventArgs e);

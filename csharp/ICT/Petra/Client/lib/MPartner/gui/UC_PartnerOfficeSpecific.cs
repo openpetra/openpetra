@@ -40,7 +40,7 @@ using Ict.Petra.Shared.MCommon;
 using Ict.Common.Controls;
 using Ict.Petra.Client.CommonForms;
 
-namespace Ict.Petra.Client.MPartner
+namespace Ict.Petra.Client.MPartner.Gui
 {
     /// UserControl for editing Office Specific Data for a Partner.
     public class TUC_PartnerOfficeSpecific : System.Windows.Forms.UserControl

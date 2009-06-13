@@ -49,7 +49,7 @@ using Ict.Petra.Client.App.Core;
 using Ict.Petra.Client.App.Gui;
 using Ict.Petra.Shared;
 
-namespace Ict.Petra.Client.MPartner
+namespace Ict.Petra.Client.MPartner.Gui
 {
     /// <summary>
     /// UserControl for editing Partner Subscription (List/Detail view).
@@ -217,6 +217,8 @@ namespace Ict.Petra.Client.MPartner
                                                   SourceGrid.GridSpecialKeys.Enter) |
                                                  SourceGrid.GridSpecialKeys.Escape) |
                                                 SourceGrid.GridSpecialKeys.Control) | SourceGrid.GridSpecialKeys.Shift)));
+            move SetStatusBarText to constructor
+            split designer file
             this.SetStatusBarText(this.grdRecordList, "Subscriptions list");
             this.grdRecordList.TabIndex = 0;
             this.grdRecordList.TabStop = true;

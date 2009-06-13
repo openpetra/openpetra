@@ -37,6 +37,9 @@ namespace Ict.Petra.Client.MCommon
     public class TSelectionDialog : System.Windows.Forms.Form
     {
         // TODO: TFrmPetraDialog
+TODO: split into PartnerAddressChangePropagationSelection.cs and PartnerAddressChangePropagationSelection.Designer.cs
+TODO: move SetStatusBarText calls to constructor; make sure that Catalog.GetString is used
+
         /// <summary> Required designer variable. </summary>
         private System.ComponentModel.IContainer components = null;
 

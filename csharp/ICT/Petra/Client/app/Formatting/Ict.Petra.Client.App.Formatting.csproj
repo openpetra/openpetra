@@ -58,7 +58,6 @@
     <Compile Include="Ict.Petra.Client.App.Formatting.AssemblyInfo.cs" />
     <Compile Include="DataBinding.cs" />
     <Compile Include="LayoutManagers.cs" />
-    <None Include="Client.sln" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Gui\Ict.Petra.Client.App.Gui.csproj">

@@ -45,11 +45,8 @@ namespace Ict.Petra.Client.CommonForms
     /// @Comment All UserControls that are used in Petra should inherit from this
     ///   UserControl!
     /// </summary>
-    public class TPetraUserControl : System.Windows.Forms.UserControl
+    public partial class TPetraUserControl : System.Windows.Forms.UserControl
     {
-        /// <summary> Required designer variable. </summary>
-        private System.ComponentModel.IContainer components;
-
         // TODO statusbar text
         private System.Windows.Forms.ToolTip tipUC;
 
@@ -89,29 +86,6 @@ namespace Ict.Petra.Client.CommonForms
                 FVerificationResultCollection = value;
             }
         }
-
-
-        #region Windows Form Designer generated code
-
-        /// <summary>
-        /// <summary> Required method for Designer support  do not modify the contents of this method with the code editor. </summary> <summary> Required method for Designer support  do not modify the contents of this method with the code editor.
-        /// </summary>
-        /// </summary>
-        /// <returns>void</returns>
-        private void InitializeComponent()
-        {
-            this.components = new System.ComponentModel.Container();
-            this.tipUC = new System.Windows.Forms.ToolTip(this.components);
-
-            //
-            // TPetraUserControl
-            //
-            this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 13F);  // IMPORTANT ASSIGNMENT FOR ALL DESCENDANT USERCONTROLS THAT HAVE A DIFFERENT FONT/FONTSIZE THAN THE STANDARD ('VERDANA, 8.25F'): THIS ALLOWS CORRECT SCALING ON NON-96DPI
-                                                                           // (E.G. 'LARGE FONTS (120DPI)') DISPLAY SETTINGS!
-            this.Name = "TPetraUserControl";
-        }
-
-        #endregion
 
         /// <summary>
         /// Special property to determine whether our code is running in the WinForms Designer.
@@ -154,23 +128,6 @@ namespace Ict.Petra.Client.CommonForms
             }
         }
 
-        /// <summary>
-        /// <summary> Clean up any resources being used. </summary>
-        /// </summary>
-        /// <returns>void</returns>
-        protected override void Dispose(Boolean Disposing)
-        {
-            if (Disposing)
-            {
-                if (components != null)
-                {
-                    components.Dispose();
-                }
-            }
-
-            base.Dispose(Disposing);
-        }
-
         #region Helper functions
 
         /// <summary>
@@ -196,16 +153,6 @@ namespace Ict.Petra.Client.CommonForms
         }
 
         #endregion
-
-        /// <summary>
-        /// todoComment
-        /// </summary>
-        /// <param name="AControl"></param>
-        /// <param name="AHelp"></param>
-        public void SetStatusBarText(Control AControl, string AHelp)
-        {
-            // TODO SetStatusBarText
-        }
     }
 
     /// <summary>

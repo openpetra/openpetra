@@ -35,7 +35,7 @@ using Mono.Unix;
 using Ict.Common.Controls;
 //using Ict.Petra.Client.CommonControls;
 
-namespace Ict.Petra.Client.MPartner
+namespace Ict.Petra.Client.MPartner.Gui
 {
     partial class TPartnerEditDSWinForm
     {
@@ -70,9 +70,9 @@ namespace Ict.Petra.Client.MPartner
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(TPartnerEditDSWinForm));
 
             this.pnlContent = new System.Windows.Forms.Panel();
-            this.ucoUpperPart = new Ict.Petra.Client.MPartner.TUC_PartnerEdit_CollapsiblePart();
+            this.ucoUpperPart = new Ict.Petra.Client.MPartner.Gui.TUC_PartnerEdit_CollapsiblePart();
             this.pnlLowerPart = new System.Windows.Forms.Panel();
-            this.ucoPartnerTabSet = new Ict.Petra.Client.MPartner.TUC_PartnerEdit_PartnerTabSet();
+            this.ucoPartnerTabSet = new Ict.Petra.Client.MPartner.Gui.TUC_PartnerEdit_PartnerTabSet();
             this.tbrMain = new System.Windows.Forms.ToolStrip();
             this.tbbSave = new System.Windows.Forms.ToolStripButton();
             this.tbbSeparator0 = new System.Windows.Forms.ToolStripSeparator();
@@ -704,9 +704,9 @@ namespace Ict.Petra.Client.MPartner
             this.PerformLayout();
         }
         private System.Windows.Forms.Panel pnlContent;
-        private Ict.Petra.Client.MPartner.TUC_PartnerEdit_CollapsiblePart ucoUpperPart;
+        private Ict.Petra.Client.MPartner.Gui.TUC_PartnerEdit_CollapsiblePart ucoUpperPart;
         private System.Windows.Forms.Panel pnlLowerPart;
-        private Ict.Petra.Client.MPartner.TUC_PartnerEdit_PartnerTabSet ucoPartnerTabSet;
+        private Ict.Petra.Client.MPartner.Gui.TUC_PartnerEdit_PartnerTabSet ucoPartnerTabSet;
         private System.Windows.Forms.ToolStrip tbrMain;
         private System.Windows.Forms.ToolStripButton tbbSave;
         private System.Windows.Forms.ToolStripSeparator tbbSeparator0;

@@ -1,4 +1,4 @@
-<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+﻿<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
     <ProjectGuid>{7B102B6E-0873-45EE-85D7-BD37126EAE21}</ProjectGuid>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
@@ -126,9 +126,30 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="btnSplitButton.cs" />
+    <Compile Include="btnSplitButton.Designer.cs">
+      <DependentUpon>btnSplitButton.cs</DependentUpon>
+    </Compile>
+    <Compile Include="cmbAutoPopulatedComboBox.Designer.cs">
+      <DependentUpon>cmbAutoPopulatedComboBox.cs</DependentUpon>
+    </Compile>
+    <Compile Include="expTextBoxStringLengthCheck.Designer.cs">
+      <DependentUpon>expTextBoxStringLengthCheck.cs</DependentUpon>
+    </Compile>
     <Compile Include="Ict.Petra.Client.CommonControls.Gui.AssemblyInfo.cs" />
     <Compile Include="PGE_PartnerStatusComboBox.cs" />
+    <Compile Include="txtAutoPopulatedButtonLabel.Designer.cs">
+      <DependentUpon>txtAutoPopulatedButtonLabel.cs</DependentUpon>
+    </Compile>
+    <Compile Include="UC_CountryComboBox.Designer.cs">
+      <DependentUpon>UC_CountryComboBox.cs</DependentUpon>
+    </Compile>
     <Compile Include="UC_CountryLabelledComboBox.cs" />
+    <Compile Include="UC_CountryLabelledComboBox.Designer.cs">
+      <DependentUpon>UC_CountryLabelledComboBox.cs</DependentUpon>
+    </Compile>
+    <Compile Include="UC_MultiMotivationDetailSelection.Designer.cs">
+      <DependentUpon>UC_MultiMotivationDetailSelection.cs</DependentUpon>
+    </Compile>
     <Compile Include="UITE_ListBox.cs" />
     <Compile Include="CustomEnablingDisabling.cs" />
     <Compile Include="ExtendedDataGrids.cs" />

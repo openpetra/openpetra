@@ -1,4 +1,4 @@
-<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+﻿<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
     <ProjectGuid>{4DCB81E4-7B19-43D5-BEFC-351706003550}</ProjectGuid>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
@@ -122,15 +122,27 @@
     <EmbeddedResource Include="SettingsLoad.resx">
       <DependentUpon>SettingsLoad.cs</DependentUpon>
     </EmbeddedResource>
+    <Compile Include="SettingsLoad.Designer.cs">
+      <DependentUpon>SettingsLoad.cs</DependentUpon>
+    </Compile>
     <Compile Include="SettingsMaintain.cs" />
     <EmbeddedResource Include="SettingsMaintain.resx">
       <DependentUpon>SettingsMaintain.cs</DependentUpon>
     </EmbeddedResource>
+    <Compile Include="SettingsMaintain.Designer.cs">
+      <DependentUpon>SettingsMaintain.cs</DependentUpon>
+    </Compile>
     <Compile Include="SettingsRename.cs" />
     <EmbeddedResource Include="SettingsRename.resx">
       <DependentUpon>SettingsRename.cs</DependentUpon>
     </EmbeddedResource>
+    <Compile Include="SettingsRename.Designer.cs">
+      <DependentUpon>SettingsRename.cs</DependentUpon>
+    </Compile>
     <Compile Include="SettingsSave.cs" />
+    <Compile Include="SettingsSave.Designer.cs">
+      <DependentUpon>SettingsSave.cs</DependentUpon>
+    </Compile>
     <Compile Include="UC_Columns.cs" />
     <Compile Include="UC_Columns.Designer.cs">
       <DependentUpon>UC_Columns.cs</DependentUpon>

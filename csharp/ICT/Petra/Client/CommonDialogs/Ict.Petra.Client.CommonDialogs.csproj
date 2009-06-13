@@ -1,4 +1,4 @@
-<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+﻿<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
     <ProjectGuid>{BE0FD127-A9A9-4291-A5E0-71A45AC2FDBD}</ProjectGuid>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
@@ -80,6 +80,9 @@
   <ItemGroup>
     <Compile Include="AssemblyInfo.cs" />
     <Compile Include="LoginDialog.cs" />
+    <Compile Include="LoginDialog.Designer.cs">
+      <DependentUpon>LoginDialog.cs</DependentUpon>
+    </Compile>
     <Compile Include="UC_PetraLogoAndVersionInfo.cs" />
     <Compile Include="UC_PetraLogoAndVersionInfo.Designer.cs">
       <DependentUpon>UC_PetraLogoAndVersionInfo.cs</DependentUpon>
@@ -90,7 +93,6 @@
     <EmbeddedResource Include="UC_PetraLogoAndVersionInfo.resx">
       <DependentUpon>UC_PetraLogoAndVersionInfo.cs</DependentUpon>
     </EmbeddedResource>
-    <None Include="Client.sln" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\app\Core\Ict.Petra.Client.App.Core.csproj">

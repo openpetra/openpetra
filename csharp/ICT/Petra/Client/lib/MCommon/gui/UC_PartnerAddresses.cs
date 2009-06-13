@@ -33,6 +33,7 @@ using System.Resources;
 using SourceGrid;
 using SourceGrid.Cells;
 using SourceGrid.Cells.DataGrid;
+using Mono.Unix;
 using Ict.Common;
 using Ict.Common.Controls;
 using Ict.Petra.Shared.Interfaces.MPartner.Partner.UIConnectors;
@@ -57,7 +58,7 @@ namespace Ict.Petra.Client.MCommon
     /// details of the selected record.
     ///
     /// </summary>
-    public class TUCPartnerAddresses : System.Windows.Forms.UserControl, IPetraEditUserControl
+    public partial class TUCPartnerAddresses : System.Windows.Forms.UserControl, IPetraEditUserControl
     {
         /// <summary>todoComment</summary>
         public const String StrSimilarLocation1stLine = "A similar address already exists in the datab" + "ase:";
@@ -104,23 +105,6 @@ namespace Ict.Petra.Client.MCommon
         /// <summary>todoComment</summary>
         public const String StrExpireAllCurrentAddressesDone = "The following {0} Address(es) was/were expired:" + "\r\n" + "{1}" + "\r\n" +
                                                                "The Partner has no Current Addresses left.";
-
-        /// <summary> Required designer variable. </summary>
-        private System.ComponentModel.IContainer components;
-        private System.Windows.Forms.ImageList imlButtonIcons;
-        private System.Windows.Forms.Panel pnlRecordList;
-        private System.Windows.Forms.Button btnMaximiseMinimiseGrid;
-        private System.Windows.Forms.Button btnDeleteRecord;
-        private System.Windows.Forms.Button btnEditRecord;
-        private System.Windows.Forms.Button btnNewRecord;
-        private System.Windows.Forms.ImageList imlRecordIcons;
-        private System.Windows.Forms.ToolTip tipMain;
-        private TSgrdDataGrid grdRecordList;
-        private System.Windows.Forms.Splitter splListSectionDetailsSection;
-
-        /// <summary>Detail UserControl to show and edit the details of the selected record</summary>
-        private TUC_PartnerAddress ucoDetails;
-        private System.Windows.Forms.Panel pnlBalloonTipAnchor;
 
         /// <summary>holds a reference to the Proxy System.Object of the Serverside UIConnector</summary>
         protected IPartnerUIConnectorsPartnerEdit FPartnerEditUIConnector;
@@ -216,218 +200,6 @@ namespace Ict.Petra.Client.MCommon
         /// <summary>Custom Event for hooking up data change events</summary>
         public event THookupDataChangeEventHandler HookupDataChange;
 
-        #region Windows Form Designer generated code
-
-        /// <summary>
-        /// Required method for Designer support - do not modify the contents of this
-        /// method with the code editor.
-        /// /// <summary>/// Required method for Designer support  do not modify/// the contents of this method with the code editor./// </summary>
-        /// </summary>
-        /// <returns>void</returns>
-        private void InitializeComponent()
-        {
-            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(TUCPartnerAddresses));
-            this.components = new System.ComponentModel.Container();
-            this.imlRecordIcons = new System.Windows.Forms.ImageList(this.components);
-            this.tipMain = new System.Windows.Forms.ToolTip(this.components);
-            this.btnMaximiseMinimiseGrid = new System.Windows.Forms.Button();
-            this.imlButtonIcons = new System.Windows.Forms.ImageList(this.components);
-            this.grdRecordList = new Ict.Common.Controls.TSgrdDataGrid();
-            this.pnlRecordList = new System.Windows.Forms.Panel();
-            this.btnDeleteRecord = new System.Windows.Forms.Button();
-            this.btnEditRecord = new System.Windows.Forms.Button();
-            this.btnNewRecord = new System.Windows.Forms.Button();
-            this.splListSectionDetailsSection = new System.Windows.Forms.Splitter();
-            this.ucoDetails = new Ict.Petra.Client.MCommon.TUC_PartnerAddress();
-            this.pnlBalloonTipAnchor = new System.Windows.Forms.Panel();
-            this.pnlRecordList.SuspendLayout();
-            this.SuspendLayout();
-
-            //
-            // imlRecordIcons
-            //
-            this.imlRecordIcons.ImageSize = new System.Drawing.Size(16, 16);
-            this.imlRecordIcons.ImageStream = (System.Windows.Forms.ImageListStreamer)resources.GetObject("imlRecordIcons.ImageStream");
-            this.imlRecordIcons.TransparentColor = System.Drawing.Color.Transparent;
-
-            //
-            // tipMain
-            //
-            this.tipMain.AutoPopDelay = 1000;
-            this.tipMain.InitialDelay = 500;
-            this.tipMain.ReshowDelay = 100;
-
-            //
-            // btnMaximiseMinimiseGrid
-            //
-            this.btnMaximiseMinimiseGrid.Anchor =
-                ((System.Windows.Forms.AnchorStyles)(System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right));
-            this.btnMaximiseMinimiseGrid.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
-            this.btnMaximiseMinimiseGrid.ImageIndex = 5;
-            this.btnMaximiseMinimiseGrid.ImageList = this.imlButtonIcons;
-            this.btnMaximiseMinimiseGrid.Location = new System.Drawing.Point(660, 86);
-            this.btnMaximiseMinimiseGrid.Name = "btnMaximiseMinimiseGrid";
-            this.btnMaximiseMinimiseGrid.Size = new System.Drawing.Size(20, 18);
-            this.btnMaximiseMinimiseGrid.TabIndex = 1;
-            this.tipMain.SetToolTip(this.btnMaximiseMinimiseGrid, "Make List higher/sm" + "aller");
-            this.btnMaximiseMinimiseGrid.Click += new System.EventHandler(this.BtnMaximiseMinimiseGrid_Click);
-
-            //
-            // imlButtonIcons
-            //
-            this.imlButtonIcons.ImageSize = new System.Drawing.Size(16, 16);
-            this.imlButtonIcons.ImageStream = ((System.Windows.Forms.ImageListStreamer)(resources.GetObject('i' + "mlButtonIcons.ImageStream")));
-            this.imlButtonIcons.TransparentColor = System.Drawing.Color.Transparent;
-
-            //
-            // grdRecordList
-            //
-            this.grdRecordList.AlternatingBackgroundColour = System.Drawing.Color.White;
-            this.grdRecordList.Anchor =
-                ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top |
-                                                        System.Windows.Forms.AnchorStyles.Bottom) |
-                                                       System.Windows.Forms.AnchorStyles.Left) | System.Windows.Forms.AnchorStyles.Right)));
-            this.grdRecordList.AutoFindColumn = ((short)(2));
-            this.grdRecordList.AutoFindMode = Ict.Common.Controls.TAutoFindModeEnum.FirstCharacter;
-            this.grdRecordList.BackColor = System.Drawing.SystemColors.ControlDark;
-            this.grdRecordList.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
-            this.grdRecordList.DeleteQuestionMessage = "You have chosen to delete thi" + "s record.'#13#10#13#10'Do you really want to delete it?";
-            this.grdRecordList.FixedRows = 1;
-            this.grdRecordList.Location = new System.Drawing.Point(4, 6);
-            this.grdRecordList.MinimumHeight = 19;
-            this.grdRecordList.Name = "grdRecordList";
-            this.grdRecordList.Size = new System.Drawing.Size(652, 99);
-            this.grdRecordList.SpecialKeys =
-                ((SourceGrid.GridSpecialKeys)((((((SourceGrid.GridSpecialKeys.Arrows |
-                                                   SourceGrid.GridSpecialKeys.PageDownUp) |
-                                                  SourceGrid.GridSpecialKeys.Enter) |
-                                                 SourceGrid.GridSpecialKeys.Escape) |
-                                                SourceGrid.GridSpecialKeys.Control) | SourceGrid.GridSpecialKeys.Shift)));
-            this.grdRecordList.TabIndex = 0;
-            this.grdRecordList.TabStop = true;
-            this.grdRecordList.DoubleClickCell += new TDoubleClickCellEventHandler(this.GrdRecordList_DoubleClickCell);
-            this.grdRecordList.InsertKeyPressed += new TKeyPressedEventHandler(this.GrdRecordList_InsertKeyPressed);
-            this.grdRecordList.EnterKeyPressed += new TKeyPressedEventHandler(this.GrdRecordList_EnterKeyPressed);
-            this.grdRecordList.DeleteKeyPressed += new TKeyPressedEventHandler(this.GrdRecordList_DeleteKeyPressed);
-
-            //
-            // pnlRecordList
-            //
-            this.pnlRecordList.BackColor = System.Drawing.SystemColors.Control;
-            this.pnlRecordList.Controls.Add(this.pnlBalloonTipAnchor);
-            this.pnlRecordList.Controls.Add(this.grdRecordList);
-            this.pnlRecordList.Controls.Add(this.btnMaximiseMinimiseGrid);
-            this.pnlRecordList.Controls.Add(this.btnDeleteRecord);
-            this.pnlRecordList.Controls.Add(this.btnEditRecord);
-            this.pnlRecordList.Controls.Add(this.btnNewRecord);
-            this.pnlRecordList.Dock = System.Windows.Forms.DockStyle.Top;
-            this.pnlRecordList.Location = new System.Drawing.Point(0, 0);
-            this.pnlRecordList.Name = "pnlRecordList";
-
-            // this.rpsUserControl.SetRestoreLocation(this.pnlRecordList, true); Disabled TH
-            this.pnlRecordList.Size = new System.Drawing.Size(740, 108);
-            this.pnlRecordList.TabIndex = 0;
-
-            //
-            // btnDeleteRecord
-            //
-            this.btnDeleteRecord.Anchor =
-                ((System.Windows.Forms.AnchorStyles)(System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right));
-            this.btnDeleteRecord.ImageAlign = System.Drawing.ContentAlignment.BottomLeft;
-            this.btnDeleteRecord.ImageIndex = 2;
-            this.btnDeleteRecord.ImageList = this.imlButtonIcons;
-            this.btnDeleteRecord.Location = new System.Drawing.Point(664, 58);
-            this.btnDeleteRecord.Name = "btnDeleteRecord";
-            this.btnDeleteRecord.Size = new System.Drawing.Size(76, 23);
-            this.btnDeleteRecord.TabIndex = 4;
-            this.btnDeleteRecord.Text = "      &Delete";
-            this.btnDeleteRecord.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
-            this.btnDeleteRecord.Click += new System.EventHandler(this.BtnDeleteRecord_Click);
-
-            //
-            // btnEditRecord
-            //
-            this.btnEditRecord.Anchor =
-                ((System.Windows.Forms.AnchorStyles)(System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right));
-            this.btnEditRecord.ImageAlign = System.Drawing.ContentAlignment.BottomLeft;
-            this.btnEditRecord.ImageIndex = 1;
-            this.btnEditRecord.ImageList = this.imlButtonIcons;
-            this.btnEditRecord.Location = new System.Drawing.Point(664, 34);
-            this.btnEditRecord.Name = "btnEditRecord";
-            this.btnEditRecord.Size = new System.Drawing.Size(76, 23);
-            this.btnEditRecord.TabIndex = 3;
-            this.btnEditRecord.Text = "       Edi&t";
-            this.btnEditRecord.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
-            this.btnEditRecord.Click += new System.EventHandler(this.BtnEditRecord_Click);
-
-            //
-            // btnNewRecord
-            //
-            this.btnNewRecord.Anchor =
-                ((System.Windows.Forms.AnchorStyles)(System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right));
-            this.btnNewRecord.BackColor = System.Drawing.SystemColors.Control;
-            this.btnNewRecord.ImageAlign = System.Drawing.ContentAlignment.BottomLeft;
-            this.btnNewRecord.ImageIndex = 0;
-            this.btnNewRecord.ImageList = this.imlButtonIcons;
-            this.btnNewRecord.Location = new System.Drawing.Point(664, 10);
-            this.btnNewRecord.Name = "btnNewRecord";
-            this.btnNewRecord.Size = new System.Drawing.Size(76, 23);
-            this.btnNewRecord.TabIndex = 2;
-            this.btnNewRecord.Text = "       &New";
-            this.btnNewRecord.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
-            this.btnNewRecord.Click += new System.EventHandler(this.BtnNewRecord_Click);
-
-            //
-            // splListSectionDetailsSection
-            //
-            this.splListSectionDetailsSection.BackColor = System.Drawing.SystemColors.ControlDark;
-            this.splListSectionDetailsSection.Dock = System.Windows.Forms.DockStyle.Top;
-            this.splListSectionDetailsSection.Location = new System.Drawing.Point(0, 108);
-            this.splListSectionDetailsSection.MinExtra = 53;
-            this.splListSectionDetailsSection.MinSize = 52;
-            this.splListSectionDetailsSection.Name = "splListSectionDetailsSection";
-            this.splListSectionDetailsSection.Size = new System.Drawing.Size(740, 4);
-            this.splListSectionDetailsSection.TabIndex = 3;
-            this.splListSectionDetailsSection.TabStop = false;
-
-            //
-            // ucoDetails
-            //
-            this.ucoDetails.AutoSize = true;
-            this.ucoDetails.AutoScroll = true;
-            this.ucoDetails.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.ucoDetails.Font =
-                new System.Drawing.Font("Verdana", 8.25f, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, (byte)0);
-            this.ucoDetails.Key = 0;
-            this.ucoDetails.Location = new System.Drawing.Point(0, 112);
-            this.ucoDetails.Name = "ucoDetails";
-            this.ucoDetails.Size = new System.Drawing.Size(740, 328);
-            this.ucoDetails.TabIndex = 4;
-
-            //
-            // pnlBalloonTipAnchor
-            //
-            this.pnlBalloonTipAnchor.Location = new System.Drawing.Point(60, 0);
-            this.pnlBalloonTipAnchor.Name = "pnlBalloonTipAnchor";
-            this.pnlBalloonTipAnchor.Size = new System.Drawing.Size(1, 1);
-            this.pnlBalloonTipAnchor.TabIndex = 5;
-
-            //
-            // TUCPartnerAddresses
-            //
-            this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Inherit;
-            this.AutoSize = true;
-            this.Controls.Add(this.ucoDetails);
-            this.Controls.Add(this.splListSectionDetailsSection);
-            this.Controls.Add(this.pnlRecordList);
-            this.Name = "TUCPartnerAddresses";
-            this.Size = new System.Drawing.Size(740, 440);
-            this.pnlRecordList.ResumeLayout(false);
-            this.ResumeLayout(false);
-        }
-
-        #endregion
-
         #region TUCPartnerAddresses
 
         /// <summary>
@@ -462,11 +234,11 @@ namespace Ict.Petra.Client.MCommon
             set
             {
                 FPetraUtilsObject = value;
-                FPetraUtilsObject.SetStatusBarText(this.btnMaximiseMinimiseGrid, "List e" + "xpand button");
-                FPetraUtilsObject.SetStatusBarText(this.grdRecordList, "Address list");
-                FPetraUtilsObject.SetStatusBarText(this.btnDeleteRecord, "Delete current" + "ly selected Address");
-                FPetraUtilsObject.SetStatusBarText(this.btnEditRecord, "Edit currently s" + "elected Address");
-                FPetraUtilsObject.SetStatusBarText(this.btnNewRecord, "Create new addres" + 's');
+                FPetraUtilsObject.SetStatusBarText(this.btnMaximiseMinimiseGrid, Catalog.GetString("List expand button"));
+                FPetraUtilsObject.SetStatusBarText(this.grdRecordList, Catalog.GetString("Address list"));
+                FPetraUtilsObject.SetStatusBarText(this.btnDeleteRecord, Catalog.GetString("Delete currently selected Address"));
+                FPetraUtilsObject.SetStatusBarText(this.btnEditRecord, Catalog.GetString("Edit currently selected Address"));
+                FPetraUtilsObject.SetStatusBarText(this.btnNewRecord, Catalog.GetString("Create new address"));
             }
         }
 
@@ -525,24 +297,6 @@ namespace Ict.Petra.Client.MCommon
         {
             btnNewRecord.Enabled = false;
             FDisabledNewButtonOnAutoCreatedAddress = true;
-        }
-
-        /// <summary>
-        /// Default WinForms function, created by the Designer
-        ///
-        /// </summary>
-        /// <returns>void</returns>
-        protected override void Dispose(Boolean Disposing)
-        {
-            if (Disposing)
-            {
-                if (components != null)
-                {
-                    components.Dispose();
-                }
-            }
-
-            base.Dispose(Disposing);
         }
 
         /// <summary>

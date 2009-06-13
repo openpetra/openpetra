@@ -23,7 +23,7 @@
  * along with OpenPetra.org.  If not, see <http://www.gnu.org/licenses/>.
  *
  ************************************************************************/
-namespace Ict.Petra.Client.MPartner
+namespace Ict.Petra.Client.MPartner.Gui
 {
     /// Dialog for displaying information about a Partner that was
     /// Merged into another Partner.
@@ -94,6 +94,7 @@ namespace Ict.Petra.Client.MPartner
             //
             // btnOK
             //
+todo: move statusbar things to constructor
             this.sbtForm.SetStatusBarText(this.btnOK, "Accept the Merged-Into Partner and continue.");
             this.btnOK.Click += new System.EventHandler(this.BtnOKClick);
 

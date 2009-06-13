@@ -24,8 +24,8 @@
  *
  ************************************************************************/
 using System.Windows.Forms;
-
-namespace Ict.Petra.Client.MPartner
+TODO : move Statusbar things to constructor
+namespace Ict.Petra.Client.MPartner.Gui
 {
     partial class TCopyPartnerAddressDialogWinForm
     {

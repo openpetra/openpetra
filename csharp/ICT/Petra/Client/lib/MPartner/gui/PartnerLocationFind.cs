@@ -47,7 +47,7 @@ using Ict.Petra.Client.CommonForms;
 using Ict.Petra.Client.App.Core.RemoteObjects;
 using Ict.Petra.Client.App.Gui;
 
-namespace Ict.Petra.Client.MPartner
+namespace Ict.Petra.Client.MPartner.Gui
 {
     public partial class TPartnerLocationFind : TFrmPetraDialog
     {
@@ -297,6 +297,7 @@ namespace Ict.Petra.Client.MPartner
             lblSearchInfo.BackColor = Color.White;
             lblSearchInfo.ForeColor = Color.Blue;
             sbtForm.InstanceStatusBar = this.stbMain;
+TODO: no resource strings
             sbtForm.SetStatusBarText(txtAddress1, Resourcestrings.StrAddress1Helptext);
             sbtForm.SetStatusBarText(txtAddress2, Resourcestrings.StrAddress2Helptext);
             sbtForm.SetStatusBarText(txtAddress3, Resourcestrings.StrAddress3Helptext);

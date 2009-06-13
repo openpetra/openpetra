@@ -46,7 +46,7 @@ using Ict.Petra.Client.App.Gui;
 using Ict.Common.Controls;
 using Ict.Petra.Client.CommonControls;
 
-namespace Ict.Petra.Client.MPartner
+namespace Ict.Petra.Client.MPartner.Gui
 {
     /// UserControl for editing Partner Details for a Partner of Partner Class ORGANISATION.
     public class TUC_PartnerDetailsOrganisation : TPetraUserControl

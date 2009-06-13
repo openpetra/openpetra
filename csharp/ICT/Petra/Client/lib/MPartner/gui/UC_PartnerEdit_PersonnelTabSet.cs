@@ -35,7 +35,7 @@ using System.Globalization;
 using Ict.Petra.Client.CommonControls;
 using Ict.Common.Controls;
 
-namespace Ict.Petra.Client.MPartner
+namespace Ict.Petra.Client.MPartner.Gui
 {
     /// UserControl that makes up the TabControl for 'Personnel Data' in Partner Edit
     /// screen.

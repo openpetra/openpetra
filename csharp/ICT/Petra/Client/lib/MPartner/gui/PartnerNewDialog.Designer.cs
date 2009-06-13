@@ -27,8 +27,9 @@ using System;
 using System.Windows.Forms;
 using Mono.Unix;
 using Ict.Common.Controls;
+using Ict.Petra.Client.CommonControls;
 
-namespace Ict.Petra.Client.MPartner
+namespace Ict.Petra.Client.MPartner.Gui
 {
     partial class TPartnerNewDialogWinForm
     {
