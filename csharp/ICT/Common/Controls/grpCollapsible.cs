@@ -108,16 +108,6 @@ namespace Ict.Common.Controls
         {
             // TODO
         }
-
-        /// <summary>
-        /// set the status bar text for controls inside the box
-        /// </summary>
-        /// <param name="AControl"></param>
-        /// <param name="AHelp"></param>
-        public void SetStatusBarText(Control AControl, string AHelp)
-        {
-            // TODO SetStatusBarText
-        }
     }
 
     /// <summary>

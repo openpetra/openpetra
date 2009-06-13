@@ -178,6 +178,22 @@ namespace Ict.Petra.Client.MPartner.Gui
             {
                 FPetraUtilsObject = value;
                 FPetraUtilsObject.SetStatusBarText(this.btnEditWorkerField, "Select " + "Worker Field");
+                FPetraUtilsObject.SetStatusBarText(chkNoSolicitations, PPartnerTable.GetNoSolicitationsHelp());
+                FPetraUtilsObject.SetStatusBarText(cmbAddresseeType, PPartnerTable.GetAddresseeTypeCodeHelp());
+                FPetraUtilsObject.SetStatusBarText(cmbPartnerStatus, PPartnerTable.GetStatusCodeHelp());
+                FPetraUtilsObject.SetStatusBarText(txtPersonTitle, PPersonTable.GetTitleHelp());
+                FPetraUtilsObject.SetStatusBarText(txtPersonFirstName, PPersonTable.GetFirstNameHelp());
+                FPetraUtilsObject.SetStatusBarText(txtPersonMiddleName, PPersonTable.GetMiddleName1Help());
+                FPetraUtilsObject.SetStatusBarText(txtPersonFamilyName, PPersonTable.GetFamilyNameHelp());
+                FPetraUtilsObject.SetStatusBarText(cmbPersonGender, PPersonTable.GetGenderHelp());
+                FPetraUtilsObject.SetStatusBarText(txtFamilyTitle, PFamilyTable.GetTitleHelp());
+                FPetraUtilsObject.SetStatusBarText(txtFamilyFirstName, PFamilyTable.GetFirstNameHelp());
+                FPetraUtilsObject.SetStatusBarText(txtFamilyFamilyName, PFamilyTable.GetFamilyNameHelp());
+                FPetraUtilsObject.SetStatusBarText(txtOtherName, PChurchTable.GetChurchNameHelp());
+                FPetraUtilsObject.SetStatusBarText(txtOtherName, POrganisationTable.GetOrganisationNameHelp());
+                FPetraUtilsObject.SetStatusBarText(txtOtherName, PUnitTable.GetUnitNameHelp());
+                FPetraUtilsObject.SetStatusBarText(txtOtherName, PBankTable.GetBranchNameHelp());
+                FPetraUtilsObject.SetStatusBarText(txtOtherName, PVenueTable.GetVenueNameHelp());
             }
         }
 
@@ -420,10 +436,6 @@ namespace Ict.Petra.Client.MPartner.Gui
             cmbAddresseeType.PerformDataBinding(FMainDS.PPartner, PPartnerTable.GetAddresseeTypeCodeDBName());
             cmbPartnerStatus.PerformDataBinding(FPartnerDefaultView, PPartnerTable.GetStatusCodeDBName());
 
-            // Set StatusBar Texts
-            SetStatusBarText(chkNoSolicitations, PPartnerTable.GetNoSolicitationsHelp());
-            SetStatusBarText(cmbAddresseeType, PPartnerTable.GetAddresseeTypeCodeHelp());
-            SetStatusBarText(cmbPartnerStatus, PPartnerTable.GetStatusCodeHelp());
             FMainDS.PPartner.ColumnChanging += new DataColumnChangeEventHandler(this.OnPartnerDataColumnChanging);
             #region Bind and show fields according to Partner Class
             FPartnerClass = FMainDS.PPartner[0].PartnerClass.ToString();
@@ -442,13 +454,6 @@ namespace Ict.Petra.Client.MPartner.Gui
                     pnlPerson.Visible = true;
                     pnlWorkerField.Visible = true;
                     txtPartnerClass.BackColor = System.Drawing.Color.Yellow;
-
-                    // Set StatusBar Texts
-                    SetStatusBarText(txtPersonTitle, PPersonTable.GetTitleHelp());
-                    SetStatusBarText(txtPersonFirstName, PPersonTable.GetFirstNameHelp());
-                    SetStatusBarText(txtPersonMiddleName, PPersonTable.GetMiddleName1Help());
-                    SetStatusBarText(txtPersonFamilyName, PPersonTable.GetFamilyNameHelp());
-                    SetStatusBarText(cmbPersonGender, PPersonTable.GetGenderHelp());
 
                     // Set ToolTips in addition to StatusBar texts for fields to make it clearer what to fill in there...
                     tipMain.SetToolTip(this.txtPersonTitle, PPersonTable.GetTitleHelp());
@@ -469,11 +474,6 @@ namespace Ict.Petra.Client.MPartner.Gui
                     pnlFamily.Visible = true;
                     pnlWorkerField.Visible = true;
 
-                    // Set StatusBar Texts
-                    SetStatusBarText(txtFamilyTitle, PFamilyTable.GetTitleHelp());
-                    SetStatusBarText(txtFamilyFirstName, PFamilyTable.GetFirstNameHelp());
-                    SetStatusBarText(txtFamilyFamilyName, PFamilyTable.GetFamilyNameHelp());
-
                     // Set ToolTips in addition to StatusBar texts for fields to make it clearer what to fill in there...
                     tipMain.SetToolTip(this.txtFamilyTitle, PFamilyTable.GetTitleHelp());
                     tipMain.SetToolTip(this.txtFamilyFirstName, PFamilyTable.GetFirstNameHelp());
@@ -485,8 +485,6 @@ namespace Ict.Petra.Client.MPartner.Gui
                     txtOtherName.DataBindings.Add("Text", FMainDS.PChurch, PChurchTable.GetChurchNameDBName());
                     pnlOther.Visible = true;
 
-                    // Set StatusBar Text
-                    SetStatusBarText(txtOtherName, PChurchTable.GetChurchNameHelp());
                     FMainDS.PChurch.ColumnChanging += new DataColumnChangeEventHandler(this.OnAnyDataColumnChanging);
                     break;
 
@@ -494,8 +492,6 @@ namespace Ict.Petra.Client.MPartner.Gui
                     txtOtherName.DataBindings.Add("Text", FMainDS.POrganisation, POrganisationTable.GetOrganisationNameDBName());
                     pnlOther.Visible = true;
 
-                    // Set StatusBar Text
-                    SetStatusBarText(txtOtherName, POrganisationTable.GetOrganisationNameHelp());
                     FMainDS.POrganisation.ColumnChanging += new DataColumnChangeEventHandler(this.OnAnyDataColumnChanging);
                     break;
 
@@ -503,8 +499,6 @@ namespace Ict.Petra.Client.MPartner.Gui
                     txtOtherName.DataBindings.Add("Text", FMainDS.PUnit, PUnitTable.GetUnitNameDBName());
                     pnlOther.Visible = true;
 
-                    // Set StatusBar Text
-                    SetStatusBarText(txtOtherName, PUnitTable.GetUnitNameHelp());
                     FMainDS.PUnit.ColumnChanging += new DataColumnChangeEventHandler(this.OnUnitDataColumnChanging);
                     FMainDS.PUnit.ColumnChanging += new DataColumnChangeEventHandler(this.OnAnyDataColumnChanging);
                     break;
@@ -513,8 +507,6 @@ namespace Ict.Petra.Client.MPartner.Gui
                     txtOtherName.DataBindings.Add("Text", FMainDS.PBank, PBankTable.GetBranchNameDBName());
                     pnlOther.Visible = true;
 
-                    // Set StatusBar Text
-                    SetStatusBarText(txtOtherName, PBankTable.GetBranchNameHelp());
                     FMainDS.PBank.ColumnChanging += new DataColumnChangeEventHandler(this.OnAnyDataColumnChanging);
                     break;
 
@@ -522,8 +514,6 @@ namespace Ict.Petra.Client.MPartner.Gui
                     txtOtherName.DataBindings.Add("Text", FMainDS.PVenue, PVenueTable.GetVenueNameDBName());
                     pnlOther.Visible = true;
 
-                    // Set StatusBar Text
-                    SetStatusBarText(txtOtherName, PVenueTable.GetVenueNameHelp());
                     FMainDS.PVenue.ColumnChanging += new DataColumnChangeEventHandler(this.OnAnyDataColumnChanging);
                     break;
 
