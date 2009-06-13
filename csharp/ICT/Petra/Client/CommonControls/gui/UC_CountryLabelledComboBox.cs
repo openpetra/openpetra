@@ -1,4 +1,4 @@
-﻿/*************************************************************************
+/*************************************************************************
  *
  * DO NOT REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
  *
@@ -77,6 +77,11 @@ namespace Ict.Petra.Client.CommonControls
             // Required for Windows Form Designer support
             //
             InitializeComponent();
+            #region CATALOGI18N
+
+            // this code has been inserted by GenerateI18N, all changes in this region will be overwritten by GenerateI18N
+            this.lblCountryName.Text = Catalog.GetString("Country Name");
+            #endregion
         }
 
         /// <summary>

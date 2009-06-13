@@ -219,6 +219,15 @@ namespace Ict.Petra.Client.CommonControls
             // Required for Windows Form Designer support
             //
             InitializeComponent();
+            #region CATALOGI18N
+
+            // this code has been inserted by GenerateI18N, all changes in this region will be overwritten by GenerateI18N
+            this.SplitButtonBase1.Text = Catalog.GetString("SplitButtonBase1");
+            this.mnuMatchStartsWith.Text = Catalog.GetString("Starts with search term --*");
+            this.mnuMatchEndsWith.Text = Catalog.GetString("Ends with search term *--");
+            this.mnuMatchContains.Text = Catalog.GetString("Contains search term *-*");
+            this.mnuMatchExact.Text = Catalog.GetString("Exactly matches search term ---");
+            #endregion
 
             // Default TControlMode
             // FControlMode:=TControlMode.Normal ;

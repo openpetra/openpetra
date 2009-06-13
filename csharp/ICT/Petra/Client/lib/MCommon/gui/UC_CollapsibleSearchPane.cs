@@ -1,4 +1,4 @@
-﻿/*************************************************************************
+/*************************************************************************
  *
  * DO NOT REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
  *
@@ -477,6 +477,12 @@ namespace Ict.Petra.Client.MCommon
             // Required for Windows Form Designer support
             //
             InitializeComponent();
+            #region CATALOGI18N
+
+            // this code has been inserted by GenerateI18N, all changes in this region will be overwritten by GenerateI18N
+            this.btnResetSearch.Text = Catalog.GetString("Reset Search");
+            this.btnInitiateSearch.Text = Catalog.GetString("&Search");
+            #endregion
 
             //
             // TODO: Add any constructor code after InitializeComponent call

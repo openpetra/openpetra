@@ -1,4 +1,4 @@
-﻿/*************************************************************************
+/*************************************************************************
  *
  * DO NOT REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
  *
@@ -541,6 +541,13 @@ namespace Ict.Petra.Client.CommonControls
             //
             this.FPreventFaultyLeaving = false;
             InitializeComponent();
+            #region CATALOGI18N
+
+            // this code has been inserted by GenerateI18N, all changes in this region will be overwritten by GenerateI18N
+            this.txtAutoPopulated.ButtonText = Catalog.GetString("btnButton");
+            this.txtAutoPopulated.LabelText = Catalog.GetString("lblLabel");
+            this.txtAutoPopulated.TextBoxText = Catalog.GetString("txtTextBox");
+            #endregion
 
             this.FUserControlInitialised = false;
             FDisplayLabelString = "";

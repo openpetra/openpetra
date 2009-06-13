@@ -28,8 +28,8 @@ using System.ComponentModel;
 using System.Windows.Forms;
 using Ict.Common.Controls;
 using Ict.Petra.Client.CommonControls;
-
-namespace Ict.Petra.Client.MPartner
+TODO : move statusbar things to constructor
+namespace Ict.Petra.Client.MPartner.Gui
 {
     partial class TExtractSubscriptionAddWinForm
     {

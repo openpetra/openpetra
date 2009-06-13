@@ -1,4 +1,4 @@
-﻿/*************************************************************************
+/*************************************************************************
  *
  * DO NOT REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
  *
@@ -106,6 +106,16 @@ namespace Ict.Petra.Client.CommonDialogs
             // Required for Windows Form Designer support
             //
             InitializeComponent();
+            #region CATALOGI18N
+
+            // this code has been inserted by GenerateI18N, all changes in this region will be overwritten by GenerateI18N
+            this.lblUserName.Text = Catalog.GetString("&User ID:");
+            this.lblPassword.Text = Catalog.GetString("&Password:");
+            this.btnLogin.Text = Catalog.GetString(" &Login");
+            this.btnCancel.Text = Catalog.GetString(" &Cancel");
+            this.lblDatabase.Text = Catalog.GetString("Database:");
+            this.Text = Catalog.GetString("Petra Login");
+            #endregion
 
             this.Text = PETRA_LOGIN_FORMTITLE;
             this.Height = 142;

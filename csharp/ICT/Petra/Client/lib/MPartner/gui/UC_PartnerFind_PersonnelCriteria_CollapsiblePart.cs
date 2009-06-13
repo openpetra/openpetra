@@ -1,4 +1,4 @@
-﻿/*************************************************************************
+/*************************************************************************
  *
  * DO NOT REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
  *
@@ -53,6 +53,18 @@ namespace Ict.Petra.Client.MPartner.Gui
             // Required for Windows Form Designer support
             //
             InitializeComponent();
+            #region CATALOGI18N
+
+            // this code has been inserted by GenerateI18N, all changes in this region will be overwritten by GenerateI18N
+            this.lblCommitmentFieldOffice.Text = Catalog.GetString("Commitm. Field &Office:");
+            this.lblCommitmentFOFromTo.Text = Catalog.GetString("From/To:");
+            this.Label3.Text = Catalog.GetString("/");
+            this.chkFOOnlyCurrentCommitments.Text = Catalog.GetString("Only Current");
+            this.btnChooseCommitmentFieldOffice.Text = Catalog.GetString("...");
+            this.btnChooseEventConferenceCampaign.Text = Catalog.GetString("...");
+            this.lblEventConferenceCampaign.Text = Catalog.GetString("Eve&nt/Confer./Camp.:");
+            this.lblPersonLanguage.Text = Catalog.GetString("Lang&uage:");
+            #endregion
 
             // Extender Provider
             this.expStringLengthCheckPersonalCriteriaCollapsiblePart.RetrieveTextboxes(this);

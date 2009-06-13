@@ -126,6 +126,30 @@ namespace Ict.Petra.Client.MPartner.Gui
             // Required for Windows Form Designer support
             //
             InitializeComponent();
+            #region CATALOGI18N
+
+            // this code has been inserted by GenerateI18N, all changes in this region will be overwritten by GenerateI18N
+            this.lblStatusUpdated.Text = Catalog.GetString("Status Updated:");
+            this.lblPersonGender.Text = Catalog.GetString("&Gender:");
+            this.lblTitleNamePerson.Text = Catalog.GetString("Title/Na&me:");
+            this.lblPartnerStatus.Text = Catalog.GetString("Partner &Status:");
+            this.lblAddresseeType.Text = Catalog.GetString("Addressee Type:");
+            this.chkNoSolicitations.Text = Catalog.GetString("No Solicitations");
+            this.txtPartnerKey.Text = Catalog.GetString("0000000000");
+            this.lblPartnerClass.Text = Catalog.GetString("Class:");
+            this.lblPartnerKey.Text = Catalog.GetString("Key:");
+            this.lblPersonPanel.Text = Catalog.GetString("PERSON Panel");
+            this.lblTitleNameFamily.Text = Catalog.GetString("Title/Na&me:");
+            this.lblFamilyPanel.Text = Catalog.GetString("FAMILY Panel");
+            this.lblOtherPanel.Text = Catalog.GetString("OTHER Panel");
+            this.lblName.Text = Catalog.GetString("Na&me:");
+            this.btnEditWorkerField.Text = Catalog.GetString("     &Field...");
+            this.txtLastGiftDate.Text = Catalog.GetString("01-JAN-9999");
+            this.txtLastGiftDetails.Text = Catalog.GetString("Currency + Amount, Given To");
+            this.txtLastContactDate.Text = Catalog.GetString("01-JAN-9999");
+            this.lblLastGiftDate.Text = Catalog.GetString("Last Gift:");
+            this.lblLastContactDate.Text = Catalog.GetString("Last Contact:");
+            #endregion
 
             // I18N: assign proper font which helps to read asian characters
             txtFamilyTitle.Font = TAppSettingsManager.GetDefaultBoldFont();

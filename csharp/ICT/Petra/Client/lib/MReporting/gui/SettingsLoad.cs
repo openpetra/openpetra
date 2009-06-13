@@ -1,4 +1,4 @@
-﻿/*************************************************************************
+/*************************************************************************
  *
  * DO NOT REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
  *
@@ -61,6 +61,14 @@ namespace Ict.Petra.Client.MReporting.Gui
             // Required for Windows Form Designer support
             //
             InitializeComponent();
+            #region CATALOGI18N
+
+            // this code has been inserted by GenerateI18N, all changes in this region will be overwritten by GenerateI18N
+            this.Label1.Text = Catalog.GetString("Existing stored Settings:");
+            this.Btn_Cancel.Text = Catalog.GetString("Cancel");
+            this.Btn_LoadFile.Text = Catalog.GetString("Load");
+            this.Text = Catalog.GetString("Load Report Settings");
+            #endregion
             Btn_LoadFile.Enabled = false;
             FSettingsName = "";
             FStoredSettings = AStoredSettings;

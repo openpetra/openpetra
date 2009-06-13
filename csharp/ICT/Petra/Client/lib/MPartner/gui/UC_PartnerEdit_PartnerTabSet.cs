@@ -270,6 +270,44 @@ namespace Ict.Petra.Client.MPartner.Gui
             // Required for Windows Form Designer support
             //
             InitializeComponent();
+            #region CATALOGI18N
+
+            // this code has been inserted by GenerateI18N, all changes in this region will be overwritten by GenerateI18N
+            this.tbpAddresses.Text = Catalog.GetString("Addresses");
+            this.lblAddressesDynamicLoadInfo.Text = Catalog.GetString(
+                "The UserControl is added dynamically at runtime to this Panel (pnlAddresses) in P");
+            this.tbpPartnerDetails.Text = Catalog.GetString("Partner Details");
+            this.lblPartnerDetailsDynamicLoadInfo.Text = Catalog.GetString(
+                "The UserControl that corresponds to the PartnerClass of the Partner is added dyna");
+            this.tbpFoundationDetails.Text = Catalog.GetString("Foundation Details");
+            this.tbpSubscriptions.Text = Catalog.GetString("Subscriptions");
+            this.lblSubscriptionsDynamicLoadInfo.Text = Catalog.GetString(
+                "The UserControl is added dynamically at runtime to this Panel (pnlSubscriptions) ");
+            this.tbpPartnerTypes.Text = Catalog.GetString("Special Types (?)");
+            this.lblPartnerTypesDynamicLoadInfo.Text = Catalog.GetString(
+                "The UserControl is added dynamically at runtime to this Panel (pnlPartnerTypes) i");
+            this.tbpContacts.Text = Catalog.GetString("Contacts (?)");
+            this.tbpFamilyMembers.Text = Catalog.GetString("Family Members (?)");
+            this.lblFamilyMembersDynamicLoadInfo.Text = Catalog.GetString(
+                "The UserControl is added dynamically at runtime to this Panel (pnlFamilyMembers) ");
+            this.tbpRelationships.Text = Catalog.GetString("Relationships (?)");
+            this.tbpInterests.Text = Catalog.GetString("Interests (?)");
+            this.lblInterestsDynamicLoadInfo.Text = Catalog.GetString(
+                "The UserControl is added dynamically at runtime to this Panel (pnlInterests) in P");
+            this.tbpReminders.Text = Catalog.GetString("Reminders (?)");
+            this.tbpNotes.Text = Catalog.GetString("Notes");
+            this.lblPartnerNotesDynamicLoadInfo.Text = Catalog.GetString(
+                "The UserControl is added dynamically at runtime to this Panel (pnlPartnerNotes) i");
+            this.tbpOfficeSpecific.Text = Catalog.GetString("Local Partner Data");
+            this.lblPartnerOfficeSpecificDynamicLoadInfo.Text = Catalog.GetString(
+                "The UserControl is added dynamically at runtime to this Panel (pnlPartnerOfficeSp");
+            this.lblContactsDynamicLoadInfo.Text = Catalog.GetString(
+                "The UserControl is added dynamically at runtime to this Panel (pnlContacts) in Pr");
+            this.lblRelationshipsDynamicLoadInfo.Text = Catalog.GetString(
+                "The UserControl is added dynamically at runtime to this Panel (pnlRelationships) ");
+            this.lblRemindersDynamicLoadInfo.Text = Catalog.GetString(
+                "The UserControl is added dynamically at runtime to this Panel (pnlReminders) in P");
+            #endregion
 
             FInitiallySelectedTabPage = TPartnerEditTabPageEnum.petpDefault;
         }
