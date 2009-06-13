@@ -1,16 +1,16 @@
 [Setup]
 AppCopyright=by developers of OpenPetra.org
 AppName=OpenPetra.org
-AppVerName=OpenPetra.org 0.0.1
+AppVerName=OpenPetra.org 0.0.2
 DefaultDirName={pf}\OpenPetra.org
 DefaultGroupName=OpenPetra.org
 AppPublisherURL=http://www.openpetra.org
-LicenseFile=U:\OpenPetra\LICENSE
-VersionInfoVersion=0.0.1.3
+LicenseFile=..\..\..\LICENSE
+VersionInfoVersion=0.0.2.0
 VersionInfoCompany=OM International
 VersionInfoDescription=Administration Software for Charities
 VersionInfoCopyright=2009 OM International
-OutputBaseFilename=OpenPetraSetup-0.0.1-3
+OutputBaseFilename=OpenPetraSetup-0.0.2-0
 
 [Languages]
 Name: en; MessagesFile: compiler:Default.isl,..\language\lang-en.isl
@@ -20,6 +20,7 @@ Name: de; MessagesFile: compiler:Languages\German.isl,..\language\lang-de.isl
 Name: {app}/bin30
 Name: {app}/manuals30
 Name: {app}/db30
+Name: {app}/reports30
 [Files]
 Source: ..\..\..\csharp\ThirdParty\DevAge\SourceGrid.dll; DestDir: {app}/bin30
 Source: ..\..\..\csharp\ThirdParty\DevAge\SourceGrid.Extensions.dll; DestDir: {app}/bin30
@@ -48,6 +49,8 @@ Source: ..\..\..\csharp\ICT\Petra\ServerAdmin\_bin\Release\Ict.Petra.ServerAdmin
 Source: ..\..\..\csharp\ICT\Petra\ServerAdmin\_bin\Release\PetraServerAdminConsole.exe; DestDir: {app}/bin30
 Source: ..\..\..\csharp\ICT\Petra\Client\_bin\Release\PetraClient.exe; DestDir: {app}/bin30
 Source: ..\..\..\csharp\ICT\Petra\Server\_bin\Release\PetraServerConsole.exe; DestDir: {app}/bin30
+Source: ..\..\..\XmlReports\reports.dtd; DestDir: {app}/reports30
+Source: ..\..\..\XmlReports\*.xml; DestDir: {app}/reports30
 Source: PetraServerAdminConsole.config; DestDir: {app}; DestName: PetraServerAdminConsole-3.0.config
 Source: PetraClient.config; DestDir: {app}; DestName: PetraClient-3.0.config
 Source: PetraServerConsole-Sqlite.config; DestDir: {app}; DestName: PetraServerConsole-3.0.config
@@ -105,6 +108,7 @@ begin
   begin
     ReplaceInTextFile(ExpandConstant('{app}/PetraServerConsole-3.0.config'), 'U:/OpenPetra/setup/petra0300/petra.db', '{userappdata}/OpenPetra.org/db30/petra.db', true);
     ReplaceInTextFile(ExpandConstant('{app}/PetraServerConsole-3.0.config'), 'U:/OpenPetra/setup/petra0300/base.db', ExpandConstant('{app}/db30/demo.db'), true);
+    ReplaceInTextFile(ExpandConstant('{app}/PetraServerConsole-3.0.config'), 'reports30', ExpandConstant('{app}/reports30'), true);
     ReplaceInTextFile(ExpandConstant('{app}/PetraClient-3.0.config'), 'PetraServerConsole.exe.config', ExpandConstant('{app}/PetraServerConsole-3.0.config'), true);
     ReplaceInTextFile(ExpandConstant('{app}/PetraClient-3.0.config'), 'PetraServerAdminConsole.exe.config', ExpandConstant('{app}/PetraServerAdminConsole-3.0.config'), true);
     ReplaceInTextFile(ExpandConstant('{app}/PetraClient-3.0.config'), 'Petra.PathTemp" value="u:\"', 'Petra.PathTemp" value="{userappdata}/OpenPetra.org/tmp30"', true);
