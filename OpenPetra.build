@@ -177,7 +177,7 @@
     <target name="recreateDatabase" depends="createSQLStatements">
         <if test="${DBMS.Type=='sqlite'}">
              <delete file="${SQLitedb.file}" if="${file::exists(SQLitedb.file)}"/>
-             <exec program="${PetraToolsExe.dir}/GenerateSQL.exe" commandline="-do:sql -dbms:${DBMS.Type} -petraxml:${PetraXML.file} -outputFile:${SQLitedb.file}" failonerror="true"/> <!-- -password:CHANGEME -->
+             <exec program="${PetraToolsExe.dir}/GenerateSQL.exe" commandline="-do:sql -dbms:${DBMS.Type} -petraxml:${PetraXML.file} -outputFile:${SQLitedb.file} -password:${DBMS.Password}" failonerror="true"/>
         </if>
         <if test="${DBMS.Type=='postgresql'}">
              <exec program="cmd.exe" commandline="/C &quot;echo DROP DATABASE IF EXISTS petra; | &quot;${PostgreSQL.exe}&quot; template1&quot;"/>
@@ -218,7 +218,7 @@
          <echo message='${script::ReplaceInFile(BaseData.file, toReplace, passwordsalt)}'/>
          
         <if test="${DBMS.Type=='sqlite'}">
-             <exec program="${PetraToolsExe.dir}/GenerateSQL.exe" commandline="-do:load -dbms:${DBMS.Type} -petraxml:${PetraXML.file} -outputFile:${SQLitedb.file} -datapath:${OpenPetraRoot.dir}/db/basedata -sqlfile:${BaseData.file}" failonerror="true"/> <!--  -password:CHANGEME  -->
+             <exec program="${PetraToolsExe.dir}/GenerateSQL.exe" commandline="-do:load -dbms:${DBMS.Type} -petraxml:${PetraXML.file} -outputFile:${SQLitedb.file} -datapath:${OpenPetraRoot.dir}/db/basedata -sqlfile:${BaseData.file} -password:${DBMS.Password}" failonerror="true"/>
         </if>
         <if test="${DBMS.Type=='postgresql'}">
              <exec program="cmd.exe" commandline="/C &quot;echo DROP OWNED BY petraserver; DROP USER IF EXISTS petraserver; | &quot;${PostgreSQL.exe}&quot; petra&quot;"/>
