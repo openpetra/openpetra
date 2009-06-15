@@ -24,6 +24,7 @@
  *
  ************************************************************************/
 using System;
+using System.Collections.Specialized;
 using System.Data;
 using System.Data.SQLite;
 using System.IO;
@@ -219,11 +220,21 @@ public class TSQLiteWriter
                                     {
                                         val = null;
                                     }
-                                    else if (field.strType == "date")
+                                    else if ((field.strType == "date") && (val.ToString().Length != 0))
                                     {
-                                        val = new DateTime(Convert.ToInt16(val.ToString().Substring(0, 3)),
-                                            Convert.ToInt16(val.ToString().Substring(4, 2)),
-                                            Convert.ToInt16(val.ToString().Substring(6, 2)));
+                                        if (val.ToString().Contains("-"))
+                                        {
+                                            StringCollection dateString = StringHelper.StrSplit(val.ToString(), "-");
+                                            val = new DateTime(Convert.ToInt16(dateString[0]),
+                                                Convert.ToInt16(dateString[1]),
+                                                Convert.ToInt16(dateString[2]));
+                                        }
+                                        else
+                                        {
+                                            val = new DateTime(Convert.ToInt16(val.ToString().Substring(0, 3)),
+                                                Convert.ToInt16(val.ToString().Substring(4, 2)),
+                                                Convert.ToInt16(val.ToString().Substring(6, 2)));
+                                        }
                                     }
                                     else if (field.strType == "bit")
                                     {
