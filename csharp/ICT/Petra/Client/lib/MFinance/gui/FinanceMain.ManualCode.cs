@@ -25,6 +25,8 @@
  ************************************************************************/
 using System;
 using System.Windows.Forms;
+using Mono.Unix;
+using Ict.Petra.Shared;
 using Ict.Petra.Client.CommonForms;
 
 namespace Ict.Petra.Client.MFinance.Gui
@@ -35,10 +37,39 @@ namespace Ict.Petra.Client.MFinance.Gui
     public partial class TFrmFinanceMain
     {
         /// <summary>
+        /// currently selected ledger
+        /// </summary>
+        private int FLedgerNumber = -1;
+
+        /// <summary>
         /// called by constructor
         /// </summary>
         public void InitializeManualCode()
         {
+            // does the user have access to Finance at all?
+            if (!UserInfo.GUserInfo.IsInModule(SharedConstants.PETRAMODULE_FINANCE1)
+                && !UserInfo.GUserInfo.IsInModule(SharedConstants.PETRAMODULE_FINANCE2)
+                && !UserInfo.GUserInfo.IsInModule(SharedConstants.PETRAMODULE_FINANCE3))
+            {
+                MessageBox.Show(String.Format(Catalog.GetString("You don't have enough permissions to access {0}."),
+                        Catalog.GetString("the finance module")));
+                Close();
+            }
+
+            // TODO: show dialog to select ledger, if there are more than one ledgers available
+            // TODO: does the user have access to the selected ledger?
+            // TODO: check user default for ledger number
+
+            FLedgerNumber = TDlgSelectLedger.SelectLedger();
+
+            if (FLedgerNumber == -1)
+            {
+                MessageBox.Show(String.Format(Catalog.GetString("You don't have enough permissions to access {0}."),
+                        Catalog.GetString("any ledger")));
+                Close();
+            }
+
+            MessageBox.Show("selected ledger: " + FLedgerNumber.ToString());
         }
     }
 }

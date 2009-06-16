@@ -129,11 +129,10 @@ namespace Ict.Petra.Server.MFinance
                         case TCacheableFinanceTablesEnum.LedgerNameList:
                             TmpALedgerNameDT = TALedgerNameAggregate.GetData(TableName, ReadTransaction);
                             DomainManager.GCacheableTablesManager.AddOrMergeCachedTable(TableName, TmpALedgerNameDT, DomainManager.GClientID);
-
-                            // Unknown Standard Cacheable DataTable
                             break;
 
                         default:
+                            // Unknown Standard Cacheable DataTable
                             throw new ECachedDataTableNotImplementedException("Requested Cacheable DataTable '" +
                             Enum.GetName(typeof(TCacheableFinanceTablesEnum),
                                 ACacheableTable) + "' is not available as a Standard Cacheable Table (without ALedgerNumber as an Argument)");

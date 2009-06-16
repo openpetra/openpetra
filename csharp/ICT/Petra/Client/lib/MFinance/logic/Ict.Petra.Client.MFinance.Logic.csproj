@@ -1,0 +1,63 @@
+﻿<Project ToolsVersion="3.5" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <ProjectGuid>{45767519-3EC2-4143-B0CC-252033363D35}</ProjectGuid>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <OutputType>Library</OutputType>
+    <RootNamespace>Ict.Petra.Client.MFinance.Logic</RootNamespace>
+    <AssemblyName>Ict.Petra.Client.MFinance.Logic</AssemblyName>
+    <TargetFrameworkVersion>v2.0</TargetFrameworkVersion>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
+    <OutputPath>bin\Debug\</OutputPath>
+    <DebugSymbols>True</DebugSymbols>
+    <DebugType>Full</DebugType>
+    <Optimize>False</Optimize>
+    <CheckForOverflowUnderflow>True</CheckForOverflowUnderflow>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)' == 'Release' ">
+    <OutputPath>bin\Release\</OutputPath>
+    <DebugSymbols>False</DebugSymbols>
+    <DebugType>None</DebugType>
+    <Optimize>True</Optimize>
+    <CheckForOverflowUnderflow>False</CheckForOverflowUnderflow>
+    <DefineConstants>TRACE</DefineConstants>
+  </PropertyGroup>
+  <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.Targets" />
+  <ItemGroup>
+    <Reference Include="Ict.Common">
+      <HintPath>..\..\..\..\..\Common\_bin\Debug\Ict.Common.dll</HintPath>
+    </Reference>
+    <Reference Include="Ict.Petra.Shared">
+      <HintPath>..\..\..\..\Shared\_bin\Server_Client\Debug\Ict.Petra.Shared.dll</HintPath>
+    </Reference>
+    <Reference Include="Ict.Petra.Shared.Interfaces">
+      <HintPath>..\..\..\..\Shared\_bin\Server_Client\Debug\Ict.Petra.Shared.Interfaces.dll</HintPath>
+    </Reference>
+    <Reference Include="Ict.Petra.Shared.MFinance">
+      <HintPath>..\..\..\..\Shared\_bin\Server_Client\Debug\Ict.Petra.Shared.MFinance.dll</HintPath>
+    </Reference>
+    <Reference Include="Ict.Petra.Shared.UserInfo">
+      <HintPath>..\..\..\..\Shared\_bin\Server_Client\Debug\Ict.Petra.Shared.UserInfo.dll</HintPath>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="AssemblyInfo.cs" />
+    <Compile Include="LedgerSelection.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\..\app\Core\Ict.Petra.Client.App.Core.csproj">
+      <Project>{69E21FFC-F815-451A-96BB-66499CDDEB6E}</Project>
+      <Name>Ict.Petra.Client.App.Core</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\app\Core\Ict.Petra.Client.App.Core.RemoteObjects.csproj">
+      <Project>{A3E8D62A-D07D-44D9-A286-68220B3AA94F}</Project>
+      <Name>Ict.Petra.Client.App.Core.RemoteObjects</Name>
+    </ProjectReference>
+  </ItemGroup>
+</Project>

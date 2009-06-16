@@ -108,9 +108,6 @@ namespace Ict.Petra.Client.CommonForms
         {
             if (!TFormsList.GFormsList.ShowForm("Ict.Petra.Client.MFinance.Gui.TFrmFinanceMain"))
             {
-                // TODO: show dialog to select ledger, if there are more than one ledgers available
-                // TODO: does the user have access to Finance at all?
-                // TODO: does the user have access to the selected ledger?
                 OpenOrFocusScreen("Ict.Petra.Client.MFinance.Gui.TFrmFinanceMain");
             }
         }

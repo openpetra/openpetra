@@ -88,6 +88,10 @@ namespace Ict.Petra.Client.MCommon
             }
         }
 
+        /// <summary>
+        /// frees some static objects in FLogic.
+        /// </summary>
+        /// <param name="Disposing"></param>
         protected void SpecialDispose(Boolean Disposing)
         {
             FLogic.FreeStaticObjects();
