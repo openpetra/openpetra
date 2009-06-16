@@ -37,7 +37,7 @@ namespace Ict.Petra.Client.MPartner.Gui
     public partial class TFrmPartnerMain
     {
         /// <summary>
-        /// Initializes a new instance of the TPartnerEditDSWinForm class (called by constructor)
+        /// called by constructor
         /// </summary>
         public void InitializeManualCode()
         {

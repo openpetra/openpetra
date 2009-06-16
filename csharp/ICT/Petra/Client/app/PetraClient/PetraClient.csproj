@@ -154,6 +154,10 @@
       <Project>{F1D473DD-F831-4662-A3F9-EE5016D4C625}</Project>
       <Name>Ict.Petra.Client.MCommon.Gui</Name>
     </ProjectReference>
+    <ProjectReference Include="..\..\lib\MFinance\gui\Ict.Petra.Client.MFinance.Gui.csproj">
+      <Project>{B8226A6F-E8BE-41B3-8509-0FD128B16574}</Project>
+      <Name>Ict.Petra.Client.MFinance.Gui</Name>
+    </ProjectReference>
     <ProjectReference Include="..\..\lib\MPartner\gui\Ict.Petra.Client.MPartner.Gui.csproj">
       <Project>{2B06F76C-A8FE-4F0A-A312-B53055F9E77A}</Project>
       <Name>Ict.Petra.Client.MPartner.Gui</Name>

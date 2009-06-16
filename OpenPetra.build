@@ -218,7 +218,7 @@
          <property name="toReplace" value="{#PASSWORDSALTSYSADMIN}"/>
          <echo message='${script::ReplaceInFile(Current.File, toReplace, passwordsalt)}'/>
 
-         <property name="passwordChangeme" value="DEMO"/>
+         <property name="passwordChangeme" value="demo"/>
          <property name="passwordsalt" value="${script::GetPasswordSalt()}"/>
          <property name="passwordhash" value="${script::GetPasswordHash(passwordChangeme, passwordsalt)}"/>
          <property name="Current.File" value="${DemoData.Dir}/init.sql.local"/>
@@ -304,6 +304,7 @@
         <exec program="${PetraToolsExe.dir}/GenerateWinforms.exe" commandline="-ymlfile:${OpenPetraRoot.dir}/csharp/ICT/Petra/Client/lib/MPartner/gui/PartnerEdit.yaml -TemplateDir:${OpenPetraRoot.dir}/csharp/ICT/PetraTools/Templates/Winforms -ResourceDir:${OpenPetraRoot.dir}/resources"/>
         <exec program="${PetraToolsExe.dir}/GenerateWinforms.exe" commandline="-ymlfile:${OpenPetraRoot.dir}/csharp/ICT/Petra/Client/lib/MPartner/gui/PartnerFind.yaml -TemplateDir:${OpenPetraRoot.dir}/csharp/ICT/PetraTools/Templates/Winforms -ResourceDir:${OpenPetraRoot.dir}/resources"/>
         <exec program="${PetraToolsExe.dir}/GenerateWinforms.exe" commandline="-ymlfile:${OpenPetraRoot.dir}/csharp/ICT/Petra/Client/lib/MReporting/gui/MPartner/PartnerByCity.yaml -TemplateDir:${OpenPetraRoot.dir}/csharp/ICT/PetraTools/Templates/Winforms -ResourceDir:${OpenPetraRoot.dir}/resources"/>
+        <exec program="${PetraToolsExe.dir}/GenerateWinforms.exe" commandline="-ymlfile:${OpenPetraRoot.dir}/csharp/ICT/Petra/Client/lib/MFinance/gui/FinanceMain.yaml -TemplateDir:${OpenPetraRoot.dir}/csharp/ICT/PetraTools/Templates/Winforms -ResourceDir:${OpenPetraRoot.dir}/resources"/>
     </target>
 
     <target name="translationTemplate">

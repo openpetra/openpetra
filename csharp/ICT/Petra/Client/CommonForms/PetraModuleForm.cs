@@ -63,7 +63,7 @@ namespace Ict.Petra.Client.CommonForms
                 }
             }
 
-            throw new Exception(String.Format("cannot find window type %s", AWindowTypeName));
+            throw new Exception(String.Format("cannot find window type {0}", AWindowTypeName));
         }
 
         private void OpenOrFocusScreen(string AClassName)
@@ -106,7 +106,13 @@ namespace Ict.Petra.Client.CommonForms
         /// <param name="e"></param>
         public void OpenFinanceModule(System.Object sender, System.EventArgs e)
         {
-            // TODO OpenOrFocusScreen("Ict.Petra.Client.MFinance.Gui.TFrmFinanceMain");
+            if (!TFormsList.GFormsList.ShowForm("Ict.Petra.Client.MFinance.Gui.TFrmFinanceMain"))
+            {
+                // TODO: show dialog to select ledger, if there are more than one ledgers available
+                // TODO: does the user have access to Finance at all?
+                // TODO: does the user have access to the selected ledger?
+                OpenOrFocusScreen("Ict.Petra.Client.MFinance.Gui.TFrmFinanceMain");
+            }
         }
 
         /// <summary>
