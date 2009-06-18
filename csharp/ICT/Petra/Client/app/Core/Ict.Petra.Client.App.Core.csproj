@@ -106,7 +106,7 @@
       <SpecificVersion>False</SpecificVersion>
     </Reference>
     <Reference Include="Ict.Petra.Shared.MPartner.DataSets">
-      <HintPath>..\..\_bin\Debug\Ict.Petra.Shared.MPartner.DataSets.dll</HintPath>
+      <HintPath>..\..\..\Shared\_bin\Server_Client\Debug\Ict.Petra.Shared.MPartner.DataSets.dll</HintPath>
     </Reference>
     <Reference Include="Ict.Petra.Shared.MSysMan">
       <HintPath>..\..\..\Shared\_bin\Server_Client\Debug\Ict.Petra.Shared.MSysMan.dll</HintPath>

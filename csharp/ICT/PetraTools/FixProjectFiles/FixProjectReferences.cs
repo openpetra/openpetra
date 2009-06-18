@@ -113,6 +113,19 @@ public class TFixProjectReferences : TCSProjTools
                             }
                         }
                     }
+                    else if (child2.Name == "Reference")
+                    {
+                        // check whether we should have a ProjectReference instead to help with the build order
+                        string referencedDll = child2.Attributes["Include"].Value;
+                        if (child2.FirstChild != null && child2.FirstChild.Name == "HintPath")
+                        {
+                            if (child2.FirstChild.InnerText.Contains("..\\_bin"))
+                            {
+                                Console.WriteLine("Please fix project reference to " + referencedDll);
+                            }
+                        }
+                        
+                    }
                 }
             }
         }

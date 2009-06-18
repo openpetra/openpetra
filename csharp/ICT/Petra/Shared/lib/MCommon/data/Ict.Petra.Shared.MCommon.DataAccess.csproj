@@ -1,4 +1,4 @@
-<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+﻿<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
     <ProjectGuid>{69E21FFC-F815-451A-96BB-66499CDDEB6E}</ProjectGuid>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
@@ -57,14 +57,6 @@
       <HintPath>..\..\..\..\..\Common\_bin\Debug\Ict.Common.Verification.dll</HintPath>
       <SpecificVersion>False</SpecificVersion>
     </Reference>
-    <Reference Include="Ict.Petra.Shared">
-      <HintPath>..\..\..\_bin\Server_Client\Debug\Ict.Petra.Shared.dll</HintPath>
-      <SpecificVersion>False</SpecificVersion>
-    </Reference>
-    <Reference Include="Ict.Petra.Shared.MCommon.DataTables">
-      <HintPath>..\..\..\_bin\Server_Client\Debug\Ict.Petra.Shared.MCommon.DataTables.dll</HintPath>
-      <SpecificVersion>False</SpecificVersion>
-    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Data" />
     <Reference Include="System.Xml" />
@@ -74,6 +66,10 @@
     <Compile Include="DataAccess.AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\..\..\Ict.Petra.Shared.csproj">
+      <Project>{5F8FBEF6-2E30-4E12-B3E4-80BC29932B7D}</Project>
+      <Name>Ict.Petra.Shared</Name>
+    </ProjectReference>
     <ProjectReference Include="..\..\..\Ict.Petra.Shared.UserInfo.csproj">
       <Project>{ECC6EB7E-E269-4735-8989-4243ABC58379}</Project>
       <Name>Ict.Petra.Shared.UserInfo</Name>
@@ -85,6 +81,10 @@
     <ProjectReference Include="..\..\MPersonnel\data\Ict.Petra.Shared.MPersonnel.DataTables.csproj">
       <Project>{5B6D2B12-84D0-4B62-AF1F-B8365FBF68D1}</Project>
       <Name>Ict.Petra.Shared.MPersonnel.DataTables</Name>
+    </ProjectReference>
+    <ProjectReference Include="Ict.Petra.Shared.MCommon.DataTables.csproj">
+      <Project>{EAF53CA5-2E91-4AE2-B412-8292DA40FE93}</Project>
+      <Name>Ict.Petra.Shared.MCommon.DataTables</Name>
     </ProjectReference>
   </ItemGroup>
 </Project>
