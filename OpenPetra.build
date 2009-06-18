@@ -77,6 +77,12 @@
                 <include name="MonoPosixHelper.dll" />
             </fileset>
         </copy>
+        <property name = "language.file" value="${OpenPetraRoot.dir}/i18n/${SelectedLanguage}.mo"/>
+        <if test="${file::exists(language.file)}">
+            <mkdir dir="${OpenPetraRoot.dir}/csharp/ICT/Petra/Server/_bin/${Output.dir}/locale/${SelectedLanguage}/LC_MESSAGES" failonerror="false"/>
+            <copy file="${language.file}"
+                tofile="${OpenPetraRoot.dir}/csharp/ICT/Petra/Server/_bin/${Output.dir}/locale/${SelectedLanguage}/LC_MESSAGES/i18n.mo"/>
+        </if>
     </target>
     <target name="compilePetraServerAdmin" description="compile Ict/Petra/ServerAdmin">
         <property name="appconfigfile" value="${OpenPetraRoot.dir}/csharp/ICT/Petra/ServerAdmin/app/PetraServerAdminConsole/app.config"/>
@@ -111,6 +117,12 @@
                 <include name="*.jpg" />
             </fileset>
         </copy>
+        <property name = "language.file" value="${OpenPetraRoot.dir}/i18n/${SelectedLanguage}.mo"/>
+        <if test="${file::exists(language.file)}">
+            <mkdir dir="${OpenPetraRoot.dir}/csharp/ICT/Petra/Client/_bin/${Output.dir}/locale/${SelectedLanguage}/LC_MESSAGES" failonerror="false"/>
+            <copy file="${language.file}"
+                tofile="${OpenPetraRoot.dir}/csharp/ICT/Petra/Client/_bin/${Output.dir}/locale/${SelectedLanguage}/LC_MESSAGES/i18n.mo"/>
+        </if>
     </target>
     <target name="cleanPetra" description="remove all compiled code of Petra">
         <!-- alternatively could use solution task: http://nant.sourceforge.net/release/latest/help/tasks/solution.html -->
@@ -256,14 +268,22 @@
         <exec program="cmd.exe" 
                 workingdir="${OpenPetraRoot.dir}/csharp/ICT/Petra/Server/_bin/${Output.dir}"
                 commandline="/C start PetraServerConsole.exe -RunWithoutMenu:false"
-                spawn="true"/>
+                spawn="true">
+           <environment>
+              <variable name="LANGUAGE" value="${SelectedLanguage}"/>
+           </environment>
+        </exec>
     </target>
 
     <target name="startPetraClient" depends="" description="start the Petra Client"> <!-- compilePetra, startPetraServer??? -->
         <exec program="cmd.exe" 
                 workingdir="${OpenPetraRoot.dir}/csharp/ICT/Petra/Client/_bin/${Output.dir}"
                 commandline="/C start PetraClient.exe -AutoLogin:demo"
-                spawn="true"/>
+                spawn="true">
+           <environment>
+              <variable name="LANGUAGE" value="${SelectedLanguage}"/>
+           </environment>
+        </exec>
     </target>
 
     <target name="stopPetraServer" depends="" description="stop the local Petra Server">

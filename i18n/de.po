@@ -3,14 +3,13 @@
 # This file is distributed under the same license as the PACKAGE package.
 # FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
 #
-#, fuzzy
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2009-06-16 14:12+0200\n"
-"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
-"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"PO-Revision-Date: 2009-06-16 21:45+0100\n"
+"Last-Translator: Timotheus Pokorra <timotheus.pokorra@gmail.com>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -83,10 +82,10 @@ msgid "Error"
 msgstr ""
 
 msgid "&User ID:"
-msgstr ""
+msgstr "&Benutzername:"
 
 msgid "&Password:"
-msgstr ""
+msgstr "&Passwort:"
 
 msgid " &Login"
 msgstr ""
@@ -878,33 +877,25 @@ msgstr ""
 msgid "Addresses"
 msgstr ""
 
-msgid ""
-"The UserControl is added dynamically at runtime to this Panel (pnlAddresses) "
-"in P"
+msgid "The UserControl is added dynamically at runtime to this Panel (pnlAddresses) in P"
 msgstr ""
 
 msgid "Partner Details"
 msgstr ""
 
-msgid ""
-"The UserControl that corresponds to the PartnerClass of the Partner is added "
-"dyna"
+msgid "The UserControl that corresponds to the PartnerClass of the Partner is added dyna"
 msgstr ""
 
 msgid "Subscriptions"
 msgstr ""
 
-msgid ""
-"The UserControl is added dynamically at runtime to this Panel "
-"(pnlSubscriptions) "
+msgid "The UserControl is added dynamically at runtime to this Panel (pnlSubscriptions) "
 msgstr ""
 
 msgid "Special Types (?)"
 msgstr ""
 
-msgid ""
-"The UserControl is added dynamically at runtime to this Panel "
-"(pnlPartnerTypes) i"
+msgid "The UserControl is added dynamically at runtime to this Panel (pnlPartnerTypes) i"
 msgstr ""
 
 msgid "Contacts (?)"
@@ -913,9 +904,7 @@ msgstr ""
 msgid "Family Members (?)"
 msgstr ""
 
-msgid ""
-"The UserControl is added dynamically at runtime to this Panel "
-"(pnlFamilyMembers) "
+msgid "The UserControl is added dynamically at runtime to this Panel (pnlFamilyMembers) "
 msgstr ""
 
 msgid "Relationships (?)"
@@ -924,9 +913,7 @@ msgstr ""
 msgid "Interests (?)"
 msgstr ""
 
-msgid ""
-"The UserControl is added dynamically at runtime to this Panel (pnlInterests) "
-"in P"
+msgid "The UserControl is added dynamically at runtime to this Panel (pnlInterests) in P"
 msgstr ""
 
 msgid "Reminders (?)"
@@ -935,32 +922,22 @@ msgstr ""
 msgid "Notes"
 msgstr ""
 
-msgid ""
-"The UserControl is added dynamically at runtime to this Panel "
-"(pnlPartnerNotes) i"
+msgid "The UserControl is added dynamically at runtime to this Panel (pnlPartnerNotes) i"
 msgstr ""
 
 msgid "Local Partner Data"
 msgstr ""
 
-msgid ""
-"The UserControl is added dynamically at runtime to this Panel "
-"(pnlPartnerOfficeSp"
+msgid "The UserControl is added dynamically at runtime to this Panel (pnlPartnerOfficeSp"
 msgstr ""
 
-msgid ""
-"The UserControl is added dynamically at runtime to this Panel (pnlContacts) "
-"in Pr"
+msgid "The UserControl is added dynamically at runtime to this Panel (pnlContacts) in Pr"
 msgstr ""
 
-msgid ""
-"The UserControl is added dynamically at runtime to this Panel "
-"(pnlRelationships) "
+msgid "The UserControl is added dynamically at runtime to this Panel (pnlRelationships) "
 msgstr ""
 
-msgid ""
-"The UserControl is added dynamically at runtime to this Panel (pnlReminders) "
-"in P"
+msgid "The UserControl is added dynamically at runtime to this Panel (pnlReminders) in P"
 msgstr ""
 
 msgid " &Search"
@@ -1488,8 +1465,7 @@ msgstr ""
 msgid "Cannot Send E-mail To Partner"
 msgstr ""
 
-msgid ""
-"No valid e-mail address for this Partner in the selected address record."
+msgid "No valid e-mail address for this Partner in the selected address record."
 msgstr ""
 
 msgid "Details: "
@@ -1516,9 +1492,7 @@ msgstr ""
 msgid "Text Output"
 msgstr ""
 
-msgid ""
-"Unfortunately this function is disabled. Please install a printer to use "
-"this page."
+msgid "Unfortunately this function is disabled. Please install a printer to use this page."
 msgstr ""
 
 msgid "Select Zoom"
@@ -1554,8 +1528,7 @@ msgstr ""
 msgid "Generate Chart"
 msgstr ""
 
-msgid ""
-"Generates a chart in Excel (only available yet for few reports at the moment)"
+msgid "Generates a chart in Excel (only available yet for few reports at the moment)"
 msgstr ""
 
 msgid "Existing stored Settings:"
@@ -1612,9 +1585,7 @@ msgstr ""
 msgid "&Add"
 msgstr ""
 
-msgid ""
-"Hint: If you don't want quotes around your values, please choose a delimiter "
-"that"
+msgid "Hint: If you don't want quotes around your values, please choose a delimiter that"
 msgstr ""
 
 msgid "(e.g. , or ; or : or Space; or type TAB for tabulator)"
@@ -1806,13 +1777,10 @@ msgstr ""
 msgid "Invalid User ID/Password."
 msgstr ""
 
-msgid ""
-"  ID | Client          | Status           | Computer    | IP Address      | "
-"Type"
+msgid "  ID | Client          | Status           | Computer    | IP Address      | Type"
 msgstr ""
 
-msgid ""
-"     | Connected since | Last activity    | Server Port |                 |"
+msgid "     | Connected since | Last activity    | Server Port |                 |"
 msgstr ""
 
 msgid " * no connected Clients *"
@@ -1822,9 +1790,7 @@ msgid " * no disconnected Clients *"
 msgstr ""
 
 #, csharp-format
-msgid ""
-"  (Currently connected Clients: {0}; client connections since Server start: "
-"{1})"
+msgid "  (Currently connected Clients: {0}; client connections since Server start: {1})"
 msgstr ""
 
 #, csharp-format
@@ -1884,3 +1850,4 @@ msgstr ""
 
 msgid "99"
 msgstr ""
+

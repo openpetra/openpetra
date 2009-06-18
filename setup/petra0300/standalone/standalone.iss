@@ -18,6 +18,7 @@ Name: de; MessagesFile: compiler:Languages\German.isl,..\language\lang-de.isl
 
 [Dirs]
 Name: {app}/bin30
+Name: {app}/bin30/locale/de/LC_MESSAGES
 Name: {app}/manuals30
 Name: {app}/db30
 Name: {app}/reports30
@@ -49,6 +50,7 @@ Source: ..\..\..\csharp\ICT\Petra\ServerAdmin\_bin\Release\Ict.Petra.ServerAdmin
 Source: ..\..\..\csharp\ICT\Petra\ServerAdmin\_bin\Release\PetraServerAdminConsole.exe; DestDir: {app}/bin30
 Source: ..\..\..\csharp\ICT\Petra\Client\_bin\Release\PetraClient.exe; DestDir: {app}/bin30
 Source: ..\..\..\csharp\ICT\Petra\Server\_bin\Release\PetraServerConsole.exe; DestDir: {app}/bin30
+Source: ..\i18n\de.mo; DestDir: {app}/bin30/locale/de/LC_MESSAGES/i18n.mo
 Source: ..\..\..\XmlReports\reports.dtd; DestDir: {app}/reports30
 Source: ..\..\..\XmlReports\*.xml; DestDir: {app}/reports30
 Source: PetraServerAdminConsole.config; DestDir: {app}; DestName: PetraServerAdminConsole-3.0.config

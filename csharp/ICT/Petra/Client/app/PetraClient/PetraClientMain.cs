@@ -31,6 +31,8 @@ using System.Runtime.InteropServices;
 using System.Security.Cryptography;
 using System.Security.Principal;
 using System.Windows.Forms;
+using System.Globalization;
+using Mono.Unix;
 using Ict.Common;
 using Ict.Common.IO;
 using Ict.Petra.Shared;
@@ -217,6 +219,19 @@ namespace Ict.Petra.Client.App.PetraClient
         public static void StartUp()
         {
             ExceptionHandling.GApplicationShutdownCallback = Shutdown.SaveUserDefaultsAndDisconnectAndStop;
+
+            // seems not to work to load culture from config file etc
+            // need to set environment variable before starting PetraClient?
+            // ie if you want to force english: set LANGUAGE=en; PetraClient.exe -C:[..]PetraClient.exe.config
+            // see also http://www.mail-archive.com/mono-devel-list@lists.ximian.com/msg16275.html
+            // CultureInfo culture = System.Globalization.CultureInfo.CreateSpecificCulture("de");
+            // Thread.CurrentThread.CurrentCulture = culture;
+            // Thread.CurrentThread.CurrentUICulture = culture;
+            // Environment.SetEnvironmentVariable ("LANGUAGE", "de");
+            Catalog.Init("i18n", "./locale");
+
+            // TODO another Catalog.Init("org", "./locale") for organisation specific words?
+
 
             /* Show Splash Screen.
              * This is non-blocking since it is done in a separate Thread, that means
