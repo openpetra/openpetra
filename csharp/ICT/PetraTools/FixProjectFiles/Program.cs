@@ -44,6 +44,7 @@ class Program
 
             foreach (string solutionFilename in SolutionFiles)
             {
+                TFixSolutionForMD.FixSolution(SolutionPath + Path.DirectorySeparatorChar + solutionFilename + ".sln");
                 FixReferences.FixAllProjectFiles(SolutionPath + Path.DirectorySeparatorChar + solutionFilename + ".sln");
             }
         }
