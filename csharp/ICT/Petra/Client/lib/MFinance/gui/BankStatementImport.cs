@@ -1,4 +1,4 @@
-/*************************************************************************
+﻿/*************************************************************************
  *
  * DO NOT REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
  *
@@ -27,19 +27,22 @@ using System;
 using System.Drawing;
 using System.Data;
 using System.Windows.Forms;
+using Mono.Unix;
 using Ict.Petra.Client.CommonForms;
 
 namespace Ict.Petra.Client.MFinance.Gui
 {
     /// <summary>
     /// Import bank statements and put them in the right sub system (gift, ap, gl, etc).
-    /// At the moment, this is just a non functional prototype 
-    /// that shows how the transactions on a bank statement can 
+    /// At the moment, this is just a non functional prototype
+    /// that shows how the transactions on a bank statement can
     /// be categorized and matched automatically to partners (eg. donors and recipients, suppliers, etc)
     /// </summary>
-    public partial class TFrmBankStatementImport : TFrmPetra
+    public partial class TFrmBankStatementImport : Form
     {
-
+        /// <summary>
+        /// constructor
+        /// </summary>
         public TFrmBankStatementImport()
         {
             //
@@ -49,12 +52,18 @@ namespace Ict.Petra.Client.MFinance.Gui
             #region CATALOGI18N
 
             // this code has been inserted by GenerateI18N, all changes in this region will be overwritten by GenerateI18N
-            this.xpToolBarButton1.Text = Catalog.GetString("Print");
-            this.xpToolBarButton2.Text = Catalog.GetString("Import New Bank statements");
             this.tabPage1.Text = Catalog.GetString("Unmatched");
+            this.button10.Text = Catalog.GetString("Cancel");
+            this.button9.Text = Catalog.GetString("Save");
             this.tabPage2.Text = Catalog.GetString("Recurring Gifts");
+            this.button11.Text = Catalog.GetString("Cancel");
+            this.button12.Text = Catalog.GetString("Save");
             this.tabPage4.Text = Catalog.GetString("One Time Gifts");
+            this.button13.Text = Catalog.GetString("Cancel");
+            this.button14.Text = Catalog.GetString("Save");
             this.tabPage3.Text = Catalog.GetString("Other (GL, AP, etc)");
+            this.button15.Text = Catalog.GetString("Cancel");
+            this.button16.Text = Catalog.GetString("Save");
             this.radioButton1.Text = Catalog.GetString("Recurring Gift");
             this.radioButton2.Text = Catalog.GetString("One Time Gift");
             this.radioButton3.Text = Catalog.GetString("Other (GL, AP, etc)");
@@ -71,7 +80,7 @@ namespace Ict.Petra.Client.MFinance.Gui
             this.label3.Text = Catalog.GetString("Annual Receipt");
             this.label2.Text = Catalog.GetString("Method of Payment:");
             this.label1.Text = Catalog.GetString("Method of Giving:");
-            this.ttxtPartnerKeyTextBox1.LabelText = Catalog.GetString("Name, Address,  Partner Class");
+            this.TTxtPartnerKeyTextBox1.LabelText = Catalog.GetString("Name, Address,  Partner Class");
             this.tabPage6.Text = Catalog.GetString("Gift Details");
             this.label20.Text = Catalog.GetString("Mailing:");
             this.checkBox3.Text = Catalog.GetString("Confidential");
@@ -91,25 +100,18 @@ namespace Ict.Petra.Client.MFinance.Gui
             this.label9.Text = Catalog.GetString("Amount:");
             this.label8.Text = Catalog.GetString("Key Ministry:");
             this.button5.Text = Catalog.GetString("Field");
-            this.ttxtPartnerKeyTextBox3.LabelText = Catalog.GetString("Name of Field");
+            this.TTxtPartnerKeyTextBox3.LabelText = Catalog.GetString("Name of Field");
             this.button4.Text = Catalog.GetString("Remove Detail");
             this.button3.Text = Catalog.GetString("Add Gift Detail");
             this.label7.Text = Catalog.GetString("Total:");
             this.label6.Text = Catalog.GetString("Gift Date:");
             this.button2.Text = Catalog.GetString("Recipient");
-            this.ttxtPartnerKeyTextBox2.LabelText = Catalog.GetString("Name of Recipient");
-            this.xpToolBarComboBox1.ComboText = Catalog.GetString("Select Statement");
-            this.xpToolBarComboBox1.Text = Catalog.GetString("13-June-2008");
-            this.button9.Text = Catalog.GetString("Save");
-            this.button10.Text = Catalog.GetString("Cancel");
-            this.button11.Text = Catalog.GetString("Cancel");
-            this.button12.Text = Catalog.GetString("Save");
-            this.button13.Text = Catalog.GetString("Cancel");
-            this.button14.Text = Catalog.GetString("Save");
-            this.button15.Text = Catalog.GetString("Cancel");
-            this.button16.Text = Catalog.GetString("Save");
-            this.xpToolBarButton3.Text = Catalog.GetString("Add new Bank Account");
-            this.xpToolBarComboBox2.ComboText = Catalog.GetString("Select Bank Account");
+            this.TTxtPartnerKeyTextBox2.LabelText = Catalog.GetString("Name of Recipient");
+            this.toolStripButton1.Text = Catalog.GetString("Print");
+            this.toolStripComboBox1.Text = Catalog.GetString("Select Bank Account");
+            this.toolStripButton2.Text = Catalog.GetString("Add new Bank Account");
+            this.toolStripButton3.Text = Catalog.GetString("Import new bank statement");
+            this.toolStripComboBox2.Text = Catalog.GetString("Select statement");
             this.Text = Catalog.GetString("Match recurring gifts");
             #endregion
 
@@ -142,9 +144,9 @@ namespace Ict.Petra.Client.MFinance.Gui
             tsgrdDataGrid1.AddTextColumn("Name", statementTable.Columns["Name"]);
             tsgrdDataGrid1.AddTextColumn("Purpose", statementTable.Columns["Purpose"]);
             tsgrdDataGrid1.DataSource = new DevAge.ComponentModel.BoundDataView(new DataView(statementTable));
-            ((DataView)tsgrdDataGrid1.DataSource).AllowEdit = false;
-            ((DataView)tsgrdDataGrid1.DataSource).AllowNew = false;
-            ((DataView)tsgrdDataGrid1.DataSource).AllowDelete = false;
+            ((DevAge.ComponentModel.BoundDataView)tsgrdDataGrid1.DataSource).AllowEdit = false;
+            ((DevAge.ComponentModel.BoundDataView)tsgrdDataGrid1.DataSource).AllowNew = false;
+            ((DevAge.ComponentModel.BoundDataView)tsgrdDataGrid1.DataSource).AllowDelete = false;
         }
     }
 }

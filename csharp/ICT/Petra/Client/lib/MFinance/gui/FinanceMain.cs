@@ -83,6 +83,7 @@ namespace Ict.Petra.Client.MFinance.Gui
       this.mniMonthEndClosing.Text = Catalog.GetString("&Month End Closing");
       this.mniYearEndClosing.Text = Catalog.GetString("&Year End Closing");
       this.mniPeriodEnd.Text = Catalog.GetString("&Period End");
+      this.mniImportBankStatements.Text = Catalog.GetString("Import &Bank statements");
       this.mniGiftBatch.Text = Catalog.GetString("&Gift Batch");
       this.mniRecurringGiftBatch.Text = Catalog.GetString("&Recurring Gift Batch");
       this.mniGiftImport.Text = Catalog.GetString("Gift &Import");
@@ -136,6 +137,11 @@ namespace Ict.Petra.Client.MFinance.Gui
     private void mniCloseClick(object sender, EventArgs e)
     {
         actClose(sender, e);
+    }
+
+    private void mniImportBankStatementsClick(object sender, EventArgs e)
+    {
+        ImportBankStatements();
     }
 
     private void mniPetraMainMenuClick(object sender, EventArgs e)

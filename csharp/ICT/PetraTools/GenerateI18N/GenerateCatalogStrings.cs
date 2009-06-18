@@ -64,6 +64,17 @@ public class TGenerateCatalogStrings
         while (!readerMainFile.EndOfStream && !line.Contains("InitializeComponent();"))
         {
             line = readerMainFile.ReadLine();
+            if (line == "/* Auto generated with nant generateORM")
+            {
+                // those files don't contain any translatable strings
+                // and they are too big to parse
+                readerMainFile.Close();
+                if (writer != null)
+                {
+                    writer.Close();
+                }
+                return;
+            }
             CheckLineAndAddDBHelp(line, ADataDefinitionStore, ADbHelpTranslationWriter);
 
             if (writer != null)

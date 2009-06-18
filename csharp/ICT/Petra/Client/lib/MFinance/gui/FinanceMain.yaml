@@ -39,6 +39,7 @@ RootNode:
            mniSeparator: {Label=-}
            mniGiftReceipting:
                Label: &Gift Receipting
+               mniImportBankStatements: {Label=Import &Bank statements, ActionClick=ImportBankStatements}
                mniGiftBatch: {Label=&Gift Batch}
                mniRecurringGiftBatch: {Label=&Recurring Gift Batch}
                mniSeparator: {Label=-}

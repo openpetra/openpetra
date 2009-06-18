@@ -96,6 +96,7 @@ namespace Ict.Petra.Client.MFinance.Gui
             this.mniYearEndClosing = new System.Windows.Forms.ToolStripMenuItem();
             this.mniSeparator2 = new System.Windows.Forms.ToolStripSeparator();
             this.mniGiftReceipting = new System.Windows.Forms.ToolStripMenuItem();
+            this.mniImportBankStatements = new System.Windows.Forms.ToolStripMenuItem();
             this.mniGiftBatch = new System.Windows.Forms.ToolStripMenuItem();
             this.mniRecurringGiftBatch = new System.Windows.Forms.ToolStripMenuItem();
             this.mniSeparator3 = new System.Windows.Forms.ToolStripSeparator();
@@ -315,6 +316,13 @@ namespace Ict.Petra.Client.MFinance.Gui
             this.mniSeparator2.AutoSize = true;
             this.mniSeparator2.Text = "-";
             //
+            // mniImportBankStatements
+            //
+            this.mniImportBankStatements.Name = "mniImportBankStatements";
+            this.mniImportBankStatements.AutoSize = true;
+            this.mniImportBankStatements.Click += new System.EventHandler(this.mniImportBankStatementsClick);
+            this.mniImportBankStatements.Text = "Import &Bank statements";
+            //
             // mniGiftBatch
             //
             this.mniGiftBatch.Name = "mniGiftBatch";
@@ -362,7 +370,8 @@ namespace Ict.Petra.Client.MFinance.Gui
             this.mniGiftReceipting.Name = "mniGiftReceipting";
             this.mniGiftReceipting.AutoSize = true;
             this.mniGiftReceipting.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-                           mniGiftBatch,
+                           mniImportBankStatements,
+                        mniGiftBatch,
                         mniRecurringGiftBatch,
                         mniSeparator3,
                         mniGiftImport,
@@ -712,6 +721,7 @@ namespace Ict.Petra.Client.MFinance.Gui
         private System.Windows.Forms.ToolStripMenuItem mniYearEndClosing;
         private System.Windows.Forms.ToolStripSeparator mniSeparator2;
         private System.Windows.Forms.ToolStripMenuItem mniGiftReceipting;
+        private System.Windows.Forms.ToolStripMenuItem mniImportBankStatements;
         private System.Windows.Forms.ToolStripMenuItem mniGiftBatch;
         private System.Windows.Forms.ToolStripMenuItem mniRecurringGiftBatch;
         private System.Windows.Forms.ToolStripSeparator mniSeparator3;

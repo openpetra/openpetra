@@ -71,5 +71,15 @@ namespace Ict.Petra.Client.MFinance.Gui
 
             MessageBox.Show("selected ledger: " + FLedgerNumber.ToString());
         }
+
+        /// <summary>
+        /// import bank statements and put them in the right sub system (gift, ap, gl, etc)
+        /// </summary>
+        public void ImportBankStatements()
+        {
+            TFrmBankStatementImport window = new TFrmBankStatementImport();
+
+            window.Show();
+        }
     }
 }

@@ -2,7 +2,7 @@ RootNode:
     BaseYaml: ../../../CommonForms/PetraEditForm.yaml
     FormTitle: Partner Edit
     ClassName: TPartnerEditDSWinForm
-    Namespace: Ict.Petra.Client.MPartner
+    Namespace: Ict.Petra.Client.MPartner.Gui
     FormType: edit
     HasManualCodeInOtherFile: true
     WindowWidth: 754
@@ -15,16 +15,16 @@ RootNode:
             Dock: Fill
             Controls: [ucoUpperPart, pnlLowerPart]
         ucoUpperPart:
-            Type: Ict.Petra.Client.MPartner.TUC_PartnerEdit_CollapsiblePart
+            Type: Ict.Petra.Client.MPartner.Gui.TUC_PartnerEdit_CollapsiblePart
             Dock: Top
         ucoPartnerTabSet:
-            Type: Ict.Petra.Client.MPartner.TUC_PartnerEdit_PartnerTabSet
+            Type: Ict.Petra.Client.MPartner.Gui.TUC_PartnerEdit_PartnerTabSet
             Dock: Fill
         ucoPersonnelTabSet:
-            Type: Ict.Petra.Client.MPartner.TUC_PartnerEdit_PersonnelTabSet
+            Type: Ict.Petra.Client.MPartner.Gui.TUC_PartnerEdit_PersonnelTabSet
             Dock: Fill
         ucoFinanceTabSet:
-            Type: Ict.Petra.Client.MPartner.TUC_PartnerEdit_FinanceTabSet
+            Type: Ict.Petra.Client.MPartner.Gui.TUC_PartnerEdit_FinanceTabSet
             Dock: Fill
         pnlLowerPart:        
             Dock: Fill

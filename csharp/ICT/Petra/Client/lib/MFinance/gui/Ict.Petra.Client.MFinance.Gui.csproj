@@ -109,6 +109,10 @@
       <Name>Ict.Petra.Client.MFinance.Logic</Name>
     </ProjectReference>
     <Compile Include="AssemblyInfo.cs" />
+    <Compile Include="BankStatementImport.cs" />
+    <Compile Include="BankStatementImport.Designer.cs">
+      <DependentUpon>BankStatementImport.cs</DependentUpon>
+    </Compile>
     <Compile Include="FinanceMain.cs" />
     <Compile Include="FinanceMain.Designer.cs">
       <DependentUpon>FinanceMain.cs</DependentUpon>
@@ -118,6 +122,9 @@
     <Compile Include="LedgerSelection.Designer.cs">
       <DependentUpon>LedgerSelection.cs</DependentUpon>
     </Compile>
+    <EmbeddedResource Include="BankStatementImport.resx">
+      <DependentUpon>BankStatementImport.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="FinanceMain.resx">
       <DependentUpon>FinanceMain.cs</DependentUpon>
     </EmbeddedResource>

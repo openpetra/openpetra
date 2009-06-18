@@ -23,7 +23,6 @@
         <echo message="ndoc: todo"/>
         <echo message="uncrustify: beautify the code according to coding style guide"/>
         <echo message="checkcode: todo"/>
-        <echo message="translation: todo"/>
         <echo message="fixProjectFiles: use this for broken GUIDs in sln and csproj files"/>
         <echo message="recreateDatabase: needed after changes in table structure in petra.xml"/>
         <echo message="resetDatabase: just resets the data, resets the permissions"/>
