@@ -1,4 +1,4 @@
-<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+﻿<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
     <ProjectGuid>{FB826CB1-81C5-47BB-B699-A7EB79CF800A}</ProjectGuid>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
@@ -57,10 +57,6 @@
       <HintPath>..\..\..\..\..\Common\_bin\Debug\Ict.Common.Verification.dll</HintPath>
       <SpecificVersion>False</SpecificVersion>
     </Reference>
-    <Reference Include="Ict.Petra.Shared.MCommon.DataTables">
-      <HintPath>..\..\..\..\Shared\_bin\Server_Client\Debug\Ict.Petra.Shared.MCommon.DataTables.dll</HintPath>
-      <SpecificVersion>False</SpecificVersion>
-    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Data" />
     <Reference Include="System.Xml" />
@@ -77,6 +73,10 @@
     <ProjectReference Include="..\..\..\Ict.Petra.Shared.UserInfo.csproj">
       <Project>{ECC6EB7E-E269-4735-8989-4243ABC58379}</Project>
       <Name>Ict.Petra.Shared.UserInfo</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\MCommon\data\Ict.Petra.Shared.MCommon.DataTables.csproj">
+      <Project>{EAF53CA5-2E91-4AE2-B412-8292DA40FE93}</Project>
+      <Name>Ict.Petra.Shared.MCommon.DataTables</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\MPartner\data\Ict.Petra.Shared.MPartner.DataTables.csproj">
       <Project>{6A8AF588-522A-469E-BEC4-C154CBC8866A}</Project>

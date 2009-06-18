@@ -1,4 +1,4 @@
-<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+﻿<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
     <ProjectGuid>{A2B90810-5C72-4154-8E6C-47F243E6538D}</ProjectGuid>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
@@ -57,14 +57,6 @@
       <HintPath>..\..\..\..\..\Common\_bin\Debug\Ict.Common.Verification.dll</HintPath>
       <SpecificVersion>False</SpecificVersion>
     </Reference>
-    <Reference Include="Ict.Petra.Shared.MCommon.DataTables">
-      <HintPath>..\..\..\..\Shared\_bin\Server_Client\Debug\Ict.Petra.Shared.MCommon.DataTables.dll</HintPath>
-      <SpecificVersion>False</SpecificVersion>
-    </Reference>
-    <Reference Include="Ict.Petra.Shared.MSysMan.DataTables">
-      <HintPath>..\..\..\..\Shared\_bin\Server_Client\Debug\Ict.Petra.Shared.MSysMan.DataTables.dll</HintPath>
-      <SpecificVersion>False</SpecificVersion>
-    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Data" />
     <Reference Include="System.Xml" />
@@ -83,9 +75,17 @@
       <Project>{ECC6EB7E-E269-4735-8989-4243ABC58379}</Project>
       <Name>Ict.Petra.Shared.UserInfo</Name>
     </ProjectReference>
+    <ProjectReference Include="..\..\MCommon\data\Ict.Petra.Shared.MCommon.DataTables.csproj">
+      <Project>{EAF53CA5-2E91-4AE2-B412-8292DA40FE93}</Project>
+      <Name>Ict.Petra.Shared.MCommon.DataTables</Name>
+    </ProjectReference>
     <ProjectReference Include="..\..\MPartner\data\Ict.Petra.Shared.MPartner.DataTables.csproj">
       <Project>{6A8AF588-522A-469E-BEC4-C154CBC8866A}</Project>
       <Name>Ict.Petra.Shared.MPartner.DataTables</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\MSysMan\data\Ict.Petra.Shared.MSysMan.DataTables.csproj">
+      <Project>{E5C3D047-F530-4AAA-B7BE-3CEE79A45BCE}</Project>
+      <Name>Ict.Petra.Shared.MSysMan.DataTables</Name>
     </ProjectReference>
     <ProjectReference Include="Ict.Petra.Shared.MPersonnel.DataTables.csproj">
       <Project>{5B6D2B12-84D0-4B62-AF1F-B8365FBF68D1}</Project>
