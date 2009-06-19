@@ -249,6 +249,7 @@ namespace Ict.Petra.Client.CommonForms
                          || (ctrl.GetType() == typeof(VScrollBar))
                          || (ctrl.GetType() == typeof(HScrollBar))
                          || (ctrl.GetType() == typeof(StatusBar))
+                         || (ctrl.GetType() == typeof(Ict.Common.Controls.TExtStatusBarHelp))
                          || (ctrl.GetType() == typeof(GroupBox))
                          || (ctrl.GetType() == typeof(TbtnVarioText))
                          || (ctrl.GetType() == typeof(TbtnCreated)))
