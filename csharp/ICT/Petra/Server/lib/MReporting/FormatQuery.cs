@@ -69,7 +69,8 @@ namespace Ict.Petra.Server.MReporting
             if (value.TypeVariant == eVariantTypes.eDateTime)
             {
                 // see also http://www.nabble.com/Best-way-to-do-a-date-comparison--td23431265.html
-                resultString = "'" + value.DateToString("yyyy/MM/dd") + "'";
+                // added 00:00:00 time to fix issue https://sourceforge.net/apps/mantisbt/openpetraorg/view.php?id=11
+                resultString = "'" + value.DateToString("yyyy/MM/dd") + " 00:00:00'";
 
                 // it seems, the separators (e.g. , /, .) are not considered
                 resultString = resultString.Replace(value.DateToString("yyyy/MM/dd")[4], '-');
