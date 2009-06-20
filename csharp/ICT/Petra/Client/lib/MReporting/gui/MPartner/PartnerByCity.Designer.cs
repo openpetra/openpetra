@@ -152,6 +152,7 @@ namespace Ict.Petra.Client.MReporting.Gui.MPartner
             this.tabReportSettings.Location = new System.Drawing.Point(2,2);
             this.tabReportSettings.Name = "tabReportSettings";
             this.tabReportSettings.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.tabReportSettings.AutoSize = true;
             this.tabReportSettings.Controls.Add(this.tpgReportSpecific);
             this.tabReportSettings.Dock = System.Windows.Forms.DockStyle.Fill;
             //
@@ -180,6 +181,7 @@ namespace Ict.Petra.Client.MReporting.Gui.MPartner
             //
             this.tbrMain.Name = "tbrMain";
             this.tbrMain.Dock = System.Windows.Forms.DockStyle.Top;
+            this.tbrMain.AutoSize = true;
             this.tbrMain.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
                            tbbGenerate,
                         tbbSave,
@@ -354,6 +356,7 @@ namespace Ict.Petra.Client.MReporting.Gui.MPartner
             //
             this.mnuMain.Name = "mnuMain";
             this.mnuMain.Dock = System.Windows.Forms.DockStyle.Top;
+            this.mnuMain.AutoSize = true;
             this.mnuMain.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
                            mniFile,
                         mniHelp});
@@ -362,6 +365,7 @@ namespace Ict.Petra.Client.MReporting.Gui.MPartner
             //
             this.stbMain.Name = "stbMain";
             this.stbMain.Dock = System.Windows.Forms.DockStyle.Bottom;
+            this.stbMain.AutoSize = true;
 
             //
             // TFrmPartnerByCity

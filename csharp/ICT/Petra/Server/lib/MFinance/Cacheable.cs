@@ -132,6 +132,7 @@ namespace Ict.Petra.Server.MFinance
                             break;
 
                         default:
+
                             // Unknown Standard Cacheable DataTable
                             throw new ECachedDataTableNotImplementedException("Requested Cacheable DataTable '" +
                             Enum.GetName(typeof(TCacheableFinanceTablesEnum),

@@ -175,6 +175,7 @@ namespace Ict.Petra.Client.MPartner.Gui
             //
             this.pnlMain.Name = "pnlMain";
             this.pnlMain.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.pnlMain.AutoSize = true;
             this.pnlMain.Controls.Add(this.tabPartnerFindMethods);
             this.pnlMain.Controls.Add(this.pnlModalButtons);
             //
@@ -196,12 +197,14 @@ namespace Ict.Petra.Client.MPartner.Gui
             //
             this.ucoFindByPartnerDetails.Name = "ucoFindByPartnerDetails";
             this.ucoFindByPartnerDetails.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.ucoFindByPartnerDetails.AutoSize = true;
             this.tpgFindPartner.Text = "Find by Partner Details";
             //
             // tabPartnerFindMethods
             //
             this.tabPartnerFindMethods.Name = "tabPartnerFindMethods";
             this.tabPartnerFindMethods.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.tabPartnerFindMethods.AutoSize = true;
             this.tabPartnerFindMethods.Controls.Add(this.tpgFindPartner);
             this.tabPartnerFindMethods.Controls.Add(this.tpgFindBankDetails);
             this.tabPartnerFindMethods.Dock = System.Windows.Forms.DockStyle.Fill;
@@ -210,6 +213,7 @@ namespace Ict.Petra.Client.MPartner.Gui
             //
             this.pnlModalButtons.Name = "pnlModalButtons";
             this.pnlModalButtons.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.pnlModalButtons.AutoSize = true;
             //
             // tableLayoutPanel1
             //
@@ -823,6 +827,7 @@ namespace Ict.Petra.Client.MPartner.Gui
             //
             this.mnuMain.Name = "mnuMain";
             this.mnuMain.Dock = System.Windows.Forms.DockStyle.Top;
+            this.mnuMain.AutoSize = true;
             this.mnuMain.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
                            mniFile,
                         mniMaintain,
@@ -835,6 +840,7 @@ namespace Ict.Petra.Client.MPartner.Gui
             //
             this.stbMain.Name = "stbMain";
             this.stbMain.Dock = System.Windows.Forms.DockStyle.Bottom;
+            this.stbMain.AutoSize = true;
 
             //
             // TPartnerFindScreen

@@ -96,10 +96,11 @@ public class TFixProjectReferences : TCSProjTools
             {
                 if (child.Attributes["Project"].Value.Contains("SharpDevelopBinPath"))
                 {
-                    Console.WriteLine("PROBLEM: please use MSBuildBinPath Microsoft.CSharp.Targets instead of SharpDevelopBinPath) SharpDevelop.Build.CSharp.targets");
+                    Console.WriteLine(
+                        "PROBLEM: please use MSBuildBinPath Microsoft.CSharp.Targets instead of SharpDevelopBinPath) SharpDevelop.Build.CSharp.targets");
                 }
             }
-            
+
             if (child.Name == "ItemGroup")
             {
                 foreach (XmlNode child2 in child.ChildNodes)
@@ -125,7 +126,8 @@ public class TFixProjectReferences : TCSProjTools
                     {
                         // check whether we should have a ProjectReference instead to help with the build order
                         string referencedDll = child2.Attributes["Include"].Value;
-                        if (child2.FirstChild != null && child2.FirstChild.Name == "HintPath")
+
+                        if ((child2.FirstChild != null) && (child2.FirstChild.Name == "HintPath"))
                         {
                             if (child2.FirstChild.InnerText.Contains("..\\_bin"))
                             {
@@ -136,17 +138,18 @@ public class TFixProjectReferences : TCSProjTools
                                 // more complicated case:
                                 // eg for a project in Shared, which refers to ..\..\..\..\Shared\_bin\Server_Client\Debug\Ict.Petra.Shared.MCommon.DataTables.dll
                                 string hintPath = child2.FirstChild.InnerText;
+
                                 if (hintPath.StartsWith(".."))
                                 {
                                     hintPath = Path.GetFullPath(Path.GetDirectoryName(AFilename) + Path.DirectorySeparatorChar + hintPath);
                                 }
-                                if (hintPath.IndexOf("_bin") > -1 && AFilename.StartsWith(hintPath.Substring(0, hintPath.IndexOf("_bin"))))
+
+                                if ((hintPath.IndexOf("_bin") > -1) && AFilename.StartsWith(hintPath.Substring(0, hintPath.IndexOf("_bin"))))
                                 {
-                                    Console.WriteLine("PROBLEM: Please fix project reference to " + referencedDll);                                    
+                                    Console.WriteLine("PROBLEM: Please fix project reference to " + referencedDll);
                                 }
                             }
                         }
-                        
                     }
                 }
             }

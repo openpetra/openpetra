@@ -98,6 +98,7 @@ namespace Ict.Petra.Client.App.PetraClient
             //
             this.ucoMainWindowContent.Name = "ucoMainWindowContent";
             this.ucoMainWindowContent.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.ucoMainWindowContent.AutoSize = true;
             //
             // mniClose
             //
@@ -232,6 +233,7 @@ namespace Ict.Petra.Client.App.PetraClient
             //
             this.mnuMain.Name = "mnuMain";
             this.mnuMain.Dock = System.Windows.Forms.DockStyle.Top;
+            this.mnuMain.AutoSize = true;
             this.mnuMain.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
                            mniFile,
                         mniPetraModules,
@@ -241,6 +243,7 @@ namespace Ict.Petra.Client.App.PetraClient
             //
             this.stbMain.Name = "stbMain";
             this.stbMain.Dock = System.Windows.Forms.DockStyle.Bottom;
+            this.stbMain.AutoSize = true;
 
             //
             // TFrmMainWindow

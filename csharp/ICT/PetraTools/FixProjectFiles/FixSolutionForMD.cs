@@ -46,10 +46,11 @@ public class TFixSolutionForMD
     {
         StreamReader reader = new StreamReader(AFilename);
         StreamWriter writer = new StreamWriter(AFilename + ".new");
-        
+
         while (!reader.EndOfStream)
         {
             string line = reader.ReadLine();
+
             if (line.Contains("Any CPU.ActiveCfg"))
             {
                 // correct order
@@ -68,15 +69,14 @@ public class TFixSolutionForMD
                 writer.WriteLine(line.Replace("/", "\\"));
             }
         }
-        
+
         reader.Close();
         writer.Close();
-        
+
         if (TTextFile.UpdateFile(AFilename))
         {
             Console.WriteLine("wrote file: " + AFilename);
         }
     }
 }
-
 }
