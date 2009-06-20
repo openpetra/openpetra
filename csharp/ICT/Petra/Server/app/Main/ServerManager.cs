@@ -40,6 +40,7 @@ using Mono.Unix;
 
 using Ict.Common;
 using Ict.Common.DB;
+using Ict.Common.IO;
 using Ict.Petra.Server.App.Core;
 using Ict.Petra.Shared.Interfaces.ServerAdminInterface;
 using Ict.Petra.Shared.Security;
@@ -468,6 +469,72 @@ namespace Ict.Petra.Server.App.Main
                     TSrvSetting.DBUsername,
                     TSrvSetting.DBPassword,
                     "");
+
+                // now check if the database is uptodate; otherwise run db patch against it
+                TDBTransaction transaction = DBAccess.GDBAccessObj.BeginTransaction();
+                string DBPatchVersion =
+                    Convert.ToString(DBAccess.GDBAccessObj.ExecuteScalar(
+                            "SELECT s_default_value_c FROM PUB_s_system_defaults WHERE s_default_code_c = 'CurrentDatabaseVersion'",
+                            transaction));
+                DBAccess.GDBAccessObj.RollbackTransaction();
+
+                // just for the moment, need to fix a problem with the earliest versions
+                // TODO remove this fix after a while
+                if (DBPatchVersion == "3.0.0")
+                {
+                    DBPatchVersion = "0.0.2-0";
+                }
+
+                TFileVersionInfo dbversion = new TFileVersionInfo(DBPatchVersion);
+                TFileVersionInfo serverExeInfo =
+                    new TFileVersionInfo(FileVersionInfo.GetVersionInfo(Environment.CurrentDirectory + Path.DirectorySeparatorChar +
+                            Ict.Common.TSrvSetting.ApplicationName));
+
+                if (serverExeInfo.Compare(new TFileVersionInfo("0.0.9-0")) == 0)
+                {
+                    // this is a developer version; database patching has to be done manually
+                }
+                else
+                {
+                    if (dbversion.Compare(serverExeInfo) < 0)
+                    {
+                        // dbversion is old
+                        // TODO: try to run a database patch
+                        // for the moment: rename the sqlite database, and use again the clean demo db
+                        if (CommonTypes.ParseDBType(DBAccess.GDBAccessObj.DBType) == TDBType.SQLite)
+                        {
+                            DBAccess.GDBAccessObj.CloseDBConnection();
+                            string dbfile = TSrvSetting.PostgreSQLServer;
+
+                            if (dbfile.Contains("{userappdata}"))
+                            {
+                                dbfile = dbfile.Replace("{userappdata}",
+                                    Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData));
+                            }
+
+                            int counter = 1;
+
+                            while (File.Exists(dbfile + "." + counter.ToString() + ".bak"))
+                            {
+                                counter++;
+                            }
+
+                            File.Move(dbfile, dbfile + "." + counter.ToString() + ".bak");
+
+                            // now connect again
+                            DBAccess.GDBAccessObj.EstablishDBConnection(TSrvSetting.RDMBSType,
+                                TSrvSetting.PostgreSQLServer,
+                                TSrvSetting.PostgreSQLServerPort,
+                                TSrvSetting.DBUsername,
+                                TSrvSetting.DBPassword,
+                                "");
+                        }
+                        else
+                        {
+                            throw new Exception("Cannot connect to old database, please restore the latest clean demo database");
+                        }
+                    }
+                }
 
                 // $IFDEF DEBUGMODE Console.WriteLine('SystemDefault "LocalisedCountyLabel": ' + FSystemDefaultsCache.GetSystemDefault('LocalisedCountyLabel'));$ENDIF
             }
