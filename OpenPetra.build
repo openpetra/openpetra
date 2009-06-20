@@ -506,7 +506,7 @@
         </foreach>
     </target>
     
-    <target name="setupStandalone" depends="resetDatabase, buildRelease">
+    <target name="setupStandalone" depends="recreateDatabase, resetDatabase, buildRelease">
         <exec program="${Innosetup.ISCC}" commandline=" ${OpenPetraRoot.dir}/setup/petra${PetraRelease}/standalone/standalone.iss"
               workingdir="${OpenPetraRoot.dir}/setup/petra${PetraRelease}/standalone"/>
     </target>

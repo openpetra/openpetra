@@ -93,6 +93,18 @@ namespace Ict.Common.IO
         }
 
         /// <summary>
+        /// constructor
+        /// </summary>
+        /// <param name="AVersion"></param>
+        public TFileVersionInfo(System.Version AVersion)
+        {
+            FileMajorPart = System.Convert.ToUInt16(AVersion.Major);
+            FileMinorPart = System.Convert.ToUInt16(AVersion.Minor);
+            FileBuildPart = System.Convert.ToUInt16(AVersion.Build);
+            FilePrivatePart = System.Convert.ToUInt16(AVersion.Revision);
+        }
+
+        /// <summary>
         /// copy constructor
         /// </summary>
         /// <param name="AInfo"></param>

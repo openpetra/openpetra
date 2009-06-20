@@ -486,9 +486,7 @@ namespace Ict.Petra.Server.App.Main
                 }
 
                 TFileVersionInfo dbversion = new TFileVersionInfo(DBPatchVersion);
-                TFileVersionInfo serverExeInfo =
-                    new TFileVersionInfo(FileVersionInfo.GetVersionInfo(Environment.CurrentDirectory + Path.DirectorySeparatorChar +
-                            Ict.Common.TSrvSetting.ApplicationName));
+                TFileVersionInfo serverExeInfo = new TFileVersionInfo(TSrvSetting.ApplicationVersion);
 
                 if (serverExeInfo.Compare(new TFileVersionInfo("0.0.9-0")) == 0)
                 {
