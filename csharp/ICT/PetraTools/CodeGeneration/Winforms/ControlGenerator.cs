@@ -43,7 +43,7 @@ namespace Ict.Tools.CodeGeneration.Winforms
             : base("lbl", typeof(Label))
         {
             FAutoSize = true;
-            GenerateLabel = false;
+            FGenerateLabel = false;
         }
 
         public string CalculateName(string controlName)
@@ -74,7 +74,7 @@ namespace Ict.Tools.CodeGeneration.Winforms
             : base("btn", typeof(Button))
         {
             FAutoSize = true;
-            GenerateLabel = false;
+            FGenerateLabel = false;
         }
 
         public override void SetControlProperties(IFormWriter writer, TControlDef ctrl)
@@ -147,7 +147,7 @@ namespace Ict.Tools.CodeGeneration.Winforms
             : base("rbt", typeof(RadioButton))
         {
             FAutoSize = true;
-            GenerateLabel = false;
+            FGenerateLabel = false;
         }
 
         public override void SetControlProperties(IFormWriter writer, TControlDef ctrl)
@@ -192,7 +192,7 @@ namespace Ict.Tools.CodeGeneration.Winforms
             : base("chk", typeof(CheckBox))
         {
             base.FAutoSize = true;
-            base.GenerateLabel = false;
+            base.FGenerateLabel = false;
         }
 
         public override void SetControlProperties(IFormWriter writer, TControlDef ctrl)
@@ -221,9 +221,17 @@ namespace Ict.Tools.CodeGeneration.Winforms
                 }
                 else
                 {
-                    // we don't support several controls yet; either put them into a groupbox,
-                    // or implement support for several controls
-                    throw new Exception("CheckBoxGenerator.SetControlProperties: does not support several controls yet");
+                    foreach (string child in childControls)
+                    {
+                        TControlDef ChildCtrl = ctrl.FCodeStorage.GetControl(child);
+
+                        if (ChildCtrl == null)
+                        {
+                            throw new Exception("cannot find control " + child + " which should belong to " + ctrl.controlName);
+                        }
+
+                        ChildCtrl.parentName = ctrl.controlName;
+                    }
                 }
             }
 
@@ -279,6 +287,23 @@ namespace Ict.Tools.CodeGeneration.Winforms
             }
         }
     }
+
+    public class NumericUpDownGenerator : TControlGenerator
+    {
+        public NumericUpDownGenerator()
+            : base("nud", typeof(NumericUpDown))
+        {
+        }
+    }
+    public class GridGenerator : TControlGenerator
+    {
+        public GridGenerator()
+            : base("grd", typeof(System.Windows.Forms.DataGridView))
+        {
+            FGenerateLabel = false;
+        }
+    }
+
 #if TODO
     public class TtxtAutoPopulatedButtonLabelGenerator : TControlGenerator
     {
@@ -341,7 +366,7 @@ namespace Ict.Tools.CodeGeneration.Winforms
         public TabControlGenerator()
             : base("tab", typeof(TabControl))
         {
-            GenerateLabel = false;
+            FGenerateLabel = false;
         }
 
         public override void SetControlProperties(IFormWriter writer, TControlDef ctrl)
@@ -384,11 +409,11 @@ namespace Ict.Tools.CodeGeneration.Winforms
             : base(prefix, type)
         {
             FAutoSize = true;
-            GenerateLabel = false;
+            FGenerateLabel = false;
 
             if (base.FPrefix == "rng")
             {
-                GenerateLabel = true;
+                FGenerateLabel = true;
             }
         }
 
@@ -411,13 +436,6 @@ namespace Ict.Tools.CodeGeneration.Winforms
         {
             base.SetControlProperties(writer, ctrl);
             string ControlName = ctrl.controlName;
-            TableLayoutPanelGenerator.eOrientation orientation = TableLayoutPanelGenerator.eOrientation.Vertical;
-
-            if (TXMLParser.HasAttribute(ctrl.xmlNode, "ControlsOrientation")
-                && (TXMLParser.GetAttribute(ctrl.xmlNode, "ControlsOrientation").ToLower() == "horizontal"))
-            {
-                orientation = TableLayoutPanelGenerator.eOrientation.Horizontal;
-            }
 
             StringCollection Controls = FindContainedControls(writer, ctrl.xmlNode);
             bool UseTableLayout = false;
@@ -426,6 +444,11 @@ namespace Ict.Tools.CodeGeneration.Winforms
             foreach (string ChildControlName in Controls)
             {
                 TControlDef ChildControl = ctrl.FCodeStorage.GetControl(ChildControlName);
+
+                if (ChildControl == null)
+                {
+                    throw new Exception("cannot find definition of child control " + ChildControlName);
+                }
 
                 if (!ChildControl.HasAttribute("Dock"))
                 {
@@ -474,8 +497,11 @@ namespace Ict.Tools.CodeGeneration.Winforms
             else
             {
                 TableLayoutPanelGenerator TlpGenerator = new TableLayoutPanelGenerator();
-                TlpGenerator.CreateLayout(writer, ControlName, Controls,
-                    orientation);
+                TlpGenerator.SetOrientation(ctrl);
+                string tlpControlName = TlpGenerator.CreateLayout(writer, ControlName, Controls);
+                writer.CallControlFunction(ControlName,
+                    "Controls.Add(this." +
+                    tlpControlName + ")");
 
                 foreach (string ChildControlName in Controls)
                 {
@@ -499,11 +525,19 @@ namespace Ict.Tools.CodeGeneration.Winforms
         {
         }
 
+        public RadioGroupSimpleGenerator(string prefix, System.Type type)
+            : base(prefix, type)
+        {
+        }
+
         public override bool ControlFitsNode(XmlNode curNode)
         {
             if (base.ControlFitsNode(curNode))
             {
-                return TXMLParser.GetChild(curNode, "OptionalValues") != null;
+                if (TXMLParser.GetChild(curNode, "OptionalValues") != null)
+                {
+                    return !TYml2Xml.HasAttribute(curNode, "BorderVisible") || TYml2Xml.GetAttribute(curNode, "BorderVisible").ToLower() != "false";
+                }
             }
 
             return false;
@@ -525,7 +559,8 @@ namespace Ict.Tools.CodeGeneration.Winforms
 
             foreach (string optionalValue in optionalValues)
             {
-                string radioButtonName = "rbt" + StringHelper.UpperCamelCase(optionalValue.Replace("'", "").Replace(" ", "_"), false, false);
+                string radioButtonName = "rbt" + StringHelper.UpperCamelCase(optionalValue.Replace("'", "").Replace(" ", "_").Replace("&",
+                        ""), false, false);
                 TControlDef newCtrl = writer.CodeStorage.FindOrCreateControl(radioButtonName, curNode.Name);
                 newCtrl.Label = optionalValue;
 
@@ -538,6 +573,28 @@ namespace Ict.Tools.CodeGeneration.Winforms
             }
 
             return Controls;
+        }
+    }
+
+    // this is for radiogroup just with several strings in OptionalValues, but no border; uses a panel instead
+    public class RadioGroupNoBorderGenerator : RadioGroupSimpleGenerator
+    {
+        public RadioGroupNoBorderGenerator()
+            : base("rgr", typeof(System.Windows.Forms.Panel))
+        {
+        }
+
+        public override bool ControlFitsNode(XmlNode curNode)
+        {
+            if (curNode.Name.StartsWith(FPrefix))
+            {
+                if (TXMLParser.GetChild(curNode, "Controls") == null)
+                {
+                    return TYml2Xml.HasAttribute(curNode, "BorderVisible") && TYml2Xml.GetAttribute(curNode, "BorderVisible").ToLower() == "false";
+                }
+            }
+
+            return false;
         }
     }
 
@@ -628,7 +685,7 @@ namespace Ict.Tools.CodeGeneration.Winforms
         {
             FAutoSize = true;
             FLocation = false;
-            GenerateLabel = false;
+            FGenerateLabel = false;
         }
 
         public MenuItemGenerator()
@@ -702,7 +759,7 @@ namespace Ict.Tools.CodeGeneration.Winforms
         {
             FAutoSize = true;
             FLocation = false;
-            GenerateLabel = false;
+            FGenerateLabel = false;
         }
 
         public override bool ControlFitsNode(XmlNode curNode)
@@ -765,7 +822,7 @@ namespace Ict.Tools.CodeGeneration.Winforms
         {
             FAutoSize = true;
             FLocation = false;
-            GenerateLabel = false;
+            FGenerateLabel = false;
         }
 
         public ToolbarButtonGenerator()
@@ -808,7 +865,7 @@ namespace Ict.Tools.CodeGeneration.Winforms
         {
             FAutoSize = true;
             FLocation = false;
-            GenerateLabel = false;
+            FGenerateLabel = false;
         }
 
         public override bool ControlFitsNode(XmlNode curNode)
@@ -827,7 +884,7 @@ namespace Ict.Tools.CodeGeneration.Winforms
         public UserControlGenerator()
             : base("uco", typeof(System.Windows.Forms.Control))
         {
-            GenerateLabel = false;
+            FGenerateLabel = false;
         }
 
         public override void SetControlProperties(IFormWriter writer, TControlDef ctrl)

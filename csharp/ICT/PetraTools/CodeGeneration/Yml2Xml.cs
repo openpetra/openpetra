@@ -395,6 +395,12 @@ namespace Ict.Tools.CodeGeneration
                             {
                                 string mapping = StringHelper.GetNextCSV(ref list, ",");
                                 string mappingName = StringHelper.GetNextCSV(ref mapping, "=").Trim();
+
+                                if (mappingName.Contains(":"))
+                                {
+                                    throw new Exception("Problem: please use = instead colons for value lists; line: " + line.Trim());
+                                }
+
                                 string mappingValue = StripQuotes(mapping.Trim());
                                 TYml2Xml.SetAttribute(newElement, mappingName, mappingValue);
                             }

@@ -44,11 +44,7 @@ namespace Ict.Tools.CodeGeneration
             get;
         }
 
-        bool GenerateLabel
-        {
-            set;
-            get;
-        }
+        bool GenerateLabel(TControlDef ctrl);
 
         string ControlType
         {

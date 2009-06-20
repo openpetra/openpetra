@@ -1,0 +1,79 @@
+RootNode:
+    BaseYaml: ../../../CommonForms/PetraForm.yaml
+    FormTitle: Accounts Payable
+    ClassName: TFrmAccountsPayableMain
+    Namespace: Ict.Petra.Client.MFinance.Gui
+    FormType: browse
+    HasManualCodeInOtherFile: true
+    WindowWidth: 754
+    WindowHeight: 623
+    Controls:
+        pnlContent:
+            Dock: Fill
+            Controls: [pnlSearchCriteria, pnlSearchFilter, pnlSearchButtons, tabSearchResult]
+        pnlSearchCriteria:
+            Dock: Top
+            Controls: [cmbSupplierCode, rgrPartnerKeyOrName]
+            ControlsOrientation: horizontal
+        cmbSupplierCode: {Label=S&earch Supplier}
+        rgrPartnerKeyOrName:
+            BorderVisible: false
+            OptionalValues: [&Partner Key, N&ame]
+            ControlsOrientation: horizontal
+        pnlSearchFilter:
+            Dock: Top
+            Controls: [chkDueToday, chkOverdue, chkDueFuture]
+            ControlsOrientation: horizontal
+        chkDueToday: {Label=Due &Today}
+        chkOverdue: {Label=&Overdue}
+        chkDueFuture:
+            Label: Due &Within Future
+            Controls: [nudNumberTimeUnits, cmbTimeUnit]
+            ControlsOrientation: horizontal
+        nudNumberTimeUnits: {NoLabel=true}
+        cmbTimeUnit:
+            NoLabel: true
+            Value: [Days, Weeks, Months]
+        pnlSearchButtons:
+            Controls: [btnSearch, btnReset]
+            ControlsOrientation: horizontal
+        btnSearch: {Label=&Search]
+        btnReset: {Label=&Reset Criteria]
+        tabSearchResult:
+            Controls: [tpgSuppliers, tpgOutstandingInvoices]
+            Dock: Fill
+        tpgSuppliers:
+            Controls: [pnlSupplierOptions, grdSupplierResult]
+        tpgOutstandingInvoices:
+            Controls: [pnlTaggingOptions, grdInvoiceResult]
+        pnlSupplierOptions:
+            Controls: [chkShowOutstandingAmounts, chkHideInactiveSuppliers, cmbSupplierCurrency]
+            ControlsOrientation: horizontal
+        grdSupplierResult: {Dock=Fill}
+        grdInvoiceResult: {Dock=Fill}
+        chkShowOutstandingAmounts: {Label=Show Outstanding &Amounts}
+        chkHideInactiveSuppliers: {Label=Hide &Inactive Suppliers}
+        cmbSupplierCurrency: {Label=C&urrency}
+        pnlTaggingOptions:
+            Controls: [btnTagAllApprovable, btnTagAllPostable, btnTagAllPayable, btnUntagAll, txtSumTagged]
+            ControlsOrientation: horizontal
+        btnTagAllApprovable: {Label=Tag all Appro&vable}
+        btnTagAllPostable: {Label=Tag a&ll Postable}
+        btnTagAllPayable: {Label=Tag all Paya&ble}
+        btnUntagAll: {Label=&Untag all}
+        txtSumTagged: {Label=Sum of Tagged}
+    Menu:
+        mniFile:
+            mniTodo1: {Label=todo}
+        mniSupplier:
+            mniTodo2: {Label=todo}
+        mniFind:
+            mniTodo3: {Label=todo}
+    Toolbar:
+        tbbTransactions: {Label=Open Transactions}
+        tbbEditSupplier: {Label=Edit Supplier}
+        tbbSeparator: {Label=-}
+        tbbNewSupplier: {Label=New Supplier}
+        tbbSeparator: {Label=-}
+        tbbCreateInvoice: {Label=Create Invoice}
+        tbbCreateCreditNote: {Label=Create Credit Note}

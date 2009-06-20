@@ -72,16 +72,14 @@ namespace Ict.Tools.CodeGeneration.Winforms
             }
         }
 
-        public bool GenerateLabel
+        public bool GenerateLabel(TControlDef ctrl)
         {
-            get
+            if (ctrl.HasAttribute("NoLabel") && (ctrl.GetAttribute("NoLabel").ToLower() == "true"))
             {
-                return FGenerateLabel;
+                return false;
             }
-            set
-            {
-                FGenerateLabel = value;
-            }
+
+            return FGenerateLabel;
         }
 
         public String ControlType
@@ -157,6 +155,7 @@ namespace Ict.Tools.CodeGeneration.Winforms
             if (TYml2Xml.HasAttribute(ctrl.xmlNode, "Dock"))
             {
                 writer.SetControlProperty(ctrl, "Dock");
+                writer.SetControlProperty(ctrl.controlName, "AutoSize", "true");
             }
             else if (FAutoSize)
             {
@@ -273,7 +272,7 @@ namespace Ict.Tools.CodeGeneration.Winforms
             : base(APrefix, AType)
         {
             FLocation = false;
-            GenerateLabel = false;
+            FGenerateLabel = false;
             FAddControlToContainer = false;
         }
 
@@ -328,7 +327,7 @@ namespace Ict.Tools.CodeGeneration.Winforms
         public ToolStripGenerator(string prefix, System.Type AType)
             : base(prefix, AType)
         {
-            GenerateLabel = false;
+            FGenerateLabel = false;
             FLocation = false;
             FHeight = 24;
             FWidth = 10;

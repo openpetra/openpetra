@@ -98,16 +98,35 @@ namespace Ict.Tools.CodeGeneration.Winforms
         protected Int32 FCurrentRow = 0;
         protected string FTlpName = "";
 
-        /**
-         * this function should be used for any collection of controls: on a TabPage, in a table, in a groupbox, radio button list etc.
-         */
-        public void CreateLayout(IFormWriter writer, string parentContainerName, StringCollection controls, eOrientation orientation)
+        /// <summary>
+        /// set the orientation based on the attribute: ControlsOrientation;
+        /// the default is vertical
+        /// </summary>
+        /// <param name="ACtrl"></param>
+        public void SetOrientation(TControlDef ACtrl)
+        {
+            FOrientation = eOrientation.Vertical;
+
+            if (TXMLParser.HasAttribute(ACtrl.xmlNode, "ControlsOrientation")
+                && (TXMLParser.GetAttribute(ACtrl.xmlNode, "ControlsOrientation").ToLower() == "horizontal"))
+            {
+                FOrientation = eOrientation.Horizontal;
+            }
+        }
+
+        /// <summary>
+        /// this function should be used for any collection of controls: on a TabPage, in a table, in a groupbox, radio button list etc.
+        /// </summary>
+        /// <param name="writer"></param>
+        /// <param name="parentContainerName"></param>
+        /// <param name="controls"></param>
+        /// <returns>the name of the table layout control that still needs to be added to the parent</returns>
+        public string CreateLayout(IFormWriter writer, string parentContainerName, StringCollection controls)
         {
             // create TableLayoutPanel that has a column for the labels and as many rows as needed
-            FOrientation = orientation;
             FCurrentRow = 0;
 
-            if (orientation == eOrientation.Vertical)
+            if (FOrientation == eOrientation.Vertical)
             {
                 FColumnCount = 2;
                 FRowCount = controls.Count;
@@ -130,9 +149,7 @@ namespace Ict.Tools.CodeGeneration.Winforms
                 ctrl.parentName = FTlpName;
             }
 
-            writer.CallControlFunction(parentContainerName,
-                "Controls.Add(this." +
-                FTlpName + ")");
+            return FTlpName;
         }
 
         public void CreateCode(IFormWriter writer, TControlDef ctrl)
@@ -195,13 +212,48 @@ namespace Ict.Tools.CodeGeneration.Winforms
             }
             else if (ctrl.HasAttribute("GenerateCheckBoxWithOtherControls"))
             {
+                // add the checkbox first
+                if (FOrientation == eOrientation.Vertical)
+                {
+                    AddControl(writer, FTlpName, ctrl.controlName, 0, FCurrentRow);
+                }
+                else
+                {
+                    AddControl(writer, FTlpName, ctrl.controlName, FCurrentRow * 2, 0);
+                }
+
                 StringCollection childControls = TYml2Xml.GetElements(TXMLParser.GetChild(curNode, "Controls"));
 
-                // only support one child at the moment
-                TControlDef ChildCtrl = ctrl.FCodeStorage.GetControl(childControls[0]);
-                IControlGenerator ChildGenerator = writer.FindControlGenerator(ChildCtrl.xmlNode);
-                ChildGenerator.GenerateDeclaration(writer, ChildCtrl);
-                ChildGenerator.SetControlProperties(writer, ChildCtrl);
+                if (childControls.Count > 1)
+                {
+                    // we need another tablelayout to arrange all the controls
+                    TableLayoutPanelGenerator TlpGenerator = new TableLayoutPanelGenerator();
+                    TlpGenerator.SetOrientation(ctrl);
+                    string subTlpControlName = TlpGenerator.CreateLayout(writer, FTlpName, childControls);
+
+                    foreach (string ChildControlName in childControls)
+                    {
+                        TControlDef ChildControl = ctrl.FCodeStorage.GetControl(ChildControlName);
+                        TlpGenerator.CreateCode(writer, ChildControl);
+                    }
+
+                    if (FOrientation == eOrientation.Vertical)
+                    {
+                        AddControl(writer, FTlpName, subTlpControlName, 1, FCurrentRow);
+                    }
+                    else
+                    {
+                        AddControl(writer, FTlpName, subTlpControlName, FCurrentRow * 2 + 1, 0);
+                    }
+                }
+                else if (childControls.Count == 1)
+                {
+                    // we don't need to add another table layout for just one other control
+                    TControlDef ChildCtrl = ctrl.FCodeStorage.GetControl(childControls[0]);
+                    IControlGenerator ChildGenerator = writer.FindControlGenerator(ChildCtrl.xmlNode);
+                    ChildGenerator.GenerateDeclaration(writer, ChildCtrl);
+                    ChildGenerator.SetControlProperties(writer, ChildCtrl);
+                }
 
                 // add and install event handler for change of selection
                 writer.CodeStorage.FEventHandlersImplementation += "void " + controlName + "CheckedChanged(object sender, System.EventArgs e)" +
@@ -215,22 +267,28 @@ namespace Ict.Tools.CodeGeneration.Winforms
                     controlName +
                     "CheckedChanged);" + Environment.NewLine);
 
-                // make sure the control is enabled/disabled depending on the selection of the radiobutton
-                writer.Template.AddToCodelet("CHECKEDCHANGED_" + controlName,
-                    ChildCtrl.controlName + ".Enabled = " + controlName + ".Checked;" + Environment.NewLine);
+                foreach (string childName in childControls)
+                {
+                    TControlDef ChildCtrl = ctrl.FCodeStorage.GetControl(childName);
 
-                if (FOrientation == eOrientation.Vertical)
-                {
-                    AddControl(writer, FTlpName, ctrl.controlName, 0, FCurrentRow);
-                    AddControl(writer, FTlpName, ChildCtrl.controlName, 1, FCurrentRow);
-                }
-                else
-                {
-                    AddControl(writer, FTlpName, ctrl.controlName, FCurrentRow * 2, 0);
-                    AddControl(writer, FTlpName, ChildCtrl.controlName, FCurrentRow * 2 + 1, 0);
+                    // make sure the control is enabled/disabled depending on the selection of the radiobutton
+                    writer.Template.AddToCodelet("CHECKEDCHANGED_" + controlName,
+                        ChildCtrl.controlName + ".Enabled = " + controlName + ".Checked;" + Environment.NewLine);
+
+                    if (childControls.Count == 1)
+                    {
+                        if (FOrientation == eOrientation.Vertical)
+                        {
+                            AddControl(writer, FTlpName, ChildCtrl.controlName, 1, FCurrentRow);
+                        }
+                        else
+                        {
+                            AddControl(writer, FTlpName, ChildCtrl.controlName, FCurrentRow * 2 + 1, 0);
+                        }
+                    }
                 }
             }
-            else if (ctrlGenerator.GenerateLabel)
+            else if (ctrlGenerator.GenerateLabel(ctrl))
             {
                 // add label
                 LabelGenerator lblGenerator = new LabelGenerator();

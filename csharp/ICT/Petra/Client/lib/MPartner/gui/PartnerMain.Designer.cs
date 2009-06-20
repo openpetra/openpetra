@@ -135,6 +135,7 @@ namespace Ict.Petra.Client.MPartner.Gui
             //
             this.pnlTODO.Name = "pnlTODO";
             this.pnlTODO.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.pnlTODO.AutoSize = true;
             //
             // mniImport
             //
@@ -526,6 +527,7 @@ namespace Ict.Petra.Client.MPartner.Gui
             //
             this.mnuMain.Name = "mnuMain";
             this.mnuMain.Dock = System.Windows.Forms.DockStyle.Top;
+            this.mnuMain.AutoSize = true;
             this.mnuMain.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
                            mniFile,
                         mniPartner,
@@ -538,6 +540,7 @@ namespace Ict.Petra.Client.MPartner.Gui
             //
             this.stbMain.Name = "stbMain";
             this.stbMain.Dock = System.Windows.Forms.DockStyle.Bottom;
+            this.stbMain.AutoSize = true;
 
             //
             // TFrmPartnerMain

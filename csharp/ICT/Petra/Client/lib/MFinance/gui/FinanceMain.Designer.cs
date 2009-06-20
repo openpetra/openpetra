@@ -151,6 +151,7 @@ namespace Ict.Petra.Client.MFinance.Gui
             //
             this.pnlTODO.Name = "pnlTODO";
             this.pnlTODO.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.pnlTODO.AutoSize = true;
             //
             // mniSelectLedger
             //
@@ -384,6 +385,7 @@ namespace Ict.Petra.Client.MFinance.Gui
             //
             this.mniAccountsPayable.Name = "mniAccountsPayable";
             this.mniAccountsPayable.AutoSize = true;
+            this.mniAccountsPayable.Click += new System.EventHandler(this.mniAccountsPayableClick);
             this.mniAccountsPayable.Text = "&Accounts Payable";
             //
             // mniBudget
@@ -658,6 +660,7 @@ namespace Ict.Petra.Client.MFinance.Gui
             //
             this.mnuMain.Name = "mnuMain";
             this.mnuMain.Dock = System.Windows.Forms.DockStyle.Top;
+            this.mnuMain.AutoSize = true;
             this.mnuMain.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
                            mniFile,
                         mniLedger,
@@ -668,6 +671,7 @@ namespace Ict.Petra.Client.MFinance.Gui
             //
             this.stbMain.Name = "stbMain";
             this.stbMain.Dock = System.Windows.Forms.DockStyle.Bottom;
+            this.stbMain.AutoSize = true;
 
             //
             // TFrmFinanceMain

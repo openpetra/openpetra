@@ -52,6 +52,7 @@ class Program
             processor.AddWriter("navigation", typeof(TWinFormsWriter));
             processor.AddWriter("edit", typeof(TWinFormsWriter));
             processor.AddWriter("report", typeof(TWinFormsWriter));
+            processor.AddWriter("browse", typeof(TWinFormsWriter));
 
             //processor.AddWriter("browse", typeof(TWinFormsWriter));
             // could add instead of TWinformsWriter: TGtkWriter

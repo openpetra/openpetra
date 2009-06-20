@@ -144,6 +144,11 @@ namespace Ict.Petra.Client.MFinance.Gui
         ImportBankStatements();
     }
 
+    private void mniAccountsPayableClick(object sender, EventArgs e)
+    {
+        AccountsPayable();
+    }
+
     private void mniPetraMainMenuClick(object sender, EventArgs e)
     {
         actMainMenu(sender, e);
@@ -267,7 +272,6 @@ namespace Ict.Petra.Client.MFinance.Gui
         mniGiftExport.Enabled = false;
         mniSeparator4.Enabled = false;
         mniGiftReceipts.Enabled = false;
-        mniAccountsPayable.Enabled = false;
         mniBudget.Enabled = false;
         mniICHCalculation.Enabled = false;
         mniICHImportFile.Enabled = false;

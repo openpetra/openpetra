@@ -155,6 +155,7 @@ namespace Ict.Petra.Client.MPartner.Gui
             //
             this.pnlContent.Name = "pnlContent";
             this.pnlContent.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.pnlContent.AutoSize = true;
             this.pnlContent.Controls.Add(this.pnlLowerPart);
             this.pnlContent.Controls.Add(this.ucoUpperPart);
             //
@@ -162,17 +163,20 @@ namespace Ict.Petra.Client.MPartner.Gui
             //
             this.ucoUpperPart.Name = "ucoUpperPart";
             this.ucoUpperPart.Dock = System.Windows.Forms.DockStyle.Top;
+            this.ucoUpperPart.AutoSize = true;
             //
             // pnlLowerPart
             //
             this.pnlLowerPart.Name = "pnlLowerPart";
             this.pnlLowerPart.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.pnlLowerPart.AutoSize = true;
             this.pnlLowerPart.Controls.Add(this.ucoPartnerTabSet);
             //
             // ucoPartnerTabSet
             //
             this.ucoPartnerTabSet.Name = "ucoPartnerTabSet";
             this.ucoPartnerTabSet.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.ucoPartnerTabSet.AutoSize = true;
             //
             // tbbSave
             //
@@ -223,6 +227,7 @@ namespace Ict.Petra.Client.MPartner.Gui
             //
             this.tbrMain.Name = "tbrMain";
             this.tbrMain.Dock = System.Windows.Forms.DockStyle.Top;
+            this.tbrMain.AutoSize = true;
             this.tbrMain.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
                            tbbSave,
                         tbbSeparator0,
@@ -663,6 +668,7 @@ namespace Ict.Petra.Client.MPartner.Gui
             //
             this.mnuMain.Name = "mnuMain";
             this.mnuMain.Dock = System.Windows.Forms.DockStyle.Top;
+            this.mnuMain.AutoSize = true;
             this.mnuMain.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
                            mniFile,
                         mniEdit,
@@ -674,6 +680,7 @@ namespace Ict.Petra.Client.MPartner.Gui
             //
             this.stbMain.Name = "stbMain";
             this.stbMain.Dock = System.Windows.Forms.DockStyle.Bottom;
+            this.stbMain.AutoSize = true;
 
             //
             // TPartnerEditDSWinForm

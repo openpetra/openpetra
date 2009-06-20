@@ -47,7 +47,7 @@ RootNode:
                mniGiftExport: {Label=Gift E&xport}
                mniSeparator: {Label=-}
                mniGiftReceipts: {Label=&Print Receipts}
-           mniAccountsPayable: {Label=&Accounts Payable}
+           mniAccountsPayable: {Label=&Accounts Payable, ActionClick=AccountsPayable}
            mniBudget: {Label=&Budget}
            mniClearingHouse:
                Label: &Clearing House

@@ -69,7 +69,8 @@ namespace Ict.Petra.Client.MFinance.Gui
                 Close();
             }
 
-            MessageBox.Show("selected ledger: " + FLedgerNumber.ToString());
+            // todo: load ledger details, display on the main finance screen, etc.
+            // MessageBox.Show("selected ledger: " + FLedgerNumber.ToString());
         }
 
         /// <summary>
@@ -78,6 +79,16 @@ namespace Ict.Petra.Client.MFinance.Gui
         public void ImportBankStatements()
         {
             TFrmBankStatementImport window = new TFrmBankStatementImport();
+
+            window.Show();
+        }
+
+        /// <summary>
+        /// show the accounts payable main screen
+        /// </summary>
+        public void AccountsPayable()
+        {
+            TFrmAccountsPayableMain window = new TFrmAccountsPayableMain(this.Handle);
 
             window.Show();
         }
