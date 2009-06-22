@@ -1,6 +1,8 @@
 required packages:
  mono-2.0-runtime
- sqlite3 (requires > 3.6.1), or postgresql
+ one of the following RDBMS:
+   sqlite3 (requires > 3.6.1)
+   postgresql
 
 You need to link the config file for the server, depending whether you want to use sqlite or postgresql:
 ln -s etc30/PetraServerConsole-postgresql.config etc30/PetraServerConsole.config
@@ -13,7 +15,8 @@ If you use sqlite, it will automatically create a copy of the demo database, and
 ~/.config/OpenPetra.org/db30/petra.db
 
 Notes for postgresql:
-TODO: how to load the initial database
+how to load the initial database: 
+su postgres -c initpg.sh
 
 firewall: 
 in order for clients to connect from outside, you need to open ports 9000 and above (or what you have defined in your config files).
