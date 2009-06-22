@@ -1,6 +1,6 @@
-43,AP,INV,BAL SHT,CRS CTRL,0,0,Input Creditor's Invoice,,true,2009-6-15,,,,,
-43,GL,ALLOC,BAL SHT,BAL SHT,0,0,Allocation Journal,,true,2009-6-15,,,,,
-43,GL,REALLOC,BAL SHT,BAL SHT,0,0,Reallocation Journal,,true,2009-6-15,,,,,
-43,GL,REVAL,5003,5003,0,0,Foreign Exchange Revaluation,,true,2009-6-15,,,,,
-43,GL,STD,BAL SHT,BAL SHT,0,0,Standard Journal,,false,2009-6-15,,,,,
-43,GR,GR,CASH,GIFT,0,0,Gift Receipting,,true,2009-6-15,,,,,
+43,AP,INV,BAL SHT,CRS CTRL,0,0,Input Creditor's Invoice,,true,2009-6-15,?,?,?,?
+43,GL,ALLOC,BAL SHT,BAL SHT,0,0,Allocation Journal,,true,2009-6-15,?,?,?,?
+43,GL,REALLOC,BAL SHT,BAL SHT,0,0,Reallocation Journal,,true,2009-6-15,?,?,?,?
+43,GL,REVAL,5003,5003,0,0,Foreign Exchange Revaluation,,true,2009-6-15,?,?,?,?
+43,GL,STD,BAL SHT,BAL SHT,0,0,Standard Journal,,false,2009-6-15,?,?,?,?
+43,GR,GR,CASH,GIFT,0,0,Gift Receipting,,true,2009-6-15,?,?,?,?

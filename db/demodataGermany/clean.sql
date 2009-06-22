@@ -6,5 +6,6 @@ DELETE FROM a_accounting_system_parameter;
 DELETE FROM a_transaction_type;
 DELETE FROM a_valid_ledger_number;
 DELETE FROM a_cost_centre;
+DELETE FROM a_cost_centre_types;
 DELETE FROM a_account;
 DELETE FROM a_ledger;

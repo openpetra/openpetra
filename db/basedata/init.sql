@@ -1,12 +1,15 @@
 -- passwords are inserted by OpenPetra.build
 INSERT INTO s_user(s_user_id_c, s_password_hash_c, s_password_salt_c, s_password_needs_change_l) VALUES('SYSADMIN', '{#PASSWORDHASHSYSADMIN}', '{#PASSWORDSALTSYSADMIN}', true);
 
+-- todo: remove s_file and all references???
+INSERT INTO s_file(s_file_name_c) VALUES ('');
+
 -- load base data
-COPY s_logon_message FROM '{#ABSOLUTEBASEDATAPATH}/s_logon_message.csv' WITH DELIMITER AS ',' NULL AS '?' CSV QUOTE AS '"' ESCAPE AS '"';
 COPY p_location_type FROM '{#ABSOLUTEBASEDATAPATH}/p_location_type.csv' WITH DELIMITER AS ',' NULL AS '?' CSV QUOTE AS '"' ESCAPE AS '"';
 COPY p_international_postal_type FROM '{#ABSOLUTEBASEDATAPATH}/p_international_postal_type.csv' WITH DELIMITER AS ',' NULL AS '?' CSV QUOTE AS '"' ESCAPE AS '"';
 COPY p_country FROM '{#ABSOLUTEBASEDATAPATH}/p_country.csv' WITH DELIMITER AS ',' NULL AS '?' CSV QUOTE AS '"' ESCAPE AS '"';
 COPY p_language FROM '{#ABSOLUTEBASEDATAPATH}/p_language.csv' WITH DELIMITER AS ',' NULL AS '?' CSV QUOTE AS '"' ESCAPE AS '"';
+COPY s_logon_message FROM '{#ABSOLUTEBASEDATAPATH}/s_logon_message.csv' WITH DELIMITER AS ',' NULL AS '?' CSV QUOTE AS '"' ESCAPE AS '"';
 COPY p_addressee_type FROM '{#ABSOLUTEBASEDATAPATH}/p_addressee_type.csv' WITH DELIMITER AS ',' NULL AS '?' CSV QUOTE AS '"' ESCAPE AS '"';
 COPY a_currency FROM '{#ABSOLUTEBASEDATAPATH}/a_currency.csv' WITH DELIMITER AS ',' NULL AS '?' CSV QUOTE AS '"' ESCAPE AS '"';
 COPY p_acquisition FROM '{#ABSOLUTEBASEDATAPATH}/p_acquisition.csv' WITH DELIMITER AS ',' NULL AS '?' CSV QUOTE AS '"' ESCAPE AS '"';

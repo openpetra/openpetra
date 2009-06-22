@@ -248,14 +248,17 @@
              <exec program="cmd.exe" commandline="/C &quot;echo CREATE USER petraserver PASSWORD 'TOBESETBYINSTALLER'; | &quot;${PostgreSQL.exe}&quot; petra&quot;"/>
              
              <exec program="cmd.exe" commandline="/C &quot;&quot;${PostgreSQL.exe}&quot; -t -o &quot;${OpenPetraRoot.dir}/setup/petra${PetraRelease}/userpermissions.sql&quot; -c &quot;select 'GRANT SELECT,UPDATE,DELETE,INSERT ON ' || c.relname || ' TO petraserver;' from pg_class AS c LEFT JOIN pg_namespace n ON n.oid = c.relnamespace where c.relkind = 'r' and n.nspname NOT IN('pg_catalog', 'pg_toast') and pg_table_is_visible(c.oid);&quot; petra &quot;" />
-             <exec program="cmd.exe" commandline="/C &quot;&quot;${PostgreSQL.exe}&quot; -c &quot;/i ${OpenPetraRoot.dir}/setup/petra${PetraRelease}/userpermissions.sql&quot; petra &quot;"/>
+             <exec program="cmd.exe" commandline="/C &quot;&quot;${PostgreSQL.exe}&quot; petra &lt; &quot;${OpenPetraRoot.dir}/setup/petra${PetraRelease}/userpermissions.sql&quot;"/>
              
              <exec program="cmd.exe" commandline="/C &quot;echo GRANT SELECT,UPDATE,USAGE ON seq_modification1 TO petraserver; | &quot;${PostgreSQL.exe}&quot; petra&quot;"/>
              <exec program="cmd.exe" commandline="/C &quot;echo GRANT SELECT,UPDATE,USAGE ON seq_modification2 TO petraserver; | &quot;${PostgreSQL.exe}&quot; petra&quot;"/>
              <exec program="cmd.exe" commandline="/C &quot;echo GRANT SELECT,UPDATE,USAGE ON s_login_s_login_process_id_r_seq TO petraserver; | &quot;${PostgreSQL.exe}&quot; petra&quot;"/>
              <exec program="cmd.exe" commandline="/C &quot;echo GRANT SELECT,UPDATE,USAGE ON seq_location_number TO petraserver; | &quot;${PostgreSQL.exe}&quot; petra&quot;"/>
              
-             <exec program="cmd.exe" workingdir="${OpenPetraRoot.dir}/db"  commandline="/C &quot;${PostgreSQL.exe}&quot; petra &lt; basedata/init.sql.local"/>
+             <exec program="cmd.exe" workingdir="${OpenPetraRoot.dir}/db"  commandline="/C &quot;${PostgreSQL.exe}&quot; petra &lt; ${DemoData.Dir}/clean.sql"/>
+             <exec program="cmd.exe" workingdir="${OpenPetraRoot.dir}/db"  commandline="/C &quot;${PostgreSQL.exe}&quot; petra &lt; ${BaseData.Dir}/clean.sql"/>
+             <exec program="cmd.exe" workingdir="${OpenPetraRoot.dir}/db"  commandline="/C &quot;${PostgreSQL.exe}&quot; petra &lt; ${BaseData.Dir}/init.sql.local"/>
+             <exec program="cmd.exe" workingdir="${OpenPetraRoot.dir}/db"  commandline="/C &quot;${PostgreSQL.exe}&quot; petra &lt; ${DemoData.Dir}/init.sql.local"/>
         </if>
         <if test="${DBMS.Type=='mysql'}">
              <!-- todo -->
@@ -584,6 +587,8 @@
                     tofile="${setupDir}/LICENSE"/>
         <copy file="${OpenPetraRoot.dir}/setup/petra${PetraRelease}/linuxserver/INSTALL"
                     tofile="${setupDir}/INSTALL"/>
+        <!-- todo: make sure that the script files are in unix format? dos2unix? -->
+        <!-- todo: can we change the executable flag? chmod a+x -->
         <copy file="${OpenPetraRoot.dir}/setup/petra${PetraRelease}/linuxserver/start.sh"
                     tofile="${setupDir}/start.sh"/>
         <copy file="${OpenPetraRoot.dir}/setup/petra${PetraRelease}/linuxserver/menu.sh"
