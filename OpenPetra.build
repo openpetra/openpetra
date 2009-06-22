@@ -36,8 +36,7 @@
         <echo message="startPetraServer: run a local Petra Server"/>
         <echo message="stopPetraServer: stop the local Petra Server"/>
         <echo message="startPetraClient: run the Petra Client"/>
-        <echo message="buildRelease: todo -D:ReleaseID=0.0.2.0"/>
-        <echo message="setupStandalone: todo"/>
+        <echo message="buildRelease: requires these parameters: -D:ReleaseID=0.0.2.0 -D:ReleaseVersion=0.0.2-0"/>
     </target>
     
     <target name="compilePetraTools" description="compile the PetraTools">
@@ -436,7 +435,7 @@
         <exec program="${PetraToolsExe.dir}/FixProjectFiles.exe" commandline="-solutionpath:${OpenPetraRoot.dir}/csharp/ICT -solutions:Common,Shared,Client,Server,ServerAdmin,PetraTools"/>
     </target>
     
-    <target name="buildRelease">
+    <target name="compileRelease">
         <!-- need to change the paths in all project files from _bin/Debug to _bin/Release -->
         <attrib normal="true">
             <fileset>
@@ -506,8 +505,100 @@
         </foreach>
     </target>
     
-    <target name="setupStandalone" depends="recreateDatabase, resetDatabase, buildRelease">
+    <target name="setupStandalone">
         <exec program="${Innosetup.ISCC}" commandline=" ${OpenPetraRoot.dir}/setup/petra${PetraRelease}/standalone/standalone.iss"
               workingdir="${OpenPetraRoot.dir}/setup/petra${PetraRelease}/standalone"/>
     </target>
+    <target name="setupLinuxServer">
+        <!-- for the moment, just create a tar.gz file, with sub directories 
+        manuals30 containing the release notes, 
+        bin30 with just the server binaries,
+        db30 with the demo sqlite database,
+        reports30,
+        etc30 with the 2 config files;
+        start and maintain script in the root
+        LICENSE file in the root, 
+        INSTALL file with instructions, required packages, firewall etc?
+        -->
+        <property name="setupDir" value="${OpenPetraRoot.dir}/tmp/openpetraorg-${ReleaseVersion}"/>
+        <delete dir="${setupDir}" failonerror="false"/>
+        <mkdir dir="${setupDir}"/>
+        <mkdir dir="${setupDir}/manuals30"/>
+        <mkdir dir="${setupDir}/bin30"/>
+        <mkdir dir="${setupDir}/bin30/locale/"/>
+        <mkdir dir="${setupDir}/db30"/>
+        <mkdir dir="${setupDir}/etc30"/>
+        <mkdir dir="${setupDir}/reports30"/>
+        <copy todir="${setupDir}/bin30">
+            <fileset basedir="${OpenPetraRoot.dir}/csharp/ICT/Petra/Server/_bin/Release/">
+                <include name="*.dll" />
+                <include name="*.exe" />
+            </fileset>
+        </copy>
+        <copy todir="${setupDir}/bin30">
+            <fileset basedir="${OpenPetraRoot.dir}/csharp/ICT/Petra/ServerAdmin/_bin/Release/">
+                <include name="*.dll" />
+                <include name="*.exe" />
+            </fileset>
+        </copy>
+        <copy file="${OpenPetraRoot.dir}/csharp/ThirdParty/SQLite/System.Data.SQLite.ManagedOnly.dll"
+                    tofile="${setupDir}/bin30/System.Data.SQLite.dll"/>
+       
+        <foreach item="File" property="filename">
+            <in>
+                <items>
+                    <include name="${OpenPetraRoot.dir}/i18n/**.mo" />
+                    <exclude name="${OpenPetraRoot.dir}/i18n/new.mo" />
+                </items>
+            </in>
+            <do>
+                <property name="languageid" value="${path::get-file-name-without-extension(filename)}"/>
+                <mkdir dir="${setupDir}/bin30/locale/${languageid}/LC_MESSAGES"/>
+                <copy file="${filename}"
+                    tofile="${setupDir}/bin30/locale/${languageid}/LC_MESSAGES/i18n"/>
+            </do>
+        </foreach>
+        
+        <copy todir="${setupDir}/etc30">
+            <fileset basedir="${OpenPetraRoot.dir}/setup/petra${PetraRelease}/linuxserver/">
+                <include name="*.config" />
+            </fileset>
+        </copy>
+
+        <copy todir="${setupDir}/manuals30">
+            <fileset basedir="${OpenPetraRoot.dir}/setup/petra${PetraRelease}/releasenotes/">
+                <include name="*.html" />
+            </fileset>
+        </copy>
+
+        <copy todir="${setupDir}/reports30">
+            <fileset basedir="${OpenPetraRoot.dir}/XmlReports/">
+                <include name="*.dtd" />
+                <include name="*.xml" />
+            </fileset>
+        </copy>
+        
+        <copy file="${OpenPetraRoot.dir}/setup/petra${PetraRelease}/demo.db"
+                    tofile="${setupDir}/db30/demo.db"/>
+        <copy file="${OpenPetraRoot.dir}/LICENSE"
+                    tofile="${setupDir}/LICENSE"/>
+        <copy file="${OpenPetraRoot.dir}/setup/petra${PetraRelease}/linuxserver/INSTALL"
+                    tofile="${setupDir}/INSTALL"/>
+        <copy file="${OpenPetraRoot.dir}/setup/petra${PetraRelease}/linuxserver/start.sh"
+                    tofile="${setupDir}/start.sh"/>
+        <copy file="${OpenPetraRoot.dir}/setup/petra${PetraRelease}/linuxserver/menu.sh"
+                    tofile="${setupDir}/menu.sh"/>
+        <copy file="${OpenPetraRoot.dir}/setup/petra${PetraRelease}/linuxserver/stop.sh"
+                    tofile="${setupDir}/stop.sh"/>
+        <tar destfile="openpetraorg-${ReleaseVersion}.tar.gz" compression="GZip">
+            <fileset basedir="${setupDir}" prefix="openpetraorg-${ReleaseVersion}">
+                <include name="**/*" />
+            </fileset>
+        </tar>
+        
+        <delete dir="${setupDir}"/>
+    </target>
+    
+    <target name="buildRelease" depends="compileCommon, compilePetraTools, recreateDatabase, resetDatabase, compileRelease, translation, setupStandalone, setupLinuxServer"/>
+    
 </project>

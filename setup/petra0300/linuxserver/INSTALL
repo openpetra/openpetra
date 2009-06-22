@@ -1,0 +1,33 @@
+required packages:
+ mono-2.0-runtime
+ sqlite3 (requires > 3.6.1), or postgresql
+
+You need to link the config file for the server, depending whether you want to use sqlite or postgresql:
+ln -s etc30/PetraServerConsole-postgresql.config etc30/PetraServerConsole.config
+or 
+ln -s etc30/PetraServerConsole-sqlite.config etc30/PetraServerConsole.config
+
+Notes for sqlite:
+it requires quite a new version of sqlite, which might not be available on your distribution of Linux.
+If you use sqlite, it will automatically create a copy of the demo database, and put it into your home directory: 
+~/.config/OpenPetra.org/db30/petra.db
+
+Notes for postgresql:
+TODO: how to load the initial database
+
+firewall: 
+in order for clients to connect from outside, you need to open ports 9000 and above (or what you have defined in your config files).
+eg if you are using iptables, add such a line:
+/sbin/iptables -A int-in -j ACCEPT -p tcp --dport 9000:9100
+ 
+To start the server with SQLite, type:
+
+. start.sh
+
+To see the menu and administrate the server, type:
+
+. menu.sh
+
+To stop the server, type:
+
+. stop.sh
