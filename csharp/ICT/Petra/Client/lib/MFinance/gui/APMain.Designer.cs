@@ -92,10 +92,19 @@ namespace Ict.Petra.Client.MFinance.Gui
             this.btnSearch = new System.Windows.Forms.Button();
             this.btnReset = new System.Windows.Forms.Button();
             this.tabSearchResult = new System.Windows.Forms.TabControl();
-            this.tpgOutstandingInvoices = new System.Windows.Forms.TabPage();
+            this.tpgSuppliers = new System.Windows.Forms.TabPage();
             this.tableLayoutPanel7 = new System.Windows.Forms.TableLayoutPanel();
-            this.pnlTaggingOptions = new System.Windows.Forms.Panel();
+            this.pnlSupplierOptions = new System.Windows.Forms.Panel();
             this.tableLayoutPanel8 = new System.Windows.Forms.TableLayoutPanel();
+            this.chkShowOutstandingAmounts = new System.Windows.Forms.CheckBox();
+            this.chkHideInactiveSuppliers = new System.Windows.Forms.CheckBox();
+            this.cmbSupplierCurrency = new System.Windows.Forms.ComboBox();
+            this.lblSupplierCurrency = new System.Windows.Forms.Label();
+            this.grdSupplierResult = new System.Windows.Forms.DataGridView();
+            this.tpgOutstandingInvoices = new System.Windows.Forms.TabPage();
+            this.tableLayoutPanel9 = new System.Windows.Forms.TableLayoutPanel();
+            this.pnlTaggingOptions = new System.Windows.Forms.Panel();
+            this.tableLayoutPanel10 = new System.Windows.Forms.TableLayoutPanel();
             this.btnTagAllApprovable = new System.Windows.Forms.Button();
             this.btnTagAllPostable = new System.Windows.Forms.Button();
             this.btnTagAllPayable = new System.Windows.Forms.Button();
@@ -103,15 +112,6 @@ namespace Ict.Petra.Client.MFinance.Gui
             this.txtSumTagged = new System.Windows.Forms.TextBox();
             this.lblSumTagged = new System.Windows.Forms.Label();
             this.grdInvoiceResult = new System.Windows.Forms.DataGridView();
-            this.tpgSuppliers = new System.Windows.Forms.TabPage();
-            this.tableLayoutPanel9 = new System.Windows.Forms.TableLayoutPanel();
-            this.pnlSupplierOptions = new System.Windows.Forms.Panel();
-            this.tableLayoutPanel10 = new System.Windows.Forms.TableLayoutPanel();
-            this.chkShowOutstandingAmounts = new System.Windows.Forms.CheckBox();
-            this.chkHideInactiveSuppliers = new System.Windows.Forms.CheckBox();
-            this.cmbSupplierCurrency = new System.Windows.Forms.ComboBox();
-            this.lblSupplierCurrency = new System.Windows.Forms.Label();
-            this.grdSupplierResult = new System.Windows.Forms.DataGridView();
             this.tbrMain = new System.Windows.Forms.ToolStrip();
             this.tbbTransactions = new System.Windows.Forms.ToolStripButton();
             this.tbbEditSupplier = new System.Windows.Forms.ToolStripButton();
@@ -149,13 +149,13 @@ namespace Ict.Petra.Client.MFinance.Gui
             this.pnlSearchButtons.SuspendLayout();
             this.tableLayoutPanel6.SuspendLayout();
             this.tabSearchResult.SuspendLayout();
-            this.tpgOutstandingInvoices.SuspendLayout();
-            this.tableLayoutPanel7.SuspendLayout();
-            this.pnlTaggingOptions.SuspendLayout();
-            this.tableLayoutPanel8.SuspendLayout();
             this.tpgSuppliers.SuspendLayout();
-            this.tableLayoutPanel9.SuspendLayout();
+            this.tableLayoutPanel7.SuspendLayout();
             this.pnlSupplierOptions.SuspendLayout();
+            this.tableLayoutPanel8.SuspendLayout();
+            this.tpgOutstandingInvoices.SuspendLayout();
+            this.tableLayoutPanel9.SuspendLayout();
+            this.pnlTaggingOptions.SuspendLayout();
             this.tableLayoutPanel10.SuspendLayout();
             this.tbrMain.SuspendLayout();
             this.mnuMain.SuspendLayout();
@@ -166,7 +166,6 @@ namespace Ict.Petra.Client.MFinance.Gui
             //
             this.pnlContent.Name = "pnlContent";
             this.pnlContent.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.pnlContent.AutoSize = true;
             //
             // tableLayoutPanel1
             //
@@ -217,6 +216,7 @@ namespace Ict.Petra.Client.MFinance.Gui
             this.lblSupplierCode.Name = "lblSupplierCode";
             this.lblSupplierCode.AutoSize = true;
             this.lblSupplierCode.Text = "S&earch Supplier:";
+            this.lblSupplierCode.Margin = new System.Windows.Forms.Padding(3, 7, 3, 0);
             this.tableLayoutPanel2.Controls.Add(this.lblSupplierCode, 0, 0);
             this.tableLayoutPanel2.Controls.Add(this.cmbSupplierCode, 1, 0);
             //
@@ -294,6 +294,7 @@ namespace Ict.Petra.Client.MFinance.Gui
             this.chkDueToday.Name = "chkDueToday";
             this.chkDueToday.AutoSize = true;
             this.chkDueToday.Text = "Due &Today";
+            this.chkDueToday.Margin = new System.Windows.Forms.Padding(3, 5, 3, 0);
             this.tableLayoutPanel4.Controls.Add(this.chkDueToday, 0, 0);
             this.tableLayoutPanel4.SetColumnSpan(this.chkDueToday, 2);
             //
@@ -303,6 +304,7 @@ namespace Ict.Petra.Client.MFinance.Gui
             this.chkOverdue.Name = "chkOverdue";
             this.chkOverdue.AutoSize = true;
             this.chkOverdue.Text = "&Overdue";
+            this.chkOverdue.Margin = new System.Windows.Forms.Padding(3, 5, 3, 0);
             this.tableLayoutPanel4.Controls.Add(this.chkOverdue, 2, 0);
             this.tableLayoutPanel4.SetColumnSpan(this.chkOverdue, 2);
             //
@@ -312,6 +314,7 @@ namespace Ict.Petra.Client.MFinance.Gui
             this.chkDueFuture.Name = "chkDueFuture";
             this.chkDueFuture.AutoSize = true;
             this.chkDueFuture.Text = "Due &Within Future";
+            this.chkDueFuture.Margin = new System.Windows.Forms.Padding(3, 5, 3, 0);
             this.tableLayoutPanel4.Controls.Add(this.chkDueFuture, 4, 0);
             //
             // tableLayoutPanel5
@@ -389,11 +392,11 @@ namespace Ict.Petra.Client.MFinance.Gui
             this.tableLayoutPanel1.Controls.Add(this.pnlSearchButtons, 0, 2);
             this.tableLayoutPanel1.SetColumnSpan(this.pnlSearchButtons, 2);
             //
-            // tpgOutstandingInvoices
+            // tpgSuppliers
             //
-            this.tpgOutstandingInvoices.Location = new System.Drawing.Point(2,2);
-            this.tpgOutstandingInvoices.Name = "tpgOutstandingInvoices";
-            this.tpgOutstandingInvoices.AutoSize = true;
+            this.tpgSuppliers.Location = new System.Drawing.Point(2,2);
+            this.tpgSuppliers.Name = "tpgSuppliers";
+            this.tpgSuppliers.AutoSize = true;
             //
             // tableLayoutPanel7
             //
@@ -407,13 +410,13 @@ namespace Ict.Petra.Client.MFinance.Gui
             this.tableLayoutPanel7.RowCount = 2;
             this.tableLayoutPanel7.RowStyles.Add(new System.Windows.Forms.RowStyle());
             this.tableLayoutPanel7.RowStyles.Add(new System.Windows.Forms.RowStyle());
-            this.tpgOutstandingInvoices.Controls.Add(this.tableLayoutPanel7);
+            this.tpgSuppliers.Controls.Add(this.tableLayoutPanel7);
             //
-            // pnlTaggingOptions
+            // pnlSupplierOptions
             //
-            this.pnlTaggingOptions.Location = new System.Drawing.Point(2,2);
-            this.pnlTaggingOptions.Name = "pnlTaggingOptions";
-            this.pnlTaggingOptions.AutoSize = true;
+            this.pnlSupplierOptions.Location = new System.Drawing.Point(2,2);
+            this.pnlSupplierOptions.Name = "pnlSupplierOptions";
+            this.pnlSupplierOptions.AutoSize = true;
             //
             // tableLayoutPanel8
             //
@@ -421,11 +424,7 @@ namespace Ict.Petra.Client.MFinance.Gui
             this.tableLayoutPanel8.Name = "tableLayoutPanel8";
             this.tableLayoutPanel8.AutoSize = true;
             this.tableLayoutPanel8.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.tableLayoutPanel8.ColumnCount = 10;
-            this.tableLayoutPanel8.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
-            this.tableLayoutPanel8.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
-            this.tableLayoutPanel8.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
-            this.tableLayoutPanel8.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
+            this.tableLayoutPanel8.ColumnCount = 6;
             this.tableLayoutPanel8.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
             this.tableLayoutPanel8.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
             this.tableLayoutPanel8.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
@@ -434,112 +433,7 @@ namespace Ict.Petra.Client.MFinance.Gui
             this.tableLayoutPanel8.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
             this.tableLayoutPanel8.RowCount = 1;
             this.tableLayoutPanel8.RowStyles.Add(new System.Windows.Forms.RowStyle());
-            this.pnlTaggingOptions.Controls.Add(this.tableLayoutPanel8);
-            //
-            // btnTagAllApprovable
-            //
-            this.btnTagAllApprovable.Location = new System.Drawing.Point(2,2);
-            this.btnTagAllApprovable.Name = "btnTagAllApprovable";
-            this.btnTagAllApprovable.AutoSize = true;
-            this.btnTagAllApprovable.Text = "Tag all Appro&vable";
-            this.tableLayoutPanel8.Controls.Add(this.btnTagAllApprovable, 0, 0);
-            this.tableLayoutPanel8.SetColumnSpan(this.btnTagAllApprovable, 2);
-            //
-            // btnTagAllPostable
-            //
-            this.btnTagAllPostable.Location = new System.Drawing.Point(2,2);
-            this.btnTagAllPostable.Name = "btnTagAllPostable";
-            this.btnTagAllPostable.AutoSize = true;
-            this.btnTagAllPostable.Text = "Tag a&ll Postable";
-            this.tableLayoutPanel8.Controls.Add(this.btnTagAllPostable, 2, 0);
-            this.tableLayoutPanel8.SetColumnSpan(this.btnTagAllPostable, 2);
-            //
-            // btnTagAllPayable
-            //
-            this.btnTagAllPayable.Location = new System.Drawing.Point(2,2);
-            this.btnTagAllPayable.Name = "btnTagAllPayable";
-            this.btnTagAllPayable.AutoSize = true;
-            this.btnTagAllPayable.Text = "Tag all Paya&ble";
-            this.tableLayoutPanel8.Controls.Add(this.btnTagAllPayable, 4, 0);
-            this.tableLayoutPanel8.SetColumnSpan(this.btnTagAllPayable, 2);
-            //
-            // btnUntagAll
-            //
-            this.btnUntagAll.Location = new System.Drawing.Point(2,2);
-            this.btnUntagAll.Name = "btnUntagAll";
-            this.btnUntagAll.AutoSize = true;
-            this.btnUntagAll.Text = "&Untag all";
-            this.tableLayoutPanel8.Controls.Add(this.btnUntagAll, 6, 0);
-            this.tableLayoutPanel8.SetColumnSpan(this.btnUntagAll, 2);
-            //
-            // txtSumTagged
-            //
-            this.txtSumTagged.Location = new System.Drawing.Point(2,2);
-            this.txtSumTagged.Name = "txtSumTagged";
-            this.txtSumTagged.Size = new System.Drawing.Size(150, 28);
-            //
-            // lblSumTagged
-            //
-            this.lblSumTagged.Location = new System.Drawing.Point(2,2);
-            this.lblSumTagged.Name = "lblSumTagged";
-            this.lblSumTagged.AutoSize = true;
-            this.lblSumTagged.Text = "Sum of Tagged:";
-            this.tableLayoutPanel8.Controls.Add(this.lblSumTagged, 8, 0);
-            this.tableLayoutPanel8.Controls.Add(this.txtSumTagged, 9, 0);
-            this.tableLayoutPanel7.Controls.Add(this.pnlTaggingOptions, 0, 0);
-            this.tableLayoutPanel7.SetColumnSpan(this.pnlTaggingOptions, 2);
-            //
-            // grdInvoiceResult
-            //
-            this.grdInvoiceResult.Name = "grdInvoiceResult";
-            this.grdInvoiceResult.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.grdInvoiceResult.AutoSize = true;
-            this.tableLayoutPanel7.Controls.Add(this.grdInvoiceResult, 0, 1);
-            this.tableLayoutPanel7.SetColumnSpan(this.grdInvoiceResult, 2);
-            this.tpgOutstandingInvoices.Text = "OutstandingInvoices";
-            //
-            // tpgSuppliers
-            //
-            this.tpgSuppliers.Location = new System.Drawing.Point(2,2);
-            this.tpgSuppliers.Name = "tpgSuppliers";
-            this.tpgSuppliers.AutoSize = true;
-            //
-            // tableLayoutPanel9
-            //
-            this.tableLayoutPanel9.Location = new System.Drawing.Point(2,2);
-            this.tableLayoutPanel9.Name = "tableLayoutPanel9";
-            this.tableLayoutPanel9.AutoSize = true;
-            this.tableLayoutPanel9.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.tableLayoutPanel9.ColumnCount = 2;
-            this.tableLayoutPanel9.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
-            this.tableLayoutPanel9.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
-            this.tableLayoutPanel9.RowCount = 2;
-            this.tableLayoutPanel9.RowStyles.Add(new System.Windows.Forms.RowStyle());
-            this.tableLayoutPanel9.RowStyles.Add(new System.Windows.Forms.RowStyle());
-            this.tpgSuppliers.Controls.Add(this.tableLayoutPanel9);
-            //
-            // pnlSupplierOptions
-            //
-            this.pnlSupplierOptions.Location = new System.Drawing.Point(2,2);
-            this.pnlSupplierOptions.Name = "pnlSupplierOptions";
-            this.pnlSupplierOptions.AutoSize = true;
-            //
-            // tableLayoutPanel10
-            //
-            this.tableLayoutPanel10.Location = new System.Drawing.Point(2,2);
-            this.tableLayoutPanel10.Name = "tableLayoutPanel10";
-            this.tableLayoutPanel10.AutoSize = true;
-            this.tableLayoutPanel10.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.tableLayoutPanel10.ColumnCount = 6;
-            this.tableLayoutPanel10.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
-            this.tableLayoutPanel10.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
-            this.tableLayoutPanel10.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
-            this.tableLayoutPanel10.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
-            this.tableLayoutPanel10.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
-            this.tableLayoutPanel10.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
-            this.tableLayoutPanel10.RowCount = 1;
-            this.tableLayoutPanel10.RowStyles.Add(new System.Windows.Forms.RowStyle());
-            this.pnlSupplierOptions.Controls.Add(this.tableLayoutPanel10);
+            this.pnlSupplierOptions.Controls.Add(this.tableLayoutPanel8);
             //
             // chkShowOutstandingAmounts
             //
@@ -547,8 +441,9 @@ namespace Ict.Petra.Client.MFinance.Gui
             this.chkShowOutstandingAmounts.Name = "chkShowOutstandingAmounts";
             this.chkShowOutstandingAmounts.AutoSize = true;
             this.chkShowOutstandingAmounts.Text = "Show Outstanding &Amounts";
-            this.tableLayoutPanel10.Controls.Add(this.chkShowOutstandingAmounts, 0, 0);
-            this.tableLayoutPanel10.SetColumnSpan(this.chkShowOutstandingAmounts, 2);
+            this.chkShowOutstandingAmounts.Margin = new System.Windows.Forms.Padding(3, 5, 3, 0);
+            this.tableLayoutPanel8.Controls.Add(this.chkShowOutstandingAmounts, 0, 0);
+            this.tableLayoutPanel8.SetColumnSpan(this.chkShowOutstandingAmounts, 2);
             //
             // chkHideInactiveSuppliers
             //
@@ -556,8 +451,9 @@ namespace Ict.Petra.Client.MFinance.Gui
             this.chkHideInactiveSuppliers.Name = "chkHideInactiveSuppliers";
             this.chkHideInactiveSuppliers.AutoSize = true;
             this.chkHideInactiveSuppliers.Text = "Hide &Inactive Suppliers";
-            this.tableLayoutPanel10.Controls.Add(this.chkHideInactiveSuppliers, 2, 0);
-            this.tableLayoutPanel10.SetColumnSpan(this.chkHideInactiveSuppliers, 2);
+            this.chkHideInactiveSuppliers.Margin = new System.Windows.Forms.Padding(3, 5, 3, 0);
+            this.tableLayoutPanel8.Controls.Add(this.chkHideInactiveSuppliers, 2, 0);
+            this.tableLayoutPanel8.SetColumnSpan(this.chkHideInactiveSuppliers, 2);
             //
             // cmbSupplierCurrency
             //
@@ -571,25 +467,134 @@ namespace Ict.Petra.Client.MFinance.Gui
             this.lblSupplierCurrency.Name = "lblSupplierCurrency";
             this.lblSupplierCurrency.AutoSize = true;
             this.lblSupplierCurrency.Text = "C&urrency:";
-            this.tableLayoutPanel10.Controls.Add(this.lblSupplierCurrency, 4, 0);
-            this.tableLayoutPanel10.Controls.Add(this.cmbSupplierCurrency, 5, 0);
-            this.tableLayoutPanel9.Controls.Add(this.pnlSupplierOptions, 0, 0);
-            this.tableLayoutPanel9.SetColumnSpan(this.pnlSupplierOptions, 2);
+            this.lblSupplierCurrency.Margin = new System.Windows.Forms.Padding(3, 7, 3, 0);
+            this.tableLayoutPanel8.Controls.Add(this.lblSupplierCurrency, 4, 0);
+            this.tableLayoutPanel8.Controls.Add(this.cmbSupplierCurrency, 5, 0);
+            this.tableLayoutPanel7.Controls.Add(this.pnlSupplierOptions, 0, 0);
+            this.tableLayoutPanel7.SetColumnSpan(this.pnlSupplierOptions, 2);
             //
             // grdSupplierResult
             //
             this.grdSupplierResult.Name = "grdSupplierResult";
             this.grdSupplierResult.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.grdSupplierResult.AutoSize = true;
-            this.tableLayoutPanel9.Controls.Add(this.grdSupplierResult, 0, 1);
-            this.tableLayoutPanel9.SetColumnSpan(this.grdSupplierResult, 2);
+            this.tableLayoutPanel7.Controls.Add(this.grdSupplierResult, 0, 1);
+            this.tableLayoutPanel7.SetColumnSpan(this.grdSupplierResult, 2);
             this.tpgSuppliers.Text = "Suppliers";
+            //
+            // tpgOutstandingInvoices
+            //
+            this.tpgOutstandingInvoices.Location = new System.Drawing.Point(2,2);
+            this.tpgOutstandingInvoices.Name = "tpgOutstandingInvoices";
+            this.tpgOutstandingInvoices.AutoSize = true;
+            //
+            // tableLayoutPanel9
+            //
+            this.tableLayoutPanel9.Location = new System.Drawing.Point(2,2);
+            this.tableLayoutPanel9.Name = "tableLayoutPanel9";
+            this.tableLayoutPanel9.AutoSize = true;
+            this.tableLayoutPanel9.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.tableLayoutPanel9.ColumnCount = 2;
+            this.tableLayoutPanel9.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
+            this.tableLayoutPanel9.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
+            this.tableLayoutPanel9.RowCount = 2;
+            this.tableLayoutPanel9.RowStyles.Add(new System.Windows.Forms.RowStyle());
+            this.tableLayoutPanel9.RowStyles.Add(new System.Windows.Forms.RowStyle());
+            this.tpgOutstandingInvoices.Controls.Add(this.tableLayoutPanel9);
+            //
+            // pnlTaggingOptions
+            //
+            this.pnlTaggingOptions.Location = new System.Drawing.Point(2,2);
+            this.pnlTaggingOptions.Name = "pnlTaggingOptions";
+            this.pnlTaggingOptions.AutoSize = true;
+            //
+            // tableLayoutPanel10
+            //
+            this.tableLayoutPanel10.Location = new System.Drawing.Point(2,2);
+            this.tableLayoutPanel10.Name = "tableLayoutPanel10";
+            this.tableLayoutPanel10.AutoSize = true;
+            this.tableLayoutPanel10.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.tableLayoutPanel10.ColumnCount = 10;
+            this.tableLayoutPanel10.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
+            this.tableLayoutPanel10.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
+            this.tableLayoutPanel10.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
+            this.tableLayoutPanel10.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
+            this.tableLayoutPanel10.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
+            this.tableLayoutPanel10.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
+            this.tableLayoutPanel10.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
+            this.tableLayoutPanel10.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
+            this.tableLayoutPanel10.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
+            this.tableLayoutPanel10.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
+            this.tableLayoutPanel10.RowCount = 1;
+            this.tableLayoutPanel10.RowStyles.Add(new System.Windows.Forms.RowStyle());
+            this.pnlTaggingOptions.Controls.Add(this.tableLayoutPanel10);
+            //
+            // btnTagAllApprovable
+            //
+            this.btnTagAllApprovable.Location = new System.Drawing.Point(2,2);
+            this.btnTagAllApprovable.Name = "btnTagAllApprovable";
+            this.btnTagAllApprovable.AutoSize = true;
+            this.btnTagAllApprovable.Text = "Tag all Appro&vable";
+            this.tableLayoutPanel10.Controls.Add(this.btnTagAllApprovable, 0, 0);
+            this.tableLayoutPanel10.SetColumnSpan(this.btnTagAllApprovable, 2);
+            //
+            // btnTagAllPostable
+            //
+            this.btnTagAllPostable.Location = new System.Drawing.Point(2,2);
+            this.btnTagAllPostable.Name = "btnTagAllPostable";
+            this.btnTagAllPostable.AutoSize = true;
+            this.btnTagAllPostable.Text = "Tag a&ll Postable";
+            this.tableLayoutPanel10.Controls.Add(this.btnTagAllPostable, 2, 0);
+            this.tableLayoutPanel10.SetColumnSpan(this.btnTagAllPostable, 2);
+            //
+            // btnTagAllPayable
+            //
+            this.btnTagAllPayable.Location = new System.Drawing.Point(2,2);
+            this.btnTagAllPayable.Name = "btnTagAllPayable";
+            this.btnTagAllPayable.AutoSize = true;
+            this.btnTagAllPayable.Text = "Tag all Paya&ble";
+            this.tableLayoutPanel10.Controls.Add(this.btnTagAllPayable, 4, 0);
+            this.tableLayoutPanel10.SetColumnSpan(this.btnTagAllPayable, 2);
+            //
+            // btnUntagAll
+            //
+            this.btnUntagAll.Location = new System.Drawing.Point(2,2);
+            this.btnUntagAll.Name = "btnUntagAll";
+            this.btnUntagAll.AutoSize = true;
+            this.btnUntagAll.Text = "&Untag all";
+            this.tableLayoutPanel10.Controls.Add(this.btnUntagAll, 6, 0);
+            this.tableLayoutPanel10.SetColumnSpan(this.btnUntagAll, 2);
+            //
+            // txtSumTagged
+            //
+            this.txtSumTagged.Location = new System.Drawing.Point(2,2);
+            this.txtSumTagged.Name = "txtSumTagged";
+            this.txtSumTagged.Size = new System.Drawing.Size(150, 28);
+            this.txtSumTagged.ReadOnly = true;
+            //
+            // lblSumTagged
+            //
+            this.lblSumTagged.Location = new System.Drawing.Point(2,2);
+            this.lblSumTagged.Name = "lblSumTagged";
+            this.lblSumTagged.AutoSize = true;
+            this.lblSumTagged.Text = "Sum of Tagged:";
+            this.lblSumTagged.Margin = new System.Windows.Forms.Padding(3, 7, 3, 0);
+            this.tableLayoutPanel10.Controls.Add(this.lblSumTagged, 8, 0);
+            this.tableLayoutPanel10.Controls.Add(this.txtSumTagged, 9, 0);
+            this.tableLayoutPanel9.Controls.Add(this.pnlTaggingOptions, 0, 0);
+            this.tableLayoutPanel9.SetColumnSpan(this.pnlTaggingOptions, 2);
+            //
+            // grdInvoiceResult
+            //
+            this.grdInvoiceResult.Name = "grdInvoiceResult";
+            this.grdInvoiceResult.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.tableLayoutPanel9.Controls.Add(this.grdInvoiceResult, 0, 1);
+            this.tableLayoutPanel9.SetColumnSpan(this.grdInvoiceResult, 2);
+            this.tpgOutstandingInvoices.Text = "OutstandingInvoices";
             //
             // tabSearchResult
             //
             this.tabSearchResult.Name = "tabSearchResult";
             this.tabSearchResult.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.tabSearchResult.AutoSize = true;
             this.tabSearchResult.Controls.Add(this.tpgSuppliers);
             this.tabSearchResult.Controls.Add(this.tpgOutstandingInvoices);
             this.tabSearchResult.Dock = System.Windows.Forms.DockStyle.Fill;
@@ -600,6 +605,8 @@ namespace Ict.Petra.Client.MFinance.Gui
             //
             this.tbbTransactions.Name = "tbbTransactions";
             this.tbbTransactions.AutoSize = true;
+            this.tbbTransactions.Click += new System.EventHandler(this.tbbTransactionsClick);
+            this.tbbTransactions.ToolTipText = "Open the transactions of the supplier";
             this.tbbTransactions.Text = "Open Transactions";
             //
             // tbbEditSupplier
@@ -794,13 +801,13 @@ namespace Ict.Petra.Client.MFinance.Gui
             this.mnuMain.ResumeLayout(false);
             this.tbrMain.ResumeLayout(false);
             this.tableLayoutPanel10.ResumeLayout(false);
-            this.pnlSupplierOptions.ResumeLayout(false);
-            this.tableLayoutPanel9.ResumeLayout(false);
-            this.tpgSuppliers.ResumeLayout(false);
-            this.tableLayoutPanel8.ResumeLayout(false);
             this.pnlTaggingOptions.ResumeLayout(false);
-            this.tableLayoutPanel7.ResumeLayout(false);
+            this.tableLayoutPanel9.ResumeLayout(false);
             this.tpgOutstandingInvoices.ResumeLayout(false);
+            this.tableLayoutPanel8.ResumeLayout(false);
+            this.pnlSupplierOptions.ResumeLayout(false);
+            this.tableLayoutPanel7.ResumeLayout(false);
+            this.tpgSuppliers.ResumeLayout(false);
             this.tabSearchResult.ResumeLayout(false);
             this.tableLayoutPanel6.ResumeLayout(false);
             this.pnlSearchButtons.ResumeLayout(false);
@@ -839,10 +846,19 @@ namespace Ict.Petra.Client.MFinance.Gui
         private System.Windows.Forms.Button btnSearch;
         private System.Windows.Forms.Button btnReset;
         private System.Windows.Forms.TabControl tabSearchResult;
-        private System.Windows.Forms.TabPage tpgOutstandingInvoices;
+        private System.Windows.Forms.TabPage tpgSuppliers;
         private System.Windows.Forms.TableLayoutPanel tableLayoutPanel7;
-        private System.Windows.Forms.Panel pnlTaggingOptions;
+        private System.Windows.Forms.Panel pnlSupplierOptions;
         private System.Windows.Forms.TableLayoutPanel tableLayoutPanel8;
+        private System.Windows.Forms.CheckBox chkShowOutstandingAmounts;
+        private System.Windows.Forms.CheckBox chkHideInactiveSuppliers;
+        private System.Windows.Forms.ComboBox cmbSupplierCurrency;
+        private System.Windows.Forms.Label lblSupplierCurrency;
+        private System.Windows.Forms.DataGridView grdSupplierResult;
+        private System.Windows.Forms.TabPage tpgOutstandingInvoices;
+        private System.Windows.Forms.TableLayoutPanel tableLayoutPanel9;
+        private System.Windows.Forms.Panel pnlTaggingOptions;
+        private System.Windows.Forms.TableLayoutPanel tableLayoutPanel10;
         private System.Windows.Forms.Button btnTagAllApprovable;
         private System.Windows.Forms.Button btnTagAllPostable;
         private System.Windows.Forms.Button btnTagAllPayable;
@@ -850,15 +866,6 @@ namespace Ict.Petra.Client.MFinance.Gui
         private System.Windows.Forms.TextBox txtSumTagged;
         private System.Windows.Forms.Label lblSumTagged;
         private System.Windows.Forms.DataGridView grdInvoiceResult;
-        private System.Windows.Forms.TabPage tpgSuppliers;
-        private System.Windows.Forms.TableLayoutPanel tableLayoutPanel9;
-        private System.Windows.Forms.Panel pnlSupplierOptions;
-        private System.Windows.Forms.TableLayoutPanel tableLayoutPanel10;
-        private System.Windows.Forms.CheckBox chkShowOutstandingAmounts;
-        private System.Windows.Forms.CheckBox chkHideInactiveSuppliers;
-        private System.Windows.Forms.ComboBox cmbSupplierCurrency;
-        private System.Windows.Forms.Label lblSupplierCurrency;
-        private System.Windows.Forms.DataGridView grdSupplierResult;
         private System.Windows.Forms.ToolStrip tbrMain;
         private System.Windows.Forms.ToolStripButton tbbTransactions;
         private System.Windows.Forms.ToolStripButton tbbEditSupplier;

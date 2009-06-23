@@ -71,8 +71,8 @@ namespace Ict.Petra.Client.MReporting.Gui.MPartner
       // this code has been inserted by GenerateI18N, all changes in this region will be overwritten by GenerateI18N
       this.lblCityName.Text = Catalog.GetString("Name of City:");
       this.tpgReportSpecific.Text = Catalog.GetString("Report parameters");
-      this.tbbGenerate.Text = Catalog.GetString("Generate");
       this.tbbGenerate.ToolTipText = Catalog.GetString("Generate the report");
+      this.tbbGenerate.Text = Catalog.GetString("&Generate");
       this.tbbSave.Text = Catalog.GetString("Save");
       this.tbbSaveAs.Text = Catalog.GetString("SaveAs");
       this.mniSaveSettings.Text = Catalog.GetString("&Save Settings");

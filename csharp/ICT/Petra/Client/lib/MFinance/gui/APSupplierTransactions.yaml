@@ -1,0 +1,82 @@
+RootNode:
+    BaseYaml: ../../../CommonForms/PetraForm.yaml
+    FormTitle: Supplier Transactions
+    ClassName: TFrmAccountsPayableSupplierTransactions
+    Namespace: Ict.Petra.Client.MFinance.Gui
+    FormType: browse
+    HasManualCodeInOtherFile: true
+    WindowWidth: 754
+    WindowHeight: 623
+    Actions:
+        actNewInvoice: {Label=&Invoice, ShortCut=Ctrl+I}        
+        actNewCreditNote:{Label=&Credit Note, ShortCut=Ctrl+R}
+        actOpenSelected: {Label=&Open Selected, ShortCut=Ctrl+O}
+        actReverseSelected: {Label=Re&verse Selected, ShortCut=F5}
+        actApproveTagged: {Label=&Approve Tagged, ShortCut=F6}
+        actPostTagged: {Label=&Post Tagged, ShortCut=F7}
+        actAddTaggedToPayment: {Label=Add Tagged to Pa&yment, ShortCut=F8}
+    Controls:
+        pnlContent:
+            Dock: Fill
+            Controls: [pnlCurrentSupplierInfo, pnlFilter1, pnlFilter2, pnlButtons, grdResult, pnlDisplayedBalance]
+        pnlCurrentSupplierInfo:
+            Controls: [txtCurrentSupplierName, txtCurrentSupplierCurrency]
+            ControlsOrientation: horizontal
+            Dock:Top
+        txtCurrentSupplierName: {Label=Current Supplier, ReadOnly=true}
+        txtCurrentSupplierCurrency: {Label=Currency, ReadOnly=true}
+        pnlDisplayedBalance: 
+            Controls: [txtDisplayedBalance]
+            Dock: Bottom
+        txtDisplayedBalance: {Label=Displayed Balance, ReadOnly=true}
+        pnlFilter1:
+            Controls: [cmbType, cmbDate, cmbDateField]
+            ControlsOrientation: horizontal
+            Dock:Top
+        cmbType: {Label=&Type}
+        cmbDate: {Label=&Date}
+        cmbDateField: {Label=Date &Field}
+        pnlFilter2:
+            Controls: [cmbStatus, chkHideAgedTransactions]
+            ControlsOrientation: horizontal
+            Dock:Top
+        cmbStatus: {Label=&Status}
+        chkHideAgedTransactions: {Label=Hide &Aged Transactions}
+        pnlButtons:
+            Controls: [btnTagApprovable, btnTagPostable, btnTagPayable, btnUntagAll, txtSumOfTagged]
+            ControlsOrientation: horizontal
+            Dock:Top
+        btnTagApprovable: {Label=Tag all Appro&vable}
+        btnTagPostable: {Label=Tag all P&ostable}
+        btnTagPayable: {Label=Tag all Paya&ble}
+        btnUntagAll: {Label=&Untag All}
+        txtSumOfTagged: {Label=Sum of Tagged, ReadOnly=true}
+        grdResult: {Dock=Fill}
+    Menu:
+        mniFile:
+            mniReprintRemittanceAdvice: {Label=Reprint Re&mittance Advice}
+            mniReprintCheque: {Label=Reprint &Cheque}
+            mniReprintPaymentReport: {Label=Reprint Pa&yment Report}
+            mniSeparator: {Label=-}
+        mniAction:
+            Label: &Action
+            mniActionNew:
+                Label: &New...
+                mniNewInvoice: {Action=actNewInvoice}
+                mniNewCreditNote: {Action=actNewCreditNote}
+            mniOpenSelected: {Action=actOpenSelected}
+            mniSeparator: {Label=-}
+            mniReverseTransaction: {Action=actReverseSelected}
+            mniApproveTagged: {Action=actApproveTagged}
+            mniPostTagged: {Action=actPostTagged}
+            mniAddTaggedToPayment: {Action=actAddTaggedToPayment}
+    Toolbar:
+        tbbNewInvoice: {Action=actNewInvoice}
+        tbbNewCreditNote: {Action=actNewCreditNote}
+        tbbSeparator: {Label=-}
+        tbbOpenSelected: {Action=actOpenSelected}
+        tbbReverseSelected: {Action=actReverseSelected}
+        tbbSeparator: {Label=-}
+        tbbApproveTagged: {Action=actApproveTagged}
+        tbbPostTagged: {Action=actPostTagged}
+        tbbAddTaggedToPayment: {Action=actAddTaggedToPayment}

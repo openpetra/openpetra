@@ -40,23 +40,13 @@ using Ict.Petra.Client.CommonForms;
 
 namespace Ict.Petra.Client.MFinance.Gui
 {
-    public partial class TFrmAccountsPayableMain
+    public partial class TFrmAccountsPayableSupplierTransactions
     {
         /// <summary>
         /// todoComment
         /// </summary>
         public void InitializeManualCode()
         {
-        }
-        
-        /// <summary>
-        /// open the transactions of the selected supplier
-        /// </summary>
-        public void SupplierTransactions(object sender, EventArgs e)
-        {
-            TFrmAccountsPayableSupplierTransactions frm = new TFrmAccountsPayableSupplierTransactions(this.Handle);
-            // todo: frm.SupplierPartnerKey = currentRow.PartnerKey;
-            frm.Show();
         }
     }
 }

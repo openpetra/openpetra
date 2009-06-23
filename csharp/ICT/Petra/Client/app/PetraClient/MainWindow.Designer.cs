@@ -98,7 +98,6 @@ namespace Ict.Petra.Client.App.PetraClient
             //
             this.ucoMainWindowContent.Name = "ucoMainWindowContent";
             this.ucoMainWindowContent.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.ucoMainWindowContent.AutoSize = true;
             //
             // mniClose
             //

@@ -151,7 +151,6 @@ namespace Ict.Petra.Client.MFinance.Gui
             //
             this.pnlTODO.Name = "pnlTODO";
             this.pnlTODO.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.pnlTODO.AutoSize = true;
             //
             // mniSelectLedger
             //

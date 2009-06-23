@@ -10,6 +10,8 @@ RootNode:
     Controls:
         tabReportSettings:
             Dock: Fill
+            # it is necessary to set the RootControl because tabReportSettings is not automatically the first control
+            RootControl: true
             # add tpgSorting and tpgOutputDestinations and tpgColumns later
             Controls: [tpgReportSpecific]
         tpgReportSpecific:

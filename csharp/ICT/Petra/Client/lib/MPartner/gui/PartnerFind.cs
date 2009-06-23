@@ -62,8 +62,8 @@ namespace Ict.Petra.Client.MPartner.Gui
       #region CATALOGI18N
 
       // this code has been inserted by GenerateI18N, all changes in this region will be overwritten by GenerateI18N
-      this.tpgFindBankDetails.Text = Catalog.GetString("Find by Bank Details");
       this.tpgFindPartner.Text = Catalog.GetString("Find by Partner Details");
+      this.tpgFindBankDetails.Text = Catalog.GetString("Find by Bank Details");
       this.btnHelp.Text = Catalog.GetString("&Help");
       this.btnCancel.Text = Catalog.GetString("&Cancel");
       this.btnFullyLoadData.Text = Catalog.GetString("Fully load Data");

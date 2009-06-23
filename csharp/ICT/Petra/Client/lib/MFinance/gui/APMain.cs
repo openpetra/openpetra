@@ -71,16 +71,17 @@ namespace Ict.Petra.Client.MFinance.Gui
       this.chkDueFuture.Text = Catalog.GetString("Due &Within Future");
       this.btnSearch.Text = Catalog.GetString("&Search");
       this.btnReset.Text = Catalog.GetString("&Reset Criteria");
+      this.chkShowOutstandingAmounts.Text = Catalog.GetString("Show Outstanding &Amounts");
+      this.chkHideInactiveSuppliers.Text = Catalog.GetString("Hide &Inactive Suppliers");
+      this.lblSupplierCurrency.Text = Catalog.GetString("C&urrency:");
+      this.tpgSuppliers.Text = Catalog.GetString("Suppliers");
       this.btnTagAllApprovable.Text = Catalog.GetString("Tag all Appro&vable");
       this.btnTagAllPostable.Text = Catalog.GetString("Tag a&ll Postable");
       this.btnTagAllPayable.Text = Catalog.GetString("Tag all Paya&ble");
       this.btnUntagAll.Text = Catalog.GetString("&Untag all");
       this.lblSumTagged.Text = Catalog.GetString("Sum of Tagged:");
       this.tpgOutstandingInvoices.Text = Catalog.GetString("OutstandingInvoices");
-      this.chkShowOutstandingAmounts.Text = Catalog.GetString("Show Outstanding &Amounts");
-      this.chkHideInactiveSuppliers.Text = Catalog.GetString("Hide &Inactive Suppliers");
-      this.lblSupplierCurrency.Text = Catalog.GetString("C&urrency:");
-      this.tpgSuppliers.Text = Catalog.GetString("Suppliers");
+      this.tbbTransactions.ToolTipText = Catalog.GetString("Open the transactions of the supplier");
       this.tbbTransactions.Text = Catalog.GetString("Open Transactions");
       this.tbbEditSupplier.Text = Catalog.GetString("Edit Supplier");
       this.tbbNewSupplier.Text = Catalog.GetString("New Supplier");
@@ -114,6 +115,11 @@ namespace Ict.Petra.Client.MFinance.Gui
     {
       nudNumberTimeUnits.Enabled = chkDueFuture.Checked;
       cmbTimeUnit.Enabled = chkDueFuture.Checked;
+    }
+
+    private void tbbTransactionsClick(object sender, EventArgs e)
+    {
+        actSupplierTransactions(sender, e);
     }
 
     private void mniCloseClick(object sender, EventArgs e)
@@ -181,6 +187,10 @@ namespace Ict.Petra.Client.MFinance.Gui
     /// auto generated
     public void ActionEnabledEvent(object sender, ActionEventArgs e)
     {
+        if (e.ActionName == "actSupplierTransactions")
+        {
+            tbbTransactions.Enabled = e.Enabled;
+        }
         mniTodo1.Enabled = false;
         if (e.ActionName == "actClose")
         {
@@ -194,6 +204,12 @@ namespace Ict.Petra.Client.MFinance.Gui
         mniSeparator1.Enabled = false;
         mniHelpAboutPetra.Enabled = false;
         mniHelpDevelopmentTeam.Enabled = false;
+    }
+
+    /// auto generated
+    protected void actSupplierTransactions(object sender, EventArgs e)
+    {
+        SupplierTransactions(sender, e);
     }
 
     /// auto generated

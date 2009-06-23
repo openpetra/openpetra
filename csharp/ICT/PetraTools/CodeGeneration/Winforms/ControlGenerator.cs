@@ -66,6 +66,7 @@ namespace Ict.Tools.CodeGeneration.Winforms
             }
 
             writer.SetControlProperty(ctrl.controlName, "Text", "\"" + labelText + "\"");
+            writer.SetControlProperty(ctrl.controlName, "Margin", "new System.Windows.Forms.Padding(3, 7, 3, 0)");
         }
     }
     public class ButtonGenerator : TControlGenerator
@@ -236,6 +237,7 @@ namespace Ict.Tools.CodeGeneration.Winforms
             }
 
             writer.SetControlProperty(ctrl.controlName, "Text", "\"" + ctrl.Label + "\"");
+            writer.SetControlProperty(ctrl.controlName, "Margin", "new System.Windows.Forms.Padding(3, 5, 3, 0)");
         }
     }
     public class TClbVersatileGenerator : TControlGenerator
@@ -279,7 +281,14 @@ namespace Ict.Tools.CodeGeneration.Winforms
         {
             base.SetControlProperties(writer, ctrl);
 
-            if (TXMLParser.HasAttribute(ctrl.xmlNode, "DefaultValue"))
+            if (TYml2Xml.HasAttribute(ctrl.xmlNode, "ReadOnly") 
+                && TYml2Xml.GetAttribute(ctrl.xmlNode, "ReadOnly").ToLower() == "true")
+            {
+                writer.SetControlProperty(ctrl.controlName,
+                    "ReadOnly",
+                    "true");
+            }
+            if (TYml2Xml.HasAttribute(ctrl.xmlNode, "DefaultValue"))
             {
                 writer.SetControlProperty(ctrl.controlName,
                     "Text",
@@ -471,7 +480,13 @@ namespace Ict.Tools.CodeGeneration.Winforms
                     }
                 }
 
+                StringCollection ControlsReverse = new StringCollection();
                 foreach (string ChildControlName in Controls)
+                {
+                    ControlsReverse.Insert(0, ChildControlName);
+                }
+                
+                foreach (string ChildControlName in ControlsReverse)
                 {
                     TControlDef ChildControl = ctrl.FCodeStorage.GetControl(ChildControlName);
 
@@ -843,7 +858,7 @@ namespace Ict.Tools.CodeGeneration.Winforms
         public override void SetControlProperties(IFormWriter writer, TControlDef ctrl)
         {
             base.SetControlProperties(writer, ctrl);
-            writer.SetControlProperty(ctrl.controlName, "Text", "\"" + ctrl.Label + "\"");
+            string Label = ctrl.Label;
             string ActionToPerform = ctrl.GetAttribute("Action");
 
             if (writer.CodeStorage.FActionList.ContainsKey(ActionToPerform))
@@ -854,7 +869,10 @@ namespace Ict.Tools.CodeGeneration.Winforms
                 writer.SetEventHandlerFunction(ctrl.controlName, "Click", ActionToPerform + "(sender, e);");
 
                 SetControlActionProperties(writer, ctrl, ActionHandler);
+                
+                Label = ActionHandler.actionLabel;
             }
+            writer.SetControlProperty(ctrl.controlName, "Text", "\"" + Label + "\"");
         }
     }
 

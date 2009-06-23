@@ -143,6 +143,7 @@ namespace Ict.Petra.Client.MReporting.Gui.MPartner
             this.lblCityName.Name = "lblCityName";
             this.lblCityName.AutoSize = true;
             this.lblCityName.Text = "Name of City:";
+            this.lblCityName.Margin = new System.Windows.Forms.Padding(3, 7, 3, 0);
             this.tableLayoutPanel1.Controls.Add(this.lblCityName, 0, 0);
             this.tableLayoutPanel1.Controls.Add(this.txtCityName, 1, 0);
             this.tpgReportSpecific.Text = "Report parameters";
@@ -152,7 +153,6 @@ namespace Ict.Petra.Client.MReporting.Gui.MPartner
             this.tabReportSettings.Location = new System.Drawing.Point(2,2);
             this.tabReportSettings.Name = "tabReportSettings";
             this.tabReportSettings.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.tabReportSettings.AutoSize = true;
             this.tabReportSettings.Controls.Add(this.tpgReportSpecific);
             this.tabReportSettings.Dock = System.Windows.Forms.DockStyle.Fill;
             //
@@ -160,10 +160,10 @@ namespace Ict.Petra.Client.MReporting.Gui.MPartner
             //
             this.tbbGenerate.Name = "tbbGenerate";
             this.tbbGenerate.AutoSize = true;
-            this.tbbGenerate.Text = "Generate";
             this.tbbGenerate.Click += new System.EventHandler(this.tbbGenerateClick);
             this.tbbGenerate.Image = ((System.Drawing.Bitmap)resources.GetObject("tbbGenerate.Glyph"));
             this.tbbGenerate.ToolTipText = "Generate the report";
+            this.tbbGenerate.Text = "&Generate";
             //
             // tbbSave
             //

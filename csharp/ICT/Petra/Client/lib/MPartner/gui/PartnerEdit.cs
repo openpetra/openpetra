@@ -62,8 +62,8 @@ namespace Ict.Petra.Client.MPartner.Gui
       #region CATALOGI18N
 
       // this code has been inserted by GenerateI18N, all changes in this region will be overwritten by GenerateI18N
-      this.tbbSave.Text = Catalog.GetString("Save");
       this.tbbSave.ToolTipText = Catalog.GetString("Saves changed data");
+      this.tbbSave.Text = Catalog.GetString("&Save");
       this.tbbNew.Text = Catalog.GetString("New Partner");
       this.tbbTogglePartner.Text = Catalog.GetString("Partner Data");
       this.tbbTogglePersonnel.Text = Catalog.GetString("Personnel Data");

@@ -45,8 +45,8 @@ namespace Ict.Tools.CodeGeneration
      */
     public class TCodeStorage
     {
-        /// contains all controls, ie also menus etc; this is a dictionary for easily finding values, but also keep them ordered
-        public SortedList <string, TControlDef>FControlList = new SortedList <string, TControlDef>();
+        /// contains all controls, ie also menus etc; this is a sorted list for easily finding values, but also keep them ordered
+        public Dictionary <string, TControlDef>FControlList = new Dictionary <string, TControlDef>();
         public Dictionary <string, TEventHandler>FEventList = new Dictionary <string, TEventHandler>();
         public Dictionary <string, TActionHandler>FActionList = new Dictionary <string, TActionHandler>();
 
@@ -91,17 +91,26 @@ namespace Ict.Tools.CodeGeneration
 
         /// <summary>
         /// get the main menustrip, tabpage, statusstrip etc;
-        /// if prefix is content, the first available pnl, uco, tpg or grp control is returned
+        /// if prefix is content, the first available pnl, uco, tpg or grp control is returned;
+        /// the first control can be overwritten with attribute RootControl=true; this is necessary for the reports, see tabReportSettings
         /// </summary>
         /// <param name="APrefix">can be mnu, tab, tbr, sbt, stb, content</param>
         /// <returns></returns>
         public TControlDef GetRootControl(string APrefix)
         {
+            TControlDef firstControl = null;
             foreach (TControlDef ctrl in FControlList.Values)
             {
                 if (ctrl.controlTypePrefix == APrefix)
                 {
-                    return ctrl;
+                    if (firstControl == null)
+                    {
+                        firstControl = ctrl;
+                    }
+                    if (ctrl.HasAttribute("RootControl") && ctrl.GetAttribute("RootControl").ToLower() == "true")
+                    {
+                        return ctrl;
+                    }                    
                 }
 
                 if ((APrefix == "content")
@@ -110,10 +119,21 @@ namespace Ict.Tools.CodeGeneration
                         || (ctrl.controlTypePrefix == "uco")
                         || (ctrl.controlTypePrefix == "pnl")))
                 {
-                    return ctrl;
+                    if (firstControl == null)
+                    {
+                        firstControl = ctrl;
+                    }
+                    if (ctrl.HasAttribute("RootControl") && ctrl.GetAttribute("RootControl").ToLower() == "true")
+                    {
+                        return ctrl;
+                    }
                 }
             }
 
+            if (firstControl != null)
+            {
+                return firstControl;
+            }
             throw new Exception("cannot find a default control for prefix " + APrefix);
 
             //return null;

@@ -153,9 +153,12 @@ namespace Ict.Tools.CodeGeneration.Winforms
             writer.SetControlProperty(ctrl.controlName, "Name", "\"" + ctrl.controlName + "\"");
 
             if (TYml2Xml.HasAttribute(ctrl.xmlNode, "Dock"))
-            {
+            {  
                 writer.SetControlProperty(ctrl, "Dock");
-                writer.SetControlProperty(ctrl.controlName, "AutoSize", "true");
+                if (TYml2Xml.GetAttribute(ctrl.xmlNode, "Dock").ToLower() != "fill")
+                {
+                    writer.SetControlProperty(ctrl.controlName, "AutoSize", "true");
+                }
             }
             else if (FAutoSize)
             {

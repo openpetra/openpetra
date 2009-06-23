@@ -7,6 +7,11 @@ RootNode:
     HasManualCodeInOtherFile: true
     WindowWidth: 754
     WindowHeight: 623
+    Actions:
+        actSupplierTransactions:
+            Label: Open Transactions
+            ActionClick: SupplierTransactions
+            Tooltip: Open the transactions of the supplier
     Controls:
         pnlContent:
             Dock: Fill
@@ -61,7 +66,7 @@ RootNode:
         btnTagAllPostable: {Label=Tag a&ll Postable}
         btnTagAllPayable: {Label=Tag all Paya&ble}
         btnUntagAll: {Label=&Untag all}
-        txtSumTagged: {Label=Sum of Tagged}
+        txtSumTagged: {Label=Sum of Tagged, ReadOnly=true}
     Menu:
         mniFile:
             mniTodo1: {Label=todo}
@@ -70,7 +75,7 @@ RootNode:
         mniFind:
             mniTodo3: {Label=todo}
     Toolbar:
-        tbbTransactions: {Label=Open Transactions}
+        tbbTransactions: {Action=actSupplierTransactions}
         tbbEditSupplier: {Label=Edit Supplier}
         tbbSeparator: {Label=-}
         tbbNewSupplier: {Label=New Supplier}
