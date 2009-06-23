@@ -73,6 +73,7 @@
             <fileset basedir="${ThirdParty.dir}/Mono">
                 <include name="intl.dll" />
                 <include name="MonoPosixHelper.dll" />
+                <include name="Mono.Security.dll" />
             </fileset>
         </copy>
         <property name = "language.file" value="${OpenPetraRoot.dir}/i18n/${SelectedLanguage}.mo"/>

@@ -54,11 +54,13 @@ namespace Ict.Petra.Server.MReporting
         }
 
         /// <summary>
-        /// format a date in a form that sqlite understands (correct order of month/day etc)
+        /// format a date in a form that will be adjusted
+        /// for each database in FormatQueryRDBMSSpecific;
+        /// (correct order of month/day etc)
         /// </summary>
         /// <param name="value"></param>
         /// <returns></returns>
-        public static TVariant SqliteDate(TVariant value)
+        public static TVariant FormatDate(TVariant value)
         {
             String list;
             String day;
@@ -68,9 +70,7 @@ namespace Ict.Petra.Server.MReporting
 
             if (value.TypeVariant == eVariantTypes.eDateTime)
             {
-                // see also http://www.nabble.com/Best-way-to-do-a-date-comparison--td23431265.html
-                // added 00:00:00 time to fix issue https://sourceforge.net/apps/mantisbt/openpetraorg/view.php?id=11
-                resultString = "'" + value.DateToString("yyyy/MM/dd") + " 00:00:00'";
+                resultString = "#" + value.DateToString("yyyy/MM/dd") + "#";
 
                 // it seems, the separators (e.g. , /, .) are not considered
                 resultString = resultString.Replace(value.DateToString("yyyy/MM/dd")[4], '-');
@@ -89,7 +89,9 @@ namespace Ict.Petra.Server.MReporting
 
                 month = StringHelper.GetNextCSV(ref list, ".", true);
                 year = StringHelper.GetNextCSV(ref list, ".", true);
-                resultString = month + "/" + day + "/" + year;
+
+                resultString = String.Format("#{0:4}-{1:2}-{2:2}#",
+                    year, month, day);
             }
 
             return new TVariant(resultString, true); // explicit string
@@ -128,7 +130,6 @@ namespace Ict.Petra.Server.MReporting
             TVariant ReturnValue;
             int position;
             int bracket;
-            int posLike;
             String parameter;
             TVariant newvalue;
             Boolean ParameterDoesExist;
@@ -216,24 +217,6 @@ namespace Ict.Petra.Server.MReporting
                         ReturnValue = convert(newvalue);
                     }
 
-                    // special case: the parameter is a string (single brackets ), and it is preceded by LIKE:
-                    // make sure that there is a wildcard character in the value, otherwise replace with =
-                    // tothink: if value is just star, should we make the value is not null? or always true?
-                    posLike = resultString.ToLower().IndexOf(" like {" + parameter.ToLower() + '}');
-
-                    if (posLike != -1)
-                    {
-                        if (newvalue.ToString().IndexOf('*') != -1)
-                        {
-                            newvalue = new TVariant(newvalue.ToString().Replace("*", "%"));
-                        }
-                        else if (newvalue.ToString().IndexOf("%") == -1)
-                        {
-                            resultString = resultString.Replace(" like {" + parameter + "}", " = {" + parameter + "}");
-                            resultString = resultString.Replace(" LIKE {" + parameter + "}", " = {" + parameter + "}");
-                        }
-                    }
-
                     resultString = resultString.Replace(searchOpen + parameter + searchClose, newOpen + convert(newvalue).ToString() + newClose);
                 }
                 catch (Exception e)
@@ -273,10 +256,7 @@ namespace Ict.Petra.Server.MReporting
             ReturnValue = new TVariant(s);
             ReturnValue = ReplaceVariablesPattern(ReturnValue, "{{", "}}", "", "", new TConvertProc(Id));
 
-            // TODO: need to know which database is used
-            ReturnValue = ReplaceVariablesPattern(ReturnValue, "{#", "#}", "", "", new TConvertProc(SqliteDate));
-
-            // TODO: postgresql
+            ReturnValue = ReplaceVariablesPattern(ReturnValue, "{#", "#}", "", "", new TConvertProc(FormatDate));
 
             if (withQuotes)
             {

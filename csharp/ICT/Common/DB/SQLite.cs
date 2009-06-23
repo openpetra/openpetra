@@ -31,6 +31,7 @@ using System.Data.Odbc;
 using System.Data.SQLite;
 using System.Collections;
 using Ict.Common;
+using System.Text.RegularExpressions;
 
 namespace Ict.Common.DB
 {
@@ -153,6 +154,17 @@ namespace Ict.Common.DB
             ReturnValue = ReturnValue.Replace("= true", "= 1");
             ReturnValue = ReturnValue.Replace("=false", "=0");
             ReturnValue = ReturnValue.Replace("=true", "=1");
+
+            Match m = Regex.Match(ReturnValue, "#([0-9][0-9][0-9][0-9])-([0-9][0-9])-([0-9][0-9])#");
+
+            while (m.Success)
+            {
+                // needs to be 'yyyy-MM-dd 00:00:00'
+                // added 00:00:00 time to fix issue https://sourceforge.net/apps/mantisbt/openpetraorg/view.php?id=11
+                ReturnValue = ReturnValue.Replace("#" + m.Groups[1] + "-" + m.Groups[2] + "-" + m.Groups[3] + "#",
+                    "'" + m.Groups[1] + "-" + m.Groups[2] + "-" + m.Groups[3] + " 00:00:00'");
+                m = Regex.Match(ReturnValue, "#([0-9][0-9][0-9][0-9])-([0-9][0-9])-([0-9][0-9])#");
+            }
 
             // LIKE of sqlite is always case insensitive, so no modification needed (eg ILIKE for postgresql)
 

@@ -31,6 +31,7 @@ using System.Data.Common;
 using System.Collections;
 using Npgsql;
 using NpgsqlTypes;
+using System.Text.RegularExpressions;
 
 namespace Ict.Common.DB
 {
@@ -158,6 +159,16 @@ namespace Ict.Common.DB
             ReturnValue = ReturnValue.Replace("pub_", "public.");
             ReturnValue = ReturnValue.Replace("pub.", "public.");
             ReturnValue = ReturnValue.Replace("\"", "'");
+
+            Match m = Regex.Match(ReturnValue, "#([0-9][0-9][0-9][0-9])-([0-9][0-9])-([0-9][0-9])#");
+
+            while (m.Success)
+            {
+                // needs to be 'yyyy-MM-dd'
+                ReturnValue = ReturnValue.Replace("#" + m.Groups[1] + "-" + m.Groups[2] + "-" + m.Groups[3] + "#",
+                    "'" + m.Groups[1] + "-" + m.Groups[2] + "-" + m.Groups[3] + "'");
+                m = Regex.Match(ReturnValue, "#([0-9][0-9][0-9][0-9])-([0-9][0-9])-([0-9][0-9])#");
+            }
 
             // PostgreSQL's 'LIKE' command is case-sensitive, but we prefer case insensitive search
             ReturnValue = ReturnValue.Replace("LIKE", "ILIKE");
@@ -338,6 +349,11 @@ namespace Ict.Common.DB
             IDbCommand ObjReturn = null;
 
             ACommandText = FormatQueryRDBMSSpecific(ACommandText);
+
+            if (DBAccess.GDBAccessObj.DebugLevel >= DBAccess.DB_DEBUGLEVEL_TRACE)
+            {
+                TLogging.Log("Query formatted for PostgreSQL: " + ACommandText);
+            }
 
 #if WITH_POSTGRESQL_LOGGING
             // TODO?
