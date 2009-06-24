@@ -237,9 +237,9 @@ namespace Ict.Petra.Client.MFinance.Gui
     }
 
     /// auto generated
-    public Ict.Petra.Client.CommonForms.TFrmPetraUtils GetUtilObject()
+    public TFrmPetraUtils GetPetraUtilsObject()
     {
-        return (Ict.Petra.Client.CommonForms.TFrmPetraUtils)FPetraUtilsObject;
+        return (TFrmPetraUtils)FPetraUtilsObject;
     }
 #endregion
 

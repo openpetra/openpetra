@@ -329,6 +329,7 @@
         <exec program="${PetraToolsExe.dir}/GenerateWinforms.exe" commandline="-ymlfile:${OpenPetraRoot.dir}/csharp/ICT/Petra/Client/lib/MFinance/gui/FinanceMain.yaml -TemplateDir:${OpenPetraRoot.dir}/csharp/ICT/PetraTools/Templates/Winforms -ResourceDir:${OpenPetraRoot.dir}/resources"/>
         <exec program="${PetraToolsExe.dir}/GenerateWinforms.exe" commandline="-ymlfile:${OpenPetraRoot.dir}/csharp/ICT/Petra/Client/lib/MFinance/gui/APMain.yaml -TemplateDir:${OpenPetraRoot.dir}/csharp/ICT/PetraTools/Templates/Winforms -ResourceDir:${OpenPetraRoot.dir}/resources"/>
         <exec program="${PetraToolsExe.dir}/GenerateWinforms.exe" commandline="-ymlfile:${OpenPetraRoot.dir}/csharp/ICT/Petra/Client/lib/MFinance/gui/APSupplierTransactions.yaml -TemplateDir:${OpenPetraRoot.dir}/csharp/ICT/PetraTools/Templates/Winforms -ResourceDir:${OpenPetraRoot.dir}/resources"/>
+        <exec program="${PetraToolsExe.dir}/GenerateWinforms.exe" commandline="-ymlfile:${OpenPetraRoot.dir}/csharp/ICT/Petra/Client/lib/MFinance/gui/APEditSupplier.yaml -TemplateDir:${OpenPetraRoot.dir}/csharp/ICT/PetraTools/Templates/Winforms -ResourceDir:${OpenPetraRoot.dir}/resources"/>
     </target>
 
     <target name="translationTemplate">

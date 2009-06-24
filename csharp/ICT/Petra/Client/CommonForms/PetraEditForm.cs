@@ -230,6 +230,10 @@ namespace Ict.Petra.Client.CommonForms
                 {
                     ((CheckBox)ctrl).CheckedChanged += new EventHandler(this.MultiEventHandler);
                 }
+                else if (ctrl is NumericUpDown)
+                {
+                    ((NumericUpDown)ctrl).ValueChanged += new EventHandler(this.MultiEventHandler);
+                }
                 else if (ctrl.GetType() == typeof(TCmbVersatile))
                 {
                     ((TCmbVersatile)ctrl).SelectedValueChanged += new EventHandler(this.MultiEventHandler);
@@ -566,8 +570,5 @@ namespace Ict.Petra.Client.CommonForms
 // TODO?        void DisableDataChangedEvent();
 
 // TODO?        void EnableDataChangedEvent();
-
-        /// <summary>todoComment</summary>
-        TFrmPetraEditUtils GetPetraUtilsObject();
     }
 }

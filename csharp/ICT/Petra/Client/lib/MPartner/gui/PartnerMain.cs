@@ -221,9 +221,9 @@ namespace Ict.Petra.Client.MPartner.Gui
     }
 
     /// auto generated
-    public TFrmPetraModuleUtils GetUtilObject()
+    public TFrmPetraUtils GetPetraUtilsObject()
     {
-        return (TFrmPetraModuleUtils)FPetraUtilsObject;
+        return (TFrmPetraUtils)FPetraUtilsObject;
     }
 #endregion
 

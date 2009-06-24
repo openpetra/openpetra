@@ -108,6 +108,11 @@
       <Project>{45767519-3EC2-4143-B0CC-252033363D35}</Project>
       <Name>Ict.Petra.Client.MFinance.Logic</Name>
     </ProjectReference>
+    <Compile Include="APEditSupplier.cs" />
+    <Compile Include="APEditSupplier.Designer.cs">
+      <DependentUpon>APEditSupplier.cs</DependentUpon>
+    </Compile>
+    <Compile Include="APEditSupplier.ManualCode.cs" />
     <Compile Include="APMain.cs" />
     <Compile Include="APMain.Designer.cs">
       <DependentUpon>APMain.cs</DependentUpon>
@@ -132,6 +137,9 @@
     <Compile Include="LedgerSelection.Designer.cs">
       <DependentUpon>LedgerSelection.cs</DependentUpon>
     </Compile>
+    <EmbeddedResource Include="APEditSupplier.resx">
+      <DependentUpon>APEditSupplier.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="APMain.resx">
       <DependentUpon>APMain.cs</DependentUpon>
     </EmbeddedResource>

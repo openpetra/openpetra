@@ -195,7 +195,9 @@ namespace Ict.Petra.Client.CommonForms
         {
             foreach (Control ctrl in c.Controls)
             {
-                if (ctrl.HasChildren == true)
+                // recurse into children; 
+                // but special case for UpDownBase/NumericUpDown, because we don't want the child controls of that
+                if (ctrl.HasChildren == true && !(ctrl is UpDownBase))
                 {
                     EnumerateControls(ctrl);
                 }
@@ -526,6 +528,7 @@ namespace Ict.Petra.Client.CommonForms
         /// <summary>todoComment</summary>
         bool CanClose();
 
-        // TODO TFrmPetraUtils GetPetraUtilsObject();
+        /// <summary>todoComment</summary>
+        TFrmPetraUtils GetPetraUtilsObject();
     }
 }

@@ -3737,15 +3737,6 @@ namespace Ict.Petra.Client.MPartner.Gui
         /// <summary>
         /// todoComment
         /// </summary>
-        /// <returns></returns>
-        public TFrmPetraEditUtils GetPetraUtilsObject()
-        {
-            return FPetraUtilsObject;
-        }
-
-        /// <summary>
-        /// todoComment
-        /// </summary>
         /// <param name="o"></param>
         /// <param name="args"></param>
         public void OnDataSaved(Object o, TDataSavedEventArgs args)

@@ -192,7 +192,7 @@ namespace Ict.Petra.Client.CommonForms
                     {
                         NonCloseableForm = FormInstance.Text;
 
-                        if (((IFrmPetraEdit)FormInstance).GetPetraUtilsObject().HasChanges)
+                        if (((TFrmPetraEditUtils)((IFrmPetraEdit)FormInstance).GetPetraUtilsObject()).HasChanges)
                         {
                             NonCloseableForm = NonCloseableForm + PetraEditForm.FORM_CHANGEDDATAINDICATOR;
                         }

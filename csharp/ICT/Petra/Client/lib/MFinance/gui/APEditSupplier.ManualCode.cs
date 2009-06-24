@@ -40,7 +40,7 @@ using Ict.Petra.Client.CommonForms;
 
 namespace Ict.Petra.Client.MFinance.Gui
 {
-    public partial class TFrmAccountsPayableMain
+    public partial class TFrmAccountsPayableEditSupplier
     {
         /// <summary>
         /// todoComment
@@ -50,35 +50,13 @@ namespace Ict.Petra.Client.MFinance.Gui
         }
         
         /// <summary>
-        /// open the transactions of the selected supplier
-        /// </summary>
-        public void SupplierTransactions(object sender, EventArgs e)
-        {
-            TFrmAccountsPayableSupplierTransactions frm = new TFrmAccountsPayableSupplierTransactions(this.Handle);
-            // todo: frm.SupplierPartnerKey = currentRow.PartnerKey;
-            frm.Show();
-        }
-        
-        /// <summary>
-        /// create a new supplier
+        /// save the current supplier
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        public void NewSupplier(object sender, EventArgs e)
+        public void FileSave(object sender, EventArgs e)
         {
-            TFrmAccountsPayableEditSupplier frm = new TFrmAccountsPayableEditSupplier(this.Handle);
-            frm.Show();
-        }
-
-        /// <summary>
-        /// edit an existing supplier
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
-        public void EditSupplier(object sender, EventArgs e)
-        {
-            TFrmAccountsPayableEditSupplier frm = new TFrmAccountsPayableEditSupplier(this.Handle);
-            frm.Show();
+            // TODO FileSave Supplier
         }
     }
 }

@@ -80,9 +80,9 @@ namespace {#NAMESPACE}
     }
 
     /// auto generated
-    public {#UTILOBJECTCLASS} GetUtilObject()
+    public TFrmPetraUtils GetPetraUtilsObject()
     {
-        return ({#UTILOBJECTCLASS})FPetraUtilsObject;
+        return (TFrmPetraUtils)FPetraUtilsObject;
     }
 #endregion
 

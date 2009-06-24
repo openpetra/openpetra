@@ -1,0 +1,48 @@
+RootNode:
+    BaseYaml: ../../../CommonForms/PetraEditForm.yaml
+    FormTitle: AP Supplier Edit
+    ClassName: TFrmAccountsPayableEditSupplier
+    Namespace: Ict.Petra.Client.MFinance.Gui
+    FormType: edit
+    HasManualCodeInOtherFile: true
+    WindowWidth: 660
+    WindowHeight: 500
+    Controls:
+        pnlContent:
+            Controls: [pnlPartnerInfo, pnlPartnerInfo2, pnlDefaults, grpAccountInformation]
+            Dock: Fill
+        pnlPartnerInfo:
+            Controls: [txtPartnerKey, btnEditPartner]
+            ControlsOrientation: horizontal
+            Dock:Top
+        txtPartnerKey: {Label=Partner Key, ReadOnly=true}
+        btnEditPartner: {Label=&Edit Partner info of Supplier}
+        pnlPartnerInfo2:
+            Controls: [txtPartnerName]
+            Dock:Top
+        txtPartnerName: {Label=Partner Name, ReadOnly=true}
+        pnlDefaults:
+            Controls: [grpGeneralInformation, grpMiscDefaults]
+            ControlsOrientation: horizontal
+            Dock:Top
+        grpGeneralInformation:
+            Label: General Information
+            Controls: [cmbCurrency, cmbSupplierType]
+        cmbCurrency: {Label=&Currency}
+        cmbSupplierType: {Label=Supplier &Type}
+        grpMiscDefaults:
+            Label: Misc Defaults
+            Controls: [nudInvoiceAging, nudCreditTerms, cmbDefaultPaymentType, nudDiscountDays, txtDiscountValue]
+        grpAccountInformation:
+            Label: Account Information
+            Controls: [cmbAPAccount, cmbDefaultBankAccount, cmbCostCentre, cmbExpenseAccount]
+        cmbAPAccount: {Label=&AP Account, Tooltip=The default AP account to use for this supplier}
+        cmbDefaultBankAccount: {Label=Default &Bank Account, Tooltip=Default Bank Account to use when making payments}
+        cmbCostCentre: {Label=Default C&ost Centre, Tooltip=Default cost centre for invoice detail lines}
+        cmbExpenseAccount: {Label=Default &Expense Account, Tooltip=Default expense account for invoice detail lines}
+        nudInvoiceAging: {Label=Invoice A&ging, LabelUnit=months, Tooltip=How long to display aged invoices and payments}
+        nudCreditTerms: {Label=C&redit Terms, LabelUnit=days, Tooltip=Default credit terms for this supplier}
+        cmbDefaultPaymentType: {Label=Default &Payment Type}
+        nudDiscountDays: {Label=Number of Days for &Discount (0 for none), Tooltip=The default discount for early payments of invoices of this supplier}
+        txtDiscountValue: {Label=Discount &Value (%)}
+

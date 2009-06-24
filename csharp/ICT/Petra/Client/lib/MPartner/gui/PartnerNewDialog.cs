@@ -561,5 +561,14 @@ namespace Ict.Petra.Client.MPartner.Gui
         public void RunOnceOnActivation()
         {
         }
+        
+        /// <summary>
+        /// implemented for IFrmPetra
+        /// </summary>
+        public TFrmPetraUtils GetPetraUtilsObject()
+        {
+            return (TFrmPetraUtils)FPetraUtilsObject;
+        }
+        
     }
 }

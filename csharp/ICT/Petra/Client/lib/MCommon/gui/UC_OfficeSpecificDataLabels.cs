@@ -208,7 +208,7 @@ namespace Ict.Petra.Client.MCommon
         {
             if (this.ParentForm != null)
             {
-                ((IFrmPetraEdit) this.ParentForm).GetPetraUtilsObject().SetChangedFlag();
+                ((TFrmPetraEditUtils)((IFrmPetraEdit) this.ParentForm).GetPetraUtilsObject()).SetChangedFlag();
             }
         }
     }

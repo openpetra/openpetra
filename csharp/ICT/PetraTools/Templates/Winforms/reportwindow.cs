@@ -145,9 +145,9 @@ namespace {#NAMESPACE}
     /// <summary>
     /// access to the utility object
     /// </summary>
-    public {#UTILOBJECTCLASS} GetFrmPetra()
+    public TFrmPetraUtils GetPetraUtilsObject()
     {
-        return ({#UTILOBJECTCLASS})FPetraUtilsObject;
+        return (TFrmPetraUtils)FPetraUtilsObject;
     }
     
     /// <summary>

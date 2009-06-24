@@ -603,15 +603,11 @@ namespace Ict.Petra.Client.MReporting.Gui
         }
 
         /// <summary>
-        /// todoComment
+        /// needed for interface
         /// </summary>
-        /// <returns></returns>
-        public TFrmPetraUtils PetraUtilsObject
+        public TFrmPetraUtils GetPetraUtilsObject()
         {
-            get
-            {
-                return (TFrmPetraUtils)FPetraUtilsObject;
-            }
+            return FPetraUtilsObject;
         }
 
         /// <summary>

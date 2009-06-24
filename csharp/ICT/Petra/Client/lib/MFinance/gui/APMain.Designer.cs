@@ -122,17 +122,29 @@ namespace Ict.Petra.Client.MFinance.Gui
             this.tbbCreateCreditNote = new System.Windows.Forms.ToolStripButton();
             this.mnuMain = new System.Windows.Forms.MenuStrip();
             this.mniFile = new System.Windows.Forms.ToolStripMenuItem();
-            this.mniTodo1 = new System.Windows.Forms.ToolStripMenuItem();
+            this.mniReports = new System.Windows.Forms.ToolStripMenuItem();
+            this.mniReprintPaymentReport = new System.Windows.Forms.ToolStripMenuItem();
+            this.mniSeparator0 = new System.Windows.Forms.ToolStripSeparator();
+            this.mniImport = new System.Windows.Forms.ToolStripMenuItem();
+            this.mniExport = new System.Windows.Forms.ToolStripMenuItem();
+            this.mniSeparator1 = new System.Windows.Forms.ToolStripSeparator();
+            this.mniDefaults = new System.Windows.Forms.ToolStripMenuItem();
+            this.mniSeparator2 = new System.Windows.Forms.ToolStripSeparator();
             this.mniClose = new System.Windows.Forms.ToolStripMenuItem();
             this.mniSupplier = new System.Windows.Forms.ToolStripMenuItem();
-            this.mniTodo2 = new System.Windows.Forms.ToolStripMenuItem();
+            this.mniNewSupplier = new System.Windows.Forms.ToolStripMenuItem();
+            this.mniTransactions = new System.Windows.Forms.ToolStripMenuItem();
+            this.mniEditSupplier = new System.Windows.Forms.ToolStripMenuItem();
+            this.mniSeparator3 = new System.Windows.Forms.ToolStripSeparator();
+            this.mniCreateInvoice = new System.Windows.Forms.ToolStripMenuItem();
+            this.mniCreateCreditNote = new System.Windows.Forms.ToolStripMenuItem();
             this.mniFind = new System.Windows.Forms.ToolStripMenuItem();
-            this.mniTodo3 = new System.Windows.Forms.ToolStripMenuItem();
+            this.mniFindInvoice = new System.Windows.Forms.ToolStripMenuItem();
             this.mniHelp = new System.Windows.Forms.ToolStripMenuItem();
             this.mniHelpPetraHelp = new System.Windows.Forms.ToolStripMenuItem();
-            this.mniSeparator0 = new System.Windows.Forms.ToolStripSeparator();
+            this.mniSeparator4 = new System.Windows.Forms.ToolStripSeparator();
             this.mniHelpBugReport = new System.Windows.Forms.ToolStripMenuItem();
-            this.mniSeparator1 = new System.Windows.Forms.ToolStripSeparator();
+            this.mniSeparator5 = new System.Windows.Forms.ToolStripSeparator();
             this.mniHelpAboutPetra = new System.Windows.Forms.ToolStripMenuItem();
             this.mniHelpDevelopmentTeam = new System.Windows.Forms.ToolStripMenuItem();
             this.stbMain = new Ict.Common.Controls.TExtStatusBarHelp();
@@ -613,7 +625,9 @@ namespace Ict.Petra.Client.MFinance.Gui
             //
             this.tbbEditSupplier.Name = "tbbEditSupplier";
             this.tbbEditSupplier.AutoSize = true;
-            this.tbbEditSupplier.Text = "Edit Supplier";
+            this.tbbEditSupplier.Click += new System.EventHandler(this.tbbEditSupplierClick);
+            this.tbbEditSupplier.ToolTipText = "Change the details and settings of an existing supplier";
+            this.tbbEditSupplier.Text = "&Edit Supplier";
             //
             // tbbSeparator0
             //
@@ -625,7 +639,9 @@ namespace Ict.Petra.Client.MFinance.Gui
             //
             this.tbbNewSupplier.Name = "tbbNewSupplier";
             this.tbbNewSupplier.AutoSize = true;
-            this.tbbNewSupplier.Text = "New Supplier";
+            this.tbbNewSupplier.Click += new System.EventHandler(this.tbbNewSupplierClick);
+            this.tbbNewSupplier.ToolTipText = "Create a new supplier";
+            this.tbbNewSupplier.Text = "&New Supplier";
             //
             // tbbSeparator1
             //
@@ -637,13 +653,15 @@ namespace Ict.Petra.Client.MFinance.Gui
             //
             this.tbbCreateInvoice.Name = "tbbCreateInvoice";
             this.tbbCreateInvoice.AutoSize = true;
-            this.tbbCreateInvoice.Text = "Create Invoice";
+            this.tbbCreateInvoice.Click += new System.EventHandler(this.tbbCreateInvoiceClick);
+            this.tbbCreateInvoice.Text = "Create &Invoice";
             //
             // tbbCreateCreditNote
             //
             this.tbbCreateCreditNote.Name = "tbbCreateCreditNote";
             this.tbbCreateCreditNote.AutoSize = true;
-            this.tbbCreateCreditNote.Text = "Create Credit Note";
+            this.tbbCreateCreditNote.Click += new System.EventHandler(this.tbbCreateCreditNoteClick);
+            this.tbbCreateCreditNote.Text = "Create C&redit Note";
             //
             // tbrMain
             //
@@ -659,11 +677,53 @@ namespace Ict.Petra.Client.MFinance.Gui
                         tbbCreateInvoice,
                         tbbCreateCreditNote});
             //
-            // mniTodo1
+            // mniReports
             //
-            this.mniTodo1.Name = "mniTodo1";
-            this.mniTodo1.AutoSize = true;
-            this.mniTodo1.Text = "todo";
+            this.mniReports.Name = "mniReports";
+            this.mniReports.AutoSize = true;
+            this.mniReports.Text = "&Reports";
+            //
+            // mniReprintPaymentReport
+            //
+            this.mniReprintPaymentReport.Name = "mniReprintPaymentReport";
+            this.mniReprintPaymentReport.AutoSize = true;
+            this.mniReprintPaymentReport.Text = "Reprint Pa&yment Report";
+            //
+            // mniSeparator0
+            //
+            this.mniSeparator0.Name = "mniSeparator0";
+            this.mniSeparator0.AutoSize = true;
+            this.mniSeparator0.Text = "-";
+            //
+            // mniImport
+            //
+            this.mniImport.Name = "mniImport";
+            this.mniImport.AutoSize = true;
+            this.mniImport.Text = "&Import";
+            //
+            // mniExport
+            //
+            this.mniExport.Name = "mniExport";
+            this.mniExport.AutoSize = true;
+            this.mniExport.Text = "&Export";
+            //
+            // mniSeparator1
+            //
+            this.mniSeparator1.Name = "mniSeparator1";
+            this.mniSeparator1.AutoSize = true;
+            this.mniSeparator1.Text = "-";
+            //
+            // mniDefaults
+            //
+            this.mniDefaults.Name = "mniDefaults";
+            this.mniDefaults.AutoSize = true;
+            this.mniDefaults.Text = "AP &Defaults";
+            //
+            // mniSeparator2
+            //
+            this.mniSeparator2.Name = "mniSeparator2";
+            this.mniSeparator2.AutoSize = true;
+            this.mniSeparator2.Text = "-";
             //
             // mniClose
             //
@@ -679,36 +739,87 @@ namespace Ict.Petra.Client.MFinance.Gui
             this.mniFile.Name = "mniFile";
             this.mniFile.AutoSize = true;
             this.mniFile.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-                           mniTodo1,
+                           mniReports,
+                        mniReprintPaymentReport,
+                        mniSeparator0,
+                        mniImport,
+                        mniExport,
+                        mniSeparator1,
+                        mniDefaults,
+                        mniSeparator2,
                         mniClose});
             this.mniFile.Text = "&File";
             //
-            // mniTodo2
+            // mniNewSupplier
             //
-            this.mniTodo2.Name = "mniTodo2";
-            this.mniTodo2.AutoSize = true;
-            this.mniTodo2.Text = "todo";
+            this.mniNewSupplier.Name = "mniNewSupplier";
+            this.mniNewSupplier.AutoSize = true;
+            this.mniNewSupplier.Click += new System.EventHandler(this.mniNewSupplierClick);
+            this.mniNewSupplier.ToolTipText = "Create a new supplier";
+            this.mniNewSupplier.Text = "&New Supplier";
+            //
+            // mniTransactions
+            //
+            this.mniTransactions.Name = "mniTransactions";
+            this.mniTransactions.AutoSize = true;
+            this.mniTransactions.Click += new System.EventHandler(this.mniTransactionsClick);
+            this.mniTransactions.ToolTipText = "Open the transactions of the supplier";
+            this.mniTransactions.Text = "Open Transactions";
+            //
+            // mniEditSupplier
+            //
+            this.mniEditSupplier.Name = "mniEditSupplier";
+            this.mniEditSupplier.AutoSize = true;
+            this.mniEditSupplier.Click += new System.EventHandler(this.mniEditSupplierClick);
+            this.mniEditSupplier.ToolTipText = "Change the details and settings of an existing supplier";
+            this.mniEditSupplier.Text = "&Edit Supplier";
+            //
+            // mniSeparator3
+            //
+            this.mniSeparator3.Name = "mniSeparator3";
+            this.mniSeparator3.AutoSize = true;
+            this.mniSeparator3.Text = "-";
+            //
+            // mniCreateInvoice
+            //
+            this.mniCreateInvoice.Name = "mniCreateInvoice";
+            this.mniCreateInvoice.AutoSize = true;
+            this.mniCreateInvoice.Click += new System.EventHandler(this.mniCreateInvoiceClick);
+            this.mniCreateInvoice.Text = "Create &Invoice";
+            //
+            // mniCreateCreditNote
+            //
+            this.mniCreateCreditNote.Name = "mniCreateCreditNote";
+            this.mniCreateCreditNote.AutoSize = true;
+            this.mniCreateCreditNote.Click += new System.EventHandler(this.mniCreateCreditNoteClick);
+            this.mniCreateCreditNote.Text = "Create C&redit Note";
             //
             // mniSupplier
             //
             this.mniSupplier.Name = "mniSupplier";
             this.mniSupplier.AutoSize = true;
             this.mniSupplier.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-                           mniTodo2});
+                           mniNewSupplier,
+                        mniTransactions,
+                        mniEditSupplier,
+                        mniSeparator3,
+                        mniCreateInvoice,
+                        mniCreateCreditNote});
             this.mniSupplier.Text = "Supplier";
             //
-            // mniTodo3
+            // mniFindInvoice
             //
-            this.mniTodo3.Name = "mniTodo3";
-            this.mniTodo3.AutoSize = true;
-            this.mniTodo3.Text = "todo";
+            this.mniFindInvoice.Name = "mniFindInvoice";
+            this.mniFindInvoice.AutoSize = true;
+            this.mniFindInvoice.Click += new System.EventHandler(this.mniFindInvoiceClick);
+            this.mniFindInvoice.Text = "&Find Invoice...";
             //
             // mniFind
             //
             this.mniFind.Name = "mniFind";
             this.mniFind.AutoSize = true;
             this.mniFind.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-                           mniTodo3});
+                           mniFindInvoice});
             this.mniFind.Text = "Find";
             //
             // mniHelpPetraHelp
@@ -717,11 +828,11 @@ namespace Ict.Petra.Client.MFinance.Gui
             this.mniHelpPetraHelp.AutoSize = true;
             this.mniHelpPetraHelp.Text = "&Petra Help";
             //
-            // mniSeparator0
+            // mniSeparator4
             //
-            this.mniSeparator0.Name = "mniSeparator0";
-            this.mniSeparator0.AutoSize = true;
-            this.mniSeparator0.Text = "-";
+            this.mniSeparator4.Name = "mniSeparator4";
+            this.mniSeparator4.AutoSize = true;
+            this.mniSeparator4.Text = "-";
             //
             // mniHelpBugReport
             //
@@ -729,11 +840,11 @@ namespace Ict.Petra.Client.MFinance.Gui
             this.mniHelpBugReport.AutoSize = true;
             this.mniHelpBugReport.Text = "Bug &Report";
             //
-            // mniSeparator1
+            // mniSeparator5
             //
-            this.mniSeparator1.Name = "mniSeparator1";
-            this.mniSeparator1.AutoSize = true;
-            this.mniSeparator1.Text = "-";
+            this.mniSeparator5.Name = "mniSeparator5";
+            this.mniSeparator5.AutoSize = true;
+            this.mniSeparator5.Text = "-";
             //
             // mniHelpAboutPetra
             //
@@ -753,9 +864,9 @@ namespace Ict.Petra.Client.MFinance.Gui
             this.mniHelp.AutoSize = true;
             this.mniHelp.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
                            mniHelpPetraHelp,
-                        mniSeparator0,
+                        mniSeparator4,
                         mniHelpBugReport,
-                        mniSeparator1,
+                        mniSeparator5,
                         mniHelpAboutPetra,
                         mniHelpDevelopmentTeam});
             this.mniHelp.Text = "&Help";
@@ -876,17 +987,29 @@ namespace Ict.Petra.Client.MFinance.Gui
         private System.Windows.Forms.ToolStripButton tbbCreateCreditNote;
         private System.Windows.Forms.MenuStrip mnuMain;
         private System.Windows.Forms.ToolStripMenuItem mniFile;
-        private System.Windows.Forms.ToolStripMenuItem mniTodo1;
+        private System.Windows.Forms.ToolStripMenuItem mniReports;
+        private System.Windows.Forms.ToolStripMenuItem mniReprintPaymentReport;
+        private System.Windows.Forms.ToolStripSeparator mniSeparator0;
+        private System.Windows.Forms.ToolStripMenuItem mniImport;
+        private System.Windows.Forms.ToolStripMenuItem mniExport;
+        private System.Windows.Forms.ToolStripSeparator mniSeparator1;
+        private System.Windows.Forms.ToolStripMenuItem mniDefaults;
+        private System.Windows.Forms.ToolStripSeparator mniSeparator2;
         private System.Windows.Forms.ToolStripMenuItem mniClose;
         private System.Windows.Forms.ToolStripMenuItem mniSupplier;
-        private System.Windows.Forms.ToolStripMenuItem mniTodo2;
+        private System.Windows.Forms.ToolStripMenuItem mniNewSupplier;
+        private System.Windows.Forms.ToolStripMenuItem mniTransactions;
+        private System.Windows.Forms.ToolStripMenuItem mniEditSupplier;
+        private System.Windows.Forms.ToolStripSeparator mniSeparator3;
+        private System.Windows.Forms.ToolStripMenuItem mniCreateInvoice;
+        private System.Windows.Forms.ToolStripMenuItem mniCreateCreditNote;
         private System.Windows.Forms.ToolStripMenuItem mniFind;
-        private System.Windows.Forms.ToolStripMenuItem mniTodo3;
+        private System.Windows.Forms.ToolStripMenuItem mniFindInvoice;
         private System.Windows.Forms.ToolStripMenuItem mniHelp;
         private System.Windows.Forms.ToolStripMenuItem mniHelpPetraHelp;
-        private System.Windows.Forms.ToolStripSeparator mniSeparator0;
+        private System.Windows.Forms.ToolStripSeparator mniSeparator4;
         private System.Windows.Forms.ToolStripMenuItem mniHelpBugReport;
-        private System.Windows.Forms.ToolStripSeparator mniSeparator1;
+        private System.Windows.Forms.ToolStripSeparator mniSeparator5;
         private System.Windows.Forms.ToolStripMenuItem mniHelpAboutPetra;
         private System.Windows.Forms.ToolStripMenuItem mniHelpDevelopmentTeam;
         private Ict.Common.Controls.TExtStatusBarHelp stbMain;

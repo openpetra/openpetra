@@ -12,6 +12,30 @@ RootNode:
             Label: Open Transactions
             ActionClick: SupplierTransactions
             Tooltip: Open the transactions of the supplier
+            ShortCut: Ctrl+O
+            Active: {ValidRowInGrid=grdSupplierResult}
+        actNewSupplier:
+            Label: &New Supplier
+            ActionClick: NewSupplier
+            Tooltip: Create a new supplier
+            ShortCut: Ctrl+N
+        actEditSupplier:
+            Label: &Edit Supplier
+            ActionClick: EditSupplier
+            Tooltip: Change the details and settings of an existing supplier
+            ShortCut: Ctrl+E
+            Active: {ValidRowInGrid=grdSupplierResult}
+        actCreateInvoice:
+            Label: Create &Invoice
+            ShortCut: Ctrl+I
+            Active: {ValidRowInGrid=grdSupplierResult}
+        actCreateCreditNote:
+            Label: Create C&redit Note
+            ShortCut: Ctrl+R
+            Active: {ValidRowInGrid=grdSupplierResult}
+        actFindInvoice:
+            Label: &Find Invoice...
+            ShortCut: Ctrl+F
     Controls:
         pnlContent:
             Dock: Fill
@@ -48,8 +72,10 @@ RootNode:
             Controls: [tpgSuppliers, tpgOutstandingInvoices]
             Dock: Fill
         tpgSuppliers:
+            # todo: different toolbar
             Controls: [pnlSupplierOptions, grdSupplierResult]
         tpgOutstandingInvoices:
+            # todo: different toolbar
             Controls: [pnlTaggingOptions, grdInvoiceResult]
         pnlSupplierOptions:
             Controls: [chkShowOutstandingAmounts, chkHideInactiveSuppliers, cmbSupplierCurrency]
@@ -69,16 +95,29 @@ RootNode:
         txtSumTagged: {Label=Sum of Tagged, ReadOnly=true}
     Menu:
         mniFile:
-            mniTodo1: {Label=todo}
+            mniReports: {Label=&Reports}
+            mniReprintPaymentReport: {Label=Reprint Pa&yment Report}
+            mniSeparator: {Label=-}
+            mniImport: {Label=&Import}
+            mniExport: {Label=&Export}
+            mniSeparator: {Label=-}
+            mniDefaults: {Label=AP &Defaults}
+            mniSeparator: {Label=-}
         mniSupplier:
-            mniTodo2: {Label=todo}
+            mniNewSupplier: {Action=actNewSupplier}
+            mniTransactions: {Action=actSupplierTransactions}
+            mniEditSupplier: {Action=actEditSupplier}
+            mniSeparator: {Label=-}
+            mniCreateInvoice: {Action=actCreateInvoice}
+            mniCreateCreditNote: {Action=actCreateCreditNote}
         mniFind:
-            mniTodo3: {Label=todo}
+            mniFindInvoice: {Action=actFindInvoice}
+    # todo: multiple toolbars, depending on selected tpg?
     Toolbar:
         tbbTransactions: {Action=actSupplierTransactions}
-        tbbEditSupplier: {Label=Edit Supplier}
+        tbbEditSupplier: {Action=actEditSupplier}
         tbbSeparator: {Label=-}
-        tbbNewSupplier: {Label=New Supplier}
+        tbbNewSupplier: {Action=actNewSupplier}
         tbbSeparator: {Label=-}
-        tbbCreateInvoice: {Label=Create Invoice}
-        tbbCreateCreditNote: {Label=Create Credit Note}
+        tbbCreateInvoice: {Action=actCreateInvoice}
+        tbbCreateCreditNote: {Action=actCreateCreditNote}

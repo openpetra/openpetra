@@ -83,17 +83,30 @@ namespace Ict.Petra.Client.MFinance.Gui
       this.tpgOutstandingInvoices.Text = Catalog.GetString("OutstandingInvoices");
       this.tbbTransactions.ToolTipText = Catalog.GetString("Open the transactions of the supplier");
       this.tbbTransactions.Text = Catalog.GetString("Open Transactions");
-      this.tbbEditSupplier.Text = Catalog.GetString("Edit Supplier");
-      this.tbbNewSupplier.Text = Catalog.GetString("New Supplier");
-      this.tbbCreateInvoice.Text = Catalog.GetString("Create Invoice");
-      this.tbbCreateCreditNote.Text = Catalog.GetString("Create Credit Note");
-      this.mniTodo1.Text = Catalog.GetString("todo");
+      this.tbbEditSupplier.ToolTipText = Catalog.GetString("Change the details and settings of an existing supplier");
+      this.tbbEditSupplier.Text = Catalog.GetString("&Edit Supplier");
+      this.tbbNewSupplier.ToolTipText = Catalog.GetString("Create a new supplier");
+      this.tbbNewSupplier.Text = Catalog.GetString("&New Supplier");
+      this.tbbCreateInvoice.Text = Catalog.GetString("Create &Invoice");
+      this.tbbCreateCreditNote.Text = Catalog.GetString("Create C&redit Note");
+      this.mniReports.Text = Catalog.GetString("&Reports");
+      this.mniReprintPaymentReport.Text = Catalog.GetString("Reprint Pa&yment Report");
+      this.mniImport.Text = Catalog.GetString("&Import");
+      this.mniExport.Text = Catalog.GetString("&Export");
+      this.mniDefaults.Text = Catalog.GetString("AP &Defaults");
       this.mniClose.ToolTipText = Catalog.GetString("Closes this window");
       this.mniClose.Text = Catalog.GetString("&Close");
       this.mniFile.Text = Catalog.GetString("&File");
-      this.mniTodo2.Text = Catalog.GetString("todo");
+      this.mniNewSupplier.ToolTipText = Catalog.GetString("Create a new supplier");
+      this.mniNewSupplier.Text = Catalog.GetString("&New Supplier");
+      this.mniTransactions.ToolTipText = Catalog.GetString("Open the transactions of the supplier");
+      this.mniTransactions.Text = Catalog.GetString("Open Transactions");
+      this.mniEditSupplier.ToolTipText = Catalog.GetString("Change the details and settings of an existing supplier");
+      this.mniEditSupplier.Text = Catalog.GetString("&Edit Supplier");
+      this.mniCreateInvoice.Text = Catalog.GetString("Create &Invoice");
+      this.mniCreateCreditNote.Text = Catalog.GetString("Create C&redit Note");
       this.mniSupplier.Text = Catalog.GetString("Supplier");
-      this.mniTodo3.Text = Catalog.GetString("todo");
+      this.mniFindInvoice.Text = Catalog.GetString("&Find Invoice...");
       this.mniFind.Text = Catalog.GetString("Find");
       this.mniHelpPetraHelp.Text = Catalog.GetString("&Petra Help");
       this.mniHelpBugReport.Text = Catalog.GetString("Bug &Report");
@@ -122,9 +135,59 @@ namespace Ict.Petra.Client.MFinance.Gui
         actSupplierTransactions(sender, e);
     }
 
+    private void tbbEditSupplierClick(object sender, EventArgs e)
+    {
+        actEditSupplier(sender, e);
+    }
+
+    private void tbbNewSupplierClick(object sender, EventArgs e)
+    {
+        actNewSupplier(sender, e);
+    }
+
+    private void tbbCreateInvoiceClick(object sender, EventArgs e)
+    {
+        actCreateInvoice(sender, e);
+    }
+
+    private void tbbCreateCreditNoteClick(object sender, EventArgs e)
+    {
+        actCreateCreditNote(sender, e);
+    }
+
     private void mniCloseClick(object sender, EventArgs e)
     {
         actClose(sender, e);
+    }
+
+    private void mniNewSupplierClick(object sender, EventArgs e)
+    {
+        actNewSupplier(sender, e);
+    }
+
+    private void mniTransactionsClick(object sender, EventArgs e)
+    {
+        actSupplierTransactions(sender, e);
+    }
+
+    private void mniEditSupplierClick(object sender, EventArgs e)
+    {
+        actEditSupplier(sender, e);
+    }
+
+    private void mniCreateInvoiceClick(object sender, EventArgs e)
+    {
+        actCreateInvoice(sender, e);
+    }
+
+    private void mniCreateCreditNoteClick(object sender, EventArgs e)
+    {
+        actCreateCreditNote(sender, e);
+    }
+
+    private void mniFindInvoiceClick(object sender, EventArgs e)
+    {
+        actFindInvoice(sender, e);
     }
 
     private void TFrmPetra_Activated(object sender, EventArgs e)
@@ -176,9 +239,9 @@ namespace Ict.Petra.Client.MFinance.Gui
     }
 
     /// auto generated
-    public Ict.Petra.Client.CommonForms.TFrmPetraUtils GetUtilObject()
+    public TFrmPetraUtils GetPetraUtilsObject()
     {
-        return (Ict.Petra.Client.CommonForms.TFrmPetraUtils)FPetraUtilsObject;
+        return (TFrmPetraUtils)FPetraUtilsObject;
     }
 #endregion
 
@@ -191,17 +254,63 @@ namespace Ict.Petra.Client.MFinance.Gui
         {
             tbbTransactions.Enabled = e.Enabled;
         }
-        mniTodo1.Enabled = false;
+        if (e.ActionName == "actEditSupplier")
+        {
+            tbbEditSupplier.Enabled = e.Enabled;
+        }
+        if (e.ActionName == "actNewSupplier")
+        {
+            tbbNewSupplier.Enabled = e.Enabled;
+        }
+        if (e.ActionName == "actCreateInvoice")
+        {
+            tbbCreateInvoice.Enabled = e.Enabled;
+        }
+        if (e.ActionName == "actCreateCreditNote")
+        {
+            tbbCreateCreditNote.Enabled = e.Enabled;
+        }
+        mniReports.Enabled = false;
+        mniReprintPaymentReport.Enabled = false;
+        mniSeparator0.Enabled = false;
+        mniImport.Enabled = false;
+        mniExport.Enabled = false;
+        mniSeparator1.Enabled = false;
+        mniDefaults.Enabled = false;
+        mniSeparator2.Enabled = false;
         if (e.ActionName == "actClose")
         {
             mniClose.Enabled = e.Enabled;
         }
-        mniTodo2.Enabled = false;
-        mniTodo3.Enabled = false;
+        if (e.ActionName == "actNewSupplier")
+        {
+            mniNewSupplier.Enabled = e.Enabled;
+        }
+        if (e.ActionName == "actSupplierTransactions")
+        {
+            mniTransactions.Enabled = e.Enabled;
+        }
+        if (e.ActionName == "actEditSupplier")
+        {
+            mniEditSupplier.Enabled = e.Enabled;
+        }
+        mniSeparator3.Enabled = false;
+        if (e.ActionName == "actCreateInvoice")
+        {
+            mniCreateInvoice.Enabled = e.Enabled;
+        }
+        if (e.ActionName == "actCreateCreditNote")
+        {
+            mniCreateCreditNote.Enabled = e.Enabled;
+        }
+        if (e.ActionName == "actFindInvoice")
+        {
+            mniFindInvoice.Enabled = e.Enabled;
+        }
         mniHelpPetraHelp.Enabled = false;
-        mniSeparator0.Enabled = false;
+        mniSeparator4.Enabled = false;
         mniHelpBugReport.Enabled = false;
-        mniSeparator1.Enabled = false;
+        mniSeparator5.Enabled = false;
         mniHelpAboutPetra.Enabled = false;
         mniHelpDevelopmentTeam.Enabled = false;
     }
@@ -210,6 +319,36 @@ namespace Ict.Petra.Client.MFinance.Gui
     protected void actSupplierTransactions(object sender, EventArgs e)
     {
         SupplierTransactions(sender, e);
+    }
+
+    /// auto generated
+    protected void actNewSupplier(object sender, EventArgs e)
+    {
+        NewSupplier(sender, e);
+    }
+
+    /// auto generated
+    protected void actEditSupplier(object sender, EventArgs e)
+    {
+        EditSupplier(sender, e);
+    }
+
+    /// auto generated
+    protected void actCreateInvoice(object sender, EventArgs e)
+    {
+        // TODO action actCreateInvoice
+    }
+
+    /// auto generated
+    protected void actCreateCreditNote(object sender, EventArgs e)
+    {
+        // TODO action actCreateCreditNote
+    }
+
+    /// auto generated
+    protected void actFindInvoice(object sender, EventArgs e)
+    {
+        // TODO action actFindInvoice
     }
 
     /// auto generated

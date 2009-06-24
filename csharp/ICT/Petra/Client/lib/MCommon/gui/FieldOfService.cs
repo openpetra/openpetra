@@ -253,7 +253,7 @@ namespace Ict.Petra.Client.MCommon
         /// <summary>
         /// needed for interface
         /// </summary>
-        public TFrmPetraEditUtils GetPetraUtilsObject()
+        public TFrmPetraUtils GetPetraUtilsObject()
         {
             return FTheObject;
         }

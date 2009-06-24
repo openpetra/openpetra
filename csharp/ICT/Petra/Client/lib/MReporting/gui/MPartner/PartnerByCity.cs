@@ -216,9 +216,9 @@ namespace Ict.Petra.Client.MReporting.Gui.MPartner
     /// <summary>
     /// access to the utility object
     /// </summary>
-    public TFrmPetraReportingUtils GetFrmPetra()
+    public TFrmPetraUtils GetPetraUtilsObject()
     {
-        return (TFrmPetraReportingUtils)FPetraUtilsObject;
+        return (TFrmPetraUtils)FPetraUtilsObject;
     }
 
     /// <summary>
