@@ -64,7 +64,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Ict.Petra.Shared.Interfaces
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Ict.Petra.Shared.Interfaces.Plugins", "Petra\Shared\lib\Interfaces\Ict.Petra.Shared.Interfaces.Plugins.csproj", "{D49D7F5A-5137-4984-B653-AC511D48B913}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Ict.Petra.Shared.MFinance.DataSets", "Petra\Shared\lib\MFinance\data\Ict.Petra.Shared.MFinance.DataSets.csproj", "B8AACF21-2B9B-4CA3-8232-3DCE1E73C5C1"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Ict.Petra.Shared.MFinance.DataSets", "Petra\Shared\lib\MFinance\data\Ict.Petra.Shared.MFinance.DataSets.csproj", "{B8AACF21-2B9B-4CA3-8232-3DCE1E73C5C1}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -196,9 +196,9 @@ Global
 		{D49D7F5A-5137-4984-B653-AC511D48B913}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{D49D7F5A-5137-4984-B653-AC511D48B913}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{D49D7F5A-5137-4984-B653-AC511D48B913}.Release|Any CPU.Build.0 = Release|Any CPU
-		B8AACF21-2B9B-4CA3-8232-3DCE1E73C5C1.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		B8AACF21-2B9B-4CA3-8232-3DCE1E73C5C1.Debug|Any CPU.Build.0 = Debug|Any CPU
-		B8AACF21-2B9B-4CA3-8232-3DCE1E73C5C1.Release|Any CPU.ActiveCfg = Release|Any CPU
-		B8AACF21-2B9B-4CA3-8232-3DCE1E73C5C1.Release|Any CPU.Build.0 = Release|Any CPU
+		{B8AACF21-2B9B-4CA3-8232-3DCE1E73C5C1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B8AACF21-2B9B-4CA3-8232-3DCE1E73C5C1}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B8AACF21-2B9B-4CA3-8232-3DCE1E73C5C1}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B8AACF21-2B9B-4CA3-8232-3DCE1E73C5C1}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal

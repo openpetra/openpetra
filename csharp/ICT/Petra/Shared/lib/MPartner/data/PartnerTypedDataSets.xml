@@ -56,7 +56,7 @@
             <CustomField name="OfficeSpecificDataLabelsAvailable" type="boolean"/>
             <CustomField name="FoundationOwner1Key" type="int64"/>
             <CustomField name="FoundationOwner2Key" type="int64"/>
-            <CustomField name="HasEXOMERPartnerType" type="boolean"/>
+            <CustomField name="HasEXWORKERPartnerType" type="boolean"/>
             <primarykey thisFields="PartnerKey"/>
         </CustomTable>
         <CustomTable name="FamilyMembers">
