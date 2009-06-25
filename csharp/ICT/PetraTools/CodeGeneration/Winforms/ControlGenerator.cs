@@ -33,8 +33,6 @@ using Ict.Common.Controls;
 using Ict.Common.IO;
 using Ict.Common;
 
-//using Ict.Petra.Client.CommonControls;
-
 namespace Ict.Tools.CodeGeneration.Winforms
 {
     public class LabelGenerator : TControlGenerator
@@ -179,12 +177,32 @@ namespace Ict.Tools.CodeGeneration.Winforms
             : base("cmb", typeof(TCmbAutoComplete))
         {
         }
+
+        protected override string AssignValue(TControlDef ctrl, string AFieldOrNull, string AFieldTypeDotNet)
+        {
+            if (AFieldOrNull == null)
+            {
+                return ctrl.controlName + ".SelectedIndex = -1;";
+            }
+
+            return ctrl.controlName + ".SelectedValue = " + AFieldOrNull + ";";
+        }
     }
     public class ComboBoxGenerator : TControlGenerator
     {
         public ComboBoxGenerator()
             : base("cmb", typeof(ComboBox))
         {
+        }
+
+        protected override string AssignValue(TControlDef ctrl, string AFieldOrNull, string AFieldTypeDotNet)
+        {
+            if (AFieldOrNull == null)
+            {
+                return ctrl.controlName + ".SelectedIndex = -1;";
+            }
+
+            return ctrl.controlName + ".SelectedValue = " + AFieldOrNull + ";";
         }
     }
     public class CheckBoxGenerator : TControlGenerator
@@ -277,17 +295,33 @@ namespace Ict.Tools.CodeGeneration.Winforms
             return false;
         }
 
+        protected override string AssignValue(TControlDef ctrl, string AFieldOrNull, string AFieldTypeDotNet)
+        {
+            if (AFieldOrNull == null)
+            {
+                return ctrl.controlName + ".Text = String.Empty;";
+            }
+
+            if (!AFieldTypeDotNet.ToLower().Contains("string"))
+            {
+                return ctrl.controlName + ".Text = " + AFieldOrNull + ".ToString();";
+            }
+
+            return ctrl.controlName + ".Text = " + AFieldOrNull + ";";
+        }
+
         public override void SetControlProperties(IFormWriter writer, TControlDef ctrl)
         {
             base.SetControlProperties(writer, ctrl);
 
-            if (TYml2Xml.HasAttribute(ctrl.xmlNode, "ReadOnly") 
-                && TYml2Xml.GetAttribute(ctrl.xmlNode, "ReadOnly").ToLower() == "true")
+            if (TYml2Xml.HasAttribute(ctrl.xmlNode, "ReadOnly")
+                && (TYml2Xml.GetAttribute(ctrl.xmlNode, "ReadOnly").ToLower() == "true"))
             {
                 writer.SetControlProperty(ctrl.controlName,
                     "ReadOnly",
                     "true");
             }
+
             if (TYml2Xml.HasAttribute(ctrl.xmlNode, "DefaultValue"))
             {
                 writer.SetControlProperty(ctrl.controlName,
@@ -303,6 +337,16 @@ namespace Ict.Tools.CodeGeneration.Winforms
             : base("nud", typeof(NumericUpDown))
         {
         }
+
+        protected override string AssignValue(TControlDef ctrl, string AFieldOrNull, string AFieldTypeDotNet)
+        {
+            if (AFieldOrNull == null)
+            {
+                return ctrl.controlName + ".Value = 0;";
+            }
+
+            return ctrl.controlName + ".Value = " + AFieldOrNull + ";";
+        }
     }
     public class GridGenerator : TControlGenerator
     {
@@ -313,13 +357,12 @@ namespace Ict.Tools.CodeGeneration.Winforms
         }
     }
 
-#if TODO
-    public class TtxtAutoPopulatedButtonLabelGenerator : TControlGenerator
+    public class TTxtAutoPopulatedButtonLabelGenerator : TControlGenerator
     {
         String FButtonLabelType = "";
 
-        public TtxtAutoPopulatedButtonLabelGenerator()
-            : base("txt", typeof(TtxtAutoPopulatedButtonLabel))
+        public TTxtAutoPopulatedButtonLabelGenerator()
+            : base("txt", "Ict.Petra.Client.CommonControls.TtxtAutoPopulatedButtonLabel")
         {
         }
 
@@ -342,34 +385,48 @@ namespace Ict.Tools.CodeGeneration.Winforms
             return false;
         }
 
+        protected override string AssignValue(TControlDef ctrl, string AFieldOrNull, string AFieldTypeDotNet)
+        {
+            if (AFieldOrNull == null)
+            {
+                return ctrl.controlName + ".Text = String.Empty;";
+            }
+
+            return ctrl.controlName + ".Text = String.Format(\"{0:0000000000}\", " + AFieldOrNull + ");";
+        }
+
         public override void SetControlProperties(IFormWriter writer, TControlDef ctrl)
         {
             string ControlName = ctrl.controlName;
             Int32 buttonWidth = 40, textBoxWidth = 80;
 
             base.SetControlProperties(writer, ctrl);
-            writer.SetControlProperty(ControlName, "ASpecialSetting", "true");
-            writer.SetControlProperty(ControlName, "ButtonTextAlign", "System.Drawing.ContentAlignment.MiddleCenter");
-            writer.SetControlProperty(ControlName, "ButtonWidth", buttonWidth.ToString());
-            writer.SetControlProperty(ControlName, "MaxLength", "32767");
-            writer.SetControlProperty(ControlName, "ReadOnly", "false");
-            writer.SetControlProperty(ControlName, "TextBoxWidth", textBoxWidth.ToString());
-            writer.SetControlProperty(ControlName,
-                "Font",
-                "new System.Drawing.Font(\"Verdana\", 8.25f, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, (byte)0)");
-            writer.SetControlProperty(ControlName, "ListTable", "TtxtAutoPopulatedButtonLabel.TListTableEnum." + FButtonLabelType);
-            writer.SetControlProperty(ControlName, "PartnerClass", "\"\"");
-            writer.SetControlProperty(ControlName, "Tag", "\"CustomDisableAlthoughInvisible\"");
-            writer.SetControlProperty(ControlName, "ButtonText", "\"Find\"");
 
-            // TODO for all (or most) controls add events and event handler
-            writer.SetEventHandlerToControl(ControlName, "Click");
+            if (!(ctrl.HasAttribute("ReadOnly") && (ctrl.GetAttribute("ReadOnly").ToLower() == "true")))
+            {
+                writer.SetControlProperty(ControlName, "ASpecialSetting", "true");
+                writer.SetControlProperty(ControlName, "ButtonTextAlign", "System.Drawing.ContentAlignment.MiddleCenter");
+                writer.SetControlProperty(ControlName, "ButtonWidth", buttonWidth.ToString());
+                writer.SetControlProperty(ControlName, "MaxLength", "32767");
+                writer.SetControlProperty(ControlName, "ReadOnly", "false");
+                writer.SetControlProperty(ControlName, "TextBoxWidth", textBoxWidth.ToString());
+                writer.SetControlProperty(ControlName,
+                    "Font",
+                    "new System.Drawing.Font(\"Verdana\", 8.25f, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, (byte)0)");
+                writer.SetControlProperty(ControlName, "ListTable", "TtxtAutoPopulatedButtonLabel.TListTableEnum." + FButtonLabelType);
+                writer.SetControlProperty(ControlName, "PartnerClass", "\"\"");
+                writer.SetControlProperty(ControlName, "Tag", "\"CustomDisableAlthoughInvisible\"");
+                writer.SetControlProperty(ControlName, "ButtonText", "\"Find\"");
 
-            string EventHandlerImplementation = "\t" + ControlName + ".Select();";
-            writer.SetEventHandlerFunction(ControlName, "Click", EventHandlerImplementation);
+                // TODO for all (or most) controls add events and event handler
+                writer.SetEventHandlerToControl(ControlName, "Click");
+
+                string EventHandlerImplementation = "\t" + ControlName + ".Select();";
+                writer.SetEventHandlerFunction(ControlName, "Click", EventHandlerImplementation);
+            }
         }
     }
-#endif
+
     public class TabControlGenerator : ContainerGenerator
     {
         public TabControlGenerator()
@@ -481,11 +538,12 @@ namespace Ict.Tools.CodeGeneration.Winforms
                 }
 
                 StringCollection ControlsReverse = new StringCollection();
+
                 foreach (string ChildControlName in Controls)
                 {
                     ControlsReverse.Insert(0, ChildControlName);
                 }
-                
+
                 foreach (string ChildControlName in ControlsReverse)
                 {
                     TControlDef ChildControl = ctrl.FCodeStorage.GetControl(ChildControlName);
@@ -869,9 +927,10 @@ namespace Ict.Tools.CodeGeneration.Winforms
                 writer.SetEventHandlerFunction(ctrl.controlName, "Click", ActionToPerform + "(sender, e);");
 
                 SetControlActionProperties(writer, ctrl, ActionHandler);
-                
+
                 Label = ActionHandler.actionLabel;
             }
+
             writer.SetControlProperty(ctrl.controlName, "Text", "\"" + Label + "\"");
         }
     }

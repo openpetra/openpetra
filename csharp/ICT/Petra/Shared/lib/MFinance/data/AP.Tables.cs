@@ -22,7 +22,7 @@ namespace Ict.Petra.Shared.MFinance.AP.Data
         /// Reference to the partner key for this supplier
         public DataColumn ColumnPartnerKey;
         
-        /// Preferred number of days to display invoices before removing it from the screen
+        /// Number of months to display invoices and credit notes
         public DataColumn ColumnPreferredScreenDisplay;
         
         /// Reference to default bank account to use to pay supplier with.
@@ -31,10 +31,10 @@ namespace Ict.Petra.Shared.MFinance.AP.Data
         /// The default type of payment to use when paying this supplier.
         public DataColumn ColumnPaymentType;
         
-        /// Reference to the currency code to use for this supplier.
+        /// The currency code to use for this supplier.
         public DataColumn ColumnCurrencyCode;
         
-        /// Reference to the default AP Account to use when paying this supplier.
+        /// The default AP Account to use when paying this supplier.
         public DataColumn ColumnDefaultApAccount;
         
         /// Default credit terms to use for invoices from this supplier.
@@ -124,7 +124,7 @@ namespace Ict.Petra.Shared.MFinance.AP.Data
         /// get help text for column
         public static string GetPreferredScreenDisplayHelp()
         {
-            return "Preferred number of days to display invoices before removing it from the screen";
+            return "Number of months to display invoices and credit notes";
         }
         
         /// get label of column
@@ -190,7 +190,7 @@ namespace Ict.Petra.Shared.MFinance.AP.Data
         /// get help text for column
         public static string GetCurrencyCodeHelp()
         {
-            return "Reference to the currency code to use for this supplier.";
+            return "The currency code to use for this supplier.";
         }
         
         /// get label of column
@@ -214,7 +214,7 @@ namespace Ict.Petra.Shared.MFinance.AP.Data
         /// get help text for column
         public static string GetDefaultApAccountHelp()
         {
-            return "Reference to the default AP Account to use when paying this supplier.";
+            return "The default AP Account to use when paying this supplier.";
         }
         
         /// get label of column
@@ -719,7 +719,7 @@ namespace Ict.Petra.Shared.MFinance.AP.Data
             }
         }
         
-        /// Preferred number of days to display invoices before removing it from the screen
+        /// Number of months to display invoices and credit notes
         public Int32 PreferredScreenDisplay
         {
             get
@@ -797,7 +797,7 @@ namespace Ict.Petra.Shared.MFinance.AP.Data
             }
         }
         
-        /// Reference to the currency code to use for this supplier.
+        /// The currency code to use for this supplier.
         public String CurrencyCode
         {
             get
@@ -823,7 +823,7 @@ namespace Ict.Petra.Shared.MFinance.AP.Data
             }
         }
         
-        /// Reference to the default AP Account to use when paying this supplier.
+        /// The default AP Account to use when paying this supplier.
         public String DefaultApAccount
         {
             get

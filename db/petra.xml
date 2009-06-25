@@ -14177,7 +14177,7 @@ been processed in an ilt processing centre"
                 label="Partner Key"/>
     <tablefield name="a_preferred_screen_display_i"
                 type="integer"
-                descr="Preferred number of days to display invoices before removing it from the screen"
+                descr="Number of months to display invoices and credit notes"
                 format=""
                 label="Preferred Screen Display"/>
     <tablefield name="a_default_bank_account_c"
@@ -14192,13 +14192,13 @@ been processed in an ilt processing centre"
                 label="Default Payment Type"/>
     <tablefield name="a_currency_code_c"
                 type="varchar"
-                descr="Reference to the currency code to use for this supplier."
+                descr="The currency code to use for this supplier."
                 format="X(8)"
                 notnull="yes"
                 label="Currency"/>
     <tablefield name="a_default_ap_account_c"
                 type="varchar"
-                descr="Reference to the default AP Account to use when paying this supplier."
+                descr="The default AP Account to use when paying this supplier."
                 format="X(8)"
                 label="Default AP Account"/>
     <tablefield name="a_default_credit_terms_i"

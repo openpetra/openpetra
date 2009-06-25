@@ -68,5 +68,9 @@
       <Project>{4034693D-4D16-4123-9FCC-C990448E63F3}</Project>
       <Name>Ict.Tools.CodeGeneration.Winforms</Name>
     </ProjectReference>
+    <ProjectReference Include="..\PetraXMLProcessor\Ict.Tools.DBXML.csproj">
+      <Project>{69E21FFC-F815-451A-96BB-66499CDDEB6E}</Project>
+      <Name>Ict.Tools.DBXML</Name>
+    </ProjectReference>
   </ItemGroup>
 </Project>

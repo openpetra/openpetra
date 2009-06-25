@@ -37,18 +37,54 @@ using Ict.Common;
 using Ict.Petra.Client.App.Core;
 using Ict.Common.Controls;
 using Ict.Petra.Client.CommonForms;
+using Ict.Petra.Shared.MFinance.AP.Data;
+using Ict.Petra.Client.App.Core.RemoteObjects;
 
 namespace Ict.Petra.Client.MFinance.Gui
 {
     public partial class TFrmAccountsPayableEditSupplier
     {
+        AccountsPayableTDS FMainDS;
+
         /// <summary>
         /// todoComment
         /// </summary>
         public void InitializeManualCode()
         {
+            FMainDS = new AccountsPayableTDS();
         }
-        
+
+        /// <summary>
+        /// called from APMain when adding new supplier;
+        /// initialises a new dataset
+        /// </summary>
+        /// <param name="APartnerKey"></param>
+        public void CreateNewSupplier(Int64 APartnerKey)
+        {
+            AApSupplierTable SupplierTable = FMainDS.AApSupplier;
+            AApSupplierRow row = SupplierTable.NewRowTyped();
+
+            row.PartnerKey = APartnerKey;
+            SupplierTable.Rows.Add(row);
+            FPetraUtilsObject.HasChanges = true;
+            ShowData();
+        }
+
+        /// <summary>
+        /// displays the data from the local datatable
+        /// </summary>
+        private void ShowDataManual()
+        {
+            TPartnerClass partnerClass;
+            string partnerShortName;
+
+            TRemote.MPartner.Partner.ServerLookups.GetPartnerShortName(
+                FMainDS.AApSupplier[0].PartnerKey,
+                out partnerShortName,
+                out partnerClass);
+            txtPartnerName.Text = partnerShortName;
+        }
+
         /// <summary>
         /// save the current supplier
         /// </summary>
@@ -56,7 +92,17 @@ namespace Ict.Petra.Client.MFinance.Gui
         /// <param name="e"></param>
         public void FileSave(object sender, EventArgs e)
         {
-            // TODO FileSave Supplier
+            SaveChanges();
+        }
+
+        /// <summary>
+        /// save the changes on the screen
+        /// </summary>
+        /// <returns></returns>
+        public bool SaveChanges()
+        {
+            // TODO SaveChanges
+            return false;
         }
     }
 }

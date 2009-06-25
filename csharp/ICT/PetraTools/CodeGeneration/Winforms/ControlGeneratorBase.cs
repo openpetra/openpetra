@@ -29,12 +29,9 @@ using System.Collections.Specialized;
 using System.Collections.Generic;
 using System.Windows.Forms;
 using Ict.Tools.CodeGeneration;
-
-//using Ict.Common.Controls;
+using Ict.Tools.DBXML;
 using Ict.Common.IO;
 using Ict.Common;
-
-//using Ict.Petra.Client.CommonControls;
 
 namespace Ict.Tools.CodeGeneration.Winforms
 {
@@ -49,6 +46,9 @@ namespace Ict.Tools.CodeGeneration.Winforms
         public bool FRequiresChildren = false;
         public Int32 FWidth = 150;
         public Int32 FHeight = 28;
+
+        public static TDataDefinitionStore FPetraXMLStore;
+
         public TControlGenerator(string APrefix, System.Type AControlType)
         {
             FPrefix = APrefix;
@@ -129,6 +129,16 @@ namespace Ict.Tools.CodeGeneration.Winforms
             // TODO generate a property that can be accessed from outside
         }
 
+        protected virtual string AssignValue(TControlDef ctrl, string AFieldOrNull, string AFieldTypeDotNet)
+        {
+            if (AFieldOrNull == null)
+            {
+                return ctrl.controlName + ".Value = null;";
+            }
+
+            return ctrl.controlName + ".Value = " + AFieldOrNull + ";";
+        }
+
         public virtual void SetControlProperties(IFormWriter writer, TControlDef ctrl)
         {
             writer.Template.AddToCodelet("CONTROLINITIALISATION",
@@ -153,8 +163,9 @@ namespace Ict.Tools.CodeGeneration.Winforms
             writer.SetControlProperty(ctrl.controlName, "Name", "\"" + ctrl.controlName + "\"");
 
             if (TYml2Xml.HasAttribute(ctrl.xmlNode, "Dock"))
-            {  
+            {
                 writer.SetControlProperty(ctrl, "Dock");
+
                 if (TYml2Xml.GetAttribute(ctrl.xmlNode, "Dock").ToLower() != "fill")
                 {
                     writer.SetControlProperty(ctrl.controlName, "AutoSize", "true");
@@ -187,6 +198,37 @@ namespace Ict.Tools.CodeGeneration.Winforms
                 ActionEnabling += "    " + ctrl.controlName + ".Enabled = e.Enabled;" + Environment.NewLine;
                 ActionEnabling += "}" + Environment.NewLine;
                 writer.Template.AddToCodelet("ACTIONENABLING", ActionEnabling);
+            }
+
+            if (ctrl.HasAttribute("DataField"))
+            {
+                string tablename = ctrl.GetAttribute("DataField").Split('.')[0];
+                string fieldname = ctrl.GetAttribute("DataField").Split('.')[1];
+
+                TTable table = FPetraXMLStore.GetTable(tablename);
+                TTableField field = table.GetField(fieldname);
+
+                string AssignValue = "";
+
+                if (!field.bNotNull)
+                {
+                    // need to check for IsNull
+                    AssignValue += "if (FMainDS." + tablename + "[0].Is" + fieldname + "Null())" + Environment.NewLine;
+                    AssignValue += "{" + Environment.NewLine;
+                    AssignValue += "    " + this.AssignValue(ctrl, null, null) + Environment.NewLine;
+                    AssignValue += "}" + Environment.NewLine;
+                    AssignValue += "else" + Environment.NewLine;
+                    AssignValue += "{" + Environment.NewLine;
+                    AssignValue += "    " +
+                                   this.AssignValue(ctrl, "FMainDS." + tablename + "[0]." + fieldname, field.strTypeDotNet) + Environment.NewLine;
+                    AssignValue += "}" + Environment.NewLine;
+                }
+                else
+                {
+                    AssignValue += this.AssignValue(ctrl, "FMainDS." + tablename + "[0]." + fieldname, field.strTypeDotNet) + Environment.NewLine;
+                }
+
+                writer.Template.AddToCodelet("SHOWDATA", AssignValue);
             }
         }
 

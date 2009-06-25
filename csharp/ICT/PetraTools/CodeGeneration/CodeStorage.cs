@@ -99,6 +99,7 @@ namespace Ict.Tools.CodeGeneration
         public TControlDef GetRootControl(string APrefix)
         {
             TControlDef firstControl = null;
+
             foreach (TControlDef ctrl in FControlList.Values)
             {
                 if (ctrl.controlTypePrefix == APrefix)
@@ -107,10 +108,11 @@ namespace Ict.Tools.CodeGeneration
                     {
                         firstControl = ctrl;
                     }
-                    if (ctrl.HasAttribute("RootControl") && ctrl.GetAttribute("RootControl").ToLower() == "true")
+
+                    if (ctrl.HasAttribute("RootControl") && (ctrl.GetAttribute("RootControl").ToLower() == "true"))
                     {
                         return ctrl;
-                    }                    
+                    }
                 }
 
                 if ((APrefix == "content")
@@ -123,7 +125,8 @@ namespace Ict.Tools.CodeGeneration
                     {
                         firstControl = ctrl;
                     }
-                    if (ctrl.HasAttribute("RootControl") && ctrl.GetAttribute("RootControl").ToLower() == "true")
+
+                    if (ctrl.HasAttribute("RootControl") && (ctrl.GetAttribute("RootControl").ToLower() == "true"))
                     {
                         return ctrl;
                     }
@@ -134,6 +137,7 @@ namespace Ict.Tools.CodeGeneration
             {
                 return firstControl;
             }
+
             throw new Exception("cannot find a default control for prefix " + APrefix);
 
             //return null;

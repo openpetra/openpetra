@@ -94,5 +94,9 @@
       <Project>{7C72F5ED-C494-4B58-AA90-2B948D4CF1D7}</Project>
       <Name>Ict.Petra.Client.App.Gui</Name>
     </ProjectReference>
+    <ProjectReference Include="..\lib\MCommon\logic\Ict.Petra.Client.MCommon.Logic.csproj">
+      <Project>{0BC4E544-F1E7-48AC-869C-71312E31AC2D}</Project>
+      <Name>Ict.Petra.Client.MCommon.Logic</Name>
+    </ProjectReference>
   </ItemGroup>
 </Project>

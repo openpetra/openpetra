@@ -1,0 +1,8 @@
+<PetraDataSets>
+  <ImportUnit name="Ict.Petra.Shared.MFinance.Account.Data"/>
+  
+    <DataSet name="AccountsPayableTDS">
+        <Table sqltable="a_ap_supplier"/>
+    </DataSet> 
+    
+</PetraDataSets>

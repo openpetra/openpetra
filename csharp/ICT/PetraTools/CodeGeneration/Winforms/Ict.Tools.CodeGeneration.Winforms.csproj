@@ -50,6 +50,9 @@
     <Reference Include="Ict.Common.Controls">
       <HintPath>..\..\..\Common\_bin\Debug\Ict.Common.Controls.dll</HintPath>
     </Reference>
+    <Reference Include="Ict.Common.Controls">
+      <HintPath>..\..\..\Common\_bin\Debug\Ict.Common.Controls.dll</HintPath>
+    </Reference>
     <Reference Include="SourceGrid">
       <HintPath>..\..\..\..\ThirdParty\DevAge\SourceGrid.dll</HintPath>
       <SpecificVersion>False</SpecificVersion>
@@ -79,6 +82,10 @@
     <ProjectReference Include="..\..\..\Common\IO\Ict.Common.IO.csproj">
       <Project>{31A5F128-F78F-4957-AA0E-B0F6005A2614}</Project>
       <Name>Ict.Common.IO</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\PetraXMLProcessor\Ict.Tools.DBXML.csproj">
+      <Project>{69E21FFC-F815-451A-96BB-66499CDDEB6E}</Project>
+      <Name>Ict.Tools.DBXML</Name>
     </ProjectReference>
     <ProjectReference Include="..\Ict.Tools.CodeGeneration.csproj">
       <Project>{B153089B-B8BF-421C-A6F4-BA672885720A}</Project>

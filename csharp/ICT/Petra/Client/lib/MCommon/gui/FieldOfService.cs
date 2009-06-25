@@ -244,6 +244,16 @@ namespace Ict.Petra.Client.MCommon
         }
 
         /// <summary>
+        /// for the interface
+        /// </summary>
+        /// <returns></returns>
+        public bool SaveChanges()
+        {
+            // TODO
+            return false;
+        }
+
+        /// <summary>
         /// needed for interface
         /// </summary>
         public void RunOnceOnActivation()

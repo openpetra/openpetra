@@ -15,6 +15,7 @@
     <property name="TargetLanguage.Pofile" value="${Translation.TargetLanguage}.po"/>
     <property name="TargetLanguage.PofileWithPath" value="${OpenPetraRoot.dir}/i18n/${Translation.TargetLanguage}.po"/>
 
+    <!-- could use nant -projecthelp instead -->
     <target name="help" depends="" description="Displays the available targets and parameters.">
         <echo message="A list of available commands: TODO"/>
         <echo message=""/>
@@ -309,6 +310,7 @@
         <exec program="${PetraToolsExe.dir}/GenerateORM.exe" commandline="-do:dataset -petraxml:${PetraXML.file} -input:${OpenPetraRoot.dir}/csharp/ICT/Petra/Shared/lib/MPartner/data/PartnerTypedDataSets.xml -outputNamespace:Ict.Petra.Shared.MPartner.Partner.Data.DataSets -outputFilename:Partner.DataSets"/>
         <exec program="${PetraToolsExe.dir}/GenerateORM.exe" commandline="-do:dataset -petraxml:${PetraXML.file} -input:${OpenPetraRoot.dir}/csharp/ICT/Petra/Shared/lib/MPersonnel/data/PersonnelTypedDataSets.xml -outputNamespace:Ict.Petra.Shared.MPersonnel.Personnel.Data.DataSets -outputFilename:Personnel.DataSets"/>
         <exec program="${PetraToolsExe.dir}/GenerateORM.exe" commandline="-do:dataset -petraxml:${PetraXML.file} -input:${OpenPetraRoot.dir}/csharp/ICT/Petra/Shared/lib/MHospitality/data/TypedDataSets.xml -outputNamespace:Ict.Petra.Shared.MHospitality.Data.DataSets -outputFilename:Hospitality.DataSets"/>
+        <exec program="${PetraToolsExe.dir}/GenerateORM.exe" commandline="-do:dataset -petraxml:${PetraXML.file} -input:${OpenPetraRoot.dir}/csharp/ICT/Petra/Shared/lib/MFinance/data/Finance.AP.TypedDataSets.xml -outputNamespace:Ict.Petra.Shared.MFinance.AP.Data.DataSets -outputFilename:Finance.AP.DataSets"/>
     </target>
     
     <target name="generateGlue" depends="compilePetraTools" description="Generate the glue between client and server, ie. interfaces and instantiators">
@@ -321,15 +323,15 @@
 
     <target name="generateWinforms" depends="compilePetraTools" description="Generate Winforms User Interface">
         <!-- todo: go through all yaml files that have FormType different from abstract -->
-        <exec program="${PetraToolsExe.dir}/GenerateWinforms.exe" commandline="-ymlfile:${OpenPetraRoot.dir}/csharp/ICT/Petra/Client/app/PetraClient/MainWindow.yaml -TemplateDir:${OpenPetraRoot.dir}/csharp/ICT/PetraTools/Templates/Winforms -ResourceDir:${OpenPetraRoot.dir}/resources"/>
-        <exec program="${PetraToolsExe.dir}/GenerateWinforms.exe" commandline="-ymlfile:${OpenPetraRoot.dir}/csharp/ICT/Petra/Client/lib/MPartner/gui/PartnerMain.yaml -TemplateDir:${OpenPetraRoot.dir}/csharp/ICT/PetraTools/Templates/Winforms -ResourceDir:${OpenPetraRoot.dir}/resources"/>
-        <exec program="${PetraToolsExe.dir}/GenerateWinforms.exe" commandline="-ymlfile:${OpenPetraRoot.dir}/csharp/ICT/Petra/Client/lib/MPartner/gui/PartnerEdit.yaml -TemplateDir:${OpenPetraRoot.dir}/csharp/ICT/PetraTools/Templates/Winforms -ResourceDir:${OpenPetraRoot.dir}/resources"/>
-        <exec program="${PetraToolsExe.dir}/GenerateWinforms.exe" commandline="-ymlfile:${OpenPetraRoot.dir}/csharp/ICT/Petra/Client/lib/MPartner/gui/PartnerFind.yaml -TemplateDir:${OpenPetraRoot.dir}/csharp/ICT/PetraTools/Templates/Winforms -ResourceDir:${OpenPetraRoot.dir}/resources"/>
-        <exec program="${PetraToolsExe.dir}/GenerateWinforms.exe" commandline="-ymlfile:${OpenPetraRoot.dir}/csharp/ICT/Petra/Client/lib/MReporting/gui/MPartner/PartnerByCity.yaml -TemplateDir:${OpenPetraRoot.dir}/csharp/ICT/PetraTools/Templates/Winforms -ResourceDir:${OpenPetraRoot.dir}/resources"/>
-        <exec program="${PetraToolsExe.dir}/GenerateWinforms.exe" commandline="-ymlfile:${OpenPetraRoot.dir}/csharp/ICT/Petra/Client/lib/MFinance/gui/FinanceMain.yaml -TemplateDir:${OpenPetraRoot.dir}/csharp/ICT/PetraTools/Templates/Winforms -ResourceDir:${OpenPetraRoot.dir}/resources"/>
-        <exec program="${PetraToolsExe.dir}/GenerateWinforms.exe" commandline="-ymlfile:${OpenPetraRoot.dir}/csharp/ICT/Petra/Client/lib/MFinance/gui/APMain.yaml -TemplateDir:${OpenPetraRoot.dir}/csharp/ICT/PetraTools/Templates/Winforms -ResourceDir:${OpenPetraRoot.dir}/resources"/>
-        <exec program="${PetraToolsExe.dir}/GenerateWinforms.exe" commandline="-ymlfile:${OpenPetraRoot.dir}/csharp/ICT/Petra/Client/lib/MFinance/gui/APSupplierTransactions.yaml -TemplateDir:${OpenPetraRoot.dir}/csharp/ICT/PetraTools/Templates/Winforms -ResourceDir:${OpenPetraRoot.dir}/resources"/>
-        <exec program="${PetraToolsExe.dir}/GenerateWinforms.exe" commandline="-ymlfile:${OpenPetraRoot.dir}/csharp/ICT/Petra/Client/lib/MFinance/gui/APEditSupplier.yaml -TemplateDir:${OpenPetraRoot.dir}/csharp/ICT/PetraTools/Templates/Winforms -ResourceDir:${OpenPetraRoot.dir}/resources"/>
+        <exec program="${PetraToolsExe.dir}/GenerateWinforms.exe" commandline="-ymlfile:${OpenPetraRoot.dir}/csharp/ICT/Petra/Client/app/PetraClient/MainWindow.yaml -TemplateDir:${OpenPetraRoot.dir}/csharp/ICT/PetraTools/Templates/Winforms -ResourceDir:${OpenPetraRoot.dir}/resources -petraxml:${PetraXML.file}"/>
+        <exec program="${PetraToolsExe.dir}/GenerateWinforms.exe" commandline="-ymlfile:${OpenPetraRoot.dir}/csharp/ICT/Petra/Client/lib/MPartner/gui/PartnerMain.yaml -TemplateDir:${OpenPetraRoot.dir}/csharp/ICT/PetraTools/Templates/Winforms -ResourceDir:${OpenPetraRoot.dir}/resources -petraxml:${PetraXML.file}"/>
+        <exec program="${PetraToolsExe.dir}/GenerateWinforms.exe" commandline="-ymlfile:${OpenPetraRoot.dir}/csharp/ICT/Petra/Client/lib/MPartner/gui/PartnerEdit.yaml -TemplateDir:${OpenPetraRoot.dir}/csharp/ICT/PetraTools/Templates/Winforms -ResourceDir:${OpenPetraRoot.dir}/resources -petraxml:${PetraXML.file}"/>
+        <exec program="${PetraToolsExe.dir}/GenerateWinforms.exe" commandline="-ymlfile:${OpenPetraRoot.dir}/csharp/ICT/Petra/Client/lib/MPartner/gui/PartnerFind.yaml -TemplateDir:${OpenPetraRoot.dir}/csharp/ICT/PetraTools/Templates/Winforms -ResourceDir:${OpenPetraRoot.dir}/resources -petraxml:${PetraXML.file}"/>
+        <exec program="${PetraToolsExe.dir}/GenerateWinforms.exe" commandline="-ymlfile:${OpenPetraRoot.dir}/csharp/ICT/Petra/Client/lib/MReporting/gui/MPartner/PartnerByCity.yaml -TemplateDir:${OpenPetraRoot.dir}/csharp/ICT/PetraTools/Templates/Winforms -ResourceDir:${OpenPetraRoot.dir}/resources -petraxml:${PetraXML.file}"/>
+        <exec program="${PetraToolsExe.dir}/GenerateWinforms.exe" commandline="-ymlfile:${OpenPetraRoot.dir}/csharp/ICT/Petra/Client/lib/MFinance/gui/FinanceMain.yaml -TemplateDir:${OpenPetraRoot.dir}/csharp/ICT/PetraTools/Templates/Winforms -ResourceDir:${OpenPetraRoot.dir}/resources -petraxml:${PetraXML.file}"/>
+        <exec program="${PetraToolsExe.dir}/GenerateWinforms.exe" commandline="-ymlfile:${OpenPetraRoot.dir}/csharp/ICT/Petra/Client/lib/MFinance/gui/APMain.yaml -TemplateDir:${OpenPetraRoot.dir}/csharp/ICT/PetraTools/Templates/Winforms -ResourceDir:${OpenPetraRoot.dir}/resources -petraxml:${PetraXML.file}"/>
+        <exec program="${PetraToolsExe.dir}/GenerateWinforms.exe" commandline="-ymlfile:${OpenPetraRoot.dir}/csharp/ICT/Petra/Client/lib/MFinance/gui/APSupplierTransactions.yaml -TemplateDir:${OpenPetraRoot.dir}/csharp/ICT/PetraTools/Templates/Winforms -ResourceDir:${OpenPetraRoot.dir}/resources -petraxml:${PetraXML.file}"/>
+        <exec program="${PetraToolsExe.dir}/GenerateWinforms.exe" commandline="-ymlfile:${OpenPetraRoot.dir}/csharp/ICT/Petra/Client/lib/MFinance/gui/APEditSupplier.yaml -TemplateDir:${OpenPetraRoot.dir}/csharp/ICT/PetraTools/Templates/Winforms -ResourceDir:${OpenPetraRoot.dir}/resources -petraxml:${PetraXML.file}"/>
     </target>
 
     <target name="translationTemplate">

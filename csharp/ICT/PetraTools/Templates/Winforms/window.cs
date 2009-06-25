@@ -50,7 +50,15 @@ namespace {#NAMESPACE}
     }
 
     {#EVENTHANDLERSIMPLEMENTATION}
-       
+
+    {#IFDEF SHOWDATA}
+    private void ShowData()
+    {
+        {#SHOWDATA}
+        ShowDataManual();
+    }
+    {#ENDIF SHOWDATA}
+
 #region Implement interface functions
 
     /// auto generated

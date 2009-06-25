@@ -211,35 +211,35 @@ namespace Ict.Tools.CodeGeneration.Winforms
                 }
             }
 /* this does not work yet; creates endless loop/recursion
-            else if (ctrl.HasAttribute("LabelUnit"))
-            {
-                // we need another label after the control
-                LabelGenerator lblGenerator = new LabelGenerator();
-                string lblName = lblGenerator.CalculateName(controlName) + "Unit";
-                TControlDef unitLabel = writer.CodeStorage.FindOrCreateControl(lblName, controlName);
-                unitLabel.Label = ctrl.GetAttribute("LabelUnit");
-                
-                TableLayoutPanelGenerator TlpGenerator = new TableLayoutPanelGenerator();
-                ctrl.SetAttribute("ControlsOrientation", "horizontal");
-                TlpGenerator.SetOrientation(ctrl);
-                StringCollection childControls = new StringCollection();
-                childControls.Add(controlName);
-                childControls.Add(lblName);
-                string subTlpControlName = TlpGenerator.CreateLayout(writer, FTlpName, childControls);
-
-                TlpGenerator.CreateCode(writer, ctrl);
-                TlpGenerator.CreateCode(writer, unitLabel);
-
-                if (FOrientation == eOrientation.Vertical)
-                {
-                    AddControl(writer, FTlpName, subTlpControlName, 1, FCurrentRow);
-                }
-                else
-                {
-                    AddControl(writer, FTlpName, subTlpControlName, FCurrentRow * 2 + 1, 0);
-                }
-            }
-*/
+ *          else if (ctrl.HasAttribute("LabelUnit"))
+ *          {
+ *              // we need another label after the control
+ *              LabelGenerator lblGenerator = new LabelGenerator();
+ *              string lblName = lblGenerator.CalculateName(controlName) + "Unit";
+ *              TControlDef unitLabel = writer.CodeStorage.FindOrCreateControl(lblName, controlName);
+ *              unitLabel.Label = ctrl.GetAttribute("LabelUnit");
+ *
+ *              TableLayoutPanelGenerator TlpGenerator = new TableLayoutPanelGenerator();
+ *              ctrl.SetAttribute("ControlsOrientation", "horizontal");
+ *              TlpGenerator.SetOrientation(ctrl);
+ *              StringCollection childControls = new StringCollection();
+ *              childControls.Add(controlName);
+ *              childControls.Add(lblName);
+ *              string subTlpControlName = TlpGenerator.CreateLayout(writer, FTlpName, childControls);
+ *
+ *              TlpGenerator.CreateCode(writer, ctrl);
+ *              TlpGenerator.CreateCode(writer, unitLabel);
+ *
+ *              if (FOrientation == eOrientation.Vertical)
+ *              {
+ *                  AddControl(writer, FTlpName, subTlpControlName, 1, FCurrentRow);
+ *              }
+ *              else
+ *              {
+ *                  AddControl(writer, FTlpName, subTlpControlName, FCurrentRow * 2 + 1, 0);
+ *              }
+ *          }
+ */
             else if (ctrl.HasAttribute("GenerateCheckBoxWithOtherControls"))
             {
                 // add the checkbox first
@@ -325,11 +325,13 @@ namespace Ict.Tools.CodeGeneration.Winforms
                 string lblName = lblGenerator.CalculateName(controlName);
                 TControlDef newLabel = writer.CodeStorage.FindOrCreateControl(lblName, FTlpName);
                 newLabel.Label = ctrl.Label;
+
                 if (ctrl.HasAttribute("LabelUnit"))
                 {
                     // alternative implementation above does not work: add another label control after the input control
                     newLabel.Label = newLabel.Label + " (in " + ctrl.GetAttribute("LabelUnit") + ")";
                 }
+
                 lblGenerator.GenerateDeclaration(writer, newLabel);
                 lblGenerator.SetControlProperties(writer, newLabel);
 

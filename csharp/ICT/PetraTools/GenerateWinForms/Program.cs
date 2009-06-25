@@ -26,6 +26,7 @@
 using System;
 using System.Xml;
 using Ict.Common;
+using Ict.Tools.DBXML;
 using Ict.Tools.CodeGeneration;
 using Ict.Tools.CodeGeneration.Winforms;
 
@@ -41,12 +42,17 @@ class Program
 
             if (!opts.HasValue("ymlfile"))
             {
-                Console.WriteLine("call: GenerateWinForms -ymlfile:c:\\test.yaml");
+                Console.WriteLine("call: GenerateWinForms -ymlfile:c:\\test.yaml -petraxml:petra.xml");
                 Console.Write("Press any key to continue . . . ");
                 Console.ReadLine();
                 Environment.Exit(-1);
                 return;
             }
+
+            TControlGenerator.FPetraXMLStore = new TDataDefinitionStore();
+            Console.WriteLine("parsing " + opts.GetValue("petraxml", true));
+            TDataDefinitionParser parser = new TDataDefinitionParser(opts.GetValue("petraxml", true));
+            parser.ParseDocument(ref TControlGenerator.FPetraXMLStore, true, true);
 
             ProcessXAML processor = new ProcessXAML(opts.GetValue("ymlfile", true));
             processor.AddWriter("navigation", typeof(TWinFormsWriter));

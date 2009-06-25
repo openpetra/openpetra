@@ -45,11 +45,23 @@
       <HintPath>..\..\..\..\..\Common\_bin\Debug\DevAge.Core.dll</HintPath>
       <SpecificVersion>False</SpecificVersion>
     </Reference>
+    <Reference Include="Ict.Common.Data">
+      <HintPath>..\..\..\..\..\Common\_bin\Debug\Ict.Common.Data.dll</HintPath>
+    </Reference>
     <Reference Include="Ict.Petra.Shared.Interfaces">
       <HintPath>..\..\..\..\Shared\_bin\Server_Client\Debug\Ict.Petra.Shared.Interfaces.dll</HintPath>
     </Reference>
     <Reference Include="Ict.Petra.Shared.MFinance">
       <HintPath>..\..\..\..\Shared\_bin\Server_Client\Debug\Ict.Petra.Shared.MFinance.dll</HintPath>
+    </Reference>
+    <Reference Include="Ict.Petra.Shared.MFinance.DataSets">
+      <HintPath>..\..\..\..\Shared\_bin\Server_Client\Debug\Ict.Petra.Shared.MFinance.DataSets.dll</HintPath>
+    </Reference>
+    <Reference Include="Ict.Petra.Shared.MFinance.DataTables">
+      <HintPath>..\..\..\..\Shared\_bin\Server_Client\Debug\Ict.Petra.Shared.MFinance.DataTables.dll</HintPath>
+    </Reference>
+    <Reference Include="Ict.Petra.Shared.MPartner">
+      <HintPath>..\..\..\..\Shared\_bin\Server_Client\Debug\Ict.Petra.Shared.MPartner.dll</HintPath>
     </Reference>
     <Reference Include="Ict.Petra.Shared.UserInfo">
       <HintPath>..\..\..\..\Shared\_bin\Server_Client\Debug\Ict.Petra.Shared.UserInfo.dll</HintPath>
@@ -95,6 +107,14 @@
     <ProjectReference Include="..\..\..\app\Core\Ict.Petra.Client.App.Core.RemoteObjects.csproj">
       <Project>{A3E8D62A-D07D-44D9-A286-68220B3AA94F}</Project>
       <Name>Ict.Petra.Client.App.Core.RemoteObjects</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\app\Core\Ict.Petra.Client.App.Core.RemoteObjects.csproj">
+      <Project>{A3E8D62A-D07D-44D9-A286-68220B3AA94F}</Project>
+      <Name>Ict.Petra.Client.App.Core.RemoteObjects</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\CommonControls\gui\Ict.Petra.Client.CommonControls.Gui.csproj">
+      <Project>{7B102B6E-0873-45EE-85D7-BD37126EAE21}</Project>
+      <Name>Ict.Petra.Client.CommonControls.Gui</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\..\CommonForms\Ict.Petra.Client.CommonForms.csproj">
       <Project>{115F2398-E0E0-4F79-854C-BBFC5DEB076F}</Project>

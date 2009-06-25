@@ -38,6 +38,7 @@ using Ict.Common;
 using Ict.Common.Verification;
 using Ict.Common.Controls;
 using Ict.Petra.Client.App.Gui;
+using Ict.Petra.Client.MCommon;
 
 namespace Ict.Petra.Client.CommonForms
 {
@@ -495,12 +496,97 @@ namespace Ict.Petra.Client.CommonForms
         }
 
         /// <summary>
-        /// todoComment
+        /// don't close window when the details are being edited;
+        /// if there are changes, ask the user what to do:
+        /// save and close, discard and close, or cancel closing
         /// </summary>
         /// <returns></returns>
-        protected Boolean CloseFormCheck()
+        public Boolean CloseFormCheck()
         {
-            return false;
+            CloseFormCheckRun = true;
+            Boolean ReturnValue = false;
+
+            if (HasChanges)
+            {
+                if (InDetailEditMode())
+                {
+                    CloseFormCheckRun = false;
+                    return false;
+                }
+
+                // still unsaved data in the DataSet
+                System.Windows.Forms.DialogResult SaveQuestionAnswer = MessageBox.Show(CommonResourcestrings.StrFormHasUnsavedChanges +
+                    Environment.NewLine + Environment.NewLine +
+                    CommonResourcestrings.StrFormHasUnsavedChangesQuestion,
+                    CommonResourcestrings.StrGenericWarning,
+                    MessageBoxButtons.YesNoCancel,
+                    MessageBoxIcon.Warning,
+                    MessageBoxDefaultButton.Button1);
+
+                if (SaveQuestionAnswer == System.Windows.Forms.DialogResult.Yes)
+                {
+                    try
+                    {
+                        if (((IFrmPetraEdit)FTheForm).SaveChanges() == false)
+                        {
+                            // Form contains invalid data that hasn't been corrected yet
+                            CloseFormCheckRun = false;
+                            return false;
+                        }
+                    }
+                    catch (Exception exp)
+                    {
+                        MessageBox.Show("Exception occured during saving of data: " + exp.ToString());
+                        CloseFormCheckRun = false;
+                    }
+
+                    ReturnValue = true;
+                    FWinForm.Close();
+                }
+                else if (SaveQuestionAnswer == System.Windows.Forms.DialogResult.No)
+                {
+                    HasChanges = false;
+                    ReturnValue = true;
+                }
+                else if (SaveQuestionAnswer == System.Windows.Forms.DialogResult.Cancel)
+                {
+                    CloseFormCheckRun = false;
+                    ReturnValue = false;
+                }
+            }
+            else
+            {
+                ReturnValue = true;
+            }
+
+            return ReturnValue;
+        }
+
+        /**
+         * Event Handler that is invoked when the Form is about to close - no matter
+         * how the closing was invoked (by calling Form.Close, a Close button, the
+         * x Button of a Form, etc).
+         *
+         * @param sender Event sender
+         * @param e EventArgs that allow cancelling of the closing
+         *
+         */
+        public override void TFrmPetra_Closing(System.Object sender, System.ComponentModel.CancelEventArgs e)
+        {
+            if (!CloseFormCheckRun)
+            {
+                if (!CloseFormCheck())
+                {
+                    // MessageBox.Show('TPartnerEditDSWinForm.TPartnerEditDSWinForm_Closing: e.Cancel := true');
+                    e.Cancel = true;
+                }
+            }
+
+            if (e.Cancel == false)
+            {
+                // tidy up
+                base.TFrmPetra_Closing(sender, e);
+            }
         }
 
         /// <summary>
@@ -570,5 +656,8 @@ namespace Ict.Petra.Client.CommonForms
 // TODO?        void DisableDataChangedEvent();
 
 // TODO?        void EnableDataChangedEvent();
+
+        /// <summary>Save the changes</summary>
+        bool SaveChanges();
     }
 }

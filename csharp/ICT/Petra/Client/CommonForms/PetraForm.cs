@@ -195,9 +195,9 @@ namespace Ict.Petra.Client.CommonForms
         {
             foreach (Control ctrl in c.Controls)
             {
-                // recurse into children; 
+                // recurse into children;
                 // but special case for UpDownBase/NumericUpDown, because we don't want the child controls of that
-                if (ctrl.HasChildren == true && !(ctrl is UpDownBase))
+                if ((ctrl.HasChildren == true) && !(ctrl is UpDownBase))
                 {
                     EnumerateControls(ctrl);
                 }
@@ -405,7 +405,7 @@ namespace Ict.Petra.Client.CommonForms
          * @param e EventArgs that allow cancelling of the closing
          *
          */
-        public void TFrmPetra_Closing(System.Object sender, System.ComponentModel.CancelEventArgs e)
+        public virtual void TFrmPetra_Closing(System.Object sender, System.ComponentModel.CancelEventArgs e)
         {
             if (!CanClose())
             {

@@ -37,6 +37,8 @@ using Ict.Common;
 using Ict.Petra.Client.App.Core;
 using Ict.Common.Controls;
 using Ict.Petra.Client.CommonForms;
+using Ict.Petra.Client.MPartner.Gui;
+using Ict.Petra.Shared.MPartner;
 
 namespace Ict.Petra.Client.MFinance.Gui
 {
@@ -48,17 +50,18 @@ namespace Ict.Petra.Client.MFinance.Gui
         public void InitializeManualCode()
         {
         }
-        
+
         /// <summary>
         /// open the transactions of the selected supplier
         /// </summary>
         public void SupplierTransactions(object sender, EventArgs e)
         {
             TFrmAccountsPayableSupplierTransactions frm = new TFrmAccountsPayableSupplierTransactions(this.Handle);
+
             // todo: frm.SupplierPartnerKey = currentRow.PartnerKey;
             frm.Show();
         }
-        
+
         /// <summary>
         /// create a new supplier
         /// </summary>
@@ -66,7 +69,19 @@ namespace Ict.Petra.Client.MFinance.Gui
         /// <param name="e"></param>
         public void NewSupplier(object sender, EventArgs e)
         {
+            Int64 PartnerKey = -1;
+            String ResultStringLbl;
+            TLocationPK ResultLocationPK;
+
+            // the user has to select an existing partner to make that partner a supplier
+            TPartnerFindScreenManager.OpenModalForm("ORGANISATION,FAMILY,CHURCH",
+                out PartnerKey,
+                out ResultStringLbl,
+                out ResultLocationPK,
+                this.Handle);
+
             TFrmAccountsPayableEditSupplier frm = new TFrmAccountsPayableEditSupplier(this.Handle);
+            frm.CreateNewSupplier(PartnerKey);
             frm.Show();
         }
 
@@ -78,6 +93,7 @@ namespace Ict.Petra.Client.MFinance.Gui
         public void EditSupplier(object sender, EventArgs e)
         {
             TFrmAccountsPayableEditSupplier frm = new TFrmAccountsPayableEditSupplier(this.Handle);
+
             frm.Show();
         }
     }

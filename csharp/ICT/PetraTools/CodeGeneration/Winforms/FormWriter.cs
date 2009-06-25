@@ -101,6 +101,7 @@ namespace Ict.Tools.CodeGeneration.Winforms
                 AvailableControlGenerators.Add(new CheckBoxGenerator());
                 AvailableControlGenerators.Add(new DateTimePickerGenerator());
                 AvailableControlGenerators.Add(new TextBoxGenerator());
+                AvailableControlGenerators.Add(new TTxtAutoPopulatedButtonLabelGenerator());
                 AvailableControlGenerators.Add(new ComboBoxGenerator());
                 AvailableControlGenerators.Add(new RadioGroupComplexGenerator());
                 AvailableControlGenerators.Add(new RadioGroupSimpleGenerator());

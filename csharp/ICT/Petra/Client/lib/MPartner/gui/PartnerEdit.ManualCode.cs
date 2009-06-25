@@ -268,6 +268,15 @@ namespace Ict.Petra.Client.MPartner.Gui
             SaveChanges(ref FMainDS);
         }
 
+        /// <summary>
+        /// needed for the interface
+        /// </summary>
+        /// <returns></returns>
+        public bool SaveChanges()
+        {
+            return SaveChanges(ref FMainDS);
+        }
+
         private void MniFileCopyPartnerKey_Click(System.Object sender, System.EventArgs e)
         {
             Clipboard.SetDataObject(FPartnerKey.ToString());
@@ -2046,71 +2055,6 @@ namespace Ict.Petra.Client.MPartner.Gui
             return ReturnValue;
         }
 
-        private Boolean CloseFormCheck()
-        {
-            Boolean ReturnValue;
-
-            System.Windows.Forms.DialogResult SaveQuestionAnswer;
-            FPetraUtilsObject.CloseFormCheckRun = true;
-            ReturnValue = false;
-
-            // MessageBox.Show('FPetraUtilsObject.HasChanges: ' + FPetraUtilsObject.HasChanges.ToString);
-            if (FPetraUtilsObject.HasChanges)
-            {
-                if (FPetraUtilsObject.InDetailEditMode())
-                {
-                    FPetraUtilsObject.CloseFormCheckRun = false;
-                    return false;
-                }
-
-                // still unsaved data in the DataSet
-                SaveQuestionAnswer = MessageBox.Show(CommonResourcestrings.StrFormHasUnsavedChanges +
-                    Environment.NewLine + Environment.NewLine +
-                    CommonResourcestrings.StrFormHasUnsavedChangesQuestion,
-                    CommonResourcestrings.StrGenericWarning,
-                    MessageBoxButtons.YesNoCancel,
-                    MessageBoxIcon.Warning,
-                    MessageBoxDefaultButton.Button1);
-
-                if (SaveQuestionAnswer == System.Windows.Forms.DialogResult.Yes)
-                {
-                    try
-                    {
-                        if (SaveChanges(ref FMainDS) == false)
-                        {
-                            // Form contains invalid data that hasn't been corrected yet
-                            FPetraUtilsObject.CloseFormCheckRun = false;
-                            return false;
-                        }
-                    }
-                    catch (Exception exp)
-                    {
-                        MessageBox.Show("Exception occured during saving of data: " + exp.ToString());
-                        FPetraUtilsObject.CloseFormCheckRun = false;
-                    }
-
-                    ReturnValue = true;
-                    this.Close();
-                }
-                else if (SaveQuestionAnswer == System.Windows.Forms.DialogResult.No)
-                {
-                    FPetraUtilsObject.HasChanges = false;
-                    ReturnValue = true;
-                }
-                else if (SaveQuestionAnswer == System.Windows.Forms.DialogResult.Cancel)
-                {
-                    FPetraUtilsObject.CloseFormCheckRun = false;
-                    ReturnValue = false;
-                }
-            }
-            else
-            {
-                ReturnValue = true;
-            }
-
-            return ReturnValue;
-        }
-
         private void EnableDisableUpperPart(bool AEnable)
         {
             ucoUpperPart.Enabled = AEnable;
@@ -2434,7 +2378,7 @@ namespace Ict.Petra.Client.MPartner.Gui
         {
             if (!FPetraUtilsObject.CloseFormCheckRun)
             {
-                if (!CloseFormCheck())
+                if (!FPetraUtilsObject.CloseFormCheck())
                 {
                     // MessageBox.Show('TPartnerEditDSWinForm.TPartnerEditDSWinForm_Closing: e.Cancel := true');
                     e.Cancel = true;
@@ -3133,7 +3077,7 @@ namespace Ict.Petra.Client.MPartner.Gui
                 // Check for unsaved changes
                 if (!FPetraUtilsObject.CloseFormCheckRun)
                 {
-                    if (!CloseFormCheck())
+                    if (!FPetraUtilsObject.CloseFormCheck())
                     {
                         // Tell user that he can't delete a Partner that has changes that weren't saved yet
                         MessageBox.Show(StrCannotDeletePartner, StrCannotDeletePartnerTitle, MessageBoxButtons.OK, MessageBoxIcon.Warning);

@@ -73,7 +73,7 @@ namespace Ict.Petra.Client.MFinance.Gui
             this.tableLayoutPanel1 = new System.Windows.Forms.TableLayoutPanel();
             this.pnlPartnerInfo = new System.Windows.Forms.Panel();
             this.tableLayoutPanel2 = new System.Windows.Forms.TableLayoutPanel();
-            this.txtPartnerKey = new System.Windows.Forms.TextBox();
+            this.txtPartnerKey = new Ict.Petra.Client.CommonControls.TtxtAutoPopulatedButtonLabel();
             this.lblPartnerKey = new System.Windows.Forms.Label();
             this.btnEditPartner = new System.Windows.Forms.Button();
             this.pnlPartnerInfo2 = new System.Windows.Forms.Panel();
@@ -199,7 +199,6 @@ namespace Ict.Petra.Client.MFinance.Gui
             this.txtPartnerKey.Location = new System.Drawing.Point(2,2);
             this.txtPartnerKey.Name = "txtPartnerKey";
             this.txtPartnerKey.Size = new System.Drawing.Size(150, 28);
-            this.txtPartnerKey.ReadOnly = true;
             //
             // lblPartnerKey
             //
@@ -742,7 +741,7 @@ namespace Ict.Petra.Client.MFinance.Gui
         private System.Windows.Forms.TableLayoutPanel tableLayoutPanel1;
         private System.Windows.Forms.Panel pnlPartnerInfo;
         private System.Windows.Forms.TableLayoutPanel tableLayoutPanel2;
-        private System.Windows.Forms.TextBox txtPartnerKey;
+        private Ict.Petra.Client.CommonControls.TtxtAutoPopulatedButtonLabel txtPartnerKey;
         private System.Windows.Forms.Label lblPartnerKey;
         private System.Windows.Forms.Button btnEditPartner;
         private System.Windows.Forms.Panel pnlPartnerInfo2;

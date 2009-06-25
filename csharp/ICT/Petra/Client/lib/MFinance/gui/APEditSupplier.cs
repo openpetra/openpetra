@@ -142,6 +142,93 @@ namespace Ict.Petra.Client.MFinance.Gui
         FPetraUtilsObject.Form_KeyDown(sender, e);
     }
 
+    private void ShowData()
+    {
+        txtPartnerKey.Text = FMainDS.AApSupplier[0].PartnerKey.ToString();
+        cmbCurrency.SelectedValue = FMainDS.AApSupplier[0].CurrencyCode;
+        if (FMainDS.AApSupplier[0].IsSupplierTypeNull())
+        {
+            cmbSupplierType.SelectedIndex = -1;
+        }
+        else
+        {
+            cmbSupplierType.SelectedValue = FMainDS.AApSupplier[0].SupplierType;
+        }
+        if (FMainDS.AApSupplier[0].IsPreferredScreenDisplayNull())
+        {
+            nudInvoiceAging.Value = 0;
+        }
+        else
+        {
+            nudInvoiceAging.Value = FMainDS.AApSupplier[0].PreferredScreenDisplay;
+        }
+        if (FMainDS.AApSupplier[0].IsDefaultCreditTermsNull())
+        {
+            nudCreditTerms.Value = 0;
+        }
+        else
+        {
+            nudCreditTerms.Value = FMainDS.AApSupplier[0].DefaultCreditTerms;
+        }
+        if (FMainDS.AApSupplier[0].IsPaymentTypeNull())
+        {
+            cmbDefaultPaymentType.SelectedIndex = -1;
+        }
+        else
+        {
+            cmbDefaultPaymentType.SelectedValue = FMainDS.AApSupplier[0].PaymentType;
+        }
+        if (FMainDS.AApSupplier[0].IsDefaultDiscountDaysNull())
+        {
+            nudDiscountDays.Value = 0;
+        }
+        else
+        {
+            nudDiscountDays.Value = FMainDS.AApSupplier[0].DefaultDiscountDays;
+        }
+        if (FMainDS.AApSupplier[0].IsDefaultDiscountPercentageNull())
+        {
+            txtDiscountValue.Text = String.Empty;
+        }
+        else
+        {
+            txtDiscountValue.Text = FMainDS.AApSupplier[0].DefaultDiscountPercentage.ToString();
+        }
+        if (FMainDS.AApSupplier[0].IsDefaultApAccountNull())
+        {
+            cmbAPAccount.SelectedIndex = -1;
+        }
+        else
+        {
+            cmbAPAccount.SelectedValue = FMainDS.AApSupplier[0].DefaultApAccount;
+        }
+        if (FMainDS.AApSupplier[0].IsDefaultBankAccountNull())
+        {
+            cmbDefaultBankAccount.SelectedIndex = -1;
+        }
+        else
+        {
+            cmbDefaultBankAccount.SelectedValue = FMainDS.AApSupplier[0].DefaultBankAccount;
+        }
+        if (FMainDS.AApSupplier[0].IsDefaultCostCentreNull())
+        {
+            cmbCostCentre.SelectedIndex = -1;
+        }
+        else
+        {
+            cmbCostCentre.SelectedValue = FMainDS.AApSupplier[0].DefaultCostCentre;
+        }
+        if (FMainDS.AApSupplier[0].IsDefaultExpAccountNull())
+        {
+            cmbExpenseAccount.SelectedIndex = -1;
+        }
+        else
+        {
+            cmbExpenseAccount.SelectedValue = FMainDS.AApSupplier[0].DefaultExpAccount;
+        }
+        ShowDataManual();
+    }
+
 #region Implement interface functions
 
     /// auto generated
