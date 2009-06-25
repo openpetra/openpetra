@@ -370,7 +370,7 @@ namespace Ict.Petra.Client.MFinance.Gui
             this.lblInvoiceAging.Location = new System.Drawing.Point(2,2);
             this.lblInvoiceAging.Name = "lblInvoiceAging";
             this.lblInvoiceAging.AutoSize = true;
-            this.lblInvoiceAging.Text = "Invoice A&ging:";
+            this.lblInvoiceAging.Text = "Invoice A&ging (in months):";
             this.lblInvoiceAging.Margin = new System.Windows.Forms.Padding(3, 7, 3, 0);
             this.tableLayoutPanel6.Controls.Add(this.lblInvoiceAging, 0, 0);
             this.tableLayoutPanel6.Controls.Add(this.nudInvoiceAging, 1, 0);
@@ -386,7 +386,7 @@ namespace Ict.Petra.Client.MFinance.Gui
             this.lblCreditTerms.Location = new System.Drawing.Point(2,2);
             this.lblCreditTerms.Name = "lblCreditTerms";
             this.lblCreditTerms.AutoSize = true;
-            this.lblCreditTerms.Text = "C&redit Terms:";
+            this.lblCreditTerms.Text = "C&redit Terms (in days):";
             this.lblCreditTerms.Margin = new System.Windows.Forms.Padding(3, 7, 3, 0);
             this.tableLayoutPanel6.Controls.Add(this.lblCreditTerms, 0, 1);
             this.tableLayoutPanel6.Controls.Add(this.nudCreditTerms, 1, 1);

@@ -68,8 +68,8 @@ namespace Ict.Petra.Client.MFinance.Gui
       this.lblCurrency.Text = Catalog.GetString("&Currency:");
       this.lblSupplierType.Text = Catalog.GetString("Supplier &Type:");
       this.grpGeneralInformation.Text = Catalog.GetString("General Information");
-      this.lblInvoiceAging.Text = Catalog.GetString("Invoice A&ging:");
-      this.lblCreditTerms.Text = Catalog.GetString("C&redit Terms:");
+      this.lblInvoiceAging.Text = Catalog.GetString("Invoice A&ging (in months):");
+      this.lblCreditTerms.Text = Catalog.GetString("C&redit Terms (in days):");
       this.lblDefaultPaymentType.Text = Catalog.GetString("Default &Payment Type:");
       this.lblDiscountDays.Text = Catalog.GetString("Number of Days for &Discount (0 for none):");
       this.lblDiscountValue.Text = Catalog.GetString("Discount &Value (%):");
