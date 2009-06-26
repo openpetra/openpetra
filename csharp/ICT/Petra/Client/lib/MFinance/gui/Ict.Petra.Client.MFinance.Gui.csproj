@@ -48,6 +48,9 @@
     <Reference Include="Ict.Common.Data">
       <HintPath>..\..\..\..\..\Common\_bin\Debug\Ict.Common.Data.dll</HintPath>
     </Reference>
+    <Reference Include="Ict.Common.Verification">
+      <HintPath>..\..\..\..\..\Common\_bin\Debug\Ict.Common.Verification.dll</HintPath>
+    </Reference>
     <Reference Include="Ict.Petra.Shared.Interfaces">
       <HintPath>..\..\..\..\Shared\_bin\Server_Client\Debug\Ict.Petra.Shared.Interfaces.dll</HintPath>
     </Reference>

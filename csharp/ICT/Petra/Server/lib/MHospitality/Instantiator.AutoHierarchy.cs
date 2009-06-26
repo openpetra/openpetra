@@ -1,5 +1,5 @@
 /* Auto generated with nant generateGlue
- * based on u:\OpenPetra\csharp\ICT\Petra\Definitions\NamespaceHierarchy.xml
+ * based on csharp\ICT\Petra\Definitions\NamespaceHierarchy.xml
  */
 //
 // Contains a remotable class that instantiates an Object which gives access to

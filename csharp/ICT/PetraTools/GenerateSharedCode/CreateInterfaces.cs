@@ -616,7 +616,8 @@ public class CreateInterfaces : AutoGenerationWriter
         Console.WriteLine("working on file " + OutputFile);
 
         OpenFile(OutputFile);
-        WriteLine("/* Auto generated with nant generateGlue, based on " + Path.GetFullPath(AXmlFileName));
+        WriteLine("/* Auto generated with nant generateGlue, based on " +
+            Path.GetFullPath(AXmlFileName).Substring(Path.GetFullPath(AXmlFileName).IndexOf("csharp")));
         WriteLine(" * and the Server c# files (eg. UIConnector implementations)");
         WriteLine(" * Do not change this file manually.");
         WriteLine(" */");

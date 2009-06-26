@@ -139,6 +139,22 @@ namespace Ict.Tools.CodeGeneration.Winforms
             return ctrl.controlName + ".Value = " + AFieldOrNull + ";";
         }
 
+        /// <summary>
+        /// for coding the transfer of the value from control to dataset
+        /// </summary>
+        /// <param name="ctrl"></param>
+        /// <param name="AFieldTypeDotNet">if this is null, check for the NULL value of the control; otherwise cast the value of the control to the value of the field in the dataset</param>
+        /// <returns></returns>
+        protected virtual string GetControlValue(TControlDef ctrl, string AFieldTypeDotNet)
+        {
+            if (AFieldTypeDotNet == null)
+            {
+                return ctrl.controlName + ".Value == null";
+            }
+
+            return ctrl.controlName + ".Value";
+        }
+
         public virtual void SetControlProperties(IFormWriter writer, TControlDef ctrl)
         {
             writer.Template.AddToCodelet("CONTROLINITIALISATION",
@@ -220,15 +236,38 @@ namespace Ict.Tools.CodeGeneration.Winforms
                     AssignValue += "else" + Environment.NewLine;
                     AssignValue += "{" + Environment.NewLine;
                     AssignValue += "    " +
-                                   this.AssignValue(ctrl, "FMainDS." + tablename + "[0]." + fieldname, field.strTypeDotNet) + Environment.NewLine;
+                                   this.AssignValue(ctrl, "FMainDS." + tablename + "[0]." + fieldname, field.GetDotNetType()) + Environment.NewLine;
                     AssignValue += "}" + Environment.NewLine;
                 }
                 else
                 {
-                    AssignValue += this.AssignValue(ctrl, "FMainDS." + tablename + "[0]." + fieldname, field.strTypeDotNet) + Environment.NewLine;
+                    AssignValue += this.AssignValue(ctrl, "FMainDS." + tablename + "[0]." + fieldname, field.GetDotNetType()) + Environment.NewLine;
                 }
 
                 writer.Template.AddToCodelet("SHOWDATA", AssignValue);
+
+                string GetValue = "";
+
+                if (!field.bNotNull && (this.GetControlValue(ctrl, null) != null))
+                {
+                    // need to check for IsNull
+                    GetValue += "if (" + this.GetControlValue(ctrl, null) + ")" + Environment.NewLine;
+                    GetValue += "{" + Environment.NewLine;
+                    GetValue += "    FMainDS." + tablename + "[0].Set" + fieldname + "Null();" + Environment.NewLine;
+                    GetValue += "}" + Environment.NewLine;
+                    GetValue += "else" + Environment.NewLine;
+                    GetValue += "{" + Environment.NewLine;
+                    GetValue += "    FMainDS." + tablename + "[0]." + fieldname + " = " +
+                                this.GetControlValue(ctrl, field.GetDotNetType()) + ";" + Environment.NewLine;
+                    GetValue += "}" + Environment.NewLine;
+                }
+                else
+                {
+                    GetValue += "FMainDS." + tablename + "[0]." + fieldname + " = " +
+                                this.GetControlValue(ctrl, field.GetDotNetType()) + ";" + Environment.NewLine;
+                }
+
+                writer.Template.AddToCodelet("SAVEDATA", GetValue);
             }
         }
 

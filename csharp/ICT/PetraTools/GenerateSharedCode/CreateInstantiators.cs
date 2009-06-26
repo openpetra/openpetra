@@ -504,7 +504,7 @@ class CreateInstantiators : AutoGenerationWriter
 
         OpenFile(OutputFile);
         WriteLine("/* Auto generated with nant generateGlue");
-        WriteLine(" * based on " + Path.GetFullPath(AXmlFileName));
+        WriteLine(" * based on " + Path.GetFullPath(AXmlFileName).Substring(Path.GetFullPath(AXmlFileName).IndexOf("csharp")));
         WriteLine(" */");
         WriteLine("//");
         WriteLine("// Contains a remotable class that instantiates an Object which gives access to");

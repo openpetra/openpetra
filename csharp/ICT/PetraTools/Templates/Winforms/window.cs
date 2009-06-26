@@ -59,6 +59,14 @@ namespace {#NAMESPACE}
     }
     {#ENDIF SHOWDATA}
 
+    {#IFDEF SAVEDATA}
+    private void GetDataFromControls()
+    {
+        {#SAVEDATA}
+        GetDataFromControlsManual();
+    }
+    {#ENDIF SAVEDATA}
+    
 #region Implement interface functions
 
     /// auto generated

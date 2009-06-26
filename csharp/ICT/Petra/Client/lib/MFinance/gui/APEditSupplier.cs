@@ -144,7 +144,7 @@ namespace Ict.Petra.Client.MFinance.Gui
 
     private void ShowData()
     {
-        txtPartnerKey.Text = FMainDS.AApSupplier[0].PartnerKey.ToString();
+        txtPartnerKey.Text = String.Format("{0:0000000000}", FMainDS.AApSupplier[0].PartnerKey);
         cmbCurrency.SelectedValue = FMainDS.AApSupplier[0].CurrencyCode;
         if (FMainDS.AApSupplier[0].IsSupplierTypeNull())
         {
@@ -227,6 +227,72 @@ namespace Ict.Petra.Client.MFinance.Gui
             cmbExpenseAccount.SelectedValue = FMainDS.AApSupplier[0].DefaultExpAccount;
         }
         ShowDataManual();
+    }
+
+    private void GetDataFromControls()
+    {
+        FMainDS.AApSupplier[0].PartnerKey = Convert.ToInt64(txtPartnerKey.Text);
+        FMainDS.AApSupplier[0].CurrencyCode = (String)cmbCurrency.SelectedValue;
+        if (cmbSupplierType.SelectedIndex == -1)
+        {
+            FMainDS.AApSupplier[0].SetSupplierTypeNull();
+        }
+        else
+        {
+            FMainDS.AApSupplier[0].SupplierType = (String)cmbSupplierType.SelectedValue;
+        }
+        FMainDS.AApSupplier[0].PreferredScreenDisplay = (Int32)nudInvoiceAging.Value;
+        FMainDS.AApSupplier[0].DefaultCreditTerms = (Int32)nudCreditTerms.Value;
+        if (cmbDefaultPaymentType.SelectedIndex == -1)
+        {
+            FMainDS.AApSupplier[0].SetPaymentTypeNull();
+        }
+        else
+        {
+            FMainDS.AApSupplier[0].PaymentType = (String)cmbDefaultPaymentType.SelectedValue;
+        }
+        FMainDS.AApSupplier[0].DefaultDiscountDays = (Int32)nudDiscountDays.Value;
+        if (txtDiscountValue.Text.Length == 0)
+        {
+            FMainDS.AApSupplier[0].SetDefaultDiscountPercentageNull();
+        }
+        else
+        {
+            FMainDS.AApSupplier[0].DefaultDiscountPercentage = Convert.ToDouble(txtDiscountValue.Text);
+        }
+        if (cmbAPAccount.SelectedIndex == -1)
+        {
+            FMainDS.AApSupplier[0].SetDefaultApAccountNull();
+        }
+        else
+        {
+            FMainDS.AApSupplier[0].DefaultApAccount = (String)cmbAPAccount.SelectedValue;
+        }
+        if (cmbDefaultBankAccount.SelectedIndex == -1)
+        {
+            FMainDS.AApSupplier[0].SetDefaultBankAccountNull();
+        }
+        else
+        {
+            FMainDS.AApSupplier[0].DefaultBankAccount = (String)cmbDefaultBankAccount.SelectedValue;
+        }
+        if (cmbCostCentre.SelectedIndex == -1)
+        {
+            FMainDS.AApSupplier[0].SetDefaultCostCentreNull();
+        }
+        else
+        {
+            FMainDS.AApSupplier[0].DefaultCostCentre = (String)cmbCostCentre.SelectedValue;
+        }
+        if (cmbExpenseAccount.SelectedIndex == -1)
+        {
+            FMainDS.AApSupplier[0].SetDefaultExpAccountNull();
+        }
+        else
+        {
+            FMainDS.AApSupplier[0].DefaultExpAccount = (String)cmbExpenseAccount.SelectedValue;
+        }
+        GetDataFromControlsManual();
     }
 
 #region Implement interface functions

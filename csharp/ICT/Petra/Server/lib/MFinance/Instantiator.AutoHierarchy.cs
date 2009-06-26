@@ -1,5 +1,5 @@
 /* Auto generated with nant generateGlue
- * based on u:\OpenPetra\csharp\ICT\Petra\Definitions\NamespaceHierarchy.xml
+ * based on csharp\ICT\Petra\Definitions\NamespaceHierarchy.xml
  */
 //
 // Contains a remotable class that instantiates an Object which gives access to
@@ -65,7 +65,7 @@ using Ict.Petra.Server.MFinance.Instantiator.Setup.UIConnectors;
 //using Ict.Petra.Server.MFinance.PeriodEnd;
 using Ict.Petra.Server.MFinance.Reporting;
 //using Ict.Petra.Server.MFinance.Setup;
-//using Ict.Petra.Server.MFinance.AccountsPayable.UIConnectors;
+using Ict.Petra.Server.MFinance.AccountsPayable.UIConnectors;
 //using Ict.Petra.Server.MFinance.Budget.UIConnectors;
 //using Ict.Petra.Server.MFinance.Gift.UIConnectors;
 //using Ict.Petra.Server.MFinance.GL.UIConnectors;
@@ -77,6 +77,7 @@ using Ict.Petra.Server.MFinance.Reporting;
 
 #region ManualCode
 using Ict.Petra.Shared.RemotedExceptions;
+using Ict.Petra.Shared.MFinance.AP.Data;
 using Ict.Petra.Shared.MFinance;
 #endregion ManualCode
 namespace Ict.Petra.Server.MFinance.Instantiator
@@ -718,6 +719,42 @@ namespace Ict.Petra.Server.MFinance.Instantiator.AccountsPayable.UIConnectors
             return null; // make sure that the TAccountsPayableUIConnectorsNamespace object exists until this AppDomain is unloaded!
         }
 
+
+        /// generated method from interface
+        public IAccountsPayableUIConnectorsSupplierEdit SupplierEdit(System.Int64 APartnerKey)
+        {
+            return new TSupplierEditUIConnector(APartnerKey);
+        }
+
+        /// generated method from interface
+        public IAccountsPayableUIConnectorsSupplierEdit SupplierEdit(System.Int64 APartnerKey,
+                                                                     ref AccountsPayableTDS ADataSet)
+        {
+#if DEBUGMODE
+            if (TSrvSetting.DL >= 9)
+            {
+                Console.WriteLine(this.GetType().FullName + ": Creating TSupplierEditUIConnector...");
+            }
+
+#endif
+            TSupplierEditUIConnector ReturnValue = new TSupplierEditUIConnector(APartnerKey);
+#if DEBUGMODE
+            if (TSrvSetting.DL >= 9)
+            {
+                Console.WriteLine(this.GetType().FullName + ": Calling TSupplierEditUIConnector.GetData...");
+            }
+
+#endif
+            ADataSet = ReturnValue.GetData();
+#if DEBUGMODE
+            if (TSrvSetting.DL >= 9)
+            {
+                Console.WriteLine(this.GetType().FullName + ": Calling TSupplierEditUIConnector.GetData finished.");
+            }
+
+#endif
+            return ReturnValue;
+        }
 
     }
 }

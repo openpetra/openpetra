@@ -171,21 +171,11 @@ namespace Ict.Tools.CodeGeneration.Winforms
         {
         }
     }
-    public class TcmbAutoCompleteGenerator : TControlGenerator
+    public class TcmbAutoCompleteGenerator : ComboBoxGenerator
     {
         public TcmbAutoCompleteGenerator()
-            : base("cmb", typeof(TCmbAutoComplete))
+            : base("cmb", "Ict.Common.Controls.TCmbAutoComplete")
         {
-        }
-
-        protected override string AssignValue(TControlDef ctrl, string AFieldOrNull, string AFieldTypeDotNet)
-        {
-            if (AFieldOrNull == null)
-            {
-                return ctrl.controlName + ".SelectedIndex = -1;";
-            }
-
-            return ctrl.controlName + ".SelectedValue = " + AFieldOrNull + ";";
         }
     }
     public class ComboBoxGenerator : TControlGenerator
@@ -195,6 +185,11 @@ namespace Ict.Tools.CodeGeneration.Winforms
         {
         }
 
+        public ComboBoxGenerator(string APrefix, string AType)
+            : base(APrefix, AType)
+        {
+        }
+
         protected override string AssignValue(TControlDef ctrl, string AFieldOrNull, string AFieldTypeDotNet)
         {
             if (AFieldOrNull == null)
@@ -203,6 +198,16 @@ namespace Ict.Tools.CodeGeneration.Winforms
             }
 
             return ctrl.controlName + ".SelectedValue = " + AFieldOrNull + ";";
+        }
+
+        protected override string GetControlValue(TControlDef ctrl, string AFieldTypeDotNet)
+        {
+            if (AFieldTypeDotNet == null)
+            {
+                return ctrl.controlName + ".SelectedIndex == -1";
+            }
+
+            return "(" + AFieldTypeDotNet + ")" + ctrl.controlName + ".SelectedValue";
         }
     }
     public class CheckBoxGenerator : TControlGenerator
@@ -283,6 +288,11 @@ namespace Ict.Tools.CodeGeneration.Winforms
         {
             if (base.ControlFitsNode(curNode))
             {
+                if (TYml2Xml.GetAttribute(curNode, "ReadOnly").ToLower() == "true")
+                {
+                    return true;
+                }
+
                 if ((TXMLParser.GetAttribute(curNode, "Type") == "PartnerKey")
                     || (TXMLParser.GetAttribute(curNode, "Type") == "Extract"))
                 {
@@ -304,10 +314,35 @@ namespace Ict.Tools.CodeGeneration.Winforms
 
             if (!AFieldTypeDotNet.ToLower().Contains("string"))
             {
+                if (ctrl.GetAttribute("Type") == "PartnerKey")
+                {
+                    // for readonly text box
+                    return ctrl.controlName + ".Text = String.Format(\"{0:0000000000}\", " + AFieldOrNull + ");";
+                }
+
                 return ctrl.controlName + ".Text = " + AFieldOrNull + ".ToString();";
             }
 
             return ctrl.controlName + ".Text = " + AFieldOrNull + ";";
+        }
+
+        protected override string GetControlValue(TControlDef ctrl, string AFieldTypeDotNet)
+        {
+            if (AFieldTypeDotNet == null)
+            {
+                return ctrl.controlName + ".Text.Length == 0";
+            }
+
+            if (AFieldTypeDotNet.ToLower().Contains("int"))
+            {
+                return "Convert.ToInt64(" + ctrl.controlName + ".Text)";
+            }
+            else if (AFieldTypeDotNet.ToLower().Contains("double"))
+            {
+                return "Convert.ToDouble(" + ctrl.controlName + ".Text)";
+            }
+
+            return ctrl.controlName + ".Text";
         }
 
         public override void SetControlProperties(IFormWriter writer, TControlDef ctrl)
@@ -347,6 +382,17 @@ namespace Ict.Tools.CodeGeneration.Winforms
 
             return ctrl.controlName + ".Value = " + AFieldOrNull + ";";
         }
+
+        protected override string GetControlValue(TControlDef ctrl, string AFieldTypeDotNet)
+        {
+            if (AFieldTypeDotNet == null)
+            {
+                // this control cannot have a null value
+                return null;
+            }
+
+            return "(" + AFieldTypeDotNet + ")" + ctrl.controlName + ".Value";
+        }
     }
     public class GridGenerator : TControlGenerator
     {
@@ -370,12 +416,17 @@ namespace Ict.Tools.CodeGeneration.Winforms
         {
             if (base.ControlFitsNode(curNode))
             {
-                if (TXMLParser.GetAttribute(curNode, "Type") == "PartnerKey")
+                if (TYml2Xml.GetAttribute(curNode, "ReadOnly").ToLower() == "true")
+                {
+                    return false;
+                }
+
+                if (TYml2Xml.GetAttribute(curNode, "Type") == "PartnerKey")
                 {
                     FButtonLabelType = "PartnerKey";
                     return true;
                 }
-                else if (TXMLParser.GetAttribute(curNode, "Type") == "Extract")
+                else if (TYml2Xml.GetAttribute(curNode, "Type") == "Extract")
                 {
                     FButtonLabelType = "Extract";
                     return true;
@@ -392,7 +443,26 @@ namespace Ict.Tools.CodeGeneration.Winforms
                 return ctrl.controlName + ".Text = String.Empty;";
             }
 
+            if (AFieldTypeDotNet.ToLower().Contains("int"))
+            {
+                return "Convert.ToInt64(" + ctrl.controlName + ".Text)";
+            }
+            else if (AFieldTypeDotNet.ToLower().Contains("double"))
+            {
+                return "Convert.ToDouble(" + ctrl.controlName + ".Text)";
+            }
+
             return ctrl.controlName + ".Text = String.Format(\"{0:0000000000}\", " + AFieldOrNull + ");";
+        }
+
+        protected override string GetControlValue(TControlDef ctrl, string AFieldTypeDotNet)
+        {
+            if (AFieldTypeDotNet == null)
+            {
+                return ctrl.controlName + ".Text.Length == 0";
+            }
+
+            return ctrl.controlName + ".Text";
         }
 
         public override void SetControlProperties(IFormWriter writer, TControlDef ctrl)

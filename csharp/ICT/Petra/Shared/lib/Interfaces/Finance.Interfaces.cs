@@ -1,4 +1,4 @@
-/* Auto generated with nant generateGlue, based on u:\OpenPetra\csharp\ICT\Petra\Definitions\NamespaceHierarchy.xml
+/* Auto generated with nant generateGlue, based on csharp\ICT\Petra\Definitions\NamespaceHierarchy.xml
  * and the Server c# files (eg. UIConnector implementations)
  * Do not change this file manually.
  */
@@ -26,6 +26,9 @@ using Ict.Petra.Shared.Interfaces.MFinance.ICH.UIConnectors;
 using Ict.Petra.Shared.Interfaces.MFinance.PeriodEnd.UIConnectors;
 using Ict.Petra.Shared.Interfaces.MFinance.Reporting.UIConnectors;
 using Ict.Petra.Shared.Interfaces.MFinance.Setup.UIConnectors;
+#region ManualCode
+using Ict.Petra.Shared.MFinance.AP.Data;
+#endregion
 namespace Ict.Petra.Shared.Interfaces.MFinance
 {
     /// <summary>auto generated</summary>
@@ -111,6 +114,21 @@ namespace Ict.Petra.Shared.Interfaces.MFinance.AccountsPayable.UIConnectors
     /// <summary>auto generated</summary>
     public interface IAccountsPayableUIConnectorsNamespace : IInterface
     {
+        /// <summary>auto generated from Connector constructor (Ict.Petra.Server.MFinance.AccountsPayable.UIConnectors.TSupplierEditUIConnector)</summary>
+        IAccountsPayableUIConnectorsSupplierEdit SupplierEdit(System.Int64 APartnerKey);
+        /// <summary>auto generated from Connector constructor and GetData (Ict.Petra.Server.MFinance.AccountsPayable.UIConnectors.TSupplierEditUIConnector)</summary>
+        IAccountsPayableUIConnectorsSupplierEdit SupplierEdit(System.Int64 APartnerKey,
+                                                              ref AccountsPayableTDS ADataSet);
+    }
+
+    /// <summary>auto generated</summary>
+    public interface IAccountsPayableUIConnectorsSupplierEdit : IInterface
+    {
+        /// <summary> auto generated from Connector method(Ict.Petra.Server.MFinance.AccountsPayable.UIConnectors.TSupplierEditUIConnector)</summary>
+        AccountsPayableTDS GetData();
+        /// <summary> auto generated from Connector method(Ict.Petra.Server.MFinance.AccountsPayable.UIConnectors.TSupplierEditUIConnector)</summary>
+        TSubmitChangesResult SubmitChanges(ref AccountsPayableTDS AInspectDS,
+                                           out TVerificationResultCollection AVerificationResult);
     }
 
 }

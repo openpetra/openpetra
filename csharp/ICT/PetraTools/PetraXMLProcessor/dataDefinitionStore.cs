@@ -920,6 +920,75 @@ namespace Ict.Tools.DBXML
             strValExp = t.strValExp;
             strValMsg = t.strValMsg;
         }
+
+        /// <summary>
+        /// get the fitting type in dot net for the field
+        /// </summary>
+        /// <returns></returns>
+        public string GetDotNetType()
+        {
+            if (strTypeDotNet.Length > 0)
+            {
+                return strTypeDotNet;
+            }
+
+            if (strType.ToLower() == "integer")
+            {
+                return "Int32";
+            }
+            else if (strType.ToLower() == "rowid")
+            {
+                return "String";
+            }
+            else if (strType.ToLower() == "varchar")
+            {
+                return "String";
+            }
+            else if (strType.ToLower() == "bit")
+            {
+                return "Boolean";
+            }
+            else if ((strType.ToLower() == "number") && (iLength == 24))
+            {
+                return "Double";  // 'currency'
+            }
+            else if ((strType.ToLower() == "number") && (iLength == 10))
+            {
+                return "Int64";
+            }
+            else if (strType.ToLower() == "number")
+            {
+                return "Decimal";
+            }
+            else if (strType.ToLower() == "date")
+            {
+                return "System.DateTime";
+            }
+            else if (strType.ToLower() == "boolean")
+            {
+                return "Boolean";
+            }
+            else if (strType.ToLower() == "int32")
+            {
+                return "Int32";
+            }
+            else if (strType.ToLower() == "int64")
+            {
+                return "Int64";
+            }
+            else if (strType.ToLower() == "datetime")
+            {
+                return "DateTime";
+            }
+            else if (strType.ToLower() == "string")
+            {
+                return "String";
+            }
+            else
+            {
+                return strType;
+            }
+        }
     }
 
     /// <summary>

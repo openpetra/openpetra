@@ -43,66 +43,7 @@ namespace Ict.Tools.CodeGeneration
          */
         public static string ToDelphiType(TTableField tableField)
         {
-            string ReturnValue;
-
-            if (tableField.strType.ToLower() == "integer")
-            {
-                ReturnValue = "Int32";
-            }
-            else if (tableField.strType.ToLower() == "rowid")
-            {
-                ReturnValue = "String";
-            }
-            else if (tableField.strType.ToLower() == "varchar")
-            {
-                ReturnValue = "String";
-            }
-            else if (tableField.strType.ToLower() == "bit")
-            {
-                ReturnValue = "Boolean";
-            }
-            else if ((tableField.strType.ToLower() == "number") && (tableField.iLength == 24))
-            {
-                ReturnValue = "Double";         /// 'currency'
-            }
-            else if ((tableField.strType.ToLower() == "number") && (tableField.iLength == 10))
-            {
-                ReturnValue = "Int64";
-            }
-            else if (tableField.strType.ToLower() == "number")
-            {
-                ReturnValue = "Decimal";
-            }
-            else if (tableField.strType.ToLower() == "date")
-            {
-                ReturnValue = "System.DateTime";
-            }
-            else if (tableField.strType.ToLower() == "boolean")
-            {
-                ReturnValue = "Boolean";
-            }
-            else if (tableField.strType.ToLower() == "int32")
-            {
-                ReturnValue = "Int32";
-            }
-            else if (tableField.strType.ToLower() == "int64")
-            {
-                ReturnValue = "Int64";
-            }
-            else if (tableField.strType.ToLower() == "datetime")
-            {
-                ReturnValue = "DateTime";
-            }
-            else if (tableField.strType.ToLower() == "string")
-            {
-                ReturnValue = "String";
-            }
-            else
-            {
-                ReturnValue = tableField.strType;
-            }
-
-            return ReturnValue;
+            return tableField.GetDotNetType();
         }
 
         public static CodeExpression ToPetraCast(TTableField tableField, CodeExpression variable)
