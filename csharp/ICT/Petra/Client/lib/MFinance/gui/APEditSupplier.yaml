@@ -34,7 +34,7 @@ RootNode:
             Controls: [cmbAPAccount, cmbDefaultBankAccount, cmbCostCentre, cmbExpenseAccount]
         txtPartnerName: {Label=Partner Name, ReadOnly=true}
         txtPartnerKey: {Label=Partner Key, ReadOnly=true, DataField=AApSupplier.PartnerKey, Type=PartnerKey}
-        cmbCurrency: {Label=&Currency, DataField=AApSupplier.CurrencyCode, LookupTODO=Currency}
+        cmbCurrency: {Label=&Currency, DataField=AApSupplier.CurrencyCode, List=CurrencyCodeList}
         cmbSupplierType: 
             Label:Supplier &Type
             DataField: AApSupplier.SupplierType

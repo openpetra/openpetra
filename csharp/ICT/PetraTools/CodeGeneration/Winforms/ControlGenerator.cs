@@ -178,6 +178,30 @@ namespace Ict.Tools.CodeGeneration.Winforms
         {
         }
     }
+    public class TcmbAutoPopulatedGenerator : ComboBoxGenerator
+    {
+        public TcmbAutoPopulatedGenerator()
+            : base("cmb", "Ict.Petra.Client.CommonControls.TCmbAutoPopulated")
+        {
+        }
+
+        public override bool ControlFitsNode(XmlNode curNode)
+        {
+            if (this.FPrefix == "cmb")
+            {
+                return TYml2Xml.HasAttribute(curNode, "List");
+            }
+
+            return false;
+        }
+        
+        public override void SetControlProperties(IFormWriter writer, TControlDef ctrl)
+        {
+            base.SetControlProperties(writer, ctrl);
+            writer.SetControlProperty(ctrl.controlName, "ListTable", "TCmbAutoPopulated.TListTableEnum." + ctrl.GetAttribute("List"));
+            writer.Template.AddToCodelet("INITUSERCONTROLS", ctrl.controlName + ".InitialiseUserControl();" + Environment.NewLine);
+        }
+    }
     public class ComboBoxGenerator : TControlGenerator
     {
         public ComboBoxGenerator()
@@ -188,6 +212,16 @@ namespace Ict.Tools.CodeGeneration.Winforms
         public ComboBoxGenerator(string APrefix, string AType)
             : base(APrefix, AType)
         {
+        }
+
+        public override bool ControlFitsNode(XmlNode curNode)
+        {
+            if (base.ControlFitsNode(curNode))
+            {
+                return !TYml2Xml.HasAttribute(curNode, "List");
+            }
+
+            return false;
         }
 
         protected override string AssignValue(TControlDef ctrl, string AFieldOrNull, string AFieldTypeDotNet)

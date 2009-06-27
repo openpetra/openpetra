@@ -440,7 +440,6 @@ namespace Ict.Petra.Client.App.PetraClient
         /// <returns>void</returns>
         private static void InitialiseClasses()
         {
-            TDataCache.InitializeUnit();
             TClientInfo.InitializeUnit();
             TCacheableTablesManager.InitializeUnit();
 

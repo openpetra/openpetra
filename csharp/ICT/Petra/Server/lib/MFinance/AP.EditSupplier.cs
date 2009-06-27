@@ -70,12 +70,19 @@ namespace Ict.Petra.Server.MFinance.AccountsPayable.UIConnectors
         /// </summary>
         /// <param name="APartnerKey">PartnerKey for the Supplier to instantiate this object with
         /// </param>
-        /// <returns>void</returns>
         public TSupplierEditUIConnector(System.Int64 APartnerKey) : base()
         {
             FPartnerKey = APartnerKey;
         }
 
+        /// <summary>
+        /// constructor for new supplier
+        /// </summary>
+        public TSupplierEditUIConnector() : base()
+        {
+            FPartnerKey = -1;
+        }
+        
         private static string DATASETNAME = "AccountsPayable";
 
         /// <summary>
@@ -98,7 +105,8 @@ namespace Ict.Petra.Server.MFinance.AccountsPayable.UIConnectors
 
                     if (FMainDS.AApSupplier.Rows.Count == 0)
                     {
-                        throw new Exception("Supplier does not exist");
+                        // Supplier does not exist
+                        throw new Exception("supplier does not exist");
                     }
                 }
                 catch (Exception Exp)
@@ -155,17 +163,31 @@ namespace Ict.Petra.Server.MFinance.AccountsPayable.UIConnectors
                 SubmitChangesTransaction = DBAccess.GDBAccessObj.BeginTransaction(IsolationLevel.Serializable);
                 try
                 {
-                    if (!AApSupplierAccess.SubmitChanges(FMainDS.AApSupplier, SubmitChangesTransaction,
+                    if (AApSupplierAccess.SubmitChanges(AInspectDS.AApSupplier, SubmitChangesTransaction,
                             out SingleVerificationResultCollection))
                     {
                         SubmissionResult = TSubmitChangesResult.scrOK;
                     }
+                    else
+                    {
+                        SubmissionResult = TSubmitChangesResult.scrError;
+                    }
+                    if (SubmissionResult == TSubmitChangesResult.scrOK)
+                    {
+                        DBAccess.GDBAccessObj.CommitTransaction();
+                    }
+                    else
+                    {
+                        DBAccess.GDBAccessObj.RollbackTransaction();
+                    }
                 }
-                catch (Exception)
+                catch (Exception e)
                 {
+                    TLogging.Log("after submitchanges: exception " + e.Message);
+                    
                     DBAccess.GDBAccessObj.RollbackTransaction();
 
-                    throw;
+                    throw e;
                 }
             }
 

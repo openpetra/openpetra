@@ -33,7 +33,7 @@ using System;
 using System.Windows.Forms;
 using Mono.Unix;
 using Ict.Common.Controls;
-//using Ict.Petra.Client.CommonControls;
+using Ict.Petra.Client.CommonControls;
 
 namespace Ict.Petra.Client.MFinance.Gui
 {
@@ -84,7 +84,7 @@ namespace Ict.Petra.Client.MFinance.Gui
             this.tableLayoutPanel4 = new System.Windows.Forms.TableLayoutPanel();
             this.grpGeneralInformation = new System.Windows.Forms.GroupBox();
             this.tableLayoutPanel5 = new System.Windows.Forms.TableLayoutPanel();
-            this.cmbCurrency = new System.Windows.Forms.ComboBox();
+            this.cmbCurrency = new Ict.Petra.Client.CommonControls.TCmbAutoPopulated();
             this.lblCurrency = new System.Windows.Forms.Label();
             this.cmbSupplierType = new System.Windows.Forms.ComboBox();
             this.lblSupplierType = new System.Windows.Forms.Label();
@@ -306,6 +306,7 @@ namespace Ict.Petra.Client.MFinance.Gui
             this.cmbCurrency.Location = new System.Drawing.Point(2,2);
             this.cmbCurrency.Name = "cmbCurrency";
             this.cmbCurrency.Size = new System.Drawing.Size(150, 28);
+            this.cmbCurrency.ListTable = TCmbAutoPopulated.TListTableEnum.CurrencyCodeList;
             //
             // lblCurrency
             //
@@ -753,7 +754,7 @@ namespace Ict.Petra.Client.MFinance.Gui
         private System.Windows.Forms.TableLayoutPanel tableLayoutPanel4;
         private System.Windows.Forms.GroupBox grpGeneralInformation;
         private System.Windows.Forms.TableLayoutPanel tableLayoutPanel5;
-        private System.Windows.Forms.ComboBox cmbCurrency;
+        private Ict.Petra.Client.CommonControls.TCmbAutoPopulated cmbCurrency;
         private System.Windows.Forms.Label lblCurrency;
         private System.Windows.Forms.ComboBox cmbSupplierType;
         private System.Windows.Forms.Label lblSupplierType;

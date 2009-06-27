@@ -113,6 +113,10 @@
       <Project>{69E21FFC-F815-451A-96BB-66499CDDEB6E}</Project>
       <Name>Ict.Petra.Client.App.Core</Name>
     </ProjectReference>
+    <ProjectReference Include="..\..\..\..\CommonControls\gui\Ict.Petra.Client.CommonControls.Gui.csproj">
+      <Project>{7B102B6E-0873-45EE-85D7-BD37126EAE21}</Project>
+      <Name>Ict.Petra.Client.CommonControls.Gui</Name>
+    </ProjectReference>
     <ProjectReference Include="..\..\..\..\CommonForms\Ict.Petra.Client.CommonForms.csproj">
       <Project>{115F2398-E0E0-4F79-854C-BBFC5DEB076F}</Project>
       <Name>Ict.Petra.Client.CommonForms</Name>

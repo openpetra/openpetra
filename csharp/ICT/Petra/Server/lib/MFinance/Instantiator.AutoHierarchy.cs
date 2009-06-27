@@ -756,6 +756,41 @@ namespace Ict.Petra.Server.MFinance.Instantiator.AccountsPayable.UIConnectors
             return ReturnValue;
         }
 
+        /// generated method from interface
+        public IAccountsPayableUIConnectorsSupplierEdit SupplierEdit()
+        {
+            return new TSupplierEditUIConnector();
+        }
+
+        /// generated method from interface
+        public IAccountsPayableUIConnectorsSupplierEdit SupplierEdit(ref AccountsPayableTDS ADataSet)
+        {
+#if DEBUGMODE
+            if (TSrvSetting.DL >= 9)
+            {
+                Console.WriteLine(this.GetType().FullName + ": Creating TSupplierEditUIConnector...");
+            }
+
+#endif
+            TSupplierEditUIConnector ReturnValue = new TSupplierEditUIConnector();
+#if DEBUGMODE
+            if (TSrvSetting.DL >= 9)
+            {
+                Console.WriteLine(this.GetType().FullName + ": Calling TSupplierEditUIConnector.GetData...");
+            }
+
+#endif
+            ADataSet = ReturnValue.GetData();
+#if DEBUGMODE
+            if (TSrvSetting.DL >= 9)
+            {
+                Console.WriteLine(this.GetType().FullName + ": Calling TSupplierEditUIConnector.GetData finished.");
+            }
+
+#endif
+            return ReturnValue;
+        }
+
     }
 }
 

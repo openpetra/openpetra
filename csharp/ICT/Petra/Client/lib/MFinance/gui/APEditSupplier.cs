@@ -100,7 +100,7 @@ namespace Ict.Petra.Client.MFinance.Gui
       #endregion
 
       FPetraUtilsObject = new TFrmPetraEditUtils(AParentFormHandle, this, stbMain);
-
+      cmbCurrency.InitialiseUserControl();
       InitializeManualCode();
       FPetraUtilsObject.ActionEnablingEvent += ActionEnabledEvent;
 

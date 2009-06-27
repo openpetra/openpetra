@@ -69,10 +69,12 @@ namespace Ict.Petra.Client.App.Core
         public const String CACHEABLEDT_FILE_EXTENSION = ".cdt";
 
         /// <summary>Holds reference to an instance of TCacheableTablesManager (for caching of DataTables)</summary>
-        public static TCacheableTablesManager UCacheableTablesManager;
+        public static TCacheableTablesManager UCacheableTablesManager = new TCacheableTablesManager(null);
 
         /// <summary>Holds reference to an instance of the Isolated Storage file system</summary>
-        public static IsolatedStorageFile UIsolatedStorageFile;
+        public static IsolatedStorageFile UIsolatedStorageFile = IsolatedStorageFile.GetStore(
+                IsolatedStorageScope.User | IsolatedStorageScope.Assembly |
+                IsolatedStorageScope.Roaming, null, null);
 
         /// <summary>
         /// todoComment
@@ -353,18 +355,6 @@ namespace Ict.Petra.Client.App.Core
             }
 
             #endregion
-        }
-
-        /// <summary>
-        /// todoComment
-        /// </summary>
-        public static void InitializeUnit()
-        {
-            UCacheableTablesManager = new TCacheableTablesManager(null);
-
-            UIsolatedStorageFile = IsolatedStorageFile.GetStore(
-                IsolatedStorageScope.User | IsolatedStorageScope.Assembly |
-                IsolatedStorageScope.Roaming, null, null);
         }
 
         /// <summary>
@@ -726,21 +716,14 @@ namespace Ict.Petra.Client.App.Core
         public static DataTable GetCacheableDataTableFromCache(String ACacheableTableName, String AFilterCriteriaString, object AFilterCriteria)
         {
             DataTable CacheableDataTableFromCache;
-            DataTable CacheableDataTableFromServer;
-            DataTable CacheableDataTableFromFile;
+            DataTable CacheableDataTableFromServer = null;
+            DataTable CacheableDataTableFromFile = null;
             DataView CacheableDataTableFromFileDV;
-            String HashCode;
-
+            String HashCode = "";
             System.Type CacheableTableSystemType;
             Int32 TmpSize;
-            Boolean CacheableDataTableReloadNecessary;
+            Boolean CacheableDataTableReloadNecessary = true;
             System.Type TmpType;
-            #region Variable initialisation
-            CacheableDataTableFromServer = null;
-            CacheableDataTableFromFile = null;
-            CacheableDataTableReloadNecessary = true;
-            HashCode = "";
-            #endregion
 
             /*
              * Check whether cacheable DataTable is available in the Client-side Cache

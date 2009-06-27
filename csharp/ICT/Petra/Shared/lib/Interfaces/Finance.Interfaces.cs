@@ -119,6 +119,10 @@ namespace Ict.Petra.Shared.Interfaces.MFinance.AccountsPayable.UIConnectors
         /// <summary>auto generated from Connector constructor and GetData (Ict.Petra.Server.MFinance.AccountsPayable.UIConnectors.TSupplierEditUIConnector)</summary>
         IAccountsPayableUIConnectorsSupplierEdit SupplierEdit(System.Int64 APartnerKey,
                                                               ref AccountsPayableTDS ADataSet);
+        /// <summary>auto generated from Connector constructor (Ict.Petra.Server.MFinance.AccountsPayable.UIConnectors.TSupplierEditUIConnector)</summary>
+        IAccountsPayableUIConnectorsSupplierEdit SupplierEdit();
+        /// <summary>auto generated from Connector constructor and GetData (Ict.Petra.Server.MFinance.AccountsPayable.UIConnectors.TSupplierEditUIConnector)</summary>
+        IAccountsPayableUIConnectorsSupplierEdit SupplierEdit(ref AccountsPayableTDS ADataSet);
     }
 
     /// <summary>auto generated</summary>

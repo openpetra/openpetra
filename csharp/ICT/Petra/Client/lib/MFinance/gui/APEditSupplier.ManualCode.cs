@@ -66,15 +66,17 @@ namespace Ict.Petra.Client.MFinance.Gui
         /// <param name="APartnerKey"></param>
         public void CreateNewSupplier(Int64 APartnerKey)
         {
-            AApSupplierTable SupplierTable = FMainDS.AApSupplier;
-            AApSupplierRow row = SupplierTable.NewRowTyped();
+            FPetraUtilsObject.SetChangedFlag();
+            
+            FSupplierEditUIConnector = TRemote.MFinance.AccountsPayable.UIConnectors.SupplierEdit();
 
+            AApSupplierRow row = FMainDS.AApSupplier.NewRowTyped();
             row.PartnerKey = APartnerKey;
-            SupplierTable.Rows.Add(row);
-            FPetraUtilsObject.HasChanges = true;
-
-            FSupplierEditUIConnector = TRemote.MFinance.AccountsPayable.UIConnectors.SupplierEdit(APartnerKey,
-                ref FMainDS);
+            // TODO: use currency code from ledger
+            // TODO: verification: don't store with currency NULL value
+            // TODO: check for existing supplier record?            
+            row.CurrencyCode = "EUR";
+            FMainDS.AApSupplier.Rows.Add(row);
 
             ShowData();
         }
@@ -135,6 +137,7 @@ namespace Ict.Petra.Client.MFinance.Gui
                 return false;
             }
 
+            FMainDS.AApSupplier.Rows[0].BeginEdit();
             GetDataFromControls();
 
             if (FPetraUtilsObject.VerificationResultCollection.Count == 0)
@@ -153,6 +156,7 @@ namespace Ict.Petra.Client.MFinance.Gui
                     this.Cursor = Cursors.WaitCursor;
 
                     AccountsPayableTDS SubmitDS = AInspectDS.GetChangesTyped(true);
+
                     TSubmitChangesResult SubmissionResult;
                     TVerificationResultCollection VerificationResult;
 
