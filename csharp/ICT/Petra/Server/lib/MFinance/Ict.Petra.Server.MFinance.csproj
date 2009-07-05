@@ -113,7 +113,6 @@
     <Compile Include="AssemblyInfo.cs" />
     <Compile Include="Gift.cs" />
     <Compile Include="Setup.cs" />
-    <None Include="Server.sln" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\app\ClientDomain\Ict.Petra.Server.App.ClientDomain.csproj">

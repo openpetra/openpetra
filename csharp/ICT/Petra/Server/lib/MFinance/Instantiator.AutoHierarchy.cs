@@ -721,6 +721,12 @@ namespace Ict.Petra.Server.MFinance.Instantiator.AccountsPayable.UIConnectors
 
 
         /// generated method from interface
+        public IAccountsPayableUIConnectorsFind Find()
+        {
+            return new TFindUIConnector();
+        }
+
+        /// generated method from interface
         public IAccountsPayableUIConnectorsSupplierEdit SupplierEdit(System.Int64 APartnerKey)
         {
             return new TSupplierEditUIConnector(APartnerKey);

@@ -82,7 +82,7 @@ namespace Ict.Petra.Server.MFinance.AccountsPayable.UIConnectors
         {
             FPartnerKey = -1;
         }
-        
+
         private static string DATASETNAME = "AccountsPayable";
 
         /// <summary>
@@ -163,6 +163,8 @@ namespace Ict.Petra.Server.MFinance.AccountsPayable.UIConnectors
                 SubmitChangesTransaction = DBAccess.GDBAccessObj.BeginTransaction(IsolationLevel.Serializable);
                 try
                 {
+                    AInspectDS.AcceptChanges();
+
                     if (AApSupplierAccess.SubmitChanges(AInspectDS.AApSupplier, SubmitChangesTransaction,
                             out SingleVerificationResultCollection))
                     {
@@ -172,6 +174,7 @@ namespace Ict.Petra.Server.MFinance.AccountsPayable.UIConnectors
                     {
                         SubmissionResult = TSubmitChangesResult.scrError;
                     }
+
                     if (SubmissionResult == TSubmitChangesResult.scrOK)
                     {
                         DBAccess.GDBAccessObj.CommitTransaction();
@@ -184,7 +187,7 @@ namespace Ict.Petra.Server.MFinance.AccountsPayable.UIConnectors
                 catch (Exception e)
                 {
                     TLogging.Log("after submitchanges: exception " + e.Message);
-                    
+
                     DBAccess.GDBAccessObj.RollbackTransaction();
 
                     throw e;

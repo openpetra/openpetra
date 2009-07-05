@@ -8,6 +8,9 @@ RootNode:
     WindowWidth: 754
     WindowHeight: 623
     Actions:
+        actSearch:
+            Label: &Search
+            ActionClick: SearchForSupplier
         actSupplierTransactions:
             Label: Open Transactions
             ActionClick: SupplierTransactions
@@ -39,16 +42,8 @@ RootNode:
     Controls:
         pnlContent:
             Dock: Fill
-            Controls: [pnlSearchCriteria, pnlSearchFilter, pnlSearchButtons, tabSearchResult]
-        pnlSearchCriteria:
-            Dock: Top
-            Controls: [cmbSupplierCode, rgrPartnerKeyOrName]
-            ControlsOrientation: horizontal
-        cmbSupplierCode: {Label=S&earch Supplier}
-        rgrPartnerKeyOrName:
-            BorderVisible: false
-            OptionalValues: [&Partner Key, N&ame]
-            ControlsOrientation: horizontal
+            Controls: [cmbSupplierCode, pnlSearchFilter, pnlSearchButtons, tabSearchResult]
+        cmbSupplierCode: {Label=S&earch Supplier, AutoComplete=SupplierSearchHistory}
         pnlSearchFilter:
             Dock: Top
             Controls: [chkDueToday, chkOverdue, chkDueFuture]
@@ -66,8 +61,8 @@ RootNode:
         pnlSearchButtons:
             Controls: [btnSearch, btnReset]
             ControlsOrientation: horizontal
-        btnSearch: {Label=&Search]
-        btnReset: {Label=&Reset Criteria]
+        btnSearch: {Action=actSearch}
+        btnReset: {Label=&Reset Criteria}
         tabSearchResult:
             Controls: [tpgSuppliers, tpgOutstandingInvoices]
             Dock: Fill

@@ -385,6 +385,14 @@ namespace Ict.Common.Controls
         }
 
         /// <summary>
+        /// overload
+        /// </summary>
+        public void SetDataSourceStringList(string ACSVList)
+        {
+            SetDataSourceStringList(StringHelper.StrSplit(ACSVList, ","));
+        }
+
+        /// <summary>
         /// This procedure is an alternative to set_datasource.
         /// This is helpful if there is only one column, and the values are all strings.
         ///
@@ -423,6 +431,7 @@ namespace Ict.Common.Controls
         public void AddStringItem(String AItem)
         {
             DataRow row;
+            string currentText = this.Text;
 
             row = FStringTable.NewRow();
             row[0] = AItem;
@@ -430,6 +439,7 @@ namespace Ict.Common.Controls
             this.BeginUpdate();
             this.DataSource = new DataView(FStringTable);
             this.EndUpdate();
+            this.Text = currentText;
         }
 
         /// <summary>
@@ -1450,6 +1460,14 @@ namespace Ict.Common.Controls
                 if (rowView != null)
                 {
                     ReturnValue = rowView[ColumnNumber].ToString();
+                }
+            }
+            else
+            {
+                if (FAcceptNewValues)
+                {
+                    AddStringItem(this.Text);
+                    return this.Text;
                 }
             }
 

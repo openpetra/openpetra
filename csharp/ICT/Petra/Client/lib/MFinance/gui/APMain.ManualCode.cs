@@ -29,6 +29,7 @@ using System.Collections;
 using System.ComponentModel;
 using System.Windows.Forms;
 using System.Data;
+using System.Threading;
 using Ict.Petra.Shared;
 using System.Resources;
 using System.Collections.Specialized;
@@ -39,6 +40,8 @@ using Ict.Common.Controls;
 using Ict.Petra.Client.CommonForms;
 using Ict.Petra.Client.MPartner.Gui;
 using Ict.Petra.Shared.MPartner;
+using Ict.Petra.Client.App.Core.RemoteObjects;
+using Ict.Petra.Shared.Interfaces.MFinance.AccountsPayable.UIConnectors;
 
 namespace Ict.Petra.Client.MFinance.Gui
 {
@@ -49,6 +52,137 @@ namespace Ict.Petra.Client.MFinance.Gui
         /// </summary>
         public void InitializeManualCode()
         {
+        }
+
+        private IAccountsPayableUIConnectorsFind FSupplierFindObject = null;
+        private bool FKeepUpSearchFinishedCheck = false;
+
+        /// <summary>DataTable that holds all Pages of data (also empty ones that are not retrieved yet!)</summary>
+        private DataTable FPagedDataTable;
+
+        /// <summary>
+        /// search button was clicked
+        /// </summary>
+        public void SearchForSupplier(object sender, EventArgs e)
+        {
+            if (FKeepUpSearchFinishedCheck)
+            {
+                // don't run several searches at the same time
+                return;
+            }
+
+            FSupplierFindObject = TRemote.MFinance.AccountsPayable.UIConnectors.Find();
+
+            DataTable CriteriaTable = new DataTable();
+
+            // TODO: fill this criteria table with generated code? or check for visible controls during runtime?
+            CriteriaTable.Columns.Add("SupplierId", typeof(string));
+            DataRow row = CriteriaTable.NewRow();
+            CriteriaTable.Rows.Add(row);
+            row["SupplierId"] = cmbSupplierCode.GetSelectedString();
+
+            // Start the asynchronous search operation on the PetraServer
+            FSupplierFindObject.FindSupplier(CriteriaTable);
+
+            // Start thread that checks for the end of the search operation on the PetraServer
+            FKeepUpSearchFinishedCheck = true;
+            Thread FinishedCheckThread = new Thread(new ThreadStart(SearchFinishedCheckThread));
+            FinishedCheckThread.Start();
+        }
+
+        /// <summary>
+        /// Thread for the search operation. Monitor's the Server System.Object's
+        /// AsyncExecProgress.ProgressState and invokes UI updates from that.
+        ///
+        /// </summary>
+        /// <returns>void</returns>
+        private void SearchFinishedCheckThread()
+        {
+            // Check whether this thread should still execute
+            while (FKeepUpSearchFinishedCheck)
+            {
+                /* The next line of code calls a function on the PetraServer
+                 * > causes a bit of data traffic everytime! */
+                switch (FSupplierFindObject.AsyncExecProgress.ProgressState)
+                {
+                    case TAsyncExecProgressState.Aeps_Finished:
+                        FKeepUpSearchFinishedCheck = false;
+
+                        // Fetch the first page of data
+                        try
+                        {
+                            FPagedDataTable = grdSupplierResult.LoadFirstDataPage(@GetDataPagedResult);
+                        }
+                        catch (Exception E)
+                        {
+                            MessageBox.Show(E.ToString());
+                        }
+                        InitialiseGrid();
+                        DataView myDataView = FPagedDataTable.DefaultView;
+                        myDataView.AllowNew = false;
+                        grdSupplierResult.DataSource = new DevAge.ComponentModel.BoundDataView(myDataView);
+                        grdSupplierResult.AutoSizeCells();
+                        grdSupplierResult.Visible = true;
+
+                        if (grdSupplierResult.TotalPages > 0)
+                        {
+                            grdSupplierResult.BringToFront();
+
+                            // Highlight first Row
+                            grdSupplierResult.Selection.SelectRow(1, true);
+
+                            // Make the Grid respond on updown keys
+                            grdSupplierResult.Focus();
+                        }
+
+                        break;
+
+                    case TAsyncExecProgressState.Aeps_Stopped:
+                        FKeepUpSearchFinishedCheck = false;
+                        EnableDisableUI(true);
+                        return;
+                }
+
+                // Sleep for some time. After that, this function is called again automatically.
+                Thread.Sleep(200);
+            }
+
+            EnableDisableUI(true);
+        }
+
+        private void InitialiseGrid()
+        {
+            grdSupplierResult.Columns.Clear();
+            grdSupplierResult.AddTextColumn("Partner Key", FPagedDataTable.Columns[0]);
+            grdSupplierResult.AddTextColumn("Partner Name", FPagedDataTable.Columns[1]);
+        }
+
+        private void EnableDisableUI(bool AEnable)
+        {
+            // TODO: autogenerate?
+        }
+
+        /// <summary>
+        /// todoComment
+        /// </summary>
+        /// <param name="ANeededPage"></param>
+        /// <param name="APageSize"></param>
+        /// <param name="ATotalRecords"></param>
+        /// <param name="ATotalPages"></param>
+        /// <returns></returns>
+        private DataTable GetDataPagedResult(Int16 ANeededPage, Int16 APageSize, out Int32 ATotalRecords, out Int16 ATotalPages)
+        {
+            ATotalRecords = 0;
+            ATotalPages = 0;
+
+            if (FSupplierFindObject != null)
+            {
+                return FSupplierFindObject.GetDataPagedResult(ANeededPage, APageSize, out ATotalRecords, out ATotalPages);
+            }
+            else
+            {
+                return null;
+            }
         }
 
         /// <summary>
@@ -92,9 +226,15 @@ namespace Ict.Petra.Client.MFinance.Gui
         /// <param name="e"></param>
         public void EditSupplier(object sender, EventArgs e)
         {
-            TFrmAccountsPayableEditSupplier frm = new TFrmAccountsPayableEditSupplier(this.Handle);
+            DataRowView[] SelectedGridRow = grdSupplierResult.SelectedDataRowsAsDataRowView;
 
-            frm.Show();
+            if (SelectedGridRow.Length >= 1)
+            {
+                Int64 PartnerKey = Convert.ToInt64(SelectedGridRow[0][FPagedDataTable.Columns[0].ColumnName]);
+                TFrmAccountsPayableEditSupplier frm = new TFrmAccountsPayableEditSupplier(this.Handle);
+                frm.EditSupplier(PartnerKey);
+                frm.Show();
+            }
         }
     }
 }

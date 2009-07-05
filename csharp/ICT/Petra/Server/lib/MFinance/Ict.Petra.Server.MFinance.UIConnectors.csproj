@@ -76,16 +76,24 @@
       <HintPath>..\..\..\Shared\_bin\Server_Client\Debug\Ict.Petra.Shared.MFinance.DataTables.dll</HintPath>
       <SpecificVersion>False</SpecificVersion>
     </Reference>
+    <Reference Include="Ict.Petra.Shared.MPartner.DataTables">
+      <HintPath>..\..\..\Shared\_bin\Server_Client\Debug\Ict.Petra.Shared.MPartner.DataTables.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Data" />
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AP.EditSupplier.cs" />
+    <Compile Include="AP.Find.cs" />
     <Compile Include="AssemblyInfo.cs" />
     <Compile Include="Reporting.UIConnectors.cs" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\MCommon\Ict.Petra.Server.MCommon.csproj">
+      <Project>{1F2FFC91-5C00-44ED-8EFD-3940426793CF}</Project>
+      <Name>Ict.Petra.Server.MCommon</Name>
+    </ProjectReference>
     <ProjectReference Include="Ict.Petra.Server.MFinance.csproj">
       <Project>{9571C77F-4E2B-4C19-B573-40E61918197C}</Project>
       <Name>Ict.Petra.Server.MFinance</Name>

@@ -67,17 +67,29 @@ namespace Ict.Petra.Client.MFinance.Gui
         public void CreateNewSupplier(Int64 APartnerKey)
         {
             FPetraUtilsObject.SetChangedFlag();
-            
+
             FSupplierEditUIConnector = TRemote.MFinance.AccountsPayable.UIConnectors.SupplierEdit();
 
             AApSupplierRow row = FMainDS.AApSupplier.NewRowTyped();
             row.PartnerKey = APartnerKey;
+
             // TODO: use currency code from ledger
             // TODO: verification: don't store with currency NULL value
-            // TODO: check for existing supplier record?            
+            // TODO: check for existing supplier record?
             row.CurrencyCode = "EUR";
             FMainDS.AApSupplier.Rows.Add(row);
 
+            ShowData();
+        }
+
+        /// <summary>
+        /// edit an existing supplier
+        /// </summary>
+        /// <param name="APartnerKey"></param>
+        public void EditSupplier(Int64 APartnerKey)
+        {
+            FSupplierEditUIConnector = TRemote.MFinance.AccountsPayable.UIConnectors.SupplierEdit(APartnerKey);
+            FMainDS = FSupplierEditUIConnector.GetData();
             ShowData();
         }
 
@@ -189,7 +201,7 @@ namespace Ict.Petra.Client.MFinance.Gui
  *                      return ReturnValue;
  *                  }
  */
-                    catch (EDBConcurrencyException Exp)
+                    catch (EDBConcurrencyException)
                     {
                         FPetraUtilsObject.WriteToStatusBar("Data could not be saved!");
                         this.Cursor = Cursors.Default;

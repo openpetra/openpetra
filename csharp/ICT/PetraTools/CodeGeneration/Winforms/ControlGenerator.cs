@@ -87,6 +87,10 @@ namespace Ict.Tools.CodeGeneration.Winforms
             if (writer.CodeStorage.FActionList.ContainsKey(ActionToPerform))
             {
                 TActionHandler ActionHandler = writer.CodeStorage.FActionList[ActionToPerform];
+                writer.SetEventHandlerToControl(ctrl.controlName, "Click");
+                writer.SetEventHandlerFunction(ctrl.controlName, "Click", ActionToPerform + "(sender, e);");
+
+                SetControlActionProperties(writer, ctrl, ActionHandler);
                 labelText = ActionHandler.actionLabel;
             }
 
@@ -177,6 +181,29 @@ namespace Ict.Tools.CodeGeneration.Winforms
             : base("cmb", "Ict.Common.Controls.TCmbAutoComplete")
         {
         }
+
+        public override bool ControlFitsNode(XmlNode curNode)
+        {
+            if (this.FPrefix == "cmb")
+            {
+                return TYml2Xml.HasAttribute(curNode, "AutoComplete");
+            }
+
+            return false;
+        }
+
+        public override void SetControlProperties(IFormWriter writer, TControlDef ctrl)
+        {
+            base.SetControlProperties(writer, ctrl);
+
+            if (ctrl.GetAttribute("AutoComplete").EndsWith("History"))
+            {
+                writer.SetControlProperty(ctrl.controlName, "AcceptNewValues", "true");
+
+                // TODO: AutoComplete History: add values to user defaults etc?
+                writer.CallControlFunction(ctrl.controlName, "SetDataSourceStringList(\"test\")");
+            }
+        }
     }
     public class TcmbAutoPopulatedGenerator : ComboBoxGenerator
     {
@@ -194,7 +221,7 @@ namespace Ict.Tools.CodeGeneration.Winforms
 
             return false;
         }
-        
+
         public override void SetControlProperties(IFormWriter writer, TControlDef ctrl)
         {
             base.SetControlProperties(writer, ctrl);
@@ -218,7 +245,8 @@ namespace Ict.Tools.CodeGeneration.Winforms
         {
             if (base.ControlFitsNode(curNode))
             {
-                return !TYml2Xml.HasAttribute(curNode, "List");
+                return !TYml2Xml.HasAttribute(curNode, "List")
+                       && !TYml2Xml.HasAttribute(curNode, "AutoComplete");
             }
 
             return false;
@@ -431,7 +459,7 @@ namespace Ict.Tools.CodeGeneration.Winforms
     public class GridGenerator : TControlGenerator
     {
         public GridGenerator()
-            : base("grd", typeof(System.Windows.Forms.DataGridView))
+            : base("grd", typeof(Ict.Common.Controls.TSgrdDataGridPaged))
         {
             FGenerateLabel = false;
         }

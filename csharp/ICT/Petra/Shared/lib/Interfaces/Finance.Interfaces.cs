@@ -28,6 +28,7 @@ using Ict.Petra.Shared.Interfaces.MFinance.Reporting.UIConnectors;
 using Ict.Petra.Shared.Interfaces.MFinance.Setup.UIConnectors;
 #region ManualCode
 using Ict.Petra.Shared.MFinance.AP.Data;
+using Ict.Petra.Shared.Interfaces.AsynchronousExecution;
 #endregion
 namespace Ict.Petra.Shared.Interfaces.MFinance
 {
@@ -114,6 +115,8 @@ namespace Ict.Petra.Shared.Interfaces.MFinance.AccountsPayable.UIConnectors
     /// <summary>auto generated</summary>
     public interface IAccountsPayableUIConnectorsNamespace : IInterface
     {
+        /// <summary>auto generated from Connector constructor (Ict.Petra.Server.MFinance.AccountsPayable.UIConnectors.TFindUIConnector)</summary>
+        IAccountsPayableUIConnectorsFind Find();
         /// <summary>auto generated from Connector constructor (Ict.Petra.Server.MFinance.AccountsPayable.UIConnectors.TSupplierEditUIConnector)</summary>
         IAccountsPayableUIConnectorsSupplierEdit SupplierEdit(System.Int64 APartnerKey);
         /// <summary>auto generated from Connector constructor and GetData (Ict.Petra.Server.MFinance.AccountsPayable.UIConnectors.TSupplierEditUIConnector)</summary>
@@ -123,6 +126,31 @@ namespace Ict.Petra.Shared.Interfaces.MFinance.AccountsPayable.UIConnectors
         IAccountsPayableUIConnectorsSupplierEdit SupplierEdit();
         /// <summary>auto generated from Connector constructor and GetData (Ict.Petra.Server.MFinance.AccountsPayable.UIConnectors.TSupplierEditUIConnector)</summary>
         IAccountsPayableUIConnectorsSupplierEdit SupplierEdit(ref AccountsPayableTDS ADataSet);
+    }
+
+    /// <summary>auto generated</summary>
+    public interface IAccountsPayableUIConnectorsFind : IInterface
+    {
+        /// <summary>auto generated from Connector property (Ict.Petra.Server.MFinance.AccountsPayable.UIConnectors.TFindUIConnector)</summary>
+        IAsynchronousExecutionProgress AsyncExecProgress
+        {
+            get;
+        }
+
+        /// <summary> auto generated from Connector method(Ict.Petra.Server.MFinance.AccountsPayable.UIConnectors.TFindUIConnector)</summary>
+        void PerformSearch(DataTable ACriteriaData);
+        /// <summary> auto generated from Connector method(Ict.Petra.Server.MFinance.AccountsPayable.UIConnectors.TFindUIConnector)</summary>
+        void StopSearch(object ASender,
+                        EventArgs AArgs);
+        /// <summary> auto generated from Connector method(Ict.Petra.Server.MFinance.AccountsPayable.UIConnectors.TFindUIConnector)</summary>
+        DataTable GetDataPagedResult(System.Int16 APage,
+                                     System.Int16 APageSize,
+                                     out System.Int32 ATotalRecords,
+                                     out System.Int16 ATotalPages);
+        /// <summary> auto generated from Connector method(Ict.Petra.Server.MFinance.AccountsPayable.UIConnectors.TFindUIConnector)</summary>
+        void FindSupplier(DataTable ACriteriaData);
+        /// <summary> auto generated from Connector method(Ict.Petra.Server.MFinance.AccountsPayable.UIConnectors.TFindUIConnector)</summary>
+        void FindInvoices(DataTable ACriteriaData);
     }
 
     /// <summary>auto generated</summary>

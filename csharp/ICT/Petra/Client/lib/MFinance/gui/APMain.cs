@@ -63,9 +63,6 @@ namespace Ict.Petra.Client.MFinance.Gui
 
       // this code has been inserted by GenerateI18N, all changes in this region will be overwritten by GenerateI18N
       this.lblSupplierCode.Text = Catalog.GetString("S&earch Supplier:");
-      this.rbtPartnerKey.Text = Catalog.GetString("&Partner Key");
-      this.rbtName.Text = Catalog.GetString("N&ame");
-      this.rgrPartnerKeyOrName.Text = Catalog.GetString("PartnerKeyOrName");
       this.chkDueToday.Text = Catalog.GetString("Due &Today");
       this.chkOverdue.Text = Catalog.GetString("&Overdue");
       this.chkDueFuture.Text = Catalog.GetString("Due &Within Future");
@@ -128,6 +125,11 @@ namespace Ict.Petra.Client.MFinance.Gui
     {
       nudNumberTimeUnits.Enabled = chkDueFuture.Checked;
       cmbTimeUnit.Enabled = chkDueFuture.Checked;
+    }
+
+    private void btnSearchClick(object sender, EventArgs e)
+    {
+        actSearch(sender, e);
     }
 
     private void tbbTransactionsClick(object sender, EventArgs e)
@@ -250,6 +252,10 @@ namespace Ict.Petra.Client.MFinance.Gui
     /// auto generated
     public void ActionEnabledEvent(object sender, ActionEventArgs e)
     {
+        if (e.ActionName == "actSearch")
+        {
+            btnSearch.Enabled = e.Enabled;
+        }
         if (e.ActionName == "actSupplierTransactions")
         {
             tbbTransactions.Enabled = e.Enabled;
@@ -313,6 +319,12 @@ namespace Ict.Petra.Client.MFinance.Gui
         mniSeparator5.Enabled = false;
         mniHelpAboutPetra.Enabled = false;
         mniHelpDevelopmentTeam.Enabled = false;
+    }
+
+    /// auto generated
+    protected void actSearch(object sender, EventArgs e)
+    {
+        SearchForSupplier(sender, e);
     }
 
     /// auto generated
