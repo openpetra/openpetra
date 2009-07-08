@@ -501,7 +501,17 @@ namespace Ict.Petra.Server.App.Main
             return null;
         }
 
-        private TPetraPrincipal PerformLoginChecks(String AUserName,
+        /// <summary>
+        /// public for stateless (webservice) authentication
+        /// </summary>
+        /// <param name="AUserName"></param>
+        /// <param name="APassword"></param>
+        /// <param name="AClientComputerName"></param>
+        /// <param name="AClientIPAddress"></param>
+        /// <param name="AProcessID"></param>
+        /// <param name="ASystemEnabled"></param>
+        /// <returns></returns>
+        static public TPetraPrincipal PerformLoginChecks(String AUserName,
             String APassword,
             String AClientComputerName,
             String AClientIPAddress,

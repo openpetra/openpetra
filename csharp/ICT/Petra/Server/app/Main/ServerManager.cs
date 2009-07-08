@@ -218,6 +218,8 @@ namespace Ict.Petra.Server.App.Main
             CommandLineArguments.ApplicationName = Environment.GetCommandLineArgs()[0];
             CommandOptionsProcessor = new TCmdOpts();
 
+            CommandLineArguments.ConfigurationFile = TAppSettingsManager.ConfigFileName;
+
             // Store command line options in TCommandLineArguments object
             if (CommandOptionsProcessor.IsFlagSet("C"))
             {
@@ -388,10 +390,22 @@ namespace Ict.Petra.Server.App.Main
             ODBCPassword = ServerCredentials;
 
             // Store Server configuration in the static TSrvSetting class
+            Version ServerAssemblyVersion;
+
+            if ((System.Reflection.Assembly.GetEntryAssembly() != null) && (System.Reflection.Assembly.GetEntryAssembly().GetName() != null))
+            {
+                ServerAssemblyVersion = System.Reflection.Assembly.GetEntryAssembly().GetName().Version;
+            }
+            else
+            {
+                // this is with the web services, started with xsp.exe
+                ServerAssemblyVersion = new Version(0, 0, 0, 0);
+            }
+
             FServerSettings = new TSrvSetting(
                 CmdLineArgs.ApplicationName,
                 CmdLineArgs.ConfigurationFile,
-                System.Reflection.Assembly.GetEntryAssembly().GetName().Version,
+                ServerAssemblyVersion,
                 Utilities.DetermineExecutingOS(),
                 RDBMSTypeAppSetting,
                 ODBCDsn,

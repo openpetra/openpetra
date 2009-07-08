@@ -37,6 +37,7 @@
         <echo message="startPetraServer: run a local Petra Server"/>
         <echo message="stopPetraServer: stop the local Petra Server"/>
         <echo message="startPetraClient: run the Petra Client"/>
+        <echo message="startSOAPServer: start a webservice with Mono XSP and Postgresl (does not work with sqlite at the moment)"/>
         <echo message="buildRelease: requires these parameters: -D:ReleaseID=0.0.2.0 -D:ReleaseVersion=0.0.2-0"/>
     </target>
     
@@ -299,8 +300,41 @@
     <target name="startXSPServer">
         <exec program="cmd.exe" 
                 workingdir="${OpenPetraRoot.dir}/csharp/ICT/Petra/Client/app/PetraClientAsp"
-                commandline="/C start.bat"
-                spawn="true"/>
+                commandline="/C start xsp2 --root . --port 8080 --applications /:."
+                spawn="true">
+            <environment>
+                <variable name="PATH" path="${environment::get-variable('PATH')};${MonoBinPath}"/>
+            </environment>
+        </exec>
+    </target>
+    <target name="startSOAPServer" description="only supports postgresql server at the moment, not sqlite; would need microsoft xsp">
+        <copy file="${OpenPetraRoot.dir}/csharp/ICT/Petra/Server/app/WebService/server.asmx"
+                    tofile="${OpenPetraRoot.dir}/csharp/ICT/Petra/Server/_bin/Debug/server.asmx"/>
+        <mkdir dir="${OpenPetraRoot.dir}/csharp/ICT/Petra/Server/_bin/Debug/bin" failonerror="false"/>
+        <copy todir="${OpenPetraRoot.dir}/csharp/ICT/Petra/Server/_bin/Debug/bin">
+            <!-- some unmanaged dlls cause problems for mono xsp -->
+            <fileset basedir="${OpenPetraRoot.dir}/csharp/ICT/Petra/Server/_bin/Debug/">
+                <include name="*.dll" />
+                <exclude name="Mono*" />
+                <exclude name="intl.dll" />
+            </fileset>
+        </copy>
+        <property name="webconfigfile" value="${OpenPetraRoot.dir}/csharp/ICT/Petra/Server/_bin/Debug/web.config"/>
+        <if test="${not file::exists(webconfigfile)}">
+            <copy file="${OpenPetraRoot.dir}/csharp/ICT/Petra/Server/app/WebService/web-sample-${DBMS.Type}.config"
+                tofile="${webconfigfile}"/>
+        </if>
+        <!-- TODO: run on linux as well? -->
+        <exec program="cmd.exe" 
+                workingdir="${OpenPetraRoot.dir}/csharp/ICT/Petra/Server/_bin/Debug"
+                commandline="/C start xsp2 --verbose --root . --port 8081 --applications /:."
+                spawn="true">
+            <environment>
+                <variable name="PATH" path="${environment::get-variable('PATH')};${MonoBinPath}"/>
+                <variable name="MONO_OPTIONS" value="--debug xsp2"/>
+            </environment>
+        </exec>
+        <echo message="in your browser, go to http://localhost:8081/server.asmx"/>
     </target>
     
     <target name="generateORM" depends="compilePetraTools" description="Generate the typed datastore.">
