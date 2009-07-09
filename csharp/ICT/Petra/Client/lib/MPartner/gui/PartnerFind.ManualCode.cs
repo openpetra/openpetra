@@ -111,6 +111,23 @@ namespace Ict.Petra.Client.MPartner.Gui
             // Set status bar texts
             FPetraUtilsObject.SetStatusBarText(btnAccept, Resourcestrings.StrAcceptButtonHelpText + Resourcestrings.StrPartnerFindSearchTargetText);
             FPetraUtilsObject.SetStatusBarText(btnCancel, Resourcestrings.StrCancelButtonHelpText + Resourcestrings.StrPartnerFindSearchTargetText);
+
+            // catch enter on all controls, to trigger search or accept (could use this.AcceptButton, but we have several search buttons etc)
+            this.KeyPreview = true;
+            this.KeyUp += new System.Windows.Forms.KeyEventHandler(this.CatchEnterKey);
+        }
+
+        private void CatchEnterKey(object sender, System.Windows.Forms.KeyEventArgs e)
+        {
+            if (e.KeyCode == Keys.Enter)
+            {
+                ucoFindByPartnerDetails.BtnSearch_Click(sender, e);
+                e.Handled = true;
+            }
+            else
+            {
+                e.Handled = false;
+            }
         }
 
         private void SetUserDefaultLastPartnerWorkedWith()

@@ -80,6 +80,11 @@ namespace Ict.Tools.CodeGeneration.Winforms
         {
             base.SetControlProperties(writer, ctrl);
 
+            if (ctrl.GetAttribute("AcceptButton").ToLower() == "true")
+            {
+                writer.Template.AddToCodelet("INITUSERCONTROLS", "this.AcceptButton = " + ctrl.controlName + ";");
+            }
+
             writer.SetControlProperty(ctrl.controlName, "Text", "\"" + ctrl.Label + "\"");
         }
     }
@@ -185,9 +190,13 @@ namespace Ict.Tools.CodeGeneration.Winforms
             if (ctrl.GetAttribute("AutoComplete").EndsWith("History"))
             {
                 writer.SetControlProperty(ctrl.controlName, "AcceptNewValues", "true");
-
-                // TODO: AutoComplete History: add values to user defaults etc?
-                writer.CallControlFunction(ctrl.controlName, "SetDataSourceStringList(\"test\")");
+                writer.SetEventHandlerToControl(ctrl.controlName,
+                    "AcceptNewEntries",
+                    "TAcceptNewEntryEventHandler",
+                    "FPetraUtilsObject.AddComboBoxHistory");
+                writer.CallControlFunction(ctrl.controlName, "SetDataSourceStringList(\"\")");
+                writer.Template.AddToCodelet("INITUSERCONTROLS",
+                    "FPetraUtilsObject.LoadComboBoxHistory(" + ctrl.controlName + ");" + Environment.NewLine);
             }
         }
     }
@@ -272,12 +281,13 @@ namespace Ict.Tools.CodeGeneration.Winforms
         {
             base.SetControlProperties(writer, ctrl);
 
-            if (ctrl.HasAttribute("OptionalValues"))
+            StringCollection OptionalValues = TYml2Xml.GetElements(ctrl.xmlNode, "OptionalValues");
+
+            if (OptionalValues.Count > 0)
             {
-                StringCollection values = StringHelper.StrSplit(ctrl.GetAttribute("OptionalValues"), ",");
                 string formattedValues = "";
 
-                foreach (string value in values)
+                foreach (string value in OptionalValues)
                 {
                     if (formattedValues.Length > 0)
                     {

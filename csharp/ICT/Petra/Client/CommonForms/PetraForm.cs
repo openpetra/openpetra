@@ -26,6 +26,7 @@
 using System;
 using System.Drawing;
 using System.Collections;
+using System.Collections.Specialized;
 using System.ComponentModel;
 using System.ComponentModel.Design;
 using System.Windows.Forms;
@@ -461,6 +462,39 @@ namespace Ict.Petra.Client.CommonForms
         public void SetStatusBarText(Control AControl, string AHelpText)
         {
             FStatusBar.SetHelpText(AControl, AHelpText);
+        }
+
+        const Int16 MAX_COMBOBOX_HISTORY = 30;
+
+        /// <summary>
+        /// add new value of combobox to the user defaults, or move existing value to the front;
+        /// limits the number of values to MAX_COMBOBOX_HISTORY
+        /// </summary>
+        /// <param name="Sender"></param>
+        /// <param name="e"></param>
+        public void AddComboBoxHistory(System.Object Sender, TAcceptNewEntryEventArgs e)
+        {
+            string keyName = "CmbHistory" + ((Control)Sender).Name;
+            StringCollection values = StringHelper.StrSplit(TUserDefaults.GetStringDefault(keyName, ""), ",");
+
+            values.Remove(e.ItemString);
+            values.Insert(0, e.ItemString);
+
+            while (values.Count > MAX_COMBOBOX_HISTORY)
+            {
+                values.RemoveAt(values.Count - 1);
+            }
+
+            TUserDefaults.SetDefault(keyName, StringHelper.StrMerge(values, ","));
+        }
+
+        /// <summary>
+        /// load the history of a combobox for auto completion from the user defaults
+        /// </summary>
+        /// <param name="AComboBox"></param>
+        public void LoadComboBoxHistory(TCmbAutoComplete AComboBox)
+        {
+            AComboBox.SetDataSourceStringList(TUserDefaults.GetStringDefault("CmbHistory" + AComboBox.Name, ""));
         }
     }
 

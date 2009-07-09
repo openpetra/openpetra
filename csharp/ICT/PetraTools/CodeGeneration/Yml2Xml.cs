@@ -692,6 +692,25 @@ namespace Ict.Tools.CodeGeneration
             return TXMLParser.GetAttribute(xmlNode, name);
         }
 
+        /// <summary>
+        /// overload for GetElements, with the main node and the name of the child node that has the elements
+        /// </summary>
+        /// <param name="node"></param>
+        /// <param name="childName"></param>
+        /// <returns></returns>
+        public static StringCollection GetElements(XmlNode node, string childName)
+        {
+            // TODO: GetElements: check for base node?
+            XmlNode child = TXMLParser.GetChild(node, childName);
+
+            if (child == null)
+            {
+                return new StringCollection();
+            }
+
+            return GetElements(child);
+        }
+
         // convert elements of a sequence into a string collection
         // checks for duplicates, and removes names with a tilde character ~ in front
         public static StringCollection GetElements(XmlNode node)

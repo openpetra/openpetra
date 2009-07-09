@@ -80,7 +80,7 @@ namespace Ict.Petra.Client.MFinance.Gui
             this.chkDueFuture = new System.Windows.Forms.CheckBox();
             this.tableLayoutPanel3 = new System.Windows.Forms.TableLayoutPanel();
             this.nudNumberTimeUnits = new System.Windows.Forms.NumericUpDown();
-            this.cmbTimeUnit = new System.Windows.Forms.ComboBox();
+            this.cmbTimeUnit = new Ict.Common.Controls.TCmbAutoComplete();
             this.pnlSearchButtons = new System.Windows.Forms.Panel();
             this.tableLayoutPanel4 = new System.Windows.Forms.TableLayoutPanel();
             this.btnSearch = new System.Windows.Forms.Button();
@@ -92,7 +92,7 @@ namespace Ict.Petra.Client.MFinance.Gui
             this.tableLayoutPanel6 = new System.Windows.Forms.TableLayoutPanel();
             this.chkShowOutstandingAmounts = new System.Windows.Forms.CheckBox();
             this.chkHideInactiveSuppliers = new System.Windows.Forms.CheckBox();
-            this.cmbSupplierCurrency = new System.Windows.Forms.ComboBox();
+            this.cmbSupplierCurrency = new Ict.Common.Controls.TCmbAutoComplete();
             this.lblSupplierCurrency = new System.Windows.Forms.Label();
             this.grdSupplierResult = new Ict.Common.Controls.TSgrdDataGridPaged();
             this.tpgOutstandingInvoices = new System.Windows.Forms.TabPage();
@@ -191,7 +191,7 @@ namespace Ict.Petra.Client.MFinance.Gui
             this.cmbSupplierCode.Name = "cmbSupplierCode";
             this.cmbSupplierCode.Size = new System.Drawing.Size(150, 28);
             this.cmbSupplierCode.AcceptNewValues = true;
-            this.cmbSupplierCode.SetDataSourceStringList("test");
+            this.cmbSupplierCode.SetDataSourceStringList("");
             //
             // lblSupplierCode
             //
@@ -282,6 +282,7 @@ namespace Ict.Petra.Client.MFinance.Gui
             this.cmbTimeUnit.Location = new System.Drawing.Point(2,2);
             this.cmbTimeUnit.Name = "cmbTimeUnit";
             this.cmbTimeUnit.Size = new System.Drawing.Size(150, 28);
+            this.cmbTimeUnit.Items.AddRange(new object[] {"Days","Weeks","Months"});;
             this.tableLayoutPanel3.Controls.Add(this.cmbTimeUnit, 2, 0);
             this.tableLayoutPanel3.SetColumnSpan(this.cmbTimeUnit, 2);
             this.tableLayoutPanel2.Controls.Add(this.tableLayoutPanel3, 5, 0);
@@ -868,7 +869,7 @@ namespace Ict.Petra.Client.MFinance.Gui
         private System.Windows.Forms.CheckBox chkDueFuture;
         private System.Windows.Forms.TableLayoutPanel tableLayoutPanel3;
         private System.Windows.Forms.NumericUpDown nudNumberTimeUnits;
-        private System.Windows.Forms.ComboBox cmbTimeUnit;
+        private Ict.Common.Controls.TCmbAutoComplete cmbTimeUnit;
         private System.Windows.Forms.Panel pnlSearchButtons;
         private System.Windows.Forms.TableLayoutPanel tableLayoutPanel4;
         private System.Windows.Forms.Button btnSearch;
@@ -880,7 +881,7 @@ namespace Ict.Petra.Client.MFinance.Gui
         private System.Windows.Forms.TableLayoutPanel tableLayoutPanel6;
         private System.Windows.Forms.CheckBox chkShowOutstandingAmounts;
         private System.Windows.Forms.CheckBox chkHideInactiveSuppliers;
-        private System.Windows.Forms.ComboBox cmbSupplierCurrency;
+        private Ict.Common.Controls.TCmbAutoComplete cmbSupplierCurrency;
         private System.Windows.Forms.Label lblSupplierCurrency;
         private Ict.Common.Controls.TSgrdDataGridPaged grdSupplierResult;
         private System.Windows.Forms.TabPage tpgOutstandingInvoices;

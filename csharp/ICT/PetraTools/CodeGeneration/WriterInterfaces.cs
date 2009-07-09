@@ -70,6 +70,7 @@ namespace Ict.Tools.CodeGeneration
         IControlGenerator FindControlGenerator(XmlNode curNode);
         void CallControlFunction(string AControlName, string AFunctionCall);
         void SetEventHandlerToControl(string AControlName, string AEvent);
+        void SetEventHandlerToControl(string AControlName, string AEvent, string AEventHandlerType, string AEventHandlingMethod);
         void SetEventHandlerFunction(string AControlName, string AEvent, string AEventImplementation);
         void AddContainer(string AControlName);
         void AddImageToResource(string AControlName, string AImageName, string AImageOrIcon);

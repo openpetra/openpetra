@@ -57,11 +57,11 @@ RootNode:
         nudNumberTimeUnits: {NoLabel=true}
         cmbTimeUnit:
             NoLabel: true
-            Value: [Days, Weeks, Months]
+            OptionalValues: [Days, Weeks, Months]
         pnlSearchButtons:
             Controls: [btnSearch, btnReset]
             ControlsOrientation: horizontal
-        btnSearch: {Action=actSearch}
+        btnSearch: {Action=actSearch, AcceptButton=true}
         btnReset: {Label=&Reset Criteria}
         tabSearchResult:
             Controls: [tpgSuppliers, tpgOutstandingInvoices]

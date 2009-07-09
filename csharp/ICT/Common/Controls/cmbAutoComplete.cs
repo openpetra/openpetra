@@ -103,7 +103,6 @@ namespace Ict.Common.Controls
         /// <summary>used for lists with only one column, only strings</summary>
         private DataTable FStringTable;
         private bool UPressedKey;
-        private String UItemString;
         private String UInitialString;
         private bool FAcceptNewValues;
         private bool FCaseSensitiveSearch;
@@ -584,14 +583,7 @@ namespace Ict.Common.Controls
         /// <returns>void</returns>
         private void OnAcceptNewEntryEvent(TAcceptNewEntryEventArgs Args)
         {
-            System.Int32 mNumDataSourceCols;
-            System.Int32 mFoundIndex;
-            String mMessage;
-            String mCaption;
-            System.Windows.Forms.MessageBoxButtons mButtons;
-            System.Windows.Forms.MessageBoxIcon mIcon;
-            System.Windows.Forms.DialogResult mDialogResult;
-            mNumDataSourceCols = this.GetNumberOfDataSourceCols();
+            System.Int32 mNumDataSourceCols = this.GetNumberOfDataSourceCols();
 
             if ((mNumDataSourceCols != 1) || (Args.Cancel == true))
             {
@@ -599,24 +591,9 @@ namespace Ict.Common.Controls
                 return;
             }
 
-            mMessage = "Do you want to add this item >" + Args.ItemString + "< to the list of this combobox?";
-            mCaption = "Confirm adding this item!";
-            mButtons = System.Windows.Forms.MessageBoxButtons.OKCancel;
-            mIcon = System.Windows.Forms.MessageBoxIcon.Question;
-            mDialogResult = MessageBox.Show(mMessage, mCaption, mButtons, mIcon);
-
-            if (mDialogResult == System.Windows.Forms.DialogResult.Cancel)
-            {
-                mFoundIndex = this.FindStringExact(this.UInitialString);
-                this.Text = this.UInitialString;
-                this.SelectedIndex = mFoundIndex;
-                return;
-            }
-
             this.AddItemToDataSource(Args.ItemString);
-            mFoundIndex = this.FindStringExact(Args.ItemString);
+            this.SelectedIndex = this.FindStringExact(Args.ItemString);
             this.Text = Args.ItemString;
-            this.SelectedIndex = mFoundIndex;
         }
 
         /// <summary>
@@ -833,6 +810,29 @@ namespace Ict.Common.Controls
         }
 
         /// <summary>
+        /// ask the user if he wants to add this new item to the combobox
+        /// </summary>
+        /// <param name="mArgs"></param>
+        protected void AskUserAcceptNewEntries(TAcceptNewEntryEventArgs mArgs)
+        {
+            if (mArgs.Cancel == true)
+            {
+                return;
+            }
+
+            string mMessage = "Do you want to add this item >" + mArgs.ItemString + "< to the list of this combobox?";
+            string mCaption = "Confirm adding this item!";
+            System.Windows.Forms.MessageBoxButtons mButtons = System.Windows.Forms.MessageBoxButtons.OKCancel;
+            System.Windows.Forms.MessageBoxIcon mIcon = System.Windows.Forms.MessageBoxIcon.Question;
+            System.Windows.Forms.DialogResult mDialogResult = MessageBox.Show(mMessage, mCaption, mButtons, mIcon);
+
+            if (mDialogResult == System.Windows.Forms.DialogResult.Cancel)
+            {
+                mArgs.Cancel = true;
+            }
+        }
+
+        /// <summary>
         /// This procedure is called when this control looses its active status and is
         /// no longer the active control of a form.
         /// </summary>
@@ -842,57 +842,58 @@ namespace Ict.Common.Controls
         protected override void OnLeave(System.EventArgs e)
         {
             base.OnLeave(e);
-            System.Int32 mFoundIndex;
-            String mItemString;
-            TAcceptNewEntryEventArgs mArgs;
 
-            // TLogging.Log('TcmbAutoComplete.OnLeave Start ...');
             if (DesignMode)
             {
                 return;
             }
 
-            mItemString = this.UItemString;
-            mItemString = this.Text;
+            String mItemString = this.Text;
+            TAcceptNewEntryEventArgs mArgs = new TAcceptNewEntryEventArgs();
+            mArgs.ItemString = mItemString;
 
             // Try to find the text entered in the set of items contained in cmbAutoComplete
-            mFoundIndex = this.FindStringExact(mItemString);
+            System.Int32 mFoundIndex = this.FindStringExact(mItemString);
 
             if (mFoundIndex >= 0)
             {
                 // Text found and identified.
                 // TLogging.Log('Text found and identified. mFoundIndex: ' + mFoundIndex.ToString);
                 this.SelectedIndex = mFoundIndex;
+
+                if (AcceptNewEntries != null)
+                {
+                    // we might want to move the value upwards in the history
+                    AcceptNewEntries(this, mArgs);
+                }
             }
             else
             {
                 // Text could not be found.
-                // TLogging.Log('Text could not be found.');
                 if (this.AcceptNewValues == true)
                 {
                     // User may enter new values.
-                    // TLogging.Log('User may enter new values.');
-                    mArgs = new TAcceptNewEntryEventArgs();
-                    mArgs.ItemString = mItemString;
-
                     if (AcceptNewEntries != null)
                     {
                         // User wants to do something before the new entry is added
-                        // TLogging.Log('User wants to do something before the new entry is added');
                         AcceptNewEntries(this, mArgs);
+
+                        // could make a call to AskUserAcceptNewEntries instead?
 
                         if (mArgs.Cancel == true)
                         {
                             // User wants to cancel the adding of a new entry => Original value prevails
-                            // TLogging.Log('User wants to cancel the adding of a new entry => Original value prevails');
                             RestoreOriginalItem();
                         }
                         else
                         {
                             // Add the new item to the combobox collection
-                            // TLogging.Log('Add the new item to the combobox collection');
                             OnAcceptNewEntryEvent(mArgs);
                         }
+                    }
+                    else
+                    {
+                        OnAcceptNewEntryEvent(mArgs);
                     }
                 }
                 else
@@ -954,11 +955,11 @@ namespace Ict.Common.Controls
             mColName = mDataColumn.ColumnName;
             mNewRow = mDataTable.NewRow();
             mNewRow[0] = ItemString;
-            mDataTable.Rows.Add(mNewRow);
+            mDataTable.Rows.InsertAt(mNewRow, 0);
             this.BeginUpdate();
             this.DisplayMember = mColName;
             this.ValueMember = mColName;
-            this.DataSource = mDataTable;
+            this.DataSource = mDataTable.DefaultView;
             this.EndUpdate();
         }
 
@@ -1227,10 +1228,6 @@ namespace Ict.Common.Controls
                 IndexValue = System.Convert.ToInt32(IndexView[0]["Index"]);
                 ReturnValue = IndexValue;
             }
-            else
-            {
-                this.UItemString = SearchString;
-            }
 
             return ReturnValue;
         }
@@ -1485,11 +1482,7 @@ namespace Ict.Common.Controls
             }
             else
             {
-                if (FAcceptNewValues)
-                {
-                    AddStringItem(this.Text);
-                    return this.Text;
-                }
+                return this.Text;
             }
 
             return ReturnValue;

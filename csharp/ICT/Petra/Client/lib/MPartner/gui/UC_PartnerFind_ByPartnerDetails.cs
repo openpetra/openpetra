@@ -604,10 +604,19 @@ namespace Ict.Petra.Client.MPartner.Gui
             FSplitterDistFindByDetails = spcPartnerFindByDetails.SplitterDistance;
         }
 
-        private void BtnSearch_Click(System.Object sender, System.EventArgs e)
+        /// <summary>
+        /// search for the partners with the currently entered criteria
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        public void BtnSearch_Click(System.Object sender, System.EventArgs e)
         {
             if (!FKeepUpSearchFinishedCheck)
             {
+                // get the data from the currently edited control;
+                // otherwise there are not the right search criteria when hitting the enter key
+                ucoPartnerFindCriteria.CompleteBindings();
+
                 FCriteriaData = ucoPartnerFindCriteria.CriteriaData;
 
                 if (!ucoPartnerFindCriteria.HasSearchCriteria())
@@ -620,7 +629,7 @@ namespace Ict.Petra.Client.MPartner.Gui
                     TUserDefaults.PARTNER_FINDOPTIONS_EXACTPARTNERKEYMATCHSEARCH,
                     true);
 
-                // used to destory server System.Object here
+                // used to destory server object here
                 // Update UI
                 grdResult.SendToBack();
                 grpResult.Text = Resourcestrings.StrSearchResult;

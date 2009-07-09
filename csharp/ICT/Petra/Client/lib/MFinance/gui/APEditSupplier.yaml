@@ -38,7 +38,7 @@ RootNode:
         cmbSupplierType: 
             Label:Supplier &Type
             DataField: AApSupplier.SupplierType
-            OptionalValues: NORMAL, CREDIT CARD
+            OptionalValues: [NORMAL, CREDIT CARD]
         cmbAPAccount: {Label=&AP Account, DataField=AApSupplier.DefaultApAccount, LookupTODO=AAccountCodesWithFILTER???}
         cmbDefaultBankAccount: {Label=Default &Bank Account, DataField=AApSupplier.DefaultBankAccount}
         cmbCostCentre: {Label=Default C&ost Centre, DataField=AApSupplier.DefaultCostCentre}
@@ -48,6 +48,6 @@ RootNode:
         cmbDefaultPaymentType:
             Label: Default &Payment Type
             DataField: AApSupplier.PaymentType
-            OptionalValues: CASH, CHEQUE, TRANSFER
+            OptionalValues: [CASH, CHEQUE, TRANSFER]
         nudDiscountDays: {Label=Number of Days for &Discount (0 for none), DataField=AApSupplier.DefaultDiscountDays}
         txtDiscountValue: {Label=Discount &Value (%), DataField=AApSupplier.DefaultDiscountPercentage, ActiveTODO="nudDiscountDays.Value > 0"}

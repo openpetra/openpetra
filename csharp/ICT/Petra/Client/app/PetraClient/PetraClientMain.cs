@@ -320,7 +320,7 @@ namespace Ict.Petra.Client.App.PetraClient
 
                     // leave out 'Revision' and 'Build'
                     MainWindow.Text = "OpenPetra.org " +
-                                      System.Reflection.Assembly.GetEntryAssembly().GetName().Version.ToString(2);
+                                      System.Reflection.Assembly.GetEntryAssembly().GetName().Version.ToString(3);
 
                     // TODO: user defined constructor with more details
                     //                    FProcessID, FWelcomeMessage, FSystemEnabled);

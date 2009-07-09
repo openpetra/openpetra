@@ -240,6 +240,13 @@ namespace Ict.Tools.CodeGeneration.Winforms
                 AControlName + AEvent + ");" + Environment.NewLine);
         }
 
+        public void SetEventHandlerToControl(string AControlName, string AEvent, string AEventHandlerType, string AEventHandlingMethod)
+        {
+            FTemplate.AddToCodelet("INITUSERCONTROLS",
+                "this." + AControlName + "." + AEvent +
+                " += new " + AEventHandlerType + "(" + AEventHandlingMethod + ");" + Environment.NewLine);
+        }
+
         public void SetEventHandlerForForm(TEventHandler handler)
         {
             string localname = handler.eventHandler;
