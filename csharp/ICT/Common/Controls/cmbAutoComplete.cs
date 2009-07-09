@@ -1268,6 +1268,18 @@ namespace Ict.Common.Controls
             BestMatch = -1;
             SearchString = SearchString.ToUpper();
 
+            if ((DataSource == null) && (FStringTable == null))
+            {
+                // use the normal Items list with string object
+                foreach (string value in Items)
+                {
+                    if (value == SearchString)
+                    {
+                        return Items.IndexOf(value);
+                    }
+                }
+            }
+
             foreach (object Item in Items)
             {
                 TmpRowView = (System.Data.DataRowView)Item;
@@ -1447,6 +1459,15 @@ namespace Ict.Common.Controls
         public string GetSelectedString(int ColumnNumber)
         {
             string ReturnValue = "";
+
+            if ((DataSource == null) && (FStringTable == null))
+            {
+                if (Items.Count > 0)
+                {
+                    // use the normal Items values, not the datasource etc
+                    return Convert.ToString(Items[this.SelectedIndex]);
+                }
+            }
 
             if (ColumnNumber == -1)
             {

@@ -274,6 +274,25 @@ namespace Ict.Petra.Client.CommonControls
         }
 
         /// <summary>
+        /// set the string that should be selected;
+        /// uses TCmbVersatile.SetSelectedString
+        /// </summary>
+        /// <param name="ASelectedString"></param>
+        public void SetSelectedString(string ASelectedString)
+        {
+            this.cmbAutoPopulated.cmbCombobox.SetSelectedString(ASelectedString);
+        }
+
+        /// <summary>
+        /// get the selected string
+        /// uses TCmbVersatile.GetSelectedString
+        /// </summary>
+        public string GetSelectedString()
+        {
+            return this.cmbAutoPopulated.cmbCombobox.GetSelectedString();
+        }
+
+        /// <summary>
         /// todoComment
         /// </summary>
         public void InitialiseUserControl()

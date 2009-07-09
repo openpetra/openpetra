@@ -415,8 +415,8 @@ namespace Ict.Petra.Client.CommonForms
             else
             {
                 // MessageBox.Show('TFrmPetra.TFrmPetra_Closing: GFormsList.Remove(Self as Form)');
-                TFormsList.GFormsList.Remove(FWinForm);
                 TFormsList.GFormsList.NotifyWindowClose(this.FWinForm.Handle);
+                TFormsList.GFormsList.Remove(FWinForm);
             }
         }
 

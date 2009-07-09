@@ -214,6 +214,22 @@ namespace Ict.Tools.CodeGeneration.Winforms
                 ActionEnabling += "    " + ctrl.controlName + ".Enabled = e.Enabled;" + Environment.NewLine;
                 ActionEnabling += "}" + Environment.NewLine;
                 writer.Template.AddToCodelet("ACTIONENABLING", ActionEnabling);
+
+                // deal with action handler
+                TActionHandler ActionHandler = writer.CodeStorage.FActionList[ActionToPerform];
+                writer.SetEventHandlerToControl(ctrl.controlName, "Click");
+                writer.SetEventHandlerFunction(ctrl.controlName, "Click", ActionToPerform + "(sender, e);");
+                SetControlActionProperties(writer, ctrl, ActionHandler);
+
+                // use the label from the action
+                ctrl.Label = ActionHandler.actionLabel;
+            }
+            else if (ctrl.HasAttribute("ActionClick"))
+            {
+                string ActionClickToPerform = ctrl.GetAttribute("ActionClick");
+
+                writer.SetEventHandlerToControl(ctrl.controlName, "Click");
+                writer.SetEventHandlerFunction(ctrl.controlName, "Click", ActionClickToPerform + "();");
             }
 
             if (ctrl.HasAttribute("DataField"))

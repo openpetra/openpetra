@@ -163,8 +163,6 @@ namespace Ict.Petra.Server.MFinance.AccountsPayable.UIConnectors
                 SubmitChangesTransaction = DBAccess.GDBAccessObj.BeginTransaction(IsolationLevel.Serializable);
                 try
                 {
-                    AInspectDS.AcceptChanges();
-
                     if (AApSupplierAccess.SubmitChanges(AInspectDS.AApSupplier, SubmitChangesTransaction,
                             out SingleVerificationResultCollection))
                     {

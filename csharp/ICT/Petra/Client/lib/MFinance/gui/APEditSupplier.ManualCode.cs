@@ -40,7 +40,9 @@ using Ict.Common.Controls;
 using Ict.Petra.Client.CommonForms;
 using Ict.Petra.Shared.MFinance.AP.Data;
 using Ict.Petra.Shared.Interfaces.MFinance.AccountsPayable.UIConnectors;
+using Ict.Petra.Client.App.Gui;
 using Ict.Petra.Client.App.Core.RemoteObjects;
+using Ict.Petra.Client.MPartner.Gui;
 
 namespace Ict.Petra.Client.MFinance.Gui
 {
@@ -91,6 +93,26 @@ namespace Ict.Petra.Client.MFinance.Gui
             FSupplierEditUIConnector = TRemote.MFinance.AccountsPayable.UIConnectors.SupplierEdit(APartnerKey);
             FMainDS = FSupplierEditUIConnector.GetData();
             ShowData();
+        }
+
+        /// <summary>
+        /// open the Partner Edit screen for the supplier
+        /// </summary>
+        private void EditPartner()
+        {
+            FPetraUtilsObject.WriteToStatusBar("Opening Partner in Partner Edit screen...");
+            this.Cursor = Cursors.WaitCursor;
+
+            try
+            {
+                TPartnerEditDSWinForm frm = new TPartnerEditDSWinForm(this.Handle);
+                frm.SetParameters(TScreenMode.smEdit, FMainDS.AApSupplier[0].PartnerKey);
+                frm.Show();
+            }
+            finally
+            {
+                this.Cursor = Cursors.Default;
+            }
         }
 
         /// <summary>
@@ -240,6 +262,9 @@ namespace Ict.Petra.Client.MFinance.Gui
 
                             // Merge back with data from the Server (eg. for getting Sequence values)
                             AInspectDS.Merge(SubmitDS, false);
+
+                            // need to accept the new modification ID
+                            AInspectDS.AcceptChanges();
 
                             // Update UI
                             FPetraUtilsObject.WriteToStatusBar("Data successfully saved.");

@@ -115,6 +115,10 @@
       <Project>{A3E8D62A-D07D-44D9-A286-68220B3AA94F}</Project>
       <Name>Ict.Petra.Client.App.Core.RemoteObjects</Name>
     </ProjectReference>
+    <ProjectReference Include="..\..\..\app\Gui\Ict.Petra.Client.App.Gui.csproj">
+      <Project>{7C72F5ED-C494-4B58-AA90-2B948D4CF1D7}</Project>
+      <Name>Ict.Petra.Client.App.Gui</Name>
+    </ProjectReference>
     <ProjectReference Include="..\..\..\CommonControls\gui\Ict.Petra.Client.CommonControls.Gui.csproj">
       <Project>{7B102B6E-0873-45EE-85D7-BD37126EAE21}</Project>
       <Name>Ict.Petra.Client.CommonControls.Gui</Name>

@@ -235,6 +235,10 @@ namespace Ict.Petra.Client.CommonForms
                 {
                     ((NumericUpDown)ctrl).ValueChanged += new EventHandler(this.MultiEventHandler);
                 }
+                else if (ctrl.GetType() == typeof(TCmbAutoComplete))
+                {
+                    ((TCmbAutoComplete)ctrl).SelectedValueChanged += new EventHandler(this.MultiEventHandler);
+                }
                 else if (ctrl.GetType() == typeof(TCmbVersatile))
                 {
                     ((TCmbVersatile)ctrl).SelectedValueChanged += new EventHandler(this.MultiEventHandler);
@@ -541,7 +545,6 @@ namespace Ict.Petra.Client.CommonForms
                     }
 
                     ReturnValue = true;
-                    FWinForm.Close();
                 }
                 else if (SaveQuestionAnswer == System.Windows.Forms.DialogResult.No)
                 {
@@ -573,7 +576,7 @@ namespace Ict.Petra.Client.CommonForms
          */
         public override void TFrmPetra_Closing(System.Object sender, System.ComponentModel.CancelEventArgs e)
         {
-            if (!CloseFormCheckRun)
+            if ((e != null) && !CloseFormCheckRun)
             {
                 if (!CloseFormCheck())
                 {
@@ -582,7 +585,7 @@ namespace Ict.Petra.Client.CommonForms
                 }
             }
 
-            if (e.Cancel == false)
+            if ((e == null) || (e.Cancel == false))
             {
                 // tidy up
                 base.TFrmPetra_Closing(sender, e);

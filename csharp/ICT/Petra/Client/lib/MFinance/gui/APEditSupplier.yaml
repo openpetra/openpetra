@@ -15,7 +15,7 @@ RootNode:
             Controls: [txtPartnerKey, btnEditPartner]
             ControlsOrientation: horizontal
             Dock:Top
-        btnEditPartner: {Label=&Edit Partner info of Supplier}
+        btnEditPartner: {Label=&Edit Partner info of Supplier, ActionClick=EditPartner}
         pnlPartnerInfo2:
             Controls: [txtPartnerName]
             Dock:Top

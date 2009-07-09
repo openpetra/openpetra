@@ -79,22 +79,8 @@ namespace Ict.Tools.CodeGeneration.Winforms
         public override void SetControlProperties(IFormWriter writer, TControlDef ctrl)
         {
             base.SetControlProperties(writer, ctrl);
-            string labelText = "";
-            labelText = ctrl.Label;
 
-            string ActionToPerform = ctrl.GetAttribute("Action");
-
-            if (writer.CodeStorage.FActionList.ContainsKey(ActionToPerform))
-            {
-                TActionHandler ActionHandler = writer.CodeStorage.FActionList[ActionToPerform];
-                writer.SetEventHandlerToControl(ctrl.controlName, "Click");
-                writer.SetEventHandlerFunction(ctrl.controlName, "Click", ActionToPerform + "(sender, e);");
-
-                SetControlActionProperties(writer, ctrl, ActionHandler);
-                labelText = ActionHandler.actionLabel;
-            }
-
-            writer.SetControlProperty(ctrl.controlName, "Text", "\"" + labelText + "\"");
+            writer.SetControlProperty(ctrl.controlName, "Text", "\"" + ctrl.Label + "\"");
         }
     }
     public class TabPageGenerator : GroupBoxGenerator
@@ -232,7 +218,7 @@ namespace Ict.Tools.CodeGeneration.Winforms
     public class ComboBoxGenerator : TControlGenerator
     {
         public ComboBoxGenerator()
-            : base("cmb", typeof(ComboBox))
+            : base("cmb", "Ict.Common.Controls.TCmbAutoComplete")
         {
         }
 
@@ -259,7 +245,12 @@ namespace Ict.Tools.CodeGeneration.Winforms
                 return ctrl.controlName + ".SelectedIndex = -1;";
             }
 
-            return ctrl.controlName + ".SelectedValue = " + AFieldOrNull + ";";
+            if (AFieldTypeDotNet != "String")
+            {
+                return ctrl.controlName + ".SetSelectedInt(" + AFieldOrNull + ");";
+            }
+
+            return ctrl.controlName + ".SetSelectedString(" + AFieldOrNull + ");";
         }
 
         protected override string GetControlValue(TControlDef ctrl, string AFieldTypeDotNet)
@@ -269,7 +260,35 @@ namespace Ict.Tools.CodeGeneration.Winforms
                 return ctrl.controlName + ".SelectedIndex == -1";
             }
 
-            return "(" + AFieldTypeDotNet + ")" + ctrl.controlName + ".SelectedValue";
+            if (AFieldTypeDotNet != "String")
+            {
+                return ctrl.controlName + ".GetSelectedInt()";
+            }
+
+            return ctrl.controlName + ".GetSelectedString()";
+        }
+
+        public override void SetControlProperties(IFormWriter writer, TControlDef ctrl)
+        {
+            base.SetControlProperties(writer, ctrl);
+
+            if (ctrl.HasAttribute("OptionalValues"))
+            {
+                StringCollection values = StringHelper.StrSplit(ctrl.GetAttribute("OptionalValues"), ",");
+                string formattedValues = "";
+
+                foreach (string value in values)
+                {
+                    if (formattedValues.Length > 0)
+                    {
+                        formattedValues += ",";
+                    }
+
+                    formattedValues += "\"" + value + "\"";
+                }
+
+                writer.CallControlFunction(ctrl.controlName, "Items.AddRange(new object[] {" + formattedValues + "});");
+            }
         }
     }
     public class CheckBoxGenerator : TControlGenerator
@@ -925,33 +944,14 @@ namespace Ict.Tools.CodeGeneration.Winforms
                     "})");
             }
 
-            string mnuLabel = ctrl.Label;
-            string ActionToPerform = ctrl.GetAttribute("Action");
-
-            if (writer.CodeStorage.FActionList.ContainsKey(ActionToPerform))
-            {
-                TActionHandler ActionHandler = writer.CodeStorage.FActionList[ActionToPerform];
-
-                writer.SetEventHandlerToControl(ctrl.controlName, "Click");
-                writer.SetEventHandlerFunction(ctrl.controlName, "Click", ActionToPerform + "(sender, e);");
-
-                SetControlActionProperties(writer, ctrl, ActionHandler);
-                mnuLabel = ActionHandler.actionLabel;
-            }
-            else if (ctrl.HasAttribute("ActionClick"))
-            {
-                string ActionClickToPerform = ctrl.GetAttribute("ActionClick");
-
-                writer.SetEventHandlerToControl(ctrl.controlName, "Click");
-                writer.SetEventHandlerFunction(ctrl.controlName, "Click", ActionClickToPerform + "();");
-            }
-            else if (ctrl.NumberChildren == 0)
+            // deactivate menu items that have no action assigned yet.
+            if (!ctrl.HasAttribute("Action") && !ctrl.HasAttribute("ActionClick") && (ctrl.NumberChildren == 0))
             {
                 string ActionEnabling = ctrl.controlName + ".Enabled = false;" + Environment.NewLine;
                 writer.Template.AddToCodelet("ACTIONENABLING", ActionEnabling);
             }
 
-            writer.SetControlProperty(ctrl.controlName, "Text", "\"" + mnuLabel + "\"");
+            writer.SetControlProperty(ctrl.controlName, "Text", "\"" + ctrl.Label + "\"");
 
             // todo: this.toolStripMenuItem1.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
         }
@@ -1048,22 +1048,8 @@ namespace Ict.Tools.CodeGeneration.Winforms
         public override void SetControlProperties(IFormWriter writer, TControlDef ctrl)
         {
             base.SetControlProperties(writer, ctrl);
-            string Label = ctrl.Label;
-            string ActionToPerform = ctrl.GetAttribute("Action");
 
-            if (writer.CodeStorage.FActionList.ContainsKey(ActionToPerform))
-            {
-                TActionHandler ActionHandler = writer.CodeStorage.FActionList[ActionToPerform];
-
-                writer.SetEventHandlerToControl(ctrl.controlName, "Click");
-                writer.SetEventHandlerFunction(ctrl.controlName, "Click", ActionToPerform + "(sender, e);");
-
-                SetControlActionProperties(writer, ctrl, ActionHandler);
-
-                Label = ActionHandler.actionLabel;
-            }
-
-            writer.SetControlProperty(ctrl.controlName, "Text", "\"" + Label + "\"");
+            writer.SetControlProperty(ctrl.controlName, "Text", "\"" + ctrl.Label + "\"");
         }
     }
 

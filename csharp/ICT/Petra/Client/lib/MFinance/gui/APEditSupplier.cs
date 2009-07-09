@@ -107,6 +107,11 @@ namespace Ict.Petra.Client.MFinance.Gui
       FPetraUtilsObject.InitActionState();
     }
 
+    private void btnEditPartnerClick(object sender, EventArgs e)
+    {
+        EditPartner();
+    }
+
     private void tbbSaveClick(object sender, EventArgs e)
     {
         actSave(sender, e);
@@ -145,14 +150,14 @@ namespace Ict.Petra.Client.MFinance.Gui
     private void ShowData()
     {
         txtPartnerKey.Text = String.Format("{0:0000000000}", FMainDS.AApSupplier[0].PartnerKey);
-        cmbCurrency.SelectedValue = FMainDS.AApSupplier[0].CurrencyCode;
+        cmbCurrency.SetSelectedString(FMainDS.AApSupplier[0].CurrencyCode);
         if (FMainDS.AApSupplier[0].IsSupplierTypeNull())
         {
             cmbSupplierType.SelectedIndex = -1;
         }
         else
         {
-            cmbSupplierType.SelectedValue = FMainDS.AApSupplier[0].SupplierType;
+            cmbSupplierType.SetSelectedString(FMainDS.AApSupplier[0].SupplierType);
         }
         if (FMainDS.AApSupplier[0].IsPreferredScreenDisplayNull())
         {
@@ -176,7 +181,7 @@ namespace Ict.Petra.Client.MFinance.Gui
         }
         else
         {
-            cmbDefaultPaymentType.SelectedValue = FMainDS.AApSupplier[0].PaymentType;
+            cmbDefaultPaymentType.SetSelectedString(FMainDS.AApSupplier[0].PaymentType);
         }
         if (FMainDS.AApSupplier[0].IsDefaultDiscountDaysNull())
         {
@@ -200,7 +205,7 @@ namespace Ict.Petra.Client.MFinance.Gui
         }
         else
         {
-            cmbAPAccount.SelectedValue = FMainDS.AApSupplier[0].DefaultApAccount;
+            cmbAPAccount.SetSelectedString(FMainDS.AApSupplier[0].DefaultApAccount);
         }
         if (FMainDS.AApSupplier[0].IsDefaultBankAccountNull())
         {
@@ -208,7 +213,7 @@ namespace Ict.Petra.Client.MFinance.Gui
         }
         else
         {
-            cmbDefaultBankAccount.SelectedValue = FMainDS.AApSupplier[0].DefaultBankAccount;
+            cmbDefaultBankAccount.SetSelectedString(FMainDS.AApSupplier[0].DefaultBankAccount);
         }
         if (FMainDS.AApSupplier[0].IsDefaultCostCentreNull())
         {
@@ -216,7 +221,7 @@ namespace Ict.Petra.Client.MFinance.Gui
         }
         else
         {
-            cmbCostCentre.SelectedValue = FMainDS.AApSupplier[0].DefaultCostCentre;
+            cmbCostCentre.SetSelectedString(FMainDS.AApSupplier[0].DefaultCostCentre);
         }
         if (FMainDS.AApSupplier[0].IsDefaultExpAccountNull())
         {
@@ -224,7 +229,7 @@ namespace Ict.Petra.Client.MFinance.Gui
         }
         else
         {
-            cmbExpenseAccount.SelectedValue = FMainDS.AApSupplier[0].DefaultExpAccount;
+            cmbExpenseAccount.SetSelectedString(FMainDS.AApSupplier[0].DefaultExpAccount);
         }
         ShowDataManual();
     }
@@ -232,14 +237,14 @@ namespace Ict.Petra.Client.MFinance.Gui
     private void GetDataFromControls()
     {
         FMainDS.AApSupplier[0].PartnerKey = Convert.ToInt64(txtPartnerKey.Text);
-        FMainDS.AApSupplier[0].CurrencyCode = (String)cmbCurrency.SelectedValue;
+        FMainDS.AApSupplier[0].CurrencyCode = cmbCurrency.GetSelectedString();
         if (cmbSupplierType.SelectedIndex == -1)
         {
             FMainDS.AApSupplier[0].SetSupplierTypeNull();
         }
         else
         {
-            FMainDS.AApSupplier[0].SupplierType = (String)cmbSupplierType.SelectedValue;
+            FMainDS.AApSupplier[0].SupplierType = cmbSupplierType.GetSelectedString();
         }
         FMainDS.AApSupplier[0].PreferredScreenDisplay = (Int32)nudInvoiceAging.Value;
         FMainDS.AApSupplier[0].DefaultCreditTerms = (Int32)nudCreditTerms.Value;
@@ -249,7 +254,7 @@ namespace Ict.Petra.Client.MFinance.Gui
         }
         else
         {
-            FMainDS.AApSupplier[0].PaymentType = (String)cmbDefaultPaymentType.SelectedValue;
+            FMainDS.AApSupplier[0].PaymentType = cmbDefaultPaymentType.GetSelectedString();
         }
         FMainDS.AApSupplier[0].DefaultDiscountDays = (Int32)nudDiscountDays.Value;
         if (txtDiscountValue.Text.Length == 0)
@@ -266,7 +271,7 @@ namespace Ict.Petra.Client.MFinance.Gui
         }
         else
         {
-            FMainDS.AApSupplier[0].DefaultApAccount = (String)cmbAPAccount.SelectedValue;
+            FMainDS.AApSupplier[0].DefaultApAccount = cmbAPAccount.GetSelectedString();
         }
         if (cmbDefaultBankAccount.SelectedIndex == -1)
         {
@@ -274,7 +279,7 @@ namespace Ict.Petra.Client.MFinance.Gui
         }
         else
         {
-            FMainDS.AApSupplier[0].DefaultBankAccount = (String)cmbDefaultBankAccount.SelectedValue;
+            FMainDS.AApSupplier[0].DefaultBankAccount = cmbDefaultBankAccount.GetSelectedString();
         }
         if (cmbCostCentre.SelectedIndex == -1)
         {
@@ -282,7 +287,7 @@ namespace Ict.Petra.Client.MFinance.Gui
         }
         else
         {
-            FMainDS.AApSupplier[0].DefaultCostCentre = (String)cmbCostCentre.SelectedValue;
+            FMainDS.AApSupplier[0].DefaultCostCentre = cmbCostCentre.GetSelectedString();
         }
         if (cmbExpenseAccount.SelectedIndex == -1)
         {
@@ -290,7 +295,7 @@ namespace Ict.Petra.Client.MFinance.Gui
         }
         else
         {
-            FMainDS.AApSupplier[0].DefaultExpAccount = (String)cmbExpenseAccount.SelectedValue;
+            FMainDS.AApSupplier[0].DefaultExpAccount = cmbExpenseAccount.GetSelectedString();
         }
         GetDataFromControlsManual();
     }

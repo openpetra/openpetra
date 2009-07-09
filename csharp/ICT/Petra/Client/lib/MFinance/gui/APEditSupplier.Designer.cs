@@ -86,7 +86,7 @@ namespace Ict.Petra.Client.MFinance.Gui
             this.tableLayoutPanel5 = new System.Windows.Forms.TableLayoutPanel();
             this.cmbCurrency = new Ict.Petra.Client.CommonControls.TCmbAutoPopulated();
             this.lblCurrency = new System.Windows.Forms.Label();
-            this.cmbSupplierType = new System.Windows.Forms.ComboBox();
+            this.cmbSupplierType = new Ict.Common.Controls.TCmbAutoComplete();
             this.lblSupplierType = new System.Windows.Forms.Label();
             this.grpMiscDefaults = new System.Windows.Forms.GroupBox();
             this.tableLayoutPanel6 = new System.Windows.Forms.TableLayoutPanel();
@@ -94,7 +94,7 @@ namespace Ict.Petra.Client.MFinance.Gui
             this.lblInvoiceAging = new System.Windows.Forms.Label();
             this.nudCreditTerms = new System.Windows.Forms.NumericUpDown();
             this.lblCreditTerms = new System.Windows.Forms.Label();
-            this.cmbDefaultPaymentType = new System.Windows.Forms.ComboBox();
+            this.cmbDefaultPaymentType = new Ict.Common.Controls.TCmbAutoComplete();
             this.lblDefaultPaymentType = new System.Windows.Forms.Label();
             this.nudDiscountDays = new System.Windows.Forms.NumericUpDown();
             this.lblDiscountDays = new System.Windows.Forms.Label();
@@ -102,13 +102,13 @@ namespace Ict.Petra.Client.MFinance.Gui
             this.lblDiscountValue = new System.Windows.Forms.Label();
             this.grpAccountInformation = new System.Windows.Forms.GroupBox();
             this.tableLayoutPanel7 = new System.Windows.Forms.TableLayoutPanel();
-            this.cmbAPAccount = new System.Windows.Forms.ComboBox();
+            this.cmbAPAccount = new Ict.Common.Controls.TCmbAutoComplete();
             this.lblAPAccount = new System.Windows.Forms.Label();
-            this.cmbDefaultBankAccount = new System.Windows.Forms.ComboBox();
+            this.cmbDefaultBankAccount = new Ict.Common.Controls.TCmbAutoComplete();
             this.lblDefaultBankAccount = new System.Windows.Forms.Label();
-            this.cmbCostCentre = new System.Windows.Forms.ComboBox();
+            this.cmbCostCentre = new Ict.Common.Controls.TCmbAutoComplete();
             this.lblCostCentre = new System.Windows.Forms.Label();
-            this.cmbExpenseAccount = new System.Windows.Forms.ComboBox();
+            this.cmbExpenseAccount = new Ict.Common.Controls.TCmbAutoComplete();
             this.lblExpenseAccount = new System.Windows.Forms.Label();
             this.tbrMain = new System.Windows.Forms.ToolStrip();
             this.tbbSave = new System.Windows.Forms.ToolStripButton();
@@ -216,6 +216,7 @@ namespace Ict.Petra.Client.MFinance.Gui
             this.btnEditPartner.Location = new System.Drawing.Point(2,2);
             this.btnEditPartner.Name = "btnEditPartner";
             this.btnEditPartner.AutoSize = true;
+            this.btnEditPartner.Click += new System.EventHandler(this.btnEditPartnerClick);
             this.btnEditPartner.Text = "&Edit Partner info of Supplier";
             this.tableLayoutPanel2.Controls.Add(this.btnEditPartner, 2, 0);
             this.tableLayoutPanel2.SetColumnSpan(this.btnEditPartner, 2);
@@ -323,6 +324,7 @@ namespace Ict.Petra.Client.MFinance.Gui
             this.cmbSupplierType.Location = new System.Drawing.Point(2,2);
             this.cmbSupplierType.Name = "cmbSupplierType";
             this.cmbSupplierType.Size = new System.Drawing.Size(150, 28);
+            this.cmbSupplierType.Items.AddRange(new object[] {"NORMAL","CREDIT CARD"});;
             //
             // lblSupplierType
             //
@@ -397,6 +399,7 @@ namespace Ict.Petra.Client.MFinance.Gui
             this.cmbDefaultPaymentType.Location = new System.Drawing.Point(2,2);
             this.cmbDefaultPaymentType.Name = "cmbDefaultPaymentType";
             this.cmbDefaultPaymentType.Size = new System.Drawing.Size(150, 28);
+            this.cmbDefaultPaymentType.Items.AddRange(new object[] {"CASH","CHEQUE","TRANSFER"});;
             //
             // lblDefaultPaymentType
             //
@@ -756,7 +759,7 @@ namespace Ict.Petra.Client.MFinance.Gui
         private System.Windows.Forms.TableLayoutPanel tableLayoutPanel5;
         private Ict.Petra.Client.CommonControls.TCmbAutoPopulated cmbCurrency;
         private System.Windows.Forms.Label lblCurrency;
-        private System.Windows.Forms.ComboBox cmbSupplierType;
+        private Ict.Common.Controls.TCmbAutoComplete cmbSupplierType;
         private System.Windows.Forms.Label lblSupplierType;
         private System.Windows.Forms.GroupBox grpMiscDefaults;
         private System.Windows.Forms.TableLayoutPanel tableLayoutPanel6;
@@ -764,7 +767,7 @@ namespace Ict.Petra.Client.MFinance.Gui
         private System.Windows.Forms.Label lblInvoiceAging;
         private System.Windows.Forms.NumericUpDown nudCreditTerms;
         private System.Windows.Forms.Label lblCreditTerms;
-        private System.Windows.Forms.ComboBox cmbDefaultPaymentType;
+        private Ict.Common.Controls.TCmbAutoComplete cmbDefaultPaymentType;
         private System.Windows.Forms.Label lblDefaultPaymentType;
         private System.Windows.Forms.NumericUpDown nudDiscountDays;
         private System.Windows.Forms.Label lblDiscountDays;
@@ -772,13 +775,13 @@ namespace Ict.Petra.Client.MFinance.Gui
         private System.Windows.Forms.Label lblDiscountValue;
         private System.Windows.Forms.GroupBox grpAccountInformation;
         private System.Windows.Forms.TableLayoutPanel tableLayoutPanel7;
-        private System.Windows.Forms.ComboBox cmbAPAccount;
+        private Ict.Common.Controls.TCmbAutoComplete cmbAPAccount;
         private System.Windows.Forms.Label lblAPAccount;
-        private System.Windows.Forms.ComboBox cmbDefaultBankAccount;
+        private Ict.Common.Controls.TCmbAutoComplete cmbDefaultBankAccount;
         private System.Windows.Forms.Label lblDefaultBankAccount;
-        private System.Windows.Forms.ComboBox cmbCostCentre;
+        private Ict.Common.Controls.TCmbAutoComplete cmbCostCentre;
         private System.Windows.Forms.Label lblCostCentre;
-        private System.Windows.Forms.ComboBox cmbExpenseAccount;
+        private Ict.Common.Controls.TCmbAutoComplete cmbExpenseAccount;
         private System.Windows.Forms.Label lblExpenseAccount;
         private System.Windows.Forms.ToolStrip tbrMain;
         private System.Windows.Forms.ToolStripButton tbbSave;
