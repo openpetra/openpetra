@@ -73,8 +73,8 @@ namespace Ict.Petra.Client.App.Core
 
         /// <summary>Holds reference to an instance of the Isolated Storage file system</summary>
         public static IsolatedStorageFile UIsolatedStorageFile = IsolatedStorageFile.GetStore(
-                IsolatedStorageScope.User | IsolatedStorageScope.Assembly |
-                IsolatedStorageScope.Roaming, null, null);
+            IsolatedStorageScope.User | IsolatedStorageScope.Assembly |
+            IsolatedStorageScope.Roaming, null, null);
 
         /// <summary>
         /// todoComment
@@ -720,6 +720,7 @@ namespace Ict.Petra.Client.App.Core
             DataTable CacheableDataTableFromFile = null;
             DataView CacheableDataTableFromFileDV;
             String HashCode = "";
+
             System.Type CacheableTableSystemType;
             Int32 TmpSize;
             Boolean CacheableDataTableReloadNecessary = true;

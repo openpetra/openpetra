@@ -46,7 +46,7 @@ namespace {#NAMESPACE}
       {#INITMANUALCODE}
       FPetraUtilsObject.ActionEnablingEvent += ActionEnabledEvent;
       
-      FPetraUtilsObject.InitActionState();
+      {#INITACTIONSTATE}
     }
 
     {#EVENTHANDLERSIMPLEMENTATION}

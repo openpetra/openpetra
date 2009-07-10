@@ -155,6 +155,18 @@ namespace Ict.Tools.CodeGeneration.Winforms
             return ctrl.controlName + ".Value";
         }
 
+        /// <summary>
+        /// </summary>
+        /// <param name="writer"></param>
+        /// <param name="ctrl"></param>
+        /// <param name="AEvent">Click or DoubleClick or other</param>
+        /// <param name="ActionClickToPerform"></param>
+        public void AssignEventHandlerToControl(IFormWriter writer, TControlDef ctrl, string AEvent, string ActionClickToPerform)
+        {
+            writer.SetEventHandlerToControl(ctrl.controlName, AEvent);
+            writer.SetEventHandlerFunction(ctrl.controlName, AEvent, ActionClickToPerform + ";");
+        }
+
         public virtual void SetControlProperties(IFormWriter writer, TControlDef ctrl)
         {
             writer.Template.AddToCodelet("CONTROLINITIALISATION",
@@ -217,8 +229,7 @@ namespace Ict.Tools.CodeGeneration.Winforms
 
                 // deal with action handler
                 TActionHandler ActionHandler = writer.CodeStorage.FActionList[ActionToPerform];
-                writer.SetEventHandlerToControl(ctrl.controlName, "Click");
-                writer.SetEventHandlerFunction(ctrl.controlName, "Click", ActionToPerform + "(sender, e);");
+                AssignEventHandlerToControl(writer, ctrl, "Click", ActionHandler.actionName + "(sender, e)");
                 SetControlActionProperties(writer, ctrl, ActionHandler);
 
                 // use the label from the action
@@ -226,10 +237,25 @@ namespace Ict.Tools.CodeGeneration.Winforms
             }
             else if (ctrl.HasAttribute("ActionClick"))
             {
-                string ActionClickToPerform = ctrl.GetAttribute("ActionClick");
-
-                writer.SetEventHandlerToControl(ctrl.controlName, "Click");
-                writer.SetEventHandlerFunction(ctrl.controlName, "Click", ActionClickToPerform + "();");
+                if (ctrl.GetAttribute("ActionClick").StartsWith("act"))
+                {
+                    AssignEventHandlerToControl(writer, ctrl, "Click", ctrl.GetAttribute("ActionClick") + "(sender, e)");
+                }
+                else
+                {
+                    AssignEventHandlerToControl(writer, ctrl, "Click", ctrl.GetAttribute("ActionClick") + "()");
+                }
+            }
+            else if (ctrl.HasAttribute("ActionDoubleClick"))
+            {
+                if (ctrl.GetAttribute("ActionDoubleClick").StartsWith("act"))
+                {
+                    AssignEventHandlerToControl(writer, ctrl, "DoubleClick", ctrl.GetAttribute("ActionDoubleClick") + "(sender, e)");
+                }
+                else
+                {
+                    AssignEventHandlerToControl(writer, ctrl, "DoubleClick", ctrl.GetAttribute("ActionDoubleClick") + "()");
+                }
             }
 
             if (ctrl.HasAttribute("DataField"))

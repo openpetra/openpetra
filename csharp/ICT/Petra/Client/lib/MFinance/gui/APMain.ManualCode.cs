@@ -135,6 +135,7 @@ namespace Ict.Petra.Client.MFinance.Gui
                             grdSupplierResult.Focus();
                         }
 
+                        ActivateSelectedSupplier(grdSupplierResult.TotalPages > 0);
                         break;
 
                     case TAsyncExecProgressState.Aeps_Stopped:

@@ -82,7 +82,7 @@ namespace Ict.Tools.CodeGeneration.Winforms
 
             if (ctrl.GetAttribute("AcceptButton").ToLower() == "true")
             {
-                writer.Template.AddToCodelet("INITUSERCONTROLS", "this.AcceptButton = " + ctrl.controlName + ";");
+                writer.Template.AddToCodelet("INITUSERCONTROLS", "this.AcceptButton = " + ctrl.controlName + ";" + Environment.NewLine);
             }
 
             writer.SetControlProperty(ctrl.controlName, "Text", "\"" + ctrl.Label + "\"");
@@ -491,6 +491,17 @@ namespace Ict.Tools.CodeGeneration.Winforms
             : base("grd", typeof(Ict.Common.Controls.TSgrdDataGridPaged))
         {
             FGenerateLabel = false;
+        }
+
+        public override void SetControlProperties(IFormWriter writer, TControlDef ctrl)
+        {
+            base.SetControlProperties(writer, ctrl);
+
+            if (TYml2Xml.HasAttribute(ctrl.xmlNode, "SelectedRowActivates"))
+            {
+                // TODO: this function needs to be called by the manual code at the moment when eg a search finishes
+                // TODO: call "Activate" + TYml2Xml.GetAttribute(ctrl.xmlNode, "SelectedRowActivates")
+            }
         }
     }
 

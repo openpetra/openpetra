@@ -290,28 +290,32 @@ namespace Ict.Tools.CodeGeneration.Winforms
         public void AddActionHandlerImplementation(TActionHandler AAction)
         {
             // the actual call what happens when the action is executed
-            FCodeStorage.FActionHandlers +=
+            string ActionHandler =
                 "/// auto generated" + Environment.NewLine +
                 "protected void " + AAction.actionName + "(object sender, EventArgs e)" + Environment.NewLine +
                 "{" + Environment.NewLine;
 
             if (AAction.actionId.Length > 0)
             {
-                FCodeStorage.FActionHandlers += "    FPetraUtilsObject.ExecuteAction(eActionId." + AAction.actionId + ");" + Environment.NewLine;
+                ActionHandler += "    FPetraUtilsObject.ExecuteAction(eActionId." + AAction.actionId + ");" + Environment.NewLine;
             }
             else
             {
-                if (AAction.actionPerformance.Length > 0)
+                if (AAction.actionClick.Length > 0)
                 {
-                    FCodeStorage.FActionHandlers += "    " + AAction.actionPerformance + "(sender, e);" + Environment.NewLine;
+                    ActionHandler += "    " + AAction.actionClick + "(sender, e);" + Environment.NewLine;
                 }
                 else
                 {
-                    FCodeStorage.FActionHandlers += "    // TODO action " + AAction.actionName + Environment.NewLine;
+                    ActionHandler += "    // TODO action " + AAction.actionName + Environment.NewLine;
+
+                    //if we did not want the handler with just a TODO comment, we would need to return here.
                 }
             }
 
-            FCodeStorage.FActionHandlers += "}" + Environment.NewLine + Environment.NewLine;
+            ActionHandler += "}" + Environment.NewLine + Environment.NewLine;
+
+            FCodeStorage.FActionHandlers += ActionHandler;
         }
 
         /// <summary>
@@ -624,6 +628,8 @@ namespace Ict.Tools.CodeGeneration.Winforms
             FTemplate.AddToCodelet("INITUSERCONTROLS", "");
             FTemplate.AddToCodelet("INITMANUALCODE", "");
 
+            FTemplate.AddToCodelet("INITACTIONSTATE", "FPetraUtilsObject.InitActionState();" + Environment.NewLine);
+
             if (FCodeStorage.FHasManualCodeInOtherFile)
             {
                 FTemplate.AddToCodelet("INITMANUALCODE", "InitializeManualCode();");
@@ -667,7 +673,32 @@ namespace Ict.Tools.CodeGeneration.Winforms
             // add actions
             foreach (TActionHandler handler in FCodeStorage.FActionList.Values)
             {
-                AddActionHandlerImplementation(handler);
+                if (!handler.actionName.StartsWith("cnd"))
+                {
+                    AddActionHandlerImplementation(handler);
+                }
+
+                if (TYml2Xml.HasAttribute(handler.actionNode, "InitialValue"))
+                {
+                    FCodeStorage.FActionHandlers +=
+                        "/// auto generated" + Environment.NewLine +
+                        "protected void Activate" + handler.actionName.Substring(3) +
+                        "(bool AEnabled)" + Environment.NewLine +
+                        "{" + Environment.NewLine +
+                        "    {#ENABLEDEPENDINGACTIONS_" + handler.actionName + "}" + Environment.NewLine +
+                        "}" + Environment.NewLine + Environment.NewLine;
+                    Template.AddToCodelet(
+                        "INITACTIONSTATE",
+                        "Activate" + handler.actionName.Substring(3) + "(" + TYml2Xml.GetAttribute(handler.actionNode,
+                            "InitialValue") + ");" + Environment.NewLine);
+                }
+
+                if (TYml2Xml.HasAttribute(handler.actionNode, "Enabled"))
+                {
+                    Template.AddToCodelet(
+                        "ENABLEDEPENDINGACTIONS_" + TYml2Xml.GetAttribute(handler.actionNode, "Enabled"),
+                        "FPetraUtilsObject.EnableAction(\"" + handler.actionName + "\", AEnabled);" + Environment.NewLine);
+                }
             }
 
             FinishUpInitialisingControls();

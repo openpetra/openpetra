@@ -8,6 +8,7 @@ RootNode:
     WindowWidth: 754
     WindowHeight: 623
     Actions:
+        cndSelectedSupplier: {InitialValue=false}
         actSearch:
             Label: &Search
             ActionClick: SearchForSupplier
@@ -16,7 +17,7 @@ RootNode:
             ActionClick: SupplierTransactions
             Tooltip: Open the transactions of the supplier
             ShortCut: Ctrl+O
-            Active: {ValidRowInGrid=grdSupplierResult}
+            Enabled: cndSelectedSupplier
         actNewSupplier:
             Label: &New Supplier
             ActionClick: NewSupplier
@@ -27,15 +28,15 @@ RootNode:
             ActionClick: EditSupplier
             Tooltip: Change the details and settings of an existing supplier
             ShortCut: Ctrl+E
-            Active: {ValidRowInGrid=grdSupplierResult}
+            Enabled: cndSelectedSupplier
         actCreateInvoice:
             Label: Create &Invoice
             ShortCut: Ctrl+I
-            Active: {ValidRowInGrid=grdSupplierResult}
+            Enabled: cndSelectedSupplier
         actCreateCreditNote:
             Label: Create C&redit Note
             ShortCut: Ctrl+R
-            Active: {ValidRowInGrid=grdSupplierResult}
+            Enabled: cndSelectedSupplier
         actFindInvoice:
             Label: &Find Invoice...
             ShortCut: Ctrl+F
@@ -75,7 +76,7 @@ RootNode:
         pnlSupplierOptions:
             Controls: [chkShowOutstandingAmounts, chkHideInactiveSuppliers, cmbSupplierCurrency]
             ControlsOrientation: horizontal
-        grdSupplierResult: {Dock=Fill}
+        grdSupplierResult: {Dock=Fill, ActionDoubleClick=actSupplierTransactions, SelectedRowActivates=cndSelectedSupplier}
         grdInvoiceResult: {Dock=Fill}
         chkShowOutstandingAmounts: {Label=Show Outstanding &Amounts}
         chkHideInactiveSuppliers: {Label=Hide &Inactive Suppliers}

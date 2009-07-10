@@ -417,6 +417,7 @@ namespace Ict.Petra.Client.MFinance.Gui
             //
             this.grdSupplierResult.Name = "grdSupplierResult";
             this.grdSupplierResult.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.grdSupplierResult.DoubleClick += new System.EventHandler(this.grdSupplierResultDoubleClick);
             this.tableLayoutPanel5.Controls.Add(this.grdSupplierResult, 0, 1);
             this.tableLayoutPanel5.SetColumnSpan(this.grdSupplierResult, 2);
             this.tpgSuppliers.Text = "Suppliers";

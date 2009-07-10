@@ -121,6 +121,8 @@ namespace Ict.Petra.Client.MFinance.Gui
       FPetraUtilsObject.ActionEnablingEvent += ActionEnabledEvent;
 
       FPetraUtilsObject.InitActionState();
+      chkDueFutureCheckedChanged(null, null);
+      ActivateSelectedSupplier(false);
     }
 
     void chkDueFutureCheckedChanged(object sender, System.EventArgs e)
@@ -132,6 +134,11 @@ namespace Ict.Petra.Client.MFinance.Gui
     private void btnSearchClick(object sender, EventArgs e)
     {
         actSearch(sender, e);
+    }
+
+    private void grdSupplierResultDoubleClick(object sender, EventArgs e)
+    {
+        actSupplierTransactions(sender, e);
     }
 
     private void tbbTransactionsClick(object sender, EventArgs e)
@@ -321,6 +328,15 @@ namespace Ict.Petra.Client.MFinance.Gui
         mniSeparator5.Enabled = false;
         mniHelpAboutPetra.Enabled = false;
         mniHelpDevelopmentTeam.Enabled = false;
+    }
+
+    /// auto generated
+    protected void ActivateSelectedSupplier(bool AEnabled)
+    {
+        FPetraUtilsObject.EnableAction("actSupplierTransactions", AEnabled);
+        FPetraUtilsObject.EnableAction("actEditSupplier", AEnabled);
+        FPetraUtilsObject.EnableAction("actCreateInvoice", AEnabled);
+        FPetraUtilsObject.EnableAction("actCreateCreditNote", AEnabled);
     }
 
     /// auto generated

@@ -326,7 +326,7 @@ namespace Ict.Tools.CodeGeneration
             //actClose: {Label=&Close, ActionClick=MniFile_Close, Tooltip=Closes this window, Image=Close.ico}
 
             string ActionLabel = "";
-            string ActionPerformance = "";
+            string ActionClick = "";
             string ActionTooltip = "";
             string ActionImage = "";
             string ActionId = "";
@@ -340,7 +340,7 @@ namespace Ict.Tools.CodeGeneration
                         break;
 
                     case "ActionClick":
-                        ActionPerformance = attrib.Value;
+                        ActionClick = attrib.Value;
                         break;
 
                     case "ActionId":
@@ -357,7 +357,7 @@ namespace Ict.Tools.CodeGeneration
                 }
             }
 
-            TActionHandler result = new TActionHandler(AParsedNode.Name, ActionPerformance, ActionId, ActionLabel, ActionTooltip, ActionImage);
+            TActionHandler result = new TActionHandler(AParsedNode, AParsedNode.Name, ActionClick, ActionId, ActionLabel, ActionTooltip, ActionImage);
 
             if (FActionList.ContainsKey(AParsedNode.Name))
             {
@@ -392,11 +392,13 @@ namespace Ict.Tools.CodeGeneration
 
     public class TActionHandler
     {
-        public string actionName, actionPerformance, actionId, actionLabel, actionTooltip, actionImage;
-        public TActionHandler(string AName, string APerformance, string AActionId, string ALabel, string ATooltip, string AImage)
+        public string actionName, actionClick, actionId, actionLabel, actionTooltip, actionImage, activeValidRowInGrid;
+        public XmlNode actionNode;
+        public TActionHandler(XmlNode AActionNode, string AName, string AActionClick, string AActionId, string ALabel, string ATooltip, string AImage)
         {
+            actionNode = AActionNode;
             actionName = AName;
-            actionPerformance = APerformance;
+            actionClick = AActionClick;
             actionId = AActionId;
             actionLabel = ALabel;
             actionTooltip = ATooltip;

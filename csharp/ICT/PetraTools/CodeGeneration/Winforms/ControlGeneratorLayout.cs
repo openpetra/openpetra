@@ -296,6 +296,7 @@ namespace Ict.Tools.CodeGeneration.Winforms
                     ".CheckedChanged += new System.EventHandler(this." +
                     controlName +
                     "CheckedChanged);" + Environment.NewLine);
+                writer.Template.AddToCodelet("INITACTIONSTATE", controlName + "CheckedChanged(null, null);" + Environment.NewLine);
 
                 foreach (string childName in childControls)
                 {
