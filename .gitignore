@@ -10,3 +10,9 @@ db/basedb_progress
 OpenPetra.build.config
 *.exe.config
 *.CollectedGettext.cs
+qooxdoo/qooxdoo-sdk
+qooxdoo/OpenPetraOrg/cache
+qooxdoo/bin
+qooxdoo/Server.log
+qooxdoo/server.asmx
+qooxdoo/web.config

@@ -14,6 +14,7 @@
     <property name="SQLitedb.file" value="${OpenPetraRoot.dir}/setup/petra${PetraRelease}/petra.db"/>
     <property name="TargetLanguage.Pofile" value="${Translation.TargetLanguage}.po"/>
     <property name="TargetLanguage.PofileWithPath" value="${OpenPetraRoot.dir}/i18n/${Translation.TargetLanguage}.po"/>
+    <property name="WebServerInstall.dir" value="${OpenPetraRoot.dir}/qooxdoo/"/>
 
     <!-- could use nant -projecthelp instead -->
     <target name="help" depends="" description="Displays the available targets and parameters.">
@@ -309,9 +310,9 @@
     </target>
     <target name="startSOAPServer" description="only supports postgresql server at the moment, not sqlite; would need microsoft xsp">
         <copy file="${OpenPetraRoot.dir}/csharp/ICT/Petra/Server/app/WebService/server.asmx"
-                    tofile="${OpenPetraRoot.dir}/csharp/ICT/Petra/Server/_bin/Debug/server.asmx"/>
-        <mkdir dir="${OpenPetraRoot.dir}/csharp/ICT/Petra/Server/_bin/Debug/bin" failonerror="false"/>
-        <copy todir="${OpenPetraRoot.dir}/csharp/ICT/Petra/Server/_bin/Debug/bin">
+                    tofile="${WebServerInstall.dir}/server.asmx"/>
+        <mkdir dir="${WebServerInstall.dir}/bin" failonerror="false"/>
+        <copy todir="${WebServerInstall.dir}/bin">
             <!-- some unmanaged dlls cause problems for mono xsp -->
             <fileset basedir="${OpenPetraRoot.dir}/csharp/ICT/Petra/Server/_bin/Debug/">
                 <include name="*.dll" />
@@ -319,14 +320,14 @@
                 <exclude name="intl.dll" />
             </fileset>
         </copy>
-        <property name="webconfigfile" value="${OpenPetraRoot.dir}/csharp/ICT/Petra/Server/_bin/Debug/web.config"/>
+        <property name="webconfigfile" value="${WebServerInstall.dir}/web.config"/>
         <if test="${not file::exists(webconfigfile)}">
             <copy file="${OpenPetraRoot.dir}/csharp/ICT/Petra/Server/app/WebService/web-sample-${DBMS.Type}.config"
                 tofile="${webconfigfile}"/>
         </if>
         <!-- TODO: run on linux as well? -->
         <exec program="cmd.exe" 
-                workingdir="${OpenPetraRoot.dir}/csharp/ICT/Petra/Server/_bin/Debug"
+                workingdir="${WebServerInstall.dir}"
                 commandline="/C start xsp2 --verbose --root . --port 8081 --applications /:."
                 spawn="true">
             <environment>
@@ -335,6 +336,14 @@
             </environment>
         </exec>
         <echo message="in your browser, go to http://localhost:8081/server.asmx"/>
+        
+        <!-- todo: 
+          set path for python
+          cd U:\openpetraorg\qooxdoo\OpenPetraOrg
+          generate.py source-all
+        -->
+        
+        <echo message="in your browser, go to http://localhost:8081/OpenPetraOrg/source/"/>
     </target>
     
     <target name="generateORM" depends="compilePetraTools" description="Generate the typed datastore.">
