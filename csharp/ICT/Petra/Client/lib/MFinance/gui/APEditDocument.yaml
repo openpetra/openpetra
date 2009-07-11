@@ -43,6 +43,8 @@ RootNode:
             Label: E&xchange Rate
         nudCreditTerms:
             Label: Credit &Terms
+            DataField: AApDocument.CreditTerms
+            Width: 50
         btnEarlyPaymentDiscount:
             Label: Early Pyt Discount
         grpDetails:
@@ -61,9 +63,11 @@ RootNode:
                 Row4: [dtpDateApproved, btnUseTaxAccountCostCentre]
         txtNarrative:
             ColSpan: 2
+            Width: 350
             Label: Narrati&ve
         txtDetailReference:
             ColSpan: 2
+            Width: 350
             Label: Detail &Ref
         txtDetailAmount:
             Label: A&mount
@@ -80,9 +84,17 @@ RootNode:
             Label: Use Ta&x Acct+CC
         btnAddDetail:
             Label: Add De&tail
+            Align: Right
+            Width: 100
         btnRemoveDetail:
             Label: &Remove Detail
+            Align: Right
+            Width: 100
         btnAnalysisAttributes:
             Label: Analysis Attri&b.
+            Align: Right
+            Width: 100
         btnApproveDetail:
             Label: A&pprove Detail
+            Align: Right
+            Width: 150 

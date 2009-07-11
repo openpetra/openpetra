@@ -100,7 +100,19 @@ namespace Ict.Petra.Client.MFinance.Gui
       #endregion
 
       FPetraUtilsObject = new TFrmPetraEditUtils(AParentFormHandle, this, stbMain);
+      FPetraUtilsObject.SetStatusBarText(txtPartnerKey, Catalog.GetString("Reference to the partner key for this supplier"));
+      FPetraUtilsObject.SetStatusBarText(cmbCurrency, Catalog.GetString("The currency code to use for this supplier."));
       cmbCurrency.InitialiseUserControl();
+      FPetraUtilsObject.SetStatusBarText(cmbSupplierType, Catalog.GetString("What type of supplier this is - normal, credit card, maybe something else."));
+      FPetraUtilsObject.SetStatusBarText(nudInvoiceAging, Catalog.GetString("Number of months to display invoices and credit notes"));
+      FPetraUtilsObject.SetStatusBarText(nudCreditTerms, Catalog.GetString("Default credit terms to use for invoices from this supplier."));
+      FPetraUtilsObject.SetStatusBarText(cmbDefaultPaymentType, Catalog.GetString("The default type of payment to use when paying this supplier."));
+      FPetraUtilsObject.SetStatusBarText(nudDiscountDays, Catalog.GetString("Default number of days in which the discount percentage has effect."));
+      FPetraUtilsObject.SetStatusBarText(txtDiscountValue, Catalog.GetString("Default percentage discount to receive for early payments."));
+      FPetraUtilsObject.SetStatusBarText(cmbAPAccount, Catalog.GetString("The default AP Account to use when paying this supplier."));
+      FPetraUtilsObject.SetStatusBarText(cmbDefaultBankAccount, Catalog.GetString("Reference to default bank account to use to pay supplier with."));
+      FPetraUtilsObject.SetStatusBarText(cmbCostCentre, Catalog.GetString("Reference to the default cost centre to use for invoice details."));
+      FPetraUtilsObject.SetStatusBarText(cmbExpenseAccount, Catalog.GetString("Reference to the default expense Account to use for invoice details."));
       InitializeManualCode();
       FPetraUtilsObject.ActionEnablingEvent += ActionEnabledEvent;
 

@@ -246,6 +246,7 @@ namespace Ict.Petra.Client.MFinance.Gui
         public void CreateInvoice(object sender, EventArgs e)
         {
             TFrmAccountsPayableEditDocument frm = new TFrmAccountsPayableEditDocument(this.Handle);
+
             frm.Show();
         }
     }

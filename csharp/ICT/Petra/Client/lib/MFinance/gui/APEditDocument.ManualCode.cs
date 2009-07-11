@@ -24,18 +24,22 @@
  *
  ************************************************************************/
 using System;
+using Ict.Petra.Shared.MFinance.AP.Data;
 
 namespace Ict.Petra.Client.MFinance.Gui
 {
     public partial class TFrmAccountsPayableEditDocument
     {
+        AccountsPayableTDS FMainDS;
+
         /// <summary>
         /// todoComment
         /// </summary>
         public void InitializeManualCode()
         {
+            FMainDS = new AccountsPayableTDS();
         }
-        
+
         /// <summary>
         /// needed for interface
         /// </summary>
@@ -53,6 +57,21 @@ namespace Ict.Petra.Client.MFinance.Gui
         public void FileSave(object sender, EventArgs e)
         {
             // TODO
+        }
+
+        /// <summary>
+        /// displays the data from the local datatable
+        /// </summary>
+        private void ShowDataManual()
+        {
+            // TODO
+        }
+
+        /// <summary>
+        /// get the data from the controls into the dataset
+        /// </summary>
+        private void GetDataFromControlsManual()
+        {
         }
     }
 }

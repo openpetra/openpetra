@@ -190,6 +190,16 @@ namespace Ict.Tools.CodeGeneration.Winforms
 
             writer.SetControlProperty(ctrl.controlName, "Name", "\"" + ctrl.controlName + "\"");
 
+            if (ctrl.HasAttribute("Align"))
+            {
+                if (ctrl.GetAttribute("Align").ToLower() == "right")
+                {
+                    writer.SetControlProperty(ctrl.controlName,
+                        "Anchor",
+                        "((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)))");
+                }
+            }
+
             if (TYml2Xml.HasAttribute(ctrl.xmlNode, "Dock"))
             {
                 writer.SetControlProperty(ctrl, "Dock");
@@ -258,12 +268,26 @@ namespace Ict.Tools.CodeGeneration.Winforms
                 }
             }
 
+            if (ctrl.HasAttribute("Tooltip"))
+            {
+                writer.Template.AddToCodelet("INITUSERCONTROLS", "FPetraUtilsObject.SetStatusBarText(" + ctrl.controlName +
+                    ", Catalog.GetString(\"" +
+                    ctrl.GetAttribute("Tooltip") +
+                    "\"));" + Environment.NewLine);
+            }
+
             if (ctrl.HasAttribute("DataField"))
             {
                 string tablename = ctrl.GetAttribute("DataField").Split('.')[0];
                 string fieldname = ctrl.GetAttribute("DataField").Split('.')[1];
 
                 TTable table = FPetraXMLStore.GetTable(tablename);
+
+                if (table == null)
+                {
+                    throw new Exception("Cannot find table: " + tablename);
+                }
+
                 TTableField field = table.GetField(fieldname);
 
                 string AssignValue = "";
@@ -310,6 +334,22 @@ namespace Ict.Tools.CodeGeneration.Winforms
                 }
 
                 writer.Template.AddToCodelet("SAVEDATA", GetValue);
+
+                // setstatusbar tooltips for datafields, with getstring plus value from petra.xml
+                string helpText = field.strHelp;
+
+                if (helpText.Length == 0)
+                {
+                    helpText = field.strDescription;
+                }
+
+                if (helpText.Length > 0)
+                {
+                    writer.Template.AddToCodelet("INITUSERCONTROLS", "FPetraUtilsObject.SetStatusBarText(" + ctrl.controlName +
+                        ", Catalog.GetString(\"" +
+                        helpText +
+                        "\"));" + Environment.NewLine);
+                }
             }
         }
 

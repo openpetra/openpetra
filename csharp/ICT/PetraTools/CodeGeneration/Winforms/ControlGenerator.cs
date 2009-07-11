@@ -286,6 +286,7 @@ namespace Ict.Tools.CodeGeneration.Winforms
             if (OptionalValues.Count > 0)
             {
                 string formattedValues = "";
+                string defaultValue = "";
 
                 foreach (string value in OptionalValues)
                 {
@@ -294,10 +295,23 @@ namespace Ict.Tools.CodeGeneration.Winforms
                         formattedValues += ",";
                     }
 
-                    formattedValues += "\"" + value + "\"";
+                    if (value.StartsWith("="))
+                    {
+                        formattedValues += "\"" + value.Substring(1).Trim() + "\"";
+                        defaultValue = value.Substring(1).Trim();
+                    }
+                    else
+                    {
+                        formattedValues += "\"" + value + "\"";
+                    }
                 }
 
                 writer.CallControlFunction(ctrl.controlName, "Items.AddRange(new object[] {" + formattedValues + "});");
+
+                if (defaultValue.Length > 0)
+                {
+                    writer.SetControlProperty(ctrl.controlName, "Text", "\"" + defaultValue + "\"");
+                }
             }
         }
     }
@@ -669,7 +683,7 @@ namespace Ict.Tools.CodeGeneration.Winforms
         {
             XmlNode controlsNode = TXMLParser.GetChild(curNode, "Controls");
 
-            if (TYml2Xml.GetChildren(controlsNode, true)[0].Name.StartsWith("Row"))
+            if ((controlsNode != null) && TYml2Xml.GetChildren(controlsNode, true)[0].Name.StartsWith("Row"))
             {
                 // this defines the layout with several rows with several controls per row
                 string result = "";
@@ -821,6 +835,7 @@ namespace Ict.Tools.CodeGeneration.Winforms
 
             if (TXMLParser.HasAttribute(curNode, "DefaultValue"))
             {
+                // TODO implement DefaultValue with = sign before control name?
                 DefaultValue = TXMLParser.GetAttribute(curNode, "DefaultValue");
             }
 

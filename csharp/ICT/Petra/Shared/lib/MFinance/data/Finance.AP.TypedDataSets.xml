@@ -3,6 +3,7 @@
   
     <DataSet name="AccountsPayableTDS">
         <Table sqltable="a_ap_supplier"/>
+        <Table sqltable="a_ap_document"/>
     </DataSet> 
     
 </PetraDataSets>

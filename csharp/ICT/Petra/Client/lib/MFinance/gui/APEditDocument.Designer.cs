@@ -291,6 +291,7 @@ namespace Ict.Petra.Client.MFinance.Gui
             this.lblReference.Margin = new System.Windows.Forms.Padding(3, 7, 3, 0);
             this.tableLayoutPanel2.Controls.Add(this.lblReference, 0, 1);
             this.tableLayoutPanel2.Controls.Add(this.txtReference, 1, 1);
+            this.tableLayoutPanel2.SetColumnSpan(this.txtReference, 2 * 2 - 1);
             //
             // dtpDateIssued
             //
@@ -328,7 +329,7 @@ namespace Ict.Petra.Client.MFinance.Gui
             //
             this.nudCreditTerms.Location = new System.Drawing.Point(2,2);
             this.nudCreditTerms.Name = "nudCreditTerms";
-            this.nudCreditTerms.Size = new System.Drawing.Size(150, 28);
+            this.nudCreditTerms.Size = new System.Drawing.Size(50, 28);
             //
             // lblCreditTerms
             //
@@ -425,7 +426,7 @@ namespace Ict.Petra.Client.MFinance.Gui
             //
             this.txtNarrative.Location = new System.Drawing.Point(2,2);
             this.txtNarrative.Name = "txtNarrative";
-            this.txtNarrative.Size = new System.Drawing.Size(150, 28);
+            this.txtNarrative.Size = new System.Drawing.Size(350, 28);
             //
             // lblNarrative
             //
@@ -436,11 +437,13 @@ namespace Ict.Petra.Client.MFinance.Gui
             this.lblNarrative.Margin = new System.Windows.Forms.Padding(3, 7, 3, 0);
             this.tableLayoutPanel3.Controls.Add(this.lblNarrative, 0, 0);
             this.tableLayoutPanel3.Controls.Add(this.txtNarrative, 1, 0);
+            this.tableLayoutPanel3.SetColumnSpan(this.txtNarrative, 2 * 2 - 1);
             //
             // btnAddDetail
             //
             this.btnAddDetail.Location = new System.Drawing.Point(2,2);
             this.btnAddDetail.Name = "btnAddDetail";
+            this.btnAddDetail.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.btnAddDetail.AutoSize = true;
             this.btnAddDetail.Text = "Add De&tail";
             this.tableLayoutPanel3.Controls.Add(this.btnAddDetail, 2, 0);
@@ -450,7 +453,7 @@ namespace Ict.Petra.Client.MFinance.Gui
             //
             this.txtDetailReference.Location = new System.Drawing.Point(2,2);
             this.txtDetailReference.Name = "txtDetailReference";
-            this.txtDetailReference.Size = new System.Drawing.Size(150, 28);
+            this.txtDetailReference.Size = new System.Drawing.Size(350, 28);
             //
             // lblDetailReference
             //
@@ -461,11 +464,13 @@ namespace Ict.Petra.Client.MFinance.Gui
             this.lblDetailReference.Margin = new System.Windows.Forms.Padding(3, 7, 3, 0);
             this.tableLayoutPanel3.Controls.Add(this.lblDetailReference, 0, 1);
             this.tableLayoutPanel3.Controls.Add(this.txtDetailReference, 1, 1);
+            this.tableLayoutPanel3.SetColumnSpan(this.txtDetailReference, 2 * 2 - 1);
             //
             // btnRemoveDetail
             //
             this.btnRemoveDetail.Location = new System.Drawing.Point(2,2);
             this.btnRemoveDetail.Name = "btnRemoveDetail";
+            this.btnRemoveDetail.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.btnRemoveDetail.AutoSize = true;
             this.btnRemoveDetail.Text = "&Remove Detail";
             this.tableLayoutPanel3.Controls.Add(this.btnRemoveDetail, 2, 1);
@@ -507,6 +512,7 @@ namespace Ict.Petra.Client.MFinance.Gui
             //
             this.btnAnalysisAttributes.Location = new System.Drawing.Point(2,2);
             this.btnAnalysisAttributes.Name = "btnAnalysisAttributes";
+            this.btnAnalysisAttributes.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.btnAnalysisAttributes.AutoSize = true;
             this.btnAnalysisAttributes.Text = "Analysis Attri&b.";
             this.tableLayoutPanel3.Controls.Add(this.btnAnalysisAttributes, 4, 2);
@@ -548,6 +554,7 @@ namespace Ict.Petra.Client.MFinance.Gui
             //
             this.btnApproveDetail.Location = new System.Drawing.Point(2,2);
             this.btnApproveDetail.Name = "btnApproveDetail";
+            this.btnApproveDetail.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.btnApproveDetail.AutoSize = true;
             this.btnApproveDetail.Text = "A&pprove Detail";
             this.tableLayoutPanel3.Controls.Add(this.btnApproveDetail, 4, 3);
@@ -573,6 +580,7 @@ namespace Ict.Petra.Client.MFinance.Gui
             //
             this.btnUseTaxAccountCostCentre.Location = new System.Drawing.Point(2,2);
             this.btnUseTaxAccountCostCentre.Name = "btnUseTaxAccountCostCentre";
+            this.btnUseTaxAccountCostCentre.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.btnUseTaxAccountCostCentre.AutoSize = true;
             this.btnUseTaxAccountCostCentre.Text = "Use Ta&x Acct+CC";
             this.tableLayoutPanel3.Controls.Add(this.btnUseTaxAccountCostCentre, 2, 4);

@@ -66,6 +66,7 @@ namespace Ict.Petra.Client.MFinance.Gui
       this.chkDueToday.Text = Catalog.GetString("Due &Today");
       this.chkOverdue.Text = Catalog.GetString("&Overdue");
       this.chkDueFuture.Text = Catalog.GetString("Due &Within Future");
+      this.cmbTimeUnit.Text = Catalog.GetString("Days");
       this.btnSearch.Text = Catalog.GetString("&Search");
       this.btnReset.Text = Catalog.GetString("&Reset Criteria");
       this.chkShowOutstandingAmounts.Text = Catalog.GetString("Show Outstanding &Amounts");
@@ -114,6 +115,7 @@ namespace Ict.Petra.Client.MFinance.Gui
       #endregion
 
       FPetraUtilsObject = new Ict.Petra.Client.CommonForms.TFrmPetraUtils(AParentFormHandle, this, stbMain);
+      FPetraUtilsObject.SetStatusBarText(cmbSupplierCode, Catalog.GetString("Search by supplier name or partner key"));
       this.cmbSupplierCode.AcceptNewEntries += new TAcceptNewEntryEventHandler(FPetraUtilsObject.AddComboBoxHistory);
       FPetraUtilsObject.LoadComboBoxHistory(cmbSupplierCode);
       this.AcceptButton = btnSearch;

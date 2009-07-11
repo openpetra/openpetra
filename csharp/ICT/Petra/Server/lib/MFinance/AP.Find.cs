@@ -298,7 +298,7 @@ namespace Ict.Petra.Server.MFinance.AccountsPayable.UIConnectors
             {
                 // search by partner key
                 Int64 SupplierPartnerKey = Convert.ToInt64(ACriteriaRow["PartnerKey"]);
-                WhereClause += String.Format(" AND {1} = ?", AApSupplierTable.GetPartnerKeyDBName());
+                WhereClause += String.Format(" AND PUB_{0}.{1} = ?", AApSupplierTable.GetTableDBName(), AApSupplierTable.GetPartnerKeyDBName());
                 AApSupplierTable Table = new AApSupplierTable();
                 OdbcParameter Param = Table.CreateOdbcParameter(Table.ColumnPartnerKey);
                 Param.Value = SupplierPartnerKey;

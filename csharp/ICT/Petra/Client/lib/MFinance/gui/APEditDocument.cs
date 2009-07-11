@@ -108,7 +108,7 @@ namespace Ict.Petra.Client.MFinance.Gui
       #endregion
 
       FPetraUtilsObject = new TFrmPetraEditUtils(AParentFormHandle, this, stbMain);
-
+      FPetraUtilsObject.SetStatusBarText(nudCreditTerms, Catalog.GetString("Credit terms allowed for this invoice."));
       InitializeManualCode();
       FPetraUtilsObject.ActionEnablingEvent += ActionEnabledEvent;
 
@@ -148,6 +148,25 @@ namespace Ict.Petra.Client.MFinance.Gui
     private void Form_KeyDown(object sender, KeyEventArgs e)
     {
         FPetraUtilsObject.Form_KeyDown(sender, e);
+    }
+
+    private void ShowData()
+    {
+        if (FMainDS.AApDocument[0].IsCreditTermsNull())
+        {
+            nudCreditTerms.Value = 0;
+        }
+        else
+        {
+            nudCreditTerms.Value = FMainDS.AApDocument[0].CreditTerms;
+        }
+        ShowDataManual();
+    }
+
+    private void GetDataFromControls()
+    {
+        FMainDS.AApDocument[0].CreditTerms = (Int32)nudCreditTerms.Value;
+        GetDataFromControlsManual();
     }
 
 #region Implement interface functions

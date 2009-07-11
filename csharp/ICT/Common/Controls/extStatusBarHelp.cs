@@ -152,6 +152,10 @@ namespace Ict.Common.Controls
                     this.FStatusLabel.Text = text;
                 }
             }
+            else
+            {
+                this.FStatusLabel.Text = "";
+            }
         }
     }
 }

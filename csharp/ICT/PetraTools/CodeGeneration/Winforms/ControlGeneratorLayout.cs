@@ -207,8 +207,6 @@ namespace Ict.Tools.CodeGeneration.Winforms
 
             if (FOrientation == eOrientation.TableLayout)
             {
-                Console.WriteLine(controlName + " " + ctrl.rowNumber.ToString());
-
                 if (FCurrentRow != ctrl.rowNumber)
                 {
                     FCurrentColumn = 0;
@@ -395,13 +393,26 @@ namespace Ict.Tools.CodeGeneration.Winforms
 
                 AddControl(writer, FTlpName, lblName, FCurrentColumn * 2, FCurrentRow);
                 AddControl(writer, FTlpName, controlName, FCurrentColumn * 2 + 1, FCurrentRow);
+
+                if (ctrl.HasAttribute("ColSpan"))
+                {
+                    writer.CallControlFunction(FTlpName, "SetColumnSpan(this." + controlName + ", " + ctrl.GetAttribute("ColSpan") + " * 2 - 1)");
+                }
             }
             else
             {
                 // checkbox, radiobutton, groupbox: no label
                 // no label: merge cells
                 AddControl(writer, FTlpName, controlName, FCurrentColumn * 2, FCurrentRow);
-                writer.CallControlFunction(FTlpName, "SetColumnSpan(this." + controlName + ", 2)");
+
+                if (ctrl.HasAttribute("ColSpan"))
+                {
+                    writer.CallControlFunction(FTlpName, "SetColumnSpan(this." + controlName + ", " + ctrl.GetAttribute("ColSpan") + " * 2)");
+                }
+                else
+                {
+                    writer.CallControlFunction(FTlpName, "SetColumnSpan(this." + controlName + ", 2)");
+                }
             }
 
             if (FOrientation == eOrientation.Vertical)

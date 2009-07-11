@@ -927,7 +927,7 @@ namespace Ict.Tools.DBXML
         /// <returns></returns>
         public string GetDotNetType()
         {
-            if (strTypeDotNet.Length > 0)
+            if ((strTypeDotNet != null) && (strTypeDotNet.Length > 0))
             {
                 return strTypeDotNet;
             }

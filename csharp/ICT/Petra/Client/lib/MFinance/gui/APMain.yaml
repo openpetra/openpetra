@@ -45,7 +45,7 @@ RootNode:
         pnlContent:
             Dock: Fill
             Controls: [cmbSupplierCode, pnlSearchFilter, pnlSearchButtons, tabSearchResult]
-        cmbSupplierCode: {Label=S&earch Supplier, AutoComplete=SupplierSearchHistory}
+        cmbSupplierCode: {Label=S&earch Supplier, AutoComplete=SupplierSearchHistory, Tooltip=Search by supplier name or partner key}
         pnlSearchFilter:
             Dock: Top
             Controls: [chkDueToday, chkOverdue, chkDueFuture]
