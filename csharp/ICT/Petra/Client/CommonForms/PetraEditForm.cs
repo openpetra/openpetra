@@ -223,6 +223,10 @@ namespace Ict.Petra.Client.CommonForms
                 {
                     ((TTxtMaskedTextBox)ctrl).TextChanged += new EventHandler(this.MultiEventHandler);
                 }
+                else if (ctrl is DateTimePicker)
+                {
+                    ((DateTimePicker)ctrl).ValueChanged += new EventHandler(this.MultiEventHandler);
+                }
                 else if (ctrl.GetType() == typeof(ComboBox))
                 {
                     ((ComboBox)ctrl).SelectedValueChanged += new EventHandler(this.MultiEventHandler);

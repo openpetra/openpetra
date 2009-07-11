@@ -32,6 +32,7 @@ RootNode:
         actCreateInvoice:
             Label: Create &Invoice
             ShortCut: Ctrl+I
+            ActionClick: CreateInvoice
             Enabled: cndSelectedSupplier
         actCreateCreditNote:
             Label: Create C&redit Note
@@ -58,7 +59,7 @@ RootNode:
         nudNumberTimeUnits: {NoLabel=true}
         cmbTimeUnit:
             NoLabel: true
-            OptionalValues: [Days, Weeks, Months]
+            OptionalValues: [=Days, Weeks, Months]
         pnlSearchButtons:
             Controls: [btnSearch, btnReset]
             ControlsOrientation: horizontal

@@ -282,7 +282,7 @@ namespace Ict.Petra.Client.MFinance.Gui
             this.cmbTimeUnit.Location = new System.Drawing.Point(2,2);
             this.cmbTimeUnit.Name = "cmbTimeUnit";
             this.cmbTimeUnit.Size = new System.Drawing.Size(150, 28);
-            this.cmbTimeUnit.Items.AddRange(new object[] {"Days","Weeks","Months"});;
+            this.cmbTimeUnit.Items.AddRange(new object[] {"=Days","Weeks","Months"});;
             this.tableLayoutPanel3.Controls.Add(this.cmbTimeUnit, 2, 0);
             this.tableLayoutPanel3.SetColumnSpan(this.cmbTimeUnit, 2);
             this.tableLayoutPanel2.Controls.Add(this.tableLayoutPanel3, 5, 0);

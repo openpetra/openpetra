@@ -419,6 +419,7 @@ namespace Ict.Tools.CodeGeneration
         public int order = -1;
         public XmlNode xmlNode = null;
         public TCodeStorage FCodeStorage = null;
+        public int rowNumber = -1;
 
         /// e.g. tableLayoutPanel1.ColumnStyles.Add
         //public string otherFunctionCalls = "";

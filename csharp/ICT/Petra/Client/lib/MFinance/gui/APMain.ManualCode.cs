@@ -237,5 +237,16 @@ namespace Ict.Petra.Client.MFinance.Gui
                 frm.Show();
             }
         }
+
+        /// <summary>
+        /// create a new invoice
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        public void CreateInvoice(object sender, EventArgs e)
+        {
+            TFrmAccountsPayableEditDocument frm = new TFrmAccountsPayableEditDocument(this.Handle);
+            frm.Show();
+        }
     }
 }

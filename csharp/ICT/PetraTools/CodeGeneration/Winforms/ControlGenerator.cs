@@ -667,6 +667,31 @@ namespace Ict.Tools.CodeGeneration.Winforms
 
         public virtual StringCollection FindContainedControls(IFormWriter writer, XmlNode curNode)
         {
+            XmlNode controlsNode = TXMLParser.GetChild(curNode, "Controls");
+
+            if (TYml2Xml.GetChildren(controlsNode, true)[0].Name.StartsWith("Row"))
+            {
+                // this defines the layout with several rows with several controls per row
+                string result = "";
+                Int32 countRow = 0;
+
+                foreach (XmlNode row in TYml2Xml.GetChildren(controlsNode, true))
+                {
+                    StringCollection controls = TYml2Xml.GetElements(row);
+
+                    foreach (string ctrlname in controls)
+                    {
+                        TControlDef ctrl = writer.CodeStorage.GetControl(ctrlname);
+                        ctrl.rowNumber = countRow;
+                    }
+
+                    result = StringHelper.ConcatCSV(result, StringHelper.StrMerge(controls, ","), ",");
+                    countRow++;
+                }
+
+                return StringHelper.StrSplit(result, ",");
+            }
+
             return TYml2Xml.GetElements(TXMLParser.GetChild(curNode, "Controls"));
         }
 

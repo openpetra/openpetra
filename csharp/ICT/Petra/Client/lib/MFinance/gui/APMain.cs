@@ -366,7 +366,7 @@ namespace Ict.Petra.Client.MFinance.Gui
     /// auto generated
     protected void actCreateInvoice(object sender, EventArgs e)
     {
-        // TODO action actCreateInvoice
+        CreateInvoice(sender, e);
     }
 
     /// auto generated

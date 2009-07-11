@@ -26,6 +26,7 @@
 using System;
 using System.Xml;
 using System.Collections.Specialized;
+using System.Collections.Generic;
 using System.Windows.Forms;
 using Ict.Tools.CodeGeneration;
 
@@ -91,11 +92,12 @@ namespace Ict.Tools.CodeGeneration.Winforms
 
         public enum eOrientation
         {
-            Vertical, Horizontal
+            Vertical, Horizontal, TableLayout
         };
 
         protected eOrientation FOrientation = eOrientation.Vertical;
         protected Int32 FCurrentRow = 0;
+        protected Int32 FCurrentColumn = 0;
         protected string FTlpName = "";
 
         /// <summary>
@@ -123,30 +125,74 @@ namespace Ict.Tools.CodeGeneration.Winforms
         /// <returns>the name of the table layout control that still needs to be added to the parent</returns>
         public string CreateLayout(IFormWriter writer, string parentContainerName, StringCollection controls)
         {
-            // create TableLayoutPanel that has a column for the labels and as many rows as needed
-            FCurrentRow = 0;
+            // first check if the table layout has already been defined in the container with sets of rows?
+            XmlNode containerNode = writer.CodeStorage.GetControl(parentContainerName).xmlNode;
+            XmlNode controlsNode = TXMLParser.GetChild(containerNode, "Controls");
 
-            if (FOrientation == eOrientation.Vertical)
+            List <XmlNode>childNodes = TYml2Xml.GetChildren(controlsNode, true);
+
+            if ((childNodes.Count > 0) && childNodes[0].Name.StartsWith("Row"))
             {
+                // create a layout using the defined rows in Controls
+                // create TableLayoutPanel that has as many columns and rows as needed
+                FOrientation = eOrientation.TableLayout;
+                FCurrentRow = 0;
+                FCurrentColumn = 0;
                 FColumnCount = 2;
-                FRowCount = controls.Count;
+
+                // determine maximum number of columns
+                foreach (XmlNode row in TYml2Xml.GetChildren(controlsNode, true))
+                {
+                    // one other column for the label
+                    int columnCount = 2 * TYml2Xml.GetElements(row).Count;
+
+                    if (columnCount > FColumnCount)
+                    {
+                        FColumnCount = columnCount;
+                    }
+                }
+
+                FRowCount = TYml2Xml.GetChildren(controlsNode, true).Count;
+
+                FTlpName = CalculateName();
+                TControlDef newTableLayoutPanel = writer.CodeStorage.FindOrCreateControl(FTlpName, parentContainerName);
+                GenerateDeclaration(writer, newTableLayoutPanel);
+                SetControlProperties(writer, newTableLayoutPanel);
+
+                foreach (string controlName in controls)
+                {
+                    TControlDef ctrl = writer.CodeStorage.GetControl(controlName);
+                    ctrl.parentName = FTlpName;
+                }
             }
             else
             {
-                // horizontal: label and control, all controls in one row
-                FColumnCount = controls.Count * 2;
-                FRowCount = 1;
-            }
+                // create TableLayoutPanel that has a column for the labels and as many rows as needed
+                FCurrentRow = 0;
+                FCurrentColumn = 0;
 
-            FTlpName = CalculateName();
-            TControlDef newTableLayoutPanel = writer.CodeStorage.FindOrCreateControl(FTlpName, parentContainerName);
-            GenerateDeclaration(writer, newTableLayoutPanel);
-            SetControlProperties(writer, newTableLayoutPanel);
+                if (FOrientation == eOrientation.Vertical)
+                {
+                    FColumnCount = 2;
+                    FRowCount = controls.Count;
+                }
+                else if (FOrientation == eOrientation.Horizontal)
+                {
+                    // horizontal: label and control, all controls in one row
+                    FColumnCount = controls.Count * 2;
+                    FRowCount = 1;
+                }
 
-            foreach (string controlName in controls)
-            {
-                TControlDef ctrl = writer.CodeStorage.GetControl(controlName);
-                ctrl.parentName = FTlpName;
+                FTlpName = CalculateName();
+                TControlDef newTableLayoutPanel = writer.CodeStorage.FindOrCreateControl(FTlpName, parentContainerName);
+                GenerateDeclaration(writer, newTableLayoutPanel);
+                SetControlProperties(writer, newTableLayoutPanel);
+
+                foreach (string controlName in controls)
+                {
+                    TControlDef ctrl = writer.CodeStorage.GetControl(controlName);
+                    ctrl.parentName = FTlpName;
+                }
             }
 
             return FTlpName;
@@ -158,6 +204,17 @@ namespace Ict.Tools.CodeGeneration.Winforms
             IControlGenerator ctrlGenerator = writer.FindControlGenerator(curNode);
 
             string controlName = ctrl.controlName;
+
+            if (FOrientation == eOrientation.TableLayout)
+            {
+                Console.WriteLine(controlName + " " + ctrl.rowNumber.ToString());
+
+                if (FCurrentRow != ctrl.rowNumber)
+                {
+                    FCurrentColumn = 0;
+                    FCurrentRow = ctrl.rowNumber;
+                }
+            }
 
             // add control itself
             ctrlGenerator.GenerateDeclaration(writer, ctrl);
@@ -204,10 +261,10 @@ namespace Ict.Tools.CodeGeneration.Winforms
                     AddControl(writer, FTlpName, rbtName, 0, FCurrentRow);
                     AddControl(writer, FTlpName, controlName, 1, FCurrentRow);
                 }
-                else
+                else if (FOrientation == eOrientation.Horizontal)
                 {
-                    AddControl(writer, FTlpName, rbtName, FCurrentRow * 2, 0);
-                    AddControl(writer, FTlpName, controlName, FCurrentRow * 2 + 1, 0);
+                    AddControl(writer, FTlpName, rbtName, FCurrentColumn * 2, 0);
+                    AddControl(writer, FTlpName, controlName, FCurrentColumn * 2 + 1, 0);
                 }
             }
 /* this does not work yet; creates endless loop/recursion
@@ -236,7 +293,7 @@ namespace Ict.Tools.CodeGeneration.Winforms
  *              }
  *              else
  *              {
- *                  AddControl(writer, FTlpName, subTlpControlName, FCurrentRow * 2 + 1, 0);
+ *                  AddControl(writer, FTlpName, subTlpControlName, FCurrentColumn * 2 + 1, 0);
  *              }
  *          }
  */
@@ -247,9 +304,9 @@ namespace Ict.Tools.CodeGeneration.Winforms
                 {
                     AddControl(writer, FTlpName, ctrl.controlName, 0, FCurrentRow);
                 }
-                else
+                else if (FOrientation == eOrientation.Horizontal)
                 {
-                    AddControl(writer, FTlpName, ctrl.controlName, FCurrentRow * 2, 0);
+                    AddControl(writer, FTlpName, ctrl.controlName, FCurrentColumn * 2, 0);
                 }
 
                 StringCollection childControls = TYml2Xml.GetElements(TXMLParser.GetChild(curNode, "Controls"));
@@ -271,9 +328,9 @@ namespace Ict.Tools.CodeGeneration.Winforms
                     {
                         AddControl(writer, FTlpName, subTlpControlName, 1, FCurrentRow);
                     }
-                    else
+                    else if (FOrientation == eOrientation.Horizontal)
                     {
-                        AddControl(writer, FTlpName, subTlpControlName, FCurrentRow * 2 + 1, 0);
+                        AddControl(writer, FTlpName, subTlpControlName, FCurrentColumn * 2 + 1, 0);
                     }
                 }
                 else if (childControls.Count == 1)
@@ -312,9 +369,9 @@ namespace Ict.Tools.CodeGeneration.Winforms
                         {
                             AddControl(writer, FTlpName, ChildCtrl.controlName, 1, FCurrentRow);
                         }
-                        else
+                        else if (FOrientation == eOrientation.Horizontal)
                         {
-                            AddControl(writer, FTlpName, ChildCtrl.controlName, FCurrentRow * 2 + 1, 0);
+                            AddControl(writer, FTlpName, ChildCtrl.controlName, FCurrentColumn * 2 + 1, 0);
                         }
                     }
                 }
@@ -336,34 +393,32 @@ namespace Ict.Tools.CodeGeneration.Winforms
                 lblGenerator.GenerateDeclaration(writer, newLabel);
                 lblGenerator.SetControlProperties(writer, newLabel);
 
-                if (FOrientation == eOrientation.Vertical)
-                {
-                    AddControl(writer, FTlpName, lblName, 0, FCurrentRow);
-                    AddControl(writer, FTlpName, controlName, 1, FCurrentRow);
-                }
-                else
-                {
-                    AddControl(writer, FTlpName, lblName, FCurrentRow * 2, 0);
-                    AddControl(writer, FTlpName, controlName, FCurrentRow * 2 + 1, 0);
-                }
+                AddControl(writer, FTlpName, lblName, FCurrentColumn * 2, FCurrentRow);
+                AddControl(writer, FTlpName, controlName, FCurrentColumn * 2 + 1, FCurrentRow);
             }
             else
             {
                 // checkbox, radiobutton, groupbox: no label
                 // no label: merge cells
-                if (FOrientation == eOrientation.Vertical)
-                {
-                    AddControl(writer, FTlpName, controlName, 0, FCurrentRow);
-                }
-                else
-                {
-                    AddControl(writer, FTlpName, controlName, FCurrentRow * 2, 0);
-                }
-
+                AddControl(writer, FTlpName, controlName, FCurrentColumn * 2, FCurrentRow);
                 writer.CallControlFunction(FTlpName, "SetColumnSpan(this." + controlName + ", 2)");
             }
 
-            FCurrentRow++;
+            if (FOrientation == eOrientation.Vertical)
+            {
+                FCurrentRow++;
+                FCurrentColumn = 0;
+            }
+            else if (FOrientation == eOrientation.Horizontal)
+            {
+                FCurrentColumn++;
+            }
+            else if (FOrientation == eOrientation.TableLayout)
+            {
+                FCurrentColumn++;
+
+                // TODO: Colspan?
+            }
         }
     }
 }
