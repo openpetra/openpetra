@@ -72,12 +72,19 @@ namespace Ict.Petra.Client.MFinance.Gui
 
             FSupplierEditUIConnector = TRemote.MFinance.AccountsPayable.UIConnectors.SupplierEdit();
 
+            // check for existing supplier record
+            if (FSupplierEditUIConnector.CanFindSupplier(APartnerKey))
+            {
+                MessageBox.Show(Catalog.GetString("There is already a supplier record for this partner!"));
+                EditSupplier(APartnerKey);
+                return;
+            }
+
             AApSupplierRow row = FMainDS.AApSupplier.NewRowTyped();
             row.PartnerKey = APartnerKey;
 
             // TODO: use currency code from ledger
             // TODO: verification: don't store with currency NULL value
-            // TODO: check for existing supplier record?
             row.CurrencyCode = "EUR";
             FMainDS.AApSupplier.Rows.Add(row);
 

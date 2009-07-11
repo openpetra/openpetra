@@ -86,6 +86,34 @@ namespace Ict.Petra.Server.MFinance.AccountsPayable.UIConnectors
         private static string DATASETNAME = "AccountsPayable";
 
         /// <summary>
+        /// check if there is already a supplier record for the given partner
+        /// </summary>
+        /// <param name="APartnerKey"></param>
+        /// <returns></returns>
+        public bool CanFindSupplier(Int64 APartnerKey)
+        {
+            TDBTransaction ReadTransaction;
+            bool NewTransaction = false;
+            bool ReturnValue = false;
+
+            try
+            {
+                ReadTransaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(IsolationLevel.ReadCommitted,
+                    TEnforceIsolationLevel.eilMinimum,
+                    out NewTransaction);
+                ReturnValue = AApSupplierAccess.CountByPrimaryKey(APartnerKey, ReadTransaction) > 0;
+            }
+            finally
+            {
+                if (NewTransaction)
+                {
+                    DBAccess.GDBAccessObj.CommitTransaction();
+                }
+            }
+            return ReturnValue;
+        }
+
+        /// <summary>
         /// Passes data as a Typed DataSet to the Supplier Edit Screen
         /// </summary>
         public AccountsPayableTDS GetData()
