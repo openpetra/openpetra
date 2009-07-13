@@ -70,8 +70,17 @@
                 tofile="${appconfigfile}"/>
             <!-- app.config is part of the PetraServerConsole project and will be copied to _bin/${Output.dir}/PetraServerConsole.exe.config -->
         </if>
+
         <property name="solution.file" value="${OpenPetraRoot.dir}/csharp/ICT/Server.sln"/>
         <call target="compileTemplate"/>
+
+        <property name="appconfigfileBin" value="${OpenPetraRoot.dir}/csharp/ICT/Petra/Server/_bin/${Output.dir}/PetraServerConsole.exe.config"/>
+        <if test="${not file::exists(appconfigfileBin)}">
+            <!-- mdbuild does not seem to copy the app file -->
+            <copy file="${appconfigfile}"
+                tofile="${appconfigfileBin}"/>
+        </if>
+
         <copy todir="${OpenPetraRoot.dir}/csharp/ICT/Petra/Server/_bin/${Output.dir}">
             <fileset basedir="${ThirdParty.dir}/Mono">
                 <include name="intl.dll" />
@@ -79,6 +88,11 @@
                 <include name="Mono.Security.dll" />
             </fileset>
         </copy>
+        <if test="${framework::get-runtime-framework() == 'mono-2.0'}" >
+            <!-- requires sqlite 3.6.1 or higher to be installed on the linux system -->
+            <copy file="${OpenPetraRoot.dir}/csharp/ThirdParty/SQLite/System.Data.SQLite.ManagedOnly.dll" 
+                  tofile="${OpenPetraRoot.dir}/csharp/ICT/Petra/Server/_bin/${Output.dir}/System.Data.SQLite.dll"/>
+        </if>
         <property name = "language.file" value="${OpenPetraRoot.dir}/i18n/${SelectedLanguage}.mo"/>
         <if test="${file::exists(language.file)}">
             <mkdir dir="${OpenPetraRoot.dir}/csharp/ICT/Petra/Server/_bin/${Output.dir}/locale/${SelectedLanguage}/LC_MESSAGES" failonerror="false"/>
@@ -95,6 +109,12 @@
         </if>
         <property name="solution.file" value="${OpenPetraRoot.dir}/csharp/ICT/ServerAdmin.sln"/>
         <call target="compileTemplate"/>
+        <property name="appconfigfileBin" value="${OpenPetraRoot.dir}/csharp/ICT/Petra/ServerAdmin/_bin/${Output.dir}/PetraServerAdminConsole.exe.config"/>
+        <if test="${not file::exists(appconfigfileBin)}">
+            <!-- mdbuild does not seem to copy the app file -->
+            <copy file="${appconfigfile}"
+                tofile="${appconfigfileBin}"/>
+        </if>
     </target>
     <target name="compilePetraClient" description="compile Ict/Petra/Client">
         <property name="appconfigfile" value="${OpenPetraRoot.dir}/csharp/ICT/Petra/Client/app/PetraClient/app.config"/>
@@ -105,6 +125,12 @@
         </if>
         <property name="solution.file" value="${OpenPetraRoot.dir}/csharp/ICT/Client.sln"/>
         <call target="compileTemplate"/>
+        <property name="appconfigfileBin" value="${OpenPetraRoot.dir}/csharp/ICT/Petra/Client/_bin/${Output.dir}/PetraClient.exe.config"/>
+        <if test="${not file::exists(appconfigfileBin)}">
+            <!-- mdbuild does not seem to copy the app file -->
+            <copy file="${appconfigfile}"
+                tofile="${appconfigfileBin}"/>
+        </if>
         <copy todir="${OpenPetraRoot.dir}/csharp/ICT/Petra/Client/_bin/${Output.dir}">
             <fileset basedir="${ThirdParty.dir}/Mono">
                 <include name="intl.dll" />
@@ -279,32 +305,70 @@
     </target>
 
     <target name="startPetraServer" depends="" description="start a local Petra Server"> <!-- compilePetra, startDatabase??? -->
-        <exec program="cmd.exe" 
-                workingdir="${OpenPetraRoot.dir}/csharp/ICT/Petra/Server/_bin/${Output.dir}"
-                commandline="/C start PetraServerConsole.exe -RunWithoutMenu:false"
-                spawn="true">
-           <environment>
-              <variable name="LANGUAGE" value="${SelectedLanguage}"/>
-           </environment>
-        </exec>
+        <if test="${framework::get-runtime-framework() == 'mono-2.0'}" >
+            <exec program="mono" 
+                    workingdir="${OpenPetraRoot.dir}/csharp/ICT/Petra/Server/_bin/${Output.dir}"
+                    commandline="PetraServerConsole.exe -RunWithoutMenu:true"
+                    spawn="true">
+                    <!-- todo: install newer version of nant that knows spawn;
+                         unfortunately, RunWithoutMenu:false would not work, because there is no extra window opened, and System.Console.ReadLine fails -->
+               <environment>
+                  <variable name="LANGUAGE" value="${SelectedLanguage}"/>
+               </environment>
+            </exec>
+        </if>
+        <if test="${framework::get-runtime-framework() == 'net-2.0'}" >
+            <exec program="cmd.exe" 
+                    workingdir="${OpenPetraRoot.dir}/csharp/ICT/Petra/Server/_bin/${Output.dir}"
+                    commandline="/C start PetraServerConsole.exe -RunWithoutMenu:false"
+                    spawn="true">
+               <environment>
+                  <variable name="LANGUAGE" value="${SelectedLanguage}"/>
+               </environment>
+            </exec>
+        </if>
     </target>
 
     <target name="startPetraClient" depends="" description="start the Petra Client"> <!-- compilePetra, startPetraServer??? -->
-        <exec program="cmd.exe" 
-                workingdir="${OpenPetraRoot.dir}/csharp/ICT/Petra/Client/_bin/${Output.dir}"
-                commandline="/C start PetraClient.exe -AutoLogin:demo"
-                spawn="true">
-           <environment>
-              <variable name="LANGUAGE" value="${SelectedLanguage}"/>
-           </environment>
-        </exec>
+        <if test="${framework::get-runtime-framework() == 'mono-2.0'}" >
+            <exec program="mono" 
+                    workingdir="${OpenPetraRoot.dir}/csharp/ICT/Petra/Client/_bin/${Output.dir}"
+                    commandline="PetraClient.exe -AutoLogin:demo"
+                    spawn="true">
+               <environment>
+                  <variable name="LANGUAGE" value="${SelectedLanguage}"/>
+               </environment>
+            </exec>
+        </if>
+        <if test="${framework::get-runtime-framework() == 'net-2.0'}" >
+            <exec program="cmd.exe" 
+                    workingdir="${OpenPetraRoot.dir}/csharp/ICT/Petra/Client/_bin/${Output.dir}"
+                    commandline="/C start PetraClient.exe -AutoLogin:demo"
+                    spawn="true">
+               <environment>
+                  <variable name="LANGUAGE" value="${SelectedLanguage}"/>
+               </environment>
+            </exec>
+        </if>
     </target>
 
     <target name="stopPetraServer" depends="" description="stop the local Petra Server">
-        <exec program="PetraServerAdminConsole.exe" 
-                basedir="${OpenPetraRoot.dir}/csharp/ICT/Petra/ServerAdmin/_bin/${Output.dir}" 
-                workingdir="${OpenPetraRoot.dir}/csharp/ICT/Petra/ServerAdmin/_bin/${Output.dir}"
-                commandline="-Command:Stop"/>
+        <if test="${framework::get-runtime-framework() == 'mono-2.0'}" >
+            <exec program="mono" 
+                    workingdir="${OpenPetraRoot.dir}/csharp/ICT/Petra/ServerAdmin/_bin/${Output.dir}"
+                    commandline="PetraServerAdminConsole.exe -Command:Stop"
+                    spawn="true">
+               <environment>
+                  <variable name="LANGUAGE" value="${SelectedLanguage}"/>
+               </environment>
+            </exec>
+        </if>
+        <if test="${framework::get-runtime-framework() == 'net-2.0'}" >
+            <exec program="PetraServerAdminConsole.exe" 
+                    basedir="${OpenPetraRoot.dir}/csharp/ICT/Petra/ServerAdmin/_bin/${Output.dir}" 
+                    workingdir="${OpenPetraRoot.dir}/csharp/ICT/Petra/ServerAdmin/_bin/${Output.dir}"
+                    commandline="-Command:Stop"/>
+        </if>
     </target>
         
     <target name="startXSPServer">
@@ -610,7 +674,7 @@
             </fileset>
         </copy>
         <copy file="${OpenPetraRoot.dir}/csharp/ThirdParty/SQLite/System.Data.SQLite.ManagedOnly.dll"
-                    tofile="${setupDir}/bin30/System.Data.SQLite.dll"/>
+                    tofile="${setupDir}/bin30/System.Data.SQLite.dll" overwrite="true"/>
        
         <foreach item="File" property="filename">
             <in>
