@@ -129,18 +129,27 @@
     <target name="cleanPetra" description="remove all compiled code of Petra">
         <!-- alternatively could use solution task: http://nant.sourceforge.net/release/latest/help/tasks/solution.html -->
         <!-- but the clean task is not implemented yet: see https://sourceforge.net/tracker/?func=detail&atid=402868&aid=1534755&group_id=31650 -->
-        <property name="Delete.dir" value="${OpenPetraRoot.dir}/csharp/ICT/Common/_bin"/>
-        <delete dir="${Delete.dir}" if="${directory::exists(Delete.dir)}" />
-        <property name="Delete.dir" value="${OpenPetraRoot.dir}/csharp/ICT/Shared/_bin"/>
-        <delete dir="${Delete.dir}" if="${directory::exists(Delete.dir)}" />
-        <property name="Delete.dir" value="${OpenPetraRoot.dir}/csharp/ICT/Server/_bin"/>
-        <delete dir="${Delete.dir}" if="${directory::exists(Delete.dir)}" />
-        <property name="Delete.dir" value="${OpenPetraRoot.dir}/csharp/ICT/ServerAdmin/_bin"/>
-        <delete dir="${Delete.dir}" if="${directory::exists(Delete.dir)}" />
-        <property name="Delete.dir" value="${OpenPetraRoot.dir}/csharp/ICT/Client/_bin"/>
-        <delete dir="${Delete.dir}" if="${directory::exists(Delete.dir)}" />
-        <property name="Delete.dir" value="${OpenPetraRoot.dir}/csharp/ICT/PetraTools/_bin"/>
-        <delete dir="${Delete.dir}" if="${directory::exists(Delete.dir)}" />
+        <delete dir="${OpenPetraRoot.dir}/csharp/ICT/Common/_bin/${Output.dir}" failonerror="false" />
+        <delete dir="${OpenPetraRoot.dir}/csharp/ICT/Common/_bin/ObjCode" failonerror="false" />
+        <delete failonerror="false"><fileset><include name="${OpenPetraRoot.dir}/csharp/ICT/Common/_bin/*.txt" /></fileset></delete>
+        <delete dir="${OpenPetraRoot.dir}/csharp/ICT/Shared/_bin/Server_Client/${Output.dir}" failonerror="false" />
+        <delete dir="${OpenPetraRoot.dir}/csharp/ICT/Shared/_bin/Server_Client/ObjCode" failonerror="false" />
+        <delete failonerror="false"><fileset><include name="${OpenPetraRoot.dir}/csharp/ICT/Shared/_bin/Server_Client/*.txt" /></fileset></delete>
+        <delete dir="${OpenPetraRoot.dir}/csharp/ICT/Shared/_bin/Server_ServerAdmin/${Output.dir}" failonerror="false" />
+        <delete dir="${OpenPetraRoot.dir}/csharp/ICT/Shared/_bin/Server_ServerAdmin/ObjCode" failonerror="false" />
+        <delete failonerror="false"><fileset><include name="${OpenPetraRoot.dir}/csharp/ICT/Shared/_bin/Server_ServerAdmin/*.txt" /></fileset></delete>
+        <delete dir="${OpenPetraRoot.dir}/csharp/ICT/Server/_bin/${Output.dir}" failonerror="false" />
+        <delete dir="${OpenPetraRoot.dir}/csharp/ICT/Server/_bin/ObjCode" failonerror="false" />
+        <delete failonerror="false"><fileset><include name="${OpenPetraRoot.dir}/csharp/ICT/Server/_bin/*.txt"/></fileset></delete>
+        <delete dir="${OpenPetraRoot.dir}/csharp/ICT/ServerAdmin/_bin/${Output.dir}" failonerror="false" />
+        <delete dir="${OpenPetraRoot.dir}/csharp/ICT/ServerAdmin/_bin/ObjCode" failonerror="false" />
+        <delete failonerror="false"><fileset><include name="${OpenPetraRoot.dir}/csharp/ICT/ServerAdmin/_bin/*.txt" /></fileset></delete>
+        <delete dir="${OpenPetraRoot.dir}/csharp/ICT/Client/_bin/${Output.dir}" failonerror="false" />
+        <delete dir="${OpenPetraRoot.dir}/csharp/ICT/Client/_bin/ObjCode" failonerror="false" />
+        <delete failonerror="false"><fileset><include name="${OpenPetraRoot.dir}/csharp/ICT/Client/_bin/*.txt" /></fileset></delete>
+        <delete dir="${OpenPetraRoot.dir}/csharp/ICT/PetraTools/_bin/${Output.dir}" failonerror="false" />
+        <delete dir="${OpenPetraRoot.dir}/csharp/ICT/PetraTools/_bin/ObjCode" failonerror="false" />
+        <delete failonerror="false"><fileset><include name="${OpenPetraRoot.dir}/csharp/ICT/PetraTools/_bin/*.txt" /></fileset></delete>
     </target>
     
     <target name="createSQLStatements" depends="compilePetraTools" description="Create the SQL files.">
@@ -487,6 +496,32 @@
         <exec program="${PetraToolsExe.dir}/FixProjectFiles.exe" commandline="-solutionpath:${OpenPetraRoot.dir}/csharp/ICT -solutions:Common,Shared,Client,Server,ServerAdmin,PetraTools"/>
     </target>
     
+    <target name="switchToDebug">
+        <echo message="reset project files to Debug path..."/>
+        <foreach item="File" property="filename">
+            <in>
+                <items>
+                    <include name="${OpenPetraRoot.dir}/csharp/ICT/**.csproj" />
+                </items>
+            </in>
+            <do>
+                <if test='${script::ChangeProjectFileRelease(filename, false)}'/>
+            </do>
+        </foreach>
+
+        <echo message="revert version number in assemblies..."/>
+        <foreach item="File" property="filename">
+            <in>
+                <items>
+                    <include name="${OpenPetraRoot.dir}/csharp/ICT/**AssemblyInfo.cs" />
+                </items>
+            </in>
+            <do>
+                <if test='${script::ChangeAssemblyVersion(filename, ReleaseID, false)}'/>
+            </do>
+        </foreach>
+    </target>
+    
     <target name="compileRelease">
         <!-- need to change the paths in all project files from _bin/Debug to _bin/Release -->
         <attrib normal="true">
@@ -531,35 +566,16 @@
                 <property name="Configuration" value="RELEASE"/>
             </properties>
         </nant>
-
-        <echo message="reset project files to Debug path..."/>
-        <foreach item="File" property="filename">
-            <in>
-                <items>
-                    <include name="${OpenPetraRoot.dir}/csharp/ICT/**.csproj" />
-                </items>
-            </in>
-            <do>
-                <if test='${script::ChangeProjectFileRelease(filename, false)}'/>
-            </do>
-        </foreach>
-
-        <echo message="revert version number in assemblies..."/>
-        <foreach item="File" property="filename">
-            <in>
-                <items>
-                    <include name="${OpenPetraRoot.dir}/csharp/ICT/**AssemblyInfo.cs" />
-                </items>
-            </in>
-            <do>
-                <if test='${script::ChangeAssemblyVersion(filename, ReleaseID, false)}'/>
-            </do>
-        </foreach>
+        <call target="switchToDebug"/>
     </target>
     
     <target name="setupStandalone">
         <exec program="${Innosetup.ISCC}" commandline=" ${OpenPetraRoot.dir}/setup/petra${PetraRelease}/standalone/standalone.iss"
               workingdir="${OpenPetraRoot.dir}/setup/petra${PetraRelease}/standalone"/>
+    </target>
+    <target name="setupRemote">
+        <exec program="${Innosetup.ISCC}" commandline=" ${OpenPetraRoot.dir}/setup/petra${PetraRelease}/remoteclientWin/remote.iss"
+              workingdir="${OpenPetraRoot.dir}/setup/petra${PetraRelease}/remoteclientWin"/>
     </target>
     <target name="setupLinuxServer">
         <!-- for the moment, just create a tar.gz file, with sub directories 
@@ -633,7 +649,10 @@
         <copy file="${OpenPetraRoot.dir}/setup/petra${PetraRelease}/demo.db"
                     tofile="${setupDir}/db30/demo.db"/>
 
-        <exec program="cmd.exe" commandline="/C &quot;pg_dump.exe --format=c petra &gt; ${setupDir}/db30/demo-pg.bak&quot;"/>
+        <property name="DBMS.Type" value="PostgreSQL"/>
+        <call target="recreateDatabase"/>
+        <call target="resetDatabase"/>
+        <exec program="cmd.exe" commandline="/C &quot;${pgdump.exe} --format=c petra &gt; ${setupDir}/db30/demo-pg.bak&quot;"/>
 
         <copy file="${OpenPetraRoot.dir}/LICENSE"
                     tofile="${setupDir}/LICENSE"/>
@@ -658,6 +677,6 @@
         <delete dir="${setupDir}"/>
     </target>
     
-    <target name="buildRelease" depends="compileCommon, compilePetraTools, recreateDatabase, resetDatabase, compileRelease, translation, setupStandalone, setupLinuxServer"/>
+    <target name="buildRelease" depends="switchToDebug, compileCommon, compilePetraTools, recreateDatabase, resetDatabase, compileRelease, translation, setupStandalone, setupRemote, setupLinuxServer"/>
     
 </project>

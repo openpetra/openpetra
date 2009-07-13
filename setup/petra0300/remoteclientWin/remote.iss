@@ -1,7 +1,7 @@
 [Setup]
 AppCopyright=by developers of OpenPetra.org
 AppName=OpenPetra.org
-AppVerName=OpenPetra.org 0.0.4
+AppVerName=OpenPetra.org Remote 0.0.4
 DefaultDirName={pf}\OpenPetra.org
 DefaultGroupName=OpenPetra.org
 AppPublisherURL=http://www.openpetra.org
@@ -10,7 +10,7 @@ VersionInfoVersion=0.0.4.0
 VersionInfoCompany=OM International
 VersionInfoDescription=Administration Software for Charities
 VersionInfoCopyright=2009 OM International
-OutputBaseFilename=OpenPetraSetup-0.0.4-0
+OutputBaseFilename=OpenPetraRemoteSetup-0.0.4-0
 
 [Languages]
 Name: en; MessagesFile: compiler:Default.isl,..\language\lang-en.isl
@@ -20,7 +20,6 @@ Name: de; MessagesFile: compiler:Languages\German.isl,..\language\lang-de.isl
 Name: {app}/bin30
 Name: {app}/bin30/locale/de/LC_MESSAGES
 Name: {app}/manuals30
-Name: {app}/db30
 Name: {app}/reports30
 [Files]
 Source: ..\..\..\csharp\ThirdParty\DevAge\SourceGrid.dll; DestDir: {app}/bin30
@@ -44,27 +43,18 @@ Source: ..\..\..\csharp\ThirdParty\gtk-sharp\libxml2.dll; DestDir: {app}/bin30
 Source: ..\..\..\csharp\ICT\Petra\Client\_bin\Release\Ict.Common*dll; DestDir: {app}/bin30
 Source: ..\..\..\csharp\ICT\Petra\Client\_bin\Release\Ict.Petra.Client*dll; DestDir: {app}/bin30
 Source: ..\..\..\csharp\ICT\Petra\Shared\_bin\Server_Client\Release\Ict.Petra.Shared*dll; DestDir: {app}/bin30
-Source: ..\..\..\csharp\ICT\Petra\Shared\_bin\Server_ServerAdmin\Release\Ict.Petra.Shared*dll; DestDir: {app}/bin30
-Source: ..\..\..\csharp\ICT\Petra\Server\_bin\Release\Ict.Petra.Server*dll; DestDir: {app}/bin30
-Source: ..\..\..\csharp\ICT\Petra\ServerAdmin\_bin\Release\Ict.Petra.ServerAdmin*dll; DestDir: {app}/bin30
-Source: ..\..\..\csharp\ICT\Petra\ServerAdmin\_bin\Release\PetraServerAdminConsole.exe; DestDir: {app}/bin30
 Source: ..\..\..\csharp\ICT\Petra\Client\_bin\Release\PetraClient.exe; DestDir: {app}/bin30
-Source: ..\..\..\csharp\ICT\Petra\Server\_bin\Release\PetraServerConsole.exe; DestDir: {app}/bin30
 Source: ..\i18n\*.mo; DestDir: {app}/bin30/locale/de/LC_MESSAGES; Flags: recursesubdirs createallsubdirs
 Source: ..\..\..\XmlReports\reports.dtd; DestDir: {app}/reports30
 Source: ..\..\..\XmlReports\*.xml; DestDir: {app}/reports30
-Source: PetraServerAdminConsole.config; DestDir: {app}; DestName: PetraServerAdminConsole-3.0.config
-Source: PetraClient.config; DestDir: {app}; DestName: PetraClient-3.0.config
-Source: PetraServerConsole-Sqlite.config; DestDir: {app}; DestName: PetraServerConsole-3.0.config
+Source: PetraClientRemote.config; DestDir: {app}; DestName: PetraClient-Remote-3.0.config
 Source: ..\releasenotes\releasenotes*html; DestDir: {app}/manuals30
-; actual db will be copied to the user's userappdata directory
-Source: ..\petra.db; DestDir: {app}/db30; DestName: demo.db
 Source: ..\..\..\resources\petraico-big.ico; DestDir: {app}
 Source: ..\..\..\LICENSE; DestDir: {app}
 [Icons]
-Name: {group}\{cm:cmIconStandaloneLabel}; Filename: {app}\bin30\PetraClient.exe; WorkingDir: {app}/bin30; IconFilename: {app}\petraico-big.ico; Comment: {cm:cmIconStandaloneComment}; IconIndex: 0; Parameters: "-C:""{app}\PetraClient-3.0.config"" -AutoLogin:demo"
+Name: {group}\{cm:cmIconRemoteLabel}; Filename: {app}\bin30\PetraClient.exe; WorkingDir: {app}/bin30; IconFilename: {app}\petraico-big.ico; Comment: {cm:cmIconRemoteComment}; IconIndex: 0; Parameters: "-C:""{app}\PetraClient-Remote-3.0.config"" -AutoLogin:demo"
 Name: {group}\{cm:cmIconReleaseNotesLabel}; Filename: {app}\manuals30\{cm:cmReleaseNotesFile}; WorkingDir: {app}/manuals30; Comment: {cm:cmIconReleaseNotesComment}
-Name: {commondesktop}\{cm:cmIconStandaloneLabel}; Filename: {app}\bin30\PetraClient.exe; WorkingDir: {app}/bin30; IconFilename: {app}\petraico-big.ico; Comment: Start OpenPetra.org; IconIndex: 0; Parameters: "-C:""{app}\PetraClient-3.0.config"" -AutoLogin:demo"; Tasks: iconDesktop
+Name: {commondesktop}\{cm:cmIconRemoteLabel}; Filename: {app}\bin30\PetraClient.exe; WorkingDir: {app}/bin30; IconFilename: {app}\petraico-big.ico; Comment: Start OpenPetra.org; IconIndex: 0; Parameters: "-C:""{app}\PetraClient-Remote-3.0.config"" -AutoLogin:demo"; Tasks: iconDesktop
 
 [Tasks]
 Name: iconDesktop; Description: {cm:cmIconTask}
@@ -77,10 +67,65 @@ Filename: {app}\manuals30\{cm:cmReleaseNotesFile}; Description: {cm:cmViewReleas
 #include "../utils/DotNetFramework.iiss"
 
 var
-	DotNetPage: TOutputMsgMemoWizardPage;
+    DotNetPage: TOutputMsgMemoWizardPage;
+    PetraServerConnectionPage: TWizardPage;
+    ctrlPetraServerConnectionHostName, ctrlPetraServerConnectionNET:  TEdit;
+    strServer : string;
+    NetPort: Integer;
+
+// This page will ask the user for the Server and Port to find Petra listening on.
+function CreatePage_PetraServerConnection(const afterId: Integer; AStrServer: String; ANETPort: Integer): TWizardPage;
+var 
+  currentY: integer;
+  lblHeader, lblHostName, lblNET: TNewStaticText;
+begin
+  Result := CreateCustomPage(afterId, 
+    ExpandConstant('{cm:cmPetraServerConnectionTitle}'), ExpandConstant('{cm:cmPetraServerConnectionSubTitle}'));
+  
+  lblHeader := TNewStaticText.Create(Result);
+  with lblHeader do begin
+    AutoSize := False;
+    Width := Result.SurfaceWidth - Left;
+    WordWrap := True;
+    Caption := ExpandConstant('{cm:cmExplanationPetraServerDetails}');
+    Parent := Result.Surface;
+  end;
+  WizardForm.AdjustLabelHeight(lblHeader);
+  
+  currentY := lblHeader.Top + lblHeader.Height + ScaleY(8);
+  
+  lblHostName := TNewStaticText.Create(Result);
+  lblHostName.Width := ScaleX(10);
+  lblHostName.Top := currentY;
+  lblHostName.Caption := ExpandConstant('{cm:cmPetraServerConnectionHostName}') + ':';
+  lblHostName.Parent := Result.Surface;
+  ctrlPetraServerConnectionHostName := TEdit.Create(Result);
+  ctrlPetraServerConnectionHostName.Top := currentY;
+  ctrlPetraServerConnectionHostName.Width := Result.SurfaceWidth div 2 - ScaleX(8);
+  ctrlPetraServerConnectionHostName.Left := lblHostName.Left + ScaleX(100) + ScaleX(8);
+  ctrlPetraServerConnectionHostName.Text := AStrServer;
+  ctrlPetraServerConnectionHostName.Parent := Result.Surface;
+
+  currentY := currentY + ctrlPetraServerConnectionHostName.Height + ScaleY(8);
+  lblNET := TNewStaticText.Create(Result);
+  lblNET.Width := ScaleX(10);
+  lblNET.Top := currentY;
+  lblNET.Caption := ExpandConstant('{cm:cmPetraServerConnectionNetPort}') + ':';
+  lblNET.Parent := Result.Surface;
+  ctrlPetraServerConnectionNET := TEdit.Create(Result);
+  ctrlPetraServerConnectionNET.Top := currentY;
+  ctrlPetraServerConnectionNET.Width := Result.SurfaceWidth div 6;
+  ctrlPetraServerConnectionNET.Left := lblNET.Left + ScaleX(100) + ScaleX(8);
+  ctrlPetraServerConnectionNET.Text := IntToStr(ANETPort);
+  ctrlPetraServerConnectionNET.Parent := Result.Surface;
+end;
+
 procedure InitializeWizard;
 begin
-	DotNetPage := CreatePage_MissingNetFrameWork(wpPreparing);
+    strServer := 'LINUX';
+    NetPort := 9000;
+    PetraServerConnectionPage := CreatePage_PetraServerConnection(wpPreparing, strServer, NETPort);
+    DotNetPage := CreatePage_MissingNetFrameWork(PetraServerConnectionPage.Id);
 end;
 
 function ShouldSkipPage(PageID: Integer): Boolean;
@@ -99,6 +144,16 @@ begin
   if (CurPageID = DotNetPage.Id) then
   begin
     result :=  IsDotNetInstalled();
+  end
+  else if (CurPageID = PetraServerConnectionPage.ID) then
+  begin  
+    strServer := ctrlPetraServerConnectionHostName.Text;
+    NetPort := StrToInt(ctrlPetraServerConnectionNET.Text);
+    result := (Length(strServer) > 0) and (NETPort > 0);
+    if (not result) then
+    begin
+      MsgBox( ExpandConstant('{cm:cmPleaseEnterValidValues}'), mbError, MB_OK);
+    end;
   end;
 end;
 
@@ -108,21 +163,13 @@ var
 begin
   if CurStep=ssPostInstall then
   begin
-    ReplaceInTextFile(ExpandConstant('{app}/PetraServerConsole-3.0.config'), 'U:/OpenPetra/setup/petra0300/petra.db', '{userappdata}/OpenPetra.org/db30/petra.db', true);
-    ReplaceInTextFile(ExpandConstant('{app}/PetraServerConsole-3.0.config'), 'U:/OpenPetra/setup/petra0300/base.db', ExpandConstant('{app}/db30/demo.db'), true);
-    ReplaceInTextFile(ExpandConstant('{app}/PetraServerConsole-3.0.config'), 'reports30', ExpandConstant('{app}/reports30'), true);
-    ReplaceInTextFile(ExpandConstant('{app}/PetraClient-3.0.config'), 'PetraServerConsole.exe.config', ExpandConstant('{app}/PetraServerConsole-3.0.config'), true);
-    ReplaceInTextFile(ExpandConstant('{app}/PetraClient-3.0.config'), 'PetraServerAdminConsole.exe.config', ExpandConstant('{app}/PetraServerAdminConsole-3.0.config'), true);
-    ReplaceInTextFile(ExpandConstant('{app}/PetraClient-3.0.config'), 'Petra.PathTemp" value="u:\"', 'Petra.PathTemp" value="{userappdata}/OpenPetra.org/tmp30"', true);
+    ReplaceInTextFile(ExpandConstant('{app}/PetraClient-Remote-3.0.config'), 'Petra.PathTemp" value="u:\"', 'Petra.PathTemp" value="{userappdata}/OpenPetra.org/tmp30"', true);
+    ReplaceInTextFile(ExpandConstant('{app}/PetraClient-Remote-3.0.config'), 'PETRAHOST', strServer, true);
+    ReplaceInTextFile(ExpandConstant('{app}/PetraClient-Remote-3.0.config'), 'PETRAPORT', IntToStr(NetPort), true);
   end;
 
   // allow the .net remoting communication between client and server
   Exec(ExpandConstant('{sys}\cmd.exe'), '/C netsh firewall set allowedprogram program = '
     + ExpandConstant('"{app}\bin30\PetraClient.exe" name = PetraClient mode = DISABLE'),
     '', SW_HIDE, ewWaitUntilTerminated, ResultCode);
-
-  Exec(ExpandConstant('{sys}\cmd.exe'), '/C netsh firewall set allowedprogram program = '
-    + ExpandConstant('"{app}\bin30\PetraServerConsole.exe" name = PetraServer mode = DISABLE'),
-    '', SW_HIDE, ewWaitUntilTerminated, ResultCode);
-
 end;

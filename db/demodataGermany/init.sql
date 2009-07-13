@@ -20,7 +20,7 @@ INSERT INTO s_user_table_access_permission(s_user_id_c,s_table_name_c) VALUES('D
 INSERT INTO s_user_table_access_permission(s_user_id_c,s_table_name_c) VALUES('DEMO', 'p_organisation');
 
 -- setup the sample site Germany 43000000
-INSERT INTO s_system_defaults(s_default_code_c, s_default_description_c, s_default_value_c) VALUES ('CurrentDatabaseVersion', 'the currently installed release number, set by installer/patchtool', '0.0.3-0');
+INSERT INTO s_system_defaults(s_default_code_c, s_default_description_c, s_default_value_c) VALUES ('CurrentDatabaseVersion', 'the currently installed release number, set by installer/patchtool', '0.0.4-0');
 INSERT INTO s_system_defaults(s_default_code_c, s_default_description_c, s_default_value_c) VALUES ('SiteKey', 'there has to be one site key for the database', '43000000');
 
 INSERT INTO p_partner(p_partner_key_n, p_partner_short_name_c) VALUES(43000000, 'Germany'); 
