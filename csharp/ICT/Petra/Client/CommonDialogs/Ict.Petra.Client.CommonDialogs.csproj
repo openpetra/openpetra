@@ -99,5 +99,9 @@
       <Project>{69E21FFC-F815-451A-96BB-66499CDDEB6E}</Project>
       <Name>Ict.Petra.Client.App.Core</Name>
     </ProjectReference>
+    <ProjectReference Include="..\CommonForms\Ict.Petra.Client.CommonForms.csproj">
+      <Project>{115F2398-E0E0-4F79-854C-BBFC5DEB076F}</Project>
+      <Name>Ict.Petra.Client.CommonForms</Name>
+    </ProjectReference>
   </ItemGroup>
 </Project>

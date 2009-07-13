@@ -52,21 +52,49 @@ namespace Ict.Petra.Client.CommonForms
         /// <param name="nCmdShow"></param>
         /// <returns></returns>
         [DllImport("user32.dll")]
-        public static extern Boolean ShowWindow(IntPtr hwnd, int nCmdShow);
+        private static extern Boolean ShowWindow(IntPtr hwnd, int nCmdShow);
 
-        /// This function returns the handle to the foreground window - the window
-        /// with which the user is currently working.
-        [DllImport("user32.dll")]
-        public static extern IntPtr GetForegroundWindow();
-
+        /// <summary>
+        /// this is a wrapper around the win32 function ShowWindow
+        /// </summary>
+        /// <param name="hwnd"></param>
+        /// <param name="nCmdShow"></param>
+        /// <returns></returns>
+        public static Boolean ShowWindowWrapper(IntPtr hwnd, int nCmdShow)
+        {
+            try
+            {
+                return ShowWindow(hwnd, nCmdShow);
+            }
+            catch (Exception)
+            {
+                // avoid crash on Linux
+            }
+            return false;
+        }
+        
         ///  The SetForegroundWindow function puts the thread that created the
         /// specified window into the foreground and activates the window
         [DllImport("user32.dll")]
-        public static extern Boolean SetForegroundWindow(IntPtr hwnd);
+        private static extern Boolean SetForegroundWindow(IntPtr hwnd);
 
-        /// The SetFocus function sets the keyboard focus to the specified window.
-        /// The window must be attached to the calling thread's message queue.
-        [DllImport("user32.dll")]
-        public static extern IntPtr SetFocus(IntPtr hwnd);
+        /// <summary>
+        /// this is a wrapper around the win32 function SetForegroundWindow
+        /// </summary>
+        /// <param name="hwnd"></param>
+        /// <returns></returns>
+        public static Boolean SetForegroundWindowWrapper(IntPtr hwnd)
+        {
+            try
+            {
+                return SetForegroundWindow(hwnd);
+            }
+            catch (Exception)
+            {
+                // avoid crash on Linux
+            }
+            return false;
+        }
+
     }
 }

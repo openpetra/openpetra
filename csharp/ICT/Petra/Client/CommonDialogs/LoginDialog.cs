@@ -43,6 +43,7 @@ using Ict.Common.DB;
 using Ict.Petra.Shared;
 using Ict.Petra.Shared.RemotedExceptions;
 using Ict.Petra.Shared.MSysMan;
+using Ict.Petra.Client.CommonForms;
 
 namespace Ict.Petra.Client.CommonDialogs
 {
@@ -52,10 +53,6 @@ namespace Ict.Petra.Client.CommonDialogs
     public partial class TLoginForm : System.Windows.Forms.Form
     {
         private static bool FPreviouslyShown = false;
-
-        /// Activate an application window.
-        [DllImport("USER32.DLL")]
-        public static extern bool SetForegroundWindow(IntPtr hWnd);
 
         /// <summary>todoComment</summary>
         public const String PETRA_LOGIN_FORMTITLE = "Petra Login";
@@ -197,7 +194,7 @@ namespace Ict.Petra.Client.CommonDialogs
             /* The following commands are needed to get the input focus after having
              * displayed the Splash Screen...
              */
-            SetForegroundWindow(this.Handle);
+            WindowHandling.SetForegroundWindowWrapper(this.Handle);
         }
 
         private void BtnCancel_Click(System.Object sender, System.EventArgs e)
