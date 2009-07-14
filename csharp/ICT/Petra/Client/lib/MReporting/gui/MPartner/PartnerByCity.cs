@@ -113,16 +113,6 @@ namespace Ict.Petra.Client.MReporting.Gui.MPartner
 
     }
 
-    private void tbbGenerateClick(object sender, EventArgs e)
-    {
-        actGenerate(sender, e);
-    }
-
-    private void mniCloseClick(object sender, EventArgs e)
-    {
-        actClose(sender, e);
-    }
-
     private void TFrmPetra_Activated(object sender, EventArgs e)
     {
         FPetraUtilsObject.TFrmPetra_Activated(sender, e);
@@ -143,6 +133,9 @@ namespace Ict.Petra.Client.MReporting.Gui.MPartner
         FPetraUtilsObject.Form_KeyDown(sender, e);
     }
 
+    private void TFrmPetra_Closed(object sender, EventArgs e)
+    {
+    }
 #region Parameter/Settings Handling
     /**
        Reads the selected values from the controls, and stores them into the parameter system of FCalculator

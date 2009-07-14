@@ -232,12 +232,12 @@ namespace Ict.Tools.CodeGeneration.Winforms
             }
         }
 
-        public void SetEventHandlerToControl(string AControlName, string AEvent)
+        public void SetEventHandlerToControl(string AControlName, string AEvent, string AActionToPerform)
         {
             FTemplate.AddToCodelet("CONTROLINITIALISATION",
                 "this." + AControlName + "." + AEvent +
                 " += new System.EventHandler(this." +
-                AControlName + AEvent + ");" + Environment.NewLine);
+                AActionToPerform + ");" + Environment.NewLine);
         }
 
         public void SetEventHandlerToControl(string AControlName, string AEvent, string AEventHandlerType, string AEventHandlingMethod)
@@ -290,32 +290,29 @@ namespace Ict.Tools.CodeGeneration.Winforms
         public void AddActionHandlerImplementation(TActionHandler AAction)
         {
             // the actual call what happens when the action is executed
-            string ActionHandler =
-                "/// auto generated" + Environment.NewLine +
-                "protected void " + AAction.actionName + "(object sender, EventArgs e)" + Environment.NewLine +
-                "{" + Environment.NewLine;
-
+            // only create an action handler for calls to FPetraUtilsObject, because that would not work in the designer
             if (AAction.actionId.Length > 0)
             {
+                string ActionHandler =
+                    "/// auto generated" + Environment.NewLine +
+                    "protected void " + AAction.actionName + "(object sender, EventArgs e)" + Environment.NewLine +
+                    "{" + Environment.NewLine;
                 ActionHandler += "    FPetraUtilsObject.ExecuteAction(eActionId." + AAction.actionId + ");" + Environment.NewLine;
+                ActionHandler += "}" + Environment.NewLine + Environment.NewLine;
+
+                FCodeStorage.FActionHandlers += ActionHandler;
             }
-            else
+            else if (AAction.actionClick.StartsWith("FPetraUtilsObject"))
             {
-                if (AAction.actionClick.Length > 0)
-                {
-                    ActionHandler += "    " + AAction.actionClick + "(sender, e);" + Environment.NewLine;
-                }
-                else
-                {
-                    ActionHandler += "    // TODO action " + AAction.actionName + Environment.NewLine;
+                string ActionHandler =
+                    "/// auto generated" + Environment.NewLine +
+                    "protected void " + AAction.actionName + "(object sender, EventArgs e)" + Environment.NewLine +
+                    "{" + Environment.NewLine;
+                ActionHandler += "    " + AAction.actionClick + "(sender, e);" + Environment.NewLine;
+                ActionHandler += "}" + Environment.NewLine + Environment.NewLine;
 
-                    //if we did not want the handler with just a TODO comment, we would need to return here.
-                }
+                FCodeStorage.FActionHandlers += ActionHandler;
             }
-
-            ActionHandler += "}" + Environment.NewLine + Environment.NewLine;
-
-            FCodeStorage.FActionHandlers += ActionHandler;
         }
 
         /// <summary>
@@ -655,6 +652,12 @@ namespace Ict.Tools.CodeGeneration.Winforms
 
             XmlNode rootNode = (XmlNode)FCodeStorage.FXmlNodes["RootNode"];
 
+            if (TYml2Xml.HasAttribute(rootNode, "UIConnectorType") && TYml2Xml.HasAttribute(rootNode, "UIConnectorCreate"))
+            {
+                FTemplate.AddToCodelet("UICONNECTORTYPE", TYml2Xml.GetAttribute(rootNode, "UIConnectorType"));
+                FTemplate.AddToCodelet("UICONNECTORCREATE", TYml2Xml.GetAttribute(rootNode, "UIConnectorCreate"));
+            }
+
             if (TYml2Xml.HasAttribute(rootNode, "Icon"))
             {
                 string iconFileName = TYml2Xml.GetAttribute(rootNode, "Icon");
@@ -680,24 +683,24 @@ namespace Ict.Tools.CodeGeneration.Winforms
 
                 if (TYml2Xml.HasAttribute(handler.actionNode, "InitialValue"))
                 {
-                    FCodeStorage.FActionHandlers +=
-                        "/// auto generated" + Environment.NewLine +
-                        "protected void Activate" + handler.actionName.Substring(3) +
-                        "(bool AEnabled)" + Environment.NewLine +
+                    string actionEnabling =
+                        "if (e.ActionName == \"" + handler.actionName + "\")" + Environment.NewLine +
                         "{" + Environment.NewLine +
                         "    {#ENABLEDEPENDINGACTIONS_" + handler.actionName + "}" + Environment.NewLine +
                         "}" + Environment.NewLine + Environment.NewLine;
+                    Template.AddToCodelet("ACTIONENABLING", actionEnabling);
                     Template.AddToCodelet(
                         "INITACTIONSTATE",
-                        "Activate" + handler.actionName.Substring(3) + "(" + TYml2Xml.GetAttribute(handler.actionNode,
-                            "InitialValue") + ");" + Environment.NewLine);
+                        "ActionEnabledEvent(null, new ActionEventArgs(" +
+                        "\"" + handler.actionName + "\", " + TYml2Xml.GetAttribute(handler.actionNode,
+                            "InitialValue") + "));" + Environment.NewLine);
                 }
 
                 if (TYml2Xml.HasAttribute(handler.actionNode, "Enabled"))
                 {
                     Template.AddToCodelet(
                         "ENABLEDEPENDINGACTIONS_" + TYml2Xml.GetAttribute(handler.actionNode, "Enabled"),
-                        "FPetraUtilsObject.EnableAction(\"" + handler.actionName + "\", AEnabled);" + Environment.NewLine);
+                        "FPetraUtilsObject.EnableAction(\"" + handler.actionName + "\", e.Enabled);" + Environment.NewLine);
                 }
             }
 

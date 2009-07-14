@@ -3,10 +3,14 @@ RootNode:
     FormTitle: AP Supplier Edit
     ClassName: TFrmAccountsPayableEditSupplier
     Namespace: Ict.Petra.Client.MFinance.Gui
+    UIConnectorType: Ict.Petra.Shared.Interfaces.MFinance.AccountsPayable.UIConnectors.IAccountsPayableUIConnectorsSupplierEdit
+    UIConnectorCreate: TRemote.MFinance.AccountsPayable.UIConnectors.SupplierEdit
     FormType: edit
     HasManualCodeInOtherFile: true
     WindowWidth: 660
     WindowHeight: 500
+    Actions:
+        cndDiscountEnabled: {InitialValue=false}
     Controls:
         pnlContent:
             Controls: [pnlPartnerInfo, pnlPartnerInfo2, pnlDefaults, grpAccountInformation]
@@ -32,7 +36,7 @@ RootNode:
         grpAccountInformation:
             Label: Account Information
             Controls: [cmbAPAccount, cmbDefaultBankAccount, cmbCostCentre, cmbExpenseAccount]
-        txtPartnerName: {Label=Partner Name, ReadOnly=true}
+        txtPartnerName: {Label=Partner Name, ReadOnly=true, PartnerShortNameLookup=AApSupplier.PartnerKey}
         txtPartnerKey: {Label=Partner Key, ReadOnly=true, DataField=AApSupplier.PartnerKey, Type=PartnerKey}
         cmbCurrency: {Label=&Currency, DataField=AApSupplier.CurrencyCode, List=CurrencyCodeList}
         cmbSupplierType: 
@@ -49,5 +53,5 @@ RootNode:
             Label: Default &Payment Type
             DataField: AApSupplier.PaymentType
             OptionalValues: [CASH, CHEQUE, TRANSFER]
-        nudDiscountDays: {Label=Number of Days for &Discount (0 for none), DataField=AApSupplier.DefaultDiscountDays}
-        txtDiscountValue: {Label=Discount &Value (%), DataField=AApSupplier.DefaultDiscountPercentage, ActiveTODO="nudDiscountDays.Value > 0"}
+        nudDiscountDays: {Label=Number of Days for &Discount (0 for none), DataField=AApSupplier.DefaultDiscountDays, PositiveValueActivates=cndDiscountEnabled}
+        txtDiscountValue: {Label=Discount &Value (%), DataField=AApSupplier.DefaultDiscountPercentage, Enabled=cndDiscountEnabled}

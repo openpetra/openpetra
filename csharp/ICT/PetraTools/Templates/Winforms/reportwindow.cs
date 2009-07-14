@@ -67,6 +67,9 @@ namespace {#NAMESPACE}
 
     {#EVENTHANDLERSIMPLEMENTATION}
 
+    private void TFrmPetra_Closed(object sender, EventArgs e)
+    {
+    }
 #region Parameter/Settings Handling
     /** 
        Reads the selected values from the controls, and stores them into the parameter system of FCalculator

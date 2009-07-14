@@ -254,7 +254,11 @@ namespace Ict.Tools.CodeGeneration.Winforms
                 return ctrl.controlName + ".SelectedIndex = -1;";
             }
 
-            if (AFieldTypeDotNet != "String")
+            if (AFieldTypeDotNet == "Boolean")
+            {
+                return ctrl.controlName + ".SelectedIndex = (" + AFieldOrNull + "?1:0);";
+            }
+            else if (AFieldTypeDotNet != "String")
             {
                 return ctrl.controlName + ".SetSelectedInt(" + AFieldOrNull + ");";
             }
@@ -269,7 +273,11 @@ namespace Ict.Tools.CodeGeneration.Winforms
                 return ctrl.controlName + ".SelectedIndex == -1";
             }
 
-            if (AFieldTypeDotNet != "String")
+            if (AFieldTypeDotNet == "Boolean")
+            {
+                return ctrl.controlName + ".SelectedIndex == 1";
+            }
+            else if (AFieldTypeDotNet != "String")
             {
                 return ctrl.controlName + ".GetSelectedInt()";
             }
@@ -498,6 +506,28 @@ namespace Ict.Tools.CodeGeneration.Winforms
 
             return "(" + AFieldTypeDotNet + ")" + ctrl.controlName + ".Value";
         }
+
+        public override void SetControlProperties(IFormWriter writer, TControlDef ctrl)
+        {
+            base.SetControlProperties(writer, ctrl);
+
+            if (TYml2Xml.HasAttribute(ctrl.xmlNode, "PositiveValueActivates"))
+            {
+                if (ctrl.HasAttribute("OnChange"))
+                {
+                    throw new Exception(ctrl.controlName + " cannot have OnChange and PositiveValueActivates at the same time");
+                }
+
+                AssignEventHandlerToControl(writer, ctrl, "ValueChanged", ctrl.controlName + "ValueChanged");
+                writer.CodeStorage.FEventHandlersImplementation +=
+                    "private void " + ctrl.controlName + "ValueChanged" +
+                    "(object sender, EventArgs e)" + Environment.NewLine +
+                    "{" + Environment.NewLine +
+                    "    ActionEnabledEvent(null, new ActionEventArgs(\"" + TYml2Xml.GetAttribute(ctrl.xmlNode, "PositiveValueActivates") +
+                    "\", " + ctrl.controlName + ".Value > 0));" + Environment.NewLine +
+                    "}" + Environment.NewLine + Environment.NewLine;
+            }
+        }
     }
     public class GridGenerator : TControlGenerator
     {
@@ -603,12 +633,6 @@ namespace Ict.Tools.CodeGeneration.Winforms
                 writer.SetControlProperty(ControlName, "PartnerClass", "\"\"");
                 writer.SetControlProperty(ControlName, "Tag", "\"CustomDisableAlthoughInvisible\"");
                 writer.SetControlProperty(ControlName, "ButtonText", "\"Find\"");
-
-                // TODO for all (or most) controls add events and event handler
-                writer.SetEventHandlerToControl(ControlName, "Click");
-
-                string EventHandlerImplementation = "\t" + ControlName + ".Select();";
-                writer.SetEventHandlerFunction(ControlName, "Click", EventHandlerImplementation);
             }
         }
     }
@@ -1006,10 +1030,11 @@ namespace Ict.Tools.CodeGeneration.Winforms
             }
 
             // deactivate menu items that have no action assigned yet.
-            if (!ctrl.HasAttribute("Action") && !ctrl.HasAttribute("ActionClick") && (ctrl.NumberChildren == 0))
+            if (!ctrl.HasAttribute("Action") && !ctrl.HasAttribute("ActionClick")
+                && (ctrl.NumberChildren == 0) && !(this is MenuItemSeparatorGenerator))
             {
                 string ActionEnabling = ctrl.controlName + ".Enabled = false;" + Environment.NewLine;
-                writer.Template.AddToCodelet("ACTIONENABLING", ActionEnabling);
+                writer.Template.AddToCodelet("ACTIONENABLINGDISABLEMISSINGFUNCS", ActionEnabling);
             }
 
             writer.SetControlProperty(ctrl.controlName, "Text", "\"" + ctrl.Label + "\"");

@@ -281,11 +281,23 @@ namespace Ict.Tools.DBXML
         }
 
         /// <summary>
+        /// overload, do warn about missing fields (if GEnabledLoggingMissingFields is set)
+        /// </summary>
+        /// <param name="s"></param>
+        /// <returns></returns>
+        public TTableField GetField(string s)
+        {
+            return GetField(s, true);
+        }
+
+        /// <summary>
         /// return the reference to a column, given by name
         /// </summary>
         /// <param name="s">name of the column</param>
+        /// <param name="AShowWarningNonExistingField">show warning if there is no field with that name;
+        /// only takes effect if GEnabledLoggingMissingFields is true</param>
         /// <returns>reference to the column</returns>
-        public TTableField GetField(string s)
+        public TTableField GetField(string s, bool AShowWarningNonExistingField)
         {
             TTableField ReturnValue;
 
@@ -302,7 +314,7 @@ namespace Ict.Tools.DBXML
             if (ReturnValue == null)
             {
                 // should be disabled for creating the diff between two Petra versions.
-                if ((GEnabledLoggingMissingFields) && (s != "s_modification_id_c"))
+                if ((GEnabledLoggingMissingFields) && (s != "s_modification_id_c") && AShowWarningNonExistingField)
                 {
                     System.Console.WriteLine("TTable.GetField: cannot find field " + strName + '.' + s);
                 }

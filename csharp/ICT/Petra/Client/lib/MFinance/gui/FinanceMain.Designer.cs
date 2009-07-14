@@ -180,7 +180,7 @@ namespace Ict.Petra.Client.MFinance.Gui
             //
             this.mniClose.Name = "mniClose";
             this.mniClose.AutoSize = true;
-            this.mniClose.Click += new System.EventHandler(this.mniCloseClick);
+            this.mniClose.Click += new System.EventHandler(this.actClose);
             this.mniClose.Image = ((System.Drawing.Bitmap)resources.GetObject("mniClose.Glyph"));
             this.mniClose.ToolTipText = "Closes this window";
             this.mniClose.Text = "&Close";
@@ -320,7 +320,7 @@ namespace Ict.Petra.Client.MFinance.Gui
             //
             this.mniImportBankStatements.Name = "mniImportBankStatements";
             this.mniImportBankStatements.AutoSize = true;
-            this.mniImportBankStatements.Click += new System.EventHandler(this.mniImportBankStatementsClick);
+            this.mniImportBankStatements.Click += new System.EventHandler(this.ImportBankStatements);
             this.mniImportBankStatements.Text = "Import &Bank statements";
             //
             // mniGiftBatch
@@ -384,7 +384,7 @@ namespace Ict.Petra.Client.MFinance.Gui
             //
             this.mniAccountsPayable.Name = "mniAccountsPayable";
             this.mniAccountsPayable.AutoSize = true;
-            this.mniAccountsPayable.Click += new System.EventHandler(this.mniAccountsPayableClick);
+            this.mniAccountsPayable.Click += new System.EventHandler(this.AccountsPayable);
             this.mniAccountsPayable.Text = "&Accounts Payable";
             //
             // mniBudget
@@ -547,49 +547,49 @@ namespace Ict.Petra.Client.MFinance.Gui
             //
             this.mniPetraMainMenu.Name = "mniPetraMainMenu";
             this.mniPetraMainMenu.AutoSize = true;
-            this.mniPetraMainMenu.Click += new System.EventHandler(this.mniPetraMainMenuClick);
+            this.mniPetraMainMenu.Click += new System.EventHandler(this.actMainMenu);
             this.mniPetraMainMenu.Text = "Petra &Main Menu";
             //
             // mniPetraPartnerModule
             //
             this.mniPetraPartnerModule.Name = "mniPetraPartnerModule";
             this.mniPetraPartnerModule.AutoSize = true;
-            this.mniPetraPartnerModule.Click += new System.EventHandler(this.mniPetraPartnerModuleClick);
+            this.mniPetraPartnerModule.Click += new System.EventHandler(this.actPartnerModule);
             this.mniPetraPartnerModule.Text = "Pa&rtner";
             //
             // mniPetraFinanceModule
             //
             this.mniPetraFinanceModule.Name = "mniPetraFinanceModule";
             this.mniPetraFinanceModule.AutoSize = true;
-            this.mniPetraFinanceModule.Click += new System.EventHandler(this.mniPetraFinanceModuleClick);
+            this.mniPetraFinanceModule.Click += new System.EventHandler(this.actFinanceModule);
             this.mniPetraFinanceModule.Text = "&Finance";
             //
             // mniPetraPersonnelModule
             //
             this.mniPetraPersonnelModule.Name = "mniPetraPersonnelModule";
             this.mniPetraPersonnelModule.AutoSize = true;
-            this.mniPetraPersonnelModule.Click += new System.EventHandler(this.mniPetraPersonnelModuleClick);
+            this.mniPetraPersonnelModule.Click += new System.EventHandler(this.actPersonnelModule);
             this.mniPetraPersonnelModule.Text = "P&ersonnel";
             //
             // mniPetraConferenceModule
             //
             this.mniPetraConferenceModule.Name = "mniPetraConferenceModule";
             this.mniPetraConferenceModule.AutoSize = true;
-            this.mniPetraConferenceModule.Click += new System.EventHandler(this.mniPetraConferenceModuleClick);
+            this.mniPetraConferenceModule.Click += new System.EventHandler(this.actConferenceModule);
             this.mniPetraConferenceModule.Text = "C&onference";
             //
             // mniPetraFinDevModule
             //
             this.mniPetraFinDevModule.Name = "mniPetraFinDevModule";
             this.mniPetraFinDevModule.AutoSize = true;
-            this.mniPetraFinDevModule.Click += new System.EventHandler(this.mniPetraFinDevModuleClick);
+            this.mniPetraFinDevModule.Click += new System.EventHandler(this.actFinDevModule);
             this.mniPetraFinDevModule.Text = "Financial &Development";
             //
             // mniPetraSysManModule
             //
             this.mniPetraSysManModule.Name = "mniPetraSysManModule";
             this.mniPetraSysManModule.AutoSize = true;
-            this.mniPetraSysManModule.Click += new System.EventHandler(this.mniPetraSysManModuleClick);
+            this.mniPetraSysManModule.Click += new System.EventHandler(this.actSysManModule);
             this.mniPetraSysManModule.Text = "&System Manager";
             //
             // mniPetraModules
@@ -690,6 +690,7 @@ namespace Ict.Petra.Client.MFinance.Gui
 	        this.Load += new System.EventHandler(this.TFrmPetra_Load);
 	        this.Closing += new System.ComponentModel.CancelEventHandler(this.TFrmPetra_Closing);
 	        this.KeyDown += new System.Windows.Forms.KeyEventHandler(this.Form_KeyDown);
+	        this.Closed += new System.EventHandler(this.TFrmPetra_Closed);
 	
             this.stbMain.ResumeLayout(false);
             this.mnuMain.ResumeLayout(false);

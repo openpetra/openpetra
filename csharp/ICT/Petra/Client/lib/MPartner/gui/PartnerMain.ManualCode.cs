@@ -46,7 +46,7 @@ namespace Ict.Petra.Client.MPartner.Gui
         /// <summary>
         /// create a new partner
         /// </summary>
-        public void NewPartner()
+        public void NewPartner(System.Object sender, EventArgs e)
         {
             TPartnerEditDSWinForm frm = new TPartnerEditDSWinForm(this.Handle);
 
@@ -57,7 +57,7 @@ namespace Ict.Petra.Client.MPartner.Gui
         /// <summary>
         /// for the moment just an experiment to show the reports
         /// </summary>
-        public void PartnerByCityReport()
+        public void PartnerByCityReport(System.Object sender, EventArgs e)
         {
             TFrmPartnerByCity frm = new TFrmPartnerByCity(this.Handle);
 
@@ -67,7 +67,7 @@ namespace Ict.Petra.Client.MPartner.Gui
         /// <summary>
         /// open partner find screen
         /// </summary>
-        public void PartnerFind()
+        public void PartnerFind(System.Object sender, EventArgs e)
         {
             TPartnerFindScreen frm = new TPartnerFindScreen(this.Handle);
 

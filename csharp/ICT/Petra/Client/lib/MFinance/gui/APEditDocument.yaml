@@ -3,10 +3,13 @@ RootNode:
     FormTitle: AP Document Edit
     ClassName: TFrmAccountsPayableEditDocument
     Namespace: Ict.Petra.Client.MFinance.Gui
+    MainEditTable: AApDocument
     FormType: edit
     HasManualCodeInOtherFile: true
     WindowWidth: 660
     WindowHeight: 500
+    Actions:
+        cndDiscountEnabled: {InitialValue=false}
     Controls:
         pnlContent:
             Controls: [pnlSupplierInfo, grpDocumentInfo, grpDetails]
@@ -15,38 +18,39 @@ RootNode:
             Controls: [txtSupplierName, txtSupplierCurrency]
             ControlsOrientation: horizontal
             Dock:Top
-        txtSupplierName: {Label=Current Supplier, ReadOnly=true}
-        txtSupplierCurrency: {Label=Currency, ReadOnly=true}
+        txtSupplierName: {Label=Current Supplier, ReadOnly=true, PartnerShortNameLookup=AApDocument.PartnerKey}
+        txtSupplierCurrency: {Label=Currency, ReadOnly=true, DataField=AApSupplier.CurrencyCode}
         grpDocumentInfo:
             Label: Document Information
             Controls: 
-                Row0: [txtInvoiceNumber, cmbDocumentType]
+                Row0: [txtDocumentCode, cmbDocumentType]
                 Row1: [txtReference]
                 Row2: [dtpDateIssued, dtpDateDue, nudCreditTerms]
-                Row3: [txtAmount, txtExchangeRate, btnEarlyPaymentDiscount]
+                Row3: [nudDiscountDays, txtDiscountPercentage]
+                Row4: [txtTotalAmount, txtExchangeRateToBase]
             Dock: Top
-        txtInvoiceNumber:
-            Label: Invoice &Number
+        txtDocumentCode: {Label=Invoice &Number}
         cmbDocumentType:
-            OptionalValues: [Invoice, Credit Note]
-            Label: T&ype        
-        txtReference:
-            Label: &Reference
-            ColSpan: 2
-        dtpDateIssued:
-            Label: &Date Issued
-        dtpDateDue:
-            Label: Date D&ue
-        txtAmount:
-            Label: &Amount
-        txtExchangeRate:
-            Label: E&xchange Rate
+            OptionalValues: [=Invoice, Credit Note]
+            Label: T&ype
+            DataField: CreditNoteFlag
+        txtReference: {Label=&Reference, ColSpan=2}
+        dtpDateIssued: {Label=&Date Issued, OnChange=UpdateCreditTerms}
         nudCreditTerms:
             Label: Credit &Terms
-            DataField: AApDocument.CreditTerms
             Width: 50
-        btnEarlyPaymentDiscount:
-            Label: Early Pyt Discount
+            OnChange: UpdateCreditTerms
+        dtpDateDue:
+            Label: Date D&ue
+            Tooltip: Credit Terms is the number of days between date issued and due date
+            OnChange: UpdateCreditTerms
+        nudDiscountDays: {Label=Discount &Days, PositiveValueActivates=cndDiscountEnabled}
+        txtDiscountPercentage: {Label=Discount &Value (%), Enabled=cndDiscountEnabled}
+        txtTotalAmount:
+            Label: &Amount
+        txtExchangeRateToBase:
+            Label: E&xchange Rate
+            # TODO: default value from daily exchange rate? update daily exchange rate?
         grpDetails:
             Label: Details
             Dock: Fill

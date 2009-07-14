@@ -41,6 +41,7 @@ using System.Collections.Specialized;
 using Mono.Unix;
 using Ict.Common;
 using Ict.Petra.Client.App.Core;
+using Ict.Petra.Client.App.Core.RemoteObjects;
 using Ict.Common.Controls;
 using Ict.Petra.Client.CommonForms;
 
@@ -144,46 +145,7 @@ namespace Ict.Petra.Client.MPartner.Gui
       FPetraUtilsObject.ActionEnablingEvent += ActionEnabledEvent;
 
       FPetraUtilsObject.InitActionState();
-    }
 
-    private void mniCloseClick(object sender, EventArgs e)
-    {
-        actClose(sender, e);
-    }
-
-    private void mniPetraMainMenuClick(object sender, EventArgs e)
-    {
-        actMainMenu(sender, e);
-    }
-
-    private void mniPetraPartnerModuleClick(object sender, EventArgs e)
-    {
-        actPartnerModule(sender, e);
-    }
-
-    private void mniPetraFinanceModuleClick(object sender, EventArgs e)
-    {
-        actFinanceModule(sender, e);
-    }
-
-    private void mniPetraPersonnelModuleClick(object sender, EventArgs e)
-    {
-        actPersonnelModule(sender, e);
-    }
-
-    private void mniPetraConferenceModuleClick(object sender, EventArgs e)
-    {
-        actConferenceModule(sender, e);
-    }
-
-    private void mniPetraFinDevModuleClick(object sender, EventArgs e)
-    {
-        actFinDevModule(sender, e);
-    }
-
-    private void mniPetraSysManModuleClick(object sender, EventArgs e)
-    {
-        actSysManModule(sender, e);
     }
 
     private void TFrmPetra_Activated(object sender, EventArgs e)
@@ -199,6 +161,12 @@ namespace Ict.Petra.Client.MPartner.Gui
     private void Form_KeyDown(object sender, KeyEventArgs e)
     {
         FPetraUtilsObject.Form_KeyDown(sender, e);
+    }
+
+    private void TFrmPetra_Closed(object sender, EventArgs e)
+    {
+        // TODO? Save Window position
+
     }
 
 #region Implement interface functions
@@ -241,68 +209,10 @@ namespace Ict.Petra.Client.MPartner.Gui
     /// auto generated
     public void ActionEnabledEvent(object sender, ActionEventArgs e)
     {
-        mniFileSearch.Enabled = false;
-        mniFileSeparator1.Enabled = false;
-        mniFileWorkWithLastPartner.Enabled = false;
-        mniFileRecentPartner1.Enabled = false;
-        mniFileRecentPartner2.Enabled = false;
-        mniFileRecentPartner3.Enabled = false;
-        mniFileRecentPartner4.Enabled = false;
-        mniFileRecentPartner5.Enabled = false;
-        mniFileRecentPartner6.Enabled = false;
-        mniFileRecentPartner7.Enabled = false;
-        mniFileRecentPartner8.Enabled = false;
-        mniFileRecentPartner9.Enabled = false;
-        mniFileRecentPartner10.Enabled = false;
-        mniFileSeparator2.Enabled = false;
-        mniFileNewPartner.Enabled = false;
-        mniFileViewPartner.Enabled = false;
-        mniFileEditPartner.Enabled = false;
-        mniFileMergePartners.Enabled = false;
-        mniFileDeletePartner.Enabled = false;
-        mniFileSeparator3.Enabled = false;
-        mniFileCopyAddress.Enabled = false;
-        mniFileCopyPartnerKey.Enabled = false;
-        mniFileSendEmail.Enabled = false;
-        mniFileSeparator4.Enabled = false;
-        mniFilePrintPartner.Enabled = false;
-        mniFileSeparator5.Enabled = false;
-        mniFileExportPartner.Enabled = false;
-        mniFileImportPartner.Enabled = false;
-        mniFileSeparator6.Enabled = false;
         if (e.ActionName == "actClose")
         {
             mniClose.Enabled = e.Enabled;
         }
-        mniMaintainAddresses.Enabled = false;
-        mniMaintainPartnerDetails.Enabled = false;
-        mniMaintainFoundationDetails.Enabled = false;
-        mniMaintainSubscriptions.Enabled = false;
-        mniMaintainSpecialTypes.Enabled = false;
-        mniMaintainContacts.Enabled = false;
-        mniMaintainFamilyMembers.Enabled = false;
-        mniMaintainRelationships.Enabled = false;
-        mniMaintainInterests.Enabled = false;
-        mniMaintainReminders.Enabled = false;
-        mniMaintainNotes.Enabled = false;
-        mniMaintainOfficeSpecific.Enabled = false;
-        mniMaintainOMerField.Enabled = false;
-        mniMaintainSeparator1.Enabled = false;
-        mniMaintainPersonnelIndividualData.Enabled = false;
-        mniMaintainSeparator2.Enabled = false;
-        mniMaintainDonorHistory.Enabled = false;
-        mniMaintainRecipientHistory.Enabled = false;
-        mniMaintainFinanceDetails.Enabled = false;
-        mniMailingGenerateExtract.Enabled = false;
-        mniMailingExtracts.Enabled = false;
-        mniMailingSeparator1.Enabled = false;
-        mniMailingDuplicateAddressCheck.Enabled = false;
-        mniMailingMergeAddresses.Enabled = false;
-        mniMailingPartnersAtLocation.Enabled = false;
-        mniMailingSeparator2.Enabled = false;
-        mniMailingSubscriptionExpNotice.Enabled = false;
-        mniMailingSubscriptionCancellation.Enabled = false;
-        mniTools.Enabled = false;
         if (e.ActionName == "actMainMenu")
         {
             mniPetraMainMenu.Enabled = e.Enabled;
@@ -331,10 +241,56 @@ namespace Ict.Petra.Client.MPartner.Gui
         {
             mniPetraSysManModule.Enabled = e.Enabled;
         }
+        mniFileSearch.Enabled = false;
+        mniFileWorkWithLastPartner.Enabled = false;
+        mniFileRecentPartner1.Enabled = false;
+        mniFileRecentPartner2.Enabled = false;
+        mniFileRecentPartner3.Enabled = false;
+        mniFileRecentPartner4.Enabled = false;
+        mniFileRecentPartner5.Enabled = false;
+        mniFileRecentPartner6.Enabled = false;
+        mniFileRecentPartner7.Enabled = false;
+        mniFileRecentPartner8.Enabled = false;
+        mniFileRecentPartner9.Enabled = false;
+        mniFileRecentPartner10.Enabled = false;
+        mniFileNewPartner.Enabled = false;
+        mniFileViewPartner.Enabled = false;
+        mniFileEditPartner.Enabled = false;
+        mniFileMergePartners.Enabled = false;
+        mniFileDeletePartner.Enabled = false;
+        mniFileCopyAddress.Enabled = false;
+        mniFileCopyPartnerKey.Enabled = false;
+        mniFileSendEmail.Enabled = false;
+        mniFilePrintPartner.Enabled = false;
+        mniFileExportPartner.Enabled = false;
+        mniFileImportPartner.Enabled = false;
+        mniMaintainAddresses.Enabled = false;
+        mniMaintainPartnerDetails.Enabled = false;
+        mniMaintainFoundationDetails.Enabled = false;
+        mniMaintainSubscriptions.Enabled = false;
+        mniMaintainSpecialTypes.Enabled = false;
+        mniMaintainContacts.Enabled = false;
+        mniMaintainFamilyMembers.Enabled = false;
+        mniMaintainRelationships.Enabled = false;
+        mniMaintainInterests.Enabled = false;
+        mniMaintainReminders.Enabled = false;
+        mniMaintainNotes.Enabled = false;
+        mniMaintainOfficeSpecific.Enabled = false;
+        mniMaintainOMerField.Enabled = false;
+        mniMaintainPersonnelIndividualData.Enabled = false;
+        mniMaintainDonorHistory.Enabled = false;
+        mniMaintainRecipientHistory.Enabled = false;
+        mniMaintainFinanceDetails.Enabled = false;
+        mniMailingGenerateExtract.Enabled = false;
+        mniMailingExtracts.Enabled = false;
+        mniMailingDuplicateAddressCheck.Enabled = false;
+        mniMailingMergeAddresses.Enabled = false;
+        mniMailingPartnersAtLocation.Enabled = false;
+        mniMailingSubscriptionExpNotice.Enabled = false;
+        mniMailingSubscriptionCancellation.Enabled = false;
+        mniTools.Enabled = false;
         mniHelpPetraHelp.Enabled = false;
-        mniSeparator0.Enabled = false;
         mniHelpBugReport.Enabled = false;
-        mniSeparator1.Enabled = false;
         mniHelpAboutPetra.Enabled = false;
         mniHelpDevelopmentTeam.Enabled = false;
     }

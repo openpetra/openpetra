@@ -727,49 +727,14 @@ namespace Ict.Petra.Server.MFinance.Instantiator.AccountsPayable.UIConnectors
         }
 
         /// generated method from interface
-        public IAccountsPayableUIConnectorsSupplierEdit SupplierEdit(System.Int64 APartnerKey)
-        {
-            return new TSupplierEditUIConnector(APartnerKey);
-        }
-
-        /// generated method from interface
-        public IAccountsPayableUIConnectorsSupplierEdit SupplierEdit(System.Int64 APartnerKey,
-                                                                     ref AccountsPayableTDS ADataSet)
-        {
-#if DEBUGMODE
-            if (TSrvSetting.DL >= 9)
-            {
-                Console.WriteLine(this.GetType().FullName + ": Creating TSupplierEditUIConnector...");
-            }
-
-#endif
-            TSupplierEditUIConnector ReturnValue = new TSupplierEditUIConnector(APartnerKey);
-#if DEBUGMODE
-            if (TSrvSetting.DL >= 9)
-            {
-                Console.WriteLine(this.GetType().FullName + ": Calling TSupplierEditUIConnector.GetData...");
-            }
-
-#endif
-            ADataSet = ReturnValue.GetData();
-#if DEBUGMODE
-            if (TSrvSetting.DL >= 9)
-            {
-                Console.WriteLine(this.GetType().FullName + ": Calling TSupplierEditUIConnector.GetData finished.");
-            }
-
-#endif
-            return ReturnValue;
-        }
-
-        /// generated method from interface
         public IAccountsPayableUIConnectorsSupplierEdit SupplierEdit()
         {
             return new TSupplierEditUIConnector();
         }
 
         /// generated method from interface
-        public IAccountsPayableUIConnectorsSupplierEdit SupplierEdit(ref AccountsPayableTDS ADataSet)
+        public IAccountsPayableUIConnectorsSupplierEdit SupplierEdit(ref AccountsPayableTDS ADataSet,
+                                                                     Int64 APartnerKey)
         {
 #if DEBUGMODE
             if (TSrvSetting.DL >= 9)
@@ -786,7 +751,7 @@ namespace Ict.Petra.Server.MFinance.Instantiator.AccountsPayable.UIConnectors
             }
 
 #endif
-            ADataSet = ReturnValue.GetData();
+            ADataSet = ReturnValue.GetData(APartnerKey);
 #if DEBUGMODE
             if (TSrvSetting.DL >= 9)
             {

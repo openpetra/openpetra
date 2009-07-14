@@ -160,11 +160,53 @@ namespace Ict.Tools.CodeGeneration.Winforms
         /// <param name="writer"></param>
         /// <param name="ctrl"></param>
         /// <param name="AEvent">Click or DoubleClick or other</param>
-        /// <param name="ActionClickToPerform"></param>
-        public void AssignEventHandlerToControl(IFormWriter writer, TControlDef ctrl, string AEvent, string ActionClickToPerform)
+        /// <param name="ActionToPerform"></param>
+        public void AssignEventHandlerToControl(IFormWriter writer, TControlDef ctrl, string AEvent, string ActionToPerform)
         {
-            writer.SetEventHandlerToControl(ctrl.controlName, AEvent);
-            writer.SetEventHandlerFunction(ctrl.controlName, AEvent, ActionClickToPerform + ";");
+            if (ActionToPerform.StartsWith("act"))
+            {
+                TActionHandler ActionHandler = writer.CodeStorage.FActionList[ActionToPerform];
+
+                if (ActionHandler.actionId.Length > 0)
+                {
+                    // actionId is managed by FPetraUtilsObject
+                    // need a special function that wraps calls to FPetraUtilsObject, otherwise problems in designer
+                    ActionToPerform = ActionHandler.actionName;
+                }
+                else if (ActionHandler.actionClick.Length > 0)
+                {
+                    if (ActionHandler.actionClick.StartsWith("FPetraUtilsObject"))
+                    {
+                        // need a special function that wraps calls to FPetraUtilsObject, otherwise problems in designer
+                        ActionToPerform = ActionHandler.actionName;
+                    }
+                    else
+                    {
+                        // direct call
+                        ActionToPerform = ActionHandler.actionClick;
+                    }
+                }
+                else
+                {
+                    ActionToPerform = "";
+                }
+            }
+            else
+            {
+                // direct call: use ActionToPerform
+            }
+
+            if (ActionToPerform.Length > 0)
+            {
+                writer.SetEventHandlerToControl(ctrl.controlName, AEvent, ActionToPerform);
+            }
+        }
+
+        public void AddToActionEnabledEvent(IFormWriter writer, string ActionCondition, string ControlName)
+        {
+            writer.Template.AddToCodelet(
+                "ENABLEDEPENDINGACTIONS_" + ActionCondition,
+                ControlName + ".Enabled = e.Enabled;" + Environment.NewLine);
         }
 
         public virtual void SetControlProperties(IFormWriter writer, TControlDef ctrl)
@@ -230,16 +272,22 @@ namespace Ict.Tools.CodeGeneration.Winforms
             if (writer.CodeStorage.FActionList.ContainsKey(ActionToPerform))
             {
                 // deal with enabling and disabling of action, affecting the menu item
-                string ActionEnabling = "";
-                ActionEnabling += "if (e.ActionName == \"" + ActionToPerform + "\")" + Environment.NewLine;
-                ActionEnabling += "{" + Environment.NewLine;
-                ActionEnabling += "    " + ctrl.controlName + ".Enabled = e.Enabled;" + Environment.NewLine;
-                ActionEnabling += "}" + Environment.NewLine;
-                writer.Template.AddToCodelet("ACTIONENABLING", ActionEnabling);
+                if (!writer.Template.FCodelets.Contains("ENABLEDEPENDINGACTIONS_" + ActionToPerform))
+                {
+                    string ActionEnabling = "";
+                    ActionEnabling += "if (e.ActionName == \"" + ActionToPerform + "\")" + Environment.NewLine;
+                    ActionEnabling += "{" + Environment.NewLine;
+                    ActionEnabling += "    {#ENABLEDEPENDINGACTIONS_" + ActionToPerform + "}" + Environment.NewLine;
+                    ActionEnabling += "}" + Environment.NewLine;
+                    writer.Template.AddToCodelet("ACTIONENABLING", ActionEnabling);
+                }
+
+                AddToActionEnabledEvent(writer, ActionToPerform, ctrl.controlName);
 
                 // deal with action handler
+                AssignEventHandlerToControl(writer, ctrl, "Click", ActionToPerform);
+
                 TActionHandler ActionHandler = writer.CodeStorage.FActionList[ActionToPerform];
-                AssignEventHandlerToControl(writer, ctrl, "Click", ActionHandler.actionName + "(sender, e)");
                 SetControlActionProperties(writer, ctrl, ActionHandler);
 
                 // use the label from the action
@@ -247,25 +295,21 @@ namespace Ict.Tools.CodeGeneration.Winforms
             }
             else if (ctrl.HasAttribute("ActionClick"))
             {
-                if (ctrl.GetAttribute("ActionClick").StartsWith("act"))
-                {
-                    AssignEventHandlerToControl(writer, ctrl, "Click", ctrl.GetAttribute("ActionClick") + "(sender, e)");
-                }
-                else
-                {
-                    AssignEventHandlerToControl(writer, ctrl, "Click", ctrl.GetAttribute("ActionClick") + "()");
-                }
+                AssignEventHandlerToControl(writer, ctrl, "Click", ctrl.GetAttribute("ActionClick"));
             }
             else if (ctrl.HasAttribute("ActionDoubleClick"))
             {
-                if (ctrl.GetAttribute("ActionDoubleClick").StartsWith("act"))
-                {
-                    AssignEventHandlerToControl(writer, ctrl, "DoubleClick", ctrl.GetAttribute("ActionDoubleClick") + "(sender, e)");
-                }
-                else
-                {
-                    AssignEventHandlerToControl(writer, ctrl, "DoubleClick", ctrl.GetAttribute("ActionDoubleClick") + "()");
-                }
+                AssignEventHandlerToControl(writer, ctrl, "DoubleClick", ctrl.GetAttribute("ActionDoubleClick"));
+            }
+
+            if (ctrl.HasAttribute("Enabled"))
+            {
+                AddToActionEnabledEvent(writer, ctrl.GetAttribute("Enabled"), ctrl.controlName);
+            }
+
+            if (ctrl.HasAttribute("OnChange"))
+            {
+                AssignEventHandlerToControl(writer, ctrl, "ValueChanged", ctrl.GetAttribute("OnChange"));
             }
 
             if (ctrl.HasAttribute("Tooltip"))
@@ -276,80 +320,144 @@ namespace Ict.Tools.CodeGeneration.Winforms
                     "\"));" + Environment.NewLine);
             }
 
-            if (ctrl.HasAttribute("DataField"))
+            if (ctrl.HasAttribute("PartnerShortNameLookup"))
             {
-                string tablename = ctrl.GetAttribute("DataField").Split('.')[0];
-                string fieldname = ctrl.GetAttribute("DataField").Split('.')[1];
+                LinkControlPartnerShortNameLookup(writer, ctrl);
+            }
+            else if (ctrl.HasAttribute("DataField"))
+            {
+                string dataField = ctrl.GetAttribute("DataField");
 
-                TTable table = FPetraXMLStore.GetTable(tablename);
-
-                if (table == null)
+                if (dataField.IndexOf(".") == -1)
                 {
-                    throw new Exception("Cannot find table: " + tablename);
+                    dataField = writer.CodeStorage.FMainEditTable + "." + dataField;
                 }
 
-                TTableField field = table.GetField(fieldname);
-
-                string AssignValue = "";
-
-                if (!field.bNotNull)
+                LinkControlDataField(writer, ctrl, GetTableField(dataField, true));
+            }
+            else if (writer.CodeStorage.FMainEditTable != "")
+            {
+                //if (ctrl.controlTypePrefix != "lbl" && ctrl.controlTypePrefix != "pnl" && ctrl.controlTypePrefix != "grp" &&
+                if (!(this is LabelGenerator || this is GroupBoxGenerator))
                 {
-                    // need to check for IsNull
-                    AssignValue += "if (FMainDS." + tablename + "[0].Is" + fieldname + "Null())" + Environment.NewLine;
-                    AssignValue += "{" + Environment.NewLine;
-                    AssignValue += "    " + this.AssignValue(ctrl, null, null) + Environment.NewLine;
-                    AssignValue += "}" + Environment.NewLine;
-                    AssignValue += "else" + Environment.NewLine;
-                    AssignValue += "{" + Environment.NewLine;
-                    AssignValue += "    " +
-                                   this.AssignValue(ctrl, "FMainDS." + tablename + "[0]." + fieldname, field.GetDotNetType()) + Environment.NewLine;
-                    AssignValue += "}" + Environment.NewLine;
+                    TTableField field =
+                        GetTableField(writer.CodeStorage.FMainEditTable + "." + ctrl.controlName.Substring(ctrl.controlTypePrefix.Length), false);
+
+                    if (field != null)
+                    {
+                        LinkControlDataField(writer, ctrl, field);
+                    }
                 }
-                else
-                {
-                    AssignValue += this.AssignValue(ctrl, "FMainDS." + tablename + "[0]." + fieldname, field.GetDotNetType()) + Environment.NewLine;
-                }
+            }
+        }
 
-                writer.Template.AddToCodelet("SHOWDATA", AssignValue);
+        /// <summary>
+        /// fetch the partner short name from the server;
+        /// this control is readonly, therefore we don't need statusbar help
+        /// </summary>
+        /// <param name="writer"></param>
+        /// <param name="ctrl"></param>
+        private void LinkControlPartnerShortNameLookup(IFormWriter writer, TControlDef ctrl)
+        {
+            string PartnerShortNameLookup = ctrl.GetAttribute("PartnerShortNameLookup");
+            string tablename = writer.CodeStorage.FMainEditTable;
+            string fieldname = PartnerShortNameLookup;
 
-                string GetValue = "";
+            if (PartnerShortNameLookup.IndexOf(".") > -1)
+            {
+                tablename = PartnerShortNameLookup.Split('.')[0];
+                fieldname = PartnerShortNameLookup.Split('.')[1];
+            }
 
-                if (!field.bNotNull && (this.GetControlValue(ctrl, null) != null))
-                {
-                    // need to check for IsNull
-                    GetValue += "if (" + this.GetControlValue(ctrl, null) + ")" + Environment.NewLine;
-                    GetValue += "{" + Environment.NewLine;
-                    GetValue += "    FMainDS." + tablename + "[0].Set" + fieldname + "Null();" + Environment.NewLine;
-                    GetValue += "}" + Environment.NewLine;
-                    GetValue += "else" + Environment.NewLine;
-                    GetValue += "{" + Environment.NewLine;
-                    GetValue += "    FMainDS." + tablename + "[0]." + fieldname + " = " +
-                                this.GetControlValue(ctrl, field.GetDotNetType()) + ";" + Environment.NewLine;
-                    GetValue += "}" + Environment.NewLine;
-                }
-                else
-                {
-                    GetValue += "FMainDS." + tablename + "[0]." + fieldname + " = " +
-                                this.GetControlValue(ctrl, field.GetDotNetType()) + ";" + Environment.NewLine;
-                }
+            string showData = "TPartnerClass partnerClass;" + Environment.NewLine;
+            showData += "string partnerShortName;" + Environment.NewLine;
+            showData += "TRemote.MPartner.Partner.ServerLookups.GetPartnerShortName(" + Environment.NewLine;
+            showData += "    FMainDS." + tablename + "[0]." + fieldname + "," + Environment.NewLine;
+            showData += "    out partnerShortName," + Environment.NewLine;
+            showData += "    out partnerClass);" + Environment.NewLine;
+            showData += ctrl.controlName + ".Text = partnerShortName;" + Environment.NewLine;
 
-                writer.Template.AddToCodelet("SAVEDATA", GetValue);
+            writer.Template.AddToCodelet("SHOWDATA", showData);
+        }
 
-                // setstatusbar tooltips for datafields, with getstring plus value from petra.xml
-                string helpText = field.strHelp;
+        private TTableField GetTableField(string ADataFieldName, bool AShowWarningNonExistingField)
+        {
+            string tablename = ADataFieldName.Split('.')[0];
+            string fieldname = ADataFieldName.Split('.')[1];
 
-                if (helpText.Length == 0)
-                {
-                    helpText = field.strDescription;
-                }
+            TTable table = FPetraXMLStore.GetTable(tablename);
 
-                if (helpText.Length > 0)
-                {
-                    writer.Template.AddToCodelet("INITUSERCONTROLS", "FPetraUtilsObject.SetStatusBarText(" + ctrl.controlName +
-                        ", Catalog.GetString(\"" +
-                        helpText +
-                        "\"));" + Environment.NewLine);
-                }
+            if (table == null)
+            {
+                throw new Exception("Cannot find table: " + tablename);
+            }
+
+            return table.GetField(fieldname, AShowWarningNonExistingField);
+        }
+
+        private void LinkControlDataField(IFormWriter writer, TControlDef ctrl, TTableField AField)
+        {
+            string AssignValue = "";
+            string tablename = TTable.NiceTableName(AField.strTableName);
+            string fieldname = TTable.NiceFieldName(AField);
+
+            if (!AField.bNotNull)
+            {
+                // need to check for IsNull
+                AssignValue += "if (FMainDS." + tablename + "[0].Is" + fieldname + "Null())" + Environment.NewLine;
+                AssignValue += "{" + Environment.NewLine;
+                AssignValue += "    " + this.AssignValue(ctrl, null, null) + Environment.NewLine;
+                AssignValue += "}" + Environment.NewLine;
+                AssignValue += "else" + Environment.NewLine;
+                AssignValue += "{" + Environment.NewLine;
+                AssignValue += "    " +
+                               this.AssignValue(ctrl, "FMainDS." + tablename + "[0]." + fieldname, AField.GetDotNetType()) + Environment.NewLine;
+                AssignValue += "}" + Environment.NewLine;
+            }
+            else
+            {
+                AssignValue += this.AssignValue(ctrl, "FMainDS." + tablename + "[0]." + fieldname, AField.GetDotNetType()) + Environment.NewLine;
+            }
+
+            writer.Template.AddToCodelet("SHOWDATA", AssignValue);
+
+            string GetValue = "";
+
+            if (!AField.bNotNull && (this.GetControlValue(ctrl, null) != null))
+            {
+                // need to check for IsNull
+                GetValue += "if (" + this.GetControlValue(ctrl, null) + ")" + Environment.NewLine;
+                GetValue += "{" + Environment.NewLine;
+                GetValue += "    FMainDS." + tablename + "[0].Set" + fieldname + "Null();" + Environment.NewLine;
+                GetValue += "}" + Environment.NewLine;
+                GetValue += "else" + Environment.NewLine;
+                GetValue += "{" + Environment.NewLine;
+                GetValue += "    FMainDS." + tablename + "[0]." + fieldname + " = " +
+                            this.GetControlValue(ctrl, AField.GetDotNetType()) + ";" + Environment.NewLine;
+                GetValue += "}" + Environment.NewLine;
+            }
+            else
+            {
+                GetValue += "FMainDS." + tablename + "[0]." + fieldname + " = " +
+                            this.GetControlValue(ctrl, AField.GetDotNetType()) + ";" + Environment.NewLine;
+            }
+
+            writer.Template.AddToCodelet("SAVEDATA", GetValue);
+
+            // setstatusbar tooltips for datafields, with getstring plus value from petra.xml
+            string helpText = AField.strHelp;
+
+            if (helpText.Length == 0)
+            {
+                helpText = AField.strDescription;
+            }
+
+            if (helpText.Length > 0)
+            {
+                writer.Template.AddToCodelet("INITUSERCONTROLS", "FPetraUtilsObject.SetStatusBarText(" + ctrl.controlName +
+                    ", Catalog.GetString(\"" +
+                    helpText +
+                    "\"));" + Environment.NewLine);
             }
         }
 

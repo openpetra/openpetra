@@ -216,7 +216,7 @@ namespace Ict.Petra.Client.MFinance.Gui
             this.btnEditPartner.Location = new System.Drawing.Point(2,2);
             this.btnEditPartner.Name = "btnEditPartner";
             this.btnEditPartner.AutoSize = true;
-            this.btnEditPartner.Click += new System.EventHandler(this.btnEditPartnerClick);
+            this.btnEditPartner.Click += new System.EventHandler(this.EditPartner);
             this.btnEditPartner.Text = "&Edit Partner info of Supplier";
             this.tableLayoutPanel2.Controls.Add(this.btnEditPartner, 2, 0);
             this.tableLayoutPanel2.SetColumnSpan(this.btnEditPartner, 2);
@@ -416,6 +416,7 @@ namespace Ict.Petra.Client.MFinance.Gui
             this.nudDiscountDays.Location = new System.Drawing.Point(2,2);
             this.nudDiscountDays.Name = "nudDiscountDays";
             this.nudDiscountDays.Size = new System.Drawing.Size(150, 28);
+            this.nudDiscountDays.ValueChanged += new System.EventHandler(this.nudDiscountDaysValueChanged);
             //
             // lblDiscountDays
             //
@@ -541,7 +542,7 @@ namespace Ict.Petra.Client.MFinance.Gui
             //
             this.tbbSave.Name = "tbbSave";
             this.tbbSave.AutoSize = true;
-            this.tbbSave.Click += new System.EventHandler(this.tbbSaveClick);
+            this.tbbSave.Click += new System.EventHandler(this.FileSave);
             this.tbbSave.Image = ((System.Drawing.Bitmap)resources.GetObject("tbbSave.Glyph"));
             this.tbbSave.ToolTipText = "Saves changed data";
             this.tbbSave.Text = "&Save";
@@ -558,7 +559,7 @@ namespace Ict.Petra.Client.MFinance.Gui
             //
             this.mniFileSave.Name = "mniFileSave";
             this.mniFileSave.AutoSize = true;
-            this.mniFileSave.Click += new System.EventHandler(this.mniFileSaveClick);
+            this.mniFileSave.Click += new System.EventHandler(this.FileSave);
             this.mniFileSave.Image = ((System.Drawing.Bitmap)resources.GetObject("mniFileSave.Glyph"));
             this.mniFileSave.ToolTipText = "Saves changed data";
             this.mniFileSave.Text = "&Save";
@@ -585,7 +586,7 @@ namespace Ict.Petra.Client.MFinance.Gui
             //
             this.mniClose.Name = "mniClose";
             this.mniClose.AutoSize = true;
-            this.mniClose.Click += new System.EventHandler(this.mniCloseClick);
+            this.mniClose.Click += new System.EventHandler(this.actClose);
             this.mniClose.Image = ((System.Drawing.Bitmap)resources.GetObject("mniClose.Glyph"));
             this.mniClose.ToolTipText = "Closes this window";
             this.mniClose.Text = "&Close";
@@ -721,6 +722,7 @@ namespace Ict.Petra.Client.MFinance.Gui
 	        this.Load += new System.EventHandler(this.TFrmPetra_Load);
 	        this.Closing += new System.ComponentModel.CancelEventHandler(this.TFrmPetra_Closing);
 	        this.KeyDown += new System.Windows.Forms.KeyEventHandler(this.Form_KeyDown);
+	        this.Closed += new System.EventHandler(this.TFrmPetra_Closed);
 	
             this.stbMain.ResumeLayout(false);
             this.mnuMain.ResumeLayout(false);

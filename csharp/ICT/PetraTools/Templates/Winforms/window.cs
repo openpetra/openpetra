@@ -17,6 +17,7 @@ using System.Collections.Specialized;
 using Mono.Unix;
 using Ict.Common;
 using Ict.Petra.Client.App.Core;
+using Ict.Petra.Client.App.Core.RemoteObjects;
 using Ict.Common.Controls;
 using Ict.Petra.Client.CommonForms;
 
@@ -27,6 +28,11 @@ namespace {#NAMESPACE}
   public partial class {#CLASSNAME}: System.Windows.Forms.Form, {#INTERFACENAME}
   {
     private {#UTILOBJECTCLASS} FPetraUtilsObject;
+    {#IFDEF UICONNECTORTYPE}
+
+    /// <summary>holds a reference to the Proxy object of the Serverside UIConnector</summary>
+    private {#UICONNECTORTYPE} FUIConnector = null;
+    {#ENDIF UICONNECTORTYPE}
 
     /// constructor
     public {#CLASSNAME}(IntPtr AParentFormHandle) : base()
@@ -47,10 +53,30 @@ namespace {#NAMESPACE}
       FPetraUtilsObject.ActionEnablingEvent += ActionEnabledEvent;
       
       {#INITACTIONSTATE}
+      
+      {#IFDEF UICONNECTORCREATE}
+      FUIConnector = {#UICONNECTORCREATE}();
+      // Register Object with the TEnsureKeepAlive Class so that it doesn't get GC'd
+      TEnsureKeepAlive.Register(FUIConnector);
+      {#ENDIF UICONNECTORCREATE}
     }
 
     {#EVENTHANDLERSIMPLEMENTATION}
 
+    private void TFrmPetra_Closed(object sender, EventArgs e)
+    {
+        // TODO? Save Window position
+
+        {#IFDEF UICONNECTORCREATE}
+        if (FUIConnector != null)
+        {
+            // UnRegister Object from the TEnsureKeepAlive Class so that the Object can get GC'd on the PetraServer
+            TEnsureKeepAlive.UnRegister(FUIConnector);
+            FUIConnector = null;
+        }
+        {#ENDIF UICONNECTORCREATE}
+    }
+    
     {#IFDEF SHOWDATA}
     private void ShowData()
     {
@@ -108,6 +134,7 @@ namespace {#NAMESPACE}
     public void ActionEnabledEvent(object sender, ActionEventArgs e)
     {
         {#ACTIONENABLING}
+        {#ACTIONENABLINGDISABLEMISSINGFUNCS}
     }
 
     {#ACTIONHANDLERS}

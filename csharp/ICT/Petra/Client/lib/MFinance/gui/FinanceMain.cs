@@ -41,6 +41,7 @@ using System.Collections.Specialized;
 using Mono.Unix;
 using Ict.Common;
 using Ict.Petra.Client.App.Core;
+using Ict.Petra.Client.App.Core.RemoteObjects;
 using Ict.Common.Controls;
 using Ict.Petra.Client.CommonForms;
 
@@ -132,56 +133,7 @@ namespace Ict.Petra.Client.MFinance.Gui
       FPetraUtilsObject.ActionEnablingEvent += ActionEnabledEvent;
 
       FPetraUtilsObject.InitActionState();
-    }
 
-    private void mniCloseClick(object sender, EventArgs e)
-    {
-        actClose(sender, e);
-    }
-
-    private void mniImportBankStatementsClick(object sender, EventArgs e)
-    {
-        ImportBankStatements();
-    }
-
-    private void mniAccountsPayableClick(object sender, EventArgs e)
-    {
-        AccountsPayable();
-    }
-
-    private void mniPetraMainMenuClick(object sender, EventArgs e)
-    {
-        actMainMenu(sender, e);
-    }
-
-    private void mniPetraPartnerModuleClick(object sender, EventArgs e)
-    {
-        actPartnerModule(sender, e);
-    }
-
-    private void mniPetraFinanceModuleClick(object sender, EventArgs e)
-    {
-        actFinanceModule(sender, e);
-    }
-
-    private void mniPetraPersonnelModuleClick(object sender, EventArgs e)
-    {
-        actPersonnelModule(sender, e);
-    }
-
-    private void mniPetraConferenceModuleClick(object sender, EventArgs e)
-    {
-        actConferenceModule(sender, e);
-    }
-
-    private void mniPetraFinDevModuleClick(object sender, EventArgs e)
-    {
-        actFinDevModule(sender, e);
-    }
-
-    private void mniPetraSysManModuleClick(object sender, EventArgs e)
-    {
-        actSysManModule(sender, e);
     }
 
     private void TFrmPetra_Activated(object sender, EventArgs e)
@@ -202,6 +154,12 @@ namespace Ict.Petra.Client.MFinance.Gui
     private void Form_KeyDown(object sender, KeyEventArgs e)
     {
         FPetraUtilsObject.Form_KeyDown(sender, e);
+    }
+
+    private void TFrmPetra_Closed(object sender, EventArgs e)
+    {
+        // TODO? Save Window position
+
     }
 
 #region Implement interface functions
@@ -244,51 +202,10 @@ namespace Ict.Petra.Client.MFinance.Gui
     /// auto generated
     public void ActionEnabledEvent(object sender, ActionEventArgs e)
     {
-        mniSelectLedger.Enabled = false;
-        mniNewLedger.Enabled = false;
-        mniDeleteLedger.Enabled = false;
-        mniSeparator0.Enabled = false;
         if (e.ActionName == "actClose")
         {
             mniClose.Enabled = e.Enabled;
         }
-        mniSetupParameters.Enabled = false;
-        mniSetupTablesTodo.Enabled = false;
-        mniSetupCostCentres.Enabled = false;
-        mniSetupAccounts.Enabled = false;
-        mniGLCurrentPeriod.Enabled = false;
-        mniGLPreviousPeriods.Enabled = false;
-        mniSeparator1.Enabled = false;
-        mniGLRecurring.Enabled = false;
-        mniGLImport.Enabled = false;
-        mniGLExport.Enabled = false;
-        mniMonthEndClosing.Enabled = false;
-        mniYearEndClosing.Enabled = false;
-        mniSeparator2.Enabled = false;
-        mniGiftBatch.Enabled = false;
-        mniRecurringGiftBatch.Enabled = false;
-        mniSeparator3.Enabled = false;
-        mniGiftImport.Enabled = false;
-        mniGiftExport.Enabled = false;
-        mniSeparator4.Enabled = false;
-        mniGiftReceipts.Enabled = false;
-        mniBudget.Enabled = false;
-        mniICHCalculation.Enabled = false;
-        mniICHImportFile.Enabled = false;
-        mniICHReports.Enabled = false;
-        mniGLReports.Enabled = false;
-        mniGiftReports.Enabled = false;
-        mniAPReports.Enabled = false;
-        mniConsolidations.Enabled = false;
-        mniSetupCurrency.Enabled = false;
-        mniSetupCorporateExchangeRate.Enabled = false;
-        mniSetupDailyExchangeRate.Enabled = false;
-        mniSetupMethodOfGiving.Enabled = false;
-        mniSetupMethodOfPayment.Enabled = false;
-        mniSeparator5.Enabled = false;
-        mniSetupAnalysisTypes.Enabled = false;
-        mniSeparator6.Enabled = false;
-        mniSetupLetters.Enabled = false;
         if (e.ActionName == "actMainMenu")
         {
             mniPetraMainMenu.Enabled = e.Enabled;
@@ -317,10 +234,42 @@ namespace Ict.Petra.Client.MFinance.Gui
         {
             mniPetraSysManModule.Enabled = e.Enabled;
         }
+        mniSelectLedger.Enabled = false;
+        mniNewLedger.Enabled = false;
+        mniDeleteLedger.Enabled = false;
+        mniSetupParameters.Enabled = false;
+        mniSetupTablesTodo.Enabled = false;
+        mniSetupCostCentres.Enabled = false;
+        mniSetupAccounts.Enabled = false;
+        mniGLCurrentPeriod.Enabled = false;
+        mniGLPreviousPeriods.Enabled = false;
+        mniGLRecurring.Enabled = false;
+        mniGLImport.Enabled = false;
+        mniGLExport.Enabled = false;
+        mniMonthEndClosing.Enabled = false;
+        mniYearEndClosing.Enabled = false;
+        mniGiftBatch.Enabled = false;
+        mniRecurringGiftBatch.Enabled = false;
+        mniGiftImport.Enabled = false;
+        mniGiftExport.Enabled = false;
+        mniGiftReceipts.Enabled = false;
+        mniBudget.Enabled = false;
+        mniICHCalculation.Enabled = false;
+        mniICHImportFile.Enabled = false;
+        mniICHReports.Enabled = false;
+        mniGLReports.Enabled = false;
+        mniGiftReports.Enabled = false;
+        mniAPReports.Enabled = false;
+        mniConsolidations.Enabled = false;
+        mniSetupCurrency.Enabled = false;
+        mniSetupCorporateExchangeRate.Enabled = false;
+        mniSetupDailyExchangeRate.Enabled = false;
+        mniSetupMethodOfGiving.Enabled = false;
+        mniSetupMethodOfPayment.Enabled = false;
+        mniSetupAnalysisTypes.Enabled = false;
+        mniSetupLetters.Enabled = false;
         mniHelpPetraHelp.Enabled = false;
-        mniSeparator7.Enabled = false;
         mniHelpBugReport.Enabled = false;
-        mniSeparator8.Enabled = false;
         mniHelpAboutPetra.Enabled = false;
         mniHelpDevelopmentTeam.Enabled = false;
     }

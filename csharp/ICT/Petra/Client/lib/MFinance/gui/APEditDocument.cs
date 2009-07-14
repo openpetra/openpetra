@@ -41,6 +41,7 @@ using System.Collections.Specialized;
 using Mono.Unix;
 using Ict.Common;
 using Ict.Petra.Client.App.Core;
+using Ict.Petra.Client.App.Core.RemoteObjects;
 using Ict.Common.Controls;
 using Ict.Petra.Client.CommonForms;
 
@@ -64,15 +65,17 @@ namespace Ict.Petra.Client.MFinance.Gui
       // this code has been inserted by GenerateI18N, all changes in this region will be overwritten by GenerateI18N
       this.lblSupplierName.Text = Catalog.GetString("Current Supplier:");
       this.lblSupplierCurrency.Text = Catalog.GetString("Currency:");
-      this.lblInvoiceNumber.Text = Catalog.GetString("Invoice &Number:");
+      this.lblDocumentCode.Text = Catalog.GetString("Invoice &Number:");
+      this.cmbDocumentType.Text = Catalog.GetString("Invoice");
       this.lblDocumentType.Text = Catalog.GetString("T&ype:");
       this.lblReference.Text = Catalog.GetString("&Reference:");
       this.lblDateIssued.Text = Catalog.GetString("&Date Issued:");
       this.lblDateDue.Text = Catalog.GetString("Date D&ue:");
       this.lblCreditTerms.Text = Catalog.GetString("Credit &Terms:");
-      this.lblAmount.Text = Catalog.GetString("&Amount:");
-      this.lblExchangeRate.Text = Catalog.GetString("E&xchange Rate:");
-      this.btnEarlyPaymentDiscount.Text = Catalog.GetString("Early Pyt Discount");
+      this.lblDiscountDays.Text = Catalog.GetString("Discount &Days:");
+      this.lblDiscountPercentage.Text = Catalog.GetString("Discount &Value (%):");
+      this.lblTotalAmount.Text = Catalog.GetString("&Amount:");
+      this.lblExchangeRateToBase.Text = Catalog.GetString("E&xchange Rate:");
       this.grpDocumentInfo.Text = Catalog.GetString("Document Information");
       this.lblNarrative.Text = Catalog.GetString("Narrati&ve:");
       this.btnAddDetail.Text = Catalog.GetString("Add De&tail");
@@ -108,26 +111,28 @@ namespace Ict.Petra.Client.MFinance.Gui
       #endregion
 
       FPetraUtilsObject = new TFrmPetraEditUtils(AParentFormHandle, this, stbMain);
+      FPetraUtilsObject.SetStatusBarText(txtSupplierCurrency, Catalog.GetString("The currency code to use for this supplier."));
+      FPetraUtilsObject.SetStatusBarText(txtDocumentCode, Catalog.GetString("The code given on the document itself (be it invoice or credit note). This will have to be unique for each supplier."));
+      FPetraUtilsObject.SetStatusBarText(cmbDocumentType, Catalog.GetString("A flag to indicate if this document is an invoice or a credit note."));
+      FPetraUtilsObject.SetStatusBarText(txtReference, Catalog.GetString("Some kind of other reference needed."));
+      FPetraUtilsObject.SetStatusBarText(dtpDateIssued, Catalog.GetString("The date when this document was issued."));
+      FPetraUtilsObject.SetStatusBarText(dtpDateDue, Catalog.GetString("Credit Terms is the number of days between date issued and due date"));
       FPetraUtilsObject.SetStatusBarText(nudCreditTerms, Catalog.GetString("Credit terms allowed for this invoice."));
+      FPetraUtilsObject.SetStatusBarText(nudDiscountDays, Catalog.GetString("The number of days that the discount is valid for (0 for none)."));
+      FPetraUtilsObject.SetStatusBarText(txtDiscountPercentage, Catalog.GetString("The percentage discount you get for early payment of this document in the case that it is an invoice."));
+      FPetraUtilsObject.SetStatusBarText(txtTotalAmount, Catalog.GetString("The total amount of money that this document is worth."));
+      FPetraUtilsObject.SetStatusBarText(txtExchangeRateToBase, Catalog.GetString("The exchange rate to the base currency at the time that the document was issued."));
       InitializeManualCode();
       FPetraUtilsObject.ActionEnablingEvent += ActionEnabledEvent;
 
       FPetraUtilsObject.InitActionState();
+      ActionEnabledEvent(null, new ActionEventArgs("cndDiscountEnabled", false));
+
     }
 
-    private void tbbSaveClick(object sender, EventArgs e)
+    private void nudDiscountDaysValueChanged(object sender, EventArgs e)
     {
-        actSave(sender, e);
-    }
-
-    private void mniFileSaveClick(object sender, EventArgs e)
-    {
-        actSave(sender, e);
-    }
-
-    private void mniCloseClick(object sender, EventArgs e)
-    {
-        actClose(sender, e);
+        ActionEnabledEvent(null, new ActionEventArgs("cndDiscountEnabled", nudDiscountDays.Value > 0));
     }
 
     private void TFrmPetra_Activated(object sender, EventArgs e)
@@ -150,8 +155,40 @@ namespace Ict.Petra.Client.MFinance.Gui
         FPetraUtilsObject.Form_KeyDown(sender, e);
     }
 
+    private void TFrmPetra_Closed(object sender, EventArgs e)
+    {
+        // TODO? Save Window position
+
+    }
+
     private void ShowData()
     {
+        TPartnerClass partnerClass;
+        string partnerShortName;
+        TRemote.MPartner.Partner.ServerLookups.GetPartnerShortName(
+            FMainDS.AApDocument[0].PartnerKey,
+            out partnerShortName,
+            out partnerClass);
+        txtSupplierName.Text = partnerShortName;
+        txtSupplierCurrency.Text = FMainDS.AApSupplier[0].CurrencyCode;
+        if (FMainDS.AApDocument[0].IsDocumentCodeNull())
+        {
+            txtDocumentCode.Text = String.Empty;
+        }
+        else
+        {
+            txtDocumentCode.Text = FMainDS.AApDocument[0].DocumentCode;
+        }
+        cmbDocumentType.SelectedIndex = (FMainDS.AApDocument[0].CreditNoteFlag?1:0);
+        if (FMainDS.AApDocument[0].IsReferenceNull())
+        {
+            txtReference.Text = String.Empty;
+        }
+        else
+        {
+            txtReference.Text = FMainDS.AApDocument[0].Reference;
+        }
+        dtpDateIssued.Value = FMainDS.AApDocument[0].DateIssued;
         if (FMainDS.AApDocument[0].IsCreditTermsNull())
         {
             nudCreditTerms.Value = 0;
@@ -160,12 +197,88 @@ namespace Ict.Petra.Client.MFinance.Gui
         {
             nudCreditTerms.Value = FMainDS.AApDocument[0].CreditTerms;
         }
+        if (FMainDS.AApDocument[0].IsDiscountDaysNull())
+        {
+            nudDiscountDays.Value = 0;
+        }
+        else
+        {
+            nudDiscountDays.Value = FMainDS.AApDocument[0].DiscountDays;
+        }
+        if (FMainDS.AApDocument[0].IsDiscountPercentageNull())
+        {
+            txtDiscountPercentage.Text = String.Empty;
+        }
+        else
+        {
+            txtDiscountPercentage.Text = FMainDS.AApDocument[0].DiscountPercentage.ToString();
+        }
+        if (FMainDS.AApDocument[0].IsTotalAmountNull())
+        {
+            txtTotalAmount.Text = String.Empty;
+        }
+        else
+        {
+            txtTotalAmount.Text = FMainDS.AApDocument[0].TotalAmount.ToString();
+        }
+        if (FMainDS.AApDocument[0].IsExchangeRateToBaseNull())
+        {
+            txtExchangeRateToBase.Text = String.Empty;
+        }
+        else
+        {
+            txtExchangeRateToBase.Text = FMainDS.AApDocument[0].ExchangeRateToBase.ToString();
+        }
         ShowDataManual();
     }
 
     private void GetDataFromControls()
     {
+        FMainDS.AApSupplier[0].CurrencyCode = txtSupplierCurrency.Text;
+        if (txtDocumentCode.Text.Length == 0)
+        {
+            FMainDS.AApDocument[0].SetDocumentCodeNull();
+        }
+        else
+        {
+            FMainDS.AApDocument[0].DocumentCode = txtDocumentCode.Text;
+        }
+        FMainDS.AApDocument[0].CreditNoteFlag = cmbDocumentType.SelectedIndex == 1;
+        if (txtReference.Text.Length == 0)
+        {
+            FMainDS.AApDocument[0].SetReferenceNull();
+        }
+        else
+        {
+            FMainDS.AApDocument[0].Reference = txtReference.Text;
+        }
+        FMainDS.AApDocument[0].DateIssued = dtpDateIssued.Value;
         FMainDS.AApDocument[0].CreditTerms = (Int32)nudCreditTerms.Value;
+        FMainDS.AApDocument[0].DiscountDays = (Int32)nudDiscountDays.Value;
+        if (txtDiscountPercentage.Text.Length == 0)
+        {
+            FMainDS.AApDocument[0].SetDiscountPercentageNull();
+        }
+        else
+        {
+            FMainDS.AApDocument[0].DiscountPercentage = Convert.ToDouble(txtDiscountPercentage.Text);
+        }
+        if (txtTotalAmount.Text.Length == 0)
+        {
+            FMainDS.AApDocument[0].SetTotalAmountNull();
+        }
+        else
+        {
+            FMainDS.AApDocument[0].TotalAmount = Convert.ToDouble(txtTotalAmount.Text);
+        }
+        if (txtExchangeRateToBase.Text.Length == 0)
+        {
+            FMainDS.AApDocument[0].SetExchangeRateToBaseNull();
+        }
+        else
+        {
+            FMainDS.AApDocument[0].ExchangeRateToBase = Convert.ToDouble(txtExchangeRateToBase.Text);
+        }
         GetDataFromControlsManual();
     }
 
@@ -212,34 +325,24 @@ namespace Ict.Petra.Client.MFinance.Gui
         if (e.ActionName == "actSave")
         {
             tbbSave.Enabled = e.Enabled;
-        }
-        if (e.ActionName == "actSave")
-        {
             mniFileSave.Enabled = e.Enabled;
         }
-        mniSeparator0.Enabled = false;
-        mniFilePrint.Enabled = false;
-        mniSeparator1.Enabled = false;
         if (e.ActionName == "actClose")
         {
             mniClose.Enabled = e.Enabled;
         }
+        if (e.ActionName == "cndDiscountEnabled")
+        {
+            txtDiscountPercentage.Enabled = e.Enabled;
+        }
+        mniFilePrint.Enabled = false;
         mniEditUndoCurrentField.Enabled = false;
         mniEditUndoScreen.Enabled = false;
-        mniSeparator2.Enabled = false;
         mniEditFind.Enabled = false;
         mniHelpPetraHelp.Enabled = false;
-        mniSeparator3.Enabled = false;
         mniHelpBugReport.Enabled = false;
-        mniSeparator4.Enabled = false;
         mniHelpAboutPetra.Enabled = false;
         mniHelpDevelopmentTeam.Enabled = false;
-    }
-
-    /// auto generated
-    protected void actSave(object sender, EventArgs e)
-    {
-        FileSave(sender, e);
     }
 
     /// auto generated

@@ -179,7 +179,7 @@ namespace Ict.Petra.Client.MPartner.Gui
             //
             this.tbbSave.Name = "tbbSave";
             this.tbbSave.AutoSize = true;
-            this.tbbSave.Click += new System.EventHandler(this.tbbSaveClick);
+            this.tbbSave.Click += new System.EventHandler(this.FileSave);
             this.tbbSave.Image = ((System.Drawing.Bitmap)resources.GetObject("tbbSave.Glyph"));
             this.tbbSave.ToolTipText = "Saves changed data";
             this.tbbSave.Text = "&Save";
@@ -292,7 +292,7 @@ namespace Ict.Petra.Client.MPartner.Gui
             //
             this.mniFileSave.Name = "mniFileSave";
             this.mniFileSave.AutoSize = true;
-            this.mniFileSave.Click += new System.EventHandler(this.mniFileSaveClick);
+            this.mniFileSave.Click += new System.EventHandler(this.FileSave);
             this.mniFileSave.Image = ((System.Drawing.Bitmap)resources.GetObject("mniFileSave.Glyph"));
             this.mniFileSave.ToolTipText = "Saves changed data";
             this.mniFileSave.Text = "&Save";
@@ -325,7 +325,7 @@ namespace Ict.Petra.Client.MPartner.Gui
             //
             this.mniClose.Name = "mniClose";
             this.mniClose.AutoSize = true;
-            this.mniClose.Click += new System.EventHandler(this.mniCloseClick);
+            this.mniClose.Click += new System.EventHandler(this.actClose);
             this.mniClose.Image = ((System.Drawing.Bitmap)resources.GetObject("mniClose.Glyph"));
             this.mniClose.ToolTipText = "Closes this window";
             this.mniClose.Text = "&Close";
@@ -696,6 +696,7 @@ namespace Ict.Petra.Client.MPartner.Gui
 
 	        this.Activated += new System.EventHandler(this.TFrmPetra_Activated);
 	        this.KeyDown += new System.Windows.Forms.KeyEventHandler(this.Form_KeyDown);
+	        this.Closed += new System.EventHandler(this.TFrmPetra_Closed);
 	        this.Load += new System.EventHandler(this.TPartnerEditDSWinForm_Load);
 	        this.Closing += new System.ComponentModel.CancelEventHandler(this.TPartnerEditDSWinForm_Closing);
 	

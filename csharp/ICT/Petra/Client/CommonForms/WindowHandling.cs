@@ -72,7 +72,7 @@ namespace Ict.Petra.Client.CommonForms
             }
             return false;
         }
-        
+
         ///  The SetForegroundWindow function puts the thread that created the
         /// specified window into the foreground and activates the window
         [DllImport("user32.dll")]
@@ -95,6 +95,5 @@ namespace Ict.Petra.Client.CommonForms
             }
             return false;
         }
-
     }
 }

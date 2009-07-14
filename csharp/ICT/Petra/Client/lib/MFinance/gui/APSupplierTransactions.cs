@@ -41,6 +41,7 @@ using System.Collections.Specialized;
 using Mono.Unix;
 using Ict.Common;
 using Ict.Petra.Client.App.Core;
+using Ict.Petra.Client.App.Core.RemoteObjects;
 using Ict.Common.Controls;
 using Ict.Petra.Client.CommonForms;
 
@@ -111,81 +112,7 @@ namespace Ict.Petra.Client.MFinance.Gui
       FPetraUtilsObject.ActionEnablingEvent += ActionEnabledEvent;
 
       FPetraUtilsObject.InitActionState();
-    }
 
-    private void tbbNewInvoiceClick(object sender, EventArgs e)
-    {
-        actNewInvoice(sender, e);
-    }
-
-    private void tbbNewCreditNoteClick(object sender, EventArgs e)
-    {
-        actNewCreditNote(sender, e);
-    }
-
-    private void tbbOpenSelectedClick(object sender, EventArgs e)
-    {
-        actOpenSelected(sender, e);
-    }
-
-    private void tbbReverseSelectedClick(object sender, EventArgs e)
-    {
-        actReverseSelected(sender, e);
-    }
-
-    private void tbbApproveTaggedClick(object sender, EventArgs e)
-    {
-        actApproveTagged(sender, e);
-    }
-
-    private void tbbPostTaggedClick(object sender, EventArgs e)
-    {
-        actPostTagged(sender, e);
-    }
-
-    private void tbbAddTaggedToPaymentClick(object sender, EventArgs e)
-    {
-        actAddTaggedToPayment(sender, e);
-    }
-
-    private void mniCloseClick(object sender, EventArgs e)
-    {
-        actClose(sender, e);
-    }
-
-    private void mniNewInvoiceClick(object sender, EventArgs e)
-    {
-        actNewInvoice(sender, e);
-    }
-
-    private void mniNewCreditNoteClick(object sender, EventArgs e)
-    {
-        actNewCreditNote(sender, e);
-    }
-
-    private void mniOpenSelectedClick(object sender, EventArgs e)
-    {
-        actOpenSelected(sender, e);
-    }
-
-    private void mniReverseTransactionClick(object sender, EventArgs e)
-    {
-        actReverseSelected(sender, e);
-    }
-
-    private void mniApproveTaggedClick(object sender, EventArgs e)
-    {
-        actApproveTagged(sender, e);
-    }
-
-    private void mniPostTaggedClick(object sender, EventArgs e)
-    {
-        actPostTagged(sender, e);
-    }
-
-    private void mniAddTaggedToPaymentClick(object sender, EventArgs e)
-    {
-        actAddTaggedToPayment(sender, e);
     }
 
     private void TFrmPetra_Activated(object sender, EventArgs e)
@@ -206,6 +133,12 @@ namespace Ict.Petra.Client.MFinance.Gui
     private void Form_KeyDown(object sender, KeyEventArgs e)
     {
         FPetraUtilsObject.Form_KeyDown(sender, e);
+    }
+
+    private void TFrmPetra_Closed(object sender, EventArgs e)
+    {
+        // TODO? Save Window position
+
     }
 
 #region Implement interface functions
@@ -251,116 +184,49 @@ namespace Ict.Petra.Client.MFinance.Gui
         if (e.ActionName == "actNewInvoice")
         {
             tbbNewInvoice.Enabled = e.Enabled;
-        }
-        if (e.ActionName == "actNewCreditNote")
-        {
-            tbbNewCreditNote.Enabled = e.Enabled;
-        }
-        if (e.ActionName == "actOpenSelected")
-        {
-            tbbOpenSelected.Enabled = e.Enabled;
-        }
-        if (e.ActionName == "actReverseSelected")
-        {
-            tbbReverseSelected.Enabled = e.Enabled;
-        }
-        if (e.ActionName == "actApproveTagged")
-        {
-            tbbApproveTagged.Enabled = e.Enabled;
-        }
-        if (e.ActionName == "actPostTagged")
-        {
-            tbbPostTagged.Enabled = e.Enabled;
-        }
-        if (e.ActionName == "actAddTaggedToPayment")
-        {
-            tbbAddTaggedToPayment.Enabled = e.Enabled;
-        }
-        mniReprintRemittanceAdvice.Enabled = false;
-        mniReprintCheque.Enabled = false;
-        mniReprintPaymentReport.Enabled = false;
-        mniSeparator0.Enabled = false;
-        if (e.ActionName == "actClose")
-        {
-            mniClose.Enabled = e.Enabled;
-        }
-        if (e.ActionName == "actNewInvoice")
-        {
             mniNewInvoice.Enabled = e.Enabled;
         }
         if (e.ActionName == "actNewCreditNote")
         {
+            tbbNewCreditNote.Enabled = e.Enabled;
             mniNewCreditNote.Enabled = e.Enabled;
         }
         if (e.ActionName == "actOpenSelected")
         {
+            tbbOpenSelected.Enabled = e.Enabled;
             mniOpenSelected.Enabled = e.Enabled;
         }
-        mniSeparator1.Enabled = false;
         if (e.ActionName == "actReverseSelected")
         {
+            tbbReverseSelected.Enabled = e.Enabled;
             mniReverseTransaction.Enabled = e.Enabled;
         }
         if (e.ActionName == "actApproveTagged")
         {
+            tbbApproveTagged.Enabled = e.Enabled;
             mniApproveTagged.Enabled = e.Enabled;
         }
         if (e.ActionName == "actPostTagged")
         {
+            tbbPostTagged.Enabled = e.Enabled;
             mniPostTagged.Enabled = e.Enabled;
         }
         if (e.ActionName == "actAddTaggedToPayment")
         {
+            tbbAddTaggedToPayment.Enabled = e.Enabled;
             mniAddTaggedToPayment.Enabled = e.Enabled;
         }
+        if (e.ActionName == "actClose")
+        {
+            mniClose.Enabled = e.Enabled;
+        }
+        mniReprintRemittanceAdvice.Enabled = false;
+        mniReprintCheque.Enabled = false;
+        mniReprintPaymentReport.Enabled = false;
         mniHelpPetraHelp.Enabled = false;
-        mniSeparator2.Enabled = false;
         mniHelpBugReport.Enabled = false;
-        mniSeparator3.Enabled = false;
         mniHelpAboutPetra.Enabled = false;
         mniHelpDevelopmentTeam.Enabled = false;
-    }
-
-    /// auto generated
-    protected void actNewInvoice(object sender, EventArgs e)
-    {
-        // TODO action actNewInvoice
-    }
-
-    /// auto generated
-    protected void actNewCreditNote(object sender, EventArgs e)
-    {
-        // TODO action actNewCreditNote
-    }
-
-    /// auto generated
-    protected void actOpenSelected(object sender, EventArgs e)
-    {
-        // TODO action actOpenSelected
-    }
-
-    /// auto generated
-    protected void actReverseSelected(object sender, EventArgs e)
-    {
-        // TODO action actReverseSelected
-    }
-
-    /// auto generated
-    protected void actApproveTagged(object sender, EventArgs e)
-    {
-        // TODO action actApproveTagged
-    }
-
-    /// auto generated
-    protected void actPostTagged(object sender, EventArgs e)
-    {
-        // TODO action actPostTagged
-    }
-
-    /// auto generated
-    protected void actAddTaggedToPayment(object sender, EventArgs e)
-    {
-        // TODO action actAddTaggedToPayment
     }
 
     /// auto generated

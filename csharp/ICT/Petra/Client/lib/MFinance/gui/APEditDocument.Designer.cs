@@ -78,8 +78,8 @@ namespace Ict.Petra.Client.MFinance.Gui
             this.lblSupplierCurrency = new System.Windows.Forms.Label();
             this.grpDocumentInfo = new System.Windows.Forms.GroupBox();
             this.tableLayoutPanel2 = new System.Windows.Forms.TableLayoutPanel();
-            this.txtInvoiceNumber = new System.Windows.Forms.TextBox();
-            this.lblInvoiceNumber = new System.Windows.Forms.Label();
+            this.txtDocumentCode = new System.Windows.Forms.TextBox();
+            this.lblDocumentCode = new System.Windows.Forms.Label();
             this.cmbDocumentType = new Ict.Common.Controls.TCmbAutoComplete();
             this.lblDocumentType = new System.Windows.Forms.Label();
             this.txtReference = new System.Windows.Forms.TextBox();
@@ -90,11 +90,14 @@ namespace Ict.Petra.Client.MFinance.Gui
             this.lblDateDue = new System.Windows.Forms.Label();
             this.nudCreditTerms = new System.Windows.Forms.NumericUpDown();
             this.lblCreditTerms = new System.Windows.Forms.Label();
-            this.txtAmount = new System.Windows.Forms.TextBox();
-            this.lblAmount = new System.Windows.Forms.Label();
-            this.txtExchangeRate = new System.Windows.Forms.TextBox();
-            this.lblExchangeRate = new System.Windows.Forms.Label();
-            this.btnEarlyPaymentDiscount = new System.Windows.Forms.Button();
+            this.nudDiscountDays = new System.Windows.Forms.NumericUpDown();
+            this.lblDiscountDays = new System.Windows.Forms.Label();
+            this.txtDiscountPercentage = new System.Windows.Forms.TextBox();
+            this.lblDiscountPercentage = new System.Windows.Forms.Label();
+            this.txtTotalAmount = new System.Windows.Forms.TextBox();
+            this.lblTotalAmount = new System.Windows.Forms.Label();
+            this.txtExchangeRateToBase = new System.Windows.Forms.TextBox();
+            this.lblExchangeRateToBase = new System.Windows.Forms.Label();
             this.grpDetails = new System.Windows.Forms.GroupBox();
             this.grdDetails = new Ict.Common.Controls.TSgrdDataGridPaged();
             this.pnlDetails = new System.Windows.Forms.Panel();
@@ -236,28 +239,29 @@ namespace Ict.Petra.Client.MFinance.Gui
             this.tableLayoutPanel2.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
             this.tableLayoutPanel2.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
             this.tableLayoutPanel2.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
-            this.tableLayoutPanel2.RowCount = 4;
+            this.tableLayoutPanel2.RowCount = 5;
+            this.tableLayoutPanel2.RowStyles.Add(new System.Windows.Forms.RowStyle());
             this.tableLayoutPanel2.RowStyles.Add(new System.Windows.Forms.RowStyle());
             this.tableLayoutPanel2.RowStyles.Add(new System.Windows.Forms.RowStyle());
             this.tableLayoutPanel2.RowStyles.Add(new System.Windows.Forms.RowStyle());
             this.tableLayoutPanel2.RowStyles.Add(new System.Windows.Forms.RowStyle());
             this.grpDocumentInfo.Controls.Add(this.tableLayoutPanel2);
             //
-            // txtInvoiceNumber
+            // txtDocumentCode
             //
-            this.txtInvoiceNumber.Location = new System.Drawing.Point(2,2);
-            this.txtInvoiceNumber.Name = "txtInvoiceNumber";
-            this.txtInvoiceNumber.Size = new System.Drawing.Size(150, 28);
+            this.txtDocumentCode.Location = new System.Drawing.Point(2,2);
+            this.txtDocumentCode.Name = "txtDocumentCode";
+            this.txtDocumentCode.Size = new System.Drawing.Size(150, 28);
             //
-            // lblInvoiceNumber
+            // lblDocumentCode
             //
-            this.lblInvoiceNumber.Location = new System.Drawing.Point(2,2);
-            this.lblInvoiceNumber.Name = "lblInvoiceNumber";
-            this.lblInvoiceNumber.AutoSize = true;
-            this.lblInvoiceNumber.Text = "Invoice &Number:";
-            this.lblInvoiceNumber.Margin = new System.Windows.Forms.Padding(3, 7, 3, 0);
-            this.tableLayoutPanel2.Controls.Add(this.lblInvoiceNumber, 0, 0);
-            this.tableLayoutPanel2.Controls.Add(this.txtInvoiceNumber, 1, 0);
+            this.lblDocumentCode.Location = new System.Drawing.Point(2,2);
+            this.lblDocumentCode.Name = "lblDocumentCode";
+            this.lblDocumentCode.AutoSize = true;
+            this.lblDocumentCode.Text = "Invoice &Number:";
+            this.lblDocumentCode.Margin = new System.Windows.Forms.Padding(3, 7, 3, 0);
+            this.tableLayoutPanel2.Controls.Add(this.lblDocumentCode, 0, 0);
+            this.tableLayoutPanel2.Controls.Add(this.txtDocumentCode, 1, 0);
             //
             // cmbDocumentType
             //
@@ -265,6 +269,7 @@ namespace Ict.Petra.Client.MFinance.Gui
             this.cmbDocumentType.Name = "cmbDocumentType";
             this.cmbDocumentType.Size = new System.Drawing.Size(150, 28);
             this.cmbDocumentType.Items.AddRange(new object[] {"Invoice","Credit Note"});;
+            this.cmbDocumentType.Text = "Invoice";
             //
             // lblDocumentType
             //
@@ -298,6 +303,7 @@ namespace Ict.Petra.Client.MFinance.Gui
             this.dtpDateIssued.Location = new System.Drawing.Point(2,2);
             this.dtpDateIssued.Name = "dtpDateIssued";
             this.dtpDateIssued.Size = new System.Drawing.Size(150, 28);
+            this.dtpDateIssued.ValueChanged += new System.EventHandler(this.UpdateCreditTerms);
             //
             // lblDateIssued
             //
@@ -314,6 +320,7 @@ namespace Ict.Petra.Client.MFinance.Gui
             this.dtpDateDue.Location = new System.Drawing.Point(2,2);
             this.dtpDateDue.Name = "dtpDateDue";
             this.dtpDateDue.Size = new System.Drawing.Size(150, 28);
+            this.dtpDateDue.ValueChanged += new System.EventHandler(this.UpdateCreditTerms);
             //
             // lblDateDue
             //
@@ -330,6 +337,7 @@ namespace Ict.Petra.Client.MFinance.Gui
             this.nudCreditTerms.Location = new System.Drawing.Point(2,2);
             this.nudCreditTerms.Name = "nudCreditTerms";
             this.nudCreditTerms.Size = new System.Drawing.Size(50, 28);
+            this.nudCreditTerms.ValueChanged += new System.EventHandler(this.UpdateCreditTerms);
             //
             // lblCreditTerms
             //
@@ -341,46 +349,70 @@ namespace Ict.Petra.Client.MFinance.Gui
             this.tableLayoutPanel2.Controls.Add(this.lblCreditTerms, 4, 2);
             this.tableLayoutPanel2.Controls.Add(this.nudCreditTerms, 5, 2);
             //
-            // txtAmount
+            // nudDiscountDays
             //
-            this.txtAmount.Location = new System.Drawing.Point(2,2);
-            this.txtAmount.Name = "txtAmount";
-            this.txtAmount.Size = new System.Drawing.Size(150, 28);
+            this.nudDiscountDays.Location = new System.Drawing.Point(2,2);
+            this.nudDiscountDays.Name = "nudDiscountDays";
+            this.nudDiscountDays.Size = new System.Drawing.Size(150, 28);
+            this.nudDiscountDays.ValueChanged += new System.EventHandler(this.nudDiscountDaysValueChanged);
             //
-            // lblAmount
+            // lblDiscountDays
             //
-            this.lblAmount.Location = new System.Drawing.Point(2,2);
-            this.lblAmount.Name = "lblAmount";
-            this.lblAmount.AutoSize = true;
-            this.lblAmount.Text = "&Amount:";
-            this.lblAmount.Margin = new System.Windows.Forms.Padding(3, 7, 3, 0);
-            this.tableLayoutPanel2.Controls.Add(this.lblAmount, 0, 3);
-            this.tableLayoutPanel2.Controls.Add(this.txtAmount, 1, 3);
+            this.lblDiscountDays.Location = new System.Drawing.Point(2,2);
+            this.lblDiscountDays.Name = "lblDiscountDays";
+            this.lblDiscountDays.AutoSize = true;
+            this.lblDiscountDays.Text = "Discount &Days:";
+            this.lblDiscountDays.Margin = new System.Windows.Forms.Padding(3, 7, 3, 0);
+            this.tableLayoutPanel2.Controls.Add(this.lblDiscountDays, 0, 3);
+            this.tableLayoutPanel2.Controls.Add(this.nudDiscountDays, 1, 3);
             //
-            // txtExchangeRate
+            // txtDiscountPercentage
             //
-            this.txtExchangeRate.Location = new System.Drawing.Point(2,2);
-            this.txtExchangeRate.Name = "txtExchangeRate";
-            this.txtExchangeRate.Size = new System.Drawing.Size(150, 28);
+            this.txtDiscountPercentage.Location = new System.Drawing.Point(2,2);
+            this.txtDiscountPercentage.Name = "txtDiscountPercentage";
+            this.txtDiscountPercentage.Size = new System.Drawing.Size(150, 28);
             //
-            // lblExchangeRate
+            // lblDiscountPercentage
             //
-            this.lblExchangeRate.Location = new System.Drawing.Point(2,2);
-            this.lblExchangeRate.Name = "lblExchangeRate";
-            this.lblExchangeRate.AutoSize = true;
-            this.lblExchangeRate.Text = "E&xchange Rate:";
-            this.lblExchangeRate.Margin = new System.Windows.Forms.Padding(3, 7, 3, 0);
-            this.tableLayoutPanel2.Controls.Add(this.lblExchangeRate, 2, 3);
-            this.tableLayoutPanel2.Controls.Add(this.txtExchangeRate, 3, 3);
+            this.lblDiscountPercentage.Location = new System.Drawing.Point(2,2);
+            this.lblDiscountPercentage.Name = "lblDiscountPercentage";
+            this.lblDiscountPercentage.AutoSize = true;
+            this.lblDiscountPercentage.Text = "Discount &Value (%):";
+            this.lblDiscountPercentage.Margin = new System.Windows.Forms.Padding(3, 7, 3, 0);
+            this.tableLayoutPanel2.Controls.Add(this.lblDiscountPercentage, 2, 3);
+            this.tableLayoutPanel2.Controls.Add(this.txtDiscountPercentage, 3, 3);
             //
-            // btnEarlyPaymentDiscount
+            // txtTotalAmount
             //
-            this.btnEarlyPaymentDiscount.Location = new System.Drawing.Point(2,2);
-            this.btnEarlyPaymentDiscount.Name = "btnEarlyPaymentDiscount";
-            this.btnEarlyPaymentDiscount.AutoSize = true;
-            this.btnEarlyPaymentDiscount.Text = "Early Pyt Discount";
-            this.tableLayoutPanel2.Controls.Add(this.btnEarlyPaymentDiscount, 4, 3);
-            this.tableLayoutPanel2.SetColumnSpan(this.btnEarlyPaymentDiscount, 2);
+            this.txtTotalAmount.Location = new System.Drawing.Point(2,2);
+            this.txtTotalAmount.Name = "txtTotalAmount";
+            this.txtTotalAmount.Size = new System.Drawing.Size(150, 28);
+            //
+            // lblTotalAmount
+            //
+            this.lblTotalAmount.Location = new System.Drawing.Point(2,2);
+            this.lblTotalAmount.Name = "lblTotalAmount";
+            this.lblTotalAmount.AutoSize = true;
+            this.lblTotalAmount.Text = "&Amount:";
+            this.lblTotalAmount.Margin = new System.Windows.Forms.Padding(3, 7, 3, 0);
+            this.tableLayoutPanel2.Controls.Add(this.lblTotalAmount, 0, 4);
+            this.tableLayoutPanel2.Controls.Add(this.txtTotalAmount, 1, 4);
+            //
+            // txtExchangeRateToBase
+            //
+            this.txtExchangeRateToBase.Location = new System.Drawing.Point(2,2);
+            this.txtExchangeRateToBase.Name = "txtExchangeRateToBase";
+            this.txtExchangeRateToBase.Size = new System.Drawing.Size(150, 28);
+            //
+            // lblExchangeRateToBase
+            //
+            this.lblExchangeRateToBase.Location = new System.Drawing.Point(2,2);
+            this.lblExchangeRateToBase.Name = "lblExchangeRateToBase";
+            this.lblExchangeRateToBase.AutoSize = true;
+            this.lblExchangeRateToBase.Text = "E&xchange Rate:";
+            this.lblExchangeRateToBase.Margin = new System.Windows.Forms.Padding(3, 7, 3, 0);
+            this.tableLayoutPanel2.Controls.Add(this.lblExchangeRateToBase, 2, 4);
+            this.tableLayoutPanel2.Controls.Add(this.txtExchangeRateToBase, 3, 4);
             this.grpDocumentInfo.Text = "Document Information";
             //
             // grpDetails
@@ -591,7 +623,7 @@ namespace Ict.Petra.Client.MFinance.Gui
             //
             this.tbbSave.Name = "tbbSave";
             this.tbbSave.AutoSize = true;
-            this.tbbSave.Click += new System.EventHandler(this.tbbSaveClick);
+            this.tbbSave.Click += new System.EventHandler(this.FileSave);
             this.tbbSave.Image = ((System.Drawing.Bitmap)resources.GetObject("tbbSave.Glyph"));
             this.tbbSave.ToolTipText = "Saves changed data";
             this.tbbSave.Text = "&Save";
@@ -608,7 +640,7 @@ namespace Ict.Petra.Client.MFinance.Gui
             //
             this.mniFileSave.Name = "mniFileSave";
             this.mniFileSave.AutoSize = true;
-            this.mniFileSave.Click += new System.EventHandler(this.mniFileSaveClick);
+            this.mniFileSave.Click += new System.EventHandler(this.FileSave);
             this.mniFileSave.Image = ((System.Drawing.Bitmap)resources.GetObject("mniFileSave.Glyph"));
             this.mniFileSave.ToolTipText = "Saves changed data";
             this.mniFileSave.Text = "&Save";
@@ -635,7 +667,7 @@ namespace Ict.Petra.Client.MFinance.Gui
             //
             this.mniClose.Name = "mniClose";
             this.mniClose.AutoSize = true;
-            this.mniClose.Click += new System.EventHandler(this.mniCloseClick);
+            this.mniClose.Click += new System.EventHandler(this.actClose);
             this.mniClose.Image = ((System.Drawing.Bitmap)resources.GetObject("mniClose.Glyph"));
             this.mniClose.ToolTipText = "Closes this window";
             this.mniClose.Text = "&Close";
@@ -771,6 +803,7 @@ namespace Ict.Petra.Client.MFinance.Gui
 	        this.Load += new System.EventHandler(this.TFrmPetra_Load);
 	        this.Closing += new System.ComponentModel.CancelEventHandler(this.TFrmPetra_Closing);
 	        this.KeyDown += new System.Windows.Forms.KeyEventHandler(this.Form_KeyDown);
+	        this.Closed += new System.EventHandler(this.TFrmPetra_Closed);
 	
             this.stbMain.ResumeLayout(false);
             this.mnuMain.ResumeLayout(false);
@@ -795,8 +828,8 @@ namespace Ict.Petra.Client.MFinance.Gui
         private System.Windows.Forms.Label lblSupplierCurrency;
         private System.Windows.Forms.GroupBox grpDocumentInfo;
         private System.Windows.Forms.TableLayoutPanel tableLayoutPanel2;
-        private System.Windows.Forms.TextBox txtInvoiceNumber;
-        private System.Windows.Forms.Label lblInvoiceNumber;
+        private System.Windows.Forms.TextBox txtDocumentCode;
+        private System.Windows.Forms.Label lblDocumentCode;
         private Ict.Common.Controls.TCmbAutoComplete cmbDocumentType;
         private System.Windows.Forms.Label lblDocumentType;
         private System.Windows.Forms.TextBox txtReference;
@@ -807,11 +840,14 @@ namespace Ict.Petra.Client.MFinance.Gui
         private System.Windows.Forms.Label lblDateDue;
         private System.Windows.Forms.NumericUpDown nudCreditTerms;
         private System.Windows.Forms.Label lblCreditTerms;
-        private System.Windows.Forms.TextBox txtAmount;
-        private System.Windows.Forms.Label lblAmount;
-        private System.Windows.Forms.TextBox txtExchangeRate;
-        private System.Windows.Forms.Label lblExchangeRate;
-        private System.Windows.Forms.Button btnEarlyPaymentDiscount;
+        private System.Windows.Forms.NumericUpDown nudDiscountDays;
+        private System.Windows.Forms.Label lblDiscountDays;
+        private System.Windows.Forms.TextBox txtDiscountPercentage;
+        private System.Windows.Forms.Label lblDiscountPercentage;
+        private System.Windows.Forms.TextBox txtTotalAmount;
+        private System.Windows.Forms.Label lblTotalAmount;
+        private System.Windows.Forms.TextBox txtExchangeRateToBase;
+        private System.Windows.Forms.Label lblExchangeRateToBase;
         private System.Windows.Forms.GroupBox grpDetails;
         private Ict.Common.Controls.TSgrdDataGridPaged grdDetails;
         private System.Windows.Forms.Panel pnlDetails;

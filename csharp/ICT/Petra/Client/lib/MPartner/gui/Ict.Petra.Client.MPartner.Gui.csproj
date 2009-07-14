@@ -128,12 +128,16 @@
     <Compile Include="PartnerEdit.Designer.cs">
       <DependentUpon>PartnerEdit.cs</DependentUpon>
     </Compile>
-    <Compile Include="PartnerEdit.ManualCode.cs" />
+    <Compile Include="PartnerEdit.ManualCode.cs">
+      <DependentUpon>PartnerEdit.cs</DependentUpon>
+    </Compile>
     <Compile Include="PartnerFind.cs" />
     <Compile Include="PartnerFind.Designer.cs">
       <DependentUpon>PartnerFind.cs</DependentUpon>
     </Compile>
-    <Compile Include="PartnerFind.ManualCode.cs" />
+    <Compile Include="PartnerFind.ManualCode.cs">
+      <DependentUpon>PartnerFind.cs</DependentUpon>
+    </Compile>
     <Compile Include="PartnerFind_Options.cs" />
     <Compile Include="PartnerFind_Options.Designer.cs">
       <DependentUpon>PartnerFind_Options.cs</DependentUpon>
@@ -142,7 +146,9 @@
     <Compile Include="PartnerMain.Designer.cs">
       <DependentUpon>PartnerMain.cs</DependentUpon>
     </Compile>
-    <Compile Include="PartnerMain.ManualCode.cs" />
+    <Compile Include="PartnerMain.ManualCode.cs">
+      <DependentUpon>PartnerMain.cs</DependentUpon>
+    </Compile>
     <Compile Include="PartnerNewDialog.cs" />
     <Compile Include="PartnerNewDialog.Designer.cs">
       <DependentUpon>PartnerNewDialog.cs</DependentUpon>

@@ -118,14 +118,10 @@ namespace Ict.Petra.Shared.Interfaces.MFinance.AccountsPayable.UIConnectors
         /// <summary>auto generated from Connector constructor (Ict.Petra.Server.MFinance.AccountsPayable.UIConnectors.TFindUIConnector)</summary>
         IAccountsPayableUIConnectorsFind Find();
         /// <summary>auto generated from Connector constructor (Ict.Petra.Server.MFinance.AccountsPayable.UIConnectors.TSupplierEditUIConnector)</summary>
-        IAccountsPayableUIConnectorsSupplierEdit SupplierEdit(System.Int64 APartnerKey);
-        /// <summary>auto generated from Connector constructor and GetData (Ict.Petra.Server.MFinance.AccountsPayable.UIConnectors.TSupplierEditUIConnector)</summary>
-        IAccountsPayableUIConnectorsSupplierEdit SupplierEdit(System.Int64 APartnerKey,
-                                                              ref AccountsPayableTDS ADataSet);
-        /// <summary>auto generated from Connector constructor (Ict.Petra.Server.MFinance.AccountsPayable.UIConnectors.TSupplierEditUIConnector)</summary>
         IAccountsPayableUIConnectorsSupplierEdit SupplierEdit();
         /// <summary>auto generated from Connector constructor and GetData (Ict.Petra.Server.MFinance.AccountsPayable.UIConnectors.TSupplierEditUIConnector)</summary>
-        IAccountsPayableUIConnectorsSupplierEdit SupplierEdit(ref AccountsPayableTDS ADataSet);
+        IAccountsPayableUIConnectorsSupplierEdit SupplierEdit(ref AccountsPayableTDS ADataSet,
+                                                              Int64 APartnerKey);
     }
 
     /// <summary>auto generated</summary>
@@ -159,7 +155,7 @@ namespace Ict.Petra.Shared.Interfaces.MFinance.AccountsPayable.UIConnectors
         /// <summary> auto generated from Connector method(Ict.Petra.Server.MFinance.AccountsPayable.UIConnectors.TSupplierEditUIConnector)</summary>
         bool CanFindSupplier(Int64 APartnerKey);
         /// <summary> auto generated from Connector method(Ict.Petra.Server.MFinance.AccountsPayable.UIConnectors.TSupplierEditUIConnector)</summary>
-        AccountsPayableTDS GetData();
+        AccountsPayableTDS GetData(Int64 APartnerKey);
         /// <summary> auto generated from Connector method(Ict.Petra.Server.MFinance.AccountsPayable.UIConnectors.TSupplierEditUIConnector)</summary>
         TSubmitChangesResult SubmitChanges(ref AccountsPayableTDS AInspectDS,
                                            out TVerificationResultCollection AVerificationResult);

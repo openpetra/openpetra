@@ -65,18 +65,7 @@ namespace Ict.Petra.Server.MFinance.AccountsPayable.UIConnectors
         AccountsPayableTDS FMainDS;
 
         /// <summary>
-        /// Constructor which automatically loads data for the Partner.
-        ///
-        /// </summary>
-        /// <param name="APartnerKey">PartnerKey for the Supplier to instantiate this object with
-        /// </param>
-        public TSupplierEditUIConnector(System.Int64 APartnerKey) : base()
-        {
-            FPartnerKey = APartnerKey;
-        }
-
-        /// <summary>
-        /// constructor for new supplier
+        /// constructor
         /// </summary>
         public TSupplierEditUIConnector() : base()
         {
@@ -116,9 +105,11 @@ namespace Ict.Petra.Server.MFinance.AccountsPayable.UIConnectors
         /// <summary>
         /// Passes data as a Typed DataSet to the Supplier Edit Screen
         /// </summary>
-        public AccountsPayableTDS GetData()
+        public AccountsPayableTDS GetData(Int64 APartnerKey)
         {
             TDBTransaction ReadTransaction;
+
+            FPartnerKey = APartnerKey;
 
             // create the DataSet that will later be passed to the Client
             FMainDS = new AccountsPayableTDS(DATASETNAME);

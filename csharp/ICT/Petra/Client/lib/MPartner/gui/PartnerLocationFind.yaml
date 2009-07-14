@@ -1,5 +1,0 @@
-ICTYaml:
-    BaseYaml: ../../../CommonForms/PetraForm.yaml
-    FormTitle: Location Find
-    ClassName: TPartnerLocationFind
-    Namespace: Ict.Petra.Client.MPartner

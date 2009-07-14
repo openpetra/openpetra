@@ -69,7 +69,7 @@ namespace Ict.Tools.CodeGeneration
         void ApplyDerivedFunctionality(IControlGenerator generator, XmlNode curNode);
         IControlGenerator FindControlGenerator(XmlNode curNode);
         void CallControlFunction(string AControlName, string AFunctionCall);
-        void SetEventHandlerToControl(string AControlName, string AEvent);
+        void SetEventHandlerToControl(string AControlName, string AEvent, string AActionToPerform);
         void SetEventHandlerToControl(string AControlName, string AEvent, string AEventHandlerType, string AEventHandlingMethod);
         void SetEventHandlerFunction(string AControlName, string AEvent, string AEventImplementation);
         void AddContainer(string AControlName);

@@ -62,6 +62,7 @@ namespace Ict.Tools.CodeGeneration
             FCodeStorage.FNamespace = TYml2Xml.GetAttribute(formNode, "Namespace");
             FCodeStorage.FHasManualCodeInOtherFile = (TYml2Xml.GetAttribute(formNode, "HasManualCodeInOtherFile").ToLower() == "true");
             FCodeStorage.FClassName = "TFrm" + System.IO.Path.GetFileNameWithoutExtension(FCodeStorage.FFilename);
+            FCodeStorage.FMainEditTable = TYml2Xml.GetAttribute(formNode, "MainEditTable");
 
             if (TYml2Xml.HasAttribute(formNode, "WindowHeight"))
             {

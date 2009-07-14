@@ -64,7 +64,6 @@ namespace Ict.Petra.Client.MFinance.Gui
         /// </summary>
         private void ShowDataManual()
         {
-            // TODO
         }
 
         /// <summary>
@@ -72,6 +71,26 @@ namespace Ict.Petra.Client.MFinance.Gui
         /// </summary>
         private void GetDataFromControlsManual()
         {
+        }
+
+        private void UpdateCreditTerms(object sender, EventArgs e)
+        {
+            if (sender == dtpDateDue)
+            {
+                int diffDays = (dtpDateDue.Value - dtpDateIssued.Value).Days;
+
+                if (diffDays < 0)
+                {
+                    diffDays = 0;
+                    dtpDateDue.Value = dtpDateIssued.Value;
+                }
+
+                nudCreditTerms.Value = diffDays;
+            }
+            else if ((sender == dtpDateIssued) || (sender == nudCreditTerms))
+            {
+                dtpDateDue.Value = dtpDateIssued.Value.AddDays((double)nudCreditTerms.Value);
+            }
         }
     }
 }

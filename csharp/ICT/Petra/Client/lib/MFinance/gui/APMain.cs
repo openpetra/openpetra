@@ -41,6 +41,7 @@ using System.Collections.Specialized;
 using Mono.Unix;
 using Ict.Common;
 using Ict.Petra.Client.App.Core;
+using Ict.Petra.Client.App.Core.RemoteObjects;
 using Ict.Common.Controls;
 using Ict.Petra.Client.CommonForms;
 
@@ -124,83 +125,14 @@ namespace Ict.Petra.Client.MFinance.Gui
 
       FPetraUtilsObject.InitActionState();
       chkDueFutureCheckedChanged(null, null);
-      ActivateSelectedSupplier(false);
+      ActionEnabledEvent(null, new ActionEventArgs("cndSelectedSupplier", false));
+
     }
 
     void chkDueFutureCheckedChanged(object sender, System.EventArgs e)
     {
       nudNumberTimeUnits.Enabled = chkDueFuture.Checked;
       cmbTimeUnit.Enabled = chkDueFuture.Checked;
-    }
-
-    private void btnSearchClick(object sender, EventArgs e)
-    {
-        actSearch(sender, e);
-    }
-
-    private void grdSupplierResultDoubleClick(object sender, EventArgs e)
-    {
-        actSupplierTransactions(sender, e);
-    }
-
-    private void tbbTransactionsClick(object sender, EventArgs e)
-    {
-        actSupplierTransactions(sender, e);
-    }
-
-    private void tbbEditSupplierClick(object sender, EventArgs e)
-    {
-        actEditSupplier(sender, e);
-    }
-
-    private void tbbNewSupplierClick(object sender, EventArgs e)
-    {
-        actNewSupplier(sender, e);
-    }
-
-    private void tbbCreateInvoiceClick(object sender, EventArgs e)
-    {
-        actCreateInvoice(sender, e);
-    }
-
-    private void tbbCreateCreditNoteClick(object sender, EventArgs e)
-    {
-        actCreateCreditNote(sender, e);
-    }
-
-    private void mniCloseClick(object sender, EventArgs e)
-    {
-        actClose(sender, e);
-    }
-
-    private void mniNewSupplierClick(object sender, EventArgs e)
-    {
-        actNewSupplier(sender, e);
-    }
-
-    private void mniTransactionsClick(object sender, EventArgs e)
-    {
-        actSupplierTransactions(sender, e);
-    }
-
-    private void mniEditSupplierClick(object sender, EventArgs e)
-    {
-        actEditSupplier(sender, e);
-    }
-
-    private void mniCreateInvoiceClick(object sender, EventArgs e)
-    {
-        actCreateInvoice(sender, e);
-    }
-
-    private void mniCreateCreditNoteClick(object sender, EventArgs e)
-    {
-        actCreateCreditNote(sender, e);
-    }
-
-    private void mniFindInvoiceClick(object sender, EventArgs e)
-    {
-        actFindInvoice(sender, e);
     }
 
     private void TFrmPetra_Activated(object sender, EventArgs e)
@@ -221,6 +153,12 @@ namespace Ict.Petra.Client.MFinance.Gui
     private void Form_KeyDown(object sender, KeyEventArgs e)
     {
         FPetraUtilsObject.Form_KeyDown(sender, e);
+    }
+
+    private void TFrmPetra_Closed(object sender, EventArgs e)
+    {
+        // TODO? Save Window position
+
     }
 
 #region Implement interface functions
@@ -270,117 +208,52 @@ namespace Ict.Petra.Client.MFinance.Gui
         if (e.ActionName == "actSupplierTransactions")
         {
             tbbTransactions.Enabled = e.Enabled;
-        }
-        if (e.ActionName == "actEditSupplier")
-        {
-            tbbEditSupplier.Enabled = e.Enabled;
-        }
-        if (e.ActionName == "actNewSupplier")
-        {
-            tbbNewSupplier.Enabled = e.Enabled;
-        }
-        if (e.ActionName == "actCreateInvoice")
-        {
-            tbbCreateInvoice.Enabled = e.Enabled;
-        }
-        if (e.ActionName == "actCreateCreditNote")
-        {
-            tbbCreateCreditNote.Enabled = e.Enabled;
-        }
-        mniReports.Enabled = false;
-        mniReprintPaymentReport.Enabled = false;
-        mniSeparator0.Enabled = false;
-        mniImport.Enabled = false;
-        mniExport.Enabled = false;
-        mniSeparator1.Enabled = false;
-        mniDefaults.Enabled = false;
-        mniSeparator2.Enabled = false;
-        if (e.ActionName == "actClose")
-        {
-            mniClose.Enabled = e.Enabled;
-        }
-        if (e.ActionName == "actNewSupplier")
-        {
-            mniNewSupplier.Enabled = e.Enabled;
-        }
-        if (e.ActionName == "actSupplierTransactions")
-        {
             mniTransactions.Enabled = e.Enabled;
         }
         if (e.ActionName == "actEditSupplier")
         {
+            tbbEditSupplier.Enabled = e.Enabled;
             mniEditSupplier.Enabled = e.Enabled;
         }
-        mniSeparator3.Enabled = false;
+        if (e.ActionName == "actNewSupplier")
+        {
+            tbbNewSupplier.Enabled = e.Enabled;
+            mniNewSupplier.Enabled = e.Enabled;
+        }
         if (e.ActionName == "actCreateInvoice")
         {
+            tbbCreateInvoice.Enabled = e.Enabled;
             mniCreateInvoice.Enabled = e.Enabled;
         }
         if (e.ActionName == "actCreateCreditNote")
         {
+            tbbCreateCreditNote.Enabled = e.Enabled;
             mniCreateCreditNote.Enabled = e.Enabled;
+        }
+        if (e.ActionName == "actClose")
+        {
+            mniClose.Enabled = e.Enabled;
         }
         if (e.ActionName == "actFindInvoice")
         {
             mniFindInvoice.Enabled = e.Enabled;
         }
+        if (e.ActionName == "cndSelectedSupplier")
+        {
+            FPetraUtilsObject.EnableAction("actSupplierTransactions", e.Enabled);
+            FPetraUtilsObject.EnableAction("actEditSupplier", e.Enabled);
+            FPetraUtilsObject.EnableAction("actCreateInvoice", e.Enabled);
+            FPetraUtilsObject.EnableAction("actCreateCreditNote", e.Enabled);
+        }
+        mniReports.Enabled = false;
+        mniReprintPaymentReport.Enabled = false;
+        mniImport.Enabled = false;
+        mniExport.Enabled = false;
+        mniDefaults.Enabled = false;
         mniHelpPetraHelp.Enabled = false;
-        mniSeparator4.Enabled = false;
         mniHelpBugReport.Enabled = false;
-        mniSeparator5.Enabled = false;
         mniHelpAboutPetra.Enabled = false;
         mniHelpDevelopmentTeam.Enabled = false;
-    }
-
-    /// auto generated
-    protected void ActivateSelectedSupplier(bool AEnabled)
-    {
-        FPetraUtilsObject.EnableAction("actSupplierTransactions", AEnabled);
-        FPetraUtilsObject.EnableAction("actEditSupplier", AEnabled);
-        FPetraUtilsObject.EnableAction("actCreateInvoice", AEnabled);
-        FPetraUtilsObject.EnableAction("actCreateCreditNote", AEnabled);
-    }
-
-    /// auto generated
-    protected void actSearch(object sender, EventArgs e)
-    {
-        SearchForSupplier(sender, e);
-    }
-
-    /// auto generated
-    protected void actSupplierTransactions(object sender, EventArgs e)
-    {
-        SupplierTransactions(sender, e);
-    }
-
-    /// auto generated
-    protected void actNewSupplier(object sender, EventArgs e)
-    {
-        NewSupplier(sender, e);
-    }
-
-    /// auto generated
-    protected void actEditSupplier(object sender, EventArgs e)
-    {
-        EditSupplier(sender, e);
-    }
-
-    /// auto generated
-    protected void actCreateInvoice(object sender, EventArgs e)
-    {
-        CreateInvoice(sender, e);
-    }
-
-    /// auto generated
-    protected void actCreateCreditNote(object sender, EventArgs e)
-    {
-        // TODO action actCreateCreditNote
-    }
-
-    /// auto generated
-    protected void actFindInvoice(object sender, EventArgs e)
-    {
-        // TODO action actFindInvoice
     }
 
     /// auto generated

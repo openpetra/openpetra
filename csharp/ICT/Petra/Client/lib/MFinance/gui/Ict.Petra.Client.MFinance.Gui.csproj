@@ -139,22 +139,30 @@
     <Compile Include="APEditDocument.Designer.cs">
       <DependentUpon>APEditDocument.cs</DependentUpon>
     </Compile>
-    <Compile Include="APEditDocument.ManualCode.cs" />
+    <Compile Include="APEditDocument.ManualCode.cs">
+      <DependentUpon>APEditDocument.cs</DependentUpon>
+    </Compile>
     <Compile Include="APEditSupplier.cs" />
     <Compile Include="APEditSupplier.Designer.cs">
       <DependentUpon>APEditSupplier.cs</DependentUpon>
     </Compile>
-    <Compile Include="APEditSupplier.ManualCode.cs" />
+    <Compile Include="APEditSupplier.ManualCode.cs">
+      <DependentUpon>APEditSupplier.cs</DependentUpon>
+    </Compile>
     <Compile Include="APMain.cs" />
     <Compile Include="APMain.Designer.cs">
       <DependentUpon>APMain.cs</DependentUpon>
     </Compile>
-    <Compile Include="APMain.ManualCode.cs" />
+    <Compile Include="APMain.ManualCode.cs">
+      <DependentUpon>APMain.cs</DependentUpon>
+    </Compile>
     <Compile Include="APSupplierTransactions.cs" />
     <Compile Include="APSupplierTransactions.Designer.cs">
       <DependentUpon>APSupplierTransactions.cs</DependentUpon>
     </Compile>
-    <Compile Include="APSupplierTransactions.ManualCode.cs" />
+    <Compile Include="APSupplierTransactions.ManualCode.cs">
+      <DependentUpon>APSupplierTransactions.cs</DependentUpon>
+    </Compile>
     <Compile Include="AssemblyInfo.cs" />
     <Compile Include="BankStatementImport.cs" />
     <Compile Include="BankStatementImport.Designer.cs">
@@ -164,7 +172,9 @@
     <Compile Include="FinanceMain.Designer.cs">
       <DependentUpon>FinanceMain.cs</DependentUpon>
     </Compile>
-    <Compile Include="FinanceMain.ManualCode.cs" />
+    <Compile Include="FinanceMain.ManualCode.cs">
+      <DependentUpon>FinanceMain.cs</DependentUpon>
+    </Compile>
     <Compile Include="LedgerSelection.cs" />
     <Compile Include="LedgerSelection.Designer.cs">
       <DependentUpon>LedgerSelection.cs</DependentUpon>

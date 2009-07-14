@@ -41,6 +41,7 @@ using System.Collections.Specialized;
 using Mono.Unix;
 using Ict.Common;
 using Ict.Petra.Client.App.Core;
+using Ict.Petra.Client.App.Core.RemoteObjects;
 using Ict.Common.Controls;
 using Ict.Petra.Client.CommonForms;
 
@@ -51,6 +52,9 @@ namespace Ict.Petra.Client.MFinance.Gui
   public partial class TFrmAccountsPayableEditSupplier: System.Windows.Forms.Form, IFrmPetraEdit
   {
     private TFrmPetraEditUtils FPetraUtilsObject;
+
+    /// <summary>holds a reference to the Proxy object of the Serverside UIConnector</summary>
+    private Ict.Petra.Shared.Interfaces.MFinance.AccountsPayable.UIConnectors.IAccountsPayableUIConnectorsSupplierEdit FUIConnector = null;
 
     /// constructor
     public TFrmAccountsPayableEditSupplier(IntPtr AParentFormHandle) : base()
@@ -117,26 +121,17 @@ namespace Ict.Petra.Client.MFinance.Gui
       FPetraUtilsObject.ActionEnablingEvent += ActionEnabledEvent;
 
       FPetraUtilsObject.InitActionState();
+      ActionEnabledEvent(null, new ActionEventArgs("cndDiscountEnabled", false));
+
+      FUIConnector = TRemote.MFinance.AccountsPayable.UIConnectors.SupplierEdit();
+      // Register Object with the TEnsureKeepAlive Class so that it doesn't get GC'd
+      TEnsureKeepAlive.Register(FUIConnector);
+
     }
 
-    private void btnEditPartnerClick(object sender, EventArgs e)
+    private void nudDiscountDaysValueChanged(object sender, EventArgs e)
     {
-        EditPartner();
-    }
-
-    private void tbbSaveClick(object sender, EventArgs e)
-    {
-        actSave(sender, e);
-    }
-
-    private void mniFileSaveClick(object sender, EventArgs e)
-    {
-        actSave(sender, e);
-    }
-
-    private void mniCloseClick(object sender, EventArgs e)
-    {
-        actClose(sender, e);
+        ActionEnabledEvent(null, new ActionEventArgs("cndDiscountEnabled", nudDiscountDays.Value > 0));
     }
 
     private void TFrmPetra_Activated(object sender, EventArgs e)
@@ -159,9 +154,29 @@ namespace Ict.Petra.Client.MFinance.Gui
         FPetraUtilsObject.Form_KeyDown(sender, e);
     }
 
+    private void TFrmPetra_Closed(object sender, EventArgs e)
+    {
+        // TODO? Save Window position
+
+        if (FUIConnector != null)
+        {
+            // UnRegister Object from the TEnsureKeepAlive Class so that the Object can get GC'd on the PetraServer
+            TEnsureKeepAlive.UnRegister(FUIConnector);
+            FUIConnector = null;
+        }
+
+    }
+
     private void ShowData()
     {
         txtPartnerKey.Text = String.Format("{0:0000000000}", FMainDS.AApSupplier[0].PartnerKey);
+        TPartnerClass partnerClass;
+        string partnerShortName;
+        TRemote.MPartner.Partner.ServerLookups.GetPartnerShortName(
+            FMainDS.AApSupplier[0].PartnerKey,
+            out partnerShortName,
+            out partnerClass);
+        txtPartnerName.Text = partnerShortName;
         cmbCurrency.SetSelectedString(FMainDS.AApSupplier[0].CurrencyCode);
         if (FMainDS.AApSupplier[0].IsSupplierTypeNull())
         {
@@ -355,34 +370,24 @@ namespace Ict.Petra.Client.MFinance.Gui
         if (e.ActionName == "actSave")
         {
             tbbSave.Enabled = e.Enabled;
-        }
-        if (e.ActionName == "actSave")
-        {
             mniFileSave.Enabled = e.Enabled;
         }
-        mniSeparator0.Enabled = false;
-        mniFilePrint.Enabled = false;
-        mniSeparator1.Enabled = false;
         if (e.ActionName == "actClose")
         {
             mniClose.Enabled = e.Enabled;
         }
+        if (e.ActionName == "cndDiscountEnabled")
+        {
+            txtDiscountValue.Enabled = e.Enabled;
+        }
+        mniFilePrint.Enabled = false;
         mniEditUndoCurrentField.Enabled = false;
         mniEditUndoScreen.Enabled = false;
-        mniSeparator2.Enabled = false;
         mniEditFind.Enabled = false;
         mniHelpPetraHelp.Enabled = false;
-        mniSeparator3.Enabled = false;
         mniHelpBugReport.Enabled = false;
-        mniSeparator4.Enabled = false;
         mniHelpAboutPetra.Enabled = false;
         mniHelpDevelopmentTeam.Enabled = false;
-    }
-
-    /// auto generated
-    protected void actSave(object sender, EventArgs e)
-    {
-        FileSave(sender, e);
     }
 
     /// auto generated

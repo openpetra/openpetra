@@ -160,7 +160,7 @@ namespace Ict.Petra.Client.MReporting.Gui.MPartner
             //
             this.tbbGenerate.Name = "tbbGenerate";
             this.tbbGenerate.AutoSize = true;
-            this.tbbGenerate.Click += new System.EventHandler(this.tbbGenerateClick);
+            this.tbbGenerate.Click += new System.EventHandler(this.actGenerate);
             this.tbbGenerate.Image = ((System.Drawing.Bitmap)resources.GetObject("tbbGenerate.Glyph"));
             this.tbbGenerate.ToolTipText = "Generate the report";
             this.tbbGenerate.Text = "&Generate";
@@ -283,7 +283,7 @@ namespace Ict.Petra.Client.MReporting.Gui.MPartner
             //
             this.mniClose.Name = "mniClose";
             this.mniClose.AutoSize = true;
-            this.mniClose.Click += new System.EventHandler(this.mniCloseClick);
+            this.mniClose.Click += new System.EventHandler(this.actClose);
             this.mniClose.Image = ((System.Drawing.Bitmap)resources.GetObject("mniClose.Glyph"));
             this.mniClose.ToolTipText = "Closes this window";
             this.mniClose.Text = "&Close";
@@ -386,6 +386,7 @@ namespace Ict.Petra.Client.MReporting.Gui.MPartner
 	        this.Load += new System.EventHandler(this.TFrmPetra_Load);
 	        this.Closing += new System.ComponentModel.CancelEventHandler(this.TFrmPetra_Closing);
 	        this.KeyDown += new System.Windows.Forms.KeyEventHandler(this.Form_KeyDown);
+	        this.Closed += new System.EventHandler(this.TFrmPetra_Closed);
 	
             this.stbMain.ResumeLayout(false);
             this.mnuMain.ResumeLayout(false);

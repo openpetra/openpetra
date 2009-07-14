@@ -463,14 +463,12 @@ namespace Ict.Petra.Client.MFinance.Gui
             //
             this.tbbNewInvoice.Name = "tbbNewInvoice";
             this.tbbNewInvoice.AutoSize = true;
-            this.tbbNewInvoice.Click += new System.EventHandler(this.tbbNewInvoiceClick);
             this.tbbNewInvoice.Text = "&Invoice";
             //
             // tbbNewCreditNote
             //
             this.tbbNewCreditNote.Name = "tbbNewCreditNote";
             this.tbbNewCreditNote.AutoSize = true;
-            this.tbbNewCreditNote.Click += new System.EventHandler(this.tbbNewCreditNoteClick);
             this.tbbNewCreditNote.Text = "&Credit Note";
             //
             // tbbSeparator0
@@ -483,14 +481,12 @@ namespace Ict.Petra.Client.MFinance.Gui
             //
             this.tbbOpenSelected.Name = "tbbOpenSelected";
             this.tbbOpenSelected.AutoSize = true;
-            this.tbbOpenSelected.Click += new System.EventHandler(this.tbbOpenSelectedClick);
             this.tbbOpenSelected.Text = "&Open Selected";
             //
             // tbbReverseSelected
             //
             this.tbbReverseSelected.Name = "tbbReverseSelected";
             this.tbbReverseSelected.AutoSize = true;
-            this.tbbReverseSelected.Click += new System.EventHandler(this.tbbReverseSelectedClick);
             this.tbbReverseSelected.Text = "Re&verse Selected";
             //
             // tbbSeparator1
@@ -503,21 +499,18 @@ namespace Ict.Petra.Client.MFinance.Gui
             //
             this.tbbApproveTagged.Name = "tbbApproveTagged";
             this.tbbApproveTagged.AutoSize = true;
-            this.tbbApproveTagged.Click += new System.EventHandler(this.tbbApproveTaggedClick);
             this.tbbApproveTagged.Text = "&Approve Tagged";
             //
             // tbbPostTagged
             //
             this.tbbPostTagged.Name = "tbbPostTagged";
             this.tbbPostTagged.AutoSize = true;
-            this.tbbPostTagged.Click += new System.EventHandler(this.tbbPostTaggedClick);
             this.tbbPostTagged.Text = "&Post Tagged";
             //
             // tbbAddTaggedToPayment
             //
             this.tbbAddTaggedToPayment.Name = "tbbAddTaggedToPayment";
             this.tbbAddTaggedToPayment.AutoSize = true;
-            this.tbbAddTaggedToPayment.Click += new System.EventHandler(this.tbbAddTaggedToPaymentClick);
             this.tbbAddTaggedToPayment.Text = "Add Tagged to Pa&yment";
             //
             // tbrMain
@@ -564,7 +557,7 @@ namespace Ict.Petra.Client.MFinance.Gui
             //
             this.mniClose.Name = "mniClose";
             this.mniClose.AutoSize = true;
-            this.mniClose.Click += new System.EventHandler(this.mniCloseClick);
+            this.mniClose.Click += new System.EventHandler(this.actClose);
             this.mniClose.Image = ((System.Drawing.Bitmap)resources.GetObject("mniClose.Glyph"));
             this.mniClose.ToolTipText = "Closes this window";
             this.mniClose.Text = "&Close";
@@ -585,14 +578,12 @@ namespace Ict.Petra.Client.MFinance.Gui
             //
             this.mniNewInvoice.Name = "mniNewInvoice";
             this.mniNewInvoice.AutoSize = true;
-            this.mniNewInvoice.Click += new System.EventHandler(this.mniNewInvoiceClick);
             this.mniNewInvoice.Text = "&Invoice";
             //
             // mniNewCreditNote
             //
             this.mniNewCreditNote.Name = "mniNewCreditNote";
             this.mniNewCreditNote.AutoSize = true;
-            this.mniNewCreditNote.Click += new System.EventHandler(this.mniNewCreditNoteClick);
             this.mniNewCreditNote.Text = "&Credit Note";
             //
             // mniActionNew
@@ -608,7 +599,6 @@ namespace Ict.Petra.Client.MFinance.Gui
             //
             this.mniOpenSelected.Name = "mniOpenSelected";
             this.mniOpenSelected.AutoSize = true;
-            this.mniOpenSelected.Click += new System.EventHandler(this.mniOpenSelectedClick);
             this.mniOpenSelected.Text = "&Open Selected";
             //
             // mniSeparator1
@@ -621,28 +611,24 @@ namespace Ict.Petra.Client.MFinance.Gui
             //
             this.mniReverseTransaction.Name = "mniReverseTransaction";
             this.mniReverseTransaction.AutoSize = true;
-            this.mniReverseTransaction.Click += new System.EventHandler(this.mniReverseTransactionClick);
             this.mniReverseTransaction.Text = "Re&verse Selected";
             //
             // mniApproveTagged
             //
             this.mniApproveTagged.Name = "mniApproveTagged";
             this.mniApproveTagged.AutoSize = true;
-            this.mniApproveTagged.Click += new System.EventHandler(this.mniApproveTaggedClick);
             this.mniApproveTagged.Text = "&Approve Tagged";
             //
             // mniPostTagged
             //
             this.mniPostTagged.Name = "mniPostTagged";
             this.mniPostTagged.AutoSize = true;
-            this.mniPostTagged.Click += new System.EventHandler(this.mniPostTaggedClick);
             this.mniPostTagged.Text = "&Post Tagged";
             //
             // mniAddTaggedToPayment
             //
             this.mniAddTaggedToPayment.Name = "mniAddTaggedToPayment";
             this.mniAddTaggedToPayment.AutoSize = true;
-            this.mniAddTaggedToPayment.Click += new System.EventHandler(this.mniAddTaggedToPaymentClick);
             this.mniAddTaggedToPayment.Text = "Add Tagged to Pa&yment";
             //
             // mniAction
@@ -743,6 +729,7 @@ namespace Ict.Petra.Client.MFinance.Gui
 	        this.Load += new System.EventHandler(this.TFrmPetra_Load);
 	        this.Closing += new System.ComponentModel.CancelEventHandler(this.TFrmPetra_Closing);
 	        this.KeyDown += new System.Windows.Forms.KeyEventHandler(this.Form_KeyDown);
+	        this.Closed += new System.EventHandler(this.TFrmPetra_Closed);
 	
             this.stbMain.ResumeLayout(false);
             this.mnuMain.ResumeLayout(false);

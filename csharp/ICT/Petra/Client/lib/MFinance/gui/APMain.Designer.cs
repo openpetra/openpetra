@@ -317,7 +317,7 @@ namespace Ict.Petra.Client.MFinance.Gui
             this.btnSearch.Location = new System.Drawing.Point(2,2);
             this.btnSearch.Name = "btnSearch";
             this.btnSearch.AutoSize = true;
-            this.btnSearch.Click += new System.EventHandler(this.btnSearchClick);
+            this.btnSearch.Click += new System.EventHandler(this.SearchForSupplier);
             this.btnSearch.Text = "&Search";
             this.tableLayoutPanel4.Controls.Add(this.btnSearch, 0, 0);
             this.tableLayoutPanel4.SetColumnSpan(this.btnSearch, 2);
@@ -418,7 +418,7 @@ namespace Ict.Petra.Client.MFinance.Gui
             //
             this.grdSupplierResult.Name = "grdSupplierResult";
             this.grdSupplierResult.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.grdSupplierResult.DoubleClick += new System.EventHandler(this.grdSupplierResultDoubleClick);
+            this.grdSupplierResult.DoubleClick += new System.EventHandler(this.SupplierTransactions);
             this.tableLayoutPanel5.Controls.Add(this.grdSupplierResult, 0, 1);
             this.tableLayoutPanel5.SetColumnSpan(this.grdSupplierResult, 2);
             this.tpgSuppliers.Text = "Suppliers";
@@ -547,7 +547,7 @@ namespace Ict.Petra.Client.MFinance.Gui
             //
             this.tbbTransactions.Name = "tbbTransactions";
             this.tbbTransactions.AutoSize = true;
-            this.tbbTransactions.Click += new System.EventHandler(this.tbbTransactionsClick);
+            this.tbbTransactions.Click += new System.EventHandler(this.SupplierTransactions);
             this.tbbTransactions.ToolTipText = "Open the transactions of the supplier";
             this.tbbTransactions.Text = "Open Transactions";
             //
@@ -555,7 +555,7 @@ namespace Ict.Petra.Client.MFinance.Gui
             //
             this.tbbEditSupplier.Name = "tbbEditSupplier";
             this.tbbEditSupplier.AutoSize = true;
-            this.tbbEditSupplier.Click += new System.EventHandler(this.tbbEditSupplierClick);
+            this.tbbEditSupplier.Click += new System.EventHandler(this.EditSupplier);
             this.tbbEditSupplier.ToolTipText = "Change the details and settings of an existing supplier";
             this.tbbEditSupplier.Text = "&Edit Supplier";
             //
@@ -569,7 +569,7 @@ namespace Ict.Petra.Client.MFinance.Gui
             //
             this.tbbNewSupplier.Name = "tbbNewSupplier";
             this.tbbNewSupplier.AutoSize = true;
-            this.tbbNewSupplier.Click += new System.EventHandler(this.tbbNewSupplierClick);
+            this.tbbNewSupplier.Click += new System.EventHandler(this.NewSupplier);
             this.tbbNewSupplier.ToolTipText = "Create a new supplier";
             this.tbbNewSupplier.Text = "&New Supplier";
             //
@@ -583,14 +583,13 @@ namespace Ict.Petra.Client.MFinance.Gui
             //
             this.tbbCreateInvoice.Name = "tbbCreateInvoice";
             this.tbbCreateInvoice.AutoSize = true;
-            this.tbbCreateInvoice.Click += new System.EventHandler(this.tbbCreateInvoiceClick);
+            this.tbbCreateInvoice.Click += new System.EventHandler(this.CreateInvoice);
             this.tbbCreateInvoice.Text = "Create &Invoice";
             //
             // tbbCreateCreditNote
             //
             this.tbbCreateCreditNote.Name = "tbbCreateCreditNote";
             this.tbbCreateCreditNote.AutoSize = true;
-            this.tbbCreateCreditNote.Click += new System.EventHandler(this.tbbCreateCreditNoteClick);
             this.tbbCreateCreditNote.Text = "Create C&redit Note";
             //
             // tbrMain
@@ -659,7 +658,7 @@ namespace Ict.Petra.Client.MFinance.Gui
             //
             this.mniClose.Name = "mniClose";
             this.mniClose.AutoSize = true;
-            this.mniClose.Click += new System.EventHandler(this.mniCloseClick);
+            this.mniClose.Click += new System.EventHandler(this.actClose);
             this.mniClose.Image = ((System.Drawing.Bitmap)resources.GetObject("mniClose.Glyph"));
             this.mniClose.ToolTipText = "Closes this window";
             this.mniClose.Text = "&Close";
@@ -684,7 +683,7 @@ namespace Ict.Petra.Client.MFinance.Gui
             //
             this.mniNewSupplier.Name = "mniNewSupplier";
             this.mniNewSupplier.AutoSize = true;
-            this.mniNewSupplier.Click += new System.EventHandler(this.mniNewSupplierClick);
+            this.mniNewSupplier.Click += new System.EventHandler(this.NewSupplier);
             this.mniNewSupplier.ToolTipText = "Create a new supplier";
             this.mniNewSupplier.Text = "&New Supplier";
             //
@@ -692,7 +691,7 @@ namespace Ict.Petra.Client.MFinance.Gui
             //
             this.mniTransactions.Name = "mniTransactions";
             this.mniTransactions.AutoSize = true;
-            this.mniTransactions.Click += new System.EventHandler(this.mniTransactionsClick);
+            this.mniTransactions.Click += new System.EventHandler(this.SupplierTransactions);
             this.mniTransactions.ToolTipText = "Open the transactions of the supplier";
             this.mniTransactions.Text = "Open Transactions";
             //
@@ -700,7 +699,7 @@ namespace Ict.Petra.Client.MFinance.Gui
             //
             this.mniEditSupplier.Name = "mniEditSupplier";
             this.mniEditSupplier.AutoSize = true;
-            this.mniEditSupplier.Click += new System.EventHandler(this.mniEditSupplierClick);
+            this.mniEditSupplier.Click += new System.EventHandler(this.EditSupplier);
             this.mniEditSupplier.ToolTipText = "Change the details and settings of an existing supplier";
             this.mniEditSupplier.Text = "&Edit Supplier";
             //
@@ -714,14 +713,13 @@ namespace Ict.Petra.Client.MFinance.Gui
             //
             this.mniCreateInvoice.Name = "mniCreateInvoice";
             this.mniCreateInvoice.AutoSize = true;
-            this.mniCreateInvoice.Click += new System.EventHandler(this.mniCreateInvoiceClick);
+            this.mniCreateInvoice.Click += new System.EventHandler(this.CreateInvoice);
             this.mniCreateInvoice.Text = "Create &Invoice";
             //
             // mniCreateCreditNote
             //
             this.mniCreateCreditNote.Name = "mniCreateCreditNote";
             this.mniCreateCreditNote.AutoSize = true;
-            this.mniCreateCreditNote.Click += new System.EventHandler(this.mniCreateCreditNoteClick);
             this.mniCreateCreditNote.Text = "Create C&redit Note";
             //
             // mniSupplier
@@ -741,7 +739,6 @@ namespace Ict.Petra.Client.MFinance.Gui
             //
             this.mniFindInvoice.Name = "mniFindInvoice";
             this.mniFindInvoice.AutoSize = true;
-            this.mniFindInvoice.Click += new System.EventHandler(this.mniFindInvoiceClick);
             this.mniFindInvoice.Text = "&Find Invoice...";
             //
             // mniFind
@@ -837,6 +834,7 @@ namespace Ict.Petra.Client.MFinance.Gui
 	        this.Load += new System.EventHandler(this.TFrmPetra_Load);
 	        this.Closing += new System.ComponentModel.CancelEventHandler(this.TFrmPetra_Closing);
 	        this.KeyDown += new System.Windows.Forms.KeyEventHandler(this.Form_KeyDown);
+	        this.Closed += new System.EventHandler(this.TFrmPetra_Closed);
 	
             this.stbMain.ResumeLayout(false);
             this.mnuMain.ResumeLayout(false);

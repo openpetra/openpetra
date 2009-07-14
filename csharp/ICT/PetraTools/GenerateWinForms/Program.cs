@@ -25,6 +25,7 @@
  ************************************************************************/
 using System;
 using System.Xml;
+using System.Collections.Specialized;
 using Ict.Common;
 using Ict.Tools.DBXML;
 using Ict.Tools.CodeGeneration;
@@ -34,6 +35,20 @@ namespace GenerateWinForms
 {
 class Program
 {
+    private static void ProcessFile(string filename)
+    {
+        ProcessXAML processor = new ProcessXAML(filename);
+
+        processor.AddWriter("navigation", typeof(TWinFormsWriter));
+        processor.AddWriter("edit", typeof(TWinFormsWriter));
+        processor.AddWriter("report", typeof(TWinFormsWriter));
+        processor.AddWriter("browse", typeof(TWinFormsWriter));
+
+        //processor.AddWriter("browse", typeof(TWinFormsWriter));
+        // could add instead of TWinformsWriter: TGtkWriter
+        processor.ProcessDocument();
+    }
+
     public static void Main(string[] args)
     {
         try
@@ -54,15 +69,28 @@ class Program
             TDataDefinitionParser parser = new TDataDefinitionParser(opts.GetValue("petraxml", true));
             parser.ParseDocument(ref TControlGenerator.FPetraXMLStore, true, true);
 
-            ProcessXAML processor = new ProcessXAML(opts.GetValue("ymlfile", true));
-            processor.AddWriter("navigation", typeof(TWinFormsWriter));
-            processor.AddWriter("edit", typeof(TWinFormsWriter));
-            processor.AddWriter("report", typeof(TWinFormsWriter));
-            processor.AddWriter("browse", typeof(TWinFormsWriter));
+            string ymlfileParam = opts.GetValue("ymlfile", true);
 
-            //processor.AddWriter("browse", typeof(TWinFormsWriter));
-            // could add instead of TWinformsWriter: TGtkWriter
-            processor.ProcessDocument();
+            if (ymlfileParam.Contains(","))
+            {
+                StringCollection collection = StringHelper.StrSplit(ymlfileParam, ",");
+
+                foreach (string file in collection)
+                {
+                    ProcessFile(file);
+                }
+            }
+            else if (System.IO.Directory.Exists(ymlfileParam))
+            {
+                foreach (string file in System.IO.Directory.GetFiles(ymlfileParam, "*.yaml"))
+                {
+                    ProcessFile(file);
+                }
+            }
+            else
+            {
+                ProcessFile(ymlfileParam);
+            }
         }
         catch (Exception e)
         {

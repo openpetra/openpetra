@@ -59,6 +59,11 @@ namespace Ict.Tools.CodeGeneration
         public string FNamespace = "";
 
         /// <summary>
+        /// this table will be used for data binding for controls without explicit DataField, and the control name matches a column in that table
+        /// </summary>
+        public string FMainEditTable = "";
+
+        /// <summary>
         ///  used for call in constructor, InitializeManualCode(); partical class, one file auto generated, other file manually edited; eg. PartnerEdit
         /// </summary>
         public bool FHasManualCodeInOtherFile = false;

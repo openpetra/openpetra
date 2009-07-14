@@ -50,9 +50,6 @@ namespace Ict.Petra.Client.MFinance.Gui
     {
         AccountsPayableTDS FMainDS;
 
-        /// <summary>holds a reference to the Proxy System.Object of the Serverside UIConnector</summary>
-        private IAccountsPayableUIConnectorsSupplierEdit FSupplierEditUIConnector;
-
         /// <summary>
         /// todoComment
         /// </summary>
@@ -70,10 +67,8 @@ namespace Ict.Petra.Client.MFinance.Gui
         {
             FPetraUtilsObject.SetChangedFlag();
 
-            FSupplierEditUIConnector = TRemote.MFinance.AccountsPayable.UIConnectors.SupplierEdit();
-
             // check for existing supplier record
-            if (FSupplierEditUIConnector.CanFindSupplier(APartnerKey))
+            if (FUIConnector.CanFindSupplier(APartnerKey))
             {
                 MessageBox.Show(Catalog.GetString("There is already a supplier record for this partner!"));
                 EditSupplier(APartnerKey);
@@ -97,15 +92,14 @@ namespace Ict.Petra.Client.MFinance.Gui
         /// <param name="APartnerKey"></param>
         public void EditSupplier(Int64 APartnerKey)
         {
-            FSupplierEditUIConnector = TRemote.MFinance.AccountsPayable.UIConnectors.SupplierEdit(APartnerKey);
-            FMainDS = FSupplierEditUIConnector.GetData();
+            FMainDS = FUIConnector.GetData(APartnerKey);
             ShowData();
         }
 
         /// <summary>
         /// open the Partner Edit screen for the supplier
         /// </summary>
-        private void EditPartner()
+        private void EditPartner(object sender, EventArgs e)
         {
             FPetraUtilsObject.WriteToStatusBar("Opening Partner in Partner Edit screen...");
             this.Cursor = Cursors.WaitCursor;
@@ -127,14 +121,6 @@ namespace Ict.Petra.Client.MFinance.Gui
         /// </summary>
         private void ShowDataManual()
         {
-            TPartnerClass partnerClass;
-            string partnerShortName;
-
-            TRemote.MPartner.Partner.ServerLookups.GetPartnerShortName(
-                FMainDS.AApSupplier[0].PartnerKey,
-                out partnerShortName,
-                out partnerClass);
-            txtPartnerName.Text = partnerShortName;
         }
 
         /// <summary>
@@ -204,7 +190,7 @@ namespace Ict.Petra.Client.MFinance.Gui
                     // Submit changes to the PETRAServer
                     try
                     {
-                        SubmissionResult = FSupplierEditUIConnector.SubmitChanges(ref SubmitDS, out VerificationResult);
+                        SubmissionResult = FUIConnector.SubmitChanges(ref SubmitDS, out VerificationResult);
                     }
                     catch (System.Net.Sockets.SocketException)
                     {

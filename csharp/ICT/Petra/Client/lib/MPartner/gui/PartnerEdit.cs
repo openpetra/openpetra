@@ -41,6 +41,7 @@ using System.Collections.Specialized;
 using Mono.Unix;
 using Ict.Common;
 using Ict.Petra.Client.App.Core;
+using Ict.Petra.Client.App.Core.RemoteObjects;
 using Ict.Common.Controls;
 using Ict.Petra.Client.CommonForms;
 
@@ -130,21 +131,7 @@ namespace Ict.Petra.Client.MPartner.Gui
       FPetraUtilsObject.ActionEnablingEvent += ActionEnabledEvent;
 
       FPetraUtilsObject.InitActionState();
-    }
 
-    private void tbbSaveClick(object sender, EventArgs e)
-    {
-        actSave(sender, e);
-    }
-
-    private void mniFileSaveClick(object sender, EventArgs e)
-    {
-        actSave(sender, e);
-    }
-
-    private void mniCloseClick(object sender, EventArgs e)
-    {
-        actClose(sender, e);
     }
 
     private void TFrmPetra_Activated(object sender, EventArgs e)
@@ -155,6 +142,12 @@ namespace Ict.Petra.Client.MPartner.Gui
     private void Form_KeyDown(object sender, KeyEventArgs e)
     {
         FPetraUtilsObject.Form_KeyDown(sender, e);
+    }
+
+    private void TFrmPetra_Closed(object sender, EventArgs e)
+    {
+        // TODO? Save Window position
+
     }
 
 #region Implement interface functions
@@ -200,6 +193,11 @@ namespace Ict.Petra.Client.MPartner.Gui
         if (e.ActionName == "actSave")
         {
             tbbSave.Enabled = e.Enabled;
+            mniFileSave.Enabled = e.Enabled;
+        }
+        if (e.ActionName == "actClose")
+        {
+            mniClose.Enabled = e.Enabled;
         }
         mniFileNew.Enabled = false;
         mniFileDeactivatePartner.Enabled = false;
@@ -207,30 +205,16 @@ namespace Ict.Petra.Client.MPartner.Gui
         mniFileCopyPartnerKey.Enabled = false;
         mniFileCopyAddress.Enabled = false;
         mniFileSendEmail.Enabled = false;
-        mniSeparator0.Enabled = false;
         mniFilePrintSection.Enabled = false;
         mniFileExportPartner.Enabled = false;
-        if (e.ActionName == "actSave")
-        {
-            mniFileSave.Enabled = e.Enabled;
-        }
-        mniSeparator1.Enabled = false;
         mniFilePrint.Enabled = false;
-        mniSeparator2.Enabled = false;
-        mniSeparator3.Enabled = false;
-        if (e.ActionName == "actClose")
-        {
-            mniClose.Enabled = e.Enabled;
-        }
         mniEditFindNewAddress.Enabled = false;
         mniEditUndoCurrentField.Enabled = false;
         mniEditUndoScreen.Enabled = false;
-        mniSeparator7.Enabled = false;
         mniEditFind.Enabled = false;
         mniViewPartnerData.Enabled = false;
         mniViewPersonnelData.Enabled = false;
         mniViewFinanceData.Enabled = false;
-        mniSeparator4.Enabled = false;
         mniViewUpperPartExpanded.Enabled = false;
         mniViewUpperPartCollapsed.Enabled = false;
         mniMaintainAddresses.Enabled = false;
@@ -246,9 +230,7 @@ namespace Ict.Petra.Client.MPartner.Gui
         mniMaintainNotes.Enabled = false;
         mniMaintainOfficeSpecific.Enabled = false;
         mniMaintainWorkerField.Enabled = false;
-        mniSeparator5.Enabled = false;
         mniMaintainPersonnelIndividualData.Enabled = false;
-        mniSeparator6.Enabled = false;
         mniMaintainDonorHistory.Enabled = false;
         mniMaintainRecipientHistory.Enabled = false;
         mniMaintainFinanceReports.Enabled = false;
@@ -256,17 +238,9 @@ namespace Ict.Petra.Client.MPartner.Gui
         mniMaintainGiftReceipting.Enabled = false;
         mniMaintainFinanceDetails.Enabled = false;
         mniHelpPetraHelp.Enabled = false;
-        mniSeparator8.Enabled = false;
         mniHelpBugReport.Enabled = false;
-        mniSeparator9.Enabled = false;
         mniHelpAboutPetra.Enabled = false;
         mniHelpDevelopmentTeam.Enabled = false;
-    }
-
-    /// auto generated
-    protected void actSave(object sender, EventArgs e)
-    {
-        FileSave(sender, e);
     }
 
     /// auto generated

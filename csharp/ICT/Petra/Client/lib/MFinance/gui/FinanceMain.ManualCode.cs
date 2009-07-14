@@ -76,7 +76,7 @@ namespace Ict.Petra.Client.MFinance.Gui
         /// <summary>
         /// import bank statements and put them in the right sub system (gift, ap, gl, etc)
         /// </summary>
-        public void ImportBankStatements()
+        public void ImportBankStatements(object sender, EventArgs e)
         {
             TFrmBankStatementImport window = new TFrmBankStatementImport();
 
@@ -86,8 +86,10 @@ namespace Ict.Petra.Client.MFinance.Gui
         /// <summary>
         /// show the accounts payable main screen
         /// </summary>
-        public void AccountsPayable()
+        public void AccountsPayable(object sender, EventArgs e)
         {
+            // TODO: use scaffolding for opening screens?
+            // TODO: pass current ledger number
             TFrmAccountsPayableMain window = new TFrmAccountsPayableMain(this.Handle);
 
             window.Show();
