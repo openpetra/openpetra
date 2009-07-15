@@ -8,6 +8,10 @@
                 <Name>UIConnectors</Name>
                 <Description>User Interface Connectors</Description>
             </SubNamespace>
+            <SubNamespace>
+                <Name>DataReader</Name>
+                <Description>Simple Data Connector for reading data; checks for permissions; returns typed tables</Description>
+            </SubNamespace>
         </SubNamespaces>
     </TopNamespace>
     <TopNamespace>

@@ -272,7 +272,8 @@ public class CreateInterfaces : AutoGenerationWriter
 
             if (ConnectorClassName.StartsWith("T")
                 && (ConnectorClassName.EndsWith("Connector")
-                    || ConnectorClassName.EndsWith("Lookup")))
+                    || ConnectorClassName.EndsWith("Lookup")
+                    || ConnectorClassName.EndsWith("Reader")))
             {
                 // create a method for the interface, that returns the interface that the connector class is derived from,
                 // and takes the parameters from the constructor of the connector class

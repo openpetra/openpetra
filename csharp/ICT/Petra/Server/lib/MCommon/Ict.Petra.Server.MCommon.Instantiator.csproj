@@ -74,6 +74,10 @@
     <Compile Include="Instantiator.AutoHierarchy.cs" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="Ict.Petra.Server.MCommon.csproj">
+      <Project>{1F2FFC91-5C00-44ED-8EFD-3940426793CF}</Project>
+      <Name>Ict.Petra.Server.MCommon</Name>
+    </ProjectReference>
     <ProjectReference Include="Ict.Petra.Server.MCommon.UIConnectors.csproj">
       <Project>{76E4431D-7374-41A6-9708-59104F895D51}</Project>
       <Name>Ict.Petra.Server.MCommon.UIConnectors</Name>

@@ -1403,6 +1403,7 @@ namespace Ict.Petra.Server.App.Main
             TClientAppDomainConnection ClientDomainManager = null;
             String RemotingURL_RemotedObject = "";
             String RemotingURL_PollClientTasks;
+            String RemotingURL_MCommon;
             String RemotingURL_MSysMan;
             String RemotingURL_MPartner;
             String RemotingURL_MPersonnel;
@@ -1751,6 +1752,15 @@ namespace Ict.Petra.Server.App.Main
             if (TSrvSetting.DL >= 5)
             {
                 Console.WriteLine("  TMSysMan instantiated. Remoting URL: " + RemotingURL_MSysMan);
+            }
+#endif
+            // Load COMMON Module assembly (always loaded)
+            ClientDomainManager.LoadPetraModuleAssembly(SharedConstants.REMOTINGURL_IDENTIFIER_MCOMMON, out RemotingURL_MCommon);
+            ARemotingURLs.Add(SharedConstants.REMOTINGURL_IDENTIFIER_MCOMMON, RemotingURL_MCommon);
+#if DEBUGMODE
+            if (TSrvSetting.DL >= 5)
+            {
+                Console.WriteLine("  TMCommon instantiated. Remoting URL: " + RemotingURL_MCommon);
             }
 #endif
 

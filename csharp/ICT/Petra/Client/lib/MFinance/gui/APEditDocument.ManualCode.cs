@@ -24,6 +24,9 @@
  *
  ************************************************************************/
 using System;
+using System.Data;
+using Ict.Common.Data;
+using Ict.Petra.Client.App.Core.RemoteObjects;
 using Ict.Petra.Shared.MFinance.AP.Data;
 
 namespace Ict.Petra.Client.MFinance.Gui
@@ -40,6 +43,59 @@ namespace Ict.Petra.Client.MFinance.Gui
             FMainDS = new AccountsPayableTDS();
         }
 
+        /// <summary>
+        /// create a new document for the given supplier
+        /// </summary>
+        /// <param name="ALedgerNumber">current ledger</param>
+        /// <param name="APartnerKey">partner key of the supplier</param>
+        /// <param name="ACreditNoteOrInvoice"></param>
+        public void CreateNewDocument(Int32 ALedgerNumber, Int64 APartnerKey, bool ACreditNoteOrInvoice)
+        {
+            FPetraUtilsObject.SetChangedFlag();
+            
+            AApDocumentRow NewDocumentRow = FMainDS.AApDocument.NewRowTyped();
+            NewDocumentRow.ApNumber = -1;
+            NewDocumentRow.LedgerNumber = ALedgerNumber;
+            NewDocumentRow.PartnerKey = APartnerKey;
+            NewDocumentRow.CreditNoteFlag = ACreditNoteOrInvoice;
+            NewDocumentRow.DateIssued = DateTime.Now;
+            NewDocumentRow.DateEntered = DateTime.Now;
+            
+            // get the supplier defaults
+            TTypedDataTable tempTable = new AApSupplierTable();;
+            AApSupplierRow filterValues = ((AApSupplierTable)tempTable).NewRowTyped();
+            filterValues.PartnerKey = APartnerKey;
+            tempTable.Rows.Add(filterValues);
+            if (TRemote.MCommon.DataReader.GetData(
+                AApSupplierTable.GetTableDBName(), 
+                tempTable,
+                out tempTable) && tempTable.Rows.Count == 1)
+            {
+                FMainDS.AApSupplier.Merge(tempTable);
+                AApSupplierRow Supplier = FMainDS.AApSupplier[0];
+                if (!Supplier.IsDefaultCreditTermsNull())
+                {
+                    NewDocumentRow.CreditTerms = Supplier.DefaultCreditTerms;
+                }
+                if (!Supplier.IsDefaultDiscountDaysNull())
+                {
+                    NewDocumentRow.DiscountDays = Supplier.DefaultDiscountDays;
+                }
+                if (!Supplier.IsDefaultDiscountPercentageNull())
+                {
+                    NewDocumentRow.DiscountPercentage = Supplier.DefaultDiscountPercentage;
+                }
+                if (!Supplier.IsDefaultApAccountNull())
+                {
+                    NewDocumentRow.ApAccount = Supplier.DefaultApAccount;
+                }
+            }
+
+            FMainDS.AApDocument.Rows.Add(NewDocumentRow);
+
+            ShowData();
+        }
+       
         /// <summary>
         /// needed for interface
         /// </summary>

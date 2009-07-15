@@ -23,8 +23,11 @@ using Ict.Common;
 using Ict.Petra.Shared;
 using Ict.Petra.Shared.Interfaces.MCommon;
 using Ict.Petra.Shared.Interfaces.MCommon.UIConnectors;
+using Ict.Petra.Shared.Interfaces.MCommon.DataReader;
 using Ict.Petra.Server.MCommon.Instantiator.UIConnectors;
+using Ict.Petra.Server.MCommon.Instantiator.DataReader;
 using Ict.Petra.Server.MCommon.UIConnectors;
+using Ict.Petra.Server.MCommon.DataReader;
 
 
 #region ManualCode
@@ -131,6 +134,7 @@ namespace Ict.Petra.Server.MCommon.Instantiator
         private DateTime FStartTime;
 #endif
         private TUIConnectorsNamespace FUIConnectorsSubNamespace;
+        private TDataReaderNamespace FDataReaderSubNamespace;
 
         /// <summary>Constructor</summary>
         public TMCommon()
@@ -223,6 +227,37 @@ namespace Ict.Petra.Server.MCommon.Instantiator
 
 
                 return FUIConnectorsSubNamespace;
+            }
+
+        }
+
+
+        /// <summary>The 'DataReader' subnamespace contains further subnamespaces.</summary>
+        public IDataReaderNamespace DataReader
+        {
+            get
+            {
+                //
+                // Creates or passes a reference to an instantiator of sub-namespaces that
+                // reside in the 'MCommon.DataReader' sub-namespace.
+                // A call to this function is done everytime a Client uses an object of this
+                // sub-namespace - this is fully transparent to the Client.
+                //
+                // @return A reference to an instantiator of sub-namespaces that reside in
+                //         the 'MCommon.DataReader' sub-namespace
+                //
+
+                // accessing TDataReaderNamespace the first time? > instantiate the object
+                if (FDataReaderSubNamespace == null)
+                {
+                    // NOTE AutoGeneration: * the returned Type will need to be manually coded in ManualEndpoints.cs of this Project!
+                    //      * for the Generator: the name of this Type ('TDataReaderNamespace') needs to come out of the XML definition,
+                    //      * The Namespace where it resides in ('Ict.Petra.Server.MCommon.Instantiator.DataReader') should be automatically contructable.
+                    FDataReaderSubNamespace = new TDataReaderNamespace();
+                }
+
+
+                return FDataReaderSubNamespace;
             }
 
         }
@@ -424,6 +459,94 @@ namespace Ict.Petra.Server.MCommon.Instantiator.UIConnectors
 
 #endif
             return ReturnValue;
+        }
+
+    }
+}
+
+
+namespace Ict.Petra.Server.MCommon.Instantiator.DataReader
+{
+
+    /// <summary>auto generated class </summary>
+    public class TDataReaderNamespace : MarshalByRefObject, IDataReaderNamespace
+    {
+#if DEBUGMODE
+        private DateTime FStartTime;
+#endif
+
+        /// <summary>Constructor</summary>
+        public TDataReaderNamespace()
+        {
+#if DEBUGMODE
+            if (TSrvSetting.DL >= 9)
+            {
+                Console.WriteLine(this.GetType().FullName + " created: Instance hash is " + this.GetHashCode().ToString());
+            }
+
+            FStartTime = DateTime.Now;
+#endif
+        }
+
+
+        // NOTE AutoGeneration: This destructor is only needed for debugging...
+#if DEBUGMODE
+        /// <summary>Destructor</summary>
+        ~TDataReaderNamespace()
+        {
+#if DEBUGMODELONGRUNNINGFINALIZERS
+            const Int32 MAX_ITERATIONS = 100000;
+            System.Int32 LoopCounter;
+            object MyObject;
+            object MyObject2;
+#endif
+            if (TSrvSetting.DL >= 9)
+            {
+                Console.WriteLine(this.GetType().FullName + ": Getting collected after " + (new TimeSpan(
+                                                                                                DateTime.Now.Ticks -
+                                                                                                FStartTime.Ticks)).ToString() + " seconds.");
+            }
+
+#if DEBUGMODELONGRUNNINGFINALIZERS
+            MyObject = new object();
+            if (TSrvSetting.DL >= 9)
+            {
+                Console.WriteLine(this.GetType().FullName + ": Now performing some longer-running stuff...");
+            }
+
+            for (LoopCounter = 0; LoopCounter <= MAX_ITERATIONS; LoopCounter += 1)
+            {
+                MyObject2 = new object();
+                GC.KeepAlive(MyObject);
+            }
+
+            if (TSrvSetting.DL >= 9)
+            {
+                Console.WriteLine(this.GetType().FullName + ": FINALIZER has run.");
+            }
+
+#endif
+        }
+
+#endif
+
+
+
+        /// NOTE AutoGeneration: This function is all-important!!!
+        public override object InitializeLifetimeService()
+        {
+            return null; // make sure that the TDataReaderNamespace object exists until this AppDomain is unloaded!
+        }
+
+
+        /// generated method from interface
+        public bool GetData(string ATablename,
+                            Ict.Common.Data.TTypedDataTable AKeys,
+                            out Ict.Common.Data.TTypedDataTable AResultTable)
+        {
+            #region ManualCode
+            return TCommonDataReader.GetData(ATablename, AKeys, out AResultTable);
+            #endregion ManualCode
         }
 
     }

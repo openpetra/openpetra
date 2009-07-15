@@ -63,6 +63,12 @@ namespace Ict.Petra.Server.App.Main
         public const String CLIENTDOMAIN_CLASSNAME = "Ict.Petra.Server.App.ClientDomain.TClientDomainManager";
 
         /// <summary>need to leave out '.dll' suffix so that .NET can find the Assembly!</summary>
+        public const String MCOMMON_DLLNAME = "Ict.Petra.Server.MCommon.Instantiator";
+
+        /// <summary>need to leave out the last part of the Namespace so that .NET can find the Class!</summary>
+        public const String MCOMMON_CLASSNAME = "Ict.Petra.Server.MCommon.Instantiator.TMCommonNamespaceLoader";
+        
+        /// <summary>need to leave out '.dll' suffix so that .NET can find the Assembly!</summary>
         public const String MSYSMAN_DLLNAME = "Ict.Petra.Server.MSysMan.Instantiator";
 
         /// <summary>need to leave out the last part of the Namespace so that .NET can find the Class!</summary>
@@ -320,6 +326,11 @@ namespace Ict.Petra.Server.App.Main
             {
                 AssemblyDLLName = MSYSMAN_DLLNAME;
                 RemoteType = MSYSMAN_CLASSNAME;
+            }
+            else if (APetraModule == SharedConstants.REMOTINGURL_IDENTIFIER_MCOMMON)
+            {
+                AssemblyDLLName = MCOMMON_DLLNAME;
+                RemoteType = MCOMMON_CLASSNAME;
             }
             else if (APetraModule == SharedConstants.REMOTINGURL_IDENTIFIER_MPARTNER)
             {

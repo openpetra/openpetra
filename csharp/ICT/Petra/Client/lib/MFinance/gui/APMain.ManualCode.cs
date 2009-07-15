@@ -187,6 +187,21 @@ namespace Ict.Petra.Client.MFinance.Gui
         }
 
         /// <summary>
+        /// get the partner key of the currently selected supplier in the grid
+        /// </summary>
+        /// <returns></returns>
+        private Int64 GetCurrentlySelectedSupplier()
+        {
+            DataRowView[] SelectedGridRow = grdSupplierResult.SelectedDataRowsAsDataRowView;
+
+            if (SelectedGridRow.Length >= 1)
+            {
+                return Convert.ToInt64(SelectedGridRow[0][FPagedDataTable.Columns[0].ColumnName]);
+            }
+            return -1;
+        }
+        
+        /// <summary>
         /// open the transactions of the selected supplier
         /// </summary>
         public void SupplierTransactions(object sender, EventArgs e)
@@ -227,17 +242,16 @@ namespace Ict.Petra.Client.MFinance.Gui
         /// <param name="e"></param>
         public void EditSupplier(object sender, EventArgs e)
         {
-            DataRowView[] SelectedGridRow = grdSupplierResult.SelectedDataRowsAsDataRowView;
+            Int64 PartnerKey = GetCurrentlySelectedSupplier();
 
-            if (SelectedGridRow.Length >= 1)
+            if (PartnerKey != -1)
             {
-                Int64 PartnerKey = Convert.ToInt64(SelectedGridRow[0][FPagedDataTable.Columns[0].ColumnName]);
                 TFrmAccountsPayableEditSupplier frm = new TFrmAccountsPayableEditSupplier(this.Handle);
                 frm.EditSupplier(PartnerKey);
                 frm.Show();
             }
         }
-
+        
         /// <summary>
         /// create a new invoice
         /// </summary>
@@ -245,9 +259,15 @@ namespace Ict.Petra.Client.MFinance.Gui
         /// <param name="e"></param>
         public void CreateInvoice(object sender, EventArgs e)
         {
-            TFrmAccountsPayableEditDocument frm = new TFrmAccountsPayableEditDocument(this.Handle);
+            Int64 PartnerKey = GetCurrentlySelectedSupplier();
 
-            frm.Show();
+            if (PartnerKey != -1)
+            {
+                TFrmAccountsPayableEditDocument frm = new TFrmAccountsPayableEditDocument(this.Handle);
+                // TODO ledgernumber
+                frm.CreateNewDocument(43, PartnerKey, false);
+                frm.Show();
+            }
         }
     }
 }

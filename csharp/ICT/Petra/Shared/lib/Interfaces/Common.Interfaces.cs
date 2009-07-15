@@ -10,6 +10,7 @@ using System.Data;
 using Ict.Common;
 using Ict.Common.Verification;
 using Ict.Petra.Shared.Interfaces.MCommon.UIConnectors;
+using Ict.Petra.Shared.Interfaces.MCommon.DataReader;
 #region ManualCode
 using Ict.Common.DB;
 using Ict.Petra.Shared.MCommon;
@@ -22,6 +23,12 @@ namespace Ict.Petra.Shared.Interfaces.MCommon
     {
         /// <summary>access to sub namespace</summary>
         IUIConnectorsNamespace UIConnectors
+        {
+            get;
+        }
+
+        /// <summary>access to sub namespace</summary>
+        IDataReaderNamespace DataReader
         {
             get;
         }
@@ -85,6 +92,20 @@ namespace Ict.Petra.Shared.Interfaces.MCommon.UIConnectors
         /// <summary> auto generated from Connector method(Ict.Petra.Server.MCommon.UIConnectors.TFieldOfServiceUIConnector)</summary>
         TSubmitChangesResult SubmitChanges(ref FieldOfServiceTDS AInspectDS,
                                            out TVerificationResultCollection AVerificationResult);
+    }
+
+}
+
+
+namespace Ict.Petra.Shared.Interfaces.MCommon.DataReader
+{
+    /// <summary>auto generated</summary>
+    public interface IDataReaderNamespace : IInterface
+    {
+        /// <summary>auto generated from Instantiator (Ict.Petra.Server.MCommon.Instantiator.DataReader.TDataReaderNamespace)</summary>
+        bool GetData(string ATablename,
+                     Ict.Common.Data.TTypedDataTable AKeys,
+                     out Ict.Common.Data.TTypedDataTable AResultTable);
     }
 
 }
