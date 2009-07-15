@@ -61,18 +61,12 @@ namespace Ict.Petra.Server.MFinance.AccountsPayable.UIConnectors
     ///</summary>
     public class TSupplierEditUIConnector : TConfigurableMBRObject, IAccountsPayableUIConnectorsSupplierEdit
     {
-        Int64 FPartnerKey;
-        AccountsPayableTDS FMainDS;
-
         /// <summary>
         /// constructor
         /// </summary>
         public TSupplierEditUIConnector() : base()
         {
-            FPartnerKey = -1;
         }
-
-        private static string DATASETNAME = "AccountsPayable";
 
         /// <summary>
         /// check if there is already a supplier record for the given partner
@@ -109,10 +103,8 @@ namespace Ict.Petra.Server.MFinance.AccountsPayable.UIConnectors
         {
             TDBTransaction ReadTransaction;
 
-            FPartnerKey = APartnerKey;
-
             // create the DataSet that will later be passed to the Client
-            FMainDS = new AccountsPayableTDS(DATASETNAME);
+            AccountsPayableTDS MainDS = new AccountsPayableTDS();
 
             try
             {
@@ -120,9 +112,9 @@ namespace Ict.Petra.Server.MFinance.AccountsPayable.UIConnectors
                 try
                 {
                     // Supplier
-                    AApSupplierAccess.LoadByPrimaryKey(FMainDS, FPartnerKey, ReadTransaction);
+                    AApSupplierAccess.LoadByPrimaryKey(MainDS, APartnerKey, ReadTransaction);
 
-                    if (FMainDS.AApSupplier.Rows.Count == 0)
+                    if (MainDS.AApSupplier.Rows.Count == 0)
                     {
                         // Supplier does not exist
                         throw new Exception("supplier does not exist");
@@ -145,12 +137,12 @@ namespace Ict.Petra.Server.MFinance.AccountsPayable.UIConnectors
             }
 
             // Accept row changes here so that the Client gets 'unmodified' rows
-            FMainDS.AcceptChanges();
+            MainDS.AcceptChanges();
 
             // Remove all Tables that were not filled with data before remoting them.
-            FMainDS.RemoveEmptyTables();
+            MainDS.RemoveEmptyTables();
 
-            return FMainDS;
+            return MainDS;
         }
 
         /// <summary>

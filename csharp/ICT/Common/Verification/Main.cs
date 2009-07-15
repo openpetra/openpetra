@@ -36,30 +36,12 @@ namespace Ict.Common.Verification
     };
 
     /// <summary>
-    /// interface for results
-    /// </summary>
-    public interface IResultInterface
-    {
-        /// <summary>
-        /// the context
-        /// </summary>
-        /// <returns></returns>
-        object ResultContext();
-
-        /// <summary>
-        /// Verification failure explanation
-        /// </summary>
-        /// <returns></returns>
-        String ResultText();
-    }
-
-    /// <summary>
     /// A TVerificationResult object stores information about failed data
     /// verification and is passed (serialised) from the Server to the Client.
     /// It is made to be stored in the TVerificationResultCollection.
     /// </summary>
     [Serializable]
-    public class TVerificationResult : object, IResultInterface
+    public class TVerificationResult
     {
         /// <summary>DB Field or other context that describes where the data verification failed (use '[ODBC ...]' instead to signal a database error (such as a failed call to a stored procedure)</summary>
         public String FResultContext;
@@ -142,7 +124,7 @@ namespace Ict.Common.Verification
     /// verification in a Form or UserControl on the Client side.
     /// It is made to be stored in the TVerificationResultCollection.
     /// </summary>
-    public class TScreenVerificationResult : TVerificationResult, IResultInterface
+    public class TScreenVerificationResult : TVerificationResult
     {
         /// <summary>
         /// the context for the verification; here of type System.Object
@@ -253,7 +235,7 @@ namespace Ict.Common.Verification
         /// <summary>
         /// access the elements of the verification collection
         /// </summary>
-        public IResultInterface this[int index]
+        public TVerificationResult this[int index]
         {
             get
             {
@@ -271,7 +253,7 @@ namespace Ict.Common.Verification
         /// </summary>
         /// <param name="value">the verification object to be added</param>
         /// <returns></returns>
-        public int Add(IResultInterface value)
+        public int Add(TVerificationResult value)
         {
             return List.Add(value);
         }
@@ -349,7 +331,7 @@ namespace Ict.Common.Verification
         /// </summary>
         /// <param name="value">check list for this value</param>
         /// <returns>true if the value is already there</returns>
-        public bool Contains(IResultInterface value)
+        public bool Contains(TVerificationResult value)
         {
             return List.Contains(value);
         }
@@ -362,7 +344,7 @@ namespace Ict.Common.Verification
         /// <returns>true if an error from this context is already there</returns>
         public bool Contains(object AResultContext)
         {
-            IResultInterface si;
+            TVerificationResult si;
             Boolean Found = false;
 
             for (int Counter = 0; Counter <= Count - 1; Counter += 1)
@@ -408,7 +390,7 @@ namespace Ict.Common.Verification
         /// </summary>
         /// <param name="Index">which result should be returned</param>
         /// <returns>the selected result</returns>
-        public IResultInterface GetVerificationResult(int Index)
+        public TVerificationResult GetVerificationResult(int Index)
         {
             return (TVerificationResult)List[Index];
         }
@@ -418,7 +400,7 @@ namespace Ict.Common.Verification
         /// </summary>
         /// <param name="Index">index to change the verification result</param>
         /// <param name="Value">the new value</param>
-        public void SetVerificationResult(int Index, IResultInterface Value)
+        public void SetVerificationResult(int Index, TVerificationResult Value)
         {
             List[Index] = Value;
         }
@@ -428,7 +410,7 @@ namespace Ict.Common.Verification
         /// </summary>
         /// <param name="value">value to look for</param>
         /// <returns>index of the value</returns>
-        public int IndexOf(IResultInterface value)
+        public int IndexOf(TVerificationResult value)
         {
             return List.IndexOf(value);
         }
@@ -438,7 +420,7 @@ namespace Ict.Common.Verification
         /// </summary>
         /// <param name="index">position to insert after</param>
         /// <param name="value">value to add</param>
-        public void Insert(int index, IResultInterface value)
+        public void Insert(int index, TVerificationResult value)
         {
             List.Insert(index, value);
         }
@@ -474,16 +456,16 @@ namespace Ict.Common.Verification
         /// </summary>
         /// <param name="AResultContext">context to look for</param>
         /// <returns>the first result for that context</returns>
-        public IResultInterface FindBy(object AResultContext)
+        public TVerificationResult FindBy(object AResultContext)
         {
-            IResultInterface ReturnValue;
-            IResultInterface si;
+            TVerificationResult ReturnValue;
+            TVerificationResult si;
 
             ReturnValue = null;
 
             for (int Counter = 0; Counter <= Count - 1; Counter += 1)
             {
-                si = (IResultInterface)(List[Counter]);
+                si = (TVerificationResult)(List[Counter]);
 
                 if (si.ResultContext() == AResultContext)
                 {
@@ -500,9 +482,9 @@ namespace Ict.Common.Verification
         /// </summary>
         /// <param name="index">index to identify the result</param>
         /// <returns>the result</returns>
-        public IResultInterface FindBy(int index)
+        public TVerificationResult FindBy(int index)
         {
-            return (IResultInterface)(List[index]);
+            return (TVerificationResult)(List[index]);
         }
 
         /// <summary>
@@ -547,7 +529,7 @@ namespace Ict.Common.Verification
         /// remove a result from the list
         /// </summary>
         /// <param name="value">value to delete</param>
-        public void Remove(IResultInterface value)
+        public void Remove(TVerificationResult value)
         {
             List.Remove(value);
         }
@@ -632,7 +614,7 @@ namespace Ict.Common.Verification
 
         private void VerifyType(object value)
         {
-            if (!(value is IResultInterface))
+            if (!(value is TVerificationResult))
             {
                 throw new ArgumentException("Invalid Type");
             }

@@ -25,9 +25,14 @@
  ************************************************************************/
 using System;
 using System.Web.Services;
+using System.Data;
 using Ict.Common;
 using Ict.Petra.Server.App.Main;
 using Ict.Petra.Shared.Security;
+using Ict.Petra.Server.MFinance.AccountsPayable.UIConnectors;
+using Ict.Common.Verification;
+using Ict.Petra.Shared.MFinance.AP.Data;
+using Jayrock.Json;
 
 namespace PetraWebService
 {
@@ -113,5 +118,119 @@ public class TOpenPetraOrg : WebService
 
         return false;
     }
+    
+    /// <summary>
+    /// check if there is already a supplier record for the given partner
+    /// </summary>
+    /// <param name="APartnerKey"></param>
+    /// <returns></returns>
+    [WebMethod(EnableSession = true)]
+    public bool CanFindSupplier(Int64 APartnerKey)
+    {
+        // TODO check permissions
+        if (IsUserLoggedIn())
+        {
+            TSupplierEditUIConnector uiconnector = new TSupplierEditUIConnector();
+            return uiconnector.CanFindSupplier(APartnerKey);
+        }
+        return false;
+    }
+
+    /// <summary>
+    /// Passes data as a Typed DataSet to the Supplier Edit Screen
+    /// </summary>
+    [WebMethod(EnableSession = true)]
+    public AccountsPayableTDS GetSupplierData(Int64 APartnerKey)
+    {
+        // TODO check permissions
+        if (IsUserLoggedIn())
+        {
+            TSupplierEditUIConnector uiconnector = new TSupplierEditUIConnector();
+            return uiconnector.GetData(APartnerKey);
+        }
+        return new AccountsPayableTDS();
+    }
+
+    /// <summary>
+    /// Passes data as a Typed DataSet (Converted to a JSON string) to the Supplier Edit Screen
+    /// </summary>
+    [WebMethod(EnableSession = true)]
+    public string GetSupplierDataJSON(Int64 APartnerKey)
+    {
+        // TODO check permissions
+        if (IsUserLoggedIn())
+        {
+            TSupplierEditUIConnector uiconnector = new TSupplierEditUIConnector();
+            AccountsPayableTDS dataset = uiconnector.GetData(APartnerKey);
+            string myJson = Jayrock.Json.Conversion.JsonConvert.ExportToString(dataset);
+            return myJson;
+        }
+        return "";
+    }
+
+    /// <summary>
+    /// experiment to check how SubmitChanges could be done via web interface
+    /// </summary>
+    /// <param name="DatasetInJSON"></param>
+    /// <returns></returns>
+    [WebMethod(EnableSession = true)]
+    public string SubmitChangesToSupplierJSON(string DatasetInJSON)
+    {
+        // TODO check permissions
+        if (IsUserLoggedIn())
+        {
+            // pass the dataset as a JSON string, then deserialize the dataset
+            AccountsPayableTDS AInspectDS = (AccountsPayableTDS) Jayrock.Json.Conversion.JsonConvert.Import(typeof(AccountsPayableTDS), DatasetInJSON);
+            TSupplierEditUIConnector uiconnector = new TSupplierEditUIConnector();
+            TVerificationResultCollection VerificationResult;
+            TSubmitChangesResult changesResult = uiconnector.SubmitChanges(ref AInspectDS, out VerificationResult);
+            return Jayrock.Json.Conversion.JsonConvert.ExportToString(new TCombinedSubmitChangesResult(changesResult, AInspectDS, VerificationResult));
+        }
+        return "not enough permissions";
+    }
+    
+    /// <summary>
+    /// combine all results into one struct; it seems out and ref is not supported by web services?
+    /// </summary>
+    public struct TCombinedSubmitChangesResult
+    {
+        private TSubmitChangesResult SubmitChangesResult;
+        private DataSet UntypedDataSet;
+        private TVerificationResultCollection VerificationResultCollection;
+        /// <summary>
+        /// constructor
+        /// </summary>
+        /// <param name="ASubmitChangesResult"></param>
+        /// <param name="AUntypedDataSet"></param>
+        /// <param name="AVerificationResultCollection"></param>
+        public TCombinedSubmitChangesResult(TSubmitChangesResult ASubmitChangesResult,
+                                   DataSet AUntypedDataSet,
+                                   TVerificationResultCollection AVerificationResultCollection)
+        {
+            SubmitChangesResult = ASubmitChangesResult;
+            UntypedDataSet = AUntypedDataSet;
+            VerificationResultCollection = AVerificationResultCollection;
+        }
+    }
+    
+    /// <summary>
+    /// experiment to check how SubmitChanges could be done via web interface
+    /// </summary>
+    /// <param name="AInspectDS"></param>
+    /// <returns></returns>
+    [WebMethod(EnableSession = true)]
+    public TCombinedSubmitChangesResult SubmitChangesToSupplier(AccountsPayableTDS AInspectDS)
+    {
+        // TODO check permissions
+        if (IsUserLoggedIn())
+        {
+            TSupplierEditUIConnector uiconnector = new TSupplierEditUIConnector();
+            TVerificationResultCollection VerificationResult;
+            TSubmitChangesResult changesResult = uiconnector.SubmitChanges(ref AInspectDS, out VerificationResult);
+            return new TCombinedSubmitChangesResult(changesResult, AInspectDS, VerificationResult);
+        }
+        return new TCombinedSubmitChangesResult(TSubmitChangesResult.scrError, new DataSet(), new TVerificationResultCollection());
+    }
+
 }
 }
