@@ -225,15 +225,16 @@ namespace Ict.Petra.Client.MFinance.Gui
             TLocationPK ResultLocationPK;
 
             // the user has to select an existing partner to make that partner a supplier
-            TPartnerFindScreenManager.OpenModalForm("ORGANISATION,FAMILY,CHURCH",
-                out PartnerKey,
-                out ResultStringLbl,
-                out ResultLocationPK,
-                this.Handle);
-
-            TFrmAccountsPayableEditSupplier frm = new TFrmAccountsPayableEditSupplier(this.Handle);
-            frm.CreateNewSupplier(PartnerKey);
-            frm.Show();
+            if (TPartnerFindScreenManager.OpenModalForm("ORGANISATION,FAMILY,CHURCH",
+                    out PartnerKey,
+                    out ResultStringLbl,
+                    out ResultLocationPK,
+                    this.Handle))
+            {
+                TFrmAccountsPayableEditSupplier frm = new TFrmAccountsPayableEditSupplier(this.Handle);
+                frm.CreateNewSupplier(PartnerKey);
+                frm.Show();
+            }
         }
 
         /// <summary>
