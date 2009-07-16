@@ -185,7 +185,7 @@ namespace Ict.Petra.Shared.Interfaces.MFinance.AccountsPayable.WebConnectors
                                              bool ACreditNoteOrInvoice);
         /// <summary> auto generated from Connector method(Ict.Petra.Server.MFinance.AccountsPayable.WebConnectors.TTransactionEditWebConnector)</summary>
         TSubmitChangesResult SaveDocument(ref AccountsPayableTDS AInspectDS,
-                                           out TVerificationResultCollection AVerificationResult);
+                                          out TVerificationResultCollection AVerificationResult);
     }
 
 }

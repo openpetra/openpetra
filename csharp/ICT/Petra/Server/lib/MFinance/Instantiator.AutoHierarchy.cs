@@ -893,7 +893,7 @@ namespace Ict.Petra.Server.MFinance.Instantiator.AccountsPayable.WebConnectors
 
         /// generated method from connector
         public TSubmitChangesResult SaveDocument(ref AccountsPayableTDS AInspectDS,
-                                                  out TVerificationResultCollection AVerificationResult)
+                                                 out TVerificationResultCollection AVerificationResult)
         {
             return Ict.Petra.Server.MFinance.AccountsPayable.WebConnectors.TTransactionEditWebConnector.SaveDocument(ref AInspectDS, out AVerificationResult);
         }

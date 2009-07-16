@@ -514,19 +514,19 @@
         <property name="uncrustifyFilesPath" value="${OpenPetraRoot.dir}/csharp/ICT/Common"/>
         <call target="uncrustifyTemplate"/>
     </target>
-    <target name="uncrustifyShared">
+    <target name="uncrustifyPetraShared">
         <property name="uncrustifyFilesPath" value="${OpenPetraRoot.dir}/csharp/ICT/Petra/Shared"/>
         <call target="uncrustifyTemplate"/>
     </target>
-    <target name="uncrustifyServer">
+    <target name="uncrustifyPetraServer">
         <property name="uncrustifyFilesPath" value="${OpenPetraRoot.dir}/csharp/ICT/Petra/Server"/>
         <call target="uncrustifyTemplate"/>
     </target>
-    <target name="uncrustifyClient">
+    <target name="uncrustifyPetraClient">
         <property name="uncrustifyFilesPath" value="${OpenPetraRoot.dir}/csharp/ICT/Petra/Client"/>
         <call target="uncrustifyTemplate"/>
     </target>
-    <target name="uncrustifyServerAdmin">
+    <target name="uncrustifyPetraServerAdmin">
         <property name="uncrustifyFilesPath" value="${OpenPetraRoot.dir}/csharp/ICT/Petra/ServerAdmin"/>
         <call target="uncrustifyTemplate"/>
     </target>
@@ -539,7 +539,7 @@
         <call target="uncrustifyTemplate"/>
     </target>
     
-    <target name="uncrustify" depends="uncrustifyCommon, uncrustifyShared, uncrustifyServer, uncrustifyClient, uncrustifyServerAdmin, uncrustifyExperimenting, uncrustifyPetraTools"/>
+    <target name="uncrustify" depends="uncrustifyCommon, uncrustifyPetraShared, uncrustifyPetraServer, uncrustifyPetraClient, uncrustifyPetraServerAdmin, uncrustifyExperimenting, uncrustifyPetraTools"/>
     
     <target name="checkCode" description="check for correct file headers, missing xml comment generation, copyright, licensing, etc">
         <foreach item="File" property="filename">

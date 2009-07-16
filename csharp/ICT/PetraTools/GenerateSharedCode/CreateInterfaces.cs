@@ -280,7 +280,6 @@ public class CreateInterfaces : AutoGenerationWriter
             if (ConnectorClassName.StartsWith("T")
                 && (ConnectorClassName.EndsWith("UIConnector")
                     || ConnectorClassName.EndsWith("LogicConnector")
-                    || ConnectorClassName.EndsWith("WebConnector")
                     || ConnectorClassName.EndsWith("Lookup")
                     || ConnectorClassName.EndsWith("Reader")))
             {
