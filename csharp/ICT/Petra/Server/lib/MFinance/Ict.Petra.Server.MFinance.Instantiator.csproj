@@ -49,6 +49,9 @@
       <HintPath>..\..\..\..\Common\_bin\Debug\Ict.Common.Data.dll</HintPath>
       <SpecificVersion>False</SpecificVersion>
     </Reference>
+    <Reference Include="Ict.Common.Verification">
+      <HintPath>..\..\..\..\Common\_bin\Debug\Ict.Common.Verification.dll</HintPath>
+    </Reference>
     <Reference Include="Ict.Petra.Shared">
       <HintPath>..\..\..\Shared\_bin\Server_Client\Debug\Ict.Petra.Shared.dll</HintPath>
       <SpecificVersion>False</SpecificVersion>
@@ -83,6 +86,10 @@
     <ProjectReference Include="Ict.Petra.Server.MFinance.UIConnectors.csproj">
       <Project>{0E47E3BD-3905-4105-B78F-060F7B9D0943}</Project>
       <Name>Ict.Petra.Server.MFinance.UIConnectors</Name>
+    </ProjectReference>
+    <ProjectReference Include="Ict.Petra.Server.MFinance.WebConnectors.csproj">
+      <Project>C68F7EC9-BE30-4F11-869A-2C9E5A758880</Project>
+      <Name>Ict.Petra.Server.MFinance.WebConnectors</Name>
     </ProjectReference>
   </ItemGroup>
 </Project>

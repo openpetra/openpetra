@@ -25,7 +25,9 @@
  ************************************************************************/
 using System;
 using System.Data;
-using Ict.Common.Data;
+using System.Windows.Forms;
+using Ict.Common.Verification;
+using Ict.Common;
 using Ict.Petra.Client.App.Core.RemoteObjects;
 using Ict.Petra.Shared.MFinance.AP.Data;
 
@@ -52,57 +54,162 @@ namespace Ict.Petra.Client.MFinance.Gui
         public void CreateNewDocument(Int32 ALedgerNumber, Int64 APartnerKey, bool ACreditNoteOrInvoice)
         {
             FPetraUtilsObject.SetChangedFlag();
-            
-            AApDocumentRow NewDocumentRow = FMainDS.AApDocument.NewRowTyped();
-            NewDocumentRow.ApNumber = -1;
-            NewDocumentRow.LedgerNumber = ALedgerNumber;
-            NewDocumentRow.PartnerKey = APartnerKey;
-            NewDocumentRow.CreditNoteFlag = ACreditNoteOrInvoice;
-            NewDocumentRow.DateIssued = DateTime.Now;
-            NewDocumentRow.DateEntered = DateTime.Now;
-            
-            // get the supplier defaults
-            TTypedDataTable tempTable = new AApSupplierTable();;
-            AApSupplierRow filterValues = ((AApSupplierTable)tempTable).NewRowTyped();
-            filterValues.PartnerKey = APartnerKey;
-            tempTable.Rows.Add(filterValues);
-            if (TRemote.MCommon.DataReader.GetData(
-                AApSupplierTable.GetTableDBName(), 
-                tempTable,
-                out tempTable) && tempTable.Rows.Count == 1)
-            {
-                FMainDS.AApSupplier.Merge(tempTable);
-                AApSupplierRow Supplier = FMainDS.AApSupplier[0];
-                if (!Supplier.IsDefaultCreditTermsNull())
-                {
-                    NewDocumentRow.CreditTerms = Supplier.DefaultCreditTerms;
-                }
-                if (!Supplier.IsDefaultDiscountDaysNull())
-                {
-                    NewDocumentRow.DiscountDays = Supplier.DefaultDiscountDays;
-                }
-                if (!Supplier.IsDefaultDiscountPercentageNull())
-                {
-                    NewDocumentRow.DiscountPercentage = Supplier.DefaultDiscountPercentage;
-                }
-                if (!Supplier.IsDefaultApAccountNull())
-                {
-                    NewDocumentRow.ApAccount = Supplier.DefaultApAccount;
-                }
-            }
 
-            FMainDS.AApDocument.Rows.Add(NewDocumentRow);
+            FMainDS = TRemote.MFinance.AccountsPayable.WebConnectors.CreateNewDocument(ALedgerNumber, APartnerKey, ACreditNoteOrInvoice);
 
             ShowData();
         }
-       
+
+        /// <summary>
+        /// save the changes on the screen
+        /// </summary>
+        /// <param name="AInspectDS"></param>
+        /// <returns></returns>
+        public bool SaveChanges(AccountsPayableTDS AInspectDS)
+        {
+            FPetraUtilsObject.OnDataSavingStart(this, new System.EventArgs());
+
+            // Don't allow saving if user is still editing a Detail of a List
+            if (FPetraUtilsObject.InDetailEditMode())
+            {
+                return false;
+            }
+
+            FMainDS.AApDocument.Rows[0].BeginEdit();
+            GetDataFromControls();
+
+            if (FPetraUtilsObject.VerificationResultCollection.Count == 0)
+            {
+                foreach (DataTable InspectDT in AInspectDS.Tables)
+                {
+                    foreach (DataRow InspectDR in InspectDT.Rows)
+                    {
+                        InspectDR.EndEdit();
+                    }
+                }
+
+                if (FPetraUtilsObject.HasChanges)
+                {
+                    FPetraUtilsObject.WriteToStatusBar("Saving data...");
+                    this.Cursor = Cursors.WaitCursor;
+
+                    AccountsPayableTDS SubmitDS = AInspectDS.GetChangesTyped(true);
+
+                    TSubmitChangesResult SubmissionResult;
+                    TVerificationResultCollection VerificationResult;
+
+                    // Submit changes to the PETRAServer
+                    try
+                    {
+                        SubmissionResult = TRemote.MFinance.AccountsPayable.WebConnectors.SaveDocument(ref SubmitDS, out VerificationResult);
+                    }
+                    catch (System.Net.Sockets.SocketException)
+                    {
+                        FPetraUtilsObject.WriteToStatusBar("Data could not be saved!");
+                        this.Cursor = Cursors.Default;
+                        MessageBox.Show("The PETRA Server cannot be reached! Data cannot be saved!",
+                            "No Server response",
+                            MessageBoxButtons.OK,
+                            MessageBoxIcon.Stop);
+                        bool ReturnValue = false;
+
+                        // TODO OnDataSaved(this, new TDataSavedEventArgs(ReturnValue));
+                        return ReturnValue;
+                    }
+/* TODO ESecurityDBTableAccessDeniedException
+ *                  catch (ESecurityDBTableAccessDeniedException Exp)
+ *                  {
+ *                      FPetraUtilsObject.WriteToStatusBar("Data could not be saved!");
+ *                      this.Cursor = Cursors.Default;
+ *                      // TODO TMessages.MsgSecurityException(Exp, this.GetType());
+ *                      bool ReturnValue = false;
+ *                      // TODO OnDataSaved(this, new TDataSavedEventArgs(ReturnValue));
+ *                      return ReturnValue;
+ *                  }
+ */
+                    catch (EDBConcurrencyException)
+                    {
+                        FPetraUtilsObject.WriteToStatusBar("Data could not be saved!");
+                        this.Cursor = Cursors.Default;
+
+                        // TODO TMessages.MsgDBConcurrencyException(Exp, this.GetType());
+                        bool ReturnValue = false;
+
+                        // TODO OnDataSaved(this, new TDataSavedEventArgs(ReturnValue));
+                        return ReturnValue;
+                    }
+                    catch (Exception exp)
+                    {
+                        FPetraUtilsObject.WriteToStatusBar("Data could not be saved!");
+                        this.Cursor = Cursors.Default;
+                        TLogging.Log(
+                            "An error occured while trying to connect to the PETRA Server!" + Environment.NewLine + exp.ToString(),
+                            TLoggingType.ToLogfile);
+                        MessageBox.Show(
+                            "An error occured while trying to connect to the PETRA Server!" + Environment.NewLine +
+                            "For details see the log file: " + TLogging.GetLogFileName(),
+                            "Server connection error",
+                            MessageBoxButtons.OK,
+                            MessageBoxIcon.Stop);
+                        bool ReturnValue = false;
+
+                        // TODO OnDataSaved(this, new TDataSavedEventArgs(ReturnValue));
+                        return ReturnValue;
+                    }
+
+                    switch (SubmissionResult)
+                    {
+                        case TSubmitChangesResult.scrOK:
+
+                            // Call AcceptChanges to get rid now of any deleted columns before we Merge with the result from the Server
+                            AInspectDS.AcceptChanges();
+
+                            // Merge back with data from the Server (eg. for getting Sequence values)
+                            AInspectDS.Merge(SubmitDS, false);
+
+                            // need to accept the new modification ID
+                            AInspectDS.AcceptChanges();
+
+                            // Update UI
+                            FPetraUtilsObject.WriteToStatusBar("Data successfully saved.");
+                            this.Cursor = Cursors.Default;
+
+                            // TODO EnableSave(false);
+
+                            // We don't have unsaved changes anymore
+                            FPetraUtilsObject.DisableSaveButton();
+
+                            // TODO OnDataSaved(this, new TDataSavedEventArgs(ReturnValue));
+                            return true;
+
+                        case TSubmitChangesResult.scrError:
+
+                            // TODO scrError
+                            break;
+
+                        case TSubmitChangesResult.scrNothingToBeSaved:
+
+                            // TODO scrNothingToBeSaved
+                            break;
+
+                        case TSubmitChangesResult.scrInfoNeeded:
+
+                            // TODO scrInfoNeeded
+                            break;
+                    }
+                }
+            }
+
+            return false;
+        }
+
         /// <summary>
         /// needed for interface
         /// </summary>
         /// <returns></returns>
         public bool SaveChanges()
         {
-            return false;
+            return SaveChanges(FMainDS);
         }
 
         /// <summary>
@@ -112,7 +219,7 @@ namespace Ict.Petra.Client.MFinance.Gui
         /// <param name="e"></param>
         public void FileSave(object sender, EventArgs e)
         {
-            // TODO
+            SaveChanges(FMainDS);
         }
 
         /// <summary>

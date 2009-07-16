@@ -198,9 +198,10 @@ namespace Ict.Petra.Client.MFinance.Gui
             {
                 return Convert.ToInt64(SelectedGridRow[0][FPagedDataTable.Columns[0].ColumnName]);
             }
+
             return -1;
         }
-        
+
         /// <summary>
         /// open the transactions of the selected supplier
         /// </summary>
@@ -251,7 +252,7 @@ namespace Ict.Petra.Client.MFinance.Gui
                 frm.Show();
             }
         }
-        
+
         /// <summary>
         /// create a new invoice
         /// </summary>
@@ -264,6 +265,7 @@ namespace Ict.Petra.Client.MFinance.Gui
             if (PartnerKey != -1)
             {
                 TFrmAccountsPayableEditDocument frm = new TFrmAccountsPayableEditDocument(this.Handle);
+
                 // TODO ledgernumber
                 frm.CreateNewDocument(43, PartnerKey, false);
                 frm.Show();

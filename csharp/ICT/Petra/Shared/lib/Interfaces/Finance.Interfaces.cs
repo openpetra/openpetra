@@ -19,6 +19,7 @@ using Ict.Petra.Shared.Interfaces.MFinance.PeriodEnd;
 using Ict.Petra.Shared.Interfaces.MFinance.Reporting;
 using Ict.Petra.Shared.Interfaces.MFinance.Setup;
 using Ict.Petra.Shared.Interfaces.MFinance.AccountsPayable.UIConnectors;
+using Ict.Petra.Shared.Interfaces.MFinance.AccountsPayable.WebConnectors;
 using Ict.Petra.Shared.Interfaces.MFinance.Budget.UIConnectors;
 using Ict.Petra.Shared.Interfaces.MFinance.Gift.UIConnectors;
 using Ict.Petra.Shared.Interfaces.MFinance.GL.UIConnectors;
@@ -105,6 +106,12 @@ namespace Ict.Petra.Shared.Interfaces.MFinance.AccountsPayable
             get;
         }
 
+        /// <summary>access to sub namespace</summary>
+        IAccountsPayableWebConnectorsNamespace WebConnectors
+        {
+            get;
+        }
+
     }
 
 }
@@ -158,6 +165,26 @@ namespace Ict.Petra.Shared.Interfaces.MFinance.AccountsPayable.UIConnectors
         AccountsPayableTDS GetData(Int64 APartnerKey);
         /// <summary> auto generated from Connector method(Ict.Petra.Server.MFinance.AccountsPayable.UIConnectors.TSupplierEditUIConnector)</summary>
         TSubmitChangesResult SubmitChanges(ref AccountsPayableTDS AInspectDS,
+                                           out TVerificationResultCollection AVerificationResult);
+    }
+
+}
+
+
+namespace Ict.Petra.Shared.Interfaces.MFinance.AccountsPayable.WebConnectors
+{
+    /// <summary>auto generated</summary>
+    public interface IAccountsPayableWebConnectorsNamespace : IInterface
+    {
+        /// <summary> auto generated from Connector method(Ict.Petra.Server.MFinance.AccountsPayable.WebConnectors.TTransactionEditWebConnector)</summary>
+        AccountsPayableTDS GetDocument(Int32 ALedgerNumber,
+                                       Int32 AAPNumber);
+        /// <summary> auto generated from Connector method(Ict.Petra.Server.MFinance.AccountsPayable.WebConnectors.TTransactionEditWebConnector)</summary>
+        AccountsPayableTDS CreateNewDocument(Int32 ALedgerNumber,
+                                             Int64 APartnerKey,
+                                             bool ACreditNoteOrInvoice);
+        /// <summary> auto generated from Connector method(Ict.Petra.Server.MFinance.AccountsPayable.WebConnectors.TTransactionEditWebConnector)</summary>
+        TSubmitChangesResult SaveDocument(ref AccountsPayableTDS AInspectDS,
                                            out TVerificationResultCollection AVerificationResult);
     }
 

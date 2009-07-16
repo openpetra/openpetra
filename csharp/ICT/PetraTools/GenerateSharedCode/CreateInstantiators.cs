@@ -239,10 +239,14 @@ class CreateInstantiators : AutoGenerationWriter
     }
 
     private string ICTPath;
-    private void ImplementInterface(String AInterfaceNamespace, String AInterfaceName)
+    private void ImplementInterface(String AFullNamespace, String AInterfaceName)
     {
+        // e.g. FullNamespace: Ict.Petra.Server.MPartner.Instantiator.Partner.UIConnectors
+        // e.g. InterfaceNamespace: Ict.Petra.Shared.Interfaces.MPartner.Partner.UIConnectors
+        string InterfaceNamespace = AFullNamespace.Replace("Server.", "Shared.Interfaces.").Replace("Instantiator.", "");
+
         // try to implement the methods defined in the interface
-        InterfaceNode t = CSParser.FindInterface(CSFiles, AInterfaceNamespace, AInterfaceName);
+        InterfaceNode t = CSParser.FindInterface(CSFiles, InterfaceNamespace, AInterfaceName);
 
         if (t == null)
         {
@@ -272,6 +276,7 @@ class CreateInstantiators : AutoGenerationWriter
             }
 
             WriteLine("/// generated method from interface");
+
             int align = (returnType + " " + MethodName).Length + 1 + ("public ").Length;
             String formattedMethod = "public " + returnType + " " + MethodName + "(";
 
@@ -296,6 +301,11 @@ class CreateInstantiators : AutoGenerationWriter
             {
                 CreateInstanceOfConnector(m, "LogicConnector");
             }
+            else if (AInterfaceName.EndsWith("WebConnectorsNamespace"))
+            {
+                // don't create instance of connector, since we use static functions
+                // should never get here, already called CreateStaticCallConnector
+            }
 
             // what about them?
             //     || AInterfaceName.EndsWith("LogicConnectorsNamespace")
@@ -303,6 +313,75 @@ class CreateInstantiators : AutoGenerationWriter
             //    || AInterfaceName.EndsWith("CacheableNamespace")
 
             EndBlock();
+        }
+    }
+
+    void ImplementStaticCallConnector(string AFullNamespace)
+    {
+        // e.g. FullNamespace: Ict.Petra.Server.MFinance.Instantiator.AccountsPayable.WebConnectors
+        // e.g. ConnectorNamespace: Ict.Petra.Server.MFinance.AccountsPayable.WebConnectors
+        string ConnectorNamespace = AFullNamespace.Replace("Instantiator.", "");
+
+        List <CSParser>CSFiles = new List <CSParser>();
+        string module = AFullNamespace.Split('.')[3];
+        CSParser.GetCSFilesInProject(ICTPath + "/Petra/Server/lib/" +
+            module + "/Ict.Petra.Server." + module + ".WebConnectors.csproj",
+            ref CSFiles);
+
+        List <ClassNode>ConnectorClasses = CSParser.GetClassesInNamespace(CSFiles, ConnectorNamespace);
+
+        foreach (ClassNode connectorClass in ConnectorClasses)
+        {
+            foreach (MethodNode m in CSParser.GetMethods(connectorClass))
+            {
+                string MethodName = CSParser.GetName(m.Names);
+
+                String returnType = CSParser.GetName(m.Type);
+
+                if (returnType == "System.Void")
+                {
+                    returnType = "void";
+                }
+
+                WriteLine("/// generated method from connector");
+
+                int align = (returnType + " " + MethodName).Length + 1 + ("public ").Length;
+                String formattedMethod = "public " + returnType + " " + MethodName + "(";
+                bool firstParameter = true;
+                string actualParameters = "";
+
+                foreach (ParamDeclNode p in m.Params)
+                {
+                    if (!firstParameter)
+                    {
+                        actualParameters += ", ";
+                    }
+
+                    if ((p.Modifiers & Modifier.Out) > 0)
+                    {
+                        actualParameters += "out ";
+                    }
+
+                    if ((p.Modifiers & Modifier.Ref) > 0)
+                    {
+                        actualParameters += "ref ";
+                    }
+
+                    actualParameters += p.Name;
+                    AddParameter(ref formattedMethod, ref firstParameter, align, p.Name, p.Modifiers, p.Type);
+                }
+
+                formattedMethod += ")";
+
+                StartBlock(formattedMethod);
+
+                // eg: return Ict.Petra.Server.MFinance.AccountsPayable.WebConnectors.TTransactionEditWebConnector.GetDocument(ALedgerNumber, AAPNumber);
+                WriteLine("return " + ConnectorNamespace + "." +
+                    CSParser.GetName(connectorClass.Name) + "." +
+                    MethodName + "(" + actualParameters + ");");
+
+                EndBlock();
+            }
         }
     }
 
@@ -394,9 +473,14 @@ class CreateInstantiators : AutoGenerationWriter
 
         if (children.Count == 0)
         {
-            // e.g. FullNamespace: Ict.Petra.Server.MPartner.Instantiator.Partner.UIConnectors
-            // e.g. InterfaceNamespace: Ict.Petra.Shared.Interfaces.MPartner.Partner.UIConnectors
-            ImplementInterface(FullNamespace.Replace("Server.", "Shared.Interfaces.").Replace("Instantiator.", ""), "I" + Namespace + "Namespace");
+            if (Namespace.EndsWith("WebConnectors"))
+            {
+                ImplementStaticCallConnector(FullNamespace);
+            }
+            else
+            {
+                ImplementInterface(FullNamespace, "I" + Namespace + "Namespace");
+            }
         }
         else
         {

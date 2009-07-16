@@ -215,7 +215,7 @@ namespace Ict.Tools.CodeGeneration
                         // 2 possibilities:
                         //   A there is new code that needs to be inserted
                         //   B or there is code that needs to be deleted from the original file
-                        // B is not implementet yet
+                        // B has now been implemented as well; it will pick a significant line (more than 5 characters length and try to find it in the original lines)
                         // A is implemented in the way, that only the first difference is logged.
                         //   as soon as there is same code again, the synchronization is picked up again.
                         //   if at the end of the file there is no synchronisation, then the writing fails with an exception
@@ -233,18 +233,28 @@ namespace Ict.Tools.CodeGeneration
                     // if the new line matches the current line in the original file,
                     // then we are back in sync
 
-                    // if line has been commented, comment it again; e.g. for using clauses
-                    if ((originalVersion[CurrentOriginalLine + 1].IndexOf(line.Trim()) != -1)
-                        && originalVersion[CurrentOriginalLine + 1].Trim().StartsWith("//"))
-                    {
-                        line = originalVersion[CurrentOriginalLine + 1];
-                    }
+                    // to skip lines, don't try doing it with a line that is too short (empty lines, brackets etc)
 
-                    if (originalVersion[CurrentOriginalLine + 1].Trim() == line.Trim())
+                    int skipLines = 0;
+
+                    while (!Synchronized && (skipLines == 0 || line.Trim().Length > 5))
                     {
-                        Console.WriteLine("back in sync: {0} {1}", CurrentOriginalLine, line.Trim());
-                        Synchronized = true;
-                        CurrentOriginalLine++;
+                        // if line has been commented, comment it again; e.g. for using clauses
+                        if ((originalVersion[CurrentOriginalLine + 1 + skipLines].IndexOf(line.Trim()) != -1)
+                            && originalVersion[CurrentOriginalLine + 1 + skipLines].Trim().StartsWith("//"))
+                        {
+                            line = originalVersion[CurrentOriginalLine + 1 + skipLines];
+                        }
+
+                        if (originalVersion[CurrentOriginalLine + 1 + skipLines].Trim() == line.Trim())
+                        {
+                            // situation A: there is new code added to the file
+                            Console.WriteLine("back in sync: {0} {1}", CurrentOriginalLine + skipLines, line.Trim());
+                            Synchronized = true;
+                            CurrentOriginalLine += skipLines + 1;
+                        }
+
+                        skipLines++;
                     }
                 }
             }

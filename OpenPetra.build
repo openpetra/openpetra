@@ -158,21 +158,21 @@
         <delete dir="${OpenPetraRoot.dir}/csharp/ICT/Common/_bin/${Output.dir}" failonerror="false" />
         <delete dir="${OpenPetraRoot.dir}/csharp/ICT/Common/_bin/ObjCode" failonerror="false" />
         <delete failonerror="false"><fileset><include name="${OpenPetraRoot.dir}/csharp/ICT/Common/_bin/*.txt" /></fileset></delete>
-        <delete dir="${OpenPetraRoot.dir}/csharp/ICT/Shared/_bin/Server_Client/${Output.dir}" failonerror="false" />
-        <delete dir="${OpenPetraRoot.dir}/csharp/ICT/Shared/_bin/Server_Client/ObjCode" failonerror="false" />
-        <delete failonerror="false"><fileset><include name="${OpenPetraRoot.dir}/csharp/ICT/Shared/_bin/Server_Client/*.txt" /></fileset></delete>
-        <delete dir="${OpenPetraRoot.dir}/csharp/ICT/Shared/_bin/Server_ServerAdmin/${Output.dir}" failonerror="false" />
-        <delete dir="${OpenPetraRoot.dir}/csharp/ICT/Shared/_bin/Server_ServerAdmin/ObjCode" failonerror="false" />
-        <delete failonerror="false"><fileset><include name="${OpenPetraRoot.dir}/csharp/ICT/Shared/_bin/Server_ServerAdmin/*.txt" /></fileset></delete>
-        <delete dir="${OpenPetraRoot.dir}/csharp/ICT/Server/_bin/${Output.dir}" failonerror="false" />
-        <delete dir="${OpenPetraRoot.dir}/csharp/ICT/Server/_bin/ObjCode" failonerror="false" />
-        <delete failonerror="false"><fileset><include name="${OpenPetraRoot.dir}/csharp/ICT/Server/_bin/*.txt"/></fileset></delete>
-        <delete dir="${OpenPetraRoot.dir}/csharp/ICT/ServerAdmin/_bin/${Output.dir}" failonerror="false" />
-        <delete dir="${OpenPetraRoot.dir}/csharp/ICT/ServerAdmin/_bin/ObjCode" failonerror="false" />
-        <delete failonerror="false"><fileset><include name="${OpenPetraRoot.dir}/csharp/ICT/ServerAdmin/_bin/*.txt" /></fileset></delete>
-        <delete dir="${OpenPetraRoot.dir}/csharp/ICT/Client/_bin/${Output.dir}" failonerror="false" />
-        <delete dir="${OpenPetraRoot.dir}/csharp/ICT/Client/_bin/ObjCode" failonerror="false" />
-        <delete failonerror="false"><fileset><include name="${OpenPetraRoot.dir}/csharp/ICT/Client/_bin/*.txt" /></fileset></delete>
+        <delete dir="${OpenPetraRoot.dir}/csharp/ICT/Petra/Shared/_bin/Server_Client/${Output.dir}" failonerror="false" />
+        <delete dir="${OpenPetraRoot.dir}/csharp/ICT/Petra/Shared/_bin/Server_Client/ObjCode" failonerror="false" />
+        <delete failonerror="false"><fileset><include name="${OpenPetraRoot.dir}/csharp/ICT/Petra/Shared/_bin/Server_Client/*.txt" /></fileset></delete>
+        <delete dir="${OpenPetraRoot.dir}/csharp/ICT/Petra/Shared/_bin/Server_ServerAdmin/${Output.dir}" failonerror="false" />
+        <delete dir="${OpenPetraRoot.dir}/csharp/ICT/Petra/Shared/_bin/Server_ServerAdmin/ObjCode" failonerror="false" />
+        <delete failonerror="false"><fileset><include name="${OpenPetraRoot.dir}/csharp/ICT/Petra/Shared/_bin/Server_ServerAdmin/*.txt" /></fileset></delete>
+        <delete dir="${OpenPetraRoot.dir}/csharp/ICT/Petra/Server/_bin/${Output.dir}" failonerror="false" />
+        <delete dir="${OpenPetraRoot.dir}/csharp/ICT/Petra/Server/_bin/ObjCode" failonerror="false" />
+        <delete failonerror="false"><fileset><include name="${OpenPetraRoot.dir}/csharp/ICT/Petra/Server/_bin/*.txt"/></fileset></delete>
+        <delete dir="${OpenPetraRoot.dir}/csharp/ICT/Petra/ServerAdmin/_bin/${Output.dir}" failonerror="false" />
+        <delete dir="${OpenPetraRoot.dir}/csharp/ICT/Petra/ServerAdmin/_bin/ObjCode" failonerror="false" />
+        <delete failonerror="false"><fileset><include name="${OpenPetraRoot.dir}/csharp/ICT/Petra/ServerAdmin/_bin/*.txt" /></fileset></delete>
+        <delete dir="${OpenPetraRoot.dir}/csharp/ICT/Petra/Client/_bin/${Output.dir}" failonerror="false" />
+        <delete dir="${OpenPetraRoot.dir}/csharp/ICT/Petra/Client/_bin/ObjCode" failonerror="false" />
+        <delete failonerror="false"><fileset><include name="${OpenPetraRoot.dir}/csharp/ICT/Petra/Client/_bin/*.txt" /></fileset></delete>
         <delete dir="${OpenPetraRoot.dir}/csharp/ICT/PetraTools/_bin/${Output.dir}" failonerror="false" />
         <delete dir="${OpenPetraRoot.dir}/csharp/ICT/PetraTools/_bin/ObjCode" failonerror="false" />
         <delete failonerror="false"><fileset><include name="${OpenPetraRoot.dir}/csharp/ICT/PetraTools/_bin/*.txt" /></fileset></delete>

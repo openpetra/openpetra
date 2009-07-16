@@ -172,13 +172,13 @@ namespace Ict.Common.DB
 
             // PostgreSQL's 'LIKE' command is case-sensitive, but we prefer case insensitive search
             ReturnValue = ReturnValue.Replace("LIKE", "ILIKE");
-            
+
             // to avoid Npgsql.NpgsqlException:
             // operator does not exist: boolean = integer
             // Hint: No operator matches the given name and argument type(s). You might need to add explicit type casts.
             ReturnValue = ReturnValue.Replace("_l = 1", "_l = true");
             ReturnValue = ReturnValue.Replace("_l = 0", "_l = false");
-            
+
             return ReturnValue;
         }
 

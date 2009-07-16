@@ -32,6 +32,7 @@ using Ict.Petra.Shared.Interfaces.MFinance.PeriodEnd;
 using Ict.Petra.Shared.Interfaces.MFinance.Reporting;
 using Ict.Petra.Shared.Interfaces.MFinance.Setup;
 using Ict.Petra.Shared.Interfaces.MFinance.AccountsPayable.UIConnectors;
+using Ict.Petra.Shared.Interfaces.MFinance.AccountsPayable.WebConnectors;
 using Ict.Petra.Shared.Interfaces.MFinance.Budget.UIConnectors;
 using Ict.Petra.Shared.Interfaces.MFinance.Gift.UIConnectors;
 using Ict.Petra.Shared.Interfaces.MFinance.GL.UIConnectors;
@@ -49,6 +50,7 @@ using Ict.Petra.Server.MFinance.Instantiator.PeriodEnd;
 using Ict.Petra.Server.MFinance.Instantiator.Reporting;
 using Ict.Petra.Server.MFinance.Instantiator.Setup;
 using Ict.Petra.Server.MFinance.Instantiator.AccountsPayable.UIConnectors;
+using Ict.Petra.Server.MFinance.Instantiator.AccountsPayable.WebConnectors;
 using Ict.Petra.Server.MFinance.Instantiator.Budget.UIConnectors;
 using Ict.Petra.Server.MFinance.Instantiator.Gift.UIConnectors;
 using Ict.Petra.Server.MFinance.Instantiator.GL.UIConnectors;
@@ -66,6 +68,7 @@ using Ict.Petra.Server.MFinance.Instantiator.Setup.UIConnectors;
 using Ict.Petra.Server.MFinance.Reporting;
 //using Ict.Petra.Server.MFinance.Setup;
 using Ict.Petra.Server.MFinance.AccountsPayable.UIConnectors;
+using Ict.Petra.Server.MFinance.AccountsPayable.WebConnectors;
 //using Ict.Petra.Server.MFinance.Budget.UIConnectors;
 //using Ict.Petra.Server.MFinance.Gift.UIConnectors;
 //using Ict.Petra.Server.MFinance.GL.UIConnectors;
@@ -76,6 +79,7 @@ using Ict.Petra.Server.MFinance.AccountsPayable.UIConnectors;
 
 
 #region ManualCode
+using Ict.Common.Verification;
 using Ict.Petra.Shared.RemotedExceptions;
 using Ict.Petra.Shared.MFinance.AP.Data;
 using Ict.Petra.Shared.MFinance;
@@ -545,6 +549,7 @@ namespace Ict.Petra.Server.MFinance.Instantiator.AccountsPayable
         private DateTime FStartTime;
 #endif
         private TAccountsPayableUIConnectorsNamespace FAccountsPayableUIConnectorsSubNamespace;
+        private TAccountsPayableWebConnectorsNamespace FAccountsPayableWebConnectorsSubNamespace;
 
         /// <summary>Constructor</summary>
         public TAccountsPayableNamespace()
@@ -637,6 +642,37 @@ namespace Ict.Petra.Server.MFinance.Instantiator.AccountsPayable
 
 
                 return (IAccountsPayableUIConnectorsNamespace)FAccountsPayableUIConnectorsSubNamespace;
+            }
+
+        }
+
+
+        /// <summary>The 'AccountsPayableWebConnectors' subnamespace contains further subnamespaces.</summary>
+        public IAccountsPayableWebConnectorsNamespace WebConnectors
+        {
+            get
+            {
+                //
+                // Creates or passes a reference to an instantiator of sub-namespaces that
+                // reside in the 'AccountsPayable.WebConnectors' sub-namespace.
+                // A call to this function is done everytime a Client uses an object of this
+                // sub-namespace - this is fully transparent to the Client.
+                //
+                // @return A reference to an instantiator of sub-namespaces that reside in
+                //         the 'AccountsPayable.WebConnectors' sub-namespace
+                //
+
+                // accessing TWebConnectorsNamespace the first time? > instantiate the object
+                if (FAccountsPayableWebConnectorsSubNamespace == null)
+                {
+                    // NOTE AutoGeneration: * the returned Type will need to be manually coded in ManualEndpoints.cs of this Project!
+                    //      * for the Generator: the name of this Type ('TWebConnectorsNamespace') needs to come out of the XML definition,
+                    //      * The Namespace where it resides in ('Ict.Petra.Server.AccountsPayable.Instantiator.WebConnectors') should be automatically contructable.
+                    FAccountsPayableWebConnectorsSubNamespace = new TAccountsPayableWebConnectorsNamespace();
+                }
+
+
+                return (IAccountsPayableWebConnectorsNamespace)FAccountsPayableWebConnectorsSubNamespace;
             }
 
         }
@@ -760,6 +796,106 @@ namespace Ict.Petra.Server.MFinance.Instantiator.AccountsPayable.UIConnectors
 
 #endif
             return ReturnValue;
+        }
+
+    }
+}
+
+
+namespace Ict.Petra.Server.MFinance.Instantiator.AccountsPayable.WebConnectors
+{
+
+    /// <summary>auto generated class </summary>
+    public class TAccountsPayableWebConnectorsNamespace : MarshalByRefObject, IAccountsPayableWebConnectorsNamespace
+    {
+#if DEBUGMODE
+        private DateTime FStartTime;
+#endif
+
+        /// <summary>Constructor</summary>
+        public TAccountsPayableWebConnectorsNamespace()
+        {
+#if DEBUGMODE
+            if (TSrvSetting.DL >= 9)
+            {
+                Console.WriteLine(this.GetType().FullName + " created: Instance hash is " + this.GetHashCode().ToString());
+            }
+
+            FStartTime = DateTime.Now;
+#endif
+        }
+
+
+        // NOTE AutoGeneration: This destructor is only needed for debugging...
+#if DEBUGMODE
+        /// <summary>Destructor</summary>
+        ~TAccountsPayableWebConnectorsNamespace()
+        {
+#if DEBUGMODELONGRUNNINGFINALIZERS
+            const Int32 MAX_ITERATIONS = 100000;
+            System.Int32 LoopCounter;
+            object MyObject;
+            object MyObject2;
+#endif
+            if (TSrvSetting.DL >= 9)
+            {
+                Console.WriteLine(this.GetType().FullName + ": Getting collected after " + (new TimeSpan(
+                                                                                                DateTime.Now.Ticks -
+                                                                                                FStartTime.Ticks)).ToString() + " seconds.");
+            }
+
+#if DEBUGMODELONGRUNNINGFINALIZERS
+            MyObject = new object();
+            if (TSrvSetting.DL >= 9)
+            {
+                Console.WriteLine(this.GetType().FullName + ": Now performing some longer-running stuff...");
+            }
+
+            for (LoopCounter = 0; LoopCounter <= MAX_ITERATIONS; LoopCounter += 1)
+            {
+                MyObject2 = new object();
+                GC.KeepAlive(MyObject);
+            }
+
+            if (TSrvSetting.DL >= 9)
+            {
+                Console.WriteLine(this.GetType().FullName + ": FINALIZER has run.");
+            }
+
+#endif
+        }
+
+#endif
+
+
+
+        /// NOTE AutoGeneration: This function is all-important!!!
+        public override object InitializeLifetimeService()
+        {
+            return null; // make sure that the TAccountsPayableWebConnectorsNamespace object exists until this AppDomain is unloaded!
+        }
+
+
+        /// generated method from connector
+        public AccountsPayableTDS GetDocument(Int32 ALedgerNumber,
+                                              Int32 AAPNumber)
+        {
+            return Ict.Petra.Server.MFinance.AccountsPayable.WebConnectors.TTransactionEditWebConnector.GetDocument(ALedgerNumber, AAPNumber);
+        }
+
+        /// generated method from connector
+        public AccountsPayableTDS CreateNewDocument(Int32 ALedgerNumber,
+                                                    Int64 APartnerKey,
+                                                    bool ACreditNoteOrInvoice)
+        {
+            return Ict.Petra.Server.MFinance.AccountsPayable.WebConnectors.TTransactionEditWebConnector.CreateNewDocument(ALedgerNumber, APartnerKey, ACreditNoteOrInvoice);
+        }
+
+        /// generated method from connector
+        public TSubmitChangesResult SaveDocument(ref AccountsPayableTDS AInspectDS,
+                                                  out TVerificationResultCollection AVerificationResult)
+        {
+            return Ict.Petra.Server.MFinance.AccountsPayable.WebConnectors.TTransactionEditWebConnector.SaveDocument(ref AInspectDS, out AVerificationResult);
         }
 
     }

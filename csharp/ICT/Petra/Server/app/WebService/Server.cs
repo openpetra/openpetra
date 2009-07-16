@@ -118,7 +118,7 @@ public class TOpenPetraOrg : WebService
 
         return false;
     }
-    
+
     /// <summary>
     /// check if there is already a supplier record for the given partner
     /// </summary>
@@ -133,6 +133,7 @@ public class TOpenPetraOrg : WebService
             TSupplierEditUIConnector uiconnector = new TSupplierEditUIConnector();
             return uiconnector.CanFindSupplier(APartnerKey);
         }
+
         return false;
     }
 
@@ -148,6 +149,7 @@ public class TOpenPetraOrg : WebService
             TSupplierEditUIConnector uiconnector = new TSupplierEditUIConnector();
             return uiconnector.GetData(APartnerKey);
         }
+
         return new AccountsPayableTDS();
     }
 
@@ -165,6 +167,7 @@ public class TOpenPetraOrg : WebService
             string myJson = Jayrock.Json.Conversion.JsonConvert.ExportToString(dataset);
             return myJson;
         }
+
         return "";
     }
 
@@ -180,15 +183,16 @@ public class TOpenPetraOrg : WebService
         if (IsUserLoggedIn())
         {
             // pass the dataset as a JSON string, then deserialize the dataset
-            AccountsPayableTDS AInspectDS = (AccountsPayableTDS) Jayrock.Json.Conversion.JsonConvert.Import(typeof(AccountsPayableTDS), DatasetInJSON);
+            AccountsPayableTDS AInspectDS = (AccountsPayableTDS)Jayrock.Json.Conversion.JsonConvert.Import(typeof(AccountsPayableTDS), DatasetInJSON);
             TSupplierEditUIConnector uiconnector = new TSupplierEditUIConnector();
             TVerificationResultCollection VerificationResult;
             TSubmitChangesResult changesResult = uiconnector.SubmitChanges(ref AInspectDS, out VerificationResult);
             return Jayrock.Json.Conversion.JsonConvert.ExportToString(new TCombinedSubmitChangesResult(changesResult, AInspectDS, VerificationResult));
         }
+
         return "not enough permissions";
     }
-    
+
     /// <summary>
     /// combine all results into one struct; it seems out and ref is not supported by web services?
     /// </summary>
@@ -197,6 +201,7 @@ public class TOpenPetraOrg : WebService
         private TSubmitChangesResult SubmitChangesResult;
         private DataSet UntypedDataSet;
         private TVerificationResultCollection VerificationResultCollection;
+
         /// <summary>
         /// constructor
         /// </summary>
@@ -204,15 +209,15 @@ public class TOpenPetraOrg : WebService
         /// <param name="AUntypedDataSet"></param>
         /// <param name="AVerificationResultCollection"></param>
         public TCombinedSubmitChangesResult(TSubmitChangesResult ASubmitChangesResult,
-                                   DataSet AUntypedDataSet,
-                                   TVerificationResultCollection AVerificationResultCollection)
+            DataSet AUntypedDataSet,
+            TVerificationResultCollection AVerificationResultCollection)
         {
             SubmitChangesResult = ASubmitChangesResult;
             UntypedDataSet = AUntypedDataSet;
             VerificationResultCollection = AVerificationResultCollection;
         }
     }
-    
+
     /// <summary>
     /// experiment to check how SubmitChanges could be done via web interface
     /// </summary>
@@ -229,8 +234,8 @@ public class TOpenPetraOrg : WebService
             TSubmitChangesResult changesResult = uiconnector.SubmitChanges(ref AInspectDS, out VerificationResult);
             return new TCombinedSubmitChangesResult(changesResult, AInspectDS, VerificationResult);
         }
+
         return new TCombinedSubmitChangesResult(TSubmitChangesResult.scrError, new DataSet(), new TVerificationResultCollection());
     }
-
 }
 }

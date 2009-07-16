@@ -208,6 +208,10 @@
                         <Name>UIConnectors</Name>
                         <Description>User Interface Connectors</Description>
                     </SubNamespace>
+                    <SubNamespace>
+                        <Name>WebConnectors</Name>
+                        <Description>Connectors for Web Services (stateless, simple)</Description>
+                    </SubNamespace>
                 </Children>
             </SubNamespace>
             <SubNamespace>

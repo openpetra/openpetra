@@ -86,8 +86,8 @@
   <ItemGroup>
     <Compile Include="AP.EditSupplier.cs" />
     <Compile Include="AP.Find.cs" />
-    <Compile Include="AssemblyInfo.cs" />
     <Compile Include="Reporting.UIConnectors.cs" />
+    <Compile Include="UIConnectors.AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\MCommon\Ict.Petra.Server.MCommon.csproj">

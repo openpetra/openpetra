@@ -1754,6 +1754,7 @@ namespace Ict.Petra.Server.App.Main
                 Console.WriteLine("  TMSysMan instantiated. Remoting URL: " + RemotingURL_MSysMan);
             }
 #endif
+
             // Load COMMON Module assembly (always loaded)
             ClientDomainManager.LoadPetraModuleAssembly(SharedConstants.REMOTINGURL_IDENTIFIER_MCOMMON, out RemotingURL_MCommon);
             ARemotingURLs.Add(SharedConstants.REMOTINGURL_IDENTIFIER_MCOMMON, RemotingURL_MCommon);

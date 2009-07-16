@@ -14295,13 +14295,15 @@ been processed in an ilt processing centre"
                 descr="The date when this document was issued."
                 format="99/99/9999"
                 notnull="yes"
-                label="Date Issued"/>
+                label="Date Issued"
+                initial="TODAY"/>
     <tablefield name="a_date_entered_d"
                 type="date"
                 descr="The date when this document was entered into the system."
                 format="99/99/9999"
                 notnull="yes"
-                label="Date Entered"/>
+                label="Date Entered"
+                initial="TODAY"/>
     <tablefield name="a_credit_terms_i"
                 type="integer"
                 descr="Credit terms allowed for this invoice."

@@ -1415,7 +1415,7 @@ namespace Ict.Petra.Shared.MFinance.AP.Data
         /// The percentage discount you get for early payment of this document in the case that it is an invoice.
         public DataColumn ColumnDiscountPercentage;
         
-        /// The number of days that the discount is valid for.
+        /// The number of days that the discount is valid for (0 for none).
         public DataColumn ColumnDiscountDays;
         
         /// Reference to the AP Account to debit/credit when posting/paying the document.
@@ -1744,7 +1744,7 @@ namespace Ict.Petra.Shared.MFinance.AP.Data
         /// get help text for column
         public static string GetDiscountDaysHelp()
         {
-            return "The number of days that the discount is valid for.";
+            return "The number of days that the discount is valid for (0 for none).";
         }
         
         /// get label of column
@@ -2531,7 +2531,7 @@ namespace Ict.Petra.Shared.MFinance.AP.Data
             }
         }
         
-        /// The number of days that the discount is valid for.
+        /// The number of days that the discount is valid for (0 for none).
         public Int32 DiscountDays
         {
             get
@@ -2810,8 +2810,8 @@ namespace Ict.Petra.Shared.MFinance.AP.Data
             this[this.myTable.ColumnCreditNoteFlag.Ordinal] = false;
             this.SetNull(this.myTable.ColumnDocumentCode);
             this.SetNull(this.myTable.ColumnReference);
-            this.SetNull(this.myTable.ColumnDateIssued);
-            this.SetNull(this.myTable.ColumnDateEntered);
+            this[this.myTable.ColumnDateIssued.Ordinal] = DateTime.Today;
+            this[this.myTable.ColumnDateEntered.Ordinal] = DateTime.Today;
             this[this.myTable.ColumnCreditTerms.Ordinal] = 0;
             this.SetNull(this.myTable.ColumnTotalAmount);
             this.SetNull(this.myTable.ColumnExchangeRateToBase);

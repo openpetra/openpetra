@@ -67,7 +67,7 @@ namespace Ict.Petra.Server.App.Main
 
         /// <summary>need to leave out the last part of the Namespace so that .NET can find the Class!</summary>
         public const String MCOMMON_CLASSNAME = "Ict.Petra.Server.MCommon.Instantiator.TMCommonNamespaceLoader";
-        
+
         /// <summary>need to leave out '.dll' suffix so that .NET can find the Assembly!</summary>
         public const String MSYSMAN_DLLNAME = "Ict.Petra.Server.MSysMan.Instantiator";
 

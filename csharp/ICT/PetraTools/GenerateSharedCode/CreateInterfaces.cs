@@ -87,6 +87,12 @@ public class CreateInterfaces : AutoGenerationWriter
 
         foreach (ClassNode t in ConnectorClasses)
         {
+            if ((t.BaseClasses.Count == 0) && ANamespace.EndsWith("WebConnectors"))
+            {
+                ClassList.Add(t);
+                break;
+            }
+
             foreach (IType ti in t.BaseClasses)
             {
                 if (CSParser.GetName(ti) == AInterfaceName)
@@ -227,6 +233,7 @@ public class CreateInterfaces : AutoGenerationWriter
                 }
 
                 formattedMethod += ");";
+                AMethodsAlreadyWritten.Add(MethodName);
                 WriteLine(formattedMethod);
             }
         }
@@ -271,7 +278,9 @@ public class CreateInterfaces : AutoGenerationWriter
             // but that cacheable constructor is not needed anyways???
 
             if (ConnectorClassName.StartsWith("T")
-                && (ConnectorClassName.EndsWith("Connector")
+                && (ConnectorClassName.EndsWith("UIConnector")
+                    || ConnectorClassName.EndsWith("LogicConnector")
+                    || ConnectorClassName.EndsWith("WebConnector")
                     || ConnectorClassName.EndsWith("Lookup")
                     || ConnectorClassName.EndsWith("Reader")))
             {
@@ -645,6 +654,9 @@ public class CreateInterfaces : AutoGenerationWriter
         List <CSParser>CSFiles = new List <CSParser>();
         CSParser.GetCSFilesInProject(ICTPath + "/Petra/Server/lib/M" +
             tn.Name + "/Ict.Petra.Server.M" + tn.Name + ".UIConnectors.csproj",
+            ref CSFiles);
+        CSParser.GetCSFilesInProject(ICTPath + "/Petra/Server/lib/M" +
+            tn.Name + "/Ict.Petra.Server.M" + tn.Name + ".WebConnectors.csproj",
             ref CSFiles);
         CSParser.GetCSFilesInProject(ICTPath + "/Petra/Server/lib/M" +
             tn.Name + "/Ict.Petra.Server.M" + tn.Name + ".LogicConnectors.csproj",

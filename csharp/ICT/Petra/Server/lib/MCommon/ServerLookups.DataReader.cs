@@ -39,7 +39,6 @@ namespace Ict.Petra.Server.MCommon.DataReader
     /// </summary>
     public class TCommonDataReader
     {
-
         /// <summary>
         /// simple data reader;
         /// checks for permissions of the current user;
@@ -51,20 +50,24 @@ namespace Ict.Petra.Server.MCommon.DataReader
         public static bool GetData(string ATablename, TTypedDataTable AKeys, out TTypedDataTable AResultTable)
         {
             // TODO: check access permissions for the current user
-            
+
             TDBTransaction ReadTransaction;
 
-            DataSet tempDataset = new DataSet();
+            TTypedDataTable tempTable = null;
 
             try
             {
                 ReadTransaction = DBAccess.GDBAccessObj.BeginTransaction(IsolationLevel.RepeatableRead, 5);
-            
+
                 // TODO: auto generate
                 if (ATablename == "a_ap_supplier")
                 {
-                    tempDataset.Tables.Add(new AApSupplierTable());
-                    AApSupplierAccess.LoadUsingTemplate(tempDataset, (AApSupplierRow)AKeys.Rows[0], ReadTransaction);
+                    Console.WriteLine(((AApSupplierRow)AKeys.Rows[0]).PartnerKey.ToString());
+                    AApSupplierTable typedTable;
+                    AApSupplierAccess.LoadUsingTemplate(out typedTable, (AApSupplierRow)AKeys.Rows[0], ReadTransaction);
+                    Console.WriteLine("Datareader1: " + typedTable.Rows.Count.ToString());
+                    tempTable = typedTable;
+                    Console.WriteLine("Datareader2: " + tempTable.Rows.Count.ToString());
                 }
                 else
                 {
@@ -84,11 +87,11 @@ namespace Ict.Petra.Server.MCommon.DataReader
             }
 
             // Accept row changes here so that the Client gets 'unmodified' rows
-            tempDataset.AcceptChanges();
-                
+            tempTable.AcceptChanges();
+
             // return the table
-            AResultTable = (TTypedDataTable)tempDataset.Tables[0];
-            
+            AResultTable = tempTable;
+
             return true;
         }
     }

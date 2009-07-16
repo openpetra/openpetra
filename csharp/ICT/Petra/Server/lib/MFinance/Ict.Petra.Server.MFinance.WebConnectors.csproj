@@ -1,18 +1,18 @@
 ﻿<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
-    <ProjectGuid>{9571C77F-4E2B-4C19-B573-40E61918197C}</ProjectGuid>
+    <ProjectGuid>C68F7EC9-BE30-4F11-869A-2C9E5A758880</ProjectGuid>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <OutputType>Library</OutputType>
-    <RootNamespace>Ict.Petra.Server.MFinance</RootNamespace>
-    <AssemblyName>Ict.Petra.Server.MFinance</AssemblyName>
+    <RootNamespace>Ict.Petra.Server.MFinance.WebConnectors</RootNamespace>
+    <AssemblyName>Ict.Petra.Server.MFinance.WebConnectors</AssemblyName>
     <BaseIntermediateOutputPath>..\..\_bin\objcode\</BaseIntermediateOutputPath>
     <TargetFrameworkVersion>v2.0</TargetFrameworkVersion>
     <AllowUnsafeBlocks>False</AllowUnsafeBlocks>
     <NoStdLib>False</NoStdLib>
     <WarningLevel>4</WarningLevel>
     <TreatWarningsAsErrors>false</TreatWarningsAsErrors>
-    <DocumentationFile>..\..\_bin\Debug\Ict.Petra.Server.MFinance.xml</DocumentationFile>
+    <DocumentationFile>..\..\_bin\Debug\Ict.Petra.Server.MFinance.WebConnectors.xml</DocumentationFile>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
     <OutputPath>..\..\_bin\Debug\</OutputPath>
@@ -20,7 +20,7 @@
     <DebugType>Full</DebugType>
     <Optimize>False</Optimize>
     <CheckForOverflowUnderflow>True</CheckForOverflowUnderflow>
-    <DefineConstants>DEBUG;TRACE; DEBUGMODE</DefineConstants>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)' == 'Release' ">
     <OutputPath>..\..\_bin\Release\</OutputPath>
@@ -51,20 +51,15 @@
       <HintPath>..\..\..\..\Common\_bin\Debug\Ict.Common.DB.dll</HintPath>
       <SpecificVersion>False</SpecificVersion>
     </Reference>
+    <Reference Include="Ict.Common.Verification">
+      <HintPath>..\..\..\..\Common\_bin\Debug\Ict.Common.Verification.dll</HintPath>
+    </Reference>
     <Reference Include="Ict.Petra.Shared">
       <HintPath>..\..\..\Shared\_bin\Server_Client\Debug\Ict.Petra.Shared.dll</HintPath>
       <SpecificVersion>False</SpecificVersion>
     </Reference>
-    <Reference Include="Ict.Petra.Shared.MCommon">
-      <HintPath>..\..\..\Shared\_bin\Server_Client\Debug\Ict.Petra.Shared.MCommon.dll</HintPath>
-      <SpecificVersion>False</SpecificVersion>
-    </Reference>
-    <Reference Include="Ict.Petra.Shared.MCommon.DataAccess">
-      <HintPath>..\..\..\Shared\_bin\Server_Client\Debug\Ict.Petra.Shared.MCommon.DataAccess.dll</HintPath>
-      <SpecificVersion>False</SpecificVersion>
-    </Reference>
-    <Reference Include="Ict.Petra.Shared.MCommon.DataTables">
-      <HintPath>..\..\..\Shared\_bin\Server_Client\Debug\Ict.Petra.Shared.MCommon.DataTables.dll</HintPath>
+    <Reference Include="Ict.Petra.Shared.Interfaces">
+      <HintPath>..\..\..\Shared\_bin\Server_Client\Debug\Ict.Petra.Shared.Interfaces.dll</HintPath>
       <SpecificVersion>False</SpecificVersion>
     </Reference>
     <Reference Include="Ict.Petra.Shared.MFinance">
@@ -73,59 +68,39 @@
     </Reference>
     <Reference Include="Ict.Petra.Shared.MFinance.DataAccess">
       <HintPath>..\..\..\Shared\_bin\Server_Client\Debug\Ict.Petra.Shared.MFinance.DataAccess.dll</HintPath>
-      <SpecificVersion>False</SpecificVersion>
+    </Reference>
+    <Reference Include="Ict.Petra.Shared.MFinance.DataAccess">
+      <HintPath>..\..\..\Shared\_bin\Server_Client\Debug\Ict.Petra.Shared.MFinance.DataAccess.dll</HintPath>
+    </Reference>
+    <Reference Include="Ict.Petra.Shared.MFinance.DataSets">
+      <HintPath>..\..\..\Shared\_bin\Server_Client\Debug\Ict.Petra.Shared.MFinance.DataSets.dll</HintPath>
     </Reference>
     <Reference Include="Ict.Petra.Shared.MFinance.DataTables">
       <HintPath>..\..\..\Shared\_bin\Server_Client\Debug\Ict.Petra.Shared.MFinance.DataTables.dll</HintPath>
       <SpecificVersion>False</SpecificVersion>
     </Reference>
-    <Reference Include="Ict.Petra.Shared.MPartner.DataAccess">
-      <HintPath>..\..\..\Shared\_bin\Server_Client\Debug\Ict.Petra.Shared.MPartner.DataAccess.dll</HintPath>
-      <SpecificVersion>False</SpecificVersion>
+    <Reference Include="Ict.Petra.Shared.MFinance.DataTables">
+      <HintPath>..\..\..\Shared\_bin\Server_Client\Debug\Ict.Petra.Shared.MFinance.DataTables.dll</HintPath>
     </Reference>
     <Reference Include="Ict.Petra.Shared.MPartner.DataTables">
       <HintPath>..\..\..\Shared\_bin\Server_Client\Debug\Ict.Petra.Shared.MPartner.DataTables.dll</HintPath>
-      <SpecificVersion>False</SpecificVersion>
-    </Reference>
-    <Reference Include="Ict.Petra.Shared.MSysMan.DataAccess">
-      <HintPath>..\..\..\Shared\_bin\Server_Client\Debug\Ict.Petra.Shared.MSysMan.DataAccess.dll</HintPath>
-      <SpecificVersion>False</SpecificVersion>
-    </Reference>
-    <Reference Include="Ict.Petra.Shared.MSysMan.DataTables">
-      <HintPath>..\..\..\Shared\_bin\Server_Client\Debug\Ict.Petra.Shared.MSysMan.DataTables.dll</HintPath>
-      <SpecificVersion>False</SpecificVersion>
-    </Reference>
-    <Reference Include="Ict.Petra.Shared.UserInfo">
-      <HintPath>..\..\..\Shared\_bin\Server_Client\Debug\Ict.Petra.Shared.UserInfo.dll</HintPath>
-      <SpecificVersion>False</SpecificVersion>
-    </Reference>
-    <Reference Include="Mono.Posix">
-      <HintPath>..\..\..\..\..\ThirdParty\Mono\Mono.Posix.dll</HintPath>
-      <SpecificVersion>False</SpecificVersion>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Data" />
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Cacheable.cs" />
-    <Compile Include="DataAggregates.ALedgerName.cs" />
-    <Compile Include="MFinance.AssemblyInfo.cs" />
-    <Compile Include="Gift.cs" />
-    <Compile Include="Setup.cs" />
+    <Compile Include="AP.EditTransaction.cs" />
+    <Compile Include="WebConnectors.AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\app\ClientDomain\Ict.Petra.Server.App.ClientDomain.csproj">
-      <Project>{DC487150-0555-4C05-A13F-91588D9D750D}</Project>
-      <Name>Ict.Petra.Server.App.ClientDomain</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\app\Core\Ict.Petra.Server.App.Core.csproj">
-      <Project>{F053BB7D-E40D-4434-B99C-FC803F65E10A}</Project>
-      <Name>Ict.Petra.Server.App.Core</Name>
-    </ProjectReference>
     <ProjectReference Include="..\MCommon\Ict.Petra.Server.MCommon.csproj">
       <Project>{1F2FFC91-5C00-44ED-8EFD-3940426793CF}</Project>
       <Name>Ict.Petra.Server.MCommon</Name>
+    </ProjectReference>
+    <ProjectReference Include="Ict.Petra.Server.MFinance.csproj">
+      <Project>{9571C77F-4E2B-4C19-B573-40E61918197C}</Project>
+      <Name>Ict.Petra.Server.MFinance</Name>
     </ProjectReference>
   </ItemGroup>
 </Project>
