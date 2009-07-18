@@ -28,6 +28,7 @@ using System.Windows.Forms;
 using Mono.Unix;
 using Ict.Petra.Shared;
 using Ict.Petra.Client.CommonForms;
+using Ict.Petra.Client.MFinance.Gui.AccountsPayable;
 
 namespace Ict.Petra.Client.MFinance.Gui
 {

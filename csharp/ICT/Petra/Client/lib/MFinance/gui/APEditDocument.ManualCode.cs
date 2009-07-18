@@ -31,33 +31,15 @@ using Ict.Common;
 using Ict.Petra.Client.App.Core.RemoteObjects;
 using Ict.Petra.Shared.MFinance.AP.Data;
 
-namespace Ict.Petra.Client.MFinance.Gui
+namespace Ict.Petra.Client.MFinance.Gui.AccountsPayable
 {
     public partial class TFrmAccountsPayableEditDocument
     {
-        AccountsPayableTDS FMainDS;
-
         /// <summary>
         /// todoComment
         /// </summary>
         public void InitializeManualCode()
         {
-            FMainDS = new AccountsPayableTDS();
-        }
-
-        /// <summary>
-        /// create a new document for the given supplier
-        /// </summary>
-        /// <param name="ALedgerNumber">current ledger</param>
-        /// <param name="APartnerKey">partner key of the supplier</param>
-        /// <param name="ACreditNoteOrInvoice"></param>
-        public void CreateNewDocument(Int32 ALedgerNumber, Int64 APartnerKey, bool ACreditNoteOrInvoice)
-        {
-            FPetraUtilsObject.SetChangedFlag();
-
-            FMainDS = TRemote.MFinance.AccountsPayable.WebConnectors.CreateNewDocument(ALedgerNumber, APartnerKey, ACreditNoteOrInvoice);
-
-            ShowData();
         }
 
         /// <summary>
@@ -101,7 +83,7 @@ namespace Ict.Petra.Client.MFinance.Gui
                     // Submit changes to the PETRAServer
                     try
                     {
-                        SubmissionResult = TRemote.MFinance.AccountsPayable.WebConnectors.SaveDocument(ref SubmitDS, out VerificationResult);
+                        SubmissionResult = TRemote.MFinance.AccountsPayable.WebConnectors.SaveAApDocument(ref SubmitDS, out VerificationResult);
                     }
                     catch (System.Net.Sockets.SocketException)
                     {
@@ -201,25 +183,6 @@ namespace Ict.Petra.Client.MFinance.Gui
             }
 
             return false;
-        }
-
-        /// <summary>
-        /// needed for interface
-        /// </summary>
-        /// <returns></returns>
-        public bool SaveChanges()
-        {
-            return SaveChanges(FMainDS);
-        }
-
-        /// <summary>
-        /// save the current document
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
-        public void FileSave(object sender, EventArgs e)
-        {
-            SaveChanges(FMainDS);
         }
 
         /// <summary>

@@ -40,18 +40,21 @@ using System.Resources;
 using System.Collections.Specialized;
 using Mono.Unix;
 using Ict.Common;
+using Ict.Common.Verification;
 using Ict.Petra.Client.App.Core;
 using Ict.Petra.Client.App.Core.RemoteObjects;
 using Ict.Common.Controls;
 using Ict.Petra.Client.CommonForms;
 
-namespace Ict.Petra.Client.MFinance.Gui
+namespace Ict.Petra.Client.MFinance.Gui.AccountsPayable
 {
 
   /// auto generated: AP Document Edit
   public partial class TFrmAccountsPayableEditDocument: System.Windows.Forms.Form, IFrmPetraEdit
   {
     private TFrmPetraEditUtils FPetraUtilsObject;
+
+    private Ict.Petra.Shared.MFinance.AP.Data.AccountsPayableTDS FMainDS;
 
     /// constructor
     public TFrmAccountsPayableEditDocument(IntPtr AParentFormHandle) : base()
@@ -77,17 +80,17 @@ namespace Ict.Petra.Client.MFinance.Gui
       this.lblTotalAmount.Text = Catalog.GetString("&Amount:");
       this.lblExchangeRateToBase.Text = Catalog.GetString("E&xchange Rate:");
       this.grpDocumentInfo.Text = Catalog.GetString("Document Information");
-      this.lblNarrative.Text = Catalog.GetString("Narrati&ve:");
+      this.lblDetailNarrative.Text = Catalog.GetString("Narrati&ve:");
       this.btnAddDetail.Text = Catalog.GetString("Add De&tail");
-      this.lblDetailReference.Text = Catalog.GetString("Detail &Ref:");
+      this.lblDetailItemRef.Text = Catalog.GetString("Detail &Ref:");
       this.btnRemoveDetail.Text = Catalog.GetString("&Remove Detail");
       this.lblDetailAmount.Text = Catalog.GetString("A&mount:");
-      this.lblCostCentre.Text = Catalog.GetString("C&ost Centre:");
+      this.lblDetailCostCentreCode.Text = Catalog.GetString("C&ost Centre:");
       this.btnAnalysisAttributes.Text = Catalog.GetString("Analysis Attri&b.");
-      this.lblBaseAmount.Text = Catalog.GetString("Base:");
-      this.lblAccount.Text = Catalog.GetString("Accou&nt:");
+      this.lblDetailBaseAmount.Text = Catalog.GetString("Base:");
+      this.lblDetailAccountCode.Text = Catalog.GetString("Accou&nt:");
       this.btnApproveDetail.Text = Catalog.GetString("A&pprove Detail");
-      this.lblDateApproved.Text = Catalog.GetString("Approved On:");
+      this.lblDetailApprovalDate.Text = Catalog.GetString("Approved On:");
       this.btnUseTaxAccountCostCentre.Text = Catalog.GetString("Use Ta&x Acct+CC");
       this.grpDetails.Text = Catalog.GetString("Details");
       this.tbbSave.ToolTipText = Catalog.GetString("Saves changed data");
@@ -122,7 +125,13 @@ namespace Ict.Petra.Client.MFinance.Gui
       FPetraUtilsObject.SetStatusBarText(txtDiscountPercentage, Catalog.GetString("The percentage discount you get for early payment of this document in the case that it is an invoice."));
       FPetraUtilsObject.SetStatusBarText(txtTotalAmount, Catalog.GetString("The total amount of money that this document is worth."));
       FPetraUtilsObject.SetStatusBarText(txtExchangeRateToBase, Catalog.GetString("The exchange rate to the base currency at the time that the document was issued."));
-      InitializeManualCode();
+
+      FMainDS = new Ict.Petra.Shared.MFinance.AP.Data.AccountsPayableTDS();
+
+      InitializeManualCode();grdDetails.Columns.Clear();
+      grdDetails.AddTextColumn("Amount", FMainDS.AApDocumentDetail.ColumnAmount);
+      grdDetails.AddTextColumn("Reference", FMainDS.AApDocumentDetail.ColumnItemRef);
+      grdDetails.AddTextColumn("Narrative", FMainDS.AApDocumentDetail.ColumnNarrative);
       FPetraUtilsObject.ActionEnablingEvent += ActionEnabledEvent;
 
       FPetraUtilsObject.InitActionState();
@@ -159,6 +168,43 @@ namespace Ict.Petra.Client.MFinance.Gui
     {
         // TODO? Save Window position
 
+    }
+
+    /// automatically generated function from webconnector
+    public bool CreateNewAApDocument(Int32 ALedgerNumber, Int64 APartnerKey, bool ACreditNoteOrInvoice)
+    {
+
+        FMainDS = TRemote.MFinance.AccountsPayable.WebConnectors.CreateNewAApDocument(ALedgerNumber, APartnerKey, ACreditNoteOrInvoice);
+
+        FPetraUtilsObject.SetChangedFlag();
+
+        ShowData();
+
+        return true;
+
+    }
+
+    /// automatically generated, create a new record of AApDocumentDetail and display on the edit screen
+    public bool CreateNewAApDocumentDetail(Int32 ALedgerNumber, Int32 AApNumber, string AApSupplier_DefaultExpAccount, string AApSupplier_DefaultCostCentre, double AAmount, Int32 ATempNumberOfDetails)
+    {
+        FMainDS.Merge(TRemote.MFinance.AccountsPayable.WebConnectors.CreateNewAApDocumentDetail(ALedgerNumber, AApNumber, AApSupplier_DefaultExpAccount, AApSupplier_DefaultCostCentre, AAmount, ATempNumberOfDetails));
+
+        FPetraUtilsObject.SetChangedFlag();
+
+        ShowData();
+        SelectDetailRow(grdDetails.Rows.Count - 1);
+
+        return true;
+    }
+    private void SelectDetailRow(Int32 ARowNumber)
+    {
+        ShowData();
+        grdDetails.Selection.ResetSelection(false);
+        grdDetails.Selection.SelectRow(ARowNumber, true);
+        // scroll to the row
+        grdDetails.ShowCell(new SourceGrid.Position(ARowNumber, 0), true);
+
+        // TODO? DataGrid_FocusRowEntered(this, new RowEventArgs(ARowNumber));
     }
 
     private void ShowData()
@@ -229,6 +275,13 @@ namespace Ict.Petra.Client.MFinance.Gui
         {
             txtExchangeRateToBase.Text = FMainDS.AApDocument[0].ExchangeRateToBase.ToString();
         }
+        if (FMainDS.AApDocumentDetail != null)
+        {
+            DataView myDataView = FMainDS.AApDocumentDetail.DefaultView;
+            myDataView.AllowNew = false;
+            grdDetails.DataSource = new DevAge.ComponentModel.BoundDataView(myDataView);
+            grdDetails.AutoSizeCells();
+        }
         ShowDataManual();
     }
 
@@ -280,6 +333,7 @@ namespace Ict.Petra.Client.MFinance.Gui
             FMainDS.AApDocument[0].ExchangeRateToBase = Convert.ToDouble(txtExchangeRateToBase.Text);
         }
         GetDataFromControlsManual();
+
     }
 
 #region Implement interface functions
@@ -315,6 +369,19 @@ namespace Ict.Petra.Client.MFinance.Gui
     {
         return (TFrmPetraUtils)FPetraUtilsObject;
     }
+
+    /// auto generated
+    public void FileSave(object sender, EventArgs e)
+    {
+        SaveChanges(FMainDS);
+    }
+
+    /// auto generated
+    public bool SaveChanges()
+    {
+        return SaveChanges(FMainDS);
+    }
+
 #endregion
 
 #region Action Handling

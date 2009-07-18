@@ -2,8 +2,10 @@ RootNode:
     BaseYaml: ../../../CommonForms/PetraEditForm.yaml
     FormTitle: AP Document Edit
     ClassName: TFrmAccountsPayableEditDocument
-    Namespace: Ict.Petra.Client.MFinance.Gui
-    MainEditTable: AApDocument
+    Namespace: Ict.Petra.Client.MFinance.Gui.AccountsPayable
+    MasterTable: AApDocument
+    DetailTable: AApDocumentDetail
+    DatasetType: Ict.Petra.Shared.MFinance.AP.Data.AccountsPayableTDS
     FormType: edit
     HasManualCodeInOtherFile: true
     WindowWidth: 660
@@ -57,43 +59,51 @@ RootNode:
             Controls: [grdDetails, pnlDetails]
         grdDetails:
             Dock: Fill
+            DetailTable: true
+            Columns: [AApDocumentDetail.Amount, AApDocumentDetail.ItemRef, AApDocumentDetail.Narrative]
         pnlDetails:
             Dock: Bottom
             Controls:
-                Row0: [txtNarrative, btnAddDetail]
-                Row1: [txtDetailReference, btnRemoveDetail]
-                Row2: [txtDetailAmount, cmbCostCentre, btnAnalysisAttributes]
-                Row3: [txtBaseAmount, cmbAccount, btnApproveDetail]
-                Row4: [dtpDateApproved, btnUseTaxAccountCostCentre]
-        txtNarrative:
+                Row0: [txtDetailNarrative, btnAddDetail]
+                Row1: [txtDetailItemRef, btnRemoveDetail]
+                Row2: [txtDetailAmount, cmbDetailCostCentreCode, btnAnalysisAttributes]
+                Row3: [txtDetailBaseAmount, cmbDetailAccountCode, btnApproveDetail]
+                Row4: [dtpDetailApprovalDate, btnUseTaxAccountCostCentre]
+        txtDetailNarrative:
             ColSpan: 2
             Width: 350
             Label: Narrati&ve
-        txtDetailReference:
+        txtDetailItemRef:
             ColSpan: 2
             Width: 350
             Label: Detail &Ref
         txtDetailAmount:
             Label: A&mount
-        txtBaseAmount:
+        txtDetailBaseAmount:
             Label: Base
-        dtpDateApproved:
+            Enabled: false
+            #TODO: calculate using exchange rate from document
+        dtpDetailApprovalDate:
             Label: Approved On
-        cmbCostCentre:
+            Enabled: false
+        cmbDetailCostCentreCode:
             Label: C&ost Centre
-        cmbAccount:
+        cmbDetailAccountCode:
             Label: Accou&nt
         btnUseTaxAccountCostCentre:
             Align: Right
             Label: Use Ta&x Acct+CC
+            #TODO
         btnAddDetail:
             Label: Add De&tail
             Align: Right
             Width: 100
+            Action: actNewDetail
         btnRemoveDetail:
             Label: &Remove Detail
             Align: Right
             Width: 100
+            Action: actRemoveDetail
         btnAnalysisAttributes:
             Label: Analysis Attri&b.
             Align: Right
@@ -101,4 +111,5 @@ RootNode:
         btnApproveDetail:
             Label: A&pprove Detail
             Align: Right
-            Width: 150 
+            Width: 150
+            Enabled: false

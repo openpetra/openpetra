@@ -237,7 +237,7 @@ namespace Ict.Tools.CodeGeneration
 
                     int skipLines = 0;
 
-                    while (!Synchronized && (skipLines == 0 || line.Trim().Length > 5))
+                    while (!Synchronized && (skipLines == 0 || line.Trim().Length > 5) && CurrentOriginalLine + 1 + skipLines < originalVersion.Count)
                     {
                         // if line has been commented, comment it again; e.g. for using clauses
                         if ((originalVersion[CurrentOriginalLine + 1 + skipLines].IndexOf(line.Trim()) != -1)

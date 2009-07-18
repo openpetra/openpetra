@@ -29,6 +29,8 @@ using System.IO;
 using System.Xml;
 using System.Collections;
 using System.Collections.Specialized;
+using System.Collections.Generic;
+using DDW;
 using Ict.Common.IO;
 using Ict.Common;
 using Ict.Tools.CodeGeneration;
@@ -601,6 +603,85 @@ namespace Ict.Tools.CodeGeneration.Winforms
             }
         }
 
+        private void HandleWebConnector(string AFunctionType,
+            string AMasterOrDetail,
+            string ATableName,
+            string AServerWebConnectorNamespace,
+            List <ClassNode>AWebConnectorClasses)
+        {
+            ClassNode WebConnectorClass;
+            MethodNode MethodInWebConnector = CSParser.GetWebConnectorMethod(AWebConnectorClasses, AFunctionType, ATableName, out WebConnectorClass);
+
+            if (MethodInWebConnector != null)
+            {
+                // get all parameters without VerificationResult
+                bool HasVerification = false;
+                string actualParameters = String.Empty;
+                string formalParameters = String.Empty;
+                bool firstParameter = true;
+
+                foreach (ParamDeclNode p in MethodInWebConnector.Params)
+                {
+                    if (!firstParameter)
+                    {
+                        actualParameters += ", ";
+                        formalParameters += ", ";
+                    }
+
+                    firstParameter = false;
+
+                    if ((p.Modifiers & Modifier.Out) > 0)
+                    {
+                        actualParameters += "out ";
+                        formalParameters += "out ";
+                    }
+
+                    if ((p.Modifiers & Modifier.Ref) > 0)
+                    {
+                        actualParameters += "ref ";
+                        formalParameters += "ref ";
+                    }
+
+                    if (CSParser.GetName(p.Type) == "TVerificationResultCollection")
+                    {
+                        HasVerification = true;
+                    }
+                    else
+                    {
+                        actualParameters += p.Name;
+                        formalParameters += CSParser.GetName(p.Type) + " " + p.Name;
+                    }
+                }
+
+                FTemplate.AddToCodelet("CANFINDWEBCONNECTOR_" + AFunctionType.ToUpper() + AMasterOrDetail, "true");
+                FTemplate.AddToCodelet("WEBCONNECTOR" + AMasterOrDetail, "TRemote." +
+                    AServerWebConnectorNamespace.Substring("Ict.Petra.Server.".Length));
+                FTemplate.AddToCodelet(AFunctionType.ToUpper() + AMasterOrDetail + "_ACTUALPARAMETERS", actualParameters);
+                FTemplate.AddToCodelet(AFunctionType.ToUpper() + AMasterOrDetail + "_FORMALPARAMETERS", formalParameters);
+
+                if (HasVerification)
+                {
+                    FTemplate.AddToCodelet(AFunctionType.ToUpper() + AMasterOrDetail + "_WITHVERIFICATION", "true");
+                }
+                else
+                {
+                    FTemplate.AddToCodelet(AFunctionType.ToUpper() + AMasterOrDetail + "_WITHOUTVERIFICATION", "true");
+                }
+            }
+        }
+
+        private void HandleWebConnectors(string AGuiNamespace)
+        {
+            // AGuiNamespace is eg. Ict.Petra.Client.MFinance.Gui.AccountsPayable
+            // ServerWebConnectorNamespace should be Ict.Petra.Server.MFinance.AccountsPayable.WebConnectors
+            string ServerWebConnectorNamespace = AGuiNamespace.Replace("Gui.", "").Replace("Client", "Server") + ".WebConnectors";
+
+            List <ClassNode>WebConnectorClasses = CSParser.GetWebConnectorClasses(ServerWebConnectorNamespace);
+
+            HandleWebConnector("CreateNew", "MASTER", FCodeStorage.GetAttribute("MasterTable"), ServerWebConnectorNamespace, WebConnectorClasses);
+            HandleWebConnector("CreateNew", "DETAIL", FCodeStorage.GetAttribute("DetailTable"), ServerWebConnectorNamespace, WebConnectorClasses);
+        }
+
         /*
          * based on the code model, create the code;
          * using the code generators that have been loaded
@@ -609,6 +690,7 @@ namespace Ict.Tools.CodeGeneration.Winforms
         {
             ResetAllValues();
             FCodeStorage = ACodeStorage;
+            TControlGenerator.FCodeStorage = ACodeStorage;
             FTemplate = new ProcessTemplate();
 
             // load default header with license and copyright
@@ -631,6 +713,14 @@ namespace Ict.Tools.CodeGeneration.Winforms
             {
                 FTemplate.AddToCodelet("INITMANUALCODE", "InitializeManualCode();");
             }
+
+            if (FCodeStorage.HasAttribute("DatasetType"))
+            {
+                FTemplate.AddToCodelet("DATASETTYPE", FCodeStorage.GetAttribute("DatasetType"));
+            }
+
+            FTemplate.AddToCodelet("MASTERTABLE", FCodeStorage.GetAttribute("MasterTable"));
+            FTemplate.AddToCodelet("DETAILTABLE", FCodeStorage.GetAttribute("DetailTable"));
 
             // find the first control that is a panel or groupbox or tab control
             AddRootControl("content");
@@ -657,6 +747,8 @@ namespace Ict.Tools.CodeGeneration.Winforms
                 FTemplate.AddToCodelet("UICONNECTORTYPE", TYml2Xml.GetAttribute(rootNode, "UIConnectorType"));
                 FTemplate.AddToCodelet("UICONNECTORCREATE", TYml2Xml.GetAttribute(rootNode, "UIConnectorCreate"));
             }
+
+            HandleWebConnectors(TYml2Xml.GetAttribute(rootNode, "Namespace"));
 
             if (TYml2Xml.HasAttribute(rootNode, "Icon"))
             {

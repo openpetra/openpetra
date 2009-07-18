@@ -47,7 +47,7 @@ namespace Ict.Tools.CodeGeneration.Winforms
         public Int32 FWidth = 150;
         public Int32 FHeight = 28;
 
-        public static TDataDefinitionStore FPetraXMLStore;
+        public static TCodeStorage FCodeStorage;
 
         public TControlGenerator(string APrefix, System.Type AControlType)
         {
@@ -327,25 +327,24 @@ namespace Ict.Tools.CodeGeneration.Winforms
             else if (ctrl.HasAttribute("DataField"))
             {
                 string dataField = ctrl.GetAttribute("DataField");
+                bool IsDetailNotMaster;
 
-                if (dataField.IndexOf(".") == -1)
-                {
-                    dataField = writer.CodeStorage.FMainEditTable + "." + dataField;
-                }
+                TTableField field = FCodeStorage.GetTableField(ctrl, dataField, out IsDetailNotMaster, true);
 
-                LinkControlDataField(writer, ctrl, GetTableField(dataField, true));
+                LinkControlDataField(writer, ctrl, field, IsDetailNotMaster);
             }
-            else if (writer.CodeStorage.FMainEditTable != "")
+            else if (writer.CodeStorage.HasAttribute("MasterTable"))
             {
                 //if (ctrl.controlTypePrefix != "lbl" && ctrl.controlTypePrefix != "pnl" && ctrl.controlTypePrefix != "grp" &&
                 if (!(this is LabelGenerator || this is GroupBoxGenerator))
                 {
-                    TTableField field =
-                        GetTableField(writer.CodeStorage.FMainEditTable + "." + ctrl.controlName.Substring(ctrl.controlTypePrefix.Length), false);
+                    bool IsDetailNotMaster;
+                    TTableField field = FCodeStorage.GetTableField(ctrl, ctrl.controlName.Substring(
+                            ctrl.controlTypePrefix.Length), out IsDetailNotMaster, false);
 
                     if (field != null)
                     {
-                        LinkControlDataField(writer, ctrl, field);
+                        LinkControlDataField(writer, ctrl, field, IsDetailNotMaster);
                     }
                 }
             }
@@ -360,19 +359,16 @@ namespace Ict.Tools.CodeGeneration.Winforms
         private void LinkControlPartnerShortNameLookup(IFormWriter writer, TControlDef ctrl)
         {
             string PartnerShortNameLookup = ctrl.GetAttribute("PartnerShortNameLookup");
-            string tablename = writer.CodeStorage.FMainEditTable;
-            string fieldname = PartnerShortNameLookup;
+            bool IsDetailNotMaster;
 
-            if (PartnerShortNameLookup.IndexOf(".") > -1)
-            {
-                tablename = PartnerShortNameLookup.Split('.')[0];
-                fieldname = PartnerShortNameLookup.Split('.')[1];
-            }
+            TTableField field = FCodeStorage.GetTableField(ctrl, PartnerShortNameLookup, out IsDetailNotMaster, true);
 
             string showData = "TPartnerClass partnerClass;" + Environment.NewLine;
+
             showData += "string partnerShortName;" + Environment.NewLine;
             showData += "TRemote.MPartner.Partner.ServerLookups.GetPartnerShortName(" + Environment.NewLine;
-            showData += "    FMainDS." + tablename + "[0]." + fieldname + "," + Environment.NewLine;
+            showData += "    FMainDS." + TTable.NiceTableName(field.strTableName) + "[0]." + TTable.NiceFieldName(field.strName) + "," +
+                        Environment.NewLine;
             showData += "    out partnerShortName," + Environment.NewLine;
             showData += "    out partnerClass);" + Environment.NewLine;
             showData += ctrl.controlName + ".Text = partnerShortName;" + Environment.NewLine;
@@ -380,22 +376,7 @@ namespace Ict.Tools.CodeGeneration.Winforms
             writer.Template.AddToCodelet("SHOWDATA", showData);
         }
 
-        private TTableField GetTableField(string ADataFieldName, bool AShowWarningNonExistingField)
-        {
-            string tablename = ADataFieldName.Split('.')[0];
-            string fieldname = ADataFieldName.Split('.')[1];
-
-            TTable table = FPetraXMLStore.GetTable(tablename);
-
-            if (table == null)
-            {
-                throw new Exception("Cannot find table: " + tablename);
-            }
-
-            return table.GetField(fieldname, AShowWarningNonExistingField);
-        }
-
-        private void LinkControlDataField(IFormWriter writer, TControlDef ctrl, TTableField AField)
+        private void LinkControlDataField(IFormWriter writer, TControlDef ctrl, TTableField AField, bool AIsDetailNotMaster)
         {
             string AssignValue = "";
             string tablename = TTable.NiceTableName(AField.strTableName);

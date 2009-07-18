@@ -180,12 +180,19 @@ namespace Ict.Petra.Shared.Interfaces.MFinance.AccountsPayable.WebConnectors
         AccountsPayableTDS GetDocument(Int32 ALedgerNumber,
                                        Int32 AAPNumber);
         /// <summary> auto generated from Connector method(Ict.Petra.Server.MFinance.AccountsPayable.WebConnectors.TTransactionEditWebConnector)</summary>
-        AccountsPayableTDS CreateNewDocument(Int32 ALedgerNumber,
-                                             Int64 APartnerKey,
-                                             bool ACreditNoteOrInvoice);
+        AccountsPayableTDS CreateNewAApDocument(Int32 ALedgerNumber,
+                                                Int64 APartnerKey,
+                                                bool ACreditNoteOrInvoice);
         /// <summary> auto generated from Connector method(Ict.Petra.Server.MFinance.AccountsPayable.WebConnectors.TTransactionEditWebConnector)</summary>
-        TSubmitChangesResult SaveDocument(ref AccountsPayableTDS AInspectDS,
-                                          out TVerificationResultCollection AVerificationResult);
+        TSubmitChangesResult SaveAApDocument(ref AccountsPayableTDS AInspectDS,
+                                             out TVerificationResultCollection AVerificationResult);
+        /// <summary> auto generated from Connector method(Ict.Petra.Server.MFinance.AccountsPayable.WebConnectors.TTransactionEditWebConnector)</summary>
+        AccountsPayableTDS CreateNewAApDocumentDetail(Int32 ALedgerNumber,
+                                                      Int32 AApNumber,
+                                                      string AApSupplier_DefaultExpAccount,
+                                                      string AApSupplier_DefaultCostCentre,
+                                                      double AAmount,
+                                                      Int32 ATempNumberOfDetails);
     }
 
 }

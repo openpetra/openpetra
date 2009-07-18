@@ -512,6 +512,59 @@ namespace Ict.Tools.CodeGeneration
             return null;
         }
 
+        /// <summary>
+        /// contains the path for the csharp/ICT directory, eg. u:\openpetraorg\csharp\ICT
+        /// </summary>
+        public static string ICTPath;
+
+        /// <summary>
+        /// get the web connector classes that fit the server namespace
+        /// </summary>
+        /// <param name="AServerNamespace"></param>
+        /// <returns></returns>
+        public static List <ClassNode>GetWebConnectorClasses(string AServerNamespace)
+        {
+            string ModuleName = AServerNamespace.Split('.')[3];
+
+            List <CSParser>CSFiles = new List <CSParser>();
+            CSParser.GetCSFilesInProject(ICTPath + "/Petra/Server/lib/" +
+                ModuleName + "/Ict.Petra.Server." + ModuleName + ".WebConnectors.csproj",
+                ref CSFiles);
+
+            return CSParser.GetClassesInNamespace(CSFiles, AServerNamespace);
+        }
+
+        /// <summary>
+        /// check if there is a webconnector method for that table and function, eg CreateNew + AApDocument
+        /// </summary>
+        /// <param name="AWebConnectorClasses"></param>
+        /// <param name="AWebFunction"></param>
+        /// <param name="ATablename"></param>
+        /// <param name="AClassOfFoundMethod"></param>
+        /// <returns></returns>
+        public static MethodNode GetWebConnectorMethod(List <ClassNode>AWebConnectorClasses,
+            string AWebFunction,
+            string ATablename,
+            out ClassNode AClassOfFoundMethod)
+        {
+            foreach (ClassNode connectorClass in AWebConnectorClasses)
+            {
+                foreach (MethodNode m in CSParser.GetMethods(connectorClass))
+                {
+                    string MethodName = CSParser.GetName(m.Names);
+
+                    if (MethodName == AWebFunction + ATablename)
+                    {
+                        AClassOfFoundMethod = connectorClass;
+                        return m;
+                    }
+                }
+            }
+
+            AClassOfFoundMethod = null;
+            return null;
+        }
+
         /**
          * todo: function that returns the lines of a method, including the line numbers???
          */

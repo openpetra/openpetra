@@ -44,7 +44,7 @@ using Ict.Petra.Client.App.Gui;
 using Ict.Petra.Client.App.Core.RemoteObjects;
 using Ict.Petra.Client.MPartner.Gui;
 
-namespace Ict.Petra.Client.MFinance.Gui
+namespace Ict.Petra.Client.MFinance.Gui.AccountsPayable
 {
     public partial class TFrmAccountsPayableEditSupplier
     {
@@ -65,7 +65,7 @@ namespace Ict.Petra.Client.MFinance.Gui
         /// <param name="APartnerKey"></param>
         public void CreateNewSupplier(Int64 APartnerKey)
         {
-            FPetraUtilsObject.SetChangedFlag();
+            // TODO: let the server do that? what about messages on failure?
 
             // check for existing supplier record
             if (FUIConnector.CanFindSupplier(APartnerKey))
@@ -74,6 +74,8 @@ namespace Ict.Petra.Client.MFinance.Gui
                 EditSupplier(APartnerKey);
                 return;
             }
+
+            FPetraUtilsObject.SetChangedFlag();
 
             AApSupplierRow row = FMainDS.AApSupplier.NewRowTyped();
             row.PartnerKey = APartnerKey;

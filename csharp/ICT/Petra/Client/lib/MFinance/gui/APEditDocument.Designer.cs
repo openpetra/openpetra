@@ -35,7 +35,7 @@ using Mono.Unix;
 using Ict.Common.Controls;
 using Ict.Petra.Client.CommonControls;
 
-namespace Ict.Petra.Client.MFinance.Gui
+namespace Ict.Petra.Client.MFinance.Gui.AccountsPayable
 {
     partial class TFrmAccountsPayableEditDocument
     {
@@ -102,24 +102,24 @@ namespace Ict.Petra.Client.MFinance.Gui
             this.grdDetails = new Ict.Common.Controls.TSgrdDataGridPaged();
             this.pnlDetails = new System.Windows.Forms.Panel();
             this.tableLayoutPanel3 = new System.Windows.Forms.TableLayoutPanel();
-            this.txtNarrative = new System.Windows.Forms.TextBox();
-            this.lblNarrative = new System.Windows.Forms.Label();
+            this.txtDetailNarrative = new System.Windows.Forms.TextBox();
+            this.lblDetailNarrative = new System.Windows.Forms.Label();
             this.btnAddDetail = new System.Windows.Forms.Button();
-            this.txtDetailReference = new System.Windows.Forms.TextBox();
-            this.lblDetailReference = new System.Windows.Forms.Label();
+            this.txtDetailItemRef = new System.Windows.Forms.TextBox();
+            this.lblDetailItemRef = new System.Windows.Forms.Label();
             this.btnRemoveDetail = new System.Windows.Forms.Button();
             this.txtDetailAmount = new System.Windows.Forms.TextBox();
             this.lblDetailAmount = new System.Windows.Forms.Label();
-            this.cmbCostCentre = new Ict.Common.Controls.TCmbAutoComplete();
-            this.lblCostCentre = new System.Windows.Forms.Label();
+            this.cmbDetailCostCentreCode = new Ict.Common.Controls.TCmbAutoComplete();
+            this.lblDetailCostCentreCode = new System.Windows.Forms.Label();
             this.btnAnalysisAttributes = new System.Windows.Forms.Button();
-            this.txtBaseAmount = new System.Windows.Forms.TextBox();
-            this.lblBaseAmount = new System.Windows.Forms.Label();
-            this.cmbAccount = new Ict.Common.Controls.TCmbAutoComplete();
-            this.lblAccount = new System.Windows.Forms.Label();
+            this.txtDetailBaseAmount = new System.Windows.Forms.TextBox();
+            this.lblDetailBaseAmount = new System.Windows.Forms.Label();
+            this.cmbDetailAccountCode = new Ict.Common.Controls.TCmbAutoComplete();
+            this.lblDetailAccountCode = new System.Windows.Forms.Label();
             this.btnApproveDetail = new System.Windows.Forms.Button();
-            this.dtpDateApproved = new System.Windows.Forms.DateTimePicker();
-            this.lblDateApproved = new System.Windows.Forms.Label();
+            this.dtpDetailApprovalDate = new System.Windows.Forms.DateTimePicker();
+            this.lblDetailApprovalDate = new System.Windows.Forms.Label();
             this.btnUseTaxAccountCostCentre = new System.Windows.Forms.Button();
             this.tbrMain = new System.Windows.Forms.ToolStrip();
             this.tbbSave = new System.Windows.Forms.ToolStripButton();
@@ -454,22 +454,22 @@ namespace Ict.Petra.Client.MFinance.Gui
             this.tableLayoutPanel3.RowStyles.Add(new System.Windows.Forms.RowStyle());
             this.pnlDetails.Controls.Add(this.tableLayoutPanel3);
             //
-            // txtNarrative
+            // txtDetailNarrative
             //
-            this.txtNarrative.Location = new System.Drawing.Point(2,2);
-            this.txtNarrative.Name = "txtNarrative";
-            this.txtNarrative.Size = new System.Drawing.Size(350, 28);
+            this.txtDetailNarrative.Location = new System.Drawing.Point(2,2);
+            this.txtDetailNarrative.Name = "txtDetailNarrative";
+            this.txtDetailNarrative.Size = new System.Drawing.Size(350, 28);
             //
-            // lblNarrative
+            // lblDetailNarrative
             //
-            this.lblNarrative.Location = new System.Drawing.Point(2,2);
-            this.lblNarrative.Name = "lblNarrative";
-            this.lblNarrative.AutoSize = true;
-            this.lblNarrative.Text = "Narrati&ve:";
-            this.lblNarrative.Margin = new System.Windows.Forms.Padding(3, 7, 3, 0);
-            this.tableLayoutPanel3.Controls.Add(this.lblNarrative, 0, 0);
-            this.tableLayoutPanel3.Controls.Add(this.txtNarrative, 1, 0);
-            this.tableLayoutPanel3.SetColumnSpan(this.txtNarrative, 2 * 2 - 1);
+            this.lblDetailNarrative.Location = new System.Drawing.Point(2,2);
+            this.lblDetailNarrative.Name = "lblDetailNarrative";
+            this.lblDetailNarrative.AutoSize = true;
+            this.lblDetailNarrative.Text = "Narrati&ve:";
+            this.lblDetailNarrative.Margin = new System.Windows.Forms.Padding(3, 7, 3, 0);
+            this.tableLayoutPanel3.Controls.Add(this.lblDetailNarrative, 0, 0);
+            this.tableLayoutPanel3.Controls.Add(this.txtDetailNarrative, 1, 0);
+            this.tableLayoutPanel3.SetColumnSpan(this.txtDetailNarrative, 2 * 2 - 1);
             //
             // btnAddDetail
             //
@@ -481,22 +481,22 @@ namespace Ict.Petra.Client.MFinance.Gui
             this.tableLayoutPanel3.Controls.Add(this.btnAddDetail, 2, 0);
             this.tableLayoutPanel3.SetColumnSpan(this.btnAddDetail, 2);
             //
-            // txtDetailReference
+            // txtDetailItemRef
             //
-            this.txtDetailReference.Location = new System.Drawing.Point(2,2);
-            this.txtDetailReference.Name = "txtDetailReference";
-            this.txtDetailReference.Size = new System.Drawing.Size(350, 28);
+            this.txtDetailItemRef.Location = new System.Drawing.Point(2,2);
+            this.txtDetailItemRef.Name = "txtDetailItemRef";
+            this.txtDetailItemRef.Size = new System.Drawing.Size(350, 28);
             //
-            // lblDetailReference
+            // lblDetailItemRef
             //
-            this.lblDetailReference.Location = new System.Drawing.Point(2,2);
-            this.lblDetailReference.Name = "lblDetailReference";
-            this.lblDetailReference.AutoSize = true;
-            this.lblDetailReference.Text = "Detail &Ref:";
-            this.lblDetailReference.Margin = new System.Windows.Forms.Padding(3, 7, 3, 0);
-            this.tableLayoutPanel3.Controls.Add(this.lblDetailReference, 0, 1);
-            this.tableLayoutPanel3.Controls.Add(this.txtDetailReference, 1, 1);
-            this.tableLayoutPanel3.SetColumnSpan(this.txtDetailReference, 2 * 2 - 1);
+            this.lblDetailItemRef.Location = new System.Drawing.Point(2,2);
+            this.lblDetailItemRef.Name = "lblDetailItemRef";
+            this.lblDetailItemRef.AutoSize = true;
+            this.lblDetailItemRef.Text = "Detail &Ref:";
+            this.lblDetailItemRef.Margin = new System.Windows.Forms.Padding(3, 7, 3, 0);
+            this.tableLayoutPanel3.Controls.Add(this.lblDetailItemRef, 0, 1);
+            this.tableLayoutPanel3.Controls.Add(this.txtDetailItemRef, 1, 1);
+            this.tableLayoutPanel3.SetColumnSpan(this.txtDetailItemRef, 2 * 2 - 1);
             //
             // btnRemoveDetail
             //
@@ -524,21 +524,21 @@ namespace Ict.Petra.Client.MFinance.Gui
             this.tableLayoutPanel3.Controls.Add(this.lblDetailAmount, 0, 2);
             this.tableLayoutPanel3.Controls.Add(this.txtDetailAmount, 1, 2);
             //
-            // cmbCostCentre
+            // cmbDetailCostCentreCode
             //
-            this.cmbCostCentre.Location = new System.Drawing.Point(2,2);
-            this.cmbCostCentre.Name = "cmbCostCentre";
-            this.cmbCostCentre.Size = new System.Drawing.Size(150, 28);
+            this.cmbDetailCostCentreCode.Location = new System.Drawing.Point(2,2);
+            this.cmbDetailCostCentreCode.Name = "cmbDetailCostCentreCode";
+            this.cmbDetailCostCentreCode.Size = new System.Drawing.Size(150, 28);
             //
-            // lblCostCentre
+            // lblDetailCostCentreCode
             //
-            this.lblCostCentre.Location = new System.Drawing.Point(2,2);
-            this.lblCostCentre.Name = "lblCostCentre";
-            this.lblCostCentre.AutoSize = true;
-            this.lblCostCentre.Text = "C&ost Centre:";
-            this.lblCostCentre.Margin = new System.Windows.Forms.Padding(3, 7, 3, 0);
-            this.tableLayoutPanel3.Controls.Add(this.lblCostCentre, 2, 2);
-            this.tableLayoutPanel3.Controls.Add(this.cmbCostCentre, 3, 2);
+            this.lblDetailCostCentreCode.Location = new System.Drawing.Point(2,2);
+            this.lblDetailCostCentreCode.Name = "lblDetailCostCentreCode";
+            this.lblDetailCostCentreCode.AutoSize = true;
+            this.lblDetailCostCentreCode.Text = "C&ost Centre:";
+            this.lblDetailCostCentreCode.Margin = new System.Windows.Forms.Padding(3, 7, 3, 0);
+            this.tableLayoutPanel3.Controls.Add(this.lblDetailCostCentreCode, 2, 2);
+            this.tableLayoutPanel3.Controls.Add(this.cmbDetailCostCentreCode, 3, 2);
             //
             // btnAnalysisAttributes
             //
@@ -550,37 +550,37 @@ namespace Ict.Petra.Client.MFinance.Gui
             this.tableLayoutPanel3.Controls.Add(this.btnAnalysisAttributes, 4, 2);
             this.tableLayoutPanel3.SetColumnSpan(this.btnAnalysisAttributes, 2);
             //
-            // txtBaseAmount
+            // txtDetailBaseAmount
             //
-            this.txtBaseAmount.Location = new System.Drawing.Point(2,2);
-            this.txtBaseAmount.Name = "txtBaseAmount";
-            this.txtBaseAmount.Size = new System.Drawing.Size(150, 28);
+            this.txtDetailBaseAmount.Location = new System.Drawing.Point(2,2);
+            this.txtDetailBaseAmount.Name = "txtDetailBaseAmount";
+            this.txtDetailBaseAmount.Size = new System.Drawing.Size(150, 28);
             //
-            // lblBaseAmount
+            // lblDetailBaseAmount
             //
-            this.lblBaseAmount.Location = new System.Drawing.Point(2,2);
-            this.lblBaseAmount.Name = "lblBaseAmount";
-            this.lblBaseAmount.AutoSize = true;
-            this.lblBaseAmount.Text = "Base:";
-            this.lblBaseAmount.Margin = new System.Windows.Forms.Padding(3, 7, 3, 0);
-            this.tableLayoutPanel3.Controls.Add(this.lblBaseAmount, 0, 3);
-            this.tableLayoutPanel3.Controls.Add(this.txtBaseAmount, 1, 3);
+            this.lblDetailBaseAmount.Location = new System.Drawing.Point(2,2);
+            this.lblDetailBaseAmount.Name = "lblDetailBaseAmount";
+            this.lblDetailBaseAmount.AutoSize = true;
+            this.lblDetailBaseAmount.Text = "Base:";
+            this.lblDetailBaseAmount.Margin = new System.Windows.Forms.Padding(3, 7, 3, 0);
+            this.tableLayoutPanel3.Controls.Add(this.lblDetailBaseAmount, 0, 3);
+            this.tableLayoutPanel3.Controls.Add(this.txtDetailBaseAmount, 1, 3);
             //
-            // cmbAccount
+            // cmbDetailAccountCode
             //
-            this.cmbAccount.Location = new System.Drawing.Point(2,2);
-            this.cmbAccount.Name = "cmbAccount";
-            this.cmbAccount.Size = new System.Drawing.Size(150, 28);
+            this.cmbDetailAccountCode.Location = new System.Drawing.Point(2,2);
+            this.cmbDetailAccountCode.Name = "cmbDetailAccountCode";
+            this.cmbDetailAccountCode.Size = new System.Drawing.Size(150, 28);
             //
-            // lblAccount
+            // lblDetailAccountCode
             //
-            this.lblAccount.Location = new System.Drawing.Point(2,2);
-            this.lblAccount.Name = "lblAccount";
-            this.lblAccount.AutoSize = true;
-            this.lblAccount.Text = "Accou&nt:";
-            this.lblAccount.Margin = new System.Windows.Forms.Padding(3, 7, 3, 0);
-            this.tableLayoutPanel3.Controls.Add(this.lblAccount, 2, 3);
-            this.tableLayoutPanel3.Controls.Add(this.cmbAccount, 3, 3);
+            this.lblDetailAccountCode.Location = new System.Drawing.Point(2,2);
+            this.lblDetailAccountCode.Name = "lblDetailAccountCode";
+            this.lblDetailAccountCode.AutoSize = true;
+            this.lblDetailAccountCode.Text = "Accou&nt:";
+            this.lblDetailAccountCode.Margin = new System.Windows.Forms.Padding(3, 7, 3, 0);
+            this.tableLayoutPanel3.Controls.Add(this.lblDetailAccountCode, 2, 3);
+            this.tableLayoutPanel3.Controls.Add(this.cmbDetailAccountCode, 3, 3);
             //
             // btnApproveDetail
             //
@@ -592,21 +592,21 @@ namespace Ict.Petra.Client.MFinance.Gui
             this.tableLayoutPanel3.Controls.Add(this.btnApproveDetail, 4, 3);
             this.tableLayoutPanel3.SetColumnSpan(this.btnApproveDetail, 2);
             //
-            // dtpDateApproved
+            // dtpDetailApprovalDate
             //
-            this.dtpDateApproved.Location = new System.Drawing.Point(2,2);
-            this.dtpDateApproved.Name = "dtpDateApproved";
-            this.dtpDateApproved.Size = new System.Drawing.Size(150, 28);
+            this.dtpDetailApprovalDate.Location = new System.Drawing.Point(2,2);
+            this.dtpDetailApprovalDate.Name = "dtpDetailApprovalDate";
+            this.dtpDetailApprovalDate.Size = new System.Drawing.Size(150, 28);
             //
-            // lblDateApproved
+            // lblDetailApprovalDate
             //
-            this.lblDateApproved.Location = new System.Drawing.Point(2,2);
-            this.lblDateApproved.Name = "lblDateApproved";
-            this.lblDateApproved.AutoSize = true;
-            this.lblDateApproved.Text = "Approved On:";
-            this.lblDateApproved.Margin = new System.Windows.Forms.Padding(3, 7, 3, 0);
-            this.tableLayoutPanel3.Controls.Add(this.lblDateApproved, 0, 4);
-            this.tableLayoutPanel3.Controls.Add(this.dtpDateApproved, 1, 4);
+            this.lblDetailApprovalDate.Location = new System.Drawing.Point(2,2);
+            this.lblDetailApprovalDate.Name = "lblDetailApprovalDate";
+            this.lblDetailApprovalDate.AutoSize = true;
+            this.lblDetailApprovalDate.Text = "Approved On:";
+            this.lblDetailApprovalDate.Margin = new System.Windows.Forms.Padding(3, 7, 3, 0);
+            this.tableLayoutPanel3.Controls.Add(this.lblDetailApprovalDate, 0, 4);
+            this.tableLayoutPanel3.Controls.Add(this.dtpDetailApprovalDate, 1, 4);
             //
             // btnUseTaxAccountCostCentre
             //
@@ -852,24 +852,24 @@ namespace Ict.Petra.Client.MFinance.Gui
         private Ict.Common.Controls.TSgrdDataGridPaged grdDetails;
         private System.Windows.Forms.Panel pnlDetails;
         private System.Windows.Forms.TableLayoutPanel tableLayoutPanel3;
-        private System.Windows.Forms.TextBox txtNarrative;
-        private System.Windows.Forms.Label lblNarrative;
+        private System.Windows.Forms.TextBox txtDetailNarrative;
+        private System.Windows.Forms.Label lblDetailNarrative;
         private System.Windows.Forms.Button btnAddDetail;
-        private System.Windows.Forms.TextBox txtDetailReference;
-        private System.Windows.Forms.Label lblDetailReference;
+        private System.Windows.Forms.TextBox txtDetailItemRef;
+        private System.Windows.Forms.Label lblDetailItemRef;
         private System.Windows.Forms.Button btnRemoveDetail;
         private System.Windows.Forms.TextBox txtDetailAmount;
         private System.Windows.Forms.Label lblDetailAmount;
-        private Ict.Common.Controls.TCmbAutoComplete cmbCostCentre;
-        private System.Windows.Forms.Label lblCostCentre;
+        private Ict.Common.Controls.TCmbAutoComplete cmbDetailCostCentreCode;
+        private System.Windows.Forms.Label lblDetailCostCentreCode;
         private System.Windows.Forms.Button btnAnalysisAttributes;
-        private System.Windows.Forms.TextBox txtBaseAmount;
-        private System.Windows.Forms.Label lblBaseAmount;
-        private Ict.Common.Controls.TCmbAutoComplete cmbAccount;
-        private System.Windows.Forms.Label lblAccount;
+        private System.Windows.Forms.TextBox txtDetailBaseAmount;
+        private System.Windows.Forms.Label lblDetailBaseAmount;
+        private Ict.Common.Controls.TCmbAutoComplete cmbDetailAccountCode;
+        private System.Windows.Forms.Label lblDetailAccountCode;
         private System.Windows.Forms.Button btnApproveDetail;
-        private System.Windows.Forms.DateTimePicker dtpDateApproved;
-        private System.Windows.Forms.Label lblDateApproved;
+        private System.Windows.Forms.DateTimePicker dtpDetailApprovalDate;
+        private System.Windows.Forms.Label lblDetailApprovalDate;
         private System.Windows.Forms.Button btnUseTaxAccountCostCentre;
         private System.Windows.Forms.ToolStrip tbrMain;
         private System.Windows.Forms.ToolStripButton tbbSave;

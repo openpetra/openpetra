@@ -62,7 +62,6 @@ namespace Ict.Tools.CodeGeneration
             FCodeStorage.FNamespace = TYml2Xml.GetAttribute(formNode, "Namespace");
             FCodeStorage.FHasManualCodeInOtherFile = (TYml2Xml.GetAttribute(formNode, "HasManualCodeInOtherFile").ToLower() == "true");
             FCodeStorage.FClassName = "TFrm" + System.IO.Path.GetFileNameWithoutExtension(FCodeStorage.FFilename);
-            FCodeStorage.FMainEditTable = TYml2Xml.GetAttribute(formNode, "MainEditTable");
 
             if (TYml2Xml.HasAttribute(formNode, "WindowHeight"))
             {
@@ -145,6 +144,7 @@ namespace Ict.Tools.CodeGeneration
             FCodeStorage.FXmlDocument.Save(AXamlFilename + ".xml");
 
             FCodeStorage.FXmlNodes = TYml2Xml.ReferenceNodes(FCodeStorage.FXmlDocument);
+            FCodeStorage.FRootNode = (XmlNode)FCodeStorage.FXmlNodes["RootNode"];
 
             if (baseyaml.Length == 0)
             {

@@ -238,7 +238,6 @@ class CreateInstantiators : AutoGenerationWriter
         }
     }
 
-    private string ICTPath;
     private void ImplementInterface(String AFullNamespace, String AInterfaceName)
     {
         // e.g. FullNamespace: Ict.Petra.Server.MPartner.Instantiator.Partner.UIConnectors
@@ -324,7 +323,7 @@ class CreateInstantiators : AutoGenerationWriter
 
         List <CSParser>CSFiles = new List <CSParser>();
         string module = AFullNamespace.Split('.')[3];
-        CSParser.GetCSFilesInProject(ICTPath + "/Petra/Server/lib/" +
+        CSParser.GetCSFilesInProject(CSParser.ICTPath + "/Petra/Server/lib/" +
             module + "/Ict.Petra.Server." + module + ".WebConnectors.csproj",
             ref CSFiles);
 
@@ -672,13 +671,11 @@ class CreateInstantiators : AutoGenerationWriter
     }
 
     private List <CSParser>CSFiles = null;
-    public void CreateFiles(List <TopNamespace>ANamespaces, String AOutputPath, String AICTPath, String AXmlFileName)
+    public void CreateFiles(List <TopNamespace>ANamespaces, String AOutputPath, String AXmlFileName)
     {
-        this.ICTPath = AICTPath;
-
         // get the appropriate cs file
         CSFiles = new List <CSParser>();
-        CSParser.GetCSFilesInProject(ICTPath + "/Petra/Shared/lib/Interfaces/Ict.Petra.Shared.Interfaces.csproj", ref CSFiles);
+        CSParser.GetCSFilesInProject(CSParser.ICTPath + "/Petra/Shared/lib/Interfaces/Ict.Petra.Shared.Interfaces.csproj", ref CSFiles);
 
         foreach (TopNamespace tn in ANamespaces)
         {

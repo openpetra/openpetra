@@ -38,7 +38,7 @@ using Ict.Petra.Client.App.Core;
 using Ict.Common.Controls;
 using Ict.Petra.Client.CommonForms;
 
-namespace Ict.Petra.Client.MFinance.Gui
+namespace Ict.Petra.Client.MFinance.Gui.AccountsPayable
 {
     public partial class TFrmAccountsPayableSupplierTransactions
     {

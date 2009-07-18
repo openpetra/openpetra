@@ -32,6 +32,7 @@ using Ict.Tools.CodeGeneration;
 using Ict.Common.Controls;
 using Ict.Common.IO;
 using Ict.Common;
+using Ict.Tools.DBXML;
 
 namespace Ict.Tools.CodeGeneration.Winforms
 {
@@ -545,6 +546,40 @@ namespace Ict.Tools.CodeGeneration.Winforms
             {
                 // TODO: this function needs to be called by the manual code at the moment when eg a search finishes
                 // TODO: call "Activate" + TYml2Xml.GetAttribute(ctrl.xmlNode, "SelectedRowActivates")
+            }
+
+            StringCollection Columns = TYml2Xml.GetElements(ctrl.xmlNode, "Columns");
+
+            if (Columns.Count > 0)
+            {
+                writer.Template.AddToCodelet("INITMANUALCODE", ctrl.controlName + ".Columns.Clear();" + Environment.NewLine);
+
+                foreach (string ColumnFieldName in Columns)
+                {
+                    bool IsDetailNotMaster;
+                    TTableField field = FCodeStorage.GetTableField(null, ColumnFieldName, out IsDetailNotMaster, true);
+
+                    // todo: other types for columns in grid? double, bool etc
+                    writer.Template.AddToCodelet("INITMANUALCODE", ctrl.controlName + ".AddTextColumn(\"" + field.strLabel + "\", " +
+                        "FMainDS." +
+                        TTable.NiceTableName(field.strTableName) + ".Column" +
+                        TTable.NiceFieldName(field.strName) + ");" + Environment.NewLine);
+                }
+            }
+
+            if ((ctrl.controlName == "grdDetails") && FCodeStorage.HasAttribute("DetailTable") && FCodeStorage.HasAttribute("DatasetType"))
+            {
+                string LoadDetailsToGrid = "";
+                LoadDetailsToGrid += "if (FMainDS." + FCodeStorage.GetAttribute("DetailTable") + " != null)" + Environment.NewLine;
+                LoadDetailsToGrid += "{" + Environment.NewLine;
+                LoadDetailsToGrid += "    DataView myDataView = FMainDS." + FCodeStorage.GetAttribute("DetailTable") + ".DefaultView;" +
+                                     Environment.NewLine;
+                LoadDetailsToGrid += "    myDataView.AllowNew = false;" + Environment.NewLine;
+                LoadDetailsToGrid += "    " + ctrl.controlName + ".DataSource = new DevAge.ComponentModel.BoundDataView(myDataView);" +
+                                     Environment.NewLine;
+                LoadDetailsToGrid += "    " + ctrl.controlName + ".AutoSizeCells();" + Environment.NewLine;
+                LoadDetailsToGrid += "}" + Environment.NewLine;
+                writer.Template.AddToCodelet("SHOWDATA", LoadDetailsToGrid);
             }
         }
     }

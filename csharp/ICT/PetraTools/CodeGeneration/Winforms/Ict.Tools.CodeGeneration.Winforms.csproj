@@ -39,6 +39,9 @@
   </PropertyGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.Targets" />
   <ItemGroup>
+    <Reference Include="CMicroParser">
+      <HintPath>..\..\..\..\ThirdParty\csparser\CMicroParser.dll</HintPath>
+    </Reference>
     <Reference Include="DevAge.Core">
       <HintPath>..\..\..\..\ThirdParty\DevAge\DevAge.Core.dll</HintPath>
       <SpecificVersion>False</SpecificVersion>

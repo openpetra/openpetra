@@ -31,6 +31,7 @@ using System.IO;
 using System.Reflection;
 using NamespaceHierarchy;
 using Ict.Common;
+using Ict.Tools.CodeGeneration;
 
 namespace GenerateSharedCode
 {
@@ -58,6 +59,16 @@ class Program
         if (cmd.IsFlagSet("outputdir"))
         {
             OutputDir = cmd.GetOptValue("outputdir");
+
+            // calculate ICTPath from outputdir
+            string fullOutputPath = Path.GetFullPath(OutputDir).Replace("\\", "/");
+
+            if (!fullOutputPath.Contains("csharp/ICT"))
+            {
+                Console.WriteLine("Output path must be below the csharp/ICT directory");
+            }
+
+            CSParser.ICTPath = fullOutputPath.Substring(0, fullOutputPath.IndexOf("csharp/ICT") + "csharp/ICT".Length);
         }
         else
         {
@@ -79,11 +90,10 @@ class Program
 
         try
         {
-            string ICTPath = System.IO.Path.GetFullPath(OutputDir + "\\..\\");
             CreateInterfaces interfaces = new CreateInterfaces();
-            interfaces.CreateFiles(namespaces, OutputDir + "\\Shared\\lib\\Interfaces", ICTPath, XmlFileName);
+            interfaces.CreateFiles(namespaces, OutputDir + "\\Shared\\lib\\Interfaces", XmlFileName);
             CreateInstantiators instantiators = new CreateInstantiators();
-            instantiators.CreateFiles(namespaces, OutputDir + "\\Server\\lib\\", ICTPath, XmlFileName);
+            instantiators.CreateFiles(namespaces, OutputDir + "\\Server\\lib\\", XmlFileName);
 
             //		  TestAnalysis("U:/delphi.net/ICT.Patch228/Petra/Server/_bin/Debug/Ict.Petra.Server.MPartner.Instantiator.dll",
             //		                "Ict.Petra.Server.MPartner.Instantiator.Partner.TPartnerUIConnectorsNamespace");

@@ -80,7 +80,7 @@ namespace Ict.Petra.Server.MFinance.AccountsPayable.WebConnectors
         /// <param name="APartnerKey">the supplier</param>
         /// <param name="ACreditNoteOrInvoice">true: credit note; false: invoice</param>
         /// <returns></returns>
-        public static AccountsPayableTDS CreateNewDocument(Int32 ALedgerNumber, Int64 APartnerKey, bool ACreditNoteOrInvoice)
+        public static AccountsPayableTDS CreateNewAApDocument(Int32 ALedgerNumber, Int64 APartnerKey, bool ACreditNoteOrInvoice)
         {
             // create the DataSet that will later be passed to the Client
             AccountsPayableTDS MainDS = new AccountsPayableTDS();
@@ -93,16 +93,10 @@ namespace Ict.Petra.Server.MFinance.AccountsPayable.WebConnectors
             NewDocumentRow.CreditNoteFlag = ACreditNoteOrInvoice;
 
             // get the supplier defaults
-            TTypedDataTable tempTable;
-            AApSupplierTable filterTable = new AApSupplierTable();
-            AApSupplierRow filterValues = filterTable.NewRowTyped(false);
-            filterValues.PartnerKey = APartnerKey;
-            filterTable.Rows.Add(filterValues);
+            AApSupplierTable tempTable;
+            AApSupplierAccess.LoadByPrimaryKey(out tempTable, APartnerKey, null);
 
-            if (MCommon.DataReader.TCommonDataReader.GetData(
-                    AApSupplierTable.GetTableDBName(),
-                    filterTable,
-                    out tempTable) && (tempTable.Rows.Count == 1))
+            if (tempTable.Rows.Count == 1)
             {
                 MainDS.AApSupplier.Merge(tempTable);
 
@@ -151,7 +145,7 @@ namespace Ict.Petra.Server.MFinance.AccountsPayable.WebConnectors
         /// <returns>true if all verifications are OK and all DB calls succeeded, false if
         /// any verification or DB call failed
         /// </returns>
-        public static TSubmitChangesResult SaveDocument(ref AccountsPayableTDS AInspectDS,
+        public static TSubmitChangesResult SaveAApDocument(ref AccountsPayableTDS AInspectDS,
             out TVerificationResultCollection AVerificationResult)
         {
             TDBTransaction SubmitChangesTransaction;
@@ -166,7 +160,6 @@ namespace Ict.Petra.Server.MFinance.AccountsPayable.WebConnectors
                 SubmitChangesTransaction = DBAccess.GDBAccessObj.BeginTransaction(IsolationLevel.Serializable);
                 try
                 {
-// problem: row is not recognised that it is new?
                     // set AP Number if it has not been set yet
                     if (AInspectDS.AApDocument[0].ApNumber == -1)
                     {
@@ -212,6 +205,43 @@ namespace Ict.Petra.Server.MFinance.AccountsPayable.WebConnectors
             }
 
             return SubmissionResult;
+        }
+
+        /// <summary>
+        /// create a new AP document detail for an existing AP document
+        /// </summary>
+        /// <param name="ALedgerNumber"></param>
+        /// <param name="AApNumber"></param>
+        /// <param name="AApSupplier_DefaultExpAccount"></param>
+        /// <param name="AApSupplier_DefaultCostCentre"></param>
+        /// <param name="AAmount">the amount that is still missing from the total amount of the invoice</param>
+        /// <param name="ATempNumberOfDetails">to give negative numbers and keep it a private key</param>
+        /// <returns></returns>
+        public static AccountsPayableTDS CreateNewAApDocumentDetail(Int32 ALedgerNumber,
+            Int32 AApNumber,
+            string AApSupplier_DefaultExpAccount,
+            string AApSupplier_DefaultCostCentre,
+            double AAmount,
+            Int32 ATempNumberOfDetails)
+        {
+            // create the DataSet that will later be passed to the Client
+            AccountsPayableTDS MainDS = new AccountsPayableTDS();
+
+            AApDocumentDetailRow NewRow = MainDS.AApDocumentDetail.NewRowTyped();
+
+            NewRow.ApNumber = AApNumber;
+            NewRow.LedgerNumber = ALedgerNumber;
+            NewRow.DetailNumber = -1 * ATempNumberOfDetails; // detail number will be set in SubmitChanges
+            NewRow.Amount = AAmount;
+            NewRow.CostCentreCode = AApSupplier_DefaultCostCentre;
+            NewRow.AccountCode = AApSupplier_DefaultExpAccount;
+
+            MainDS.AApDocumentDetail.Rows.Add(NewRow);
+
+            // Remove all Tables that were not filled with data before remoting them.
+            MainDS.RemoveEmptyTables();
+
+            return MainDS;
         }
     }
 }

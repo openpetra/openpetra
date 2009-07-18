@@ -43,7 +43,7 @@ using Ict.Petra.Shared.MPartner;
 using Ict.Petra.Client.App.Core.RemoteObjects;
 using Ict.Petra.Shared.Interfaces.MFinance.AccountsPayable.UIConnectors;
 
-namespace Ict.Petra.Client.MFinance.Gui
+namespace Ict.Petra.Client.MFinance.Gui.AccountsPayable
 {
     public partial class TFrmAccountsPayableMain
     {
@@ -268,7 +268,7 @@ namespace Ict.Petra.Client.MFinance.Gui
                 TFrmAccountsPayableEditDocument frm = new TFrmAccountsPayableEditDocument(this.Handle);
 
                 // TODO ledgernumber
-                frm.CreateNewDocument(43, PartnerKey, false);
+                frm.CreateNewAApDocument(43, PartnerKey, false);
                 frm.Show();
             }
         }

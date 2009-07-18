@@ -580,8 +580,6 @@ public class CreateInterfaces : AutoGenerationWriter
         }
     }
 
-    private string ICTPath;
-
     //other interfaces, e.g. IPartnerUIConnectorsPartnerEdit
     // we don't know the interfaces that are implemented, so need to look for the base classes
     // we need to know all the source files that are part of the UIConnector dll
@@ -651,20 +649,20 @@ public class CreateInterfaces : AutoGenerationWriter
 
         // get all csharp files that might hold implementations of remotable classes
         List <CSParser>CSFiles = new List <CSParser>();
-        CSParser.GetCSFilesInProject(ICTPath + "/Petra/Server/lib/M" +
+        CSParser.GetCSFilesInProject(CSParser.ICTPath + "/Petra/Server/lib/M" +
             tn.Name + "/Ict.Petra.Server.M" + tn.Name + ".UIConnectors.csproj",
             ref CSFiles);
-        CSParser.GetCSFilesInProject(ICTPath + "/Petra/Server/lib/M" +
+        CSParser.GetCSFilesInProject(CSParser.ICTPath + "/Petra/Server/lib/M" +
             tn.Name + "/Ict.Petra.Server.M" + tn.Name + ".WebConnectors.csproj",
             ref CSFiles);
-        CSParser.GetCSFilesInProject(ICTPath + "/Petra/Server/lib/M" +
+        CSParser.GetCSFilesInProject(CSParser.ICTPath + "/Petra/Server/lib/M" +
             tn.Name + "/Ict.Petra.Server.M" + tn.Name + ".LogicConnectors.csproj",
             ref CSFiles);
-        CSParser.GetCSFilesInProject(ICTPath + "/Petra/Server/lib/M" +
+        CSParser.GetCSFilesInProject(CSParser.ICTPath + "/Petra/Server/lib/M" +
             tn.Name + "/Ict.Petra.Server.M" + tn.Name + ".csproj",
             ref CSFiles);
 
-        CSParser.GetCSFilesInProject(ICTPath + "/Petra/Server/lib/M" +
+        CSParser.GetCSFilesInProject(CSParser.ICTPath + "/Petra/Server/lib/M" +
             tn.Name + "/Ict.Petra.Server.M" + tn.Name + ".Instantiator.csproj",
             ref CSFiles);
 
@@ -680,12 +678,9 @@ public class CreateInterfaces : AutoGenerationWriter
     /// </summary>
     /// <param name="ANamespaces"></param>
     /// <param name="AOutputPath"></param>
-    /// <param name="AICTPath"></param>
     /// <param name="AXmlFileName"></param>
-    public void CreateFiles(List <TopNamespace>ANamespaces, String AOutputPath, String AICTPath, String AXmlFileName)
+    public void CreateFiles(List <TopNamespace>ANamespaces, String AOutputPath, String AXmlFileName)
     {
-        this.ICTPath = AICTPath;
-
         foreach (TopNamespace tn in ANamespaces)
         {
             // for testing

@@ -884,18 +884,29 @@ namespace Ict.Petra.Server.MFinance.Instantiator.AccountsPayable.WebConnectors
         }
 
         /// generated method from connector
-        public AccountsPayableTDS CreateNewDocument(Int32 ALedgerNumber,
-                                                    Int64 APartnerKey,
-                                                    bool ACreditNoteOrInvoice)
+        public AccountsPayableTDS CreateNewAApDocument(Int32 ALedgerNumber,
+                                                       Int64 APartnerKey,
+                                                       bool ACreditNoteOrInvoice)
         {
-            return Ict.Petra.Server.MFinance.AccountsPayable.WebConnectors.TTransactionEditWebConnector.CreateNewDocument(ALedgerNumber, APartnerKey, ACreditNoteOrInvoice);
+            return Ict.Petra.Server.MFinance.AccountsPayable.WebConnectors.TTransactionEditWebConnector.CreateNewAApDocument(ALedgerNumber, APartnerKey, ACreditNoteOrInvoice);
         }
 
         /// generated method from connector
-        public TSubmitChangesResult SaveDocument(ref AccountsPayableTDS AInspectDS,
-                                                 out TVerificationResultCollection AVerificationResult)
+        public TSubmitChangesResult SaveAApDocument(ref AccountsPayableTDS AInspectDS,
+                                                    out TVerificationResultCollection AVerificationResult)
         {
-            return Ict.Petra.Server.MFinance.AccountsPayable.WebConnectors.TTransactionEditWebConnector.SaveDocument(ref AInspectDS, out AVerificationResult);
+            return Ict.Petra.Server.MFinance.AccountsPayable.WebConnectors.TTransactionEditWebConnector.SaveAApDocument(ref AInspectDS, out AVerificationResult);
+        }
+
+        /// generated method from connector
+        public AccountsPayableTDS CreateNewAApDocumentDetail(Int32 ALedgerNumber,
+                                                             Int32 AApNumber,
+                                                             string AApSupplier_DefaultExpAccount,
+                                                             string AApSupplier_DefaultCostCentre,
+                                                             double AAmount,
+                                                             Int32 ATempNumberOfDetails)
+        {
+            return Ict.Petra.Server.MFinance.AccountsPayable.WebConnectors.TTransactionEditWebConnector.CreateNewAApDocumentDetail(ALedgerNumber, AApNumber, AApSupplier_DefaultExpAccount, AApSupplier_DefaultCostCentre, AAmount, ATempNumberOfDetails);
         }
 
     }

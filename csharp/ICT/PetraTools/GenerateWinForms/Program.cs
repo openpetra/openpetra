@@ -26,6 +26,7 @@
 using System;
 using System.Xml;
 using System.Collections.Specialized;
+using System.IO;
 using Ict.Common;
 using Ict.Tools.DBXML;
 using Ict.Tools.CodeGeneration;
@@ -64,10 +65,20 @@ class Program
                 return;
             }
 
-            TControlGenerator.FPetraXMLStore = new TDataDefinitionStore();
+            // calculate ICTPath from ymlfile path
+            string fullYmlfilePath = Path.GetFullPath(opts.GetValue("ymlfile")).Replace("\\", "/");
+
+            if (!fullYmlfilePath.Contains("csharp/ICT"))
+            {
+                Console.WriteLine("ymlfile must be below the csharp/ICT directory");
+            }
+
+            CSParser.ICTPath = fullYmlfilePath.Substring(0, fullYmlfilePath.IndexOf("csharp/ICT") + "csharp/ICT".Length);
+
+            TCodeStorage.FPetraXMLStore = new TDataDefinitionStore();
             Console.WriteLine("parsing " + opts.GetValue("petraxml", true));
             TDataDefinitionParser parser = new TDataDefinitionParser(opts.GetValue("petraxml", true));
-            parser.ParseDocument(ref TControlGenerator.FPetraXMLStore, true, true);
+            parser.ParseDocument(ref TCodeStorage.FPetraXMLStore, true, true);
 
             string ymlfileParam = opts.GetValue("ymlfile", true);
 

@@ -4,6 +4,10 @@
     <DataSet name="AccountsPayableTDS">
         <Table sqltable="a_ap_supplier"/>
         <Table sqltable="a_ap_document"/>
+        <Table sqltable="a_ap_document_detail"/>
+        <Table sqltable="a_ap_document_payment"/>
+        <Table sqltable="a_ap_payment"/>
+        <Table sqltable="a_ap_anal_attrib"/>
     </DataSet> 
     
 </PetraDataSets>
