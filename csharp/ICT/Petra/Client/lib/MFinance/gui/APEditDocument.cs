@@ -53,7 +53,6 @@ namespace Ict.Petra.Client.MFinance.Gui.AccountsPayable
   public partial class TFrmAccountsPayableEditDocument: System.Windows.Forms.Form, IFrmPetraEdit
   {
     private TFrmPetraEditUtils FPetraUtilsObject;
-
     private Ict.Petra.Shared.MFinance.AP.Data.AccountsPayableTDS FMainDS;
 
     /// constructor
@@ -125,10 +124,8 @@ namespace Ict.Petra.Client.MFinance.Gui.AccountsPayable
       FPetraUtilsObject.SetStatusBarText(txtDiscountPercentage, Catalog.GetString("The percentage discount you get for early payment of this document in the case that it is an invoice."));
       FPetraUtilsObject.SetStatusBarText(txtTotalAmount, Catalog.GetString("The total amount of money that this document is worth."));
       FPetraUtilsObject.SetStatusBarText(txtExchangeRateToBase, Catalog.GetString("The exchange rate to the base currency at the time that the document was issued."));
-
       FMainDS = new Ict.Petra.Shared.MFinance.AP.Data.AccountsPayableTDS();
-
-      InitializeManualCode();grdDetails.Columns.Clear();
+      grdDetails.Columns.Clear();
       grdDetails.AddTextColumn("Amount", FMainDS.AApDocumentDetail.ColumnAmount);
       grdDetails.AddTextColumn("Reference", FMainDS.AApDocumentDetail.ColumnItemRef);
       grdDetails.AddTextColumn("Narrative", FMainDS.AApDocumentDetail.ColumnNarrative);
@@ -173,7 +170,6 @@ namespace Ict.Petra.Client.MFinance.Gui.AccountsPayable
     /// automatically generated function from webconnector
     public bool CreateNewAApDocument(Int32 ALedgerNumber, Int64 APartnerKey, bool ACreditNoteOrInvoice)
     {
-
         FMainDS = TRemote.MFinance.AccountsPayable.WebConnectors.CreateNewAApDocument(ALedgerNumber, APartnerKey, ACreditNoteOrInvoice);
 
         FPetraUtilsObject.SetChangedFlag();
@@ -181,7 +177,6 @@ namespace Ict.Petra.Client.MFinance.Gui.AccountsPayable
         ShowData();
 
         return true;
-
     }
 
     /// automatically generated, create a new record of AApDocumentDetail and display on the edit screen
@@ -205,6 +200,16 @@ namespace Ict.Petra.Client.MFinance.Gui.AccountsPayable
         grdDetails.ShowCell(new SourceGrid.Position(ARowNumber, 0), true);
 
         // TODO? DataGrid_FocusRowEntered(this, new RowEventArgs(ARowNumber));
+    }
+
+    /// automatically generated function from webconnector
+    public bool LoadAApDocument(Int32 ALedgerNumber, Int32 AAPNumber)
+    {
+        FMainDS.Merge(TRemote.MFinance.AccountsPayable.WebConnectors.LoadAApDocument(ALedgerNumber, AAPNumber));
+
+        ShowData();
+
+        return true;
     }
 
     private void ShowData()
@@ -282,12 +287,10 @@ namespace Ict.Petra.Client.MFinance.Gui.AccountsPayable
             grdDetails.DataSource = new DevAge.ComponentModel.BoundDataView(myDataView);
             grdDetails.AutoSizeCells();
         }
-        ShowDataManual();
     }
 
     private void GetDataFromControls()
     {
-        FMainDS.AApSupplier[0].CurrencyCode = txtSupplierCurrency.Text;
         if (txtDocumentCode.Text.Length == 0)
         {
             FMainDS.AApDocument[0].SetDocumentCodeNull();
@@ -332,8 +335,6 @@ namespace Ict.Petra.Client.MFinance.Gui.AccountsPayable
         {
             FMainDS.AApDocument[0].ExchangeRateToBase = Convert.ToDouble(txtExchangeRateToBase.Text);
         }
-        GetDataFromControlsManual();
-
     }
 
 #region Implement interface functions
@@ -381,7 +382,6 @@ namespace Ict.Petra.Client.MFinance.Gui.AccountsPayable
     {
         return SaveChanges(FMainDS);
     }
-
 #endregion
 
 #region Action Handling

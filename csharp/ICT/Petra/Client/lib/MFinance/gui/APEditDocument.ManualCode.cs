@@ -36,13 +36,6 @@ namespace Ict.Petra.Client.MFinance.Gui.AccountsPayable
     public partial class TFrmAccountsPayableEditDocument
     {
         /// <summary>
-        /// todoComment
-        /// </summary>
-        public void InitializeManualCode()
-        {
-        }
-
-        /// <summary>
         /// save the changes on the screen
         /// </summary>
         /// <param name="AInspectDS"></param>
@@ -183,20 +176,6 @@ namespace Ict.Petra.Client.MFinance.Gui.AccountsPayable
             }
 
             return false;
-        }
-
-        /// <summary>
-        /// displays the data from the local datatable
-        /// </summary>
-        private void ShowDataManual()
-        {
-        }
-
-        /// <summary>
-        /// get the data from the controls into the dataset
-        /// </summary>
-        private void GetDataFromControlsManual()
-        {
         }
 
         private void UpdateCreditTerms(object sender, EventArgs e)

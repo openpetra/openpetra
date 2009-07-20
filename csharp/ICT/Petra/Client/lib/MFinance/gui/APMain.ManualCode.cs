@@ -47,18 +47,24 @@ namespace Ict.Petra.Client.MFinance.Gui.AccountsPayable
 {
     public partial class TFrmAccountsPayableMain
     {
-        /// <summary>
-        /// todoComment
-        /// </summary>
-        public void InitializeManualCode()
-        {
-        }
-
         private IAccountsPayableUIConnectorsFind FSupplierFindObject = null;
         private bool FKeepUpSearchFinishedCheck = false;
 
         /// <summary>DataTable that holds all Pages of data (also empty ones that are not retrieved yet!)</summary>
         private DataTable FPagedDataTable;
+
+        private Int32 FLedgerNumber;
+
+        /// <summary>
+        /// AP is opened in this ledger
+        /// </summary>
+        public Int32 LedgerNumber
+        {
+            set
+            {
+                FLedgerNumber = value;
+            }
+        }
 
         /// <summary>
         /// search button was clicked
@@ -209,7 +215,7 @@ namespace Ict.Petra.Client.MFinance.Gui.AccountsPayable
         {
             TFrmAccountsPayableSupplierTransactions frm = new TFrmAccountsPayableSupplierTransactions(this.Handle);
 
-            // todo: frm.SupplierPartnerKey = currentRow.PartnerKey;
+            frm.LoadSupplier(FLedgerNumber, GetCurrentlySelectedSupplier());
             frm.Show();
         }
 
@@ -267,8 +273,7 @@ namespace Ict.Petra.Client.MFinance.Gui.AccountsPayable
             {
                 TFrmAccountsPayableEditDocument frm = new TFrmAccountsPayableEditDocument(this.Handle);
 
-                // TODO ledgernumber
-                frm.CreateNewAApDocument(43, PartnerKey, false);
+                frm.CreateNewAApDocument(FLedgerNumber, PartnerKey, false);
                 frm.Show();
             }
         }

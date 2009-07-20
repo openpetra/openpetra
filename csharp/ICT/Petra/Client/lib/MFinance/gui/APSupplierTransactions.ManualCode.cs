@@ -30,23 +30,66 @@ using System.ComponentModel;
 using System.Windows.Forms;
 using System.Data;
 using Ict.Petra.Shared;
+using Ict.Common.Data;
 using System.Resources;
 using System.Collections.Specialized;
 using Mono.Unix;
 using Ict.Common;
 using Ict.Petra.Client.App.Core;
+using Ict.Petra.Client.App.Core.RemoteObjects;
 using Ict.Common.Controls;
 using Ict.Petra.Client.CommonForms;
+using Ict.Petra.Shared.MFinance.AP.Data;
 
 namespace Ict.Petra.Client.MFinance.Gui.AccountsPayable
 {
     public partial class TFrmAccountsPayableSupplierTransactions
     {
+        Int32 FLedgerNumber = -1;
+
         /// <summary>
-        /// todoComment
+        /// load the supplier, do the first search with the default search parameters
         /// </summary>
-        public void InitializeManualCode()
+        /// <param name="ALedgerNumber"></param>
+        /// <param name="APartnerKey"></param>
+        public void LoadSupplier(Int32 ALedgerNumber, Int64 APartnerKey)
         {
+            FLedgerNumber = ALedgerNumber;
+
+            FMainDS.Merge(TRemote.MFinance.AccountsPayable.WebConnectors.FindAApDocument(
+                    ALedgerNumber, APartnerKey,
+
+                    // cmbStatus.GetSelectedString(),
+                    "UNPOSTED",
+                    cmbType.SelectedIndex == 1,
+                    chkHideAgedTransactions.Checked));
+
+            ShowData();
+        }
+
+        /// <summary>
+        /// needed for generated code
+        /// </summary>
+        void ShowDataManual()
+        {
+            DataView myDataView = FMainDS.AApDocument.DefaultView;
+
+            myDataView.AllowNew = false;
+            grdResult.DataSource = new DevAge.ComponentModel.BoundDataView(myDataView);
+            grdResult.AutoSizeCells();
+        }
+
+        private void OpenSelectedApDocument(System.Object sender, EventArgs args)
+        {
+            DataRowView[] SelectedGridRow = grdResult.SelectedDataRowsAsDataRowView;
+
+            if (SelectedGridRow.Length >= 1)
+            {
+                TFrmAccountsPayableEditDocument frm = new TFrmAccountsPayableEditDocument(this.Handle);
+                MessageBox.Show("ledger number: " + FLedgerNumber.ToString());
+                frm.LoadAApDocument(FLedgerNumber, Convert.ToInt32(SelectedGridRow[0][FMainDS.AApDocument.ColumnApNumber.ColumnName]));
+                frm.Show();
+            }
         }
     }
 }

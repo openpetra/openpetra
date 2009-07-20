@@ -877,10 +877,10 @@ namespace Ict.Petra.Server.MFinance.Instantiator.AccountsPayable.WebConnectors
 
 
         /// generated method from connector
-        public AccountsPayableTDS GetDocument(Int32 ALedgerNumber,
-                                              Int32 AAPNumber)
+        public AccountsPayableTDS LoadAApDocument(Int32 ALedgerNumber,
+                                                  Int32 AAPNumber)
         {
-            return Ict.Petra.Server.MFinance.AccountsPayable.WebConnectors.TTransactionEditWebConnector.GetDocument(ALedgerNumber, AAPNumber);
+            return Ict.Petra.Server.MFinance.AccountsPayable.WebConnectors.TTransactionWebConnector.LoadAApDocument(ALedgerNumber, AAPNumber);
         }
 
         /// generated method from connector
@@ -888,14 +888,14 @@ namespace Ict.Petra.Server.MFinance.Instantiator.AccountsPayable.WebConnectors
                                                        Int64 APartnerKey,
                                                        bool ACreditNoteOrInvoice)
         {
-            return Ict.Petra.Server.MFinance.AccountsPayable.WebConnectors.TTransactionEditWebConnector.CreateNewAApDocument(ALedgerNumber, APartnerKey, ACreditNoteOrInvoice);
+            return Ict.Petra.Server.MFinance.AccountsPayable.WebConnectors.TTransactionWebConnector.CreateNewAApDocument(ALedgerNumber, APartnerKey, ACreditNoteOrInvoice);
         }
 
         /// generated method from connector
         public TSubmitChangesResult SaveAApDocument(ref AccountsPayableTDS AInspectDS,
                                                     out TVerificationResultCollection AVerificationResult)
         {
-            return Ict.Petra.Server.MFinance.AccountsPayable.WebConnectors.TTransactionEditWebConnector.SaveAApDocument(ref AInspectDS, out AVerificationResult);
+            return Ict.Petra.Server.MFinance.AccountsPayable.WebConnectors.TTransactionWebConnector.SaveAApDocument(ref AInspectDS, out AVerificationResult);
         }
 
         /// generated method from connector
@@ -906,7 +906,17 @@ namespace Ict.Petra.Server.MFinance.Instantiator.AccountsPayable.WebConnectors
                                                              double AAmount,
                                                              Int32 ATempNumberOfDetails)
         {
-            return Ict.Petra.Server.MFinance.AccountsPayable.WebConnectors.TTransactionEditWebConnector.CreateNewAApDocumentDetail(ALedgerNumber, AApNumber, AApSupplier_DefaultExpAccount, AApSupplier_DefaultCostCentre, AAmount, ATempNumberOfDetails);
+            return Ict.Petra.Server.MFinance.AccountsPayable.WebConnectors.TTransactionWebConnector.CreateNewAApDocumentDetail(ALedgerNumber, AApNumber, AApSupplier_DefaultExpAccount, AApSupplier_DefaultCostCentre, AAmount, ATempNumberOfDetails);
+        }
+
+        /// generated method from connector
+        public AccountsPayableTDS FindAApDocument(Int32 ALedgerNumber,
+                                                  Int64 ASupplierKey,
+                                                  string ADocumentStatus,
+                                                  bool IsCreditNoteNotInvoice,
+                                                  bool AHideAgedTransactions)
+        {
+            return Ict.Petra.Server.MFinance.AccountsPayable.WebConnectors.TTransactionWebConnector.FindAApDocument(ALedgerNumber, ASupplierKey, ADocumentStatus, IsCreditNoteNotInvoice, AHideAgedTransactions);
         }
 
     }

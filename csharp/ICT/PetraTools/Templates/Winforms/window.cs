@@ -16,7 +16,9 @@ using System.Resources;
 using System.Collections.Specialized;
 using Mono.Unix;
 using Ict.Common;
+{#IFDEF ISEDITSCREEN}
 using Ict.Common.Verification;
+{#ENDIF ISEDITSCREEN}
 using Ict.Petra.Client.App.Core;
 using Ict.Petra.Client.App.Core.RemoteObjects;
 using Ict.Common.Controls;
@@ -29,15 +31,15 @@ namespace {#NAMESPACE}
   public partial class {#CLASSNAME}: System.Windows.Forms.Form, {#INTERFACENAME}
   {
     private {#UTILOBJECTCLASS} FPetraUtilsObject;
-    {#IFDEF DATASETTYPE}
+{#IFDEF DATASETTYPE}
     private {#DATASETTYPE} FMainDS;
-    {#ENDIF DATASETTYPE}
+{#ENDIF DATASETTYPE}
     
-    {#IFDEF UICONNECTORTYPE}
+{#IFDEF UICONNECTORTYPE}
 
     /// <summary>holds a reference to the Proxy object of the Serverside UIConnector</summary>
     private {#UICONNECTORTYPE} FUIConnector = null;
-    {#ENDIF UICONNECTORTYPE}
+{#ENDIF UICONNECTORTYPE}
 
     /// constructor
     public {#CLASSNAME}(IntPtr AParentFormHandle) : base()
@@ -54,19 +56,19 @@ namespace {#NAMESPACE}
 
       FPetraUtilsObject = new {#UTILOBJECTCLASS}(AParentFormHandle, this, stbMain);
       {#INITUSERCONTROLS}
-      {#IFDEF DATASETTYPE}
+{#IFDEF DATASETTYPE}
       FMainDS = new {#DATASETTYPE}();
-      {#ENDIF DATASETTYPE}
+{#ENDIF DATASETTYPE}
       {#INITMANUALCODE}
       FPetraUtilsObject.ActionEnablingEvent += ActionEnabledEvent;
       
       {#INITACTIONSTATE}
       
-      {#IFDEF UICONNECTORCREATE}
+{#IFDEF UICONNECTORCREATE}
       FUIConnector = {#UICONNECTORCREATE}();
       // Register Object with the TEnsureKeepAlive Class so that it doesn't get GC'd
       TEnsureKeepAlive.Register(FUIConnector);
-      {#ENDIF UICONNECTORCREATE}
+{#ENDIF UICONNECTORCREATE}
     }
 
     {#EVENTHANDLERSIMPLEMENTATION}
@@ -75,21 +77,22 @@ namespace {#NAMESPACE}
     {
         // TODO? Save Window position
 
-        {#IFDEF UICONNECTORCREATE}
+{#IFDEF UICONNECTORCREATE}
         if (FUIConnector != null)
         {
             // UnRegister Object from the TEnsureKeepAlive Class so that the Object can get GC'd on the PetraServer
             TEnsureKeepAlive.UnRegister(FUIConnector);
             FUIConnector = null;
         }
-        {#ENDIF UICONNECTORCREATE}
+{#ENDIF UICONNECTORCREATE}
     }
-    
-    {#IFDEF CANFINDWEBCONNECTOR_CREATENEWMASTER}
+
+{#IFDEF ISEDITSCREEN}
+{#IFDEF CANFINDWEBCONNECTOR_CREATENEWMASTER}
     /// automatically generated function from webconnector
     public bool CreateNew{#MASTERTABLE}({#CREATENEWMASTER_FORMALPARAMETERS})
     {
-        {#IFDEF CREATENEWMASTER_WITHVERIFICATION}
+{#IFDEF CREATENEWMASTER_WITHVERIFICATION}
         TVerificationResultCollection VerificationResult;
 
         FMainDS = {#WEBCONNECTORMASTER}.CreateNew{#MASTERTABLE}({#CREATENEWMASTER_ACTUALPARAMETERS}, out VerificationResult);
@@ -106,8 +109,8 @@ namespace {#NAMESPACE}
             
             return true;
         }
-        {#ENDIF CREATENEWMASTER_WITHVERIFICATION}
-        {#IFDEF CREATENEWMASTER_WITHOUTVERIFICATION}
+{#ENDIF CREATENEWMASTER_WITHVERIFICATION}
+{#IFDEF CREATENEWMASTER_WITHOUTVERIFICATION}
         FMainDS = {#WEBCONNECTORMASTER}.CreateNew{#MASTERTABLE}({#CREATENEWMASTER_ACTUALPARAMETERS});
 
         FPetraUtilsObject.SetChangedFlag();
@@ -115,11 +118,11 @@ namespace {#NAMESPACE}
         ShowData();
         
         return true;
-        {#ENDIF CREATENEWMASTER_WITHOUTVERIFICATION}
+{#ENDIF CREATENEWMASTER_WITHOUTVERIFICATION}
     }
-    {#ENDIF CANFINDWEBCONNECTOR_CREATENEWMASTER}
+{#ENDIF CANFINDWEBCONNECTOR_CREATENEWMASTER}
 
-    {#IFDEF CANFINDWEBCONNECTOR_CREATENEWDETAIL}
+{#IFDEF CANFINDWEBCONNECTOR_CREATENEWDETAIL}
     /// automatically generated, create a new record of {#DETAILTABLE} and display on the edit screen
     public bool CreateNew{#DETAILTABLE}({#CREATENEWDETAIL_FORMALPARAMETERS})
     {
@@ -142,46 +145,54 @@ namespace {#NAMESPACE}
         
         // TODO? DataGrid_FocusRowEntered(this, new RowEventArgs(ARowNumber));
     }
-    {#ENDIF CANFINDWEBCONNECTOR_CREATENEWDETAIL}
+{#ENDIF CANFINDWEBCONNECTOR_CREATENEWDETAIL}
+{#ENDIF ISEDITSCREEN}
 
-    {#IFDEF SHOWDATA}
+{#IFDEF CANFINDWEBCONNECTOR_LOADMASTER}
+    /// automatically generated function from webconnector
+    public bool Load{#MASTERTABLE}({#LOADMASTER_FORMALPARAMETERS})
+    {
+        FMainDS.Merge({#WEBCONNECTORMASTER}.Load{#MASTERTABLE}({#LOADMASTER_ACTUALPARAMETERS}));
+
+        ShowData();
+        
+        return true;
+    }
+{#ENDIF CANFINDWEBCONNECTOR_LOADMASTER}
+
+{#IFDEF SHOWDATA}
     private void ShowData()
     {
         {#SHOWDATA}
-        ShowDataManual();
     }
-    {#ENDIF SHOWDATA}
+{#ENDIF SHOWDATA}
 
-    {#IFDEF SHOWDATADETAILS}
+{#IFDEF SHOWDATADETAILS}
     private void ShowDataDetails()
     {
         {#SHOWDATADETAILS}
-        ShowDataDetailsManual();
     }
-    {#ENDIF SHOWDATADETAILS}
+{#ENDIF SHOWDATADETAILS}
     
-    {#IFDEF SAVEDATA}
+{#IFDEF SAVEDATA}
     private void GetDataFromControls()
     {
         {#SAVEDATA}
-        GetDataFromControlsManual();
-        {#IFDEF SAVEDETAILS}
+{#IFDEF SAVEDETAILS}
         GetDetailDataFromControls();
-        {#ENDIF SAVEDETAILS}
+{#ENDIF SAVEDETAILS}
     }
-    {#ENDIF SAVEDATA}
-    
-    {#IFDEF SAVEDETAILS}
+{#ENDIF SAVEDATA}
+
+{#IFDEF SAVEDETAILS}
     private void GetDetailDataFromControls()
     {
         {#SAVEDETAILS}
-        GetDetailDataFromControlsManual();
     }
 
     private void ShowDetails()
     {
         {#SHOWDETAILS}
-        ShowDetailsManual();
     }
     
     private void actNewDetail(Object sender, EventArgs e)
@@ -189,7 +200,7 @@ namespace {#NAMESPACE}
         FPetraUtilsObject.SetChangedFlag();
         
     }
-    {#ENDIF SAVEDETAILS}
+{#ENDIF SAVEDETAILS}
 
 #region Implement interface functions
 
@@ -224,8 +235,8 @@ namespace {#NAMESPACE}
     {
         return (TFrmPetraUtils)FPetraUtilsObject;
     }
-    
-{#IFDEF DATASETTYPE}
+{#IFDEF ISEDITSCREEN}
+
     /// auto generated
     public void FileSave(object sender, EventArgs e)
     {
@@ -237,7 +248,7 @@ namespace {#NAMESPACE}
     {
         return SaveChanges(FMainDS);
     }
-{#ENDIF DATASETTYPE}
+{#ENDIF ISEDITSCREEN}
 #endregion
 
 #region Action Handling

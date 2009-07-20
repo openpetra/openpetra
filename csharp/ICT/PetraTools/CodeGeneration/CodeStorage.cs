@@ -58,12 +58,8 @@ namespace Ict.Tools.CodeGeneration
         public string FClassName = "";
         public string FFormTitle = "";
         public string FNamespace = "";
-
-        /// <summary>
-        ///  used for call in constructor, InitializeManualCode(); partical class, one file auto generated, other file manually edited; eg. PartnerEdit
-        /// </summary>
-        public bool FHasManualCodeInOtherFile = false;
         public string FFilename = "";
+        public string FManualCodeFilename = "";
         public string FEventHandler = "";
         public string FEventHandlersImplementation = "";
         public string FActionHandlers = "";
@@ -75,10 +71,30 @@ namespace Ict.Tools.CodeGeneration
         public SortedList FXmlNodes = null;
         public XmlNode FRootNode = null;
 
-        public TCodeStorage(XmlDocument AXmlDocument, SortedList AXmlNodes)
+        private string FManualCodeFileContent = "";
+
+        public TCodeStorage(XmlDocument AXmlDocument, SortedList AXmlNodes, string AManualCodeFilename)
         {
             FXmlDocument = AXmlDocument;
             FXmlNodes = AXmlNodes;
+            FManualCodeFilename = AManualCodeFilename;
+        }
+
+        /// <summary>
+        /// check if the text is in the manual code file for the file that is about to be generated
+        /// </summary>
+        /// <param name="ASearchText"></param>
+        /// <returns></returns>
+        public bool ManualFileExistsAndContains(string ASearchText)
+        {
+            if ((FManualCodeFilename.Length > 0) && (FManualCodeFileContent.Length == 0) && System.IO.File.Exists(FManualCodeFilename))
+            {
+                System.IO.StreamReader r = new System.IO.StreamReader(FManualCodeFilename);
+                FManualCodeFileContent = r.ReadToEnd();
+                r.Close();
+            }
+
+            return FManualCodeFileContent.Contains(ASearchText);
         }
 
         public TControlDef GetControl(string AControlName)
@@ -224,13 +240,28 @@ namespace Ict.Tools.CodeGeneration
         {
             if (ADataField.IndexOf(".") == -1)
             {
-                if (ACtrl.controlName.Substring(ACtrl.controlTypePrefix.Length).StartsWith("Detail"))
+                if (ACtrl != null)
                 {
-                    ADataField = GetAttribute("DetailTable") + "." + ADataField;
+                    if (ACtrl.controlName.Substring(ACtrl.controlTypePrefix.Length).StartsWith("Detail"))
+                    {
+                        ADataField = GetAttribute("DetailTable") + "." + ADataField;
+                    }
+                    else
+                    {
+                        ADataField = GetAttribute("MasterTable") + "." + ADataField;
+                    }
                 }
                 else
                 {
-                    ADataField = GetAttribute("MasterTable") + "." + ADataField;
+                    // eg used for columns in datagrid
+                    if (ADataField.StartsWith("Detail"))
+                    {
+                        ADataField = GetAttribute("DetailTable") + "." + ADataField.Substring("Detail".Length);
+                    }
+                    else
+                    {
+                        ADataField = GetAttribute("MasterTable") + "." + ADataField;
+                    }
                 }
             }
 

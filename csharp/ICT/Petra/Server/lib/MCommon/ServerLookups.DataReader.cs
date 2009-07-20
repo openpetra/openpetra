@@ -60,14 +60,17 @@ namespace Ict.Petra.Server.MCommon.DataReader
                 ReadTransaction = DBAccess.GDBAccessObj.BeginTransaction(IsolationLevel.RepeatableRead, 5);
 
                 // TODO: auto generate
-                if (ATablename == "a_ap_supplier")
+                if (ATablename == AApSupplierTable.GetTableDBName())
                 {
-                    Console.WriteLine(((AApSupplierRow)AKeys.Rows[0]).PartnerKey.ToString());
                     AApSupplierTable typedTable;
                     AApSupplierAccess.LoadUsingTemplate(out typedTable, (AApSupplierRow)AKeys.Rows[0], ReadTransaction);
-                    Console.WriteLine("Datareader1: " + typedTable.Rows.Count.ToString());
                     tempTable = typedTable;
-                    Console.WriteLine("Datareader2: " + tempTable.Rows.Count.ToString());
+                }
+                else if (ATablename == AApDocumentTable.GetTableDBName())
+                {
+                    AApDocumentTable typedTable;
+                    AApDocumentAccess.LoadUsingTemplate(out typedTable, (AApDocumentRow)AKeys.Rows[0], ReadTransaction);
+                    tempTable = typedTable;
                 }
                 else
                 {

@@ -402,28 +402,31 @@ namespace Ict.Tools.CodeGeneration.Winforms
 
             writer.Template.AddToCodelet("SHOWDATA", AssignValue);
 
-            string GetValue = "";
-
-            if (!AField.bNotNull && (this.GetControlValue(ctrl, null) != null))
+            if (ctrl.GetAttribute("ReadOnly").ToLower() != "true")
             {
-                // need to check for IsNull
-                GetValue += "if (" + this.GetControlValue(ctrl, null) + ")" + Environment.NewLine;
-                GetValue += "{" + Environment.NewLine;
-                GetValue += "    FMainDS." + tablename + "[0].Set" + fieldname + "Null();" + Environment.NewLine;
-                GetValue += "}" + Environment.NewLine;
-                GetValue += "else" + Environment.NewLine;
-                GetValue += "{" + Environment.NewLine;
-                GetValue += "    FMainDS." + tablename + "[0]." + fieldname + " = " +
-                            this.GetControlValue(ctrl, AField.GetDotNetType()) + ";" + Environment.NewLine;
-                GetValue += "}" + Environment.NewLine;
-            }
-            else
-            {
-                GetValue += "FMainDS." + tablename + "[0]." + fieldname + " = " +
-                            this.GetControlValue(ctrl, AField.GetDotNetType()) + ";" + Environment.NewLine;
-            }
+                string GetValue = "";
 
-            writer.Template.AddToCodelet("SAVEDATA", GetValue);
+                if (!AField.bNotNull && (this.GetControlValue(ctrl, null) != null))
+                {
+                    // need to check for IsNull
+                    GetValue += "if (" + this.GetControlValue(ctrl, null) + ")" + Environment.NewLine;
+                    GetValue += "{" + Environment.NewLine;
+                    GetValue += "    FMainDS." + tablename + "[0].Set" + fieldname + "Null();" + Environment.NewLine;
+                    GetValue += "}" + Environment.NewLine;
+                    GetValue += "else" + Environment.NewLine;
+                    GetValue += "{" + Environment.NewLine;
+                    GetValue += "    FMainDS." + tablename + "[0]." + fieldname + " = " +
+                                this.GetControlValue(ctrl, AField.GetDotNetType()) + ";" + Environment.NewLine;
+                    GetValue += "}" + Environment.NewLine;
+                }
+                else
+                {
+                    GetValue += "FMainDS." + tablename + "[0]." + fieldname + " = " +
+                                this.GetControlValue(ctrl, AField.GetDotNetType()) + ";" + Environment.NewLine;
+                }
+
+                writer.Template.AddToCodelet("SAVEDATA", GetValue);
+            }
 
             // setstatusbar tooltips for datafields, with getstring plus value from petra.xml
             string helpText = AField.strHelp;

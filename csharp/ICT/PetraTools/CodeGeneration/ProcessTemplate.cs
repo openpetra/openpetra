@@ -108,7 +108,15 @@ namespace Ict.Tools.CodeGeneration
                         Environment.NewLine + "We are missing the ENDIF for: " + name);
                 }
 
-                s = s.Substring(0, posPlaceholder - 1) + s.Substring(s.IndexOf("}", posPlaceholderAfter) + 1);
+                string before = s.Substring(0, posPlaceholder - 1);
+                string after = s.Substring(s.IndexOf("}", posPlaceholderAfter) + 1);
+
+                if (before.EndsWith(Environment.NewLine) || after.StartsWith(Environment.NewLine))
+                {
+                    before = before.Substring(0, before.Length - Environment.NewLine.Length + 1);
+                }
+
+                s = before + after;
                 posPlaceholder = s.IndexOf("{#IFDEF ");
             }
 
@@ -209,6 +217,19 @@ namespace Ict.Tools.CodeGeneration
             return FCodelets.GetByIndex(index).ToString();
         }
 
+        // create a new codelet, overwrites existing one
+        public string SetCodelet(string APlaceholder, string ACodelet)
+        {
+            if (!FCodelets.ContainsKey(APlaceholder + FCodeletPostfix))
+            {
+                FCodelets.Add(APlaceholder + FCodeletPostfix, "");
+            }
+
+            int index = FCodelets.IndexOfKey(APlaceholder + FCodeletPostfix);
+            FCodelets.SetByIndex(index, ACodelet);
+            return FCodelets.GetByIndex(index).ToString();
+        }
+
         protected void ReplaceCodelets()
         {
             Boolean somethingWasReplaced = true;
@@ -277,7 +298,9 @@ namespace Ict.Tools.CodeGeneration
                     AValue = "";
                 }
 
+                FTemplateCode = FTemplateCode.Replace("{#IFDEF " + APlaceholder + "}" + Environment.NewLine, "");
                 FTemplateCode = FTemplateCode.Replace("{#IFDEF " + APlaceholder + "}", "");
+                FTemplateCode = FTemplateCode.Replace(Environment.NewLine + "{#ENDIF " + APlaceholder + "}", "");
                 FTemplateCode = FTemplateCode.Replace("{#ENDIF " + APlaceholder + "}", "");
 
                 // automatically indent to the same indentation as the placeholder

@@ -654,7 +654,7 @@ namespace Ict.Tools.CodeGeneration.Winforms
                 }
 
                 FTemplate.AddToCodelet("CANFINDWEBCONNECTOR_" + AFunctionType.ToUpper() + AMasterOrDetail, "true");
-                FTemplate.AddToCodelet("WEBCONNECTOR" + AMasterOrDetail, "TRemote." +
+                FTemplate.SetCodelet("WEBCONNECTOR" + AMasterOrDetail, "TRemote." +
                     AServerWebConnectorNamespace.Substring("Ict.Petra.Server.".Length));
                 FTemplate.AddToCodelet(AFunctionType.ToUpper() + AMasterOrDetail + "_ACTUALPARAMETERS", actualParameters);
                 FTemplate.AddToCodelet(AFunctionType.ToUpper() + AMasterOrDetail + "_FORMALPARAMETERS", formalParameters);
@@ -680,6 +680,7 @@ namespace Ict.Tools.CodeGeneration.Winforms
 
             HandleWebConnector("CreateNew", "MASTER", FCodeStorage.GetAttribute("MasterTable"), ServerWebConnectorNamespace, WebConnectorClasses);
             HandleWebConnector("CreateNew", "DETAIL", FCodeStorage.GetAttribute("DetailTable"), ServerWebConnectorNamespace, WebConnectorClasses);
+            HandleWebConnector("Load", "MASTER", FCodeStorage.GetAttribute("MasterTable"), ServerWebConnectorNamespace, WebConnectorClasses);
         }
 
         /*
@@ -709,9 +710,9 @@ namespace Ict.Tools.CodeGeneration.Winforms
 
             FTemplate.AddToCodelet("INITACTIONSTATE", "FPetraUtilsObject.InitActionState();" + Environment.NewLine);
 
-            if (FCodeStorage.FHasManualCodeInOtherFile)
+            if (FCodeStorage.ManualFileExistsAndContains("InitializeManualCode"))
             {
-                FTemplate.AddToCodelet("INITMANUALCODE", "InitializeManualCode();");
+                FTemplate.AddToCodelet("INITMANUALCODE", "InitializeManualCode();" + Environment.NewLine);
             }
 
             if (FCodeStorage.HasAttribute("DatasetType"))
@@ -721,6 +722,11 @@ namespace Ict.Tools.CodeGeneration.Winforms
 
             FTemplate.AddToCodelet("MASTERTABLE", FCodeStorage.GetAttribute("MasterTable"));
             FTemplate.AddToCodelet("DETAILTABLE", FCodeStorage.GetAttribute("DetailTable"));
+
+            if (FCodeStorage.GetAttribute("FormType").ToLower() == "edit")
+            {
+                FTemplate.AddToCodelet("ISEDITSCREEN", "true");
+            }
 
             // find the first control that is a panel or groupbox or tab control
             AddRootControl("content");
@@ -797,6 +803,32 @@ namespace Ict.Tools.CodeGeneration.Winforms
             }
 
             FinishUpInitialisingControls();
+
+            if (FCodeStorage.ManualFileExistsAndContains("ShowDataManual"))
+            {
+                FTemplate.AddToCodelet("SHOWDATA", "ShowDataManual();" + Environment.NewLine);
+            }
+
+            if (FCodeStorage.ManualFileExistsAndContains("ShowDataDetailsManual"))
+            {
+                FTemplate.AddToCodelet("SHOWDATADETAILS", "ShowDataDetailsManual();" + Environment.NewLine);
+            }
+
+            if (FCodeStorage.ManualFileExistsAndContains("GetDataFromControlsManual"))
+            {
+                FTemplate.AddToCodelet("SAVEDATA", "GetDataFromControlsManual();" + Environment.NewLine);
+            }
+
+            if (FCodeStorage.ManualFileExistsAndContains("GetDetailDataFromControlsManual"))
+            {
+                FTemplate.AddToCodelet("SAVEDETAILS", "GetDetailDataFromControlsManual();" + Environment.NewLine);
+            }
+
+            if (FCodeStorage.ManualFileExistsAndContains("ShowDetailsManual"))
+            {
+                FTemplate.AddToCodelet("SHOWDETAILS", "ShowDetailsManual();" + Environment.NewLine);
+            }
+
             InsertCodeIntoTemplate(AXAMLFilename);
         }
 

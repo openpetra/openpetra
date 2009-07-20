@@ -40,6 +40,7 @@ using System.Resources;
 using System.Collections.Specialized;
 using Mono.Unix;
 using Ict.Common;
+using Ict.Common.Verification;
 using Ict.Petra.Client.App.Core;
 using Ict.Petra.Client.App.Core.RemoteObjects;
 using Ict.Common.Controls;
@@ -126,7 +127,6 @@ namespace Ict.Petra.Client.MFinance.Gui.AccountsPayable
       FUIConnector = TRemote.MFinance.AccountsPayable.UIConnectors.SupplierEdit();
       // Register Object with the TEnsureKeepAlive Class so that it doesn't get GC'd
       TEnsureKeepAlive.Register(FUIConnector);
-
     }
 
     private void nudDiscountDaysValueChanged(object sender, EventArgs e)
@@ -164,7 +164,6 @@ namespace Ict.Petra.Client.MFinance.Gui.AccountsPayable
             TEnsureKeepAlive.UnRegister(FUIConnector);
             FUIConnector = null;
         }
-
     }
 
     private void ShowData()
@@ -258,12 +257,10 @@ namespace Ict.Petra.Client.MFinance.Gui.AccountsPayable
         {
             cmbExpenseAccount.SetSelectedString(FMainDS.AApSupplier[0].DefaultExpAccount);
         }
-        ShowDataManual();
     }
 
     private void GetDataFromControls()
     {
-        FMainDS.AApSupplier[0].PartnerKey = Convert.ToInt64(txtPartnerKey.Text);
         FMainDS.AApSupplier[0].CurrencyCode = cmbCurrency.GetSelectedString();
         if (cmbSupplierType.SelectedIndex == -1)
         {
@@ -324,7 +321,6 @@ namespace Ict.Petra.Client.MFinance.Gui.AccountsPayable
         {
             FMainDS.AApSupplier[0].DefaultExpAccount = cmbExpenseAccount.GetSelectedString();
         }
-        GetDataFromControlsManual();
     }
 
 #region Implement interface functions
@@ -359,6 +355,18 @@ namespace Ict.Petra.Client.MFinance.Gui.AccountsPayable
     public TFrmPetraUtils GetPetraUtilsObject()
     {
         return (TFrmPetraUtils)FPetraUtilsObject;
+    }
+
+    /// auto generated
+    public void FileSave(object sender, EventArgs e)
+    {
+        SaveChanges(FMainDS);
+    }
+
+    /// auto generated
+    public bool SaveChanges()
+    {
+        return SaveChanges(FMainDS);
     }
 #endregion
 

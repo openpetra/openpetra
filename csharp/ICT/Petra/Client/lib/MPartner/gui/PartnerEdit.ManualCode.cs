@@ -263,20 +263,6 @@ namespace Ict.Petra.Client.MPartner.Gui
 #endif
         }
 
-        private void FileSave(System.Object sender, System.EventArgs e)
-        {
-            SaveChanges(ref FMainDS);
-        }
-
-        /// <summary>
-        /// needed for the interface
-        /// </summary>
-        /// <returns></returns>
-        public bool SaveChanges()
-        {
-            return SaveChanges(ref FMainDS);
-        }
-
         private void MniFileCopyPartnerKey_Click(System.Object sender, System.EventArgs e)
         {
             Clipboard.SetDataObject(FPartnerKey.ToString());
@@ -1455,7 +1441,7 @@ namespace Ict.Petra.Client.MPartner.Gui
         /// <param name="AInspectDS">The screen's dataset
         /// </param>
         /// <returns>void</returns>
-        private Boolean SaveChanges(ref PartnerEditTDS AInspectDS)
+        private Boolean SaveChanges(PartnerEditTDS AInspectDS)
         {
             Boolean ReturnValue;
             PartnerEditTDS SubmitDS;
@@ -1928,7 +1914,7 @@ namespace Ict.Petra.Client.MPartner.Gui
                             // end;
                             // recursive call!
                             FSubmitChangesContinue = true;
-                            ReturnValue = SaveChanges(ref AInspectDS);
+                            ReturnValue = SaveChanges(AInspectDS);
                             return ReturnValue;
                     }
                 }

@@ -3,14 +3,17 @@ RootNode:
     FormTitle: Supplier Transactions
     ClassName: TFrmAccountsPayableSupplierTransactions
     Namespace: Ict.Petra.Client.MFinance.Gui.AccountsPayable
+    DatasetType: Ict.Petra.Shared.MFinance.AP.Data.AccountsPayableTDS
+    MasterTable: AApSupplier
+    DetailTable: AApDocument
     FormType: browse
     HasManualCodeInOtherFile: true
     WindowWidth: 754
     WindowHeight: 623
     Actions:
-        actNewInvoice: {Label=&Invoice, ShortCut=Ctrl+I}        
-        actNewCreditNote:{Label=&Credit Note, ShortCut=Ctrl+R}
-        actOpenSelected: {Label=&Open Selected, ShortCut=Ctrl+O}
+        actNewInvoice: {Label=New &Invoice, ShortCut=Ctrl+I}        
+        actNewCreditNote:{Label=New &Credit Note, ShortCut=Ctrl+R}
+        actOpenSelected: {Label=&Open Selected, ShortCut=Ctrl+O, ActionClick=OpenSelectedApDocument}
         actReverseSelected: {Label=Re&verse Selected, ShortCut=F5}
         actApproveTagged: {Label=&Approve Tagged, ShortCut=F6}
         actPostTagged: {Label=&Post Tagged, ShortCut=F7}
@@ -23,8 +26,8 @@ RootNode:
             Controls: [txtCurrentSupplierName, txtCurrentSupplierCurrency]
             ControlsOrientation: horizontal
             Dock:Top
-        txtCurrentSupplierName: {Label=Current Supplier, ReadOnly=true}
-        txtCurrentSupplierCurrency: {Label=Currency, ReadOnly=true}
+        txtCurrentSupplierName: {Label=Current Supplier, ReadOnly=true, PartnerShortNameLookup=AApSupplier.PartnerKey}
+        txtCurrentSupplierCurrency: {Label=Currency, ReadOnly=true, DataField=AApSupplier.CurrencyCode}
         pnlDisplayedBalance: 
             Controls: [txtDisplayedBalance]
             Dock: Bottom
@@ -51,7 +54,11 @@ RootNode:
         btnTagPayable: {Label=Tag all Paya&ble}
         btnUntagAll: {Label=&Untag All}
         txtSumOfTagged: {Label=Sum of Tagged, ReadOnly=true}
-        grdResult: {Dock=Fill}
+        grdResult: 
+            Dock: Fill
+            ActionDoubleClick: actOpenSelected
+            # TODO: show DateDue (calculated from DetailDate and DateDue)
+            Columns: [DetailApNumber, DetailDocumentCode, DetailDateIssued, DetailTotalAmount]
     Menu:
         mniFile:
             mniReprintRemittanceAdvice: {Label=Reprint Re&mittance Advice}

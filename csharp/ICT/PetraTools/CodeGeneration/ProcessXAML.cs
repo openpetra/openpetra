@@ -88,6 +88,10 @@ namespace Ict.Tools.CodeGeneration
                                          System.IO.Path.DirectorySeparatorChar +
                                          System.IO.Path.GetFileNameWithoutExtension(FXamlFilename) +
                                          ".cs";
+                string manualCodeFile = System.IO.Path.GetDirectoryName(FXamlFilename) +
+                                        System.IO.Path.DirectorySeparatorChar +
+                                        System.IO.Path.GetFileNameWithoutExtension(FXamlFilename) +
+                                        ".ManualCode.cs";
                 string designerFile = System.IO.Path.GetDirectoryName(FXamlFilename) +
                                       System.IO.Path.DirectorySeparatorChar +
                                       System.IO.Path.GetFileNameWithoutExtension(FXamlFilename) +
@@ -102,7 +106,7 @@ namespace Ict.Tools.CodeGeneration
                 //* parsing *******
                 //******************
                 XmlDocument myDoc = TYml2Xml.CreateXmlDocument();
-                TCodeStorage codeStorage = new TCodeStorage(myDoc, FXmlNodes);
+                TCodeStorage codeStorage = new TCodeStorage(myDoc, FXmlNodes, manualCodeFile);
                 TParseXAML yamlParser = new TParseXAML(ref codeStorage);
 
                 // should not need to be specific to special forms

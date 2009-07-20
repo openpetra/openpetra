@@ -176,23 +176,29 @@ namespace Ict.Petra.Shared.Interfaces.MFinance.AccountsPayable.WebConnectors
     /// <summary>auto generated</summary>
     public interface IAccountsPayableWebConnectorsNamespace : IInterface
     {
-        /// <summary> auto generated from Connector method(Ict.Petra.Server.MFinance.AccountsPayable.WebConnectors.TTransactionEditWebConnector)</summary>
-        AccountsPayableTDS GetDocument(Int32 ALedgerNumber,
-                                       Int32 AAPNumber);
-        /// <summary> auto generated from Connector method(Ict.Petra.Server.MFinance.AccountsPayable.WebConnectors.TTransactionEditWebConnector)</summary>
+        /// <summary> auto generated from Connector method(Ict.Petra.Server.MFinance.AccountsPayable.WebConnectors.TTransactionWebConnector)</summary>
+        AccountsPayableTDS LoadAApDocument(Int32 ALedgerNumber,
+                                           Int32 AAPNumber);
+        /// <summary> auto generated from Connector method(Ict.Petra.Server.MFinance.AccountsPayable.WebConnectors.TTransactionWebConnector)</summary>
         AccountsPayableTDS CreateNewAApDocument(Int32 ALedgerNumber,
                                                 Int64 APartnerKey,
                                                 bool ACreditNoteOrInvoice);
-        /// <summary> auto generated from Connector method(Ict.Petra.Server.MFinance.AccountsPayable.WebConnectors.TTransactionEditWebConnector)</summary>
+        /// <summary> auto generated from Connector method(Ict.Petra.Server.MFinance.AccountsPayable.WebConnectors.TTransactionWebConnector)</summary>
         TSubmitChangesResult SaveAApDocument(ref AccountsPayableTDS AInspectDS,
                                              out TVerificationResultCollection AVerificationResult);
-        /// <summary> auto generated from Connector method(Ict.Petra.Server.MFinance.AccountsPayable.WebConnectors.TTransactionEditWebConnector)</summary>
+        /// <summary> auto generated from Connector method(Ict.Petra.Server.MFinance.AccountsPayable.WebConnectors.TTransactionWebConnector)</summary>
         AccountsPayableTDS CreateNewAApDocumentDetail(Int32 ALedgerNumber,
                                                       Int32 AApNumber,
                                                       string AApSupplier_DefaultExpAccount,
                                                       string AApSupplier_DefaultCostCentre,
                                                       double AAmount,
                                                       Int32 ATempNumberOfDetails);
+        /// <summary> auto generated from Connector method(Ict.Petra.Server.MFinance.AccountsPayable.WebConnectors.TTransactionWebConnector)</summary>
+        AccountsPayableTDS FindAApDocument(Int32 ALedgerNumber,
+                                           Int64 ASupplierKey,
+                                           string ADocumentStatus,
+                                           bool IsCreditNoteNotInvoice,
+                                           bool AHideAgedTransactions);
     }
 
 }

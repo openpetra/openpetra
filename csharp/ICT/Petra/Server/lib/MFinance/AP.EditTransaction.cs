@@ -44,25 +44,19 @@ namespace Ict.Petra.Server.MFinance.AccountsPayable.WebConnectors
     ///<summary>
     /// This connector provides data for the finance Accounts Payable screens
     ///</summary>
-    public class TTransactionEditWebConnector
+    public class TTransactionWebConnector
     {
         /// <summary>
         /// Passes data as a Typed DataSet to the Transaction Edit Screen
         /// </summary>
-        public static AccountsPayableTDS GetDocument(Int32 ALedgerNumber, Int32 AAPNumber)
+        public static AccountsPayableTDS LoadAApDocument(Int32 ALedgerNumber, Int32 AAPNumber)
         {
             // create the DataSet that will later be passed to the Client
             AccountsPayableTDS MainDS = new AccountsPayableTDS();
 
-            TTypedDataTable tempTable = new AApDocumentTable();
-            AApDocumentRow filterValues = ((AApDocumentTable)tempTable).NewRowTyped(false);
-
-            filterValues.LedgerNumber = ALedgerNumber;
-            filterValues.ApNumber = AAPNumber;
-            tempTable.Rows.Add(filterValues);
-            MCommon.DataReader.TCommonDataReader.GetData(AApDocumentTable.GetTableDBName(), tempTable, out tempTable);
-
-            MainDS.Merge(tempTable);
+            AApDocumentAccess.LoadByPrimaryKey(MainDS, ALedgerNumber, AAPNumber, null);
+            AApDocumentDetailAccess.LoadViaAApDocument(MainDS, ALedgerNumber, AAPNumber, null);
+            AApSupplierAccess.LoadByPrimaryKey(MainDS, MainDS.AApDocument[0].PartnerKey, null);
 
             // Accept row changes here so that the Client gets 'unmodified' rows
             MainDS.AcceptChanges();
@@ -240,6 +234,27 @@ namespace Ict.Petra.Server.MFinance.AccountsPayable.WebConnectors
 
             // Remove all Tables that were not filled with data before remoting them.
             MainDS.RemoveEmptyTables();
+
+            return MainDS;
+        }
+
+        /// <summary>
+        /// Find AP Documents
+        /// TODO: date
+        /// </summary>
+        public static AccountsPayableTDS FindAApDocument(Int32 ALedgerNumber, Int64 ASupplierKey,
+            string ADocumentStatus,
+            bool IsCreditNoteNotInvoice,
+            bool AHideAgedTransactions)
+        {
+            // create the DataSet that will later be passed to the Client
+            AccountsPayableTDS MainDS = new AccountsPayableTDS();
+
+            AApSupplierAccess.LoadByPrimaryKey(MainDS, ASupplierKey, null);
+
+            // TODO: filters for documents
+            // TODO: filter by ledger number
+            AApDocumentAccess.LoadViaAApSupplier(MainDS, ASupplierKey, null);
 
             return MainDS;
         }

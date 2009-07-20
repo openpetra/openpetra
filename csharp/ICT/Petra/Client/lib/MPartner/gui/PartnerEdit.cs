@@ -40,6 +40,7 @@ using System.Resources;
 using System.Collections.Specialized;
 using Mono.Unix;
 using Ict.Common;
+using Ict.Common.Verification;
 using Ict.Petra.Client.App.Core;
 using Ict.Petra.Client.App.Core.RemoteObjects;
 using Ict.Common.Controls;
@@ -182,6 +183,18 @@ namespace Ict.Petra.Client.MPartner.Gui
     public TFrmPetraUtils GetPetraUtilsObject()
     {
         return (TFrmPetraUtils)FPetraUtilsObject;
+    }
+
+    /// auto generated
+    public void FileSave(object sender, EventArgs e)
+    {
+        SaveChanges(FMainDS);
+    }
+
+    /// auto generated
+    public bool SaveChanges()
+    {
+        return SaveChanges(FMainDS);
     }
 #endregion
 

@@ -52,6 +52,7 @@ namespace Ict.Petra.Client.MFinance.Gui.AccountsPayable
   public partial class TFrmAccountsPayableSupplierTransactions: System.Windows.Forms.Form, Ict.Petra.Client.CommonForms.IFrmPetra
   {
     private Ict.Petra.Client.CommonForms.TFrmPetraUtils FPetraUtilsObject;
+    private Ict.Petra.Shared.MFinance.AP.Data.AccountsPayableTDS FMainDS;
 
     /// constructor
     public TFrmAccountsPayableSupplierTransactions(IntPtr AParentFormHandle) : base()
@@ -76,8 +77,8 @@ namespace Ict.Petra.Client.MFinance.Gui.AccountsPayable
       this.btnUntagAll.Text = Catalog.GetString("&Untag All");
       this.lblSumOfTagged.Text = Catalog.GetString("Sum of Tagged:");
       this.lblDisplayedBalance.Text = Catalog.GetString("Displayed Balance:");
-      this.tbbNewInvoice.Text = Catalog.GetString("&Invoice");
-      this.tbbNewCreditNote.Text = Catalog.GetString("&Credit Note");
+      this.tbbNewInvoice.Text = Catalog.GetString("New &Invoice");
+      this.tbbNewCreditNote.Text = Catalog.GetString("New &Credit Note");
       this.tbbOpenSelected.Text = Catalog.GetString("&Open Selected");
       this.tbbReverseSelected.Text = Catalog.GetString("Re&verse Selected");
       this.tbbApproveTagged.Text = Catalog.GetString("&Approve Tagged");
@@ -89,8 +90,8 @@ namespace Ict.Petra.Client.MFinance.Gui.AccountsPayable
       this.mniClose.ToolTipText = Catalog.GetString("Closes this window");
       this.mniClose.Text = Catalog.GetString("&Close");
       this.mniFile.Text = Catalog.GetString("&File");
-      this.mniNewInvoice.Text = Catalog.GetString("&Invoice");
-      this.mniNewCreditNote.Text = Catalog.GetString("&Credit Note");
+      this.mniNewInvoice.Text = Catalog.GetString("New &Invoice");
+      this.mniNewCreditNote.Text = Catalog.GetString("New &Credit Note");
       this.mniActionNew.Text = Catalog.GetString("&New...");
       this.mniOpenSelected.Text = Catalog.GetString("&Open Selected");
       this.mniReverseTransaction.Text = Catalog.GetString("Re&verse Selected");
@@ -107,8 +108,13 @@ namespace Ict.Petra.Client.MFinance.Gui.AccountsPayable
       #endregion
 
       FPetraUtilsObject = new Ict.Petra.Client.CommonForms.TFrmPetraUtils(AParentFormHandle, this, stbMain);
-
-      InitializeManualCode();
+      FPetraUtilsObject.SetStatusBarText(txtCurrentSupplierCurrency, Catalog.GetString("The currency code to use for this supplier."));
+      FMainDS = new Ict.Petra.Shared.MFinance.AP.Data.AccountsPayableTDS();
+      grdResult.Columns.Clear();
+      grdResult.AddTextColumn("AP Number", FMainDS.AApDocument.ColumnApNumber);
+      grdResult.AddTextColumn("Invoice Number", FMainDS.AApDocument.ColumnDocumentCode);
+      grdResult.AddTextColumn("Date Issued", FMainDS.AApDocument.ColumnDateIssued);
+      grdResult.AddTextColumn("Total Amount", FMainDS.AApDocument.ColumnTotalAmount);
       FPetraUtilsObject.ActionEnablingEvent += ActionEnabledEvent;
 
       FPetraUtilsObject.InitActionState();
@@ -139,6 +145,19 @@ namespace Ict.Petra.Client.MFinance.Gui.AccountsPayable
     {
         // TODO? Save Window position
 
+    }
+
+    private void ShowData()
+    {
+        TPartnerClass partnerClass;
+        string partnerShortName;
+        TRemote.MPartner.Partner.ServerLookups.GetPartnerShortName(
+            FMainDS.AApSupplier[0].PartnerKey,
+            out partnerShortName,
+            out partnerClass);
+        txtCurrentSupplierName.Text = partnerShortName;
+        txtCurrentSupplierCurrency.Text = FMainDS.AApSupplier[0].CurrencyCode;
+        ShowDataManual();
     }
 
 #region Implement interface functions

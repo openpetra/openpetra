@@ -90,9 +90,9 @@ namespace Ict.Petra.Client.MFinance.Gui
         public void AccountsPayable(object sender, EventArgs e)
         {
             // TODO: use scaffolding for opening screens?
-            // TODO: pass current ledger number
             TFrmAccountsPayableMain window = new TFrmAccountsPayableMain(this.Handle);
 
+            window.LedgerNumber = this.FLedgerNumber;
             window.Show();
         }
     }

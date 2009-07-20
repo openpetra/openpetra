@@ -119,39 +119,6 @@ namespace Ict.Petra.Client.MFinance.Gui.AccountsPayable
         }
 
         /// <summary>
-        /// displays the data from the local datatable
-        /// </summary>
-        private void ShowDataManual()
-        {
-        }
-
-        /// <summary>
-        /// get the data from the controls into the dataset
-        /// </summary>
-        private void GetDataFromControlsManual()
-        {
-        }
-
-        /// <summary>
-        /// save the current supplier
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
-        public void FileSave(object sender, EventArgs e)
-        {
-            SaveChanges(FMainDS);
-        }
-
-        /// <summary>
-        /// needed for interface
-        /// </summary>
-        /// <returns></returns>
-        public bool SaveChanges()
-        {
-            return SaveChanges(FMainDS);
-        }
-
-        /// <summary>
         /// save the changes on the screen
         /// </summary>
         /// <param name="AInspectDS"></param>

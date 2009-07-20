@@ -128,7 +128,7 @@ namespace Ict.Petra.Server.MFinance
 
                         case TCacheableFinanceTablesEnum.LedgerNameList:
                             TmpALedgerNameDT = TALedgerNameAggregate.GetData(TableName, ReadTransaction);
-                            DomainManager.GCacheableTablesManager.AddOrMergeCachedTable(TableName, TmpALedgerNameDT, DomainManager.GClientID);
+                            DomainManager.GCacheableTablesManager.AddOrRefreshCachedTable(TableName, TmpALedgerNameDT, DomainManager.GClientID);
                             break;
 
                         default:

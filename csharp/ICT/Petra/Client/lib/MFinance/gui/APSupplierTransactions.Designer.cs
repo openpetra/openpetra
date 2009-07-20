@@ -422,6 +422,7 @@ namespace Ict.Petra.Client.MFinance.Gui.AccountsPayable
             //
             this.grdResult.Name = "grdResult";
             this.grdResult.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.grdResult.DoubleClick += new System.EventHandler(this.OpenSelectedApDocument);
             //
             // pnlDisplayedBalance
             //
@@ -463,13 +464,13 @@ namespace Ict.Petra.Client.MFinance.Gui.AccountsPayable
             //
             this.tbbNewInvoice.Name = "tbbNewInvoice";
             this.tbbNewInvoice.AutoSize = true;
-            this.tbbNewInvoice.Text = "&Invoice";
+            this.tbbNewInvoice.Text = "New &Invoice";
             //
             // tbbNewCreditNote
             //
             this.tbbNewCreditNote.Name = "tbbNewCreditNote";
             this.tbbNewCreditNote.AutoSize = true;
-            this.tbbNewCreditNote.Text = "&Credit Note";
+            this.tbbNewCreditNote.Text = "New &Credit Note";
             //
             // tbbSeparator0
             //
@@ -481,6 +482,7 @@ namespace Ict.Petra.Client.MFinance.Gui.AccountsPayable
             //
             this.tbbOpenSelected.Name = "tbbOpenSelected";
             this.tbbOpenSelected.AutoSize = true;
+            this.tbbOpenSelected.Click += new System.EventHandler(this.OpenSelectedApDocument);
             this.tbbOpenSelected.Text = "&Open Selected";
             //
             // tbbReverseSelected
@@ -578,13 +580,13 @@ namespace Ict.Petra.Client.MFinance.Gui.AccountsPayable
             //
             this.mniNewInvoice.Name = "mniNewInvoice";
             this.mniNewInvoice.AutoSize = true;
-            this.mniNewInvoice.Text = "&Invoice";
+            this.mniNewInvoice.Text = "New &Invoice";
             //
             // mniNewCreditNote
             //
             this.mniNewCreditNote.Name = "mniNewCreditNote";
             this.mniNewCreditNote.AutoSize = true;
-            this.mniNewCreditNote.Text = "&Credit Note";
+            this.mniNewCreditNote.Text = "New &Credit Note";
             //
             // mniActionNew
             //
@@ -599,6 +601,7 @@ namespace Ict.Petra.Client.MFinance.Gui.AccountsPayable
             //
             this.mniOpenSelected.Name = "mniOpenSelected";
             this.mniOpenSelected.AutoSize = true;
+            this.mniOpenSelected.Click += new System.EventHandler(this.OpenSelectedApDocument);
             this.mniOpenSelected.Text = "&Open Selected";
             //
             // mniSeparator1
