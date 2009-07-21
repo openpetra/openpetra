@@ -85,6 +85,7 @@ namespace Ict.Petra.Server.MFinance.AccountsPayable.WebConnectors
             NewDocumentRow.LedgerNumber = ALedgerNumber;
             NewDocumentRow.PartnerKey = APartnerKey;
             NewDocumentRow.CreditNoteFlag = ACreditNoteOrInvoice;
+            NewDocumentRow.LastDetailNumber = -1;
 
             // get the supplier defaults
             AApSupplierTable tempTable;
@@ -172,7 +173,15 @@ namespace Ict.Petra.Server.MFinance.AccountsPayable.WebConnectors
                     if (AApDocumentAccess.SubmitChanges(AInspectDS.AApDocument, SubmitChangesTransaction,
                             out SingleVerificationResultCollection))
                     {
-                        SubmissionResult = TSubmitChangesResult.scrOK;
+                        if (AApDocumentDetailAccess.SubmitChanges(AInspectDS.AApDocumentDetail, SubmitChangesTransaction,
+                                out SingleVerificationResultCollection))
+                        {
+                            SubmissionResult = TSubmitChangesResult.scrOK;
+                        }
+                        else
+                        {
+                            SubmissionResult = TSubmitChangesResult.scrError;
+                        }
                     }
                     else
                     {
@@ -202,21 +211,22 @@ namespace Ict.Petra.Server.MFinance.AccountsPayable.WebConnectors
         }
 
         /// <summary>
-        /// create a new AP document detail for an existing AP document
+        /// create a new AP document detail for an existing AP document;
+        /// attention: need to modify the LastDetailNumber on the client side!
         /// </summary>
         /// <param name="ALedgerNumber"></param>
         /// <param name="AApNumber"></param>
         /// <param name="AApSupplier_DefaultExpAccount"></param>
         /// <param name="AApSupplier_DefaultCostCentre"></param>
         /// <param name="AAmount">the amount that is still missing from the total amount of the invoice</param>
-        /// <param name="ATempNumberOfDetails">to give negative numbers and keep it a private key</param>
-        /// <returns></returns>
+        /// <param name="ALastDetailNumber">AApDocument.LastDetailNumber</param>
+        /// <returns>the new AApDocumentDetail row</returns>
         public static AccountsPayableTDS CreateNewAApDocumentDetail(Int32 ALedgerNumber,
             Int32 AApNumber,
             string AApSupplier_DefaultExpAccount,
             string AApSupplier_DefaultCostCentre,
             double AAmount,
-            Int32 ATempNumberOfDetails)
+            Int32 ALastDetailNumber)
         {
             // create the DataSet that will later be passed to the Client
             AccountsPayableTDS MainDS = new AccountsPayableTDS();
@@ -225,7 +235,7 @@ namespace Ict.Petra.Server.MFinance.AccountsPayable.WebConnectors
 
             NewRow.ApNumber = AApNumber;
             NewRow.LedgerNumber = ALedgerNumber;
-            NewRow.DetailNumber = -1 * ATempNumberOfDetails; // detail number will be set in SubmitChanges
+            NewRow.DetailNumber = ALastDetailNumber;
             NewRow.Amount = AAmount;
             NewRow.CostCentreCode = AApSupplier_DefaultCostCentre;
             NewRow.AccountCode = AApSupplier_DefaultExpAccount;

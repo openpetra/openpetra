@@ -178,6 +178,33 @@ namespace Ict.Petra.Client.MFinance.Gui.AccountsPayable
             return false;
         }
 
+        private void NewDetail(Object sender, EventArgs e)
+        {
+            // get the entered amounts, so that we can calculate the missing amount for the new detail
+            GetDetailsFromControls(FPreviouslySelectedDetailRow);
+
+            double DetailAmount = FMainDS.AApDocument[0].TotalAmount;
+
+            foreach (AApDocumentDetailRow detailRow in FMainDS.AApDocumentDetail.Rows)
+            {
+                DetailAmount -= detailRow.Amount;
+            }
+
+            if (DetailAmount < 0)
+            {
+                DetailAmount = 0;
+            }
+
+            CreateNewAApDocumentDetail(
+                FMainDS.AApDocument[0].LedgerNumber,
+                FMainDS.AApDocument[0].ApNumber,
+                FMainDS.AApSupplier[0].DefaultExpAccount,
+                FMainDS.AApSupplier[0].DefaultCostCentre,
+                DetailAmount,
+                FMainDS.AApDocument[0].LastDetailNumber);
+            FMainDS.AApDocument[0].LastDetailNumber++;
+        }
+
         private void UpdateCreditTerms(object sender, EventArgs e)
         {
             if (sender == dtpDateDue)

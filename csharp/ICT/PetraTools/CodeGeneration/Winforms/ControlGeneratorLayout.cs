@@ -398,6 +398,11 @@ namespace Ict.Tools.CodeGeneration.Winforms
                 {
                     writer.CallControlFunction(FTlpName, "SetColumnSpan(this." + controlName + ", " + ctrl.GetAttribute("ColSpan") + " * 2 - 1)");
                 }
+
+                if (ctrl.HasAttribute("RowSpan"))
+                {
+                    writer.CallControlFunction(FTlpName, "SetRowSpan(this." + controlName + ", " + ctrl.GetAttribute("RowSpan") + ")");
+                }
             }
             else
             {
@@ -412,6 +417,11 @@ namespace Ict.Tools.CodeGeneration.Winforms
                 else
                 {
                     writer.CallControlFunction(FTlpName, "SetColumnSpan(this." + controlName + ", 2)");
+                }
+
+                if (ctrl.HasAttribute("RowSpan"))
+                {
+                    writer.CallControlFunction(FTlpName, "SetRowSpan(this." + controlName + ", " + ctrl.GetAttribute("RowSpan") + ")");
                 }
             }
 

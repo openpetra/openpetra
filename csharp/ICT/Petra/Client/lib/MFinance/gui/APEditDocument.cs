@@ -79,17 +79,15 @@ namespace Ict.Petra.Client.MFinance.Gui.AccountsPayable
       this.lblTotalAmount.Text = Catalog.GetString("&Amount:");
       this.lblExchangeRateToBase.Text = Catalog.GetString("E&xchange Rate:");
       this.grpDocumentInfo.Text = Catalog.GetString("Document Information");
-      this.lblDetailNarrative.Text = Catalog.GetString("Narrati&ve:");
       this.btnAddDetail.Text = Catalog.GetString("Add De&tail");
-      this.lblDetailItemRef.Text = Catalog.GetString("Detail &Ref:");
       this.btnRemoveDetail.Text = Catalog.GetString("&Remove Detail");
+      this.lblDetailNarrative.Text = Catalog.GetString("Narrati&ve:");
+      this.lblDetailItemRef.Text = Catalog.GetString("Detail &Ref:");
       this.lblDetailAmount.Text = Catalog.GetString("A&mount:");
       this.lblDetailCostCentreCode.Text = Catalog.GetString("C&ost Centre:");
       this.btnAnalysisAttributes.Text = Catalog.GetString("Analysis Attri&b.");
       this.lblDetailBaseAmount.Text = Catalog.GetString("Base:");
       this.lblDetailAccountCode.Text = Catalog.GetString("Accou&nt:");
-      this.btnApproveDetail.Text = Catalog.GetString("A&pprove Detail");
-      this.lblDetailApprovalDate.Text = Catalog.GetString("Approved On:");
       this.btnUseTaxAccountCostCentre.Text = Catalog.GetString("Use Ta&x Acct+CC");
       this.grpDetails.Text = Catalog.GetString("Details");
       this.tbbSave.ToolTipText = Catalog.GetString("Saves changed data");
@@ -124,11 +122,16 @@ namespace Ict.Petra.Client.MFinance.Gui.AccountsPayable
       FPetraUtilsObject.SetStatusBarText(txtDiscountPercentage, Catalog.GetString("The percentage discount you get for early payment of this document in the case that it is an invoice."));
       FPetraUtilsObject.SetStatusBarText(txtTotalAmount, Catalog.GetString("The total amount of money that this document is worth."));
       FPetraUtilsObject.SetStatusBarText(txtExchangeRateToBase, Catalog.GetString("The exchange rate to the base currency at the time that the document was issued."));
+      FPetraUtilsObject.SetStatusBarText(txtDetailNarrative, Catalog.GetString("A narrative about what this is."));
+      FPetraUtilsObject.SetStatusBarText(txtDetailItemRef, Catalog.GetString("Some other reference to the item."));
+      FPetraUtilsObject.SetStatusBarText(txtDetailAmount, Catalog.GetString("The amount of money this detail is worth."));
+      FPetraUtilsObject.SetStatusBarText(cmbDetailCostCentreCode, Catalog.GetString("Reference to the cost centre to use for this detail."));
+      FPetraUtilsObject.SetStatusBarText(cmbDetailAccountCode, Catalog.GetString("Reference to the account to use for this detail"));
       FMainDS = new Ict.Petra.Shared.MFinance.AP.Data.AccountsPayableTDS();
       grdDetails.Columns.Clear();
       grdDetails.AddTextColumn("Amount", FMainDS.AApDocumentDetail.ColumnAmount);
-      grdDetails.AddTextColumn("Reference", FMainDS.AApDocumentDetail.ColumnItemRef);
       grdDetails.AddTextColumn("Narrative", FMainDS.AApDocumentDetail.ColumnNarrative);
+      grdDetails.AddTextColumn("Reference", FMainDS.AApDocumentDetail.ColumnItemRef);
       FPetraUtilsObject.ActionEnablingEvent += ActionEnabledEvent;
 
       FPetraUtilsObject.InitActionState();
@@ -180,26 +183,78 @@ namespace Ict.Petra.Client.MFinance.Gui.AccountsPayable
     }
 
     /// automatically generated, create a new record of AApDocumentDetail and display on the edit screen
-    public bool CreateNewAApDocumentDetail(Int32 ALedgerNumber, Int32 AApNumber, string AApSupplier_DefaultExpAccount, string AApSupplier_DefaultCostCentre, double AAmount, Int32 ATempNumberOfDetails)
+    public bool CreateNewAApDocumentDetail(Int32 ALedgerNumber, Int32 AApNumber, string AApSupplier_DefaultExpAccount, string AApSupplier_DefaultCostCentre, double AAmount, Int32 ALastDetailNumber)
     {
-        FMainDS.Merge(TRemote.MFinance.AccountsPayable.WebConnectors.CreateNewAApDocumentDetail(ALedgerNumber, AApNumber, AApSupplier_DefaultExpAccount, AApSupplier_DefaultCostCentre, AAmount, ATempNumberOfDetails));
+        FMainDS.Merge(TRemote.MFinance.AccountsPayable.WebConnectors.CreateNewAApDocumentDetail(ALedgerNumber, AApNumber, AApSupplier_DefaultExpAccount, AApSupplier_DefaultCostCentre, AAmount, ALastDetailNumber));
 
         FPetraUtilsObject.SetChangedFlag();
 
-        ShowData();
-        SelectDetailRow(grdDetails.Rows.Count - 1);
+        grdDetails.DataSource = new DevAge.ComponentModel.BoundDataView(FMainDS.AApDocumentDetail.DefaultView);
+        grdDetails.Refresh();
+        SelectDetailRowByDataTableIndex(FMainDS.AApDocumentDetail.Rows.Count - 1);
 
         return true;
     }
-    private void SelectDetailRow(Int32 ARowNumber)
-    {
-        ShowData();
-        grdDetails.Selection.ResetSelection(false);
-        grdDetails.Selection.SelectRow(ARowNumber, true);
-        // scroll to the row
-        grdDetails.ShowCell(new SourceGrid.Position(ARowNumber, 0), true);
 
-        // TODO? DataGrid_FocusRowEntered(this, new RowEventArgs(ARowNumber));
+    private void SelectDetailRowByDataTableIndex(Int32 ARowNumberInTable)
+    {
+        Int32 RowNumberGrid = -1;
+        for (int Counter = 0; Counter < grdDetails.DataSource.Count; Counter++)
+        {
+            bool found = true;
+            foreach (DataColumn myColumn in FMainDS.AApDocumentDetail.PrimaryKey)
+            {
+                string value1 = FMainDS.AApDocumentDetail.Rows[ARowNumberInTable][myColumn].ToString();
+                string value2 = (grdDetails.DataSource as DevAge.ComponentModel.BoundDataView).mDataView[Counter][myColumn.Ordinal].ToString();
+                if (value1 != value2)
+                {
+                    found = false;
+                }
+            }
+            if (found)
+            {
+                RowNumberGrid = Counter + 1;
+            }
+        }
+        grdDetails.Selection.ResetSelection(false);
+        grdDetails.Selection.SelectRow(RowNumberGrid, true);
+        // scroll to the row
+        grdDetails.ShowCell(new SourceGrid.Position(RowNumberGrid, 0), true);
+
+        FocusedRowChanged(this, new SourceGrid.RowEventArgs(RowNumberGrid));
+    }
+
+    /// return the index in the detail datatable of the selected row, not the index in the datagrid
+    private Int32 GetSelectedDetailDataTableIndex()
+    {
+        DataRowView[] SelectedGridRow = grdDetails.SelectedDataRowsAsDataRowView;
+
+        if (SelectedGridRow.Length >= 1)
+        {
+            // this would return the index in the grid: return grdDetails.DataSource.IndexOf(SelectedGridRow[0]);
+            // we could keep track of the order in the datatable ourselves: return Convert.ToInt32(SelectedGridRow[0][ORIGINALINDEX]);
+            // does not seem to work: return grdDetails.DataSourceRowToIndex2(SelectedGridRow[0]);
+
+            for (int Counter = 0; Counter < FMainDS.AApDocumentDetail.Rows.Count; Counter++)
+            {
+                bool found = true;
+                foreach (DataColumn myColumn in FMainDS.AApDocumentDetail.PrimaryKey)
+                {
+                    if (FMainDS.AApDocumentDetail.Rows[Counter][myColumn].ToString() !=
+                        SelectedGridRow[0][myColumn.Ordinal].ToString())
+                    {
+                        found = false;
+                    }
+
+                }
+                if (found)
+                {
+                    return Counter;
+                }
+            }
+        }
+
+        return -1;
     }
 
     /// automatically generated function from webconnector
@@ -264,14 +319,7 @@ namespace Ict.Petra.Client.MFinance.Gui.AccountsPayable
         {
             txtDiscountPercentage.Text = FMainDS.AApDocument[0].DiscountPercentage.ToString();
         }
-        if (FMainDS.AApDocument[0].IsTotalAmountNull())
-        {
-            txtTotalAmount.Text = String.Empty;
-        }
-        else
-        {
-            txtTotalAmount.Text = FMainDS.AApDocument[0].TotalAmount.ToString();
-        }
+        txtTotalAmount.Text = FMainDS.AApDocument[0].TotalAmount.ToString();
         if (FMainDS.AApDocument[0].IsExchangeRateToBaseNull())
         {
             txtExchangeRateToBase.Text = String.Empty;
@@ -286,7 +334,77 @@ namespace Ict.Petra.Client.MFinance.Gui.AccountsPayable
             myDataView.AllowNew = false;
             grdDetails.DataSource = new DevAge.ComponentModel.BoundDataView(myDataView);
             grdDetails.AutoSizeCells();
+            if (FMainDS.AApDocumentDetail.Rows.Count > 0)
+            {
+                ShowDetails(0);
+            }
+            else
+            {
+                pnlDetails.Enabled = false;
+            }
         }
+        else
+        {
+            pnlDetails.Enabled = false;
+        }
+    }
+
+    private void ShowDetails(Int32 ACurrentDetailIndex)
+    {
+        if (FMainDS.AApDocumentDetail[ACurrentDetailIndex].IsNarrativeNull())
+        {
+            txtDetailNarrative.Text = String.Empty;
+        }
+        else
+        {
+            txtDetailNarrative.Text = FMainDS.AApDocumentDetail[ACurrentDetailIndex].Narrative;
+        }
+        if (FMainDS.AApDocumentDetail[ACurrentDetailIndex].IsItemRefNull())
+        {
+            txtDetailItemRef.Text = String.Empty;
+        }
+        else
+        {
+            txtDetailItemRef.Text = FMainDS.AApDocumentDetail[ACurrentDetailIndex].ItemRef;
+        }
+        if (FMainDS.AApDocumentDetail[ACurrentDetailIndex].IsAmountNull())
+        {
+            txtDetailAmount.Text = String.Empty;
+        }
+        else
+        {
+            txtDetailAmount.Text = FMainDS.AApDocumentDetail[ACurrentDetailIndex].Amount.ToString();
+        }
+        if (FMainDS.AApDocumentDetail[ACurrentDetailIndex].IsCostCentreCodeNull())
+        {
+            cmbDetailCostCentreCode.SelectedIndex = -1;
+        }
+        else
+        {
+            cmbDetailCostCentreCode.SetSelectedString(FMainDS.AApDocumentDetail[ACurrentDetailIndex].CostCentreCode);
+        }
+        if (FMainDS.AApDocumentDetail[ACurrentDetailIndex].IsAccountCodeNull())
+        {
+            cmbDetailAccountCode.SelectedIndex = -1;
+        }
+        else
+        {
+            cmbDetailAccountCode.SetSelectedString(FMainDS.AApDocumentDetail[ACurrentDetailIndex].AccountCode);
+        }
+    }
+
+    private Int32 FPreviouslySelectedDetailRow = -1;
+    private void FocusedRowChanged(System.Object sender, SourceGrid.RowEventArgs e)
+    {
+        // get the details from the previously selected row
+        if (FPreviouslySelectedDetailRow != -1)
+        {
+            GetDetailsFromControls(FPreviouslySelectedDetailRow);
+        }
+        // display the details of the currently selected row; e.Row: first row has number 1
+        ShowDetails(GetSelectedDetailDataTableIndex());
+        FPreviouslySelectedDetailRow = GetSelectedDetailDataTableIndex();
+        pnlDetails.Enabled = true;
     }
 
     private void GetDataFromControls()
@@ -319,14 +437,7 @@ namespace Ict.Petra.Client.MFinance.Gui.AccountsPayable
         {
             FMainDS.AApDocument[0].DiscountPercentage = Convert.ToDouble(txtDiscountPercentage.Text);
         }
-        if (txtTotalAmount.Text.Length == 0)
-        {
-            FMainDS.AApDocument[0].SetTotalAmountNull();
-        }
-        else
-        {
-            FMainDS.AApDocument[0].TotalAmount = Convert.ToDouble(txtTotalAmount.Text);
-        }
+        FMainDS.AApDocument[0].TotalAmount = Convert.ToDouble(txtTotalAmount.Text);
         if (txtExchangeRateToBase.Text.Length == 0)
         {
             FMainDS.AApDocument[0].SetExchangeRateToBaseNull();
@@ -334,6 +445,54 @@ namespace Ict.Petra.Client.MFinance.Gui.AccountsPayable
         else
         {
             FMainDS.AApDocument[0].ExchangeRateToBase = Convert.ToDouble(txtExchangeRateToBase.Text);
+        }
+        GetDetailsFromControls(GetSelectedDetailDataTableIndex());
+    }
+
+    private void GetDetailsFromControls(Int32 ACurrentDetailIndex)
+    {
+        if (ACurrentDetailIndex != -1)
+        {
+            if (txtDetailNarrative.Text.Length == 0)
+            {
+                FMainDS.AApDocumentDetail[ACurrentDetailIndex].SetNarrativeNull();
+            }
+            else
+            {
+                FMainDS.AApDocumentDetail[ACurrentDetailIndex].Narrative = txtDetailNarrative.Text;
+            }
+            if (txtDetailItemRef.Text.Length == 0)
+            {
+                FMainDS.AApDocumentDetail[ACurrentDetailIndex].SetItemRefNull();
+            }
+            else
+            {
+                FMainDS.AApDocumentDetail[ACurrentDetailIndex].ItemRef = txtDetailItemRef.Text;
+            }
+            if (txtDetailAmount.Text.Length == 0)
+            {
+                FMainDS.AApDocumentDetail[ACurrentDetailIndex].SetAmountNull();
+            }
+            else
+            {
+                FMainDS.AApDocumentDetail[ACurrentDetailIndex].Amount = Convert.ToDouble(txtDetailAmount.Text);
+            }
+            if (cmbDetailCostCentreCode.SelectedIndex == -1)
+            {
+                FMainDS.AApDocumentDetail[ACurrentDetailIndex].SetCostCentreCodeNull();
+            }
+            else
+            {
+                FMainDS.AApDocumentDetail[ACurrentDetailIndex].CostCentreCode = cmbDetailCostCentreCode.GetSelectedString();
+            }
+            if (cmbDetailAccountCode.SelectedIndex == -1)
+            {
+                FMainDS.AApDocumentDetail[ACurrentDetailIndex].SetAccountCodeNull();
+            }
+            else
+            {
+                FMainDS.AApDocumentDetail[ACurrentDetailIndex].AccountCode = cmbDetailAccountCode.GetSelectedString();
+            }
         }
     }
 
@@ -389,6 +548,10 @@ namespace Ict.Petra.Client.MFinance.Gui.AccountsPayable
     /// auto generated
     public void ActionEnabledEvent(object sender, ActionEventArgs e)
     {
+        if (e.ActionName == "actNewDetail")
+        {
+            btnAddDetail.Enabled = e.Enabled;
+        }
         if (e.ActionName == "actSave")
         {
             tbbSave.Enabled = e.Enabled;

@@ -567,6 +567,12 @@ namespace Ict.Tools.CodeGeneration.Winforms
                 }
             }
 
+            if (ctrl.HasAttribute("ActionFocusRow"))
+            {
+                AssignEventHandlerToControl(writer, ctrl, "Selection.FocusRowEntered", "SourceGrid.RowEventHandler",
+                    ctrl.GetAttribute("ActionFocusRow"));
+            }
+
             if ((ctrl.controlName == "grdDetails") && FCodeStorage.HasAttribute("DetailTable") && FCodeStorage.HasAttribute("DatasetType"))
             {
                 string LoadDetailsToGrid = "";
@@ -578,7 +584,20 @@ namespace Ict.Tools.CodeGeneration.Winforms
                 LoadDetailsToGrid += "    " + ctrl.controlName + ".DataSource = new DevAge.ComponentModel.BoundDataView(myDataView);" +
                                      Environment.NewLine;
                 LoadDetailsToGrid += "    " + ctrl.controlName + ".AutoSizeCells();" + Environment.NewLine;
+                LoadDetailsToGrid += "    if (FMainDS." + FCodeStorage.GetAttribute("DetailTable") + ".Rows.Count > 0)" + Environment.NewLine;
+                LoadDetailsToGrid += "    {" + Environment.NewLine;
+                LoadDetailsToGrid += "        ShowDetails(0);" + Environment.NewLine;
+                LoadDetailsToGrid += "    }" + Environment.NewLine;
+                LoadDetailsToGrid += "    else" + Environment.NewLine;
+                LoadDetailsToGrid += "    {" + Environment.NewLine;
+                LoadDetailsToGrid += "        pnlDetails.Enabled = false;" + Environment.NewLine;
+                LoadDetailsToGrid += "    }" + Environment.NewLine;
                 LoadDetailsToGrid += "}" + Environment.NewLine;
+                LoadDetailsToGrid += "else" + Environment.NewLine;
+                LoadDetailsToGrid += "{" + Environment.NewLine;
+                LoadDetailsToGrid += "    pnlDetails.Enabled = false;" + Environment.NewLine;
+                LoadDetailsToGrid += "}" + Environment.NewLine;
+
                 writer.Template.AddToCodelet("SHOWDATA", LoadDetailsToGrid);
             }
         }

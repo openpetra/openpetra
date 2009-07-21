@@ -244,6 +244,11 @@ namespace Ict.Tools.CodeGeneration
                 {
                     if (ACtrl.controlName.Substring(ACtrl.controlTypePrefix.Length).StartsWith("Detail"))
                     {
+                        if (ADataField.StartsWith("Detail"))
+                        {
+                            ADataField = ADataField.Substring("Detail".Length);
+                        }
+
                         ADataField = GetAttribute("DetailTable") + "." + ADataField;
                     }
                     else

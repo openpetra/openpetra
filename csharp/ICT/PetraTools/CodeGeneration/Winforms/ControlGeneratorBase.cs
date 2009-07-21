@@ -156,12 +156,18 @@ namespace Ict.Tools.CodeGeneration.Winforms
         }
 
         /// <summary>
+        /// overload
         /// </summary>
         /// <param name="writer"></param>
         /// <param name="ctrl"></param>
         /// <param name="AEvent">Click or DoubleClick or other</param>
         /// <param name="ActionToPerform"></param>
         public void AssignEventHandlerToControl(IFormWriter writer, TControlDef ctrl, string AEvent, string ActionToPerform)
+        {
+            AssignEventHandlerToControl(writer, ctrl, AEvent, "System.EventHandler", ActionToPerform);
+        }
+
+        public void AssignEventHandlerToControl(IFormWriter writer, TControlDef ctrl, string AEvent, string AEventHandlerType, string ActionToPerform)
         {
             if (ActionToPerform.StartsWith("act"))
             {
@@ -198,7 +204,7 @@ namespace Ict.Tools.CodeGeneration.Winforms
 
             if (ActionToPerform.Length > 0)
             {
-                writer.SetEventHandlerToControl(ctrl.controlName, AEvent, ActionToPerform);
+                writer.SetEventHandlerToControl(ctrl.controlName, AEvent, AEventHandlerType, ActionToPerform);
             }
         }
 
@@ -214,7 +220,7 @@ namespace Ict.Tools.CodeGeneration.Winforms
             writer.Template.AddToCodelet("CONTROLINITIALISATION",
                 "//" + Environment.NewLine + "// " + ctrl.controlName + Environment.NewLine + "//" + Environment.NewLine);
 
-            if (TXMLParser.HasAttribute(ctrl.xmlNode, "Location"))
+            if (TYml2Xml.HasAttribute(ctrl.xmlNode, "Location"))
             {
                 // this control has already been there in the designer file, it is not defined in yaml
                 writer.SetControlProperty(ctrl, "Location");
@@ -225,7 +231,7 @@ namespace Ict.Tools.CodeGeneration.Winforms
                 return;
             }
 
-            if (FLocation && !TXMLParser.HasAttribute(ctrl.xmlNode, "Dock"))
+            if (FLocation && !TYml2Xml.HasAttribute(ctrl.xmlNode, "Dock"))
             {
                 writer.SetControlProperty(ctrl.controlName, "Location", "new System.Drawing.Point(2,2)");
             }
@@ -251,20 +257,18 @@ namespace Ict.Tools.CodeGeneration.Winforms
                     writer.SetControlProperty(ctrl.controlName, "AutoSize", "true");
                 }
             }
+            else if (TYml2Xml.HasAttribute(ctrl.xmlNode, "Width"))
+            {
+                writer.SetControlProperty(ctrl.controlName, "Size", "new System.Drawing.Size(" + TYml2Xml.GetAttribute(ctrl.xmlNode,
+                        "Width") + ", " + FHeight.ToString() + ")");
+            }
             else if (FAutoSize)
             {
                 writer.SetControlProperty(ctrl.controlName, "AutoSize", "true");
             }
             else
             {
-                string thisWidth = FWidth.ToString();
-
-                if (TXMLParser.HasAttribute(ctrl.xmlNode, "Width"))
-                {
-                    thisWidth = TXMLParser.GetAttribute(ctrl.xmlNode, "Width");
-                }
-
-                writer.SetControlProperty(ctrl.controlName, "Size", "new System.Drawing.Size(" + thisWidth + ", " + FHeight.ToString() + ")");
+                writer.SetControlProperty(ctrl.controlName, "Size", "new System.Drawing.Size(" + FWidth.ToString() + ", " + FHeight.ToString() + ")");
             }
 
             string ActionToPerform = ctrl.GetAttribute("Action");
@@ -400,7 +404,15 @@ namespace Ict.Tools.CodeGeneration.Winforms
                 AssignValue += this.AssignValue(ctrl, "FMainDS." + tablename + "[0]." + fieldname, AField.GetDotNetType()) + Environment.NewLine;
             }
 
-            writer.Template.AddToCodelet("SHOWDATA", AssignValue);
+            if (tablename == writer.CodeStorage.GetAttribute("DetailTable"))
+            {
+                AssignValue = AssignValue.Replace("FMainDS." + tablename + "[0]", "FMainDS." + tablename + "[ACurrentDetailIndex]");
+                writer.Template.AddToCodelet("SHOWDETAILS", AssignValue);
+            }
+            else
+            {
+                writer.Template.AddToCodelet("SHOWDATA", AssignValue);
+            }
 
             if (ctrl.GetAttribute("ReadOnly").ToLower() != "true")
             {
@@ -425,7 +437,15 @@ namespace Ict.Tools.CodeGeneration.Winforms
                                 this.GetControlValue(ctrl, AField.GetDotNetType()) + ";" + Environment.NewLine;
                 }
 
-                writer.Template.AddToCodelet("SAVEDATA", GetValue);
+                if (tablename == writer.CodeStorage.GetAttribute("DetailTable"))
+                {
+                    GetValue = GetValue.Replace("FMainDS." + tablename + "[0]", "FMainDS." + tablename + "[ACurrentDetailIndex]");
+                    writer.Template.AddToCodelet("SAVEDETAILS", GetValue);
+                }
+                else
+                {
+                    writer.Template.AddToCodelet("SAVEDATA", GetValue);
+                }
             }
 
             // setstatusbar tooltips for datafields, with getstring plus value from petra.xml
@@ -478,7 +498,7 @@ namespace Ict.Tools.CodeGeneration.Winforms
         public virtual void OnChangeDataType(IFormWriter writer, XmlNode curNode, string controlName)
         {
             // the selection of this control triggers the available options in other controls
-            if (TXMLParser.HasAttribute(curNode, "OnChangeDataType"))
+            if (TYml2Xml.HasAttribute(curNode, "OnChangeDataType"))
             {
                 writer.Template.AddToCodelet("CONTROLINITIALISATION",
                     "this." + controlName + ".Leave += new EventHandler(this." + StringHelper.UpperCamelCase(controlName,
@@ -494,17 +514,17 @@ namespace Ict.Tools.CodeGeneration.Winforms
                     "{" + Environment.NewLine +
                     "  " +
                     StringHelper.UpperCamelCase(controlName, ",", false,
-                        false) + "_Initialise(" + controlName + ".GetSelected" + TXMLParser.GetAttribute(
+                        false) + "_Initialise(" + controlName + ".GetSelected" + TYml2Xml.GetAttribute(
                         curNode,
                         "OnChangeDataType") + "());" + Environment.NewLine +
                     "}" + Environment.NewLine + Environment.NewLine;
                 writer.CodeStorage.FEventHandlersImplementation +=
-                    "private void " + StringHelper.UpperCamelCase(controlName, ",", false, false) + "_Initialise(" + TXMLParser.GetAttribute(curNode,
+                    "private void " + StringHelper.UpperCamelCase(controlName, ",", false, false) + "_Initialise(" + TYml2Xml.GetAttribute(curNode,
                         "OnChangeDataType") + " AParam)" + Environment.NewLine +
                     "{" + Environment.NewLine +
                     "  Int32 Index;" + Environment.NewLine +
                     "  Index = this." + controlName + ".Find" +
-                    TXMLParser.GetAttribute(curNode, "OnChangeDataType") + "InComboBox(AParam);" + Environment.NewLine +
+                    TYml2Xml.GetAttribute(curNode, "OnChangeDataType") + "InComboBox(AParam);" + Environment.NewLine +
                     "  if ((Index >= 0) && (Index < this." + controlName + ".Items.Count) && (Index != this." + controlName + ".SelectedIndex)) " +
                     Environment.NewLine +
                     "  {" + Environment.NewLine +

@@ -12,6 +12,7 @@ RootNode:
     WindowHeight: 500
     Actions:
         cndDiscountEnabled: {InitialValue=false}
+        actNewDetail: {Label=Add De&tail, ActionClick=NewDetail}
     Controls:
         pnlContent:
             Controls: [pnlSupplierInfo, grpDocumentInfo, grpDetails]
@@ -56,19 +57,27 @@ RootNode:
         grpDetails:
             Label: Details
             Dock: Fill
-            Controls: [grdDetails, pnlDetails]
+            Controls: [pnlDetailGrid, pnlDetails]
+        pnlDetailGrid:
+            Dock: Fill
+            Controls: [grdDetails, pnlDetailButtons]
+        pnlDetailButtons:
+            Dock: Right
+            Controls: [btnAddDetail, btnRemoveDetail]
         grdDetails:
             Dock: Fill
             DetailTable: true
-            Columns: [AApDocumentDetail.Amount, AApDocumentDetail.ItemRef, AApDocumentDetail.Narrative]
+            RowSpan: 2
+            Columns: [AApDocumentDetail.Amount, AApDocumentDetail.Narrative, AApDocumentDetail.ItemRef]
+            ActionFocusRow: FocusedRowChanged
         pnlDetails:
             Dock: Bottom
+            ColSpan: 2
             Controls:
-                Row0: [txtDetailNarrative, btnAddDetail]
-                Row1: [txtDetailItemRef, btnRemoveDetail]
+                Row0: [txtDetailNarrative]
+                Row1: [txtDetailItemRef]
                 Row2: [txtDetailAmount, cmbDetailCostCentreCode, btnAnalysisAttributes]
-                Row3: [txtDetailBaseAmount, cmbDetailAccountCode, btnApproveDetail]
-                Row4: [dtpDetailApprovalDate, btnUseTaxAccountCostCentre]
+                Row3: [txtDetailBaseAmount, cmbDetailAccountCode, btnUseTaxAccountCostCentre]
         txtDetailNarrative:
             ColSpan: 2
             Width: 350
@@ -81,35 +90,32 @@ RootNode:
             Label: A&mount
         txtDetailBaseAmount:
             Label: Base
-            Enabled: false
+            ReadOnly: true
             #TODO: calculate using exchange rate from document
-        dtpDetailApprovalDate:
-            Label: Approved On
-            Enabled: false
+# TODO: Approval completely disabled for the moment
+#        dtpDetailApprovalDate:
+#            Label: Approved On
+#            ReadOnly: true
         cmbDetailCostCentreCode:
             Label: C&ost Centre
         cmbDetailAccountCode:
             Label: Accou&nt
         btnUseTaxAccountCostCentre:
-            Align: Right
             Label: Use Ta&x Acct+CC
             #TODO
         btnAddDetail:
-            Label: Add De&tail
-            Align: Right
             Width: 100
             Action: actNewDetail
         btnRemoveDetail:
             Label: &Remove Detail
-            Align: Right
             Width: 100
             Action: actRemoveDetail
         btnAnalysisAttributes:
             Label: Analysis Attri&b.
-            Align: Right
             Width: 100
-        btnApproveDetail:
-            Label: A&pprove Detail
-            Align: Right
-            Width: 150
-            Enabled: false
+# TODO: Approval completely disabled for the moment
+#        btnApproveDetail:
+#            Label: A&pprove Detail
+#            Align: Right
+#            Width: 150
+#            Enabled: false

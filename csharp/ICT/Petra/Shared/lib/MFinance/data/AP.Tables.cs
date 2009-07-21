@@ -2813,12 +2813,12 @@ namespace Ict.Petra.Shared.MFinance.AP.Data
             this[this.myTable.ColumnDateIssued.Ordinal] = DateTime.Today;
             this[this.myTable.ColumnDateEntered.Ordinal] = DateTime.Today;
             this[this.myTable.ColumnCreditTerms.Ordinal] = 0;
-            this.SetNull(this.myTable.ColumnTotalAmount);
+            this[this.myTable.ColumnTotalAmount.Ordinal] = 0;
             this.SetNull(this.myTable.ColumnExchangeRateToBase);
             this.SetNull(this.myTable.ColumnDiscountPercentage);
             this.SetNull(this.myTable.ColumnDiscountDays);
             this.SetNull(this.myTable.ColumnApAccount);
-            this.SetNull(this.myTable.ColumnLastDetailNumber);
+            this[this.myTable.ColumnLastDetailNumber.Ordinal] = 0;
             this.SetNull(this.myTable.ColumnDocumentStatus);
             this[this.myTable.ColumnDateCreated.Ordinal] = DateTime.Today;
             this.SetNull(this.myTable.ColumnCreatedBy);
@@ -2861,18 +2861,6 @@ namespace Ict.Petra.Shared.MFinance.AP.Data
         public void SetCreditTermsNull()
         {
             this.SetNull(this.myTable.ColumnCreditTerms);
-        }
-        
-        /// test for NULL value
-        public bool IsTotalAmountNull()
-        {
-            return this.IsNull(this.myTable.ColumnTotalAmount);
-        }
-        
-        /// assign NULL value
-        public void SetTotalAmountNull()
-        {
-            this.SetNull(this.myTable.ColumnTotalAmount);
         }
         
         /// test for NULL value
@@ -2921,18 +2909,6 @@ namespace Ict.Petra.Shared.MFinance.AP.Data
         public void SetApAccountNull()
         {
             this.SetNull(this.myTable.ColumnApAccount);
-        }
-        
-        /// test for NULL value
-        public bool IsLastDetailNumberNull()
-        {
-            return this.IsNull(this.myTable.ColumnLastDetailNumber);
-        }
-        
-        /// assign NULL value
-        public void SetLastDetailNumberNull()
-        {
-            this.SetNull(this.myTable.ColumnLastDetailNumber);
         }
         
         /// test for NULL value

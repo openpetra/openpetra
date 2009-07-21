@@ -14316,7 +14316,9 @@ been processed in an ilt processing centre"
                 decimals="10"
                 descr="The total amount of money that this document is worth."
                 format="-&gt;&gt;&gt;,&gt;&gt;&gt;,&gt;&gt;&gt;,&gt;&gt;9.99"
-                label="Total Amount"/>
+                label="Total Amount"
+                notnull="yes"
+                initial="0"/>
     <tablefield name="a_exchange_rate_to_base_n"
                 type="number"
                 length="24"
@@ -14345,7 +14347,9 @@ been processed in an ilt processing centre"
                 type="integer"
                 descr="The number of the last item for this document. This is used simply to quickly get the next number if items are added."
                 format=""
-                label="Last Detail Number"/>
+                label="Last Detail Number"
+                notnull="yes"
+                initial="0"/>
     <tablefield name="a_document_status_c"
                 type="varchar"
                 descr="The current status of the invoice. The value can (for now) be one of: OPEN, APPROVED, POSTED, PARTPAID, or PAID."

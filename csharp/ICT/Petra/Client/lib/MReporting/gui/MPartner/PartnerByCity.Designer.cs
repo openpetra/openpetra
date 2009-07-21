@@ -150,7 +150,6 @@ namespace Ict.Petra.Client.MReporting.Gui.MPartner
             //
             // tabReportSettings
             //
-            this.tabReportSettings.Location = new System.Drawing.Point(2,2);
             this.tabReportSettings.Name = "tabReportSettings";
             this.tabReportSettings.Dock = System.Windows.Forms.DockStyle.Fill;
             this.tabReportSettings.Controls.Add(this.tpgReportSpecific);

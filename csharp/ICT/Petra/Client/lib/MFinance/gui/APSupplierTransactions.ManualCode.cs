@@ -86,7 +86,6 @@ namespace Ict.Petra.Client.MFinance.Gui.AccountsPayable
             if (SelectedGridRow.Length >= 1)
             {
                 TFrmAccountsPayableEditDocument frm = new TFrmAccountsPayableEditDocument(this.Handle);
-                MessageBox.Show("ledger number: " + FLedgerNumber.ToString());
                 frm.LoadAApDocument(FLedgerNumber, Convert.ToInt32(SelectedGridRow[0][FMainDS.AApDocument.ColumnApNumber.ColumnName]));
                 frm.Show();
             }

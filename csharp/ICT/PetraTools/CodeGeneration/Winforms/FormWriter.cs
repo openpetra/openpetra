@@ -234,17 +234,20 @@ namespace Ict.Tools.CodeGeneration.Winforms
             }
         }
 
-        public void SetEventHandlerToControl(string AControlName, string AEvent, string AActionToPerform)
-        {
-            FTemplate.AddToCodelet("CONTROLINITIALISATION",
-                "this." + AControlName + "." + AEvent +
-                " += new System.EventHandler(this." +
-                AActionToPerform + ");" + Environment.NewLine);
-        }
-
         public void SetEventHandlerToControl(string AControlName, string AEvent, string AEventHandlerType, string AEventHandlingMethod)
         {
-            FTemplate.AddToCodelet("INITUSERCONTROLS",
+            string CodeletName = "CONTROLINITIALISATION";
+
+            if (AEventHandlingMethod.Contains("FPetraUtilsObject"))
+            {
+                CodeletName = "INITUSERCONTROLS";
+            }
+            else if (!AEventHandlingMethod.StartsWith("this."))
+            {
+                AEventHandlingMethod = "this." + AEventHandlingMethod;
+            }
+
+            FTemplate.AddToCodelet(CodeletName,
                 "this." + AControlName + "." + AEvent +
                 " += new " + AEventHandlerType + "(" + AEventHandlingMethod + ");" + Environment.NewLine);
         }
@@ -720,8 +723,15 @@ namespace Ict.Tools.CodeGeneration.Winforms
                 FTemplate.AddToCodelet("DATASETTYPE", FCodeStorage.GetAttribute("DatasetType"));
             }
 
-            FTemplate.AddToCodelet("MASTERTABLE", FCodeStorage.GetAttribute("MasterTable"));
-            FTemplate.AddToCodelet("DETAILTABLE", FCodeStorage.GetAttribute("DetailTable"));
+            if (FCodeStorage.HasAttribute("MasterTable"))
+            {
+                FTemplate.AddToCodelet("MASTERTABLE", FCodeStorage.GetAttribute("MasterTable"));
+            }
+
+            if (FCodeStorage.HasAttribute("DetailTable"))
+            {
+                FTemplate.AddToCodelet("DETAILTABLE", FCodeStorage.GetAttribute("DetailTable"));
+            }
 
             if (FCodeStorage.GetAttribute("FormType").ToLower() == "edit")
             {
@@ -809,9 +819,9 @@ namespace Ict.Tools.CodeGeneration.Winforms
                 FTemplate.AddToCodelet("SHOWDATA", "ShowDataManual();" + Environment.NewLine);
             }
 
-            if (FCodeStorage.ManualFileExistsAndContains("ShowDataDetailsManual"))
+            if (FCodeStorage.ManualFileExistsAndContains("ShowDetailsManual"))
             {
-                FTemplate.AddToCodelet("SHOWDATADETAILS", "ShowDataDetailsManual();" + Environment.NewLine);
+                FTemplate.AddToCodelet("SHOWDETAILS", "ShowDetailsManual();" + Environment.NewLine);
             }
 
             if (FCodeStorage.ManualFileExistsAndContains("GetDataFromControlsManual"))
@@ -821,7 +831,7 @@ namespace Ict.Tools.CodeGeneration.Winforms
 
             if (FCodeStorage.ManualFileExistsAndContains("GetDetailDataFromControlsManual"))
             {
-                FTemplate.AddToCodelet("SAVEDETAILS", "GetDetailDataFromControlsManual();" + Environment.NewLine);
+                FTemplate.AddToCodelet("SAVEDETAILS", "GetDetailsFromControlsManual();" + Environment.NewLine);
             }
 
             if (FCodeStorage.ManualFileExistsAndContains("ShowDetailsManual"))

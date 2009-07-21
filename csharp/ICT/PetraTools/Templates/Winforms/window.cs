@@ -130,25 +130,80 @@ namespace {#NAMESPACE}
 
         FPetraUtilsObject.SetChangedFlag();
 
-        ShowData();
-        SelectDetailRow(grdDetails.Rows.Count - 1);
+        grdDetails.DataSource = new DevAge.ComponentModel.BoundDataView(FMainDS.{#DETAILTABLE}.DefaultView);
+        grdDetails.Refresh();
+        SelectDetailRowByDataTableIndex(FMainDS.{#DETAILTABLE}.Rows.Count - 1);
         
         return true;
     }
-    private void SelectDetailRow(Int32 ARowNumber)
-    {
-        ShowData();
-        grdDetails.Selection.ResetSelection(false);
-        grdDetails.Selection.SelectRow(ARowNumber, true);
-        // scroll to the row
-        grdDetails.ShowCell(new SourceGrid.Position(ARowNumber, 0), true);
-        
-        // TODO? DataGrid_FocusRowEntered(this, new RowEventArgs(ARowNumber));
-    }
 {#ENDIF CANFINDWEBCONNECTOR_CREATENEWDETAIL}
+{#IFDEF DETAILTABLE}
+
+    private void SelectDetailRowByDataTableIndex(Int32 ARowNumberInTable)
+    {
+        Int32 RowNumberGrid = -1;
+        for (int Counter = 0; Counter < grdDetails.DataSource.Count; Counter++)
+        {
+            bool found = true;
+            foreach (DataColumn myColumn in FMainDS.{#DETAILTABLE}.PrimaryKey)
+            {
+                string value1 = FMainDS.{#DETAILTABLE}.Rows[ARowNumberInTable][myColumn].ToString();
+                string value2 = (grdDetails.DataSource as DevAge.ComponentModel.BoundDataView).mDataView[Counter][myColumn.Ordinal].ToString();
+                if (value1 != value2)
+                {
+                    found = false;
+                }
+            }
+            if (found)
+            {
+                RowNumberGrid = Counter + 1;
+            }
+        }
+        grdDetails.Selection.ResetSelection(false);
+        grdDetails.Selection.SelectRow(RowNumberGrid, true);
+        // scroll to the row
+        grdDetails.ShowCell(new SourceGrid.Position(RowNumberGrid, 0), true);
+
+        FocusedRowChanged(this, new SourceGrid.RowEventArgs(RowNumberGrid));
+    }
+
+    /// return the index in the detail datatable of the selected row, not the index in the datagrid
+    private Int32 GetSelectedDetailDataTableIndex()
+    {
+        DataRowView[] SelectedGridRow = grdDetails.SelectedDataRowsAsDataRowView;
+
+        if (SelectedGridRow.Length >= 1)
+        {
+            // this would return the index in the grid: return grdDetails.DataSource.IndexOf(SelectedGridRow[0]);
+            // we could keep track of the order in the datatable ourselves: return Convert.ToInt32(SelectedGridRow[0][ORIGINALINDEX]);
+            // does not seem to work: return grdDetails.DataSourceRowToIndex2(SelectedGridRow[0]);
+
+            for (int Counter = 0; Counter < FMainDS.{#DETAILTABLE}.Rows.Count; Counter++)
+            {
+                bool found = true;
+                foreach (DataColumn myColumn in FMainDS.{#DETAILTABLE}.PrimaryKey)
+                {
+                    if (FMainDS.{#DETAILTABLE}.Rows[Counter][myColumn].ToString() != 
+                        SelectedGridRow[0][myColumn.Ordinal].ToString())
+                    {
+                        found = false;
+                    }
+                    
+                }
+                if (found)
+                {
+                    return Counter;
+                }
+            }
+        }
+
+        return -1;
+    }
+{#ENDIF DETAILTABLE}
 {#ENDIF ISEDITSCREEN}
 
 {#IFDEF CANFINDWEBCONNECTOR_LOADMASTER}
+
     /// automatically generated function from webconnector
     public bool Load{#MASTERTABLE}({#LOADMASTER_FORMALPARAMETERS})
     {
@@ -167,38 +222,46 @@ namespace {#NAMESPACE}
     }
 {#ENDIF SHOWDATA}
 
-{#IFDEF SHOWDATADETAILS}
-    private void ShowDataDetails()
+{#IFDEF SHOWDETAILS}
+    private void ShowDetails(Int32 ACurrentDetailIndex)
     {
-        {#SHOWDATADETAILS}
+        {#SHOWDETAILS}
     }
-{#ENDIF SHOWDATADETAILS}
+
+    private Int32 FPreviouslySelectedDetailRow = -1;
+    private void FocusedRowChanged(System.Object sender, SourceGrid.RowEventArgs e)
+    {
+{#IFDEF SAVEDETAILS}
+        // get the details from the previously selected row
+        if (FPreviouslySelectedDetailRow != -1)
+        {
+            GetDetailsFromControls(FPreviouslySelectedDetailRow);
+        }
+{#ENDIF SAVEDETAILS}
+        // display the details of the currently selected row; e.Row: first row has number 1
+        ShowDetails(GetSelectedDetailDataTableIndex());
+        FPreviouslySelectedDetailRow = GetSelectedDetailDataTableIndex();
+        pnlDetails.Enabled = true;
+    }
+{#ENDIF SHOWDETAILS}
     
 {#IFDEF SAVEDATA}
     private void GetDataFromControls()
     {
         {#SAVEDATA}
 {#IFDEF SAVEDETAILS}
-        GetDetailDataFromControls();
+        GetDetailsFromControls(GetSelectedDetailDataTableIndex());
 {#ENDIF SAVEDETAILS}
     }
 {#ENDIF SAVEDATA}
 
 {#IFDEF SAVEDETAILS}
-    private void GetDetailDataFromControls()
+    private void GetDetailsFromControls(Int32 ACurrentDetailIndex)
     {
-        {#SAVEDETAILS}
-    }
-
-    private void ShowDetails()
-    {
-        {#SHOWDETAILS}
-    }
-    
-    private void actNewDetail(Object sender, EventArgs e)
-    {
-        FPetraUtilsObject.SetChangedFlag();
-        
+        if (ACurrentDetailIndex != -1)
+        {
+            {#SAVEDETAILS}
+        }
     }
 {#ENDIF SAVEDETAILS}
 
