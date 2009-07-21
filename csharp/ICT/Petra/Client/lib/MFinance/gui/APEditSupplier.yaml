@@ -7,7 +7,6 @@ RootNode:
     UIConnectorCreate: TRemote.MFinance.AccountsPayable.UIConnectors.SupplierEdit
     FormType: edit
     MasterTable: AApSupplier
-    HasManualCodeInOtherFile: true
     WindowWidth: 660
     WindowHeight: 500
     Actions:

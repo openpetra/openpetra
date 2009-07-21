@@ -28,8 +28,11 @@ using System.Data;
 using Ict.Common.DB;
 using Ict.Common;
 using Ict.Common.Data;
+using Ict.Common.Verification;
 using Ict.Petra.Shared.MFinance.AP.Data.Access;
 using Ict.Petra.Shared.MFinance.AP.Data;
+using Ict.Petra.Shared.MCommon.Data.Access;
+using Ict.Petra.Shared.MCommon.Data;
 
 namespace Ict.Petra.Server.MCommon.DataReader
 {
@@ -72,6 +75,12 @@ namespace Ict.Petra.Server.MCommon.DataReader
                     AApDocumentAccess.LoadUsingTemplate(out typedTable, (AApDocumentRow)AKeys.Rows[0], ReadTransaction);
                     tempTable = typedTable;
                 }
+                else if (ATablename == ACurrencyTable.GetTableDBName())
+                {
+                    ACurrencyTable typedTable;
+                    ACurrencyAccess.LoadAll(out typedTable, ReadTransaction);
+                    tempTable = typedTable;
+                }
                 else
                 {
                     throw new Exception("TCommonDataReader.LoadData: unknown table " + ATablename);
@@ -96,6 +105,66 @@ namespace Ict.Petra.Server.MCommon.DataReader
             AResultTable = tempTable;
 
             return true;
+        }
+
+        /// <summary>
+        /// generic function for saving some rows in a single table
+        /// </summary>
+        /// <param name="ATablename"></param>
+        /// <param name="ASubmitTable"></param>
+        /// <param name="AVerificationResult"></param>
+        /// <returns></returns>
+        public static TSubmitChangesResult SaveData(string ATablename,
+            ref TTypedDataTable ASubmitTable,
+            out TVerificationResultCollection AVerificationResult)
+        {
+            TDBTransaction SubmitChangesTransaction;
+            TSubmitChangesResult SubmissionResult = TSubmitChangesResult.scrError;
+            TVerificationResultCollection SingleVerificationResultCollection;
+
+            AVerificationResult = null;
+
+            // TODO: check write permissions
+
+            if (ASubmitTable != null)
+            {
+                AVerificationResult = new TVerificationResultCollection();
+                SubmitChangesTransaction = DBAccess.GDBAccessObj.BeginTransaction(IsolationLevel.Serializable);
+                try
+                {
+                    if (ATablename == ACurrencyTable.GetTableDBName())
+                    {
+                        if (ACurrencyAccess.SubmitChanges((ACurrencyTable)ASubmitTable, SubmitChangesTransaction,
+                                out SingleVerificationResultCollection))
+                        {
+                            SubmissionResult = TSubmitChangesResult.scrOK;
+                        }
+                        else
+                        {
+                            SubmissionResult = TSubmitChangesResult.scrError;
+                        }
+                    }
+
+                    if (SubmissionResult == TSubmitChangesResult.scrOK)
+                    {
+                        DBAccess.GDBAccessObj.CommitTransaction();
+                    }
+                    else
+                    {
+                        DBAccess.GDBAccessObj.RollbackTransaction();
+                    }
+                }
+                catch (Exception e)
+                {
+                    TLogging.Log("after submitchanges: exception " + e.Message);
+
+                    DBAccess.GDBAccessObj.RollbackTransaction();
+
+                    throw new Exception(e.ToString() + " " + e.Message);
+                }
+            }
+
+            return SubmissionResult;
         }
     }
 }

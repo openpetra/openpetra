@@ -721,6 +721,13 @@ namespace Ict.Tools.CodeGeneration.Winforms
             if (FCodeStorage.HasAttribute("DatasetType"))
             {
                 FTemplate.AddToCodelet("DATASETTYPE", FCodeStorage.GetAttribute("DatasetType"));
+                FTemplate.SetCodelet("MANAGEDDATASETORTYPE", "true");
+            }
+
+            if (FCodeStorage.HasAttribute("DatatableType"))
+            {
+                FTemplate.AddToCodelet("DATATABLETYPE", FCodeStorage.GetAttribute("DatatableType"));
+                FTemplate.SetCodelet("MANAGEDDATASETORTYPE", "true");
             }
 
             if (FCodeStorage.HasAttribute("MasterTable"))

@@ -192,7 +192,7 @@ namespace Ict.Petra.Shared.Interfaces.MFinance.AccountsPayable.WebConnectors
                                                       string AApSupplier_DefaultExpAccount,
                                                       string AApSupplier_DefaultCostCentre,
                                                       double AAmount,
-                                                      Int32 ATempNumberOfDetails);
+                                                      Int32 ALastDetailNumber);
         /// <summary> auto generated from Connector method(Ict.Petra.Server.MFinance.AccountsPayable.WebConnectors.TTransactionWebConnector)</summary>
         AccountsPayableTDS FindAApDocument(Int32 ALedgerNumber,
                                            Int64 ASupplierKey,

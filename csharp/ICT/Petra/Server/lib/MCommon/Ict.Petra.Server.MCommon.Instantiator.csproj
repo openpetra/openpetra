@@ -50,6 +50,9 @@
     <Reference Include="Ict.Common.DB">
       <HintPath>..\..\..\..\Common\_bin\Debug\Ict.Common.DB.dll</HintPath>
     </Reference>
+    <Reference Include="Ict.Common.Verification">
+      <HintPath>..\..\..\..\Common\_bin\Debug\Ict.Common.Verification.dll</HintPath>
+    </Reference>
     <Reference Include="Ict.Petra.Shared">
       <HintPath>..\..\..\Shared\_bin\Server_Client\Debug\Ict.Petra.Shared.dll</HintPath>
       <SpecificVersion>False</SpecificVersion>

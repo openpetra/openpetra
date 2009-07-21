@@ -904,9 +904,9 @@ namespace Ict.Petra.Server.MFinance.Instantiator.AccountsPayable.WebConnectors
                                                              string AApSupplier_DefaultExpAccount,
                                                              string AApSupplier_DefaultCostCentre,
                                                              double AAmount,
-                                                             Int32 ATempNumberOfDetails)
+                                                             Int32 ALastDetailNumber)
         {
-            return Ict.Petra.Server.MFinance.AccountsPayable.WebConnectors.TTransactionWebConnector.CreateNewAApDocumentDetail(ALedgerNumber, AApNumber, AApSupplier_DefaultExpAccount, AApSupplier_DefaultCostCentre, AAmount, ATempNumberOfDetails);
+            return Ict.Petra.Server.MFinance.AccountsPayable.WebConnectors.TTransactionWebConnector.CreateNewAApDocumentDetail(ALedgerNumber, AApNumber, AApSupplier_DefaultExpAccount, AApSupplier_DefaultCostCentre, AAmount, ALastDetailNumber);
         }
 
         /// generated method from connector

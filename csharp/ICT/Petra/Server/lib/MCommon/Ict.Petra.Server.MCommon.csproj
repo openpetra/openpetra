@@ -53,6 +53,9 @@
       <HintPath>..\..\..\..\Common\_bin\Debug\Ict.Common.DB.dll</HintPath>
       <SpecificVersion>False</SpecificVersion>
     </Reference>
+    <Reference Include="Ict.Common.Verification">
+      <HintPath>..\..\..\..\Common\_bin\Debug\Ict.Common.Verification.dll</HintPath>
+    </Reference>
     <Reference Include="Ict.Petra.Shared">
       <HintPath>..\..\..\Shared\_bin\Server_Client\Debug\Ict.Petra.Shared.dll</HintPath>
       <SpecificVersion>False</SpecificVersion>
@@ -60,6 +63,12 @@
     <Reference Include="Ict.Petra.Shared.Interfaces">
       <HintPath>..\..\..\Shared\_bin\Server_Client\Debug\Ict.Petra.Shared.Interfaces.dll</HintPath>
       <SpecificVersion>False</SpecificVersion>
+    </Reference>
+    <Reference Include="Ict.Petra.Shared.MCommon.DataAccess">
+      <HintPath>..\..\..\Shared\_bin\Server_Client\Debug\Ict.Petra.Shared.MCommon.DataAccess.dll</HintPath>
+    </Reference>
+    <Reference Include="Ict.Petra.Shared.MCommon.DataTables">
+      <HintPath>..\..\..\Shared\_bin\Server_Client\Debug\Ict.Petra.Shared.MCommon.DataTables.dll</HintPath>
     </Reference>
     <Reference Include="Ict.Petra.Shared.MFinance.DataAccess">
       <HintPath>..\..\..\Shared\_bin\Server_Client\Debug\Ict.Petra.Shared.MFinance.DataAccess.dll</HintPath>

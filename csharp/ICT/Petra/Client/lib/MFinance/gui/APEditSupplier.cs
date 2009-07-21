@@ -360,14 +360,9 @@ namespace Ict.Petra.Client.MFinance.Gui.AccountsPayable
     /// auto generated
     public void FileSave(object sender, EventArgs e)
     {
-        SaveChanges(FMainDS);
+        SaveChanges();
     }
-
-    /// auto generated
-    public bool SaveChanges()
-    {
-        return SaveChanges(FMainDS);
-    }
+
 #endregion
 
 #region Action Handling

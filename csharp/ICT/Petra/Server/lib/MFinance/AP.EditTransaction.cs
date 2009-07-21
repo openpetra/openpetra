@@ -145,7 +145,6 @@ namespace Ict.Petra.Server.MFinance.AccountsPayable.WebConnectors
         {
             TDBTransaction SubmitChangesTransaction;
             TSubmitChangesResult SubmissionResult = TSubmitChangesResult.scrError;
-            TVerificationResultCollection SingleVerificationResultCollection;
 
             AVerificationResult = null;
 
@@ -171,10 +170,10 @@ namespace Ict.Petra.Server.MFinance.AccountsPayable.WebConnectors
                     }
 
                     if (AApDocumentAccess.SubmitChanges(AInspectDS.AApDocument, SubmitChangesTransaction,
-                            out SingleVerificationResultCollection))
+                            out AVerificationResult))
                     {
                         if (AApDocumentDetailAccess.SubmitChanges(AInspectDS.AApDocumentDetail, SubmitChangesTransaction,
-                                out SingleVerificationResultCollection))
+                                out AVerificationResult))
                         {
                             SubmissionResult = TSubmitChangesResult.scrOK;
                         }

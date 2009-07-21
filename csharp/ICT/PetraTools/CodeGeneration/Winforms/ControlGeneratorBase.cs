@@ -305,6 +305,21 @@ namespace Ict.Tools.CodeGeneration.Winforms
             {
                 AssignEventHandlerToControl(writer, ctrl, "DoubleClick", ctrl.GetAttribute("ActionDoubleClick"));
             }
+            else if (ctrl.HasAttribute("ActionOpenScreen"))
+            {
+                AssignEventHandlerToControl(writer, ctrl, "Click", "OpenScreen" + ctrl.controlName.Substring(ctrl.controlTypePrefix.Length));
+                string ActionHandler =
+                    "/// auto generated" + Environment.NewLine +
+                    "protected void OpenScreen" + ctrl.controlName.Substring(ctrl.controlTypePrefix.Length) + "(object sender, EventArgs e)" +
+                    Environment.NewLine +
+                    "{" + Environment.NewLine;
+                ActionHandler += "    " + ctrl.GetAttribute("ActionOpenScreen") + " frm = new " + ctrl.GetAttribute("ActionOpenScreen") +
+                                 "(this.Handle);" + Environment.NewLine;
+                ActionHandler += "    frm.Show();" + Environment.NewLine;
+                ActionHandler += "}" + Environment.NewLine + Environment.NewLine;
+
+                FCodeStorage.FActionHandlers += ActionHandler;
+            }
 
             if (ctrl.HasAttribute("Enabled"))
             {
@@ -337,7 +352,7 @@ namespace Ict.Tools.CodeGeneration.Winforms
 
                 LinkControlDataField(writer, ctrl, field, IsDetailNotMaster);
             }
-            else if (writer.CodeStorage.HasAttribute("MasterTable"))
+            else if (writer.CodeStorage.HasAttribute("MasterTable") || writer.CodeStorage.HasAttribute("DetailTable"))
             {
                 //if (ctrl.controlTypePrefix != "lbl" && ctrl.controlTypePrefix != "pnl" && ctrl.controlTypePrefix != "grp" &&
                 if (!(this is LabelGenerator || this is GroupBoxGenerator))

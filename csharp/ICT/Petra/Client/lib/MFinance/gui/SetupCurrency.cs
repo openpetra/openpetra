@@ -1,10 +1,34 @@
-/* auto generated with nant generateWinforms from {#XAMLSRCFILE} 
+/* auto generated with nant generateWinforms from SetupCurrency.yaml
  *
  * DO NOT edit manually, DO NOT edit with the designer
  * use a user control if you need to modify the screen content
  *
  */
-{#GPLFILEHEADER}
+/*************************************************************************
+ *
+ * DO NOT REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
+ *
+ * @Authors:
+ *       auto generated
+ *
+ * Copyright 2004-2009 by OM International
+ *
+ * This file is part of OpenPetra.org.
+ *
+ * OpenPetra.org is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * OpenPetra.org is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with OpenPetra.org.  If not, see <http://www.gnu.org/licenses/>.
+ *
+ ************************************************************************/
 using System;
 using System.Drawing;
 using System.Collections;
@@ -16,40 +40,27 @@ using System.Resources;
 using System.Collections.Specialized;
 using Mono.Unix;
 using Ict.Common;
-{#IFDEF ISEDITSCREEN}
 using Ict.Common.Verification;
-{#ENDIF ISEDITSCREEN}
 using Ict.Petra.Client.App.Core;
 using Ict.Petra.Client.App.Core.RemoteObjects;
 using Ict.Common.Controls;
 using Ict.Petra.Client.CommonForms;
 
-namespace {#NAMESPACE}
+namespace Ict.Petra.Client.MFinance.Gui.Setup
 {
 
-  /// auto generated: {#FORMTITLE}
-  public partial class {#CLASSNAME}: System.Windows.Forms.Form, {#INTERFACENAME}
+  /// auto generated: Currency List
+  public partial class TFrmSetupCurrency: System.Windows.Forms.Form, IFrmPetraEdit
   {
-    private {#UTILOBJECTCLASS} FPetraUtilsObject;
-{#IFDEF DATASETTYPE}
-    private {#DATASETTYPE} FMainDS;
-{#ENDIF DATASETTYPE}
+    private TFrmPetraEditUtils FPetraUtilsObject;
 
-{#IFDEF DATATABLETYPE}
     private class FMainDS
     {
-        public static {#DATATABLETYPE}Table {#DETAILTABLE};
+        public static Ict.Petra.Shared.MCommon.Data.ACurrencyTable ACurrency;
     }
-{#ENDIF DATATABLETYPE}
-    
-{#IFDEF UICONNECTORTYPE}
-
-    /// <summary>holds a reference to the Proxy object of the Serverside UIConnector</summary>
-    private {#UICONNECTORTYPE} FUIConnector = null;
-{#ENDIF UICONNECTORTYPE}
 
     /// constructor
-    public {#CLASSNAME}(IntPtr AParentFormHandle) : base()
+    public TFrmSetupCurrency(IntPtr AParentFormHandle) : base()
     {
       //
       // Required for Windows Form Designer support
@@ -58,117 +69,97 @@ namespace {#NAMESPACE}
       #region CATALOGI18N
 
       // this code has been inserted by GenerateI18N, all changes in this region will be overwritten by GenerateI18N
-      {#CATALOGI18N}
+      this.btnNew.Text = Catalog.GetString("&New");
+      this.btnDelete.Text = Catalog.GetString("&Delete");
+      this.lblDetailCurrencyCode.Text = Catalog.GetString("Currency Code:");
+      this.lblDetailCurrencyName.Text = Catalog.GetString("Currency Name:");
+      this.lblDetailCurrencySymbol.Text = Catalog.GetString("Currency Symbol:");
+      this.lblDetailCountryCode.Text = Catalog.GetString("Country Code:");
+      this.lblDetailDisplayFormat.Text = Catalog.GetString("Number of Decimals:");
+      this.tbbSave.ToolTipText = Catalog.GetString("Saves changed data");
+      this.tbbSave.Text = Catalog.GetString("&Save");
+      this.mniFileSave.ToolTipText = Catalog.GetString("Saves changed data");
+      this.mniFileSave.Text = Catalog.GetString("&Save");
+      this.mniFilePrint.Text = Catalog.GetString("&Print...");
+      this.mniClose.ToolTipText = Catalog.GetString("Closes this window");
+      this.mniClose.Text = Catalog.GetString("&Close");
+      this.mniFile.Text = Catalog.GetString("&File");
+      this.mniEditUndoCurrentField.Text = Catalog.GetString("Undo &Current Field");
+      this.mniEditUndoScreen.Text = Catalog.GetString("&Undo Screen");
+      this.mniEditFind.Text = Catalog.GetString("&Find...");
+      this.mniEdit.Text = Catalog.GetString("&Edit");
+      this.mniHelpPetraHelp.Text = Catalog.GetString("&Petra Help");
+      this.mniHelpBugReport.Text = Catalog.GetString("Bug &Report");
+      this.mniHelpAboutPetra.Text = Catalog.GetString("&About Petra");
+      this.mniHelpDevelopmentTeam.Text = Catalog.GetString("&The Development Team...");
+      this.mniHelp.Text = Catalog.GetString("&Help");
+      this.Text = Catalog.GetString("Currency List");
       #endregion
 
-      FPetraUtilsObject = new {#UTILOBJECTCLASS}(AParentFormHandle, this, stbMain);
-      {#INITUSERCONTROLS}
-{#IFDEF DATASETTYPE}
-      FMainDS = new {#DATASETTYPE}();
-{#ENDIF DATASETTYPE}
-{#IFDEF DATATABLETYPE}
-      FMainDS.{#DETAILTABLE} = new {#DATATABLETYPE}Table();
+      FPetraUtilsObject = new TFrmPetraEditUtils(AParentFormHandle, this, stbMain);
+      FPetraUtilsObject.SetStatusBarText(txtDetailCurrencyCode, Catalog.GetString("Enter a currency code"));
+      FPetraUtilsObject.SetStatusBarText(txtDetailCurrencyName, Catalog.GetString("Enter the currency name"));
+      FPetraUtilsObject.SetStatusBarText(txtDetailCurrencySymbol, Catalog.GetString("Enter the symbol which represents this currency"));
+      FPetraUtilsObject.SetStatusBarText(cmbDetailCountryCode, Catalog.GetString("Enter a valid country code."));
+      cmbDetailCountryCode.InitialiseUserControl();
+      FPetraUtilsObject.SetStatusBarText(txtDetailDisplayFormat, Catalog.GetString("The format in which to display and accept input on a currency."));
+      FMainDS.ACurrency = new Ict.Petra.Shared.MCommon.Data.ACurrencyTable();
       Ict.Common.Data.TTypedDataTable TypedTable;
-      TRemote.MCommon.DataReader.GetData({#DATATABLETYPE}Table.GetTableDBName(), null, out TypedTable);
-      FMainDS.{#DETAILTABLE}.Merge(TypedTable);
-{#ENDIF DATATABLETYPE}
-      {#INITMANUALCODE}
+      TRemote.MCommon.DataReader.GetData(Ict.Petra.Shared.MCommon.Data.ACurrencyTable.GetTableDBName(), null, out TypedTable);
+      FMainDS.ACurrency.Merge(TypedTable);
+      grdDetails.Columns.Clear();
+      grdDetails.AddTextColumn("Currency Code", FMainDS.ACurrency.ColumnCurrencyCode);
+      grdDetails.AddTextColumn("Currency Name", FMainDS.ACurrency.ColumnCurrencyName);
+      grdDetails.AddTextColumn("Currency Symbol", FMainDS.ACurrency.ColumnCurrencySymbol);
+      grdDetails.AddTextColumn("Country Code", FMainDS.ACurrency.ColumnCountryCode);
+      grdDetails.AddTextColumn("Display Format", FMainDS.ACurrency.ColumnDisplayFormat);
       FPetraUtilsObject.ActionEnablingEvent += ActionEnabledEvent;
-      
-      {#INITACTIONSTATE}
-      
-{#IFDEF UICONNECTORCREATE}
-      FUIConnector = {#UICONNECTORCREATE}();
-      // Register Object with the TEnsureKeepAlive Class so that it doesn't get GC'd
-      TEnsureKeepAlive.Register(FUIConnector);
-{#ENDIF UICONNECTORCREATE}
+
+      FPetraUtilsObject.InitActionState();
+
     }
 
-    {#EVENTHANDLERSIMPLEMENTATION}
+    private void TFrmPetra_Activated(object sender, EventArgs e)
+    {
+        FPetraUtilsObject.TFrmPetra_Activated(sender, e);
+    }
+
+    private void TFrmPetra_Load(object sender, EventArgs e)
+    {
+        FPetraUtilsObject.TFrmPetra_Load(sender, e);
+    }
+
+    private void TFrmPetra_Closing(object sender, CancelEventArgs e)
+    {
+        FPetraUtilsObject.TFrmPetra_Closing(sender, e);
+    }
+
+    private void Form_KeyDown(object sender, KeyEventArgs e)
+    {
+        FPetraUtilsObject.Form_KeyDown(sender, e);
+    }
 
     private void TFrmPetra_Closed(object sender, EventArgs e)
     {
         // TODO? Save Window position
 
-{#IFDEF UICONNECTORCREATE}
-        if (FUIConnector != null)
-        {
-            // UnRegister Object from the TEnsureKeepAlive Class so that the Object can get GC'd on the PetraServer
-            TEnsureKeepAlive.UnRegister(FUIConnector);
-            FUIConnector = null;
-        }
-{#ENDIF UICONNECTORCREATE}
     }
 
-{#IFDEF ISEDITSCREEN}
-{#IFDEF CANFINDWEBCONNECTOR_CREATENEWMASTER}
-    /// automatically generated function from webconnector
-    public bool CreateNew{#MASTERTABLE}({#CREATENEWMASTER_FORMALPARAMETERS})
-    {
-{#IFDEF CREATENEWMASTER_WITHVERIFICATION}
-        TVerificationResultCollection VerificationResult;
-
-        FMainDS = {#WEBCONNECTORMASTER}.CreateNew{#MASTERTABLE}({#CREATENEWMASTER_ACTUALPARAMETERS}, out VerificationResult);
-
-        if (VerificationResult != null && VerificationResult.Count > 0)
-        {
-            return CreateNewMasterManual({#CREATENEWMASTER_ACTUALPARAMETERS}, VerificationResult);
-        }
-        else
-        {
-            FPetraUtilsObject.SetChangedFlag();
-
-            ShowData();
-            
-            return true;
-        }
-{#ENDIF CREATENEWMASTER_WITHVERIFICATION}
-{#IFDEF CREATENEWMASTER_WITHOUTVERIFICATION}
-        FMainDS = {#WEBCONNECTORMASTER}.CreateNew{#MASTERTABLE}({#CREATENEWMASTER_ACTUALPARAMETERS});
-
-        FPetraUtilsObject.SetChangedFlag();
-
-        ShowData();
-        
-        return true;
-{#ENDIF CREATENEWMASTER_WITHOUTVERIFICATION}
-    }
-{#ENDIF CANFINDWEBCONNECTOR_CREATENEWMASTER}
-
-{#IFDEF CANFINDWEBCONNECTOR_CREATENEWDETAIL}
-    /// automatically generated, create a new record of {#DETAILTABLE} and display on the edit screen
-    public bool CreateNew{#DETAILTABLE}({#CREATENEWDETAIL_FORMALPARAMETERS})
-    {
-        FMainDS.Merge({#WEBCONNECTORDETAIL}.CreateNew{#DETAILTABLE}({#CREATENEWDETAIL_ACTUALPARAMETERS}));
-
-        FPetraUtilsObject.SetChangedFlag();
-
-        grdDetails.DataSource = new DevAge.ComponentModel.BoundDataView(FMainDS.{#DETAILTABLE}.DefaultView);
-        grdDetails.Refresh();
-        SelectDetailRowByDataTableIndex(FMainDS.{#DETAILTABLE}.Rows.Count - 1);
-        
-        return true;
-    }
-{#ENDIF CANFINDWEBCONNECTOR_CREATENEWDETAIL}
-{#IFDEF DATATABLETYPE}
-
-    /// automatically generated, create a new record of {#DETAILTABLE} and display on the edit screen
+    /// automatically generated, create a new record of ACurrency and display on the edit screen
     /// we create the table locally, no dataset
-    public bool CreateNew{#DETAILTABLE}()
+    public bool CreateNewACurrency()
     {
-        {#DATATABLETYPE}Row NewRow = FMainDS.{#DETAILTABLE}.NewRowTyped();
-        FMainDS.{#DETAILTABLE}.Rows.Add(NewRow);
-        
+        Ict.Petra.Shared.MCommon.Data.ACurrencyRow NewRow = FMainDS.ACurrency.NewRowTyped();
+        FMainDS.ACurrency.Rows.Add(NewRow);
+
         FPetraUtilsObject.SetChangedFlag();
 
-        grdDetails.DataSource = new DevAge.ComponentModel.BoundDataView(FMainDS.{#DETAILTABLE}.DefaultView);
+        grdDetails.DataSource = new DevAge.ComponentModel.BoundDataView(FMainDS.ACurrency.DefaultView);
         grdDetails.Refresh();
-        SelectDetailRowByDataTableIndex(FMainDS.{#DETAILTABLE}.Rows.Count - 1);
-        
+        SelectDetailRowByDataTableIndex(FMainDS.ACurrency.Rows.Count - 1);
+
         return true;
     }
-{#ENDIF DATATABLETYPE}
-{#IFDEF DETAILTABLE}
 
     private void SelectDetailRowByDataTableIndex(Int32 ARowNumberInTable)
     {
@@ -176,9 +167,9 @@ namespace {#NAMESPACE}
         for (int Counter = 0; Counter < grdDetails.DataSource.Count; Counter++)
         {
             bool found = true;
-            foreach (DataColumn myColumn in FMainDS.{#DETAILTABLE}.PrimaryKey)
+            foreach (DataColumn myColumn in FMainDS.ACurrency.PrimaryKey)
             {
-                string value1 = FMainDS.{#DETAILTABLE}.Rows[ARowNumberInTable][myColumn].ToString();
+                string value1 = FMainDS.ACurrency.Rows[ARowNumberInTable][myColumn].ToString();
                 string value2 = (grdDetails.DataSource as DevAge.ComponentModel.BoundDataView).mDataView[Counter][myColumn.Ordinal].ToString();
                 if (value1 != value2)
                 {
@@ -209,17 +200,17 @@ namespace {#NAMESPACE}
             // we could keep track of the order in the datatable ourselves: return Convert.ToInt32(SelectedGridRow[0][ORIGINALINDEX]);
             // does not seem to work: return grdDetails.DataSourceRowToIndex2(SelectedGridRow[0]);
 
-            for (int Counter = 0; Counter < FMainDS.{#DETAILTABLE}.Rows.Count; Counter++)
+            for (int Counter = 0; Counter < FMainDS.ACurrency.Rows.Count; Counter++)
             {
                 bool found = true;
-                foreach (DataColumn myColumn in FMainDS.{#DETAILTABLE}.PrimaryKey)
+                foreach (DataColumn myColumn in FMainDS.ACurrency.PrimaryKey)
                 {
-                    if (FMainDS.{#DETAILTABLE}.Rows[Counter][myColumn].ToString() != 
+                    if (FMainDS.ACurrency.Rows[Counter][myColumn].ToString() !=
                         SelectedGridRow[0][myColumn.Ordinal].ToString())
                     {
                         found = false;
                     }
-                    
+
                 }
                 if (found)
                 {
@@ -230,78 +221,48 @@ namespace {#NAMESPACE}
 
         return -1;
     }
-{#ENDIF DETAILTABLE}
-{#ENDIF ISEDITSCREEN}
 
-{#IFDEF CANFINDWEBCONNECTOR_LOADMASTER}
-
-    /// automatically generated function from webconnector
-    public bool Load{#MASTERTABLE}({#LOADMASTER_FORMALPARAMETERS})
-    {
-        FMainDS.Merge({#WEBCONNECTORMASTER}.Load{#MASTERTABLE}({#LOADMASTER_ACTUALPARAMETERS}));
-
-        ShowData();
-        
-        return true;
-    }
-{#ENDIF CANFINDWEBCONNECTOR_LOADMASTER}
-
-{#IFDEF SHOWDATA}
-    private void ShowData()
-    {
-        {#SHOWDATA}
-    }
-{#ENDIF SHOWDATA}
-
-{#IFDEF SHOWDETAILS}
     private void ShowDetails(Int32 ACurrentDetailIndex)
     {
-        {#SHOWDETAILS}
+        txtDetailCurrencyCode.Text = FMainDS.ACurrency[ACurrentDetailIndex].CurrencyCode;
+        txtDetailCurrencyName.Text = FMainDS.ACurrency[ACurrentDetailIndex].CurrencyName;
+        txtDetailCurrencySymbol.Text = FMainDS.ACurrency[ACurrentDetailIndex].CurrencySymbol;
+        cmbDetailCountryCode.SetSelectedString(FMainDS.ACurrency[ACurrentDetailIndex].CountryCode);
+        txtDetailDisplayFormat.Text = FMainDS.ACurrency[ACurrentDetailIndex].DisplayFormat;
     }
 
     private Int32 FPreviouslySelectedDetailRow = -1;
     private void FocusedRowChanged(System.Object sender, SourceGrid.RowEventArgs e)
     {
-{#IFDEF SAVEDETAILS}
         // get the details from the previously selected row
         if (FPreviouslySelectedDetailRow != -1)
         {
             GetDetailsFromControls(FPreviouslySelectedDetailRow);
         }
-{#ENDIF SAVEDETAILS}
         // display the details of the currently selected row; e.Row: first row has number 1
         ShowDetails(GetSelectedDetailDataTableIndex());
         FPreviouslySelectedDetailRow = GetSelectedDetailDataTableIndex();
         pnlDetails.Enabled = true;
     }
-{#ENDIF SHOWDETAILS}
-    
-{#IFDEF SAVEDATA}
-    private void GetDataFromControls()
-    {
-        {#SAVEDATA}
-{#IFDEF SAVEDETAILS}
-        GetDetailsFromControls(GetSelectedDetailDataTableIndex());
-{#ENDIF SAVEDETAILS}
-    }
-{#ENDIF SAVEDATA}
 
-{#IFDEF SAVEDETAILS}
     private void GetDetailsFromControls(Int32 ACurrentDetailIndex)
     {
         if (ACurrentDetailIndex != -1)
         {
-            {#SAVEDETAILS}
+            FMainDS.ACurrency[ACurrentDetailIndex].CurrencyCode = txtDetailCurrencyCode.Text;
+            FMainDS.ACurrency[ACurrentDetailIndex].CurrencyName = txtDetailCurrencyName.Text;
+            FMainDS.ACurrency[ACurrentDetailIndex].CurrencySymbol = txtDetailCurrencySymbol.Text;
+            FMainDS.ACurrency[ACurrentDetailIndex].CountryCode = cmbDetailCountryCode.GetSelectedString();
+            FMainDS.ACurrency[ACurrentDetailIndex].DisplayFormat = txtDetailDisplayFormat.Text;
         }
     }
-{#ENDIF SAVEDETAILS}
 
 #region Implement interface functions
 
     /// auto generated
     public void RunOnceOnActivation()
     {
-        {#RUNONCEINTERFACEIMPLEMENTATION}
+
     }
 
     /// <summary>
@@ -309,7 +270,7 @@ namespace {#NAMESPACE}
     /// </summary>
     public void HookupAllControls()
     {
-        {#HOOKUPINTERFACEIMPLEMENTATION}
+
     }
 
     /// auto generated
@@ -329,7 +290,6 @@ namespace {#NAMESPACE}
     {
         return (TFrmPetraUtils)FPetraUtilsObject;
     }
-{#IFDEF ISEDITSCREEN}
 
     /// auto generated
     public void FileSave(object sender, EventArgs e)
@@ -337,7 +297,6 @@ namespace {#NAMESPACE}
         SaveChanges();
     }
 
-{#IFDEF MANAGEDDATASETORTYPE}
     /// <summary>
     /// save the changes on the screen
     /// </summary>
@@ -347,32 +306,16 @@ namespace {#NAMESPACE}
         FPetraUtilsObject.OnDataSavingStart(this, new System.EventArgs());
 
 //TODO?  still needed?      FMainDS.AApDocument.Rows[0].BeginEdit();
-{#IFDEF DATASETTYPE}
-        GetDataFromControls();
-{#ENDIF DATASETTYPE}
-{#IFDEF DATATABLETYPE}
         GetDetailsFromControls(GetSelectedDetailDataTableIndex());
-{#ENDIF DATATABLETYPE}
 
         // TODO: verification
 
         if (FPetraUtilsObject.VerificationResultCollection.Count == 0)
         {
-{#IFDEF DATASETTYPE}
-            foreach (DataTable InspectDT in FMainDS.Tables)
-            {
-                foreach (DataRow InspectDR in InspectDT.Rows)
-                {
-                    InspectDR.EndEdit();
-                }
-            }
-{#ENDIF DATASETTYPE}
-{#IFDEF DATATABLETYPE}
-            foreach (DataRow InspectDR in FMainDS.{#DETAILTABLE}.Rows)
+            foreach (DataRow InspectDR in FMainDS.ACurrency.Rows)
             {
                 InspectDR.EndEdit();
             }
-{#ENDIF DATATABLETYPE}
 
             if (FPetraUtilsObject.HasChanges)
             {
@@ -382,24 +325,13 @@ namespace {#NAMESPACE}
                 TSubmitChangesResult SubmissionResult;
                 TVerificationResultCollection VerificationResult;
 
-{#IFDEF DATASETTYPE}
-                {#DATASETTYPE} SubmitDS = FMainDS.GetChangesTyped(true);
+                Ict.Common.Data.TTypedDataTable SubmitDT = FMainDS.ACurrency.GetChangesTyped();
 
                 // Submit changes to the PETRAServer
                 try
                 {
-                    SubmissionResult = {#WEBCONNECTORMASTER}.Save{#MASTERTABLE}(ref SubmitDS, out VerificationResult);
+                    SubmissionResult = TRemote.MCommon.DataReader.SaveData(Ict.Petra.Shared.MCommon.Data.ACurrencyTable.GetTableDBName(), ref SubmitDT, out VerificationResult);
                 }
-{#ENDIF DATASETTYPE}
-{#IFDEF DATATABLETYPE}
-                Ict.Common.Data.TTypedDataTable SubmitDT = FMainDS.{#DETAILTABLE}.GetChangesTyped();
-
-                // Submit changes to the PETRAServer
-                try
-                {
-                    SubmissionResult = TRemote.MCommon.DataReader.SaveData({#DATATABLETYPE}Table.GetTableDBName(), ref SubmitDT, out VerificationResult);
-                }
-{#ENDIF DATATABLETYPE}
                 catch (System.Net.Sockets.SocketException)
                 {
                     FPetraUtilsObject.WriteToStatusBar("Data could not be saved!");
@@ -458,26 +390,14 @@ namespace {#NAMESPACE}
                 {
                     case TSubmitChangesResult.scrOK:
 
-{#IFDEF DATASETTYPE}
                         // Call AcceptChanges to get rid now of any deleted columns before we Merge with the result from the Server
-                        FMainDS.AcceptChanges();
+                        FMainDS.ACurrency.AcceptChanges();
 
                         // Merge back with data from the Server (eg. for getting Sequence values)
-                        FMainDS.Merge(SubmitDS, false);
+                        FMainDS.ACurrency.Merge(SubmitDT, false);
 
                         // need to accept the new modification ID
-                        FMainDS.AcceptChanges();
-{#ENDIF DATASETTYPE}
-{#IFDEF DATATABLETYPE}
-                        // Call AcceptChanges to get rid now of any deleted columns before we Merge with the result from the Server
-                        FMainDS.{#DETAILTABLE}.AcceptChanges();
-
-                        // Merge back with data from the Server (eg. for getting Sequence values)
-                        FMainDS.{#DETAILTABLE}.Merge(SubmitDT, false);
-
-                        // need to accept the new modification ID
-                        FMainDS.{#DETAILTABLE}.AcceptChanges();
-{#ENDIF DATATABLETYPE}
+                        FMainDS.ACurrency.AcceptChanges();
 
                         // Update UI
                         FPetraUtilsObject.WriteToStatusBar("Data successfully saved.");
@@ -512,8 +432,6 @@ namespace {#NAMESPACE}
         return false;
     }
 
-{#ENDIF MANAGEDDATASETORTYPE}    
-{#ENDIF ISEDITSCREEN}
 #endregion
 
 #region Action Handling
@@ -521,11 +439,38 @@ namespace {#NAMESPACE}
     /// auto generated
     public void ActionEnabledEvent(object sender, ActionEventArgs e)
     {
-        {#ACTIONENABLING}
-        {#ACTIONENABLINGDISABLEMISSINGFUNCS}
+        if (e.ActionName == "actNew")
+        {
+            btnNew.Enabled = e.Enabled;
+        }
+        if (e.ActionName == "actDelete")
+        {
+            btnDelete.Enabled = e.Enabled;
+        }
+        if (e.ActionName == "actSave")
+        {
+            tbbSave.Enabled = e.Enabled;
+            mniFileSave.Enabled = e.Enabled;
+        }
+        if (e.ActionName == "actClose")
+        {
+            mniClose.Enabled = e.Enabled;
+        }
+        mniFilePrint.Enabled = false;
+        mniEditUndoCurrentField.Enabled = false;
+        mniEditUndoScreen.Enabled = false;
+        mniEditFind.Enabled = false;
+        mniHelpPetraHelp.Enabled = false;
+        mniHelpBugReport.Enabled = false;
+        mniHelpAboutPetra.Enabled = false;
+        mniHelpDevelopmentTeam.Enabled = false;
     }
 
-    {#ACTIONHANDLERS}
+    /// auto generated
+    protected void actClose(object sender, EventArgs e)
+    {
+        FPetraUtilsObject.ExecuteAction(eActionId.eClose);
+    }
 
 #endregion
   }

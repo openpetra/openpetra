@@ -67,12 +67,10 @@ RootNode:
         grdDetails:
             Dock: Fill
             DetailTable: true
-            RowSpan: 2
             Columns: [AApDocumentDetail.Amount, AApDocumentDetail.Narrative, AApDocumentDetail.ItemRef]
             ActionFocusRow: FocusedRowChanged
         pnlDetails:
             Dock: Bottom
-            ColSpan: 2
             Controls:
                 Row0: [txtDetailNarrative]
                 Row1: [txtDetailItemRef]

@@ -421,6 +421,21 @@ namespace Ict.Petra.Client.MFinance.Gui
                         mniICHReports});
             this.mniClearingHouse.Text = "&Clearing House";
             //
+            // mniLedger
+            //
+            this.mniLedger.Name = "mniLedger";
+            this.mniLedger.AutoSize = true;
+            this.mniLedger.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+                           mniLedgerSetup,
+                        mniGLBatch,
+                        mniPeriodEnd,
+                        mniSeparator2,
+                        mniGiftReceipting,
+                        mniAccountsPayable,
+                        mniBudget,
+                        mniClearingHouse});
+            this.mniLedger.Text = "&Ledger";
+            //
             // mniGLReports
             //
             this.mniGLReports.Name = "mniGLReports";
@@ -459,6 +474,7 @@ namespace Ict.Petra.Client.MFinance.Gui
             //
             this.mniSetupCurrency.Name = "mniSetupCurrency";
             this.mniSetupCurrency.AutoSize = true;
+            this.mniSetupCurrency.Click += new System.EventHandler(this.OpenScreenSetupCurrency);
             this.mniSetupCurrency.Text = "&Currency";
             //
             // mniSetupCorporateExchangeRate
@@ -524,24 +540,6 @@ namespace Ict.Petra.Client.MFinance.Gui
                         mniSeparator6,
                         mniSetupLetters});
             this.mniFinanceSetup.Text = "&Setup";
-            //
-            // mniLedger
-            //
-            this.mniLedger.Name = "mniLedger";
-            this.mniLedger.AutoSize = true;
-            this.mniLedger.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-                           mniLedgerSetup,
-                        mniGLBatch,
-                        mniPeriodEnd,
-                        mniSeparator2,
-                        mniGiftReceipting,
-                        mniAccountsPayable,
-                        mniBudget,
-                        mniClearingHouse,
-                        mniReports,
-                        mniConsolidations,
-                        mniFinanceSetup});
-            this.mniLedger.Text = "&Ledger";
             //
             // mniPetraMainMenu
             //
@@ -663,6 +661,9 @@ namespace Ict.Petra.Client.MFinance.Gui
             this.mnuMain.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
                            mniFile,
                         mniLedger,
+                        mniReports,
+                        mniConsolidations,
+                        mniFinanceSetup,
                         mniPetraModules,
                         mniHelp});
             //

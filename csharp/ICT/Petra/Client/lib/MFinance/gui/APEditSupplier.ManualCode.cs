@@ -121,9 +121,8 @@ namespace Ict.Petra.Client.MFinance.Gui.AccountsPayable
         /// <summary>
         /// save the changes on the screen
         /// </summary>
-        /// <param name="AInspectDS"></param>
         /// <returns></returns>
-        public bool SaveChanges(AccountsPayableTDS AInspectDS)
+        public bool SaveChanges()
         {
             FPetraUtilsObject.OnDataSavingStart(this, new System.EventArgs());
 
@@ -138,7 +137,7 @@ namespace Ict.Petra.Client.MFinance.Gui.AccountsPayable
 
             if (FPetraUtilsObject.VerificationResultCollection.Count == 0)
             {
-                foreach (DataTable InspectDT in AInspectDS.Tables)
+                foreach (DataTable InspectDT in FMainDS.Tables)
                 {
                     foreach (DataRow InspectDR in InspectDT.Rows)
                     {
@@ -151,7 +150,7 @@ namespace Ict.Petra.Client.MFinance.Gui.AccountsPayable
                     FPetraUtilsObject.WriteToStatusBar("Saving data...");
                     this.Cursor = Cursors.WaitCursor;
 
-                    AccountsPayableTDS SubmitDS = AInspectDS.GetChangesTyped(true);
+                    AccountsPayableTDS SubmitDS = FMainDS.GetChangesTyped(true);
 
                     TSubmitChangesResult SubmissionResult;
                     TVerificationResultCollection VerificationResult;
@@ -220,13 +219,13 @@ namespace Ict.Petra.Client.MFinance.Gui.AccountsPayable
                         case TSubmitChangesResult.scrOK:
 
                             // Call AcceptChanges to get rid now of any deleted columns before we Merge with the result from the Server
-                            AInspectDS.AcceptChanges();
+                            FMainDS.AcceptChanges();
 
                             // Merge back with data from the Server (eg. for getting Sequence values)
-                            AInspectDS.Merge(SubmitDS, false);
+                            FMainDS.Merge(SubmitDS, false);
 
                             // need to accept the new modification ID
-                            AInspectDS.AcceptChanges();
+                            FMainDS.AcceptChanges();
 
                             // Update UI
                             FPetraUtilsObject.WriteToStatusBar("Data successfully saved.");

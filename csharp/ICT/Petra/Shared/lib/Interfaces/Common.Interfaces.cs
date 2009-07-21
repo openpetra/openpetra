@@ -13,6 +13,7 @@ using Ict.Petra.Shared.Interfaces.MCommon.UIConnectors;
 using Ict.Petra.Shared.Interfaces.MCommon.DataReader;
 #region ManualCode
 using Ict.Common.DB;
+using Ict.Common.Data;
 using Ict.Petra.Shared.MCommon;
 using Ict.Petra.Shared.MCommon.Data;
 #endregion ManualCode
@@ -106,6 +107,10 @@ namespace Ict.Petra.Shared.Interfaces.MCommon.DataReader
         bool GetData(string ATablename,
                      Ict.Common.Data.TTypedDataTable AKeys,
                      out Ict.Common.Data.TTypedDataTable AResultTable);
+        /// <summary>auto generated from Instantiator (Ict.Petra.Server.MCommon.Instantiator.DataReader.TDataReaderNamespace)</summary>
+        TSubmitChangesResult SaveData(string ATablename,
+                                      ref TTypedDataTable ASubmitTable,
+                                      out TVerificationResultCollection AVerificationResult);
     }
 
 }

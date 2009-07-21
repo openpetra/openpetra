@@ -1,0 +1,45 @@
+RootNode:
+    BaseYaml: ../../../CommonForms/PetraEditForm.yaml
+    FormTitle: Currency List
+    ClassName: TFrmSetupCurrency
+    Namespace: Ict.Petra.Client.MFinance.Gui.Setup
+    DetailTable: ACurrency
+    DatatableType: Ict.Petra.Shared.MCommon.Data.ACurrency
+    FormType: edit
+    WindowWidth: 660
+    WindowHeight: 500
+    Actions:
+        actNew: {Label=&New, ActionClick=NewRow}
+        actDelete: {Label=&Delete, ActionClick=DeleteRow}
+    Controls:
+        pnlContent:
+            Controls: [pnlGrid, pnlDetails]
+            Dock: Fill
+        pnlGrid:
+            Dock: Fill
+            Controls: [grdDetails, pnlButtons]
+        pnlButtons:
+            Dock: Right
+            Controls: [btnNew, btnDelete]
+        btnNew:
+            Action: actNew
+        btnDelete:
+            Action: actDelete
+        grdDetails:
+            Dock: Fill
+            Columns: [ACurrency.CurrencyCode, ACurrency.CurrencyName, ACurrency.CurrencySymbol, ACurrency.CountryCode, ACurrency.DisplayFormat]
+            ActionFocusRow: FocusedRowChanged
+        pnlDetails:
+            Dock: Bottom
+            Controls:
+                Row0: [txtDetailCurrencyCode]
+                Row1: [txtDetailCurrencyName]
+                Row2: [txtDetailCurrencySymbol]
+                Row3: [cmbDetailCountryCode]
+                Row4: [txtDetailDisplayFormat]
+        txtDetailCurrencyCode: {Label=Currency Code, OnlySetOnce=true}
+        txtDetailCurrencyName: {Label=Currency Name}
+        txtDetailCurrencySymbol: {Label=Currency Symbol}
+        cmbDetailCountryCode: {Label=Country Code, List=CountryList}
+        # TODO: should be nudNumberOfDecimals
+        txtDetailDisplayFormat: {Label=Number of Decimals}

@@ -97,6 +97,7 @@ namespace Ict.Petra.Client.MFinance.Gui
       this.mniICHImportFile.Text = Catalog.GetString("&Import file from field");
       this.mniICHReports.Text = Catalog.GetString("ICH &reports...");
       this.mniClearingHouse.Text = Catalog.GetString("&Clearing House");
+      this.mniLedger.Text = Catalog.GetString("&Ledger");
       this.mniGLReports.Text = Catalog.GetString("&GL");
       this.mniGiftReports.Text = Catalog.GetString("G&if");
       this.mniAPReports.Text = Catalog.GetString("Accounts &Payable");
@@ -110,7 +111,6 @@ namespace Ict.Petra.Client.MFinance.Gui
       this.mniSetupAnalysisTypes.Text = Catalog.GetString("A&nalysis Types");
       this.mniSetupLetters.Text = Catalog.GetString("&Letters");
       this.mniFinanceSetup.Text = Catalog.GetString("&Setup");
-      this.mniLedger.Text = Catalog.GetString("&Ledger");
       this.mniPetraMainMenu.Text = Catalog.GetString("Petra &Main Menu");
       this.mniPetraPartnerModule.Text = Catalog.GetString("Pa&rtner");
       this.mniPetraFinanceModule.Text = Catalog.GetString("&Finance");
@@ -261,7 +261,6 @@ namespace Ict.Petra.Client.MFinance.Gui
         mniGiftReports.Enabled = false;
         mniAPReports.Enabled = false;
         mniConsolidations.Enabled = false;
-        mniSetupCurrency.Enabled = false;
         mniSetupCorporateExchangeRate.Enabled = false;
         mniSetupDailyExchangeRate.Enabled = false;
         mniSetupMethodOfGiving.Enabled = false;
@@ -272,6 +271,13 @@ namespace Ict.Petra.Client.MFinance.Gui
         mniHelpBugReport.Enabled = false;
         mniHelpAboutPetra.Enabled = false;
         mniHelpDevelopmentTeam.Enabled = false;
+    }
+
+    /// auto generated
+    protected void OpenScreenSetupCurrency(object sender, EventArgs e)
+    {
+        Ict.Petra.Client.MFinance.Gui.Setup.TFrmSetupCurrency frm = new Ict.Petra.Client.MFinance.Gui.Setup.TFrmSetupCurrency(this.Handle);
+        frm.Show();
     }
 
     /// auto generated

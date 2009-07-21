@@ -54,6 +54,9 @@
     <Reference Include="Ict.Petra.Shared.Interfaces">
       <HintPath>..\..\..\..\Shared\_bin\Server_Client\Debug\Ict.Petra.Shared.Interfaces.dll</HintPath>
     </Reference>
+    <Reference Include="Ict.Petra.Shared.MCommon.DataTables">
+      <HintPath>..\..\..\..\Shared\_bin\Server_Client\Debug\Ict.Petra.Shared.MCommon.DataTables.dll</HintPath>
+    </Reference>
     <Reference Include="Ict.Petra.Shared.MFinance">
       <HintPath>..\..\..\..\Shared\_bin\Server_Client\Debug\Ict.Petra.Shared.MFinance.dll</HintPath>
     </Reference>
@@ -179,6 +182,13 @@
     <Compile Include="LedgerSelection.Designer.cs">
       <DependentUpon>LedgerSelection.cs</DependentUpon>
     </Compile>
+    <Compile Include="SetupCurrency.cs" />
+    <Compile Include="SetupCurrency.Designer.cs">
+      <DependentUpon>SetupCurrency.cs</DependentUpon>
+    </Compile>
+    <Compile Include="SetupCurrency.ManualCode.cs">
+      <DependentUpon>SetupCurrency.cs</DependentUpon>
+    </Compile>
     <EmbeddedResource Include="APEditDocument.resx">
       <DependentUpon>APEditDocument.cs</DependentUpon>
     </EmbeddedResource>
@@ -199,6 +209,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="LedgerSelection.resx">
       <DependentUpon>LedgerSelection.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="SetupCurrency.resx">
+      <DependentUpon>SetupCurrency.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
 </Project>

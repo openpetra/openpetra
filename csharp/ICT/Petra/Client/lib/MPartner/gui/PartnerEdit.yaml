@@ -3,8 +3,8 @@ RootNode:
     FormTitle: Partner Edit
     ClassName: TPartnerEditDSWinForm
     Namespace: Ict.Petra.Client.MPartner.Gui
-    FormType: edit
-    HasManualCodeInOtherFile: true
+    # TODO: formtype should be edit, but it does not use generated SaveChanges yet etc
+    FormType: browse
     WindowWidth: 754
     WindowHeight: 623
     Events:

@@ -34,6 +34,8 @@ using Ict.Petra.Server.MCommon.DataReader;
 using Ict.Petra.Shared.MCommon;
 using Ict.Petra.Shared.MCommon.Data;
 using Ict.Common.DB;
+using Ict.Common.Data;
+using Ict.Common.Verification;
 #endregion ManualCode
 namespace Ict.Petra.Server.MCommon.Instantiator
 {
@@ -546,6 +548,16 @@ namespace Ict.Petra.Server.MCommon.Instantiator.DataReader
         {
             #region ManualCode
             return TCommonDataReader.GetData(ATablename, AKeys, out AResultTable);
+            #endregion ManualCode
+        }
+
+        /// generated method from interface
+        public TSubmitChangesResult SaveData(string ATablename,
+                                             ref TTypedDataTable ASubmitTable,
+                                             out TVerificationResultCollection AVerificationResult)
+        {
+            #region ManualCode
+            return TCommonDataReader.SaveData(ATablename, ref ASubmitTable, out AVerificationResult);
             #endregion ManualCode
         }
 
