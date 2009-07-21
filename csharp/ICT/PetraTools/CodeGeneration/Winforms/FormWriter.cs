@@ -834,11 +834,6 @@ namespace Ict.Tools.CodeGeneration.Winforms
                 FTemplate.AddToCodelet("SAVEDETAILS", "GetDetailsFromControlsManual();" + Environment.NewLine);
             }
 
-            if (FCodeStorage.ManualFileExistsAndContains("ShowDetailsManual"))
-            {
-                FTemplate.AddToCodelet("SHOWDETAILS", "ShowDetailsManual();" + Environment.NewLine);
-            }
-
             InsertCodeIntoTemplate(AXAMLFilename);
         }
 
