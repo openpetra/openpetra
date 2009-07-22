@@ -31,6 +31,8 @@ using Ict.Common.Data;
 using Ict.Common.Verification;
 using Ict.Petra.Shared.MFinance.AP.Data.Access;
 using Ict.Petra.Shared.MFinance.AP.Data;
+using Ict.Petra.Shared.MFinance.Account.Data.Access;
+using Ict.Petra.Shared.MFinance.Account.Data;
 using Ict.Petra.Shared.MCommon.Data.Access;
 using Ict.Petra.Shared.MCommon.Data;
 
@@ -79,6 +81,12 @@ namespace Ict.Petra.Server.MCommon.DataReader
                 {
                     ACurrencyTable typedTable;
                     ACurrencyAccess.LoadAll(out typedTable, ReadTransaction);
+                    tempTable = typedTable;
+                }
+                else if (ATablename == ADailyExchangeRateTable.GetTableDBName())
+                {
+                    ADailyExchangeRateTable typedTable;
+                    ADailyExchangeRateAccess.LoadAll(out typedTable, ReadTransaction);
                     tempTable = typedTable;
                 }
                 else
@@ -143,6 +151,22 @@ namespace Ict.Petra.Server.MCommon.DataReader
                         {
                             SubmissionResult = TSubmitChangesResult.scrError;
                         }
+                    }
+                    else if (ATablename == ADailyExchangeRateTable.GetTableDBName())
+                    {
+                        if (ADailyExchangeRateAccess.SubmitChanges((ADailyExchangeRateTable)ASubmitTable, SubmitChangesTransaction,
+                                out SingleVerificationResultCollection))
+                        {
+                            SubmissionResult = TSubmitChangesResult.scrOK;
+                        }
+                        else
+                        {
+                            SubmissionResult = TSubmitChangesResult.scrError;
+                        }
+                    }
+                    else
+                    {
+                        throw new Exception("TCommonDataReader.SaveData: unknown table " + ATablename);
                     }
 
                     if (SubmissionResult == TSubmitChangesResult.scrOK)

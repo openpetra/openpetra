@@ -1,4 +1,4 @@
-/* auto generated with nant generateWinforms from SetupCurrency.yaml and template windowMaintainTable
+/* auto generated with nant generateWinforms from SetupDailyExchangeRate.yaml and template windowMaintainTable
  *
  * DO NOT edit manually, DO NOT edit with the designer
  * use a user control if you need to modify the screen content
@@ -49,18 +49,18 @@ using Ict.Petra.Client.CommonForms;
 namespace Ict.Petra.Client.MFinance.Gui.Setup
 {
 
-  /// auto generated: Currency List
-  public partial class TFrmSetupCurrency: System.Windows.Forms.Form, IFrmPetraEdit
+  /// auto generated: Daily Exchange Rate List
+  public partial class TFrmSetupDailyExchangeRate: System.Windows.Forms.Form, IFrmPetraEdit
   {
     private TFrmPetraEditUtils FPetraUtilsObject;
 
     private class FMainDS
     {
-        public static Ict.Petra.Shared.MCommon.Data.ACurrencyTable ACurrency;
+        public static Ict.Petra.Shared.MFinance.Account.Data.ADailyExchangeRateTable ADailyExchangeRate;
     }
 
     /// constructor
-    public TFrmSetupCurrency(IntPtr AParentFormHandle) : base()
+    public TFrmSetupDailyExchangeRate(IntPtr AParentFormHandle) : base()
     {
       //
       // Required for Windows Form Designer support
@@ -71,11 +71,13 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
       // this code has been inserted by GenerateI18N, all changes in this region will be overwritten by GenerateI18N
       this.btnNew.Text = Catalog.GetString("&New");
       this.btnDelete.Text = Catalog.GetString("&Delete");
-      this.lblDetailCurrencyCode.Text = Catalog.GetString("Currency Code:");
-      this.lblDetailCurrencyName.Text = Catalog.GetString("Currency Name:");
-      this.lblDetailCurrencySymbol.Text = Catalog.GetString("Currency Symbol:");
-      this.lblDetailCountryCode.Text = Catalog.GetString("Country Code:");
-      this.lblDetailDisplayFormat.Text = Catalog.GetString("Number of Decimals:");
+      this.lblDetailFromCurrencyCode.Text = Catalog.GetString("&From Currency Code:");
+      this.lblDetailToCurrencyCode.Text = Catalog.GetString("&To Currency Code:");
+      this.lblDetailDateEffectiveFrom.Text = Catalog.GetString("D&ate:");
+      this.lblDetailTimeEffectiveFrom.Text = Catalog.GetString("T&ime:");
+      this.lblDetailRateOfExchange.Text = Catalog.GetString("&Rate of exchange:");
+      this.lblValueOneDirection.Text = Catalog.GetString("ValueOneDirection:");
+      this.lblValueOtherDirection.Text = Catalog.GetString("ValueOtherDirection:");
       this.tbbSave.ToolTipText = Catalog.GetString("Saves changed data");
       this.tbbSave.Text = Catalog.GetString("&Save");
       this.mniFileSave.ToolTipText = Catalog.GetString("Saves changed data");
@@ -93,29 +95,28 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
       this.mniHelpAboutPetra.Text = Catalog.GetString("&About Petra");
       this.mniHelpDevelopmentTeam.Text = Catalog.GetString("&The Development Team...");
       this.mniHelp.Text = Catalog.GetString("&Help");
-      this.Text = Catalog.GetString("Currency List");
+      this.Text = Catalog.GetString("Daily Exchange Rate List");
       #endregion
 
       FPetraUtilsObject = new TFrmPetraEditUtils(AParentFormHandle, this, stbMain);
-      FPetraUtilsObject.SetStatusBarText(txtDetailCurrencyCode, Catalog.GetString("Enter a currency code"));
-      FPetraUtilsObject.SetStatusBarText(txtDetailCurrencyName, Catalog.GetString("Enter the currency name"));
-      FPetraUtilsObject.SetStatusBarText(txtDetailCurrencySymbol, Catalog.GetString("Enter the symbol which represents this currency"));
-      FPetraUtilsObject.SetStatusBarText(cmbDetailCountryCode, Catalog.GetString("Enter a valid country code."));
-      cmbDetailCountryCode.InitialiseUserControl();
-      FPetraUtilsObject.SetStatusBarText(txtDetailDisplayFormat, Catalog.GetString("The format in which to display and accept input on a currency."));
-      FMainDS.ACurrency = new Ict.Petra.Shared.MCommon.Data.ACurrencyTable();
+      FPetraUtilsObject.SetStatusBarText(cmbDetailFromCurrencyCode, Catalog.GetString("Enter a currency code"));
+      FPetraUtilsObject.SetStatusBarText(cmbDetailToCurrencyCode, Catalog.GetString("Enter a currency code"));
+      FPetraUtilsObject.SetStatusBarText(dtpDetailDateEffectiveFrom, Catalog.GetString("Enter the date which the rate becomes effective"));
+      FPetraUtilsObject.SetStatusBarText(txtDetailTimeEffectiveFrom, Catalog.GetString("The date and time"));
+      FPetraUtilsObject.SetStatusBarText(txtDetailRateOfExchange, Catalog.GetString("Enter the rate of exchange"));
+      FMainDS.ADailyExchangeRate = new Ict.Petra.Shared.MFinance.Account.Data.ADailyExchangeRateTable();
       Ict.Common.Data.TTypedDataTable TypedTable;
-      TRemote.MCommon.DataReader.GetData(Ict.Petra.Shared.MCommon.Data.ACurrencyTable.GetTableDBName(), null, out TypedTable);
-      FMainDS.ACurrency.Merge(TypedTable);
+      TRemote.MCommon.DataReader.GetData(Ict.Petra.Shared.MFinance.Account.Data.ADailyExchangeRateTable.GetTableDBName(), null, out TypedTable);
+      FMainDS.ADailyExchangeRate.Merge(TypedTable);
       grdDetails.Columns.Clear();
-      grdDetails.AddTextColumn("Currency Code", FMainDS.ACurrency.ColumnCurrencyCode);
-      grdDetails.AddTextColumn("Currency Name", FMainDS.ACurrency.ColumnCurrencyName);
-      grdDetails.AddTextColumn("Currency Symbol", FMainDS.ACurrency.ColumnCurrencySymbol);
-      grdDetails.AddTextColumn("Country Code", FMainDS.ACurrency.ColumnCountryCode);
-      grdDetails.AddTextColumn("Display Format", FMainDS.ACurrency.ColumnDisplayFormat);
+      grdDetails.AddTextColumn("From Currency Code", FMainDS.ADailyExchangeRate.ColumnFromCurrencyCode);
+      grdDetails.AddTextColumn("To Currency Code", FMainDS.ADailyExchangeRate.ColumnToCurrencyCode);
+      grdDetails.AddTextColumn("Date Effective From", FMainDS.ADailyExchangeRate.ColumnDateEffectiveFrom);
+      grdDetails.AddTextColumn("Time", FMainDS.ADailyExchangeRate.ColumnTimeEffectiveFrom);
+      grdDetails.AddTextColumn("Rate of exchange", FMainDS.ADailyExchangeRate.ColumnRateOfExchange);
       FPetraUtilsObject.ActionEnablingEvent += ActionEnabledEvent;
 
-      DataView myDataView = FMainDS.ACurrency.DefaultView;
+      DataView myDataView = FMainDS.ADailyExchangeRate.DefaultView;
       myDataView.AllowNew = false;
       grdDetails.DataSource = new DevAge.ComponentModel.BoundDataView(myDataView);
       grdDetails.AutoSizeCells();
@@ -149,18 +150,18 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
 
     }
 
-    /// automatically generated, create a new record of ACurrency and display on the edit screen
+    /// automatically generated, create a new record of ADailyExchangeRate and display on the edit screen
     /// we create the table locally, no dataset
-    public bool CreateNewACurrency()
+    public bool CreateNewADailyExchangeRate()
     {
-        Ict.Petra.Shared.MCommon.Data.ACurrencyRow NewRow = FMainDS.ACurrency.NewRowTyped();
-        FMainDS.ACurrency.Rows.Add(NewRow);
+        Ict.Petra.Shared.MFinance.Account.Data.ADailyExchangeRateRow NewRow = FMainDS.ADailyExchangeRate.NewRowTyped();
+        FMainDS.ADailyExchangeRate.Rows.Add(NewRow);
 
         FPetraUtilsObject.SetChangedFlag();
 
-        grdDetails.DataSource = new DevAge.ComponentModel.BoundDataView(FMainDS.ACurrency.DefaultView);
+        grdDetails.DataSource = new DevAge.ComponentModel.BoundDataView(FMainDS.ADailyExchangeRate.DefaultView);
         grdDetails.Refresh();
-        SelectDetailRowByDataTableIndex(FMainDS.ACurrency.Rows.Count - 1);
+        SelectDetailRowByDataTableIndex(FMainDS.ADailyExchangeRate.Rows.Count - 1);
 
         return true;
     }
@@ -171,9 +172,9 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
         for (int Counter = 0; Counter < grdDetails.DataSource.Count; Counter++)
         {
             bool found = true;
-            foreach (DataColumn myColumn in FMainDS.ACurrency.PrimaryKey)
+            foreach (DataColumn myColumn in FMainDS.ADailyExchangeRate.PrimaryKey)
             {
-                string value1 = FMainDS.ACurrency.Rows[ARowNumberInTable][myColumn].ToString();
+                string value1 = FMainDS.ADailyExchangeRate.Rows[ARowNumberInTable][myColumn].ToString();
                 string value2 = (grdDetails.DataSource as DevAge.ComponentModel.BoundDataView).mDataView[Counter][myColumn.Ordinal].ToString();
                 if (value1 != value2)
                 {
@@ -204,12 +205,12 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
             // we could keep track of the order in the datatable ourselves: return Convert.ToInt32(SelectedGridRow[0][ORIGINALINDEX]);
             // does not seem to work: return grdDetails.DataSourceRowToIndex2(SelectedGridRow[0]);
 
-            for (int Counter = 0; Counter < FMainDS.ACurrency.Rows.Count; Counter++)
+            for (int Counter = 0; Counter < FMainDS.ADailyExchangeRate.Rows.Count; Counter++)
             {
                 bool found = true;
-                foreach (DataColumn myColumn in FMainDS.ACurrency.PrimaryKey)
+                foreach (DataColumn myColumn in FMainDS.ADailyExchangeRate.PrimaryKey)
                 {
-                    if (FMainDS.ACurrency.Rows[Counter][myColumn].ToString() !=
+                    if (FMainDS.ADailyExchangeRate.Rows[Counter][myColumn].ToString() !=
                         SelectedGridRow[0][myColumn.Ordinal].ToString())
                     {
                         found = false;
@@ -228,11 +229,11 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
 
     private void ShowDetails(Int32 ACurrentDetailIndex)
     {
-        txtDetailCurrencyCode.Text = FMainDS.ACurrency[ACurrentDetailIndex].CurrencyCode;
-        txtDetailCurrencyName.Text = FMainDS.ACurrency[ACurrentDetailIndex].CurrencyName;
-        txtDetailCurrencySymbol.Text = FMainDS.ACurrency[ACurrentDetailIndex].CurrencySymbol;
-        cmbDetailCountryCode.SetSelectedString(FMainDS.ACurrency[ACurrentDetailIndex].CountryCode);
-        txtDetailDisplayFormat.Text = FMainDS.ACurrency[ACurrentDetailIndex].DisplayFormat;
+        cmbDetailFromCurrencyCode.SetSelectedString(FMainDS.ADailyExchangeRate[ACurrentDetailIndex].FromCurrencyCode);
+        cmbDetailToCurrencyCode.SetSelectedString(FMainDS.ADailyExchangeRate[ACurrentDetailIndex].ToCurrencyCode);
+        dtpDetailDateEffectiveFrom.Value = FMainDS.ADailyExchangeRate[ACurrentDetailIndex].DateEffectiveFrom;
+        txtDetailTimeEffectiveFrom.Text = FMainDS.ADailyExchangeRate[ACurrentDetailIndex].TimeEffectiveFrom.ToString();
+        txtDetailRateOfExchange.Text = FMainDS.ADailyExchangeRate[ACurrentDetailIndex].RateOfExchange.ToString();
     }
 
     private Int32 FPreviouslySelectedDetailRow = -1;
@@ -253,11 +254,11 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
     {
         if (ACurrentDetailIndex != -1)
         {
-            FMainDS.ACurrency[ACurrentDetailIndex].CurrencyCode = txtDetailCurrencyCode.Text;
-            FMainDS.ACurrency[ACurrentDetailIndex].CurrencyName = txtDetailCurrencyName.Text;
-            FMainDS.ACurrency[ACurrentDetailIndex].CurrencySymbol = txtDetailCurrencySymbol.Text;
-            FMainDS.ACurrency[ACurrentDetailIndex].CountryCode = cmbDetailCountryCode.GetSelectedString();
-            FMainDS.ACurrency[ACurrentDetailIndex].DisplayFormat = txtDetailDisplayFormat.Text;
+            FMainDS.ADailyExchangeRate[ACurrentDetailIndex].FromCurrencyCode = cmbDetailFromCurrencyCode.GetSelectedString();
+            FMainDS.ADailyExchangeRate[ACurrentDetailIndex].ToCurrencyCode = cmbDetailToCurrencyCode.GetSelectedString();
+            FMainDS.ADailyExchangeRate[ACurrentDetailIndex].DateEffectiveFrom = dtpDetailDateEffectiveFrom.Value;
+            FMainDS.ADailyExchangeRate[ACurrentDetailIndex].TimeEffectiveFrom = Convert.ToInt32(txtDetailTimeEffectiveFrom.Text);
+            FMainDS.ADailyExchangeRate[ACurrentDetailIndex].RateOfExchange = Convert.ToDouble(txtDetailRateOfExchange.Text);
         }
     }
 
@@ -316,7 +317,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
 
         if (FPetraUtilsObject.VerificationResultCollection.Count == 0)
         {
-            foreach (DataRow InspectDR in FMainDS.ACurrency.Rows)
+            foreach (DataRow InspectDR in FMainDS.ADailyExchangeRate.Rows)
             {
                 InspectDR.EndEdit();
             }
@@ -329,12 +330,12 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
                 TSubmitChangesResult SubmissionResult;
                 TVerificationResultCollection VerificationResult;
 
-                Ict.Common.Data.TTypedDataTable SubmitDT = FMainDS.ACurrency.GetChangesTyped();
+                Ict.Common.Data.TTypedDataTable SubmitDT = FMainDS.ADailyExchangeRate.GetChangesTyped();
 
                 // Submit changes to the PETRAServer
                 try
                 {
-                    SubmissionResult = TRemote.MCommon.DataReader.SaveData(Ict.Petra.Shared.MCommon.Data.ACurrencyTable.GetTableDBName(), ref SubmitDT, out VerificationResult);
+                    SubmissionResult = TRemote.MCommon.DataReader.SaveData(Ict.Petra.Shared.MFinance.Account.Data.ADailyExchangeRateTable.GetTableDBName(), ref SubmitDT, out VerificationResult);
                 }
                 catch (System.Net.Sockets.SocketException)
                 {
@@ -395,13 +396,13 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
                     case TSubmitChangesResult.scrOK:
 
                         // Call AcceptChanges to get rid now of any deleted columns before we Merge with the result from the Server
-                        FMainDS.ACurrency.AcceptChanges();
+                        FMainDS.ADailyExchangeRate.AcceptChanges();
 
                         // Merge back with data from the Server (eg. for getting Sequence values)
-                        FMainDS.ACurrency.Merge(SubmitDT, false);
+                        FMainDS.ADailyExchangeRate.Merge(SubmitDT, false);
 
                         // need to accept the new modification ID
-                        FMainDS.ACurrency.AcceptChanges();
+                        FMainDS.ADailyExchangeRate.AcceptChanges();
 
                         // Update UI
                         FPetraUtilsObject.WriteToStatusBar("Data successfully saved.");

@@ -64,7 +64,7 @@ RootNode:
            Label: &Setup
            mniSetupCurrency: {Label=&Currency, ActionOpenScreen=Ict.Petra.Client.MFinance.Gui.Setup.TFrmSetupCurrency}
            mniSetupCorporateExchangeRate: {Label=C&orporate Exchange Rate}
-           mniSetupDailyExchangeRate: {Label=&Daily Exchange Rate}
+           mniSetupDailyExchangeRate: {Label=&Daily Exchange Rate, ActionOpenScreen=Ict.Petra.Client.MFinance.Gui.Setup.TFrmSetupDailyExchangeRate}
            mniSetupMethodOfGiving: {Label=Method of &Giving}
            mniSetupMethodOfPayment: {Label=Method of &Payment}
            mniSeparator: {Label=-}

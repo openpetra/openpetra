@@ -449,7 +449,7 @@ namespace Ict.Tools.CodeGeneration.Winforms
 
             if (AFieldTypeDotNet.ToLower().Contains("int"))
             {
-                return "Convert.ToInt64(" + ctrl.controlName + ".Text)";
+                return "Convert.ToInt32(" + ctrl.controlName + ".Text)";
             }
             else if (AFieldTypeDotNet.ToLower().Contains("double"))
             {
@@ -645,7 +645,7 @@ namespace Ict.Tools.CodeGeneration.Winforms
 
             if (AFieldTypeDotNet.ToLower().Contains("int"))
             {
-                return "Convert.ToInt64(" + ctrl.controlName + ".Text)";
+                return "Convert.ToInt32(" + ctrl.controlName + ".Text)";
             }
             else if (AFieldTypeDotNet.ToLower().Contains("double"))
             {
@@ -774,6 +774,10 @@ namespace Ict.Tools.CodeGeneration.Winforms
                     foreach (string ctrlname in controls)
                     {
                         TControlDef ctrl = writer.CodeStorage.GetControl(ctrlname);
+                        if (ctrl == null)
+                        {
+                            throw new Exception("cannot find control with name " + ctrlname + "; it belongs to " + curNode.Name);
+                        }
                         ctrl.rowNumber = countRow;
                     }
 

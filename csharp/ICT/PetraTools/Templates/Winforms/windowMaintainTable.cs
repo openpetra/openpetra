@@ -57,6 +57,11 @@ namespace {#NAMESPACE}
       {#INITMANUALCODE}
       FPetraUtilsObject.ActionEnablingEvent += ActionEnabledEvent;
       
+      DataView myDataView = FMainDS.{#DETAILTABLE}.DefaultView;
+      myDataView.AllowNew = false;
+      grdDetails.DataSource = new DevAge.ComponentModel.BoundDataView(myDataView);
+      grdDetails.AutoSizeCells();
+
       {#INITACTIONSTATE}
     }
 

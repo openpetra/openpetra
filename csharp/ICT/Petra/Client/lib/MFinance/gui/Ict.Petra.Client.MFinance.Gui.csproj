@@ -189,6 +189,13 @@
     <Compile Include="SetupCurrency.ManualCode.cs">
       <DependentUpon>SetupCurrency.cs</DependentUpon>
     </Compile>
+    <Compile Include="SetupDailyExchangeRate.cs" />
+    <Compile Include="SetupDailyExchangeRate.Designer.cs">
+      <DependentUpon>SetupDailyExchangeRate.cs</DependentUpon>
+    </Compile>
+    <Compile Include="SetupDailyExchangeRate.ManualCode.cs">
+      <DependentUpon>SetupDailyExchangeRate.cs</DependentUpon>
+    </Compile>
     <EmbeddedResource Include="APEditDocument.resx">
       <DependentUpon>APEditDocument.cs</DependentUpon>
     </EmbeddedResource>
@@ -212,6 +219,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="SetupCurrency.resx">
       <DependentUpon>SetupCurrency.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="SetupDailyExchangeRate.resx">
+      <DependentUpon>SetupDailyExchangeRate.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
 </Project>

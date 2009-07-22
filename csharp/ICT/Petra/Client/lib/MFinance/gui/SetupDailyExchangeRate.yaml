@@ -1,0 +1,48 @@
+RootNode:
+    BaseYaml: ../../../CommonForms/PetraEditForm.yaml
+    FormTitle: Daily Exchange Rate List
+    ClassName: TFrmSetupDailyExchangeRate
+    Namespace: Ict.Petra.Client.MFinance.Gui.Setup
+    DetailTable: ADailyExchangeRate
+    DatatableType: Ict.Petra.Shared.MFinance.Account.Data.ADailyExchangeRate
+    FormType: edit
+    Template: windowMaintainTable
+    WindowWidth: 660
+    WindowHeight: 500
+    Actions:
+        actNew: {Label=&New, ActionClick=NewRow}
+        actDelete: {Label=&Delete, ActionClick=DeleteRow}
+    Controls:
+        pnlContent:
+            Controls: [pnlGrid, pnlDetails]
+            Dock: Fill
+        pnlGrid:
+            Dock: Fill
+            Controls: [grdDetails, pnlButtons]
+        pnlButtons:
+            Dock: Right
+            Controls: [btnNew, btnDelete]
+        btnNew:
+            Action: actNew
+        btnDelete:
+            Action: actDelete
+        grdDetails:
+            Dock: Fill
+            Columns: [ADailyExchangeRate.FromCurrencyCode, ADailyExchangeRate.ToCurrencyCode, ADailyExchangeRate.DateEffectiveFrom, ADailyExchangeRate.TimeEffectiveFrom, ADailyExchangeRate.RateOfExchange]
+            ActionFocusRow: FocusedRowChanged
+        pnlDetails:
+            Dock: Bottom
+            Controls:
+                Row0: [cmbDetailFromCurrencyCode]
+                Row1: [cmbDetailToCurrencyCode]
+                Row2: [dtpDetailDateEffectiveFrom, txtDetailTimeEffectiveFrom]
+                Row3: [txtDetailRateOfExchange]
+                Row4: [lblValueOneDirection]
+                Row5: [lblValueOtherDirection]
+        cmbDetailFromCurrencyCode: {OnlySetOnce=true, Label=&From Currency Code}
+        cmbDetailToCurrencyCode: {OnlySetOnce=true, Label=&To Currency Code}
+        dtpDetailDateEffectiveFrom: {OnlySetOnce=true, Label=D&ate}
+        txtDetailTimeEffectiveFrom: {OnlySetOnce=true, Label=T&ime}
+        txtDetailRateOfExchange: {Label=&Rate of exchange}
+        lblValueOneDirection: {TODO=true}
+        lblValueOtherDirection: {TODO=true}

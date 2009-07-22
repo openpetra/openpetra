@@ -261,7 +261,6 @@ namespace Ict.Petra.Client.MFinance.Gui
         mniAPReports.Enabled = false;
         mniConsolidations.Enabled = false;
         mniSetupCorporateExchangeRate.Enabled = false;
-        mniSetupDailyExchangeRate.Enabled = false;
         mniSetupMethodOfGiving.Enabled = false;
         mniSetupMethodOfPayment.Enabled = false;
         mniSetupAnalysisTypes.Enabled = false;
@@ -276,6 +275,13 @@ namespace Ict.Petra.Client.MFinance.Gui
     protected void OpenScreenSetupCurrency(object sender, EventArgs e)
     {
         Ict.Petra.Client.MFinance.Gui.Setup.TFrmSetupCurrency frm = new Ict.Petra.Client.MFinance.Gui.Setup.TFrmSetupCurrency(this.Handle);
+        frm.Show();
+    }
+
+    /// auto generated
+    protected void OpenScreenSetupDailyExchangeRate(object sender, EventArgs e)
+    {
+        Ict.Petra.Client.MFinance.Gui.Setup.TFrmSetupDailyExchangeRate frm = new Ict.Petra.Client.MFinance.Gui.Setup.TFrmSetupDailyExchangeRate(this.Handle);
         frm.Show();
     }
 

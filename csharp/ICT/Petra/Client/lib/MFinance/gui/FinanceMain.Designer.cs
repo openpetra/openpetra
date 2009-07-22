@@ -487,6 +487,7 @@ namespace Ict.Petra.Client.MFinance.Gui
             //
             this.mniSetupDailyExchangeRate.Name = "mniSetupDailyExchangeRate";
             this.mniSetupDailyExchangeRate.AutoSize = true;
+            this.mniSetupDailyExchangeRate.Click += new System.EventHandler(this.OpenScreenSetupDailyExchangeRate);
             this.mniSetupDailyExchangeRate.Text = "&Daily Exchange Rate";
             //
             // mniSetupMethodOfGiving
