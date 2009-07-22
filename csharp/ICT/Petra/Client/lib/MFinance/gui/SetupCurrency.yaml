@@ -6,6 +6,7 @@ RootNode:
     DetailTable: ACurrency
     DatatableType: Ict.Petra.Shared.MCommon.Data.ACurrency
     FormType: edit
+    Template: windowMaintainTable
     WindowWidth: 660
     WindowHeight: 500
     Actions:

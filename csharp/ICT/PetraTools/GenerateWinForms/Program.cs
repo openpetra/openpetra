@@ -40,6 +40,9 @@ class Program
     {
         ProcessXAML processor = new ProcessXAML(filename);
 
+        // report is at the moment the only real different type of screen,
+        // because it uses different controls
+        // otherwise, the Template attribute is also quite important, because it determines which code is written
         processor.AddWriter("navigation", typeof(TWinFormsWriter));
         processor.AddWriter("edit", typeof(TWinFormsWriter));
         processor.AddWriter("report", typeof(TWinFormsWriter));

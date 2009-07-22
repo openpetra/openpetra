@@ -7,7 +7,7 @@ RootNode:
     DetailTable: AApDocumentDetail
     DatasetType: Ict.Petra.Shared.MFinance.AP.Data.AccountsPayableTDS
     FormType: edit
-    HasManualCodeInOtherFile: true
+    Template: windowEditWebConnectorMasterDetail
     WindowWidth: 660
     WindowHeight: 500
     Actions:

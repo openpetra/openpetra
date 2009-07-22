@@ -1,4 +1,4 @@
-/* auto generated with nant generateWinforms from {#XAMLSRCFILE} 
+/* auto generated with nant generateWinforms from {#XAMLSRCFILE} and template windowFind
  *
  * DO NOT edit manually, DO NOT edit with the designer
  * use a user control if you need to modify the screen content
@@ -28,6 +28,15 @@ namespace {#NAMESPACE}
   public partial class {#CLASSNAME}: System.Windows.Forms.Form, {#INTERFACENAME}
   {
     private {#UTILOBJECTCLASS} FPetraUtilsObject;
+{#IFDEF DATASETTYPE}
+    private {#DATASETTYPE} FMainDS;
+{#ENDIF DATASETTYPE}
+
+{#IFDEF UICONNECTORTYPE}
+
+    /// <summary>holds a reference to the Proxy object of the Serverside UIConnector</summary>
+    private {#UICONNECTORTYPE} FUIConnector = null;
+{#ENDIF UICONNECTORTYPE}
 
     /// constructor
     public {#CLASSNAME}(IntPtr AParentFormHandle) : base()
@@ -44,11 +53,19 @@ namespace {#NAMESPACE}
 
       FPetraUtilsObject = new {#UTILOBJECTCLASS}(AParentFormHandle, this, stbMain);
       {#INITUSERCONTROLS}
+{#IFDEF DATASETTYPE}
+      FMainDS = new {#DATASETTYPE}();
+{#ENDIF DATASETTYPE}
       {#INITMANUALCODE}
       FPetraUtilsObject.ActionEnablingEvent += ActionEnabledEvent;
-
+      
       {#INITACTIONSTATE}
-
+      
+{#IFDEF UICONNECTORCREATE}
+      FUIConnector = {#UICONNECTORCREATE}();
+      // Register Object with the TEnsureKeepAlive Class so that it doesn't get GC'd
+      TEnsureKeepAlive.Register(FUIConnector);
+{#ENDIF UICONNECTORCREATE}
     }
 
     {#EVENTHANDLERSIMPLEMENTATION}
@@ -56,7 +73,23 @@ namespace {#NAMESPACE}
     private void TFrmPetra_Closed(object sender, EventArgs e)
     {
         // TODO? Save Window position
+
+{#IFDEF UICONNECTORCREATE}
+        if (FUIConnector != null)
+        {
+            // UnRegister Object from the TEnsureKeepAlive Class so that the Object can get GC'd on the PetraServer
+            TEnsureKeepAlive.UnRegister(FUIConnector);
+            FUIConnector = null;
+        }
+{#ENDIF UICONNECTORCREATE}
     }
+
+{#IFDEF SHOWDATA}
+    private void ShowData()
+    {
+        {#SHOWDATA}
+    }
+{#ENDIF SHOWDATA}
 
 #region Implement interface functions
 

@@ -3,8 +3,9 @@ RootNode:
     FormTitle: Partner Edit
     ClassName: TPartnerEditDSWinForm
     Namespace: Ict.Petra.Client.MPartner.Gui
-    # TODO: formtype should be edit, but it does not use generated SaveChanges yet etc
-    FormType: browse
+    FormType: edit
+    #use default Template, since the UI connector is programmed manually
+    #Template: windowEditUIConnector
     WindowWidth: 754
     WindowHeight: 623
     Events:

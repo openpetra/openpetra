@@ -1,4 +1,4 @@
-/* auto generated with nant generateWinforms from APEditDocument.yaml
+/* auto generated with nant generateWinforms from APEditDocument.yaml and template windowEditWebConnectorMasterDetail
  *
  * DO NOT edit manually, DO NOT edit with the designer
  * use a user control if you need to modify the screen content

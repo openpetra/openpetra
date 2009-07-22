@@ -740,11 +740,6 @@ namespace Ict.Tools.CodeGeneration.Winforms
                 FTemplate.AddToCodelet("DETAILTABLE", FCodeStorage.GetAttribute("DetailTable"));
             }
 
-            if (FCodeStorage.GetAttribute("FormType").ToLower() == "edit")
-            {
-                FTemplate.AddToCodelet("ISEDITSCREEN", "true");
-            }
-
             // find the first control that is a panel or groupbox or tab control
             AddRootControl("content");
 

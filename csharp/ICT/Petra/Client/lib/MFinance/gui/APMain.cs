@@ -1,4 +1,4 @@
-/* auto generated with nant generateWinforms from APMain.yaml
+/* auto generated with nant generateWinforms from APMain.yaml and template windowFind
  *
  * DO NOT edit manually, DO NOT edit with the designer
  * use a user control if you need to modify the screen content

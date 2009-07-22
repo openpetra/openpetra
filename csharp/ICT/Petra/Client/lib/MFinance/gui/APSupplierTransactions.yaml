@@ -7,7 +7,7 @@ RootNode:
     MasterTable: AApSupplier
     DetailTable: AApDocument
     FormType: browse
-    HasManualCodeInOtherFile: true
+    Template: windowFind
     WindowWidth: 754
     WindowHeight: 623
     Actions:

@@ -1,4 +1,4 @@
-/* auto generated with nant generateWinforms from APEditSupplier.yaml
+/* auto generated with nant generateWinforms from APEditSupplier.yaml and template windowEditUIConnector
  *
  * DO NOT edit manually, DO NOT edit with the designer
  * use a user control if you need to modify the screen content
@@ -362,7 +362,7 @@ namespace Ict.Petra.Client.MFinance.Gui.AccountsPayable
     {
         SaveChanges();
     }
-
+
 #endregion
 
 #region Action Handling

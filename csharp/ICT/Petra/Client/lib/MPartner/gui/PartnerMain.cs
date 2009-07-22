@@ -142,7 +142,6 @@ namespace Ict.Petra.Client.MPartner.Gui
     private void TFrmPetra_Closed(object sender, EventArgs e)
     {
         // TODO? Save Window position
-
     }
 
 #region Implement interface functions

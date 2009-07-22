@@ -4,7 +4,7 @@ RootNode:
     ClassName: TFrmAccountsPayableMain
     Namespace: Ict.Petra.Client.MFinance.Gui.AccountsPayable
     FormType: browse
-    HasManualCodeInOtherFile: true
+    Template: windowFind
     WindowWidth: 754
     WindowHeight: 623
     Actions:
