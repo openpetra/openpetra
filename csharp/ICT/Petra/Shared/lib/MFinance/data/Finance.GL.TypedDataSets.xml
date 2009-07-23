@@ -1,0 +1,14 @@
+<PetraDataSets>
+  <ImportUnit name="Ict.Petra.Shared.MFinance.Account.Data"/>
+  
+    <DataSet name="GLBatchTDS">
+        <Table sqltable="a_ledger"/>
+        <Table sqltable="a_batch"/>
+        <Table sqltable="a_journal"/>
+        <Table sqltable="a_transaction">
+            <CustomField name="DateEntered" type="date"/>
+            <CustomField name="AnalysisAttributes" type="string"/>
+        </Table>
+    </DataSet> 
+    
+</PetraDataSets>

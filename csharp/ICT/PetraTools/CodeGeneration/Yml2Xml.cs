@@ -693,6 +693,20 @@ namespace Ict.Tools.CodeGeneration
         }
 
         /// <summary>
+        /// get the child node with the given name
+        /// TODO: consider base nodes as well
+        /// </summary>
+        /// <param name="node"></param>
+        /// <param name="childName"></param>
+        /// <returns></returns>
+        public static XmlNode GetChild(XmlNode node, string childName)
+        {
+            // TODO: check for base node
+            XmlNode child = TXMLParser.GetChild(node, childName);
+            return child;
+        }
+        
+        /// <summary>
         /// overload for GetElements, with the main node and the name of the child node that has the elements
         /// </summary>
         /// <param name="node"></param>
@@ -700,8 +714,8 @@ namespace Ict.Tools.CodeGeneration
         /// <returns></returns>
         public static StringCollection GetElements(XmlNode node, string childName)
         {
-            // TODO: GetElements: check for base node?
-            XmlNode child = TXMLParser.GetChild(node, childName);
+            // TODO: GetChild: check for base node?
+            XmlNode child = GetChild(node, childName);
 
             if (child == null)
             {

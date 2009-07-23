@@ -52,13 +52,15 @@ namespace {#NAMESPACE}
       #endregion
 
       FPetraUtilsObject = new {#UTILOBJECTCLASS}(AParentFormHandle, this, stbMain);
-      {#INITUSERCONTROLS}
 {#IFDEF DATASETTYPE}
       FMainDS = new {#DATASETTYPE}();
 {#ENDIF DATASETTYPE}
+      {#INITUSERCONTROLS}
       {#INITMANUALCODE}
+{#IFDEF ACTIONENABLING}
       FPetraUtilsObject.ActionEnablingEvent += ActionEnabledEvent;
-      
+{#ENDIF ACTIONENABLING}
+
       {#INITACTIONSTATE}
       
 {#IFDEF UICONNECTORCREATE}
@@ -125,6 +127,7 @@ namespace {#NAMESPACE}
         return (TFrmPetraUtils)FPetraUtilsObject;
     }
 #endregion
+{#IFDEF ACTIONENABLING}
 
 #region Action Handling
 
@@ -138,5 +141,6 @@ namespace {#NAMESPACE}
     {#ACTIONHANDLERS}
 
 #endregion
+{#ENDIF ACTIONENABLING}
   }
 }

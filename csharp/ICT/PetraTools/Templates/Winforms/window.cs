@@ -45,7 +45,9 @@ namespace {#NAMESPACE}
       FPetraUtilsObject = new {#UTILOBJECTCLASS}(AParentFormHandle, this, stbMain);
       {#INITUSERCONTROLS}
       {#INITMANUALCODE}
+{#IFDEF ACTIONENABLING}
       FPetraUtilsObject.ActionEnablingEvent += ActionEnabledEvent;
+{#ENDIF ACTIONENABLING}
 
       {#INITACTIONSTATE}
 
@@ -92,6 +94,7 @@ namespace {#NAMESPACE}
         return (TFrmPetraUtils)FPetraUtilsObject;
     }
 #endregion
+{#IFDEF ACTIONENABLING}
 
 #region Action Handling
 
@@ -105,5 +108,6 @@ namespace {#NAMESPACE}
     {#ACTIONHANDLERS}
 
 #endregion
+{#ENDIF ACTIONENABLING}
   }
 }

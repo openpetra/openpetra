@@ -160,6 +160,14 @@ namespace Ict.Petra.Client.MPartner.Gui
             }
         }
 
+        /// <summary>
+        /// needed for generated code
+        /// </summary>
+        public void InitUserControl()
+        {
+            
+        }
+
         private void GrdResult_MouseDown(System.Object sender, System.Windows.Forms.MouseEventArgs e)
         {
             int PointY = -1;

@@ -91,6 +91,14 @@ namespace Ict.Petra.Client.App.PetraClient
         }
 
         /// <summary>
+        /// needed for generated code
+        /// </summary>
+        public void InitUserControl()
+        {
+            
+        }
+
+        /// <summary>
         /// todoComment
         /// </summary>
         /// <param name="sender"></param>

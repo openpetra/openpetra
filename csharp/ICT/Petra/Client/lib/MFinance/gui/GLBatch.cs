@@ -1,4 +1,4 @@
-/* auto generated with nant generateWinforms from MainWindow.yaml
+/* auto generated with nant generateWinforms from GLBatch.yaml and template windowFind
  *
  * DO NOT edit manually, DO NOT edit with the designer
  * use a user control if you need to modify the screen content
@@ -45,16 +45,17 @@ using Ict.Petra.Client.App.Core.RemoteObjects;
 using Ict.Common.Controls;
 using Ict.Petra.Client.CommonForms;
 
-namespace Ict.Petra.Client.App.PetraClient
+namespace Ict.Petra.Client.MFinance.Gui.GL
 {
 
-  /// auto generated:
-  public partial class TFrmMainWindow: System.Windows.Forms.Form, Ict.Petra.Client.CommonForms.IFrmPetra
+  /// auto generated: GL Batches
+  public partial class TFrmGLBatches: System.Windows.Forms.Form, IFrmPetraEdit
   {
-    private TFrmPetraModuleUtils FPetraUtilsObject;
+    private TFrmPetraEditUtils FPetraUtilsObject;
+    private Ict.Petra.Shared.MFinance.GL.Data.GLBatchTDS FMainDS;
 
     /// constructor
-    public TFrmMainWindow(IntPtr AParentFormHandle) : base()
+    public TFrmGLBatches(IntPtr AParentFormHandle) : base()
     {
       //
       // Required for Windows Form Designer support
@@ -63,27 +64,40 @@ namespace Ict.Petra.Client.App.PetraClient
       #region CATALOGI18N
 
       // this code has been inserted by GenerateI18N, all changes in this region will be overwritten by GenerateI18N
+      this.tpgBatches.Text = Catalog.GetString("Batches");
+      this.tpgJournals.Text = Catalog.GetString("Journals");
+      this.tpgTransactions.Text = Catalog.GetString("Transactions");
+      this.tbbSave.ToolTipText = Catalog.GetString("Saves changed data");
+      this.tbbSave.Text = Catalog.GetString("&Save");
+      this.mniFileSave.ToolTipText = Catalog.GetString("Saves changed data");
+      this.mniFileSave.Text = Catalog.GetString("&Save");
+      this.mniFilePrint.Text = Catalog.GetString("&Print...");
       this.mniClose.ToolTipText = Catalog.GetString("Closes this window");
       this.mniClose.Text = Catalog.GetString("&Close");
       this.mniFile.Text = Catalog.GetString("&File");
-      this.mniPetraMainMenu.Text = Catalog.GetString("Petra &Main Menu");
-      this.mniPetraPartnerModule.Text = Catalog.GetString("Pa&rtner");
-      this.mniPetraFinanceModule.Text = Catalog.GetString("&Finance");
-      this.mniPetraPersonnelModule.Text = Catalog.GetString("P&ersonnel");
-      this.mniPetraConferenceModule.Text = Catalog.GetString("C&onference");
-      this.mniPetraFinDevModule.Text = Catalog.GetString("Financial &Development");
-      this.mniPetraSysManModule.Text = Catalog.GetString("&System Manager");
-      this.mniPetraModules.Text = Catalog.GetString("&Petra");
+      this.mniEditUndoCurrentField.Text = Catalog.GetString("Undo &Current Field");
+      this.mniEditUndoScreen.Text = Catalog.GetString("&Undo Screen");
+      this.mniEditFind.Text = Catalog.GetString("&Find...");
+      this.mniEdit.Text = Catalog.GetString("&Edit");
       this.mniHelpPetraHelp.Text = Catalog.GetString("&Petra Help");
       this.mniHelpBugReport.Text = Catalog.GetString("Bug &Report");
       this.mniHelpAboutPetra.Text = Catalog.GetString("&About Petra");
       this.mniHelpDevelopmentTeam.Text = Catalog.GetString("&The Development Team...");
       this.mniHelp.Text = Catalog.GetString("&Help");
+      this.Text = Catalog.GetString("GL Batches");
       #endregion
 
-      FPetraUtilsObject = new TFrmPetraModuleUtils(AParentFormHandle, this, stbMain);
-      ucoMainWindowContent.PetraUtilsObject = FPetraUtilsObject;
-      ucoMainWindowContent.InitUserControl();
+      FPetraUtilsObject = new TFrmPetraEditUtils(AParentFormHandle, this, stbMain);
+      FMainDS = new Ict.Petra.Shared.MFinance.GL.Data.GLBatchTDS();
+      ucoBatches.PetraUtilsObject = FPetraUtilsObject;
+      ucoBatches.MainDS = FMainDS;
+      ucoBatches.InitUserControl();
+      ucoJournals.PetraUtilsObject = FPetraUtilsObject;
+      ucoJournals.MainDS = FMainDS;
+      ucoJournals.InitUserControl();
+      ucoTransactions.PetraUtilsObject = FPetraUtilsObject;
+      ucoTransactions.MainDS = FMainDS;
+      ucoTransactions.InitUserControl();
 
       FPetraUtilsObject.ActionEnablingEvent += ActionEnabledEvent;
 
@@ -114,6 +128,7 @@ namespace Ict.Petra.Client.App.PetraClient
     private void TFrmPetra_Closed(object sender, EventArgs e)
     {
         // TODO? Save Window position
+
     }
 
 #region Implement interface functions
@@ -156,84 +171,23 @@ namespace Ict.Petra.Client.App.PetraClient
     /// auto generated
     public void ActionEnabledEvent(object sender, ActionEventArgs e)
     {
+        if (e.ActionName == "actSave")
+        {
+            tbbSave.Enabled = e.Enabled;
+            mniFileSave.Enabled = e.Enabled;
+        }
         if (e.ActionName == "actClose")
         {
             mniClose.Enabled = e.Enabled;
         }
-        if (e.ActionName == "actMainMenu")
-        {
-            mniPetraMainMenu.Enabled = e.Enabled;
-        }
-        if (e.ActionName == "actPartnerModule")
-        {
-            mniPetraPartnerModule.Enabled = e.Enabled;
-        }
-        if (e.ActionName == "actFinanceModule")
-        {
-            mniPetraFinanceModule.Enabled = e.Enabled;
-        }
-        if (e.ActionName == "actPersonnelModule")
-        {
-            mniPetraPersonnelModule.Enabled = e.Enabled;
-        }
-        if (e.ActionName == "actConferenceModule")
-        {
-            mniPetraConferenceModule.Enabled = e.Enabled;
-        }
-        if (e.ActionName == "actFinDevModule")
-        {
-            mniPetraFinDevModule.Enabled = e.Enabled;
-        }
-        if (e.ActionName == "actSysManModule")
-        {
-            mniPetraSysManModule.Enabled = e.Enabled;
-        }
+        mniFilePrint.Enabled = false;
+        mniEditUndoCurrentField.Enabled = false;
+        mniEditUndoScreen.Enabled = false;
+        mniEditFind.Enabled = false;
         mniHelpPetraHelp.Enabled = false;
         mniHelpBugReport.Enabled = false;
         mniHelpAboutPetra.Enabled = false;
         mniHelpDevelopmentTeam.Enabled = false;
-    }
-
-    /// auto generated
-    protected void actMainMenu(object sender, EventArgs e)
-    {
-        FPetraUtilsObject.OpenMainScreen(sender, e);
-    }
-
-    /// auto generated
-    protected void actPartnerModule(object sender, EventArgs e)
-    {
-        FPetraUtilsObject.OpenPartnerModule(sender, e);
-    }
-
-    /// auto generated
-    protected void actFinanceModule(object sender, EventArgs e)
-    {
-        FPetraUtilsObject.OpenFinanceModule(sender, e);
-    }
-
-    /// auto generated
-    protected void actPersonnelModule(object sender, EventArgs e)
-    {
-        FPetraUtilsObject.OpenPersonnelModule(sender, e);
-    }
-
-    /// auto generated
-    protected void actConferenceModule(object sender, EventArgs e)
-    {
-        FPetraUtilsObject.OpenConferenceModule(sender, e);
-    }
-
-    /// auto generated
-    protected void actFinDevModule(object sender, EventArgs e)
-    {
-        FPetraUtilsObject.OpenFinDevModule(sender, e);
-    }
-
-    /// auto generated
-    protected void actSysManModule(object sender, EventArgs e)
-    {
-        FPetraUtilsObject.OpenSysManModule(sender, e);
     }
 
     /// auto generated

@@ -1,0 +1,36 @@
+RootNode:
+    BaseClass: System.Windows.Forms.UserControl
+    UtilObjectClass: TFrmPetraEditUtils
+    ClassName: TUC_GLBatches
+    Namespace: Ict.Petra.Client.MFinance.Gui.GL
+    DatasetType: Ict.Petra.Shared.MFinance.GL.Data.GLBatchTDS
+    DetailTable: ABatch
+    DatatableType: Ict.Petra.Shared.MFinance.Account.Data.ABatch
+    FormType: edit
+    Template: controlMaintainTable
+    Controls:
+        pnlContent:
+            Controls: [pnlLedgerInfo, pnlBatches]
+            Dock: Fill
+        pnlLedgerInfo:
+            Controls: [txtLedgerNumber]
+        txtLedgerNumber: {TODO=true}
+        pnlBatches:
+            Controls: [pnlDetailGrid, pnlDetails]
+            Dock: Fill
+        pnlDetailGrid:
+            Dock: Fill
+            Controls: [grdDetails, pnlDetailButtons]
+        pnlDetailButtons:
+            Dock: Right
+            Controls: [btnAdd, btnRemove]
+        btnAdd: {TODO=true}
+        btnRemove: {TODO=true}
+        grdDetails:
+            Dock: Fill
+            Columns: [ABatch.BatchNumber, ABatch.BatchStatus, ABatch.DateEffective, ABatch.BatchDebitTotal, ABatch.BatchCreditTotal, ABatch.BatchControlTotal, ABatch.BatchDescription]
+        pnlDetails:
+            Dock: Bottom
+            Controls:
+                Row0: [txtDetailBatchDescription]
+        txtDetailBatchDescription: {NoAttribute=true}

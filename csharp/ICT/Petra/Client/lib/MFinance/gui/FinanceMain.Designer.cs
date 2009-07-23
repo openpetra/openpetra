@@ -244,6 +244,7 @@ namespace Ict.Petra.Client.MFinance.Gui
             //
             this.mniGLCurrentPeriod.Name = "mniGLCurrentPeriod";
             this.mniGLCurrentPeriod.AutoSize = true;
+            this.mniGLCurrentPeriod.Click += new System.EventHandler(this.OpenScreenGLCurrentPeriod);
             this.mniGLCurrentPeriod.Text = "&Current Period";
             //
             // mniGLPreviousPeriods

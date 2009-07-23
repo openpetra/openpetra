@@ -99,9 +99,8 @@ namespace Ict.Tools.CodeGeneration.Winforms
 
         public override void SetControlProperties(IFormWriter writer, TControlDef ctrl)
         {
-            string controlName = ctrl.controlName;
-
             base.SetControlProperties(writer, ctrl);
+            writer.SetControlProperty(ctrl.controlName, "Dock", "Fill");
         }
 
 /*
@@ -557,13 +556,43 @@ namespace Ict.Tools.CodeGeneration.Winforms
                 foreach (string ColumnFieldName in Columns)
                 {
                     bool IsDetailNotMaster;
-                    TTableField field = FCodeStorage.GetTableField(null, ColumnFieldName, out IsDetailNotMaster, true);
+                    TTableField field = null;
 
-                    // todo: other types for columns in grid? double, bool etc
-                    writer.Template.AddToCodelet("INITMANUALCODE", ctrl.controlName + ".AddTextColumn(\"" + field.strLabel + "\", " +
-                        "FMainDS." +
-                        TTable.NiceTableName(field.strTableName) + ".Column" +
-                        TTable.NiceFieldName(field.strName) + ");" + Environment.NewLine);
+                    // customfield, eg. UC_GLTransactions, ATransaction.DateEntered and ATransaction.AnalysisAttributes
+                    // there needs to be a list of CustomColumns
+                    XmlNode CustomColumnsNode = TYml2Xml.GetChild(ctrl.xmlNode, "CustomColumns");
+                    XmlNode CustomColumnNode = null;
+                    if (CustomColumnsNode != null)
+                    {
+                       CustomColumnNode = TYml2Xml.GetChild(CustomColumnsNode, ColumnFieldName);
+                    }
+                    
+                    if (CustomColumnNode != null)
+                    {
+                        // todo TYml2Xml.GetAttribute(CustomColumnNode, "Type")
+                        writer.Template.AddToCodelet("INITMANUALCODE", ctrl.controlName + ".AddTextColumn(\"" + 
+                            TYml2Xml.GetAttribute(CustomColumnNode, "Label") + "\", " +
+                            "FMainDS." +
+                            ctrl.GetAttribute("TableName") + ".Column" +
+                            ColumnFieldName + ");" + Environment.NewLine);
+                    }
+                    else if (ctrl.HasAttribute("TableName"))
+                    {
+                        field = FCodeStorage.GetTableField(null, ctrl.GetAttribute("TableName") + "." + ColumnFieldName, out IsDetailNotMaster, true);
+                    }
+                    else
+                    {
+                        field = FCodeStorage.GetTableField(null, ColumnFieldName, out IsDetailNotMaster, true);
+                    }
+
+                    if (field != null)
+                    {
+                        // todo: other types for columns in grid? double, bool etc
+                        writer.Template.AddToCodelet("INITMANUALCODE", ctrl.controlName + ".AddTextColumn(\"" + field.strLabel + "\", " +
+                            "FMainDS." +
+                            TTable.NiceTableName(field.strTableName) + ".Column" +
+                            TTable.NiceFieldName(field.strName) + ");" + Environment.NewLine);
+                    }
                 }
             }
 
@@ -703,11 +732,6 @@ namespace Ict.Tools.CodeGeneration.Winforms
         {
             CreateCode(writer, ctrl);
             base.SetControlProperties(writer, ctrl);
-
-            if (ctrl.HasAttribute("Dock"))
-            {
-                writer.SetControlProperty(ctrl, "Dock");
-            }
         }
 
         protected void CreateCode(IFormWriter writer, TControlDef ATabControl)
@@ -1237,6 +1261,11 @@ namespace Ict.Tools.CodeGeneration.Winforms
             // todo: use properties from yaml
 
             writer.Template.AddToCodelet("INITUSERCONTROLS", controlName + ".PetraUtilsObject = FPetraUtilsObject;" + Environment.NewLine);
+            if (writer.CodeStorage.HasAttribute("DatasetType"))
+            {
+                writer.Template.AddToCodelet("INITUSERCONTROLS", controlName + ".MainDS = FMainDS;" + Environment.NewLine);
+            }
+            writer.Template.AddToCodelet("INITUSERCONTROLS", controlName + ".InitUserControl();" + Environment.NewLine);
         }
     }
 #if TODO

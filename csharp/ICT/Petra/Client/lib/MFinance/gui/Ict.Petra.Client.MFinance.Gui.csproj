@@ -178,6 +178,13 @@
     <Compile Include="FinanceMain.ManualCode.cs">
       <DependentUpon>FinanceMain.cs</DependentUpon>
     </Compile>
+    <Compile Include="GLBatch.cs" />
+    <Compile Include="GLBatch.Designer.cs">
+      <DependentUpon>GLBatch.cs</DependentUpon>
+    </Compile>
+    <Compile Include="GLBatch.ManualCode.cs">
+      <DependentUpon>GLBatch.cs</DependentUpon>
+    </Compile>
     <Compile Include="LedgerSelection.cs" />
     <Compile Include="LedgerSelection.Designer.cs">
       <DependentUpon>LedgerSelection.cs</DependentUpon>
@@ -195,6 +202,18 @@
     </Compile>
     <Compile Include="SetupDailyExchangeRate.ManualCode.cs">
       <DependentUpon>SetupDailyExchangeRate.cs</DependentUpon>
+    </Compile>
+    <Compile Include="UC_GLBatches.cs" />
+    <Compile Include="UC_GLBatches.Designer.cs">
+      <DependentUpon>UC_GLBatches.cs</DependentUpon>
+    </Compile>
+    <Compile Include="UC_GLJournals.cs" />
+    <Compile Include="UC_GLJournals.Designer.cs">
+      <DependentUpon>UC_GLJournals.cs</DependentUpon>
+    </Compile>
+    <Compile Include="UC_GLTransactions.cs" />
+    <Compile Include="UC_GLTransactions.Designer.cs">
+      <DependentUpon>UC_GLTransactions.cs</DependentUpon>
     </Compile>
     <EmbeddedResource Include="APEditDocument.resx">
       <DependentUpon>APEditDocument.cs</DependentUpon>
@@ -214,6 +233,9 @@
     <EmbeddedResource Include="FinanceMain.resx">
       <DependentUpon>FinanceMain.cs</DependentUpon>
     </EmbeddedResource>
+    <EmbeddedResource Include="GLBatch.resx">
+      <DependentUpon>GLBatch.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="LedgerSelection.resx">
       <DependentUpon>LedgerSelection.cs</DependentUpon>
     </EmbeddedResource>
@@ -222,6 +244,15 @@
     </EmbeddedResource>
     <EmbeddedResource Include="SetupDailyExchangeRate.resx">
       <DependentUpon>SetupDailyExchangeRate.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="UC_GLBatches.resx">
+      <DependentUpon>UC_GLBatches.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="UC_GLJournals.resx">
+      <DependentUpon>UC_GLJournals.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="UC_GLTransactions.resx">
+      <DependentUpon>UC_GLTransactions.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
 </Project>

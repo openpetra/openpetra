@@ -191,6 +191,14 @@ namespace Ict.Petra.Client.MPartner.Gui
         }
 
         /// <summary>
+        /// needed for generated code
+        /// </summary>
+        public void InitUserControl()
+        {
+            
+        }
+        
+        /// <summary>
         /// todoComment
         /// </summary>
         /// <returns></returns>

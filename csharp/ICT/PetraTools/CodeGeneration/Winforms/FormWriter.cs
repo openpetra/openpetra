@@ -744,13 +744,22 @@ namespace Ict.Tools.CodeGeneration.Winforms
             AddRootControl("content");
 
             // Toolbar
-            AddRootControl("tbr");
+            if (FCodeStorage.HasRootControl("tbr"))
+            {
+                AddRootControl("tbr");
+            }
 
             // Main Menu
-            AddRootControl("mnu");
+            if (FCodeStorage.HasRootControl("mnu"))
+            {
+                AddRootControl("mnu");
+            }
 
             // Statusbar
-            AddRootControl("stb");
+            if (FCodeStorage.HasRootControl("stb"))
+            {
+                AddRootControl("stb");
+            }
 
             // add form events
             foreach (TEventHandler handler in FCodeStorage.FEventList.Values)

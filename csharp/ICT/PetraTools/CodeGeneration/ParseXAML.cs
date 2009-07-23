@@ -176,8 +176,14 @@ namespace Ict.Tools.CodeGeneration
             LoadLayout((XmlNode)nodes["Layout"]);
 
             // todo: what about popup menus?; can contain menu items from the main menu
-            LoadMenu(FCodeStorage.GetRootControl("mnu").controlName, (XmlNode)nodes["Menu"]);
-            LoadToolbar(FCodeStorage.GetRootControl("tbr").controlName, (XmlNode)nodes["Toolbar"]);
+            if (FCodeStorage.HasRootControl("mnu"))
+            {
+                LoadMenu(FCodeStorage.GetRootControl("mnu").controlName, (XmlNode)nodes["Menu"]);
+            }
+            if (FCodeStorage.HasRootControl("tbr"))
+            {
+                LoadToolbar(FCodeStorage.GetRootControl("tbr").controlName, (XmlNode)nodes["Toolbar"]);
+            }
 
             LoadActions((XmlNode)nodes["Actions"]);
             LoadEvents((XmlNode)nodes["Events"]);

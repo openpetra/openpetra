@@ -165,7 +165,7 @@ namespace Ict.Tools.CodeGeneration
         {
             foreach (TControlDef ctrl in FControlList.Values)
             {
-                if ((ctrl.controlTypePrefix == APrefix) && (ctrl.parentName == "ROOT"))
+                if (ctrl.controlTypePrefix == APrefix)
                 {
                     return true;
                 }

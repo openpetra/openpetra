@@ -1,4 +1,4 @@
-<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+﻿<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
     <ProjectGuid>{B8AACF21-2B9B-4CA3-8232-3DCE1E73C5C1}</ProjectGuid>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
@@ -54,6 +54,7 @@
   <ItemGroup>
     <Compile Include="Finance.AP.DataSets.cs" />
     <Compile Include="DataSets.AssemblyInfo.cs" />
+    <Compile Include="Finance.GL.DataSets.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="Ict.Petra.Shared.MFinance.DataTables.csproj">

@@ -240,7 +240,6 @@ namespace Ict.Petra.Client.MFinance.Gui
         mniSetupTablesTodo.Enabled = false;
         mniSetupCostCentres.Enabled = false;
         mniSetupAccounts.Enabled = false;
-        mniGLCurrentPeriod.Enabled = false;
         mniGLPreviousPeriods.Enabled = false;
         mniGLRecurring.Enabled = false;
         mniGLImport.Enabled = false;
@@ -269,6 +268,13 @@ namespace Ict.Petra.Client.MFinance.Gui
         mniHelpBugReport.Enabled = false;
         mniHelpAboutPetra.Enabled = false;
         mniHelpDevelopmentTeam.Enabled = false;
+    }
+
+    /// auto generated
+    protected void OpenScreenGLCurrentPeriod(object sender, EventArgs e)
+    {
+        Ict.Petra.Client.MFinance.Gui.GL.TFrmGLBatches frm = new Ict.Petra.Client.MFinance.Gui.GL.TFrmGLBatches(this.Handle);
+        frm.Show();
     }
 
     /// auto generated

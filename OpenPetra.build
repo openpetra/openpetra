@@ -427,6 +427,7 @@
         <exec program="${PetraToolsExe.dir}/GenerateORM.exe" commandline="-do:dataset -petraxml:${PetraXML.file} -input:${OpenPetraRoot.dir}/csharp/ICT/Petra/Shared/lib/MPersonnel/data/PersonnelTypedDataSets.xml -outputNamespace:Ict.Petra.Shared.MPersonnel.Personnel.Data.DataSets -outputFilename:Personnel.DataSets"/>
         <exec program="${PetraToolsExe.dir}/GenerateORM.exe" commandline="-do:dataset -petraxml:${PetraXML.file} -input:${OpenPetraRoot.dir}/csharp/ICT/Petra/Shared/lib/MHospitality/data/TypedDataSets.xml -outputNamespace:Ict.Petra.Shared.MHospitality.Data.DataSets -outputFilename:Hospitality.DataSets"/>
         <exec program="${PetraToolsExe.dir}/GenerateORM.exe" commandline="-do:dataset -petraxml:${PetraXML.file} -input:${OpenPetraRoot.dir}/csharp/ICT/Petra/Shared/lib/MFinance/data/Finance.AP.TypedDataSets.xml -outputNamespace:Ict.Petra.Shared.MFinance.AP.Data.DataSets -outputFilename:Finance.AP.DataSets"/>
+        <exec program="${PetraToolsExe.dir}/GenerateORM.exe" commandline="-do:dataset -petraxml:${PetraXML.file} -input:${OpenPetraRoot.dir}/csharp/ICT/Petra/Shared/lib/MFinance/data/Finance.GL.TypedDataSets.xml -outputNamespace:Ict.Petra.Shared.MFinance.GL.Data.DataSets -outputFilename:Finance.GL.DataSets"/>
     </target>
     
     <target name="generateGlue" depends="compilePetraTools" description="Generate the glue between client and server, ie. interfaces and instantiators">
@@ -444,12 +445,6 @@
         <exec program="${PetraToolsExe.dir}/GenerateWinforms.exe" commandline="-ymlfile:${ClientPath}/app/PetraClient/MainWindow.yaml ${generateWinformsParameters}"/>
         <exec program="${PetraToolsExe.dir}/GenerateWinforms.exe" commandline="-ymlfile:${ClientPath}/lib/MPartner/gui ${generateWinformsParameters}"/>
         <exec program="${PetraToolsExe.dir}/GenerateWinforms.exe" commandline="-ymlfile:${ClientPath}/lib/MReporting/gui/MPartner ${generateWinformsParameters}"/>
-        <exec program="${PetraToolsExe.dir}/GenerateWinforms.exe" commandline="-ymlfile:${ClientPath}/lib/MFinance/gui ${generateWinformsParameters}"/>
-    </target>
-    <target name="generateWinformsDevelop">
-        <!-- just a selected number of screens, to make generation during development quicker -->
-        <property name="generateWinformsParameters" value="-TemplateDir:${OpenPetraRoot.dir}/csharp/ICT/PetraTools/Templates/Winforms -ResourceDir:${OpenPetraRoot.dir}/resources -petraxml:${PetraXML.file}"/>
-        <property name="ClientPath" value="${OpenPetraRoot.dir}/csharp/ICT/Petra/Client"/>
         <exec program="${PetraToolsExe.dir}/GenerateWinforms.exe" commandline="-ymlfile:${ClientPath}/lib/MFinance/gui ${generateWinformsParameters}"/>
     </target>
 

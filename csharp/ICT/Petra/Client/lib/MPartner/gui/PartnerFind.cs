@@ -141,6 +141,7 @@ namespace Ict.Petra.Client.MPartner.Gui
 
       FPetraUtilsObject = new TFrmPetraModuleUtils(AParentFormHandle, this, stbMain);
       ucoFindByPartnerDetails.PetraUtilsObject = FPetraUtilsObject;
+      ucoFindByPartnerDetails.InitUserControl();
       InitializeManualCode();
       FPetraUtilsObject.ActionEnablingEvent += ActionEnabledEvent;
 
