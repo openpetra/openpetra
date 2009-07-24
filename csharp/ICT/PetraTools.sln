@@ -1,4 +1,4 @@
-
+﻿
 Microsoft Visual Studio Solution File, Format Version 9.00
 # Visual Studio 2005
 # SharpDevelop 3.0.0.3800
@@ -25,6 +25,8 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FixProjectFiles", "PetraTools\FixProjectFiles\FixProjectFiles.csproj", "{252FBC9E-4B7E-4EB0-84EB-D60B922A6111}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GenerateI18N", "PetraTools\GenerateI18N\GenerateI18N.csproj", "{9DED19CA-06E0-4271-991B-A4A6F3C9B6D1}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Ict.Tools.NAntTasks", "PetraTools\NAntTasks\Ict.Tools.NAntTasks.csproj", "{A5090592-78DD-4F41-9B96-8F02F61A6CDE}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -80,5 +82,9 @@ Global
 		{9DED19CA-06E0-4271-991B-A4A6F3C9B6D1}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{9DED19CA-06E0-4271-991B-A4A6F3C9B6D1}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{9DED19CA-06E0-4271-991B-A4A6F3C9B6D1}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A5090592-78DD-4F41-9B96-8F02F61A6CDE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A5090592-78DD-4F41-9B96-8F02F61A6CDE}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A5090592-78DD-4F41-9B96-8F02F61A6CDE}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A5090592-78DD-4F41-9B96-8F02F61A6CDE}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal

@@ -16,6 +16,15 @@
     <property name="TargetLanguage.PofileWithPath" value="${OpenPetraRoot.dir}/i18n/${Translation.TargetLanguage}.po"/>
     <property name="WebServerInstall.dir" value="${OpenPetraRoot.dir}/qooxdoo/"/>
 
+    <property name="IctNAntTasks.file" value="${PetraToolsExe.dir}/Ict.Tools.NAntTasks.dll"/>
+    <if test="${file::exists(IctNAntTasks.file)}">
+        <loadtasks assembly="${IctNAntTasks.file}" />
+    </if>
+    <if test="${not file::exists(IctNAntTasks.file)}">
+        <call target="compilePetraTools"/>
+        <loadtasks assembly="${IctNAntTasks.file}" />
+    </if>
+    
     <!-- could use nant -projecthelp instead -->
     <target name="help" depends="" description="Displays the available targets and parameters.">
         <echo message="A list of available commands: TODO"/>
@@ -182,10 +191,10 @@
         <mkdir dir="${OpenPetraRoot.dir}/setup/petra${PetraRelease}" failonerror="false"/>
         <if test="${DBMS.Type=='sqlite'}">
             <!-- sqlite does not have an petra.sql file, but we need one for generating the documentation -->
-            <exec program="${PetraToolsExe.dir}/GenerateSQL.exe" commandline="-do:sql -dbms:postgresql -petraxml:${PetraXML.file} -outputFile:${OpenPetraRoot.dir}/setup/petra${PetraRelease}/petra.sql" failonerror="true"/>
+            <ExecDotNet program="${PetraToolsExe.dir}/GenerateSQL.exe" commandline="-do:sql -dbms:postgresql -petraxml:${PetraXML.file} -outputFile:${OpenPetraRoot.dir}/setup/petra${PetraRelease}/petra.sql" failonerror="true"/>
         </if>
         <if test="${DBMS.Type!='sqlite'}">
-            <exec program="${PetraToolsExe.dir}/GenerateSQL.exe" commandline="-do:sql -dbms:${DBMS.Type} -petraxml:${PetraXML.file} -outputFile:${OpenPetraRoot.dir}/setup/petra${PetraRelease}/petra.sql" failonerror="true"/>
+            <ExecDotNet program="${PetraToolsExe.dir}/GenerateSQL.exe" commandline="-do:sql -dbms:${DBMS.Type} -petraxml:${PetraXML.file} -outputFile:${OpenPetraRoot.dir}/setup/petra${PetraRelease}/petra.sql" failonerror="true"/>
         </if>
     </target>
 
@@ -226,12 +235,12 @@
     <target name="recreateDatabase" depends="createSQLStatements">
         <if test="${DBMS.Type=='sqlite'}">
              <delete file="${SQLitedb.file}" if="${file::exists(SQLitedb.file)}"/>
-             <exec program="${PetraToolsExe.dir}/GenerateSQL.exe" commandline="-do:sql -dbms:${DBMS.Type} -petraxml:${PetraXML.file} -outputFile:${SQLitedb.file} -password:${DBMS.Password}" failonerror="true"/>
+             <ExecDotNet program="${PetraToolsExe.dir}/GenerateSQL.exe" commandline="-do:sql -dbms:${DBMS.Type} -petraxml:${PetraXML.file} -outputFile:${SQLitedb.file} -password:${DBMS.Password}" failonerror="true"/>
         </if>
         <if test="${DBMS.Type=='postgresql'}">
-             <exec program="cmd.exe" commandline="/C &quot;echo DROP DATABASE IF EXISTS petra; | &quot;${PostgreSQL.exe}&quot; template1&quot;"/>
-             <exec program="cmd.exe" commandline="/C &quot;echo CREATE DATABASE petra; | &quot;${PostgreSQL.exe}&quot;&quot; template1"/>
-             <exec program="cmd.exe" commandline="/C &quot;${PostgreSQL.exe}&quot; petra &lt; ${OpenPetraRoot.dir}/setup/petra${PetraRelease}/petra.sql"/>
+             <psql exe="${PostgreSQL.exe}" sqlcommand="DROP DATABASE IF EXISTS petra" database="template1"/>
+             <psql exe="${PostgreSQL.exe}" sqlcommand="CREATE DATABASE petra" database="template1"/>
+             <psql exe="${PostgreSQL.exe}" sqlfile="${OpenPetraRoot.dir}/setup/petra${PetraRelease}/petra.sql" database="template1"/>
         </if>
         <if test="${DBMS.Type=='mysql'}">
              <echo message="this will now take a while..."/>
@@ -277,27 +286,30 @@
          <echo message='${script::ReplaceInFile(Current.File, toReplace, passwordsalt)}'/>
 
         <if test="${DBMS.Type=='sqlite'}">
-             <exec program="${PetraToolsExe.dir}/GenerateSQL.exe" commandline="-do:load -dbms:${DBMS.Type} -petraxml:${PetraXML.file} -outputFile:${SQLitedb.file} -datapath:${DemoData.Dir} -sqlfile:${DemoData.Dir}/clean.sql -password:${DBMS.Password}" failonerror="true"/>
-             <exec program="${PetraToolsExe.dir}/GenerateSQL.exe" commandline="-do:load -dbms:${DBMS.Type} -petraxml:${PetraXML.file} -outputFile:${SQLitedb.file} -datapath:${BaseData.Dir} -sqlfile:${BaseData.Dir}/clean.sql -password:${DBMS.Password}" failonerror="true"/>
-             <exec program="${PetraToolsExe.dir}/GenerateSQL.exe" commandline="-do:load -dbms:${DBMS.Type} -petraxml:${PetraXML.file} -outputFile:${SQLitedb.file} -datapath:${BaseData.Dir} -sqlfile:${BaseData.Dir}/init.sql.local -password:${DBMS.Password}" failonerror="true"/>
-             <exec program="${PetraToolsExe.dir}/GenerateSQL.exe" commandline="-do:load -dbms:${DBMS.Type} -petraxml:${PetraXML.file} -outputFile:${SQLitedb.file} -datapath:${DemoData.Dir} -sqlfile:${DemoData.Dir}/init.sql.local -password:${DBMS.Password}" failonerror="true"/>
+             <ExecDotNet program="${PetraToolsExe.dir}/GenerateSQL.exe" commandline="-do:load -dbms:${DBMS.Type} -petraxml:${PetraXML.file} -outputFile:${SQLitedb.file} -datapath:${DemoData.Dir} -sqlfile:${DemoData.Dir}/clean.sql -password:${DBMS.Password}" failonerror="true"/>
+             <ExecDotNet program="${PetraToolsExe.dir}/GenerateSQL.exe" commandline="-do:load -dbms:${DBMS.Type} -petraxml:${PetraXML.file} -outputFile:${SQLitedb.file} -datapath:${BaseData.Dir} -sqlfile:${BaseData.Dir}/clean.sql -password:${DBMS.Password}" failonerror="true"/>
+             <ExecDotNet program="${PetraToolsExe.dir}/GenerateSQL.exe" commandline="-do:load -dbms:${DBMS.Type} -petraxml:${PetraXML.file} -outputFile:${SQLitedb.file} -datapath:${BaseData.Dir} -sqlfile:${BaseData.Dir}/init.sql.local -password:${DBMS.Password}" failonerror="true"/>
+             <ExecDotNet program="${PetraToolsExe.dir}/GenerateSQL.exe" commandline="-do:load -dbms:${DBMS.Type} -petraxml:${PetraXML.file} -outputFile:${SQLitedb.file} -datapath:${DemoData.Dir} -sqlfile:${DemoData.Dir}/init.sql.local -password:${DBMS.Password}" failonerror="true"/>
         </if>
         <if test="${DBMS.Type=='postgresql'}">
-             <exec program="cmd.exe" commandline="/C &quot;echo DROP OWNED BY petraserver; DROP USER IF EXISTS petraserver; | &quot;${PostgreSQL.exe}&quot; petra&quot;"/>
-             <exec program="cmd.exe" commandline="/C &quot;echo CREATE USER petraserver PASSWORD 'TOBESETBYINSTALLER'; | &quot;${PostgreSQL.exe}&quot; petra&quot;"/>
-             
-             <exec program="cmd.exe" commandline="/C &quot;&quot;${PostgreSQL.exe}&quot; -t -o &quot;${OpenPetraRoot.dir}/setup/petra${PetraRelease}/userpermissions.sql&quot; -c &quot;select 'GRANT SELECT,UPDATE,DELETE,INSERT ON ' || c.relname || ' TO petraserver;' from pg_class AS c LEFT JOIN pg_namespace n ON n.oid = c.relnamespace where c.relkind = 'r' and n.nspname NOT IN('pg_catalog', 'pg_toast') and pg_table_is_visible(c.oid);&quot; petra &quot;" />
-             <exec program="cmd.exe" commandline="/C &quot;&quot;${PostgreSQL.exe}&quot; petra &lt; &quot;${OpenPetraRoot.dir}/setup/petra${PetraRelease}/userpermissions.sql&quot;"/>
-             
-             <exec program="cmd.exe" commandline="/C &quot;echo GRANT SELECT,UPDATE,USAGE ON seq_modification1 TO petraserver; | &quot;${PostgreSQL.exe}&quot; petra&quot;"/>
-             <exec program="cmd.exe" commandline="/C &quot;echo GRANT SELECT,UPDATE,USAGE ON seq_modification2 TO petraserver; | &quot;${PostgreSQL.exe}&quot; petra&quot;"/>
-             <exec program="cmd.exe" commandline="/C &quot;echo GRANT SELECT,UPDATE,USAGE ON s_login_s_login_process_id_r_seq TO petraserver; | &quot;${PostgreSQL.exe}&quot; petra&quot;"/>
-             <exec program="cmd.exe" commandline="/C &quot;echo GRANT SELECT,UPDATE,USAGE ON seq_location_number TO petraserver; | &quot;${PostgreSQL.exe}&quot; petra&quot;"/>
-             
-             <exec program="cmd.exe" workingdir="${OpenPetraRoot.dir}/db"  commandline="/C &quot;${PostgreSQL.exe}&quot; petra &lt; ${DemoData.Dir}/clean.sql"/>
-             <exec program="cmd.exe" workingdir="${OpenPetraRoot.dir}/db"  commandline="/C &quot;${PostgreSQL.exe}&quot; petra &lt; ${BaseData.Dir}/clean.sql"/>
-             <exec program="cmd.exe" workingdir="${OpenPetraRoot.dir}/db"  commandline="/C &quot;${PostgreSQL.exe}&quot; petra &lt; ${BaseData.Dir}/init.sql.local"/>
-             <exec program="cmd.exe" workingdir="${OpenPetraRoot.dir}/db"  commandline="/C &quot;${PostgreSQL.exe}&quot; petra &lt; ${DemoData.Dir}/init.sql.local"/>
+             <psql exe="${PostgreSQL.exe}" sqlcommand="DROP OWNED BY petraserver; DROP USER IF EXISTS petraserver;" database="petra"/>
+             <psql exe="${PostgreSQL.exe}" sqlcommand="CREATE USER petraserver PASSWORD 'TOBESETBYINSTALLER';" database="petra"/>
+
+             <psql exe="${PostgreSQL.exe}" 
+                sqlcommand="select 'GRANT SELECT,UPDATE,DELETE,INSERT ON ' || c.relname || ' TO petraserver;' from pg_class AS c LEFT JOIN pg_namespace n ON n.oid = c.relnamespace where c.relkind = 'r' and n.nspname NOT IN('pg_catalog', 'pg_toast') and pg_table_is_visible(c.oid);"
+                outputfile="${OpenPetraRoot.dir}/setup/petra${PetraRelease}/userpermissions.sql"
+                database="petra"/>
+             <psql exe="${PostgreSQL.exe}" sqlfile="${OpenPetraRoot.dir}/setup/petra${PetraRelease}/userpermissions.sql" database="petra"/>
+
+             <psql exe="${PostgreSQL.exe}" sqlcommand="GRANT SELECT,UPDATE,USAGE ON seq_modification1 TO petraserver;" database="petra"/>
+             <psql exe="${PostgreSQL.exe}" sqlcommand="GRANT SELECT,UPDATE,USAGE ON seq_modification2 TO petraserver;" database="petra"/>
+             <psql exe="${PostgreSQL.exe}" sqlcommand="GRANT SELECT,UPDATE,USAGE ON s_login_s_login_process_id_r_seq TO petraserver;"  database="petra"/>
+             <psql exe="${PostgreSQL.exe}" sqlcommand="GRANT SELECT,UPDATE,USAGE ON seq_location_number TO petraserver;" database="petra"/>
+
+             <psql exe="${PostgreSQL.exe}" sqlfile="${DemoData.Dir}/clean.sql" database="petra"/>
+             <psql exe="${PostgreSQL.exe}" sqlfile="${BaseData.Dir}/clean.sql" database="petra"/>
+             <psql exe="${PostgreSQL.exe}" sqlfile="${BaseData.Dir}/init.sql.local" database="petra"/>
+             <psql exe="${PostgreSQL.exe}" sqlfile="${DemoData.Dir}/init.sql.local" database="petra"/>
         </if>
         <if test="${DBMS.Type=='mysql'}">
              <!-- todo -->
@@ -420,37 +432,37 @@
     </target>
     
     <target name="generateORM" depends="compilePetraTools" description="Generate the typed datastore.">
-        <exec program="${PetraToolsExe.dir}/GenerateORM.exe" commandline="-do:defaulttables -petraxml:${PetraXML.file} -outputshared:${OpenPetraRoot.dir}/csharp/ICT/Petra/Shared"/>
-        <exec program="${PetraToolsExe.dir}/GenerateORM.exe" commandline="-do:dataaccess -petraxml:${PetraXML.file} -outputshared:${OpenPetraRoot.dir}/csharp/ICT/Petra/Shared"/>
-        <exec program="${PetraToolsExe.dir}/GenerateORM.exe" commandline="-do:dataset -petraxml:${PetraXML.file} -input:${OpenPetraRoot.dir}/csharp/ICT/Petra/Shared/lib/MCommon/data/CommonTypedDataSets.xml -outputNamespace:Ict.Petra.Shared.MCommon.Data.DataSets -outputFilename:Common.DataSets"/>
-        <exec program="${PetraToolsExe.dir}/GenerateORM.exe" commandline="-do:dataset -petraxml:${PetraXML.file} -input:${OpenPetraRoot.dir}/csharp/ICT/Petra/Shared/lib/MPartner/data/PartnerTypedDataSets.xml -outputNamespace:Ict.Petra.Shared.MPartner.Partner.Data.DataSets -outputFilename:Partner.DataSets"/>
-        <exec program="${PetraToolsExe.dir}/GenerateORM.exe" commandline="-do:dataset -petraxml:${PetraXML.file} -input:${OpenPetraRoot.dir}/csharp/ICT/Petra/Shared/lib/MPersonnel/data/PersonnelTypedDataSets.xml -outputNamespace:Ict.Petra.Shared.MPersonnel.Personnel.Data.DataSets -outputFilename:Personnel.DataSets"/>
-        <exec program="${PetraToolsExe.dir}/GenerateORM.exe" commandline="-do:dataset -petraxml:${PetraXML.file} -input:${OpenPetraRoot.dir}/csharp/ICT/Petra/Shared/lib/MHospitality/data/TypedDataSets.xml -outputNamespace:Ict.Petra.Shared.MHospitality.Data.DataSets -outputFilename:Hospitality.DataSets"/>
-        <exec program="${PetraToolsExe.dir}/GenerateORM.exe" commandline="-do:dataset -petraxml:${PetraXML.file} -input:${OpenPetraRoot.dir}/csharp/ICT/Petra/Shared/lib/MFinance/data/Finance.AP.TypedDataSets.xml -outputNamespace:Ict.Petra.Shared.MFinance.AP.Data.DataSets -outputFilename:Finance.AP.DataSets"/>
-        <exec program="${PetraToolsExe.dir}/GenerateORM.exe" commandline="-do:dataset -petraxml:${PetraXML.file} -input:${OpenPetraRoot.dir}/csharp/ICT/Petra/Shared/lib/MFinance/data/Finance.GL.TypedDataSets.xml -outputNamespace:Ict.Petra.Shared.MFinance.GL.Data.DataSets -outputFilename:Finance.GL.DataSets"/>
+        <ExecDotNet program="${PetraToolsExe.dir}/GenerateORM.exe" commandline="-do:defaulttables -petraxml:${PetraXML.file} -outputshared:${OpenPetraRoot.dir}/csharp/ICT/Petra/Shared"/>
+        <ExecDotNet program="${PetraToolsExe.dir}/GenerateORM.exe" commandline="-do:dataaccess -petraxml:${PetraXML.file} -outputshared:${OpenPetraRoot.dir}/csharp/ICT/Petra/Shared"/>
+        <ExecDotNet program="${PetraToolsExe.dir}/GenerateORM.exe" commandline="-do:dataset -petraxml:${PetraXML.file} -input:${OpenPetraRoot.dir}/csharp/ICT/Petra/Shared/lib/MCommon/data/CommonTypedDataSets.xml -outputNamespace:Ict.Petra.Shared.MCommon.Data.DataSets -outputFilename:Common.DataSets"/>
+        <ExecDotNet program="${PetraToolsExe.dir}/GenerateORM.exe" commandline="-do:dataset -petraxml:${PetraXML.file} -input:${OpenPetraRoot.dir}/csharp/ICT/Petra/Shared/lib/MPartner/data/PartnerTypedDataSets.xml -outputNamespace:Ict.Petra.Shared.MPartner.Partner.Data.DataSets -outputFilename:Partner.DataSets"/>
+        <ExecDotNet program="${PetraToolsExe.dir}/GenerateORM.exe" commandline="-do:dataset -petraxml:${PetraXML.file} -input:${OpenPetraRoot.dir}/csharp/ICT/Petra/Shared/lib/MPersonnel/data/PersonnelTypedDataSets.xml -outputNamespace:Ict.Petra.Shared.MPersonnel.Personnel.Data.DataSets -outputFilename:Personnel.DataSets"/>
+        <ExecDotNet program="${PetraToolsExe.dir}/GenerateORM.exe" commandline="-do:dataset -petraxml:${PetraXML.file} -input:${OpenPetraRoot.dir}/csharp/ICT/Petra/Shared/lib/MHospitality/data/TypedDataSets.xml -outputNamespace:Ict.Petra.Shared.MHospitality.Data.DataSets -outputFilename:Hospitality.DataSets"/>
+        <ExecDotNet program="${PetraToolsExe.dir}/GenerateORM.exe" commandline="-do:dataset -petraxml:${PetraXML.file} -input:${OpenPetraRoot.dir}/csharp/ICT/Petra/Shared/lib/MFinance/data/Finance.AP.TypedDataSets.xml -outputNamespace:Ict.Petra.Shared.MFinance.AP.Data.DataSets -outputFilename:Finance.AP.DataSets"/>
+        <ExecDotNet program="${PetraToolsExe.dir}/GenerateORM.exe" commandline="-do:dataset -petraxml:${PetraXML.file} -input:${OpenPetraRoot.dir}/csharp/ICT/Petra/Shared/lib/MFinance/data/Finance.GL.TypedDataSets.xml -outputNamespace:Ict.Petra.Shared.MFinance.GL.Data.DataSets -outputFilename:Finance.GL.DataSets"/>
     </target>
     
     <target name="generateGlue" depends="compilePetraTools" description="Generate the glue between client and server, ie. interfaces and instantiators">
-        <exec program="${PetraToolsExe.dir}/GenerateSharedCode.exe" commandline="-xmlfile:${OpenPetraRoot.dir}/csharp/ICT/Petra/Definitions/NamespaceHierarchy.xml -outputdir:${OpenPetraRoot.dir}/csharp/ICT/Petra"/>
+        <ExecDotNet program="${PetraToolsExe.dir}/GenerateSharedCode.exe" commandline="-xmlfile:${OpenPetraRoot.dir}/csharp/ICT/Petra/Definitions/NamespaceHierarchy.xml -outputdir:${OpenPetraRoot.dir}/csharp/ICT/Petra"/>
     </target>
 
     <target name="generateGTK" depends="compilePetraTools" description="Generate GTK User Interface">
-        <exec program="${PetraToolsExe.dir}/GenerateGTK.exe" commandline="-ymlfile:${OpenPetraRoot.dir}/csharp/ICT/Petra/Client/lib/MSysMan/MaintainUsers.yaml -petraxml:${PetraXML.file} -outputdir:${OpenPetraRoot.dir}/csharp/ICT/Petra/Client/lib/MSysMan/gtk"/>
+        <ExecDotNet program="${PetraToolsExe.dir}/GenerateGTK.exe" commandline="-ymlfile:${OpenPetraRoot.dir}/csharp/ICT/Petra/Client/lib/MSysMan/MaintainUsers.yaml -petraxml:${PetraXML.file} -outputdir:${OpenPetraRoot.dir}/csharp/ICT/Petra/Client/lib/MSysMan/gtk"/>
     </target>
 
     <target name="generateWinforms" depends="compilePetraTools" description="Generate Winforms User Interface">
         <!-- todo: go through all yaml files that have FormType different from abstract -->
         <property name="generateWinformsParameters" value="-TemplateDir:${OpenPetraRoot.dir}/csharp/ICT/PetraTools/Templates/Winforms -ResourceDir:${OpenPetraRoot.dir}/resources -petraxml:${PetraXML.file}"/>
         <property name="ClientPath" value="${OpenPetraRoot.dir}/csharp/ICT/Petra/Client"/>
-        <exec program="${PetraToolsExe.dir}/GenerateWinforms.exe" commandline="-ymlfile:${ClientPath}/app/PetraClient/MainWindow.yaml ${generateWinformsParameters}"/>
-        <exec program="${PetraToolsExe.dir}/GenerateWinforms.exe" commandline="-ymlfile:${ClientPath}/lib/MPartner/gui ${generateWinformsParameters}"/>
-        <exec program="${PetraToolsExe.dir}/GenerateWinforms.exe" commandline="-ymlfile:${ClientPath}/lib/MReporting/gui/MPartner ${generateWinformsParameters}"/>
-        <exec program="${PetraToolsExe.dir}/GenerateWinforms.exe" commandline="-ymlfile:${ClientPath}/lib/MFinance/gui ${generateWinformsParameters}"/>
+        <ExecDotNet program="${PetraToolsExe.dir}/GenerateWinforms.exe" commandline="-ymlfile:${ClientPath}/app/PetraClient/MainWindow.yaml ${generateWinformsParameters}"/>
+        <ExecDotNet program="${PetraToolsExe.dir}/GenerateWinforms.exe" commandline="-ymlfile:${ClientPath}/lib/MPartner/gui ${generateWinformsParameters}"/>
+        <ExecDotNet program="${PetraToolsExe.dir}/GenerateWinforms.exe" commandline="-ymlfile:${ClientPath}/lib/MReporting/gui/MPartner ${generateWinformsParameters}"/>
+        <ExecDotNet program="${PetraToolsExe.dir}/GenerateWinforms.exe" commandline="-ymlfile:${ClientPath}/lib/MFinance/gui ${generateWinformsParameters}"/>
     </target>
 
     <target name="translationTemplate">
         <!-- first collect all Catalog.GetString from all source files in solution; also resolve calls to Table.GetFieldnameHelp etc; result is in solutionName.CollectedGettext.cs -->
-        <exec program="${PetraToolsExe.dir}/GenerateI18N.exe" commandline="-solution:${OpenPetraRoot.dir}/csharp/ICT/${solutionName}.sln -petraxml:${PetraXML.file}"/>
+        <ExecDotNet program="${PetraToolsExe.dir}/GenerateI18N.exe" commandline="-solution:${OpenPetraRoot.dir}/csharp/ICT/${solutionName}.sln -petraxml:${PetraXML.file}"/>
         <!-- use solutionName.CollectedGettext.cs as input for po file -->
         <property name="collectedGettext.file" value="${OpenPetraRoot.dir}/csharp/ICT/${solutionName}.CollectedGettext.cs"/>
         <if test="${file::exists(collectedGettext.file)}">
@@ -554,7 +566,7 @@
     </target>
 
     <target name="fixProjectFiles">
-        <exec program="${PetraToolsExe.dir}/FixProjectFiles.exe" commandline="-solutionpath:${OpenPetraRoot.dir}/csharp/ICT -solutions:Common,Shared,Client,Server,ServerAdmin,PetraTools"/>
+        <ExecDotNet program="${PetraToolsExe.dir}/FixProjectFiles.exe" commandline="-solutionpath:${OpenPetraRoot.dir}/csharp/ICT -solutions:Common,Shared,Client,Server,ServerAdmin,PetraTools"/>
     </target>
     
     <target name="switchToDebug">
@@ -713,7 +725,7 @@
         <property name="DBMS.Type" value="PostgreSQL"/>
         <call target="recreateDatabase"/>
         <call target="resetDatabase"/>
-        <exec program="cmd.exe" commandline="/C &quot;${pgdump.exe} --format=c petra &gt; ${setupDir}/db30/demo-pg.bak&quot;"/>
+        <exec program="${pgdump.exe}" commandline="--format=c petra &gt; ${setupDir}/db30/demo-pg.bak"/>
 
         <copy file="${OpenPetraRoot.dir}/LICENSE"
                     tofile="${setupDir}/LICENSE"/>
