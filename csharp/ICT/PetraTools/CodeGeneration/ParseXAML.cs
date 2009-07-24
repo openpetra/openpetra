@@ -180,6 +180,7 @@ namespace Ict.Tools.CodeGeneration
             {
                 LoadMenu(FCodeStorage.GetRootControl("mnu").controlName, (XmlNode)nodes["Menu"]);
             }
+
             if (FCodeStorage.HasRootControl("tbr"))
             {
                 LoadToolbar(FCodeStorage.GetRootControl("tbr").controlName, (XmlNode)nodes["Toolbar"]);

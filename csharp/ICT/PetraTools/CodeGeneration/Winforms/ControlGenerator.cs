@@ -562,15 +562,16 @@ namespace Ict.Tools.CodeGeneration.Winforms
                     // there needs to be a list of CustomColumns
                     XmlNode CustomColumnsNode = TYml2Xml.GetChild(ctrl.xmlNode, "CustomColumns");
                     XmlNode CustomColumnNode = null;
+
                     if (CustomColumnsNode != null)
                     {
-                       CustomColumnNode = TYml2Xml.GetChild(CustomColumnsNode, ColumnFieldName);
+                        CustomColumnNode = TYml2Xml.GetChild(CustomColumnsNode, ColumnFieldName);
                     }
-                    
+
                     if (CustomColumnNode != null)
                     {
                         // todo TYml2Xml.GetAttribute(CustomColumnNode, "Type")
-                        writer.Template.AddToCodelet("INITMANUALCODE", ctrl.controlName + ".AddTextColumn(\"" + 
+                        writer.Template.AddToCodelet("INITMANUALCODE", ctrl.controlName + ".AddTextColumn(\"" +
                             TYml2Xml.GetAttribute(CustomColumnNode, "Label") + "\", " +
                             "FMainDS." +
                             ctrl.GetAttribute("TableName") + ".Column" +
@@ -798,10 +799,12 @@ namespace Ict.Tools.CodeGeneration.Winforms
                     foreach (string ctrlname in controls)
                     {
                         TControlDef ctrl = writer.CodeStorage.GetControl(ctrlname);
+
                         if (ctrl == null)
                         {
                             throw new Exception("cannot find control with name " + ctrlname + "; it belongs to " + curNode.Name);
                         }
+
                         ctrl.rowNumber = countRow;
                     }
 
@@ -1261,10 +1264,12 @@ namespace Ict.Tools.CodeGeneration.Winforms
             // todo: use properties from yaml
 
             writer.Template.AddToCodelet("INITUSERCONTROLS", controlName + ".PetraUtilsObject = FPetraUtilsObject;" + Environment.NewLine);
+
             if (writer.CodeStorage.HasAttribute("DatasetType"))
             {
                 writer.Template.AddToCodelet("INITUSERCONTROLS", controlName + ".MainDS = FMainDS;" + Environment.NewLine);
             }
+
             writer.Template.AddToCodelet("INITUSERCONTROLS", controlName + ".InitUserControl();" + Environment.NewLine);
         }
     }

@@ -95,7 +95,6 @@ namespace Ict.Petra.Client.App.PetraClient
         /// </summary>
         public void InitUserControl()
         {
-            
         }
 
         /// <summary>

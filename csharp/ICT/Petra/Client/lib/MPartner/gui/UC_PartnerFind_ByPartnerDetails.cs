@@ -165,7 +165,6 @@ namespace Ict.Petra.Client.MPartner.Gui
         /// </summary>
         public void InitUserControl()
         {
-            
         }
 
         private void GrdResult_MouseDown(System.Object sender, System.Windows.Forms.MouseEventArgs e)

@@ -703,9 +703,10 @@ namespace Ict.Tools.CodeGeneration
         {
             // TODO: check for base node
             XmlNode child = TXMLParser.GetChild(node, childName);
+
             return child;
         }
-        
+
         /// <summary>
         /// overload for GetElements, with the main node and the name of the child node that has the elements
         /// </summary>

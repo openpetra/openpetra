@@ -38,7 +38,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             // TODO
             return false;
         }
-        
+
         /// <summary>
         /// TODOComment
         /// </summary>
