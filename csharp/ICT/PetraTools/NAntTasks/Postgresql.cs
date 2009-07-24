@@ -98,6 +98,19 @@ namespace Ict.Tools.NAntTasks
             }
         }
 
+        private bool FFailOnError = true;
+        [TaskAttribute("failonerror", Required = false)]
+        public bool FailOnError {
+            get
+            {
+                return FFailOnError;
+            }
+            set
+            {
+                FFailOnError = value;
+            }
+        }
+
         protected override void ExecuteTask()
         {
             System.Diagnostics.Process process;
@@ -122,6 +135,20 @@ namespace Ict.Tools.NAntTasks
             }
 
             process.StartInfo.Arguments += " " + FDatabase;
+ 
+            string SuperUser = string.Empty;
+
+            if (NAnt.Core.PlatformHelper.IsUnix)
+            {
+                SuperUser = "postgres";
+            }
+
+            if (SuperUser.Length > 0)
+            {
+                process.StartInfo.FileName = "sudo";
+                process.StartInfo.Arguments = "-u " + SuperUser + " " + FPsqlExecutable + " " + process.StartInfo.Arguments;
+            }
+
             process.StartInfo.WindowStyle = ProcessWindowStyle.Hidden;
             process.EnableRaisingEvents = true;
             try
@@ -141,7 +168,7 @@ namespace Ict.Tools.NAntTasks
                 System.Threading.Thread.Sleep(500);
             }
 
-            if (process.ExitCode != 0)
+            if (FFailOnError && process.ExitCode != 0)
             {
                 throw new Exception("Exit Code " + process.ExitCode.ToString() + " shows that something went wrong");
             }

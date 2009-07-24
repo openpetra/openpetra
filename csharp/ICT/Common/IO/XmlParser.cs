@@ -99,8 +99,7 @@ namespace Ict.Common.IO
         /// the XmlDocument that is currently parsed
         /// </summary>
         protected XmlDocument myDoc;
-        XmlValidatingReader reader;
-        XmlTextReader txtReader;
+        XmlReader reader;
 
         /// <summary>
         /// constructor
@@ -120,19 +119,24 @@ namespace Ict.Common.IO
             reader = null;
             try
             {
-                txtReader = new XmlTextReader(filename);
-                reader = new XmlValidatingReader(txtReader);
+                XmlReaderSettings settings = new XmlReaderSettings();
+		settings.ProhibitDtd = false;
 
-                if (withValidation)
+                // TODO there seems to be problems finding the dtd file on Mono; so no validation there for the moment
+                // also see http://bytes.com/groups/net-xml/178914-exception-xmldocumet-load
+                if (withValidation && Ict.Common.Utilities.DetermineExecutingCLR() != TExecutingCLREnum.eclrMono)
                 {
-                    reader.ValidationType = ValidationType.DTD;
+                    settings.ValidationType = ValidationType.DTD;
                 }
                 else
                 {
-                    reader.ValidationType = ValidationType.None;
+                    settings.ValidationType = ValidationType.None;
                 }
 
-                reader.ValidationEventHandler += new ValidationEventHandler(eventHandler);
+                settings.ValidationEventHandler += new ValidationEventHandler(eventHandler);
+
+		reader = XmlReader.Create(new StreamReader(filename), settings);
+
                 myDoc = new XmlDocument();
                 myDoc.Load(reader);
             }
@@ -176,7 +180,6 @@ namespace Ict.Common.IO
         {
             this.myDoc = AReuseParser.myDoc;
             this.reader = AReuseParser.reader;
-            this.txtReader = AReuseParser.txtReader;
         }
 
         /// <summary>

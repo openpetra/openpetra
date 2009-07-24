@@ -45,9 +45,9 @@ class Program
 
             if (operation == "sql")
             {
+                System.Console.WriteLine("Reading xml file {0}...", xmlfile);
                 TDataDefinitionParser parser = new TDataDefinitionParser(xmlfile);
                 TDataDefinitionStore store = new TDataDefinitionStore();
-                System.Console.WriteLine("Reading xml file {0}...", xmlfile);
 
                 if (parser.ParseDocument(ref store))
                 {
@@ -73,9 +73,9 @@ class Program
 
             if (operation == "load")
             {
+                System.Console.WriteLine("Reading xml file {0}...", xmlfile);
                 TDataDefinitionParser parser = new TDataDefinitionParser(xmlfile);
                 TDataDefinitionStore store = new TDataDefinitionStore();
-                System.Console.WriteLine("Reading xml file {0}...", xmlfile);
 
                 if (parser.ParseDocument(ref store))
                 {

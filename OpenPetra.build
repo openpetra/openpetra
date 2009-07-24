@@ -54,11 +54,18 @@
     <target name="compilePetraTools" description="compile the PetraTools">
         <property name="solution.file" value="${OpenPetraRoot.dir}/csharp/ICT/PetraTools.sln"/>
         <call target="compileTemplate"/>
+        <if test="${framework::get-runtime-framework() == 'mono-2.0'}" >
+            <copy file="${OpenPetraRoot.dir}/csharp/ThirdParty/SQLite/System.Data.SQLite.ManagedOnly.dll" tofile="${OpenPetraRoot.dir}/csharp/ICT/PetraTools/_bin/Debug/System.Data.SQLite.dll"/>
+        </if>
     </target>
     <target name="compilePetra" description="compile the whole of Petra" depends="compileCommon, compilePetraShared, compilePetraServerAdmin, compilePetraServer, compilePetraClient"/>
     <target name="compileTemplate">
         <if test="${framework::get-runtime-framework() == 'mono-2.0'}" >
-            <exec program="mdtool" commandline="build --buildfile:${solution.file}" />
+            <exec program="mdtool" commandline="build --buildfile:${solution.file}">
+               <environment>
+                  <variable name="MONO_PATH" value="${NAntBin.dir}"/> <!-- variable does not exist yet; otherwise: value="${NAntBin.dir}:${environment::get-variable('MONO_PATH')}" -->
+               </environment>
+            </exec>
         </if>
         <if test="${framework::get-runtime-framework() == 'net-2.0'}" >
             <solution configuration="${Configuration}" solutionfile="${solution.file}" />
@@ -238,9 +245,9 @@
              <ExecDotNet program="${PetraToolsExe.dir}/GenerateSQL.exe" commandline="-do:sql -dbms:${DBMS.Type} -petraxml:${PetraXML.file} -outputFile:${SQLitedb.file} -password:${DBMS.Password}" failonerror="true"/>
         </if>
         <if test="${DBMS.Type=='postgresql'}">
-             <psql exe="${PostgreSQL.exe}" sqlcommand="DROP DATABASE IF EXISTS petra" database="template1"/>
-             <psql exe="${PostgreSQL.exe}" sqlcommand="CREATE DATABASE petra" database="template1"/>
-             <psql exe="${PostgreSQL.exe}" sqlfile="${OpenPetraRoot.dir}/setup/petra${PetraRelease}/petra.sql" database="template1"/>
+             <psql exe="${PostgreSQL.exe}" sqlcommand="DROP DATABASE IF EXISTS petra;" database=""/>
+             <psql exe="${PostgreSQL.exe}" sqlcommand="CREATE DATABASE petra;" database=""/>
+             <psql exe="${PostgreSQL.exe}" sqlfile="${OpenPetraRoot.dir}/setup/petra${PetraRelease}/petra.sql" database="petra"/>
         </if>
         <if test="${DBMS.Type=='mysql'}">
              <echo message="this will now take a while..."/>
@@ -252,6 +259,7 @@
     </target>
 
     <target name="resetDatabase" depends="" description="useful for debugging the creation of fresh database"> <!-- depends: recreateDatabase --> 
+         <property name="OpenPetraRoot.dir" value="${path::get-full-path(OpenPetraRoot.dir)}"/>
          <property name="BaseData.Dir" value="${OpenPetraRoot.dir}/db/basedata"/>
          <property name="DemoData.Dir" value="${OpenPetraRoot.dir}/db/${SelectedDemo}"/>
 
@@ -292,14 +300,14 @@
              <ExecDotNet program="${PetraToolsExe.dir}/GenerateSQL.exe" commandline="-do:load -dbms:${DBMS.Type} -petraxml:${PetraXML.file} -outputFile:${SQLitedb.file} -datapath:${DemoData.Dir} -sqlfile:${DemoData.Dir}/init.sql.local -password:${DBMS.Password}" failonerror="true"/>
         </if>
         <if test="${DBMS.Type=='postgresql'}">
-             <psql exe="${PostgreSQL.exe}" sqlcommand="DROP OWNED BY petraserver; DROP USER IF EXISTS petraserver;" database="petra"/>
+             <psql exe="${PostgreSQL.exe}" sqlcommand="DROP OWNED BY petraserver; DROP USER IF EXISTS petraserver;" database="petra" failonerror="false"/>
              <psql exe="${PostgreSQL.exe}" sqlcommand="CREATE USER petraserver PASSWORD 'TOBESETBYINSTALLER';" database="petra"/>
 
              <psql exe="${PostgreSQL.exe}" 
                 sqlcommand="select 'GRANT SELECT,UPDATE,DELETE,INSERT ON ' || c.relname || ' TO petraserver;' from pg_class AS c LEFT JOIN pg_namespace n ON n.oid = c.relnamespace where c.relkind = 'r' and n.nspname NOT IN('pg_catalog', 'pg_toast') and pg_table_is_visible(c.oid);"
-                outputfile="${OpenPetraRoot.dir}/setup/petra${PetraRelease}/userpermissions.sql"
+                outputfile="${path::get-temp-path()}/userpermissions.sql"
                 database="petra"/>
-             <psql exe="${PostgreSQL.exe}" sqlfile="${OpenPetraRoot.dir}/setup/petra${PetraRelease}/userpermissions.sql" database="petra"/>
+             <psql exe="${PostgreSQL.exe}" sqlfile="${path::get-temp-path()}/userpermissions.sql" database="petra"/>
 
              <psql exe="${PostgreSQL.exe}" sqlcommand="GRANT SELECT,UPDATE,USAGE ON seq_modification1 TO petraserver;" database="petra"/>
              <psql exe="${PostgreSQL.exe}" sqlcommand="GRANT SELECT,UPDATE,USAGE ON seq_modification2 TO petraserver;" database="petra"/>
