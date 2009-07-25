@@ -1,4 +1,4 @@
-
+﻿
 Microsoft Visual Studio Solution File, Format Version 9.00
 # Visual Studio 2005
 # SharpDevelop 3.0.0.3800
@@ -196,9 +196,9 @@ Global
 		{476D1409-E5EA-4E2A-A3FB-743F4835AE7A}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{476D1409-E5EA-4E2A-A3FB-743F4835AE7A}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{476D1409-E5EA-4E2A-A3FB-743F4835AE7A}.Release|Any CPU.Build.0 = Release|Any CPU
-		{C68F7EC9-BE30-4F11-869A-2C9E5A758880.Debug}|Any CPU.ActiveCfg = Debug|Any CPU
-		{C68F7EC9-BE30-4F11-869A-2C9E5A758880.Debug}|Any CPU.Build.0 = Debug|Any CPU
-		{C68F7EC9-BE30-4F11-869A-2C9E5A758880.Release}|Any CPU.ActiveCfg = Release|Any CPU
-		{C68F7EC9-BE30-4F11-869A-2C9E5A758880.Release}|Any CPU.Build.0 = Release|Any CPU
+		{C68F7EC9-BE30-4F11-869A-2C9E5A758880}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C68F7EC9-BE30-4F11-869A-2C9E5A758880}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C68F7EC9-BE30-4F11-869A-2C9E5A758880}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C68F7EC9-BE30-4F11-869A-2C9E5A758880}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal

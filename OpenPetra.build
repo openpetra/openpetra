@@ -16,14 +16,12 @@
     <property name="TargetLanguage.PofileWithPath" value="${OpenPetraRoot.dir}/i18n/${Translation.TargetLanguage}.po"/>
     <property name="WebServerInstall.dir" value="${OpenPetraRoot.dir}/qooxdoo/"/>
 
-    <property name="IctNAntTasks.file" value="${PetraToolsExe.dir}/Ict.Tools.NAntTasks.dll"/>
-    <if test="${file::exists(IctNAntTasks.file)}">
-        <loadtasks assembly="${IctNAntTasks.file}" />
-    </if>
+    <property name="IctNAntTasks.file" value="${ThirdParty.dir}/NAnt/Ict.Tools.NAntTasks.dll"/>
     <if test="${not file::exists(IctNAntTasks.file)}">
         <call target="compilePetraTools"/>
-        <loadtasks assembly="${IctNAntTasks.file}" />
+        <copy file="${PetraToolsExe.dir}/Ict.Tools.NAntTasks.dll" tofile="${IctNAntTasks.file}"/>
     </if>
+    <loadtasks assembly="${IctNAntTasks.file}" if="${file::exists(IctNAntTasks.file)}"/>
     
     <!-- could use nant -projecthelp instead -->
     <target name="help" depends="" description="Displays the available targets and parameters.">
@@ -198,10 +196,10 @@
         <mkdir dir="${OpenPetraRoot.dir}/setup/petra${PetraRelease}" failonerror="false"/>
         <if test="${DBMS.Type=='sqlite'}">
             <!-- sqlite does not have an petra.sql file, but we need one for generating the documentation -->
-            <ExecDotNet program="${PetraToolsExe.dir}/GenerateSQL.exe" commandline="-do:sql -dbms:postgresql -petraxml:${PetraXML.file} -outputFile:${OpenPetraRoot.dir}/setup/petra${PetraRelease}/petra.sql" failonerror="true"/>
+            <ExecDotNet program="${PetraToolsExe.dir}/GenerateSQL.exe" workingdir="${OpenPetraRoot.dir}/db" commandline="-do:sql -dbms:postgresql -petraxml:${PetraXML.file} -outputFile:${OpenPetraRoot.dir}/setup/petra${PetraRelease}/petra.sql" failonerror="true"/>
         </if>
         <if test="${DBMS.Type!='sqlite'}">
-            <ExecDotNet program="${PetraToolsExe.dir}/GenerateSQL.exe" commandline="-do:sql -dbms:${DBMS.Type} -petraxml:${PetraXML.file} -outputFile:${OpenPetraRoot.dir}/setup/petra${PetraRelease}/petra.sql" failonerror="true"/>
+            <ExecDotNet program="${PetraToolsExe.dir}/GenerateSQL.exe" workingdir="${OpenPetraRoot.dir}/db" commandline="-do:sql -dbms:${DBMS.Type} -petraxml:${PetraXML.file} -outputFile:${OpenPetraRoot.dir}/setup/petra${PetraRelease}/petra.sql" failonerror="true"/>
         </if>
     </target>
 
@@ -245,8 +243,8 @@
              <ExecDotNet program="${PetraToolsExe.dir}/GenerateSQL.exe" commandline="-do:sql -dbms:${DBMS.Type} -petraxml:${PetraXML.file} -outputFile:${SQLitedb.file} -password:${DBMS.Password}" failonerror="true"/>
         </if>
         <if test="${DBMS.Type=='postgresql'}">
-             <psql exe="${PostgreSQL.exe}" sqlcommand="DROP DATABASE IF EXISTS petra;" database=""/>
-             <psql exe="${PostgreSQL.exe}" sqlcommand="CREATE DATABASE petra;" database=""/>
+             <psql exe="${PostgreSQL.exe}" sqlcommand="DROP DATABASE IF EXISTS petra;" database="template1"/>
+             <psql exe="${PostgreSQL.exe}" sqlcommand="CREATE DATABASE petra;" database="template1"/>
              <psql exe="${PostgreSQL.exe}" sqlfile="${OpenPetraRoot.dir}/setup/petra${PetraRelease}/petra.sql" database="petra"/>
         </if>
         <if test="${DBMS.Type=='mysql'}">

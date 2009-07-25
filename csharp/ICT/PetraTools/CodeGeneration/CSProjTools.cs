@@ -78,7 +78,7 @@ namespace Ict.Tools.CodeGeneration
                     string ProjectName = StringHelper.TrimQuotes(details[0]);
 
                     // relative path to project
-                    string RelativePath = StringHelper.TrimQuotes(details[1]);
+                    string RelativePath = StringHelper.TrimQuotes(details[1]).Replace("\", Path.DirectorySeparatorChar);
 
                     // GUID of project
                     string ProjectGUID = StringHelper.TrimQuotes(details[2]);

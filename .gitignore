@@ -16,3 +16,4 @@ qooxdoo/bin
 qooxdoo/Server.log
 qooxdoo/server.asmx
 qooxdoo/web.config
+/csharp/ThirdParty/NAnt/Ict.Tools.NAntTasks.dll
