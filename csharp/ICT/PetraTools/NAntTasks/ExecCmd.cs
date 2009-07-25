@@ -33,12 +33,32 @@ namespace Ict.Tools.NAntTasks
     [TaskName("ExecCmd")]
     public class ExecCmdTask : NAnt.Core.Tasks.ExecTask
     {
+
+        private string FSuperUser = String.Empty;
+        [TaskAttribute("superuser", Required = false)]
+        public string SuperUser {
+            get
+            {
+                return FSuperUser;
+            }
+            set
+            {
+                FSuperUser = value;
+            }
+        }
+     
         protected override void ExecuteTask()
         {
+
             if (NAnt.Core.PlatformHelper.IsUnix)
             {
                 this.FileName = "sh";
                 this.CommandLineArguments = "-c" + this.CommandLineArguments.Substring(2);
+                if (SuperUser.Length > 0)
+                {
+                    this.FileName = "sudo";
+                    this.CommandLineArguments = "-u " + SuperUser + " " + this.CommandLineArguments.Substring(2);
+                }
             }
             else if (NAnt.Core.PlatformHelper.IsWin32)
             {
