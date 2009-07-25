@@ -677,6 +677,12 @@
         <mkdir dir="${setupDir}/etc30"/>
         <mkdir dir="${setupDir}/reports30"/>
         <copy todir="${setupDir}/bin30">
+            <fileset basedir="${OpenPetraRoot.dir}/csharp/ICT/Petra/Client/_bin/Release/">
+                <include name="*.dll" />
+                <include name="*.exe" />
+            </fileset>
+        </copy>
+        <copy todir="${setupDir}/bin30">
             <fileset basedir="${OpenPetraRoot.dir}/csharp/ICT/Petra/Server/_bin/Release/">
                 <include name="*.dll" />
                 <include name="*.exe" />
