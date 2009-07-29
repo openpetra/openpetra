@@ -1,6 +1,32 @@
 /* Auto generated with nant generateORM
  * Do not modify this file manually!
  */
+/*************************************************************************
+ *
+ * DO NOT REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
+ *
+ * @Authors:
+ *       auto generated
+ *
+ * Copyright 2004-2009 by OM International
+ *
+ * This file is part of OpenPetra.org.
+ *
+ * OpenPetra.org is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * OpenPetra.org is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with OpenPetra.org.  If not, see <http://www.gnu.org/licenses/>.
+ *
+ ************************************************************************/
+
 namespace Ict.Petra.Shared.MCommon.Data.Cascading
 {
     using System;
@@ -11,41 +37,34 @@ namespace Ict.Petra.Shared.MCommon.Data.Cascading
     using Ict.Common.DB;
     using Ict.Common.Verification;
     using Ict.Common.Data;
+    using Ict.Petra.Shared.MCommon.Data;
+    using Ict.Petra.Shared.MCommon.Data.Access;
+    using Ict.Petra.Shared.MSysMan.Data;
+    using Ict.Petra.Shared.MSysMan.Data.Access;
     using Ict.Petra.Shared.MPartner.Partner.Data;
     using Ict.Petra.Shared.MPartner.Partner.Data.Access;
+    using Ict.Petra.Shared.MFinance.Account.Data;
+    using Ict.Petra.Shared.MFinance.Account.Data.Access;
     using Ict.Petra.Shared.MPartner.Mailroom.Data;
     using Ict.Petra.Shared.MPartner.Mailroom.Data.Access;
+    using Ict.Petra.Shared.MFinance.AR.Data;
+    using Ict.Petra.Shared.MFinance.AR.Data.Access;
+    using Ict.Petra.Shared.MFinance.Gift.Data;
+    using Ict.Petra.Shared.MFinance.Gift.Data.Access;
+    using Ict.Petra.Shared.MFinance.AP.Data;
+    using Ict.Petra.Shared.MFinance.AP.Data.Access;
     using Ict.Petra.Shared.MPersonnel.Personnel.Data;
     using Ict.Petra.Shared.MPersonnel.Personnel.Data.Access;
     using Ict.Petra.Shared.MPersonnel.Units.Data;
     using Ict.Petra.Shared.MPersonnel.Units.Data.Access;
     using Ict.Petra.Shared.MConference.Data;
     using Ict.Petra.Shared.MConference.Data.Access;
-    using Ict.Petra.Shared.MFinance.Account.Data;
-    using Ict.Petra.Shared.MFinance.Account.Data.Access;
-    using Ict.Petra.Shared.MFinance.Gift.Data;
-    using Ict.Petra.Shared.MFinance.Gift.Data.Access;
-    using Ict.Petra.Shared.MFinance.AP.Data;
-    using Ict.Petra.Shared.MFinance.AP.Data.Access;
-    using Ict.Petra.Shared.MFinance.AR.Data;
-    using Ict.Petra.Shared.MFinance.AR.Data.Access;
-    using Ict.Petra.Shared.MSysMan.Data;
-    using Ict.Petra.Shared.MSysMan.Data.Access;
-    using Ict.Petra.Shared.MCommon.Data;
-    using Ict.Petra.Shared.MCommon.Data.Access;
     using Ict.Petra.Shared.MHospitality.Data;
     using Ict.Petra.Shared.MHospitality.Data.Access;
-    
-    
-    /// auto generated
-    public class PLanguageCascading : TTypedDataAccess
-    {
-    }
-    
+
     /// auto generated
     public class AFrequencyCascading : TTypedDataAccess
     {
-        
         /// cascading delete
         public static void DeleteByPrimaryKey(String AFrequencyCode, TDBTransaction ATransaction, bool AWithCascDelete)
         {
@@ -67,7 +86,7 @@ namespace Ict.Petra.Shared.MCommon.Data.Cascading
             }
             AFrequencyAccess.DeleteByPrimaryKey(AFrequencyCode, ATransaction);
         }
-        
+
         /// cascading delete
         public static void DeleteUsingTemplate(AFrequencyRow ATemplateRow, StringCollection ATemplateOperators, TDBTransaction ATransaction, bool AWithCascDelete)
         {
@@ -90,11 +109,10 @@ namespace Ict.Petra.Shared.MCommon.Data.Cascading
             AFrequencyAccess.DeleteUsingTemplate(ATemplateRow, ATemplateOperators, ATransaction);
         }
     }
-    
+
     /// auto generated
     public class PInternationalPostalTypeCascading : TTypedDataAccess
     {
-        
         /// cascading delete
         public static void DeleteByPrimaryKey(String AInternatPostalTypeCode, TDBTransaction ATransaction, bool AWithCascDelete)
         {
@@ -105,12 +123,12 @@ namespace Ict.Petra.Shared.MCommon.Data.Cascading
                 PCountryAccess.LoadViaPInternationalPostalType(out MyPCountryTable, AInternatPostalTypeCode, StringHelper.StrSplit("p_country_code_c", ","), ATransaction);
                 for (countRow = 0; (countRow != MyPCountryTable.Rows.Count); countRow = (countRow + 1))
                 {
-                    PCountryAccess.DeleteUsingTemplate(MyPCountryTable[countRow], null, ATransaction);
-                }
+                                    PCountryAccess.DeleteUsingTemplate(MyPCountryTable[countRow], null, ATransaction);
+                                }
             }
             PInternationalPostalTypeAccess.DeleteByPrimaryKey(AInternatPostalTypeCode, ATransaction);
         }
-        
+
         /// cascading delete
         public static void DeleteUsingTemplate(PInternationalPostalTypeRow ATemplateRow, StringCollection ATemplateOperators, TDBTransaction ATransaction, bool AWithCascDelete)
         {
@@ -121,32 +139,16 @@ namespace Ict.Petra.Shared.MCommon.Data.Cascading
                 PCountryAccess.LoadViaPInternationalPostalTypeTemplate(out MyPCountryTable, ATemplateRow, StringHelper.StrSplit("p_country_code_c", ","), ATransaction);
                 for (countRow = 0; (countRow != MyPCountryTable.Rows.Count); countRow = (countRow + 1))
                 {
-                    PCountryAccess.DeleteUsingTemplate(MyPCountryTable[countRow], null, ATransaction);
-                }
+                                    PCountryAccess.DeleteUsingTemplate(MyPCountryTable[countRow], null, ATransaction);
+                                }
             }
             PInternationalPostalTypeAccess.DeleteUsingTemplate(ATemplateRow, ATemplateOperators, ATransaction);
         }
     }
-    
-    /// auto generated
-    public class PCountryCascading : TTypedDataAccess
-    {
-    }
-    
-    /// auto generated
-    public class ACurrencyCascading : TTypedDataAccess
-    {
-    }
-    
-    /// auto generated
-    public class SUserCascading : TTypedDataAccess
-    {
-    }
-    
+
     /// auto generated
     public class SFormCascading : TTypedDataAccess
     {
-        
         /// cascading delete
         public static void DeleteByPrimaryKey(String AFormName, TDBTransaction ATransaction, bool AWithCascDelete)
         {
@@ -174,7 +176,7 @@ namespace Ict.Petra.Shared.MCommon.Data.Cascading
             }
             SFormAccess.DeleteByPrimaryKey(AFormName, ATransaction);
         }
-        
+
         /// cascading delete
         public static void DeleteUsingTemplate(SFormRow ATemplateRow, StringCollection ATemplateOperators, TDBTransaction ATransaction, bool AWithCascDelete)
         {
@@ -203,11 +205,10 @@ namespace Ict.Petra.Shared.MCommon.Data.Cascading
             SFormAccess.DeleteUsingTemplate(ATemplateRow, ATemplateOperators, ATransaction);
         }
     }
-    
+
     /// auto generated
     public class SFileCascading : TTypedDataAccess
     {
-        
         /// cascading delete
         public static void DeleteByPrimaryKey(String AFileName, TDBTransaction ATransaction, bool AWithCascDelete)
         {
@@ -244,16 +245,17 @@ namespace Ict.Petra.Shared.MCommon.Data.Cascading
                 {
                     AMethodOfPaymentCascading.DeleteUsingTemplate(MyAMethodOfPaymentTable[countRow], null, ATransaction, AWithCascDelete);
                 }
-                ASpecialTransTypeTable MyASpecialTransTypeTable = null;
-                ASpecialTransTypeAccess.LoadViaSFileSpecTransProcessToCall(out MyASpecialTransTypeTable, AFileName, StringHelper.StrSplit("a_sub_system_code_c,a_transaction_type_code_c", ","), ATransaction);
-                for (countRow = 0; (countRow != MyASpecialTransTypeTable.Rows.Count); countRow = (countRow + 1))
+                ASpecialTransTypeTable MyASpecialTransTypeSpecTransProcessToCallTable = null;
+                ASpecialTransTypeAccess.LoadViaSFileSpecTransProcessToCall(out MyASpecialTransTypeSpecTransProcessToCallTable, AFileName, StringHelper.StrSplit("a_sub_system_code_c,a_transaction_type_code_c", ","), ATransaction);
+                for (countRow = 0; (countRow != MyASpecialTransTypeSpecTransProcessToCallTable.Rows.Count); countRow = (countRow + 1))
                 {
-                    ASpecialTransTypeCascading.DeleteUsingTemplate(MyASpecialTransTypeTable[countRow], null, ATransaction, AWithCascDelete);
+                    ASpecialTransTypeCascading.DeleteUsingTemplate(MyASpecialTransTypeSpecTransProcessToCallTable[countRow], null, ATransaction, AWithCascDelete);
                 }
-                ASpecialTransTypeAccess.LoadViaSFileSpecTransUndoProcess(out MyASpecialTransTypeTable, AFileName, StringHelper.StrSplit("a_sub_system_code_c,a_transaction_type_code_c", ","), ATransaction);
-                for (countRow = 0; (countRow != MyASpecialTransTypeTable.Rows.Count); countRow = (countRow + 1))
+                ASpecialTransTypeTable MyASpecialTransTypeSpecTransUndoProcessTable = null;
+                ASpecialTransTypeAccess.LoadViaSFileSpecTransUndoProcess(out MyASpecialTransTypeSpecTransUndoProcessTable, AFileName, StringHelper.StrSplit("a_sub_system_code_c,a_transaction_type_code_c", ","), ATransaction);
+                for (countRow = 0; (countRow != MyASpecialTransTypeSpecTransUndoProcessTable.Rows.Count); countRow = (countRow + 1))
                 {
-                    ASpecialTransTypeCascading.DeleteUsingTemplate(MyASpecialTransTypeTable[countRow], null, ATransaction, AWithCascDelete);
+                    ASpecialTransTypeCascading.DeleteUsingTemplate(MyASpecialTransTypeSpecTransUndoProcessTable[countRow], null, ATransaction, AWithCascDelete);
                 }
                 PtReportsTable MyPtReportsTable = null;
                 PtReportsAccess.LoadViaSFile(out MyPtReportsTable, AFileName, StringHelper.StrSplit("pt_report_name_c", ","), ATransaction);
@@ -264,7 +266,7 @@ namespace Ict.Petra.Shared.MCommon.Data.Cascading
             }
             SFileAccess.DeleteByPrimaryKey(AFileName, ATransaction);
         }
-        
+
         /// cascading delete
         public static void DeleteUsingTemplate(SFileRow ATemplateRow, StringCollection ATemplateOperators, TDBTransaction ATransaction, bool AWithCascDelete)
         {
@@ -301,16 +303,17 @@ namespace Ict.Petra.Shared.MCommon.Data.Cascading
                 {
                     AMethodOfPaymentCascading.DeleteUsingTemplate(MyAMethodOfPaymentTable[countRow], null, ATransaction, AWithCascDelete);
                 }
-                ASpecialTransTypeTable MyASpecialTransTypeTable = null;
-                ASpecialTransTypeAccess.LoadViaSFileSpecTransProcessToCallTemplate(out MyASpecialTransTypeTable, ATemplateRow, StringHelper.StrSplit("a_sub_system_code_c,a_transaction_type_code_c", ","), ATransaction);
-                for (countRow = 0; (countRow != MyASpecialTransTypeTable.Rows.Count); countRow = (countRow + 1))
+                ASpecialTransTypeTable MyASpecialTransTypeSpecTransProcessToCallTable = null;
+                ASpecialTransTypeAccess.LoadViaSFileSpecTransProcessToCallTemplate(out MyASpecialTransTypeSpecTransProcessToCallTable, ATemplateRow, StringHelper.StrSplit("a_sub_system_code_c,a_transaction_type_code_c", ","), ATransaction);
+                for (countRow = 0; (countRow != MyASpecialTransTypeSpecTransProcessToCallTable.Rows.Count); countRow = (countRow + 1))
                 {
-                    ASpecialTransTypeCascading.DeleteUsingTemplate(MyASpecialTransTypeTable[countRow], null, ATransaction, AWithCascDelete);
+                    ASpecialTransTypeCascading.DeleteUsingTemplate(MyASpecialTransTypeSpecTransProcessToCallTable[countRow], null, ATransaction, AWithCascDelete);
                 }
-                ASpecialTransTypeAccess.LoadViaSFileSpecTransUndoProcessTemplate(out MyASpecialTransTypeTable, ATemplateRow, StringHelper.StrSplit("a_sub_system_code_c,a_transaction_type_code_c", ","), ATransaction);
-                for (countRow = 0; (countRow != MyASpecialTransTypeTable.Rows.Count); countRow = (countRow + 1))
+                ASpecialTransTypeTable MyASpecialTransTypeSpecTransUndoProcessTable = null;
+                ASpecialTransTypeAccess.LoadViaSFileSpecTransUndoProcessTemplate(out MyASpecialTransTypeSpecTransUndoProcessTable, ATemplateRow, StringHelper.StrSplit("a_sub_system_code_c,a_transaction_type_code_c", ","), ATransaction);
+                for (countRow = 0; (countRow != MyASpecialTransTypeSpecTransUndoProcessTable.Rows.Count); countRow = (countRow + 1))
                 {
-                    ASpecialTransTypeCascading.DeleteUsingTemplate(MyASpecialTransTypeTable[countRow], null, ATransaction, AWithCascDelete);
+                    ASpecialTransTypeCascading.DeleteUsingTemplate(MyASpecialTransTypeSpecTransUndoProcessTable[countRow], null, ATransaction, AWithCascDelete);
                 }
                 PtReportsTable MyPtReportsTable = null;
                 PtReportsAccess.LoadViaSFileTemplate(out MyPtReportsTable, ATemplateRow, StringHelper.StrSplit("pt_report_name_c", ","), ATransaction);
@@ -322,33 +325,26 @@ namespace Ict.Petra.Shared.MCommon.Data.Cascading
             SFileAccess.DeleteUsingTemplate(ATemplateRow, ATemplateOperators, ATransaction);
         }
     }
-    
-    /// auto generated
-    public class SGroupCascading : TTypedDataAccess
-    {
-    }
-    
+
     /// auto generated
     public class SUserGroupCascading : TTypedDataAccess
     {
-        
         /// cascading delete
         public static void DeleteByPrimaryKey(String AUserId, String AGroupId, Int64 AUnitKey, TDBTransaction ATransaction, bool AWithCascDelete)
         {
             SUserGroupAccess.DeleteByPrimaryKey(AUserId, AGroupId, AUnitKey, ATransaction);
         }
-        
+
         /// cascading delete
         public static void DeleteUsingTemplate(SUserGroupRow ATemplateRow, StringCollection ATemplateOperators, TDBTransaction ATransaction, bool AWithCascDelete)
         {
             SUserGroupAccess.DeleteUsingTemplate(ATemplateRow, ATemplateOperators, ATransaction);
         }
     }
-    
+
     /// auto generated
     public class SModuleCascading : TTypedDataAccess
     {
-        
         /// cascading delete
         public static void DeleteByPrimaryKey(String AModuleId, TDBTransaction ATransaction, bool AWithCascDelete)
         {
@@ -388,7 +384,7 @@ namespace Ict.Petra.Shared.MCommon.Data.Cascading
             }
             SModuleAccess.DeleteByPrimaryKey(AModuleId, ATransaction);
         }
-        
+
         /// cascading delete
         public static void DeleteUsingTemplate(SModuleRow ATemplateRow, StringCollection ATemplateOperators, TDBTransaction ATransaction, bool AWithCascDelete)
         {
@@ -429,332 +425,298 @@ namespace Ict.Petra.Shared.MCommon.Data.Cascading
             SModuleAccess.DeleteUsingTemplate(ATemplateRow, ATemplateOperators, ATransaction);
         }
     }
-    
+
     /// auto generated
     public class SValidOutputFormCascading : TTypedDataAccess
     {
-        
         /// cascading delete
         public static void DeleteByPrimaryKey(String AModuleId, String AFormName, TDBTransaction ATransaction, bool AWithCascDelete)
         {
             SValidOutputFormAccess.DeleteByPrimaryKey(AModuleId, AFormName, ATransaction);
         }
-        
+
         /// cascading delete
         public static void DeleteUsingTemplate(SValidOutputFormRow ATemplateRow, StringCollection ATemplateOperators, TDBTransaction ATransaction, bool AWithCascDelete)
         {
             SValidOutputFormAccess.DeleteUsingTemplate(ATemplateRow, ATemplateOperators, ATransaction);
         }
     }
-    
+
     /// auto generated
     public class SModuleFileCascading : TTypedDataAccess
     {
-        
         /// cascading delete
         public static void DeleteByPrimaryKey(String AModuleId, String AFileName, TDBTransaction ATransaction, bool AWithCascDelete)
         {
             SModuleFileAccess.DeleteByPrimaryKey(AModuleId, AFileName, ATransaction);
         }
-        
+
         /// cascading delete
         public static void DeleteUsingTemplate(SModuleFileRow ATemplateRow, StringCollection ATemplateOperators, TDBTransaction ATransaction, bool AWithCascDelete)
         {
             SModuleFileAccess.DeleteUsingTemplate(ATemplateRow, ATemplateOperators, ATransaction);
         }
     }
-    
+
     /// auto generated
     public class SGroupModuleAccessPermissionCascading : TTypedDataAccess
     {
-        
         /// cascading delete
         public static void DeleteByPrimaryKey(String AGroupId, Int64 AGroupUnitKey, String AModuleId, TDBTransaction ATransaction, bool AWithCascDelete)
         {
             SGroupModuleAccessPermissionAccess.DeleteByPrimaryKey(AGroupId, AGroupUnitKey, AModuleId, ATransaction);
         }
-        
+
         /// cascading delete
         public static void DeleteUsingTemplate(SGroupModuleAccessPermissionRow ATemplateRow, StringCollection ATemplateOperators, TDBTransaction ATransaction, bool AWithCascDelete)
         {
             SGroupModuleAccessPermissionAccess.DeleteUsingTemplate(ATemplateRow, ATemplateOperators, ATransaction);
         }
     }
-    
+
     /// auto generated
     public class SGroupTableAccessPermissionCascading : TTypedDataAccess
     {
-        
         /// cascading delete
         public static void DeleteByPrimaryKey(String AGroupId, Int64 AGroupUnitKey, String ATableName, TDBTransaction ATransaction, bool AWithCascDelete)
         {
             SGroupTableAccessPermissionAccess.DeleteByPrimaryKey(AGroupId, AGroupUnitKey, ATableName, ATransaction);
         }
-        
+
         /// cascading delete
         public static void DeleteUsingTemplate(SGroupTableAccessPermissionRow ATemplateRow, StringCollection ATemplateOperators, TDBTransaction ATransaction, bool AWithCascDelete)
         {
             SGroupTableAccessPermissionAccess.DeleteUsingTemplate(ATemplateRow, ATemplateOperators, ATransaction);
         }
     }
-    
+
     /// auto generated
     public class SUserModuleAccessPermissionCascading : TTypedDataAccess
     {
-        
         /// cascading delete
         public static void DeleteByPrimaryKey(String AUserId, String AModuleId, TDBTransaction ATransaction, bool AWithCascDelete)
         {
             SUserModuleAccessPermissionAccess.DeleteByPrimaryKey(AUserId, AModuleId, ATransaction);
         }
-        
+
         /// cascading delete
         public static void DeleteUsingTemplate(SUserModuleAccessPermissionRow ATemplateRow, StringCollection ATemplateOperators, TDBTransaction ATransaction, bool AWithCascDelete)
         {
             SUserModuleAccessPermissionAccess.DeleteUsingTemplate(ATemplateRow, ATemplateOperators, ATransaction);
         }
     }
-    
+
     /// auto generated
     public class SUserTableAccessPermissionCascading : TTypedDataAccess
     {
-        
         /// cascading delete
         public static void DeleteByPrimaryKey(String AUserId, String ATableName, TDBTransaction ATransaction, bool AWithCascDelete)
         {
             SUserTableAccessPermissionAccess.DeleteByPrimaryKey(AUserId, ATableName, ATransaction);
         }
-        
+
         /// cascading delete
         public static void DeleteUsingTemplate(SUserTableAccessPermissionRow ATemplateRow, StringCollection ATemplateOperators, TDBTransaction ATransaction, bool AWithCascDelete)
         {
             SUserTableAccessPermissionAccess.DeleteUsingTemplate(ATemplateRow, ATemplateOperators, ATransaction);
         }
     }
-    
+
     /// auto generated
     public class SLanguageSpecificCascading : TTypedDataAccess
     {
-        
         /// cascading delete
         public static void DeleteByPrimaryKey(String ALanguageCode, TDBTransaction ATransaction, bool AWithCascDelete)
         {
             SLanguageSpecificAccess.DeleteByPrimaryKey(ALanguageCode, ATransaction);
         }
-        
+
         /// cascading delete
         public static void DeleteUsingTemplate(SLanguageSpecificRow ATemplateRow, StringCollection ATemplateOperators, TDBTransaction ATransaction, bool AWithCascDelete)
         {
             SLanguageSpecificAccess.DeleteUsingTemplate(ATemplateRow, ATemplateOperators, ATransaction);
         }
     }
-    
+
     /// auto generated
     public class SLoginCascading : TTypedDataAccess
     {
-        
         /// cascading delete
         public static void DeleteByPrimaryKey(String AUserId, System.DateTime ALoginDate, Int32 ALoginTime, TDBTransaction ATransaction, bool AWithCascDelete)
         {
             SLoginAccess.DeleteByPrimaryKey(AUserId, ALoginDate, ALoginTime, ATransaction);
         }
-        
+
         /// cascading delete
         public static void DeleteUsingTemplate(SLoginRow ATemplateRow, StringCollection ATemplateOperators, TDBTransaction ATransaction, bool AWithCascDelete)
         {
             SLoginAccess.DeleteUsingTemplate(ATemplateRow, ATemplateOperators, ATransaction);
         }
     }
-    
+
     /// auto generated
     public class SLogonMessageCascading : TTypedDataAccess
     {
-        
         /// cascading delete
         public static void DeleteByPrimaryKey(String ALanguageCode, TDBTransaction ATransaction, bool AWithCascDelete)
         {
             SLogonMessageAccess.DeleteByPrimaryKey(ALanguageCode, ATransaction);
         }
-        
+
         /// cascading delete
         public static void DeleteUsingTemplate(SLogonMessageRow ATemplateRow, StringCollection ATemplateOperators, TDBTransaction ATransaction, bool AWithCascDelete)
         {
             SLogonMessageAccess.DeleteUsingTemplate(ATemplateRow, ATemplateOperators, ATransaction);
         }
     }
-    
+
     /// auto generated
     public class SPatchLogCascading : TTypedDataAccess
     {
-        
         /// cascading delete
         public static void DeleteByPrimaryKey(String APatchName, TDBTransaction ATransaction, bool AWithCascDelete)
         {
             SPatchLogAccess.DeleteByPrimaryKey(APatchName, ATransaction);
         }
-        
+
         /// cascading delete
         public static void DeleteUsingTemplate(SPatchLogRow ATemplateRow, StringCollection ATemplateOperators, TDBTransaction ATransaction, bool AWithCascDelete)
         {
             SPatchLogAccess.DeleteUsingTemplate(ATemplateRow, ATemplateOperators, ATransaction);
         }
     }
-    
+
     /// auto generated
     public class SReportsToArchiveCascading : TTypedDataAccess
     {
-        
         /// cascading delete
         public static void DeleteByPrimaryKey(String AReportTitle, TDBTransaction ATransaction, bool AWithCascDelete)
         {
             SReportsToArchiveAccess.DeleteByPrimaryKey(AReportTitle, ATransaction);
         }
-        
+
         /// cascading delete
         public static void DeleteUsingTemplate(SReportsToArchiveRow ATemplateRow, StringCollection ATemplateOperators, TDBTransaction ATransaction, bool AWithCascDelete)
         {
             SReportsToArchiveAccess.DeleteUsingTemplate(ATemplateRow, ATemplateOperators, ATransaction);
         }
     }
-    
+
     /// auto generated
     public class SReportFileCascading : TTypedDataAccess
     {
-        
         /// cascading delete
         public static void DeleteByPrimaryKey(String AReportFileName, TDBTransaction ATransaction, bool AWithCascDelete)
         {
             SReportFileAccess.DeleteByPrimaryKey(AReportFileName, ATransaction);
         }
-        
+
         /// cascading delete
         public static void DeleteUsingTemplate(SReportFileRow ATemplateRow, StringCollection ATemplateOperators, TDBTransaction ATransaction, bool AWithCascDelete)
         {
             SReportFileAccess.DeleteUsingTemplate(ATemplateRow, ATemplateOperators, ATransaction);
         }
     }
-    
-    /// auto generated
-    public class SReportOptionsCascading : TTypedDataAccess
-    {
-    }
-    
-    /// auto generated
-    public class SSelectedOutputDestinationCascading : TTypedDataAccess
-    {
-    }
-    
+
     /// auto generated
     public class SSystemStatusCascading : TTypedDataAccess
     {
-        
         /// cascading delete
         public static void DeleteByPrimaryKey(String AUserId, TDBTransaction ATransaction, bool AWithCascDelete)
         {
             SSystemStatusAccess.DeleteByPrimaryKey(AUserId, ATransaction);
         }
-        
+
         /// cascading delete
         public static void DeleteUsingTemplate(SSystemStatusRow ATemplateRow, StringCollection ATemplateOperators, TDBTransaction ATransaction, bool AWithCascDelete)
         {
             SSystemStatusAccess.DeleteUsingTemplate(ATemplateRow, ATemplateOperators, ATransaction);
         }
     }
-    
-    /// auto generated
-    public class SSystemStatusLogCascading : TTypedDataAccess
-    {
-    }
-    
+
     /// auto generated
     public class SUserDefaultsCascading : TTypedDataAccess
     {
-        
         /// cascading delete
         public static void DeleteByPrimaryKey(String AUserId, String ADefaultCode, TDBTransaction ATransaction, bool AWithCascDelete)
         {
             SUserDefaultsAccess.DeleteByPrimaryKey(AUserId, ADefaultCode, ATransaction);
         }
-        
+
         /// cascading delete
         public static void DeleteUsingTemplate(SUserDefaultsRow ATemplateRow, StringCollection ATemplateOperators, TDBTransaction ATransaction, bool AWithCascDelete)
         {
             SUserDefaultsAccess.DeleteUsingTemplate(ATemplateRow, ATemplateOperators, ATransaction);
         }
     }
-    
+
     /// auto generated
     public class SSystemDefaultsCascading : TTypedDataAccess
     {
-        
         /// cascading delete
         public static void DeleteByPrimaryKey(String ADefaultCode, TDBTransaction ATransaction, bool AWithCascDelete)
         {
             SSystemDefaultsAccess.DeleteByPrimaryKey(ADefaultCode, ATransaction);
         }
-        
+
         /// cascading delete
         public static void DeleteUsingTemplate(SSystemDefaultsRow ATemplateRow, StringCollection ATemplateOperators, TDBTransaction ATransaction, bool AWithCascDelete)
         {
             SSystemDefaultsAccess.DeleteUsingTemplate(ATemplateRow, ATemplateOperators, ATransaction);
         }
     }
-    
+
     /// auto generated
     public class SBatchJobCascading : TTypedDataAccess
     {
-        
         /// cascading delete
         public static void DeleteByPrimaryKey(String AFileName, String AUserId, System.DateTime ADateSubmitted, Int32 ATimeSubmitted, TDBTransaction ATransaction, bool AWithCascDelete)
         {
             SBatchJobAccess.DeleteByPrimaryKey(AFileName, AUserId, ADateSubmitted, ATimeSubmitted, ATransaction);
         }
-        
+
         /// cascading delete
         public static void DeleteUsingTemplate(SBatchJobRow ATemplateRow, StringCollection ATemplateOperators, TDBTransaction ATransaction, bool AWithCascDelete)
         {
             SBatchJobAccess.DeleteUsingTemplate(ATemplateRow, ATemplateOperators, ATransaction);
         }
     }
-    
+
     /// auto generated
     public class SErrorMessageCascading : TTypedDataAccess
     {
-        
         /// cascading delete
         public static void DeleteByPrimaryKey(String ALanguageCode, String AErrorCode, TDBTransaction ATransaction, bool AWithCascDelete)
         {
             SErrorMessageAccess.DeleteByPrimaryKey(ALanguageCode, AErrorCode, ATransaction);
         }
-        
+
         /// cascading delete
         public static void DeleteUsingTemplate(SErrorMessageRow ATemplateRow, StringCollection ATemplateOperators, TDBTransaction ATransaction, bool AWithCascDelete)
         {
             SErrorMessageAccess.DeleteUsingTemplate(ATemplateRow, ATemplateOperators, ATransaction);
         }
     }
-    
+
     /// auto generated
     public class SErrorLogCascading : TTypedDataAccess
     {
-        
         /// cascading delete
         public static void DeleteByPrimaryKey(String AErrorCode, String AUserId, System.DateTime ADate, Int32 ATime, TDBTransaction ATransaction, bool AWithCascDelete)
         {
             SErrorLogAccess.DeleteByPrimaryKey(AErrorCode, AUserId, ADate, ATime, ATransaction);
         }
-        
+
         /// cascading delete
         public static void DeleteUsingTemplate(SErrorLogRow ATemplateRow, StringCollection ATemplateOperators, TDBTransaction ATransaction, bool AWithCascDelete)
         {
             SErrorLogAccess.DeleteUsingTemplate(ATemplateRow, ATemplateOperators, ATransaction);
         }
     }
-    
+
     /// auto generated
     public class PPartnerStatusCascading : TTypedDataAccess
     {
-        
         /// cascading delete
         public static void DeleteByPrimaryKey(String AStatusCode, TDBTransaction ATransaction, bool AWithCascDelete)
         {
@@ -765,12 +727,12 @@ namespace Ict.Petra.Shared.MCommon.Data.Cascading
                 PPartnerAccess.LoadViaPPartnerStatus(out MyPPartnerTable, AStatusCode, StringHelper.StrSplit("p_partner_key_n", ","), ATransaction);
                 for (countRow = 0; (countRow != MyPPartnerTable.Rows.Count); countRow = (countRow + 1))
                 {
-                    PPartnerAccess.DeleteUsingTemplate(MyPPartnerTable[countRow], null, ATransaction);
-                }
+                                    PPartnerAccess.DeleteUsingTemplate(MyPPartnerTable[countRow], null, ATransaction);
+                                }
             }
             PPartnerStatusAccess.DeleteByPrimaryKey(AStatusCode, ATransaction);
         }
-        
+
         /// cascading delete
         public static void DeleteUsingTemplate(PPartnerStatusRow ATemplateRow, StringCollection ATemplateOperators, TDBTransaction ATransaction, bool AWithCascDelete)
         {
@@ -781,17 +743,16 @@ namespace Ict.Petra.Shared.MCommon.Data.Cascading
                 PPartnerAccess.LoadViaPPartnerStatusTemplate(out MyPPartnerTable, ATemplateRow, StringHelper.StrSplit("p_partner_key_n", ","), ATransaction);
                 for (countRow = 0; (countRow != MyPPartnerTable.Rows.Count); countRow = (countRow + 1))
                 {
-                    PPartnerAccess.DeleteUsingTemplate(MyPPartnerTable[countRow], null, ATransaction);
-                }
+                                    PPartnerAccess.DeleteUsingTemplate(MyPPartnerTable[countRow], null, ATransaction);
+                                }
             }
             PPartnerStatusAccess.DeleteUsingTemplate(ATemplateRow, ATemplateOperators, ATransaction);
         }
     }
-    
+
     /// auto generated
     public class PAcquisitionCascading : TTypedDataAccess
     {
-        
         /// cascading delete
         public static void DeleteByPrimaryKey(String AAcquisitionCode, TDBTransaction ATransaction, bool AWithCascDelete)
         {
@@ -802,8 +763,8 @@ namespace Ict.Petra.Shared.MCommon.Data.Cascading
                 PPartnerAccess.LoadViaPAcquisition(out MyPPartnerTable, AAcquisitionCode, StringHelper.StrSplit("p_partner_key_n", ","), ATransaction);
                 for (countRow = 0; (countRow != MyPPartnerTable.Rows.Count); countRow = (countRow + 1))
                 {
-                    PPartnerAccess.DeleteUsingTemplate(MyPPartnerTable[countRow], null, ATransaction);
-                }
+                                    PPartnerAccess.DeleteUsingTemplate(MyPPartnerTable[countRow], null, ATransaction);
+                                }
                 PmShortTermApplicationTable MyPmShortTermApplicationTable = null;
                 PmShortTermApplicationAccess.LoadViaPAcquisition(out MyPmShortTermApplicationTable, AAcquisitionCode, StringHelper.StrSplit("p_partner_key_n,pm_application_key_i,pm_registration_office_n", ","), ATransaction);
                 for (countRow = 0; (countRow != MyPmShortTermApplicationTable.Rows.Count); countRow = (countRow + 1))
@@ -813,7 +774,7 @@ namespace Ict.Petra.Shared.MCommon.Data.Cascading
             }
             PAcquisitionAccess.DeleteByPrimaryKey(AAcquisitionCode, ATransaction);
         }
-        
+
         /// cascading delete
         public static void DeleteUsingTemplate(PAcquisitionRow ATemplateRow, StringCollection ATemplateOperators, TDBTransaction ATransaction, bool AWithCascDelete)
         {
@@ -824,8 +785,8 @@ namespace Ict.Petra.Shared.MCommon.Data.Cascading
                 PPartnerAccess.LoadViaPAcquisitionTemplate(out MyPPartnerTable, ATemplateRow, StringHelper.StrSplit("p_partner_key_n", ","), ATransaction);
                 for (countRow = 0; (countRow != MyPPartnerTable.Rows.Count); countRow = (countRow + 1))
                 {
-                    PPartnerAccess.DeleteUsingTemplate(MyPPartnerTable[countRow], null, ATransaction);
-                }
+                                    PPartnerAccess.DeleteUsingTemplate(MyPPartnerTable[countRow], null, ATransaction);
+                                }
                 PmShortTermApplicationTable MyPmShortTermApplicationTable = null;
                 PmShortTermApplicationAccess.LoadViaPAcquisitionTemplate(out MyPmShortTermApplicationTable, ATemplateRow, StringHelper.StrSplit("p_partner_key_n,pm_application_key_i,pm_registration_office_n", ","), ATransaction);
                 for (countRow = 0; (countRow != MyPmShortTermApplicationTable.Rows.Count); countRow = (countRow + 1))
@@ -836,11 +797,10 @@ namespace Ict.Petra.Shared.MCommon.Data.Cascading
             PAcquisitionAccess.DeleteUsingTemplate(ATemplateRow, ATemplateOperators, ATransaction);
         }
     }
-    
+
     /// auto generated
     public class PAddresseeTypeCascading : TTypedDataAccess
     {
-        
         /// cascading delete
         public static void DeleteByPrimaryKey(String AAddresseeTypeCode, TDBTransaction ATransaction, bool AWithCascDelete)
         {
@@ -857,8 +817,8 @@ namespace Ict.Petra.Shared.MCommon.Data.Cascading
                 PPartnerAccess.LoadViaPAddresseeType(out MyPPartnerTable, AAddresseeTypeCode, StringHelper.StrSplit("p_partner_key_n", ","), ATransaction);
                 for (countRow = 0; (countRow != MyPPartnerTable.Rows.Count); countRow = (countRow + 1))
                 {
-                    PPartnerAccess.DeleteUsingTemplate(MyPPartnerTable[countRow], null, ATransaction);
-                }
+                                    PPartnerAccess.DeleteUsingTemplate(MyPPartnerTable[countRow], null, ATransaction);
+                                }
                 PFormalityTable MyPFormalityTable = null;
                 PFormalityAccess.LoadViaPAddresseeType(out MyPFormalityTable, AAddresseeTypeCode, StringHelper.StrSplit("p_language_code_c,p_country_code_c,p_addressee_type_code_c,p_formality_level_i", ","), ATransaction);
                 for (countRow = 0; (countRow != MyPFormalityTable.Rows.Count); countRow = (countRow + 1))
@@ -868,7 +828,7 @@ namespace Ict.Petra.Shared.MCommon.Data.Cascading
             }
             PAddresseeTypeAccess.DeleteByPrimaryKey(AAddresseeTypeCode, ATransaction);
         }
-        
+
         /// cascading delete
         public static void DeleteUsingTemplate(PAddresseeTypeRow ATemplateRow, StringCollection ATemplateOperators, TDBTransaction ATransaction, bool AWithCascDelete)
         {
@@ -885,8 +845,8 @@ namespace Ict.Petra.Shared.MCommon.Data.Cascading
                 PPartnerAccess.LoadViaPAddresseeTypeTemplate(out MyPPartnerTable, ATemplateRow, StringHelper.StrSplit("p_partner_key_n", ","), ATransaction);
                 for (countRow = 0; (countRow != MyPPartnerTable.Rows.Count); countRow = (countRow + 1))
                 {
-                    PPartnerAccess.DeleteUsingTemplate(MyPPartnerTable[countRow], null, ATransaction);
-                }
+                                    PPartnerAccess.DeleteUsingTemplate(MyPPartnerTable[countRow], null, ATransaction);
+                                }
                 PFormalityTable MyPFormalityTable = null;
                 PFormalityAccess.LoadViaPAddresseeTypeTemplate(out MyPFormalityTable, ATemplateRow, StringHelper.StrSplit("p_language_code_c,p_country_code_c,p_addressee_type_code_c,p_formality_level_i", ","), ATransaction);
                 for (countRow = 0; (countRow != MyPFormalityTable.Rows.Count); countRow = (countRow + 1))
@@ -897,28 +857,26 @@ namespace Ict.Petra.Shared.MCommon.Data.Cascading
             PAddresseeTypeAccess.DeleteUsingTemplate(ATemplateRow, ATemplateOperators, ATransaction);
         }
     }
-    
+
     /// auto generated
     public class PTitleCascading : TTypedDataAccess
     {
-        
         /// cascading delete
         public static void DeleteByPrimaryKey(String ATitle, TDBTransaction ATransaction, bool AWithCascDelete)
         {
             PTitleAccess.DeleteByPrimaryKey(ATitle, ATransaction);
         }
-        
+
         /// cascading delete
         public static void DeleteUsingTemplate(PTitleRow ATemplateRow, StringCollection ATemplateOperators, TDBTransaction ATransaction, bool AWithCascDelete)
         {
             PTitleAccess.DeleteUsingTemplate(ATemplateRow, ATemplateOperators, ATransaction);
         }
     }
-    
+
     /// auto generated
     public class PPartnerClassesCascading : TTypedDataAccess
     {
-        
         /// cascading delete
         public static void DeleteByPrimaryKey(String APartnerClass, TDBTransaction ATransaction, bool AWithCascDelete)
         {
@@ -929,8 +887,8 @@ namespace Ict.Petra.Shared.MCommon.Data.Cascading
                 PPartnerAccess.LoadViaPPartnerClasses(out MyPPartnerTable, APartnerClass, StringHelper.StrSplit("p_partner_key_n", ","), ATransaction);
                 for (countRow = 0; (countRow != MyPPartnerTable.Rows.Count); countRow = (countRow + 1))
                 {
-                    PPartnerAccess.DeleteUsingTemplate(MyPPartnerTable[countRow], null, ATransaction);
-                }
+                                    PPartnerAccess.DeleteUsingTemplate(MyPPartnerTable[countRow], null, ATransaction);
+                                }
                 PPartnerFieldOfServiceTable MyPPartnerFieldOfServiceTable = null;
                 PPartnerFieldOfServiceAccess.LoadViaPPartnerClasses(out MyPPartnerFieldOfServiceTable, APartnerClass, StringHelper.StrSplit("p_key_i", ","), ATransaction);
                 for (countRow = 0; (countRow != MyPPartnerFieldOfServiceTable.Rows.Count); countRow = (countRow + 1))
@@ -940,7 +898,7 @@ namespace Ict.Petra.Shared.MCommon.Data.Cascading
             }
             PPartnerClassesAccess.DeleteByPrimaryKey(APartnerClass, ATransaction);
         }
-        
+
         /// cascading delete
         public static void DeleteUsingTemplate(PPartnerClassesRow ATemplateRow, StringCollection ATemplateOperators, TDBTransaction ATransaction, bool AWithCascDelete)
         {
@@ -951,8 +909,8 @@ namespace Ict.Petra.Shared.MCommon.Data.Cascading
                 PPartnerAccess.LoadViaPPartnerClassesTemplate(out MyPPartnerTable, ATemplateRow, StringHelper.StrSplit("p_partner_key_n", ","), ATransaction);
                 for (countRow = 0; (countRow != MyPPartnerTable.Rows.Count); countRow = (countRow + 1))
                 {
-                    PPartnerAccess.DeleteUsingTemplate(MyPPartnerTable[countRow], null, ATransaction);
-                }
+                                    PPartnerAccess.DeleteUsingTemplate(MyPPartnerTable[countRow], null, ATransaction);
+                                }
                 PPartnerFieldOfServiceTable MyPPartnerFieldOfServiceTable = null;
                 PPartnerFieldOfServiceAccess.LoadViaPPartnerClassesTemplate(out MyPPartnerFieldOfServiceTable, ATemplateRow, StringHelper.StrSplit("p_key_i", ","), ATransaction);
                 for (countRow = 0; (countRow != MyPPartnerFieldOfServiceTable.Rows.Count); countRow = (countRow + 1))
@@ -963,50 +921,42 @@ namespace Ict.Petra.Shared.MCommon.Data.Cascading
             PPartnerClassesAccess.DeleteUsingTemplate(ATemplateRow, ATemplateOperators, ATransaction);
         }
     }
-    
-    /// auto generated
-    public class PPartnerCascading : TTypedDataAccess
-    {
-    }
-    
+
     /// auto generated
     public class PRecentPartnersCascading : TTypedDataAccess
     {
-        
         /// cascading delete
         public static void DeleteByPrimaryKey(String AUserId, Int64 APartnerKey, TDBTransaction ATransaction, bool AWithCascDelete)
         {
             PRecentPartnersAccess.DeleteByPrimaryKey(AUserId, APartnerKey, ATransaction);
         }
-        
+
         /// cascading delete
         public static void DeleteUsingTemplate(PRecentPartnersRow ATemplateRow, StringCollection ATemplateOperators, TDBTransaction ATransaction, bool AWithCascDelete)
         {
             PRecentPartnersAccess.DeleteUsingTemplate(ATemplateRow, ATemplateOperators, ATransaction);
         }
     }
-    
+
     /// auto generated
     public class PPartnerGraphicCascading : TTypedDataAccess
     {
-        
         /// cascading delete
         public static void DeleteByPrimaryKey(Int64 AFileInfoKey, TDBTransaction ATransaction, bool AWithCascDelete)
         {
             PPartnerGraphicAccess.DeleteByPrimaryKey(AFileInfoKey, ATransaction);
         }
-        
+
         /// cascading delete
         public static void DeleteUsingTemplate(PPartnerGraphicRow ATemplateRow, StringCollection ATemplateOperators, TDBTransaction ATransaction, bool AWithCascDelete)
         {
             PPartnerGraphicAccess.DeleteUsingTemplate(ATemplateRow, ATemplateOperators, ATransaction);
         }
     }
-    
+
     /// auto generated
     public class PLocationCascading : TTypedDataAccess
     {
-        
         /// cascading delete
         public static void DeleteByPrimaryKey(Int64 ASiteKey, Int32 ALocationKey, TDBTransaction ATransaction, bool AWithCascDelete)
         {
@@ -1034,7 +984,7 @@ namespace Ict.Petra.Shared.MCommon.Data.Cascading
             }
             PLocationAccess.DeleteByPrimaryKey(ASiteKey, ALocationKey, ATransaction);
         }
-        
+
         /// cascading delete
         public static void DeleteUsingTemplate(PLocationRow ATemplateRow, StringCollection ATemplateOperators, TDBTransaction ATransaction, bool AWithCascDelete)
         {
@@ -1063,11 +1013,10 @@ namespace Ict.Petra.Shared.MCommon.Data.Cascading
             PLocationAccess.DeleteUsingTemplate(ATemplateRow, ATemplateOperators, ATransaction);
         }
     }
-    
+
     /// auto generated
     public class PLocationTypeCascading : TTypedDataAccess
     {
-        
         /// cascading delete
         public static void DeleteByPrimaryKey(String ACode, TDBTransaction ATransaction, bool AWithCascDelete)
         {
@@ -1083,7 +1032,7 @@ namespace Ict.Petra.Shared.MCommon.Data.Cascading
             }
             PLocationTypeAccess.DeleteByPrimaryKey(ACode, ATransaction);
         }
-        
+
         /// cascading delete
         public static void DeleteUsingTemplate(PLocationTypeRow ATemplateRow, StringCollection ATemplateOperators, TDBTransaction ATransaction, bool AWithCascDelete)
         {
@@ -1100,11 +1049,10 @@ namespace Ict.Petra.Shared.MCommon.Data.Cascading
             PLocationTypeAccess.DeleteUsingTemplate(ATemplateRow, ATemplateOperators, ATransaction);
         }
     }
-    
+
     /// auto generated
     public class PPartnerLocationCascading : TTypedDataAccess
     {
-        
         /// cascading delete
         public static void DeleteByPrimaryKey(Int64 APartnerKey, Int64 ASiteKey, Int32 ALocationKey, TDBTransaction ATransaction, bool AWithCascDelete)
         {
@@ -1120,7 +1068,7 @@ namespace Ict.Petra.Shared.MCommon.Data.Cascading
             }
             PPartnerLocationAccess.DeleteByPrimaryKey(APartnerKey, ASiteKey, ALocationKey, ATransaction);
         }
-        
+
         /// cascading delete
         public static void DeleteUsingTemplate(PPartnerLocationRow ATemplateRow, StringCollection ATemplateOperators, TDBTransaction ATransaction, bool AWithCascDelete)
         {
@@ -1137,11 +1085,10 @@ namespace Ict.Petra.Shared.MCommon.Data.Cascading
             PPartnerLocationAccess.DeleteUsingTemplate(ATemplateRow, ATemplateOperators, ATransaction);
         }
     }
-    
+
     /// auto generated
     public class PPartnerAttributeTypeCascading : TTypedDataAccess
     {
-        
         /// cascading delete
         public static void DeleteByPrimaryKey(String ACode, TDBTransaction ATransaction, bool AWithCascDelete)
         {
@@ -1157,7 +1104,7 @@ namespace Ict.Petra.Shared.MCommon.Data.Cascading
             }
             PPartnerAttributeTypeAccess.DeleteByPrimaryKey(ACode, ATransaction);
         }
-        
+
         /// cascading delete
         public static void DeleteUsingTemplate(PPartnerAttributeTypeRow ATemplateRow, StringCollection ATemplateOperators, TDBTransaction ATransaction, bool AWithCascDelete)
         {
@@ -1174,28 +1121,26 @@ namespace Ict.Petra.Shared.MCommon.Data.Cascading
             PPartnerAttributeTypeAccess.DeleteUsingTemplate(ATemplateRow, ATemplateOperators, ATransaction);
         }
     }
-    
+
     /// auto generated
     public class PPartnerAttributeCascading : TTypedDataAccess
     {
-        
         /// cascading delete
         public static void DeleteByPrimaryKey(Int64 APartnerKey, String ACode, Int32 ASequence, TDBTransaction ATransaction, bool AWithCascDelete)
         {
             PPartnerAttributeAccess.DeleteByPrimaryKey(APartnerKey, ACode, ASequence, ATransaction);
         }
-        
+
         /// cascading delete
         public static void DeleteUsingTemplate(PPartnerAttributeRow ATemplateRow, StringCollection ATemplateOperators, TDBTransaction ATransaction, bool AWithCascDelete)
         {
             PPartnerAttributeAccess.DeleteUsingTemplate(ATemplateRow, ATemplateOperators, ATransaction);
         }
     }
-    
+
     /// auto generated
     public class UUnitTypeCascading : TTypedDataAccess
     {
-        
         /// cascading delete
         public static void DeleteByPrimaryKey(String AUnitTypeCode, TDBTransaction ATransaction, bool AWithCascDelete)
         {
@@ -1206,8 +1151,8 @@ namespace Ict.Petra.Shared.MCommon.Data.Cascading
                 PUnitAccess.LoadViaUUnitType(out MyPUnitTable, AUnitTypeCode, StringHelper.StrSplit("p_partner_key_n", ","), ATransaction);
                 for (countRow = 0; (countRow != MyPUnitTable.Rows.Count); countRow = (countRow + 1))
                 {
-                    PUnitAccess.DeleteUsingTemplate(MyPUnitTable[countRow], null, ATransaction);
-                }
+                                    PUnitAccess.DeleteUsingTemplate(MyPUnitTable[countRow], null, ATransaction);
+                                }
                 PtPositionTable MyPtPositionTable = null;
                 PtPositionAccess.LoadViaUUnitType(out MyPtPositionTable, AUnitTypeCode, StringHelper.StrSplit("pt_position_name_c,pt_position_scope_c", ","), ATransaction);
                 for (countRow = 0; (countRow != MyPtPositionTable.Rows.Count); countRow = (countRow + 1))
@@ -1217,7 +1162,7 @@ namespace Ict.Petra.Shared.MCommon.Data.Cascading
             }
             UUnitTypeAccess.DeleteByPrimaryKey(AUnitTypeCode, ATransaction);
         }
-        
+
         /// cascading delete
         public static void DeleteUsingTemplate(UUnitTypeRow ATemplateRow, StringCollection ATemplateOperators, TDBTransaction ATransaction, bool AWithCascDelete)
         {
@@ -1228,8 +1173,8 @@ namespace Ict.Petra.Shared.MCommon.Data.Cascading
                 PUnitAccess.LoadViaUUnitTypeTemplate(out MyPUnitTable, ATemplateRow, StringHelper.StrSplit("p_partner_key_n", ","), ATransaction);
                 for (countRow = 0; (countRow != MyPUnitTable.Rows.Count); countRow = (countRow + 1))
                 {
-                    PUnitAccess.DeleteUsingTemplate(MyPUnitTable[countRow], null, ATransaction);
-                }
+                                    PUnitAccess.DeleteUsingTemplate(MyPUnitTable[countRow], null, ATransaction);
+                                }
                 PtPositionTable MyPtPositionTable = null;
                 PtPositionAccess.LoadViaUUnitTypeTemplate(out MyPtPositionTable, ATemplateRow, StringHelper.StrSplit("pt_position_name_c,pt_position_scope_c", ","), ATransaction);
                 for (countRow = 0; (countRow != MyPtPositionTable.Rows.Count); countRow = (countRow + 1))
@@ -1240,33 +1185,26 @@ namespace Ict.Petra.Shared.MCommon.Data.Cascading
             UUnitTypeAccess.DeleteUsingTemplate(ATemplateRow, ATemplateOperators, ATransaction);
         }
     }
-    
-    /// auto generated
-    public class PUnitCascading : TTypedDataAccess
-    {
-    }
-    
+
     /// auto generated
     public class UmUnitStructureCascading : TTypedDataAccess
     {
-        
         /// cascading delete
         public static void DeleteByPrimaryKey(Int64 AParentUnitKey, Int64 AChildUnitKey, TDBTransaction ATransaction, bool AWithCascDelete)
         {
             UmUnitStructureAccess.DeleteByPrimaryKey(AParentUnitKey, AChildUnitKey, ATransaction);
         }
-        
+
         /// cascading delete
         public static void DeleteUsingTemplate(UmUnitStructureRow ATemplateRow, StringCollection ATemplateOperators, TDBTransaction ATransaction, bool AWithCascDelete)
         {
             UmUnitStructureAccess.DeleteUsingTemplate(ATemplateRow, ATemplateOperators, ATransaction);
         }
     }
-    
+
     /// auto generated
     public class PFamilyCascading : TTypedDataAccess
     {
-        
         /// cascading delete
         public static void DeleteByPrimaryKey(Int64 APartnerKey, TDBTransaction ATransaction, bool AWithCascDelete)
         {
@@ -1277,12 +1215,12 @@ namespace Ict.Petra.Shared.MCommon.Data.Cascading
                 PPersonAccess.LoadViaPFamily(out MyPPersonTable, APartnerKey, StringHelper.StrSplit("p_partner_key_n", ","), ATransaction);
                 for (countRow = 0; (countRow != MyPPersonTable.Rows.Count); countRow = (countRow + 1))
                 {
-                    PPersonAccess.DeleteUsingTemplate(MyPPersonTable[countRow], null, ATransaction);
-                }
+                                    PPersonAccess.DeleteUsingTemplate(MyPPersonTable[countRow], null, ATransaction);
+                                }
             }
             PFamilyAccess.DeleteByPrimaryKey(APartnerKey, ATransaction);
         }
-        
+
         /// cascading delete
         public static void DeleteUsingTemplate(PFamilyRow ATemplateRow, StringCollection ATemplateOperators, TDBTransaction ATransaction, bool AWithCascDelete)
         {
@@ -1293,17 +1231,16 @@ namespace Ict.Petra.Shared.MCommon.Data.Cascading
                 PPersonAccess.LoadViaPFamilyTemplate(out MyPPersonTable, ATemplateRow, StringHelper.StrSplit("p_partner_key_n", ","), ATransaction);
                 for (countRow = 0; (countRow != MyPPersonTable.Rows.Count); countRow = (countRow + 1))
                 {
-                    PPersonAccess.DeleteUsingTemplate(MyPPersonTable[countRow], null, ATransaction);
-                }
+                                    PPersonAccess.DeleteUsingTemplate(MyPPersonTable[countRow], null, ATransaction);
+                                }
             }
             PFamilyAccess.DeleteUsingTemplate(ATemplateRow, ATemplateOperators, ATransaction);
         }
     }
-    
+
     /// auto generated
     public class PtMaritalStatusCascading : TTypedDataAccess
     {
-        
         /// cascading delete
         public static void DeleteByPrimaryKey(String ACode, TDBTransaction ATransaction, bool AWithCascDelete)
         {
@@ -1320,12 +1257,12 @@ namespace Ict.Petra.Shared.MCommon.Data.Cascading
                 PPersonAccess.LoadViaPtMaritalStatus(out MyPPersonTable, ACode, StringHelper.StrSplit("p_partner_key_n", ","), ATransaction);
                 for (countRow = 0; (countRow != MyPPersonTable.Rows.Count); countRow = (countRow + 1))
                 {
-                    PPersonAccess.DeleteUsingTemplate(MyPPersonTable[countRow], null, ATransaction);
-                }
+                                    PPersonAccess.DeleteUsingTemplate(MyPPersonTable[countRow], null, ATransaction);
+                                }
             }
             PtMaritalStatusAccess.DeleteByPrimaryKey(ACode, ATransaction);
         }
-        
+
         /// cascading delete
         public static void DeleteUsingTemplate(PtMaritalStatusRow ATemplateRow, StringCollection ATemplateOperators, TDBTransaction ATransaction, bool AWithCascDelete)
         {
@@ -1342,17 +1279,16 @@ namespace Ict.Petra.Shared.MCommon.Data.Cascading
                 PPersonAccess.LoadViaPtMaritalStatusTemplate(out MyPPersonTable, ATemplateRow, StringHelper.StrSplit("p_partner_key_n", ","), ATransaction);
                 for (countRow = 0; (countRow != MyPPersonTable.Rows.Count); countRow = (countRow + 1))
                 {
-                    PPersonAccess.DeleteUsingTemplate(MyPPersonTable[countRow], null, ATransaction);
-                }
+                                    PPersonAccess.DeleteUsingTemplate(MyPPersonTable[countRow], null, ATransaction);
+                                }
             }
             PtMaritalStatusAccess.DeleteUsingTemplate(ATemplateRow, ATemplateOperators, ATransaction);
         }
     }
-    
+
     /// auto generated
     public class POccupationCascading : TTypedDataAccess
     {
-        
         /// cascading delete
         public static void DeleteByPrimaryKey(String AOccupationCode, TDBTransaction ATransaction, bool AWithCascDelete)
         {
@@ -1363,12 +1299,12 @@ namespace Ict.Petra.Shared.MCommon.Data.Cascading
                 PPersonAccess.LoadViaPOccupation(out MyPPersonTable, AOccupationCode, StringHelper.StrSplit("p_partner_key_n", ","), ATransaction);
                 for (countRow = 0; (countRow != MyPPersonTable.Rows.Count); countRow = (countRow + 1))
                 {
-                    PPersonAccess.DeleteUsingTemplate(MyPPersonTable[countRow], null, ATransaction);
-                }
+                                    PPersonAccess.DeleteUsingTemplate(MyPPersonTable[countRow], null, ATransaction);
+                                }
             }
             POccupationAccess.DeleteByPrimaryKey(AOccupationCode, ATransaction);
         }
-        
+
         /// cascading delete
         public static void DeleteUsingTemplate(POccupationRow ATemplateRow, StringCollection ATemplateOperators, TDBTransaction ATransaction, bool AWithCascDelete)
         {
@@ -1379,22 +1315,16 @@ namespace Ict.Petra.Shared.MCommon.Data.Cascading
                 PPersonAccess.LoadViaPOccupationTemplate(out MyPPersonTable, ATemplateRow, StringHelper.StrSplit("p_partner_key_n", ","), ATransaction);
                 for (countRow = 0; (countRow != MyPPersonTable.Rows.Count); countRow = (countRow + 1))
                 {
-                    PPersonAccess.DeleteUsingTemplate(MyPPersonTable[countRow], null, ATransaction);
-                }
+                                    PPersonAccess.DeleteUsingTemplate(MyPPersonTable[countRow], null, ATransaction);
+                                }
             }
             POccupationAccess.DeleteUsingTemplate(ATemplateRow, ATemplateOperators, ATransaction);
         }
     }
-    
-    /// auto generated
-    public class PPersonCascading : TTypedDataAccess
-    {
-    }
-    
+
     /// auto generated
     public class PDenominationCascading : TTypedDataAccess
     {
-        
         /// cascading delete
         public static void DeleteByPrimaryKey(String ADenominationCode, TDBTransaction ATransaction, bool AWithCascDelete)
         {
@@ -1410,7 +1340,7 @@ namespace Ict.Petra.Shared.MCommon.Data.Cascading
             }
             PDenominationAccess.DeleteByPrimaryKey(ADenominationCode, ATransaction);
         }
-        
+
         /// cascading delete
         public static void DeleteUsingTemplate(PDenominationRow ATemplateRow, StringCollection ATemplateOperators, TDBTransaction ATransaction, bool AWithCascDelete)
         {
@@ -1427,28 +1357,26 @@ namespace Ict.Petra.Shared.MCommon.Data.Cascading
             PDenominationAccess.DeleteUsingTemplate(ATemplateRow, ATemplateOperators, ATransaction);
         }
     }
-    
+
     /// auto generated
     public class PChurchCascading : TTypedDataAccess
     {
-        
         /// cascading delete
         public static void DeleteByPrimaryKey(Int64 APartnerKey, TDBTransaction ATransaction, bool AWithCascDelete)
         {
             PChurchAccess.DeleteByPrimaryKey(APartnerKey, ATransaction);
         }
-        
+
         /// cascading delete
         public static void DeleteUsingTemplate(PChurchRow ATemplateRow, StringCollection ATemplateOperators, TDBTransaction ATransaction, bool AWithCascDelete)
         {
             PChurchAccess.DeleteUsingTemplate(ATemplateRow, ATemplateOperators, ATransaction);
         }
     }
-    
+
     /// auto generated
     public class PBusinessCascading : TTypedDataAccess
     {
-        
         /// cascading delete
         public static void DeleteByPrimaryKey(String ABusinessCode, TDBTransaction ATransaction, bool AWithCascDelete)
         {
@@ -1464,7 +1392,7 @@ namespace Ict.Petra.Shared.MCommon.Data.Cascading
             }
             PBusinessAccess.DeleteByPrimaryKey(ABusinessCode, ATransaction);
         }
-        
+
         /// cascading delete
         public static void DeleteUsingTemplate(PBusinessRow ATemplateRow, StringCollection ATemplateOperators, TDBTransaction ATransaction, bool AWithCascDelete)
         {
@@ -1481,11 +1409,10 @@ namespace Ict.Petra.Shared.MCommon.Data.Cascading
             PBusinessAccess.DeleteUsingTemplate(ATemplateRow, ATemplateOperators, ATransaction);
         }
     }
-    
+
     /// auto generated
     public class POrganisationCascading : TTypedDataAccess
     {
-        
         /// cascading delete
         public static void DeleteByPrimaryKey(Int64 APartnerKey, TDBTransaction ATransaction, bool AWithCascDelete)
         {
@@ -1501,7 +1428,7 @@ namespace Ict.Petra.Shared.MCommon.Data.Cascading
             }
             POrganisationAccess.DeleteByPrimaryKey(APartnerKey, ATransaction);
         }
-        
+
         /// cascading delete
         public static void DeleteUsingTemplate(POrganisationRow ATemplateRow, StringCollection ATemplateOperators, TDBTransaction ATransaction, bool AWithCascDelete)
         {
@@ -1518,11 +1445,10 @@ namespace Ict.Petra.Shared.MCommon.Data.Cascading
             POrganisationAccess.DeleteUsingTemplate(ATemplateRow, ATemplateOperators, ATransaction);
         }
     }
-    
+
     /// auto generated
     public class PBankCascading : TTypedDataAccess
     {
-        
         /// cascading delete
         public static void DeleteByPrimaryKey(Int64 APartnerKey, TDBTransaction ATransaction, bool AWithCascDelete)
         {
@@ -1544,7 +1470,7 @@ namespace Ict.Petra.Shared.MCommon.Data.Cascading
             }
             PBankAccess.DeleteByPrimaryKey(APartnerKey, ATransaction);
         }
-        
+
         /// cascading delete
         public static void DeleteUsingTemplate(PBankRow ATemplateRow, StringCollection ATemplateOperators, TDBTransaction ATransaction, bool AWithCascDelete)
         {
@@ -1567,11 +1493,10 @@ namespace Ict.Petra.Shared.MCommon.Data.Cascading
             PBankAccess.DeleteUsingTemplate(ATemplateRow, ATemplateOperators, ATransaction);
         }
     }
-    
+
     /// auto generated
     public class PVenueCascading : TTypedDataAccess
     {
-        
         /// cascading delete
         public static void DeleteByPrimaryKey(Int64 APartnerKey, TDBTransaction ATransaction, bool AWithCascDelete)
         {
@@ -1593,7 +1518,7 @@ namespace Ict.Petra.Shared.MCommon.Data.Cascading
             }
             PVenueAccess.DeleteByPrimaryKey(APartnerKey, ATransaction);
         }
-        
+
         /// cascading delete
         public static void DeleteUsingTemplate(PVenueRow ATemplateRow, StringCollection ATemplateOperators, TDBTransaction ATransaction, bool AWithCascDelete)
         {
@@ -1616,11 +1541,10 @@ namespace Ict.Petra.Shared.MCommon.Data.Cascading
             PVenueAccess.DeleteUsingTemplate(ATemplateRow, ATemplateOperators, ATransaction);
         }
     }
-    
+
     /// auto generated
     public class PBankingTypeCascading : TTypedDataAccess
     {
-        
         /// cascading delete
         public static void DeleteByPrimaryKey(Int32 AId, TDBTransaction ATransaction, bool AWithCascDelete)
         {
@@ -1636,7 +1560,7 @@ namespace Ict.Petra.Shared.MCommon.Data.Cascading
             }
             PBankingTypeAccess.DeleteByPrimaryKey(AId, ATransaction);
         }
-        
+
         /// cascading delete
         public static void DeleteUsingTemplate(PBankingTypeRow ATemplateRow, StringCollection ATemplateOperators, TDBTransaction ATransaction, bool AWithCascDelete)
         {
@@ -1653,11 +1577,10 @@ namespace Ict.Petra.Shared.MCommon.Data.Cascading
             PBankingTypeAccess.DeleteUsingTemplate(ATemplateRow, ATemplateOperators, ATransaction);
         }
     }
-    
+
     /// auto generated
     public class PBankingDetailsCascading : TTypedDataAccess
     {
-        
         /// cascading delete
         public static void DeleteByPrimaryKey(Int32 ABankingDetailsKey, TDBTransaction ATransaction, bool AWithCascDelete)
         {
@@ -1686,12 +1609,12 @@ namespace Ict.Petra.Shared.MCommon.Data.Cascading
                 AAccountAccess.LoadViaPBankingDetails(out MyAAccountTable, ABankingDetailsKey, StringHelper.StrSplit("a_ledger_number_i,a_account_code_c", ","), ATransaction);
                 for (countRow = 0; (countRow != MyAAccountTable.Rows.Count); countRow = (countRow + 1))
                 {
-                    AAccountAccess.DeleteUsingTemplate(MyAAccountTable[countRow], null, ATransaction);
-                }
+                                    AAccountAccess.DeleteUsingTemplate(MyAAccountTable[countRow], null, ATransaction);
+                                }
             }
             PBankingDetailsAccess.DeleteByPrimaryKey(ABankingDetailsKey, ATransaction);
         }
-        
+
         /// cascading delete
         public static void DeleteUsingTemplate(PBankingDetailsRow ATemplateRow, StringCollection ATemplateOperators, TDBTransaction ATransaction, bool AWithCascDelete)
         {
@@ -1720,17 +1643,16 @@ namespace Ict.Petra.Shared.MCommon.Data.Cascading
                 AAccountAccess.LoadViaPBankingDetailsTemplate(out MyAAccountTable, ATemplateRow, StringHelper.StrSplit("a_ledger_number_i,a_account_code_c", ","), ATransaction);
                 for (countRow = 0; (countRow != MyAAccountTable.Rows.Count); countRow = (countRow + 1))
                 {
-                    AAccountAccess.DeleteUsingTemplate(MyAAccountTable[countRow], null, ATransaction);
-                }
+                                    AAccountAccess.DeleteUsingTemplate(MyAAccountTable[countRow], null, ATransaction);
+                                }
             }
             PBankingDetailsAccess.DeleteUsingTemplate(ATemplateRow, ATemplateOperators, ATransaction);
         }
     }
-    
+
     /// auto generated
     public class PPartnerBankingDetailsCascading : TTypedDataAccess
     {
-        
         /// cascading delete
         public static void DeleteByPrimaryKey(Int64 APartnerKey, Int32 ABankingDetailsKey, TDBTransaction ATransaction, bool AWithCascDelete)
         {
@@ -1746,7 +1668,7 @@ namespace Ict.Petra.Shared.MCommon.Data.Cascading
             }
             PPartnerBankingDetailsAccess.DeleteByPrimaryKey(APartnerKey, ABankingDetailsKey, ATransaction);
         }
-        
+
         /// cascading delete
         public static void DeleteUsingTemplate(PPartnerBankingDetailsRow ATemplateRow, StringCollection ATemplateOperators, TDBTransaction ATransaction, bool AWithCascDelete)
         {
@@ -1763,11 +1685,10 @@ namespace Ict.Petra.Shared.MCommon.Data.Cascading
             PPartnerBankingDetailsAccess.DeleteUsingTemplate(ATemplateRow, ATemplateOperators, ATransaction);
         }
     }
-    
+
     /// auto generated
     public class PBankingDetailsUsageTypeCascading : TTypedDataAccess
     {
-        
         /// cascading delete
         public static void DeleteByPrimaryKey(String AType, TDBTransaction ATransaction, bool AWithCascDelete)
         {
@@ -1783,7 +1704,7 @@ namespace Ict.Petra.Shared.MCommon.Data.Cascading
             }
             PBankingDetailsUsageTypeAccess.DeleteByPrimaryKey(AType, ATransaction);
         }
-        
+
         /// cascading delete
         public static void DeleteUsingTemplate(PBankingDetailsUsageTypeRow ATemplateRow, StringCollection ATemplateOperators, TDBTransaction ATransaction, bool AWithCascDelete)
         {
@@ -1800,45 +1721,42 @@ namespace Ict.Petra.Shared.MCommon.Data.Cascading
             PBankingDetailsUsageTypeAccess.DeleteUsingTemplate(ATemplateRow, ATemplateOperators, ATransaction);
         }
     }
-    
+
     /// auto generated
     public class PBankingDetailsUsageCascading : TTypedDataAccess
     {
-        
         /// cascading delete
         public static void DeleteByPrimaryKey(Int64 APartnerKey, Int32 ABankingDetailsKey, String AType, TDBTransaction ATransaction, bool AWithCascDelete)
         {
             PBankingDetailsUsageAccess.DeleteByPrimaryKey(APartnerKey, ABankingDetailsKey, AType, ATransaction);
         }
-        
+
         /// cascading delete
         public static void DeleteUsingTemplate(PBankingDetailsUsageRow ATemplateRow, StringCollection ATemplateOperators, TDBTransaction ATransaction, bool AWithCascDelete)
         {
             PBankingDetailsUsageAccess.DeleteUsingTemplate(ATemplateRow, ATemplateOperators, ATransaction);
         }
     }
-    
+
     /// auto generated
     public class AEpAccountCascading : TTypedDataAccess
     {
-        
         /// cascading delete
         public static void DeleteByPrimaryKey(Int32 ABankingDetailsKey, TDBTransaction ATransaction, bool AWithCascDelete)
         {
             AEpAccountAccess.DeleteByPrimaryKey(ABankingDetailsKey, ATransaction);
         }
-        
+
         /// cascading delete
         public static void DeleteUsingTemplate(AEpAccountRow ATemplateRow, StringCollection ATemplateOperators, TDBTransaction ATransaction, bool AWithCascDelete)
         {
             AEpAccountAccess.DeleteUsingTemplate(ATemplateRow, ATemplateOperators, ATransaction);
         }
     }
-    
+
     /// auto generated
     public class AEpStatementCascading : TTypedDataAccess
     {
-        
         /// cascading delete
         public static void DeleteByPrimaryKey(Int32 AStatementKey, TDBTransaction ATransaction, bool AWithCascDelete)
         {
@@ -1854,7 +1772,7 @@ namespace Ict.Petra.Shared.MCommon.Data.Cascading
             }
             AEpStatementAccess.DeleteByPrimaryKey(AStatementKey, ATransaction);
         }
-        
+
         /// cascading delete
         public static void DeleteUsingTemplate(AEpStatementRow ATemplateRow, StringCollection ATemplateOperators, TDBTransaction ATransaction, bool AWithCascDelete)
         {
@@ -1871,11 +1789,10 @@ namespace Ict.Petra.Shared.MCommon.Data.Cascading
             AEpStatementAccess.DeleteUsingTemplate(ATemplateRow, ATemplateOperators, ATransaction);
         }
     }
-    
+
     /// auto generated
     public class AEpMatchCascading : TTypedDataAccess
     {
-        
         /// cascading delete
         public static void DeleteByPrimaryKey(Int32 AEpMatchKey, TDBTransaction ATransaction, bool AWithCascDelete)
         {
@@ -1891,7 +1808,7 @@ namespace Ict.Petra.Shared.MCommon.Data.Cascading
             }
             AEpMatchAccess.DeleteByPrimaryKey(AEpMatchKey, ATransaction);
         }
-        
+
         /// cascading delete
         public static void DeleteUsingTemplate(AEpMatchRow ATemplateRow, StringCollection ATemplateOperators, TDBTransaction ATransaction, bool AWithCascDelete)
         {
@@ -1908,28 +1825,26 @@ namespace Ict.Petra.Shared.MCommon.Data.Cascading
             AEpMatchAccess.DeleteUsingTemplate(ATemplateRow, ATemplateOperators, ATransaction);
         }
     }
-    
+
     /// auto generated
     public class AEpTransactionCascading : TTypedDataAccess
     {
-        
         /// cascading delete
         public static void DeleteByPrimaryKey(Int32 AStatementKey, Int32 AOrder, TDBTransaction ATransaction, bool AWithCascDelete)
         {
             AEpTransactionAccess.DeleteByPrimaryKey(AStatementKey, AOrder, ATransaction);
         }
-        
+
         /// cascading delete
         public static void DeleteUsingTemplate(AEpTransactionRow ATemplateRow, StringCollection ATemplateOperators, TDBTransaction ATransaction, bool AWithCascDelete)
         {
             AEpTransactionAccess.DeleteUsingTemplate(ATemplateRow, ATemplateOperators, ATransaction);
         }
     }
-    
+
     /// auto generated
     public class PTypeCascading : TTypedDataAccess
     {
-        
         /// cascading delete
         public static void DeleteByPrimaryKey(String ATypeCode, TDBTransaction ATransaction, bool AWithCascDelete)
         {
@@ -1951,7 +1866,7 @@ namespace Ict.Petra.Shared.MCommon.Data.Cascading
             }
             PTypeAccess.DeleteByPrimaryKey(ATypeCode, ATransaction);
         }
-        
+
         /// cascading delete
         public static void DeleteUsingTemplate(PTypeRow ATemplateRow, StringCollection ATemplateOperators, TDBTransaction ATransaction, bool AWithCascDelete)
         {
@@ -1974,11 +1889,10 @@ namespace Ict.Petra.Shared.MCommon.Data.Cascading
             PTypeAccess.DeleteUsingTemplate(ATemplateRow, ATemplateOperators, ATransaction);
         }
     }
-    
+
     /// auto generated
     public class PTypeCategoryCascading : TTypedDataAccess
     {
-        
         /// cascading delete
         public static void DeleteByPrimaryKey(String ACode, TDBTransaction ATransaction, bool AWithCascDelete)
         {
@@ -1994,7 +1908,7 @@ namespace Ict.Petra.Shared.MCommon.Data.Cascading
             }
             PTypeCategoryAccess.DeleteByPrimaryKey(ACode, ATransaction);
         }
-        
+
         /// cascading delete
         public static void DeleteUsingTemplate(PTypeCategoryRow ATemplateRow, StringCollection ATemplateOperators, TDBTransaction ATransaction, bool AWithCascDelete)
         {
@@ -2011,28 +1925,26 @@ namespace Ict.Petra.Shared.MCommon.Data.Cascading
             PTypeCategoryAccess.DeleteUsingTemplate(ATemplateRow, ATemplateOperators, ATransaction);
         }
     }
-    
+
     /// auto generated
     public class PPartnerTypeCascading : TTypedDataAccess
     {
-        
         /// cascading delete
         public static void DeleteByPrimaryKey(Int64 APartnerKey, String ATypeCode, TDBTransaction ATransaction, bool AWithCascDelete)
         {
             PPartnerTypeAccess.DeleteByPrimaryKey(APartnerKey, ATypeCode, ATransaction);
         }
-        
+
         /// cascading delete
         public static void DeleteUsingTemplate(PPartnerTypeRow ATemplateRow, StringCollection ATemplateOperators, TDBTransaction ATransaction, bool AWithCascDelete)
         {
             PPartnerTypeAccess.DeleteUsingTemplate(ATemplateRow, ATemplateOperators, ATransaction);
         }
     }
-    
+
     /// auto generated
     public class PRelationCategoryCascading : TTypedDataAccess
     {
-        
         /// cascading delete
         public static void DeleteByPrimaryKey(String ACode, TDBTransaction ATransaction, bool AWithCascDelete)
         {
@@ -2048,7 +1960,7 @@ namespace Ict.Petra.Shared.MCommon.Data.Cascading
             }
             PRelationCategoryAccess.DeleteByPrimaryKey(ACode, ATransaction);
         }
-        
+
         /// cascading delete
         public static void DeleteUsingTemplate(PRelationCategoryRow ATemplateRow, StringCollection ATemplateOperators, TDBTransaction ATransaction, bool AWithCascDelete)
         {
@@ -2065,11 +1977,10 @@ namespace Ict.Petra.Shared.MCommon.Data.Cascading
             PRelationCategoryAccess.DeleteUsingTemplate(ATemplateRow, ATemplateOperators, ATransaction);
         }
     }
-    
+
     /// auto generated
     public class PRelationCascading : TTypedDataAccess
     {
-        
         /// cascading delete
         public static void DeleteByPrimaryKey(String ARelationName, TDBTransaction ATransaction, bool AWithCascDelete)
         {
@@ -2085,7 +1996,7 @@ namespace Ict.Petra.Shared.MCommon.Data.Cascading
             }
             PRelationAccess.DeleteByPrimaryKey(ARelationName, ATransaction);
         }
-        
+
         /// cascading delete
         public static void DeleteUsingTemplate(PRelationRow ATemplateRow, StringCollection ATemplateOperators, TDBTransaction ATransaction, bool AWithCascDelete)
         {
@@ -2102,62 +2013,58 @@ namespace Ict.Petra.Shared.MCommon.Data.Cascading
             PRelationAccess.DeleteUsingTemplate(ATemplateRow, ATemplateOperators, ATransaction);
         }
     }
-    
+
     /// auto generated
     public class PPartnerRelationshipCascading : TTypedDataAccess
     {
-        
         /// cascading delete
         public static void DeleteByPrimaryKey(Int64 APartnerKey, String ARelationName, Int64 ARelationKey, TDBTransaction ATransaction, bool AWithCascDelete)
         {
             PPartnerRelationshipAccess.DeleteByPrimaryKey(APartnerKey, ARelationName, ARelationKey, ATransaction);
         }
-        
+
         /// cascading delete
         public static void DeleteUsingTemplate(PPartnerRelationshipRow ATemplateRow, StringCollection ATemplateOperators, TDBTransaction ATransaction, bool AWithCascDelete)
         {
             PPartnerRelationshipAccess.DeleteUsingTemplate(ATemplateRow, ATemplateOperators, ATransaction);
         }
     }
-    
+
     /// auto generated
     public class PReportsCascading : TTypedDataAccess
     {
-        
         /// cascading delete
         public static void DeleteByPrimaryKey(String AReportName, TDBTransaction ATransaction, bool AWithCascDelete)
         {
             PReportsAccess.DeleteByPrimaryKey(AReportName, ATransaction);
         }
-        
+
         /// cascading delete
         public static void DeleteUsingTemplate(PReportsRow ATemplateRow, StringCollection ATemplateOperators, TDBTransaction ATransaction, bool AWithCascDelete)
         {
             PReportsAccess.DeleteUsingTemplate(ATemplateRow, ATemplateOperators, ATransaction);
         }
     }
-    
+
     /// auto generated
     public class PPartnerLedgerCascading : TTypedDataAccess
     {
-        
         /// cascading delete
         public static void DeleteByPrimaryKey(Int64 APartnerKey, TDBTransaction ATransaction, bool AWithCascDelete)
         {
             PPartnerLedgerAccess.DeleteByPrimaryKey(APartnerKey, ATransaction);
         }
-        
+
         /// cascading delete
         public static void DeleteUsingTemplate(PPartnerLedgerRow ATemplateRow, StringCollection ATemplateOperators, TDBTransaction ATransaction, bool AWithCascDelete)
         {
             PPartnerLedgerAccess.DeleteUsingTemplate(ATemplateRow, ATemplateOperators, ATransaction);
         }
     }
-    
+
     /// auto generated
     public class MExtractMasterCascading : TTypedDataAccess
     {
-        
         /// cascading delete
         public static void DeleteByPrimaryKey(Int32 AExtractId, TDBTransaction ATransaction, bool AWithCascDelete)
         {
@@ -2191,7 +2098,7 @@ namespace Ict.Petra.Shared.MCommon.Data.Cascading
             }
             MExtractMasterAccess.DeleteByPrimaryKey(AExtractId, ATransaction);
         }
-        
+
         /// cascading delete
         public static void DeleteUsingTemplate(MExtractMasterRow ATemplateRow, StringCollection ATemplateOperators, TDBTransaction ATransaction, bool AWithCascDelete)
         {
@@ -2226,28 +2133,26 @@ namespace Ict.Petra.Shared.MCommon.Data.Cascading
             MExtractMasterAccess.DeleteUsingTemplate(ATemplateRow, ATemplateOperators, ATransaction);
         }
     }
-    
+
     /// auto generated
     public class MExtractCascading : TTypedDataAccess
     {
-        
         /// cascading delete
         public static void DeleteByPrimaryKey(Int32 AExtractId, Int64 APartnerKey, Int64 ASiteKey, TDBTransaction ATransaction, bool AWithCascDelete)
         {
             MExtractAccess.DeleteByPrimaryKey(AExtractId, APartnerKey, ASiteKey, ATransaction);
         }
-        
+
         /// cascading delete
         public static void DeleteUsingTemplate(MExtractRow ATemplateRow, StringCollection ATemplateOperators, TDBTransaction ATransaction, bool AWithCascDelete)
         {
             MExtractAccess.DeleteUsingTemplate(ATemplateRow, ATemplateOperators, ATransaction);
         }
     }
-    
+
     /// auto generated
     public class MExtractTypeCascading : TTypedDataAccess
     {
-        
         /// cascading delete
         public static void DeleteByPrimaryKey(String ACode, TDBTransaction ATransaction, bool AWithCascDelete)
         {
@@ -2263,7 +2168,7 @@ namespace Ict.Petra.Shared.MCommon.Data.Cascading
             }
             MExtractTypeAccess.DeleteByPrimaryKey(ACode, ATransaction);
         }
-        
+
         /// cascading delete
         public static void DeleteUsingTemplate(MExtractTypeRow ATemplateRow, StringCollection ATemplateOperators, TDBTransaction ATransaction, bool AWithCascDelete)
         {
@@ -2280,28 +2185,26 @@ namespace Ict.Petra.Shared.MCommon.Data.Cascading
             MExtractTypeAccess.DeleteUsingTemplate(ATemplateRow, ATemplateOperators, ATransaction);
         }
     }
-    
+
     /// auto generated
     public class MExtractParameterCascading : TTypedDataAccess
     {
-        
         /// cascading delete
         public static void DeleteByPrimaryKey(Int32 AExtractId, String AParameterCode, Int32 AValueIndex, TDBTransaction ATransaction, bool AWithCascDelete)
         {
             MExtractParameterAccess.DeleteByPrimaryKey(AExtractId, AParameterCode, AValueIndex, ATransaction);
         }
-        
+
         /// cascading delete
         public static void DeleteUsingTemplate(MExtractParameterRow ATemplateRow, StringCollection ATemplateOperators, TDBTransaction ATransaction, bool AWithCascDelete)
         {
             MExtractParameterAccess.DeleteUsingTemplate(ATemplateRow, ATemplateOperators, ATransaction);
         }
     }
-    
+
     /// auto generated
     public class PMailingCascading : TTypedDataAccess
     {
-        
         /// cascading delete
         public static void DeleteByPrimaryKey(String AMailingCode, TDBTransaction ATransaction, bool AWithCascDelete)
         {
@@ -2335,7 +2238,7 @@ namespace Ict.Petra.Shared.MCommon.Data.Cascading
             }
             PMailingAccess.DeleteByPrimaryKey(AMailingCode, ATransaction);
         }
-        
+
         /// cascading delete
         public static void DeleteUsingTemplate(PMailingRow ATemplateRow, StringCollection ATemplateOperators, TDBTransaction ATransaction, bool AWithCascDelete)
         {
@@ -2370,11 +2273,10 @@ namespace Ict.Petra.Shared.MCommon.Data.Cascading
             PMailingAccess.DeleteUsingTemplate(ATemplateRow, ATemplateOperators, ATransaction);
         }
     }
-    
+
     /// auto generated
     public class PAddressLayoutCodeCascading : TTypedDataAccess
     {
-        
         /// cascading delete
         public static void DeleteByPrimaryKey(String ACode, TDBTransaction ATransaction, bool AWithCascDelete)
         {
@@ -2382,8 +2284,7 @@ namespace Ict.Petra.Shared.MCommon.Data.Cascading
             if ((AWithCascDelete == true))
             {
                 PAddressLayoutTable MyPAddressLayoutTable = null;
-                PAddressLayoutAccess.LoadViaPAddressLayoutCode(out MyPAddressLayoutTable, ACode, StringHelper.StrSplit("p_country_code_c,p_address_layout_code_c,p_address_line_number_i,p_address_line_c" +
-                            "ode_c", ","), ATransaction);
+                PAddressLayoutAccess.LoadViaPAddressLayoutCode(out MyPAddressLayoutTable, ACode, StringHelper.StrSplit("p_country_code_c,p_address_layout_code_c,p_address_line_number_i,p_address_line_code_c", ","), ATransaction);
                 for (countRow = 0; (countRow != MyPAddressLayoutTable.Rows.Count); countRow = (countRow + 1))
                 {
                     PAddressLayoutCascading.DeleteUsingTemplate(MyPAddressLayoutTable[countRow], null, ATransaction, AWithCascDelete);
@@ -2397,7 +2298,7 @@ namespace Ict.Petra.Shared.MCommon.Data.Cascading
             }
             PAddressLayoutCodeAccess.DeleteByPrimaryKey(ACode, ATransaction);
         }
-        
+
         /// cascading delete
         public static void DeleteUsingTemplate(PAddressLayoutCodeRow ATemplateRow, StringCollection ATemplateOperators, TDBTransaction ATransaction, bool AWithCascDelete)
         {
@@ -2405,8 +2306,7 @@ namespace Ict.Petra.Shared.MCommon.Data.Cascading
             if ((AWithCascDelete == true))
             {
                 PAddressLayoutTable MyPAddressLayoutTable = null;
-                PAddressLayoutAccess.LoadViaPAddressLayoutCodeTemplate(out MyPAddressLayoutTable, ATemplateRow, StringHelper.StrSplit("p_country_code_c,p_address_layout_code_c,p_address_line_number_i,p_address_line_c" +
-                            "ode_c", ","), ATransaction);
+                PAddressLayoutAccess.LoadViaPAddressLayoutCodeTemplate(out MyPAddressLayoutTable, ATemplateRow, StringHelper.StrSplit("p_country_code_c,p_address_layout_code_c,p_address_line_number_i,p_address_line_code_c", ","), ATransaction);
                 for (countRow = 0; (countRow != MyPAddressLayoutTable.Rows.Count); countRow = (countRow + 1))
                 {
                     PAddressLayoutCascading.DeleteUsingTemplate(MyPAddressLayoutTable[countRow], null, ATransaction, AWithCascDelete);
@@ -2421,28 +2321,26 @@ namespace Ict.Petra.Shared.MCommon.Data.Cascading
             PAddressLayoutCodeAccess.DeleteUsingTemplate(ATemplateRow, ATemplateOperators, ATransaction);
         }
     }
-    
+
     /// auto generated
     public class PAddressLayoutCascading : TTypedDataAccess
     {
-        
         /// cascading delete
         public static void DeleteByPrimaryKey(String ACountryCode, String AAddressLayoutCode, Int32 AAddressLineNumber, String AAddressLineCode, TDBTransaction ATransaction, bool AWithCascDelete)
         {
             PAddressLayoutAccess.DeleteByPrimaryKey(ACountryCode, AAddressLayoutCode, AAddressLineNumber, AAddressLineCode, ATransaction);
         }
-        
+
         /// cascading delete
         public static void DeleteUsingTemplate(PAddressLayoutRow ATemplateRow, StringCollection ATemplateOperators, TDBTransaction ATransaction, bool AWithCascDelete)
         {
             PAddressLayoutAccess.DeleteUsingTemplate(ATemplateRow, ATemplateOperators, ATransaction);
         }
     }
-    
+
     /// auto generated
     public class PAddressElementCascading : TTypedDataAccess
     {
-        
         /// cascading delete
         public static void DeleteByPrimaryKey(String AAddressElementCode, TDBTransaction ATransaction, bool AWithCascDelete)
         {
@@ -2458,7 +2356,7 @@ namespace Ict.Petra.Shared.MCommon.Data.Cascading
             }
             PAddressElementAccess.DeleteByPrimaryKey(AAddressElementCode, ATransaction);
         }
-        
+
         /// cascading delete
         public static void DeleteUsingTemplate(PAddressElementRow ATemplateRow, StringCollection ATemplateOperators, TDBTransaction ATransaction, bool AWithCascDelete)
         {
@@ -2475,79 +2373,74 @@ namespace Ict.Petra.Shared.MCommon.Data.Cascading
             PAddressElementAccess.DeleteUsingTemplate(ATemplateRow, ATemplateOperators, ATransaction);
         }
     }
-    
+
     /// auto generated
     public class PAddressLineCascading : TTypedDataAccess
     {
-        
         /// cascading delete
         public static void DeleteByPrimaryKey(String AAddressLineCode, Int32 AAddressElementPosition, TDBTransaction ATransaction, bool AWithCascDelete)
         {
             PAddressLineAccess.DeleteByPrimaryKey(AAddressLineCode, AAddressElementPosition, ATransaction);
         }
-        
+
         /// cascading delete
         public static void DeleteUsingTemplate(PAddressLineRow ATemplateRow, StringCollection ATemplateOperators, TDBTransaction ATransaction, bool AWithCascDelete)
         {
             PAddressLineAccess.DeleteUsingTemplate(ATemplateRow, ATemplateOperators, ATransaction);
         }
     }
-    
+
     /// auto generated
     public class PAddresseeTitleOverrideCascading : TTypedDataAccess
     {
-        
         /// cascading delete
         public static void DeleteByPrimaryKey(String ALanguageCode, String ATitle, TDBTransaction ATransaction, bool AWithCascDelete)
         {
             PAddresseeTitleOverrideAccess.DeleteByPrimaryKey(ALanguageCode, ATitle, ATransaction);
         }
-        
+
         /// cascading delete
         public static void DeleteUsingTemplate(PAddresseeTitleOverrideRow ATemplateRow, StringCollection ATemplateOperators, TDBTransaction ATransaction, bool AWithCascDelete)
         {
             PAddresseeTitleOverrideAccess.DeleteUsingTemplate(ATemplateRow, ATemplateOperators, ATransaction);
         }
     }
-    
+
     /// auto generated
     public class PCustomisedGreetingCascading : TTypedDataAccess
     {
-        
         /// cascading delete
         public static void DeleteByPrimaryKey(Int64 APartnerKey, String AUserId, TDBTransaction ATransaction, bool AWithCascDelete)
         {
             PCustomisedGreetingAccess.DeleteByPrimaryKey(APartnerKey, AUserId, ATransaction);
         }
-        
+
         /// cascading delete
         public static void DeleteUsingTemplate(PCustomisedGreetingRow ATemplateRow, StringCollection ATemplateOperators, TDBTransaction ATransaction, bool AWithCascDelete)
         {
             PCustomisedGreetingAccess.DeleteUsingTemplate(ATemplateRow, ATemplateOperators, ATransaction);
         }
     }
-    
+
     /// auto generated
     public class PFormalityCascading : TTypedDataAccess
     {
-        
         /// cascading delete
         public static void DeleteByPrimaryKey(String ALanguageCode, String ACountryCode, String AAddresseeTypeCode, Int32 AFormalityLevel, TDBTransaction ATransaction, bool AWithCascDelete)
         {
             PFormalityAccess.DeleteByPrimaryKey(ALanguageCode, ACountryCode, AAddresseeTypeCode, AFormalityLevel, ATransaction);
         }
-        
+
         /// cascading delete
         public static void DeleteUsingTemplate(PFormalityRow ATemplateRow, StringCollection ATemplateOperators, TDBTransaction ATransaction, bool AWithCascDelete)
         {
             PFormalityAccess.DeleteUsingTemplate(ATemplateRow, ATemplateOperators, ATransaction);
         }
     }
-    
+
     /// auto generated
     public class PFormLetterBodyCascading : TTypedDataAccess
     {
-        
         /// cascading delete
         public static void DeleteByPrimaryKey(String ABodyName, TDBTransaction ATransaction, bool AWithCascDelete)
         {
@@ -2569,7 +2462,7 @@ namespace Ict.Petra.Shared.MCommon.Data.Cascading
             }
             PFormLetterBodyAccess.DeleteByPrimaryKey(ABodyName, ATransaction);
         }
-        
+
         /// cascading delete
         public static void DeleteUsingTemplate(PFormLetterBodyRow ATemplateRow, StringCollection ATemplateOperators, TDBTransaction ATransaction, bool AWithCascDelete)
         {
@@ -2592,62 +2485,58 @@ namespace Ict.Petra.Shared.MCommon.Data.Cascading
             PFormLetterBodyAccess.DeleteUsingTemplate(ATemplateRow, ATemplateOperators, ATransaction);
         }
     }
-    
+
     /// auto generated
     public class PFormLetterDesignCascading : TTypedDataAccess
     {
-        
         /// cascading delete
         public static void DeleteByPrimaryKey(String ADesignName, TDBTransaction ATransaction, bool AWithCascDelete)
         {
             PFormLetterDesignAccess.DeleteByPrimaryKey(ADesignName, ATransaction);
         }
-        
+
         /// cascading delete
         public static void DeleteUsingTemplate(PFormLetterDesignRow ATemplateRow, StringCollection ATemplateOperators, TDBTransaction ATransaction, bool AWithCascDelete)
         {
             PFormLetterDesignAccess.DeleteUsingTemplate(ATemplateRow, ATemplateOperators, ATransaction);
         }
     }
-    
+
     /// auto generated
     public class PFormLetterInsertCascading : TTypedDataAccess
     {
-        
         /// cascading delete
         public static void DeleteByPrimaryKey(Int32 ASequence, TDBTransaction ATransaction, bool AWithCascDelete)
         {
             PFormLetterInsertAccess.DeleteByPrimaryKey(ASequence, ATransaction);
         }
-        
+
         /// cascading delete
         public static void DeleteUsingTemplate(PFormLetterInsertRow ATemplateRow, StringCollection ATemplateOperators, TDBTransaction ATransaction, bool AWithCascDelete)
         {
             PFormLetterInsertAccess.DeleteUsingTemplate(ATemplateRow, ATemplateOperators, ATransaction);
         }
     }
-    
+
     /// auto generated
     public class PLabelCascading : TTypedDataAccess
     {
-        
         /// cascading delete
         public static void DeleteByPrimaryKey(String ACode, TDBTransaction ATransaction, bool AWithCascDelete)
         {
             PLabelAccess.DeleteByPrimaryKey(ACode, ATransaction);
         }
-        
+
         /// cascading delete
         public static void DeleteUsingTemplate(PLabelRow ATemplateRow, StringCollection ATemplateOperators, TDBTransaction ATransaction, bool AWithCascDelete)
         {
             PLabelAccess.DeleteUsingTemplate(ATemplateRow, ATemplateOperators, ATransaction);
         }
     }
-    
+
     /// auto generated
     public class PMergeFormCascading : TTypedDataAccess
     {
-        
         /// cascading delete
         public static void DeleteByPrimaryKey(String AMergeFormName, TDBTransaction ATransaction, bool AWithCascDelete)
         {
@@ -2663,7 +2552,7 @@ namespace Ict.Petra.Shared.MCommon.Data.Cascading
             }
             PMergeFormAccess.DeleteByPrimaryKey(AMergeFormName, ATransaction);
         }
-        
+
         /// cascading delete
         public static void DeleteUsingTemplate(PMergeFormRow ATemplateRow, StringCollection ATemplateOperators, TDBTransaction ATransaction, bool AWithCascDelete)
         {
@@ -2680,28 +2569,26 @@ namespace Ict.Petra.Shared.MCommon.Data.Cascading
             PMergeFormAccess.DeleteUsingTemplate(ATemplateRow, ATemplateOperators, ATransaction);
         }
     }
-    
+
     /// auto generated
     public class PMergeFieldCascading : TTypedDataAccess
     {
-        
         /// cascading delete
         public static void DeleteByPrimaryKey(String AMergeFormName, String AMergeFieldName, TDBTransaction ATransaction, bool AWithCascDelete)
         {
             PMergeFieldAccess.DeleteByPrimaryKey(AMergeFormName, AMergeFieldName, ATransaction);
         }
-        
+
         /// cascading delete
         public static void DeleteUsingTemplate(PMergeFieldRow ATemplateRow, StringCollection ATemplateOperators, TDBTransaction ATransaction, bool AWithCascDelete)
         {
             PMergeFieldAccess.DeleteUsingTemplate(ATemplateRow, ATemplateOperators, ATransaction);
         }
     }
-    
+
     /// auto generated
     public class PPostcodeRangeCascading : TTypedDataAccess
     {
-        
         /// cascading delete
         public static void DeleteByPrimaryKey(String ARange, TDBTransaction ATransaction, bool AWithCascDelete)
         {
@@ -2717,7 +2604,7 @@ namespace Ict.Petra.Shared.MCommon.Data.Cascading
             }
             PPostcodeRangeAccess.DeleteByPrimaryKey(ARange, ATransaction);
         }
-        
+
         /// cascading delete
         public static void DeleteUsingTemplate(PPostcodeRangeRow ATemplateRow, StringCollection ATemplateOperators, TDBTransaction ATransaction, bool AWithCascDelete)
         {
@@ -2734,28 +2621,26 @@ namespace Ict.Petra.Shared.MCommon.Data.Cascading
             PPostcodeRangeAccess.DeleteUsingTemplate(ATemplateRow, ATemplateOperators, ATransaction);
         }
     }
-    
+
     /// auto generated
     public class PPostcodeRegionCascading : TTypedDataAccess
     {
-        
         /// cascading delete
         public static void DeleteByPrimaryKey(String ARegion, String ARange, TDBTransaction ATransaction, bool AWithCascDelete)
         {
             PPostcodeRegionAccess.DeleteByPrimaryKey(ARegion, ARange, ATransaction);
         }
-        
+
         /// cascading delete
         public static void DeleteUsingTemplate(PPostcodeRegionRow ATemplateRow, StringCollection ATemplateOperators, TDBTransaction ATransaction, bool AWithCascDelete)
         {
             PPostcodeRegionAccess.DeleteUsingTemplate(ATemplateRow, ATemplateOperators, ATransaction);
         }
     }
-    
+
     /// auto generated
     public class PPublicationCascading : TTypedDataAccess
     {
-        
         /// cascading delete
         public static void DeleteByPrimaryKey(String APublicationCode, TDBTransaction ATransaction, bool AWithCascDelete)
         {
@@ -2777,7 +2662,7 @@ namespace Ict.Petra.Shared.MCommon.Data.Cascading
             }
             PPublicationAccess.DeleteByPrimaryKey(APublicationCode, ATransaction);
         }
-        
+
         /// cascading delete
         public static void DeleteUsingTemplate(PPublicationRow ATemplateRow, StringCollection ATemplateOperators, TDBTransaction ATransaction, bool AWithCascDelete)
         {
@@ -2800,28 +2685,26 @@ namespace Ict.Petra.Shared.MCommon.Data.Cascading
             PPublicationAccess.DeleteUsingTemplate(ATemplateRow, ATemplateOperators, ATransaction);
         }
     }
-    
+
     /// auto generated
     public class PPublicationCostCascading : TTypedDataAccess
     {
-        
         /// cascading delete
         public static void DeleteByPrimaryKey(String APublicationCode, System.DateTime ADateEffective, TDBTransaction ATransaction, bool AWithCascDelete)
         {
             PPublicationCostAccess.DeleteByPrimaryKey(APublicationCode, ADateEffective, ATransaction);
         }
-        
+
         /// cascading delete
         public static void DeleteUsingTemplate(PPublicationCostRow ATemplateRow, StringCollection ATemplateOperators, TDBTransaction ATransaction, bool AWithCascDelete)
         {
             PPublicationCostAccess.DeleteUsingTemplate(ATemplateRow, ATemplateOperators, ATransaction);
         }
     }
-    
+
     /// auto generated
     public class PReasonSubscriptionGivenCascading : TTypedDataAccess
     {
-        
         /// cascading delete
         public static void DeleteByPrimaryKey(String ACode, TDBTransaction ATransaction, bool AWithCascDelete)
         {
@@ -2837,7 +2720,7 @@ namespace Ict.Petra.Shared.MCommon.Data.Cascading
             }
             PReasonSubscriptionGivenAccess.DeleteByPrimaryKey(ACode, ATransaction);
         }
-        
+
         /// cascading delete
         public static void DeleteUsingTemplate(PReasonSubscriptionGivenRow ATemplateRow, StringCollection ATemplateOperators, TDBTransaction ATransaction, bool AWithCascDelete)
         {
@@ -2854,11 +2737,10 @@ namespace Ict.Petra.Shared.MCommon.Data.Cascading
             PReasonSubscriptionGivenAccess.DeleteUsingTemplate(ATemplateRow, ATemplateOperators, ATransaction);
         }
     }
-    
+
     /// auto generated
     public class PReasonSubscriptionCancelledCascading : TTypedDataAccess
     {
-        
         /// cascading delete
         public static void DeleteByPrimaryKey(String ACode, TDBTransaction ATransaction, bool AWithCascDelete)
         {
@@ -2874,7 +2756,7 @@ namespace Ict.Petra.Shared.MCommon.Data.Cascading
             }
             PReasonSubscriptionCancelledAccess.DeleteByPrimaryKey(ACode, ATransaction);
         }
-        
+
         /// cascading delete
         public static void DeleteUsingTemplate(PReasonSubscriptionCancelledRow ATemplateRow, StringCollection ATemplateOperators, TDBTransaction ATransaction, bool AWithCascDelete)
         {
@@ -2891,28 +2773,26 @@ namespace Ict.Petra.Shared.MCommon.Data.Cascading
             PReasonSubscriptionCancelledAccess.DeleteUsingTemplate(ATemplateRow, ATemplateOperators, ATransaction);
         }
     }
-    
+
     /// auto generated
     public class PSubscriptionCascading : TTypedDataAccess
     {
-        
         /// cascading delete
         public static void DeleteByPrimaryKey(String APublicationCode, Int64 APartnerKey, TDBTransaction ATransaction, bool AWithCascDelete)
         {
             PSubscriptionAccess.DeleteByPrimaryKey(APublicationCode, APartnerKey, ATransaction);
         }
-        
+
         /// cascading delete
         public static void DeleteUsingTemplate(PSubscriptionRow ATemplateRow, StringCollection ATemplateOperators, TDBTransaction ATransaction, bool AWithCascDelete)
         {
             PSubscriptionAccess.DeleteUsingTemplate(ATemplateRow, ATemplateOperators, ATransaction);
         }
     }
-    
+
     /// auto generated
     public class PContactAttributeCascading : TTypedDataAccess
     {
-        
         /// cascading delete
         public static void DeleteByPrimaryKey(String AContactAttributeCode, TDBTransaction ATransaction, bool AWithCascDelete)
         {
@@ -2928,7 +2808,7 @@ namespace Ict.Petra.Shared.MCommon.Data.Cascading
             }
             PContactAttributeAccess.DeleteByPrimaryKey(AContactAttributeCode, ATransaction);
         }
-        
+
         /// cascading delete
         public static void DeleteUsingTemplate(PContactAttributeRow ATemplateRow, StringCollection ATemplateOperators, TDBTransaction ATransaction, bool AWithCascDelete)
         {
@@ -2945,11 +2825,10 @@ namespace Ict.Petra.Shared.MCommon.Data.Cascading
             PContactAttributeAccess.DeleteUsingTemplate(ATemplateRow, ATemplateOperators, ATransaction);
         }
     }
-    
+
     /// auto generated
     public class PContactAttributeDetailCascading : TTypedDataAccess
     {
-        
         /// cascading delete
         public static void DeleteByPrimaryKey(String AContactAttributeCode, String AContactAttrDetailCode, TDBTransaction ATransaction, bool AWithCascDelete)
         {
@@ -2965,7 +2844,7 @@ namespace Ict.Petra.Shared.MCommon.Data.Cascading
             }
             PContactAttributeDetailAccess.DeleteByPrimaryKey(AContactAttributeCode, AContactAttrDetailCode, ATransaction);
         }
-        
+
         /// cascading delete
         public static void DeleteUsingTemplate(PContactAttributeDetailRow ATemplateRow, StringCollection ATemplateOperators, TDBTransaction ATransaction, bool AWithCascDelete)
         {
@@ -2982,11 +2861,10 @@ namespace Ict.Petra.Shared.MCommon.Data.Cascading
             PContactAttributeDetailAccess.DeleteUsingTemplate(ATemplateRow, ATemplateOperators, ATransaction);
         }
     }
-    
+
     /// auto generated
     public class PMethodOfContactCascading : TTypedDataAccess
     {
-        
         /// cascading delete
         public static void DeleteByPrimaryKey(String AMethodOfContactCode, TDBTransaction ATransaction, bool AWithCascDelete)
         {
@@ -3002,7 +2880,7 @@ namespace Ict.Petra.Shared.MCommon.Data.Cascading
             }
             PMethodOfContactAccess.DeleteByPrimaryKey(AMethodOfContactCode, ATransaction);
         }
-        
+
         /// cascading delete
         public static void DeleteUsingTemplate(PMethodOfContactRow ATemplateRow, StringCollection ATemplateOperators, TDBTransaction ATransaction, bool AWithCascDelete)
         {
@@ -3019,11 +2897,10 @@ namespace Ict.Petra.Shared.MCommon.Data.Cascading
             PMethodOfContactAccess.DeleteUsingTemplate(ATemplateRow, ATemplateOperators, ATransaction);
         }
     }
-    
+
     /// auto generated
     public class PPartnerContactCascading : TTypedDataAccess
     {
-        
         /// cascading delete
         public static void DeleteByPrimaryKey(Int32 AContactId, TDBTransaction ATransaction, bool AWithCascDelete)
         {
@@ -3057,7 +2934,7 @@ namespace Ict.Petra.Shared.MCommon.Data.Cascading
             }
             PPartnerContactAccess.DeleteByPrimaryKey(AContactId, ATransaction);
         }
-        
+
         /// cascading delete
         public static void DeleteUsingTemplate(PPartnerContactRow ATemplateRow, StringCollection ATemplateOperators, TDBTransaction ATransaction, bool AWithCascDelete)
         {
@@ -3092,28 +2969,26 @@ namespace Ict.Petra.Shared.MCommon.Data.Cascading
             PPartnerContactAccess.DeleteUsingTemplate(ATemplateRow, ATemplateOperators, ATransaction);
         }
     }
-    
+
     /// auto generated
     public class PPartnerContactAttributeCascading : TTypedDataAccess
     {
-        
         /// cascading delete
         public static void DeleteByPrimaryKey(Int32 AContactId, String AContactAttributeCode, String AContactAttrDetailCode, TDBTransaction ATransaction, bool AWithCascDelete)
         {
             PPartnerContactAttributeAccess.DeleteByPrimaryKey(AContactId, AContactAttributeCode, AContactAttrDetailCode, ATransaction);
         }
-        
+
         /// cascading delete
         public static void DeleteUsingTemplate(PPartnerContactAttributeRow ATemplateRow, StringCollection ATemplateOperators, TDBTransaction ATransaction, bool AWithCascDelete)
         {
             PPartnerContactAttributeAccess.DeleteUsingTemplate(ATemplateRow, ATemplateOperators, ATransaction);
         }
     }
-    
+
     /// auto generated
     public class ASubSystemCascading : TTypedDataAccess
     {
-        
         /// cascading delete
         public static void DeleteByPrimaryKey(String ASubSystemCode, TDBTransaction ATransaction, bool AWithCascDelete)
         {
@@ -3141,7 +3016,7 @@ namespace Ict.Petra.Shared.MCommon.Data.Cascading
             }
             ASubSystemAccess.DeleteByPrimaryKey(ASubSystemCode, ATransaction);
         }
-        
+
         /// cascading delete
         public static void DeleteUsingTemplate(ASubSystemRow ATemplateRow, StringCollection ATemplateOperators, TDBTransaction ATransaction, bool AWithCascDelete)
         {
@@ -3170,11 +3045,10 @@ namespace Ict.Petra.Shared.MCommon.Data.Cascading
             ASubSystemAccess.DeleteUsingTemplate(ATemplateRow, ATemplateOperators, ATransaction);
         }
     }
-    
+
     /// auto generated
     public class ATaxTypeCascading : TTypedDataAccess
     {
-        
         /// cascading delete
         public static void DeleteByPrimaryKey(String ATaxTypeCode, TDBTransaction ATransaction, bool AWithCascDelete)
         {
@@ -3185,8 +3059,8 @@ namespace Ict.Petra.Shared.MCommon.Data.Cascading
                 ALedgerAccess.LoadViaATaxType(out MyALedgerTable, ATaxTypeCode, StringHelper.StrSplit("a_ledger_number_i", ","), ATransaction);
                 for (countRow = 0; (countRow != MyALedgerTable.Rows.Count); countRow = (countRow + 1))
                 {
-                    ALedgerAccess.DeleteUsingTemplate(MyALedgerTable[countRow], null, ATransaction);
-                }
+                                    ALedgerAccess.DeleteUsingTemplate(MyALedgerTable[countRow], null, ATransaction);
+                                }
                 ATaxTableTable MyATaxTableTable = null;
                 ATaxTableAccess.LoadViaATaxType(out MyATaxTableTable, ATaxTypeCode, StringHelper.StrSplit("a_ledger_number_i,a_tax_type_code_c,a_tax_rate_code_c,a_tax_valid_from_d", ","), ATransaction);
                 for (countRow = 0; (countRow != MyATaxTableTable.Rows.Count); countRow = (countRow + 1))
@@ -3202,7 +3076,7 @@ namespace Ict.Petra.Shared.MCommon.Data.Cascading
             }
             ATaxTypeAccess.DeleteByPrimaryKey(ATaxTypeCode, ATransaction);
         }
-        
+
         /// cascading delete
         public static void DeleteUsingTemplate(ATaxTypeRow ATemplateRow, StringCollection ATemplateOperators, TDBTransaction ATransaction, bool AWithCascDelete)
         {
@@ -3213,8 +3087,8 @@ namespace Ict.Petra.Shared.MCommon.Data.Cascading
                 ALedgerAccess.LoadViaATaxTypeTemplate(out MyALedgerTable, ATemplateRow, StringHelper.StrSplit("a_ledger_number_i", ","), ATransaction);
                 for (countRow = 0; (countRow != MyALedgerTable.Rows.Count); countRow = (countRow + 1))
                 {
-                    ALedgerAccess.DeleteUsingTemplate(MyALedgerTable[countRow], null, ATransaction);
-                }
+                                    ALedgerAccess.DeleteUsingTemplate(MyALedgerTable[countRow], null, ATransaction);
+                                }
                 ATaxTableTable MyATaxTableTable = null;
                 ATaxTableAccess.LoadViaATaxTypeTemplate(out MyATaxTableTable, ATemplateRow, StringHelper.StrSplit("a_ledger_number_i,a_tax_type_code_c,a_tax_rate_code_c,a_tax_valid_from_d", ","), ATransaction);
                 for (countRow = 0; (countRow != MyATaxTableTable.Rows.Count); countRow = (countRow + 1))
@@ -3231,16 +3105,10 @@ namespace Ict.Petra.Shared.MCommon.Data.Cascading
             ATaxTypeAccess.DeleteUsingTemplate(ATemplateRow, ATemplateOperators, ATransaction);
         }
     }
-    
-    /// auto generated
-    public class ALedgerCascading : TTypedDataAccess
-    {
-    }
-    
+
     /// auto generated
     public class ATaxTableCascading : TTypedDataAccess
     {
-        
         /// cascading delete
         public static void DeleteByPrimaryKey(Int32 ALedgerNumber, String ATaxTypeCode, String ATaxRateCode, System.DateTime ATaxValidFrom, TDBTransaction ATransaction, bool AWithCascDelete)
         {
@@ -3262,7 +3130,7 @@ namespace Ict.Petra.Shared.MCommon.Data.Cascading
             }
             ATaxTableAccess.DeleteByPrimaryKey(ALedgerNumber, ATaxTypeCode, ATaxRateCode, ATaxValidFrom, ATransaction);
         }
-        
+
         /// cascading delete
         public static void DeleteUsingTemplate(ATaxTableRow ATemplateRow, StringCollection ATemplateOperators, TDBTransaction ATransaction, bool AWithCascDelete)
         {
@@ -3285,28 +3153,26 @@ namespace Ict.Petra.Shared.MCommon.Data.Cascading
             ATaxTableAccess.DeleteUsingTemplate(ATemplateRow, ATemplateOperators, ATransaction);
         }
     }
-    
+
     /// auto generated
     public class ALedgerInitFlagCascading : TTypedDataAccess
     {
-        
         /// cascading delete
         public static void DeleteByPrimaryKey(Int32 ALedgerNumber, String AInitOptionName, TDBTransaction ATransaction, bool AWithCascDelete)
         {
             ALedgerInitFlagAccess.DeleteByPrimaryKey(ALedgerNumber, AInitOptionName, ATransaction);
         }
-        
+
         /// cascading delete
         public static void DeleteUsingTemplate(ALedgerInitFlagRow ATemplateRow, StringCollection ATemplateOperators, TDBTransaction ATransaction, bool AWithCascDelete)
         {
             ALedgerInitFlagAccess.DeleteUsingTemplate(ATemplateRow, ATemplateOperators, ATransaction);
         }
     }
-    
+
     /// auto generated
     public class ABudgetTypeCascading : TTypedDataAccess
     {
-        
         /// cascading delete
         public static void DeleteByPrimaryKey(String ABudgetTypeCode, TDBTransaction ATransaction, bool AWithCascDelete)
         {
@@ -3317,8 +3183,8 @@ namespace Ict.Petra.Shared.MCommon.Data.Cascading
                 AAccountAccess.LoadViaABudgetType(out MyAAccountTable, ABudgetTypeCode, StringHelper.StrSplit("a_ledger_number_i,a_account_code_c", ","), ATransaction);
                 for (countRow = 0; (countRow != MyAAccountTable.Rows.Count); countRow = (countRow + 1))
                 {
-                    AAccountAccess.DeleteUsingTemplate(MyAAccountTable[countRow], null, ATransaction);
-                }
+                                    AAccountAccess.DeleteUsingTemplate(MyAAccountTable[countRow], null, ATransaction);
+                                }
                 ABudgetTable MyABudgetTable = null;
                 ABudgetAccess.LoadViaABudgetType(out MyABudgetTable, ABudgetTypeCode, StringHelper.StrSplit("a_budget_sequence_i", ","), ATransaction);
                 for (countRow = 0; (countRow != MyABudgetTable.Rows.Count); countRow = (countRow + 1))
@@ -3328,7 +3194,7 @@ namespace Ict.Petra.Shared.MCommon.Data.Cascading
             }
             ABudgetTypeAccess.DeleteByPrimaryKey(ABudgetTypeCode, ATransaction);
         }
-        
+
         /// cascading delete
         public static void DeleteUsingTemplate(ABudgetTypeRow ATemplateRow, StringCollection ATemplateOperators, TDBTransaction ATransaction, bool AWithCascDelete)
         {
@@ -3339,8 +3205,8 @@ namespace Ict.Petra.Shared.MCommon.Data.Cascading
                 AAccountAccess.LoadViaABudgetTypeTemplate(out MyAAccountTable, ATemplateRow, StringHelper.StrSplit("a_ledger_number_i,a_account_code_c", ","), ATransaction);
                 for (countRow = 0; (countRow != MyAAccountTable.Rows.Count); countRow = (countRow + 1))
                 {
-                    AAccountAccess.DeleteUsingTemplate(MyAAccountTable[countRow], null, ATransaction);
-                }
+                                    AAccountAccess.DeleteUsingTemplate(MyAAccountTable[countRow], null, ATransaction);
+                                }
                 ABudgetTable MyABudgetTable = null;
                 ABudgetAccess.LoadViaABudgetTypeTemplate(out MyABudgetTable, ATemplateRow, StringHelper.StrSplit("a_budget_sequence_i", ","), ATransaction);
                 for (countRow = 0; (countRow != MyABudgetTable.Rows.Count); countRow = (countRow + 1))
@@ -3351,16 +3217,10 @@ namespace Ict.Petra.Shared.MCommon.Data.Cascading
             ABudgetTypeAccess.DeleteUsingTemplate(ATemplateRow, ATemplateOperators, ATransaction);
         }
     }
-    
-    /// auto generated
-    public class AAccountCascading : TTypedDataAccess
-    {
-    }
-    
+
     /// auto generated
     public class AAccountPropertyCodeCascading : TTypedDataAccess
     {
-        
         /// cascading delete
         public static void DeleteByPrimaryKey(String APropertyCode, TDBTransaction ATransaction, bool AWithCascDelete)
         {
@@ -3376,7 +3236,7 @@ namespace Ict.Petra.Shared.MCommon.Data.Cascading
             }
             AAccountPropertyCodeAccess.DeleteByPrimaryKey(APropertyCode, ATransaction);
         }
-        
+
         /// cascading delete
         public static void DeleteUsingTemplate(AAccountPropertyCodeRow ATemplateRow, StringCollection ATemplateOperators, TDBTransaction ATransaction, bool AWithCascDelete)
         {
@@ -3393,28 +3253,26 @@ namespace Ict.Petra.Shared.MCommon.Data.Cascading
             AAccountPropertyCodeAccess.DeleteUsingTemplate(ATemplateRow, ATemplateOperators, ATransaction);
         }
     }
-    
+
     /// auto generated
     public class AAccountPropertyCascading : TTypedDataAccess
     {
-        
         /// cascading delete
         public static void DeleteByPrimaryKey(Int32 ALedgerNumber, String AAccountCode, String APropertyCode, String APropertyValue, TDBTransaction ATransaction, bool AWithCascDelete)
         {
             AAccountPropertyAccess.DeleteByPrimaryKey(ALedgerNumber, AAccountCode, APropertyCode, APropertyValue, ATransaction);
         }
-        
+
         /// cascading delete
         public static void DeleteUsingTemplate(AAccountPropertyRow ATemplateRow, StringCollection ATemplateOperators, TDBTransaction ATransaction, bool AWithCascDelete)
         {
             AAccountPropertyAccess.DeleteUsingTemplate(ATemplateRow, ATemplateOperators, ATransaction);
         }
     }
-    
+
     /// auto generated
     public class AAccountHierarchyCascading : TTypedDataAccess
     {
-        
         /// cascading delete
         public static void DeleteByPrimaryKey(Int32 ALedgerNumber, String AAccountHierarchyCode, TDBTransaction ATransaction, bool AWithCascDelete)
         {
@@ -3430,7 +3288,7 @@ namespace Ict.Petra.Shared.MCommon.Data.Cascading
             }
             AAccountHierarchyAccess.DeleteByPrimaryKey(ALedgerNumber, AAccountHierarchyCode, ATransaction);
         }
-        
+
         /// cascading delete
         public static void DeleteUsingTemplate(AAccountHierarchyRow ATemplateRow, StringCollection ATemplateOperators, TDBTransaction ATransaction, bool AWithCascDelete)
         {
@@ -3447,28 +3305,26 @@ namespace Ict.Petra.Shared.MCommon.Data.Cascading
             AAccountHierarchyAccess.DeleteUsingTemplate(ATemplateRow, ATemplateOperators, ATransaction);
         }
     }
-    
+
     /// auto generated
     public class AAccountHierarchyDetailCascading : TTypedDataAccess
     {
-        
         /// cascading delete
         public static void DeleteByPrimaryKey(Int32 ALedgerNumber, String AAccountHierarchyCode, String AReportingAccountCode, TDBTransaction ATransaction, bool AWithCascDelete)
         {
             AAccountHierarchyDetailAccess.DeleteByPrimaryKey(ALedgerNumber, AAccountHierarchyCode, AReportingAccountCode, ATransaction);
         }
-        
+
         /// cascading delete
         public static void DeleteUsingTemplate(AAccountHierarchyDetailRow ATemplateRow, StringCollection ATemplateOperators, TDBTransaction ATransaction, bool AWithCascDelete)
         {
             AAccountHierarchyDetailAccess.DeleteUsingTemplate(ATemplateRow, ATemplateOperators, ATransaction);
         }
     }
-    
+
     /// auto generated
     public class ACostCentreTypesCascading : TTypedDataAccess
     {
-        
         /// cascading delete
         public static void DeleteByPrimaryKey(Int32 ALedgerNumber, String ACostCentreType, TDBTransaction ATransaction, bool AWithCascDelete)
         {
@@ -3479,12 +3335,12 @@ namespace Ict.Petra.Shared.MCommon.Data.Cascading
                 ACostCentreAccess.LoadViaACostCentreTypes(out MyACostCentreTable, ALedgerNumber, ACostCentreType, StringHelper.StrSplit("a_ledger_number_i,a_cost_centre_code_c", ","), ATransaction);
                 for (countRow = 0; (countRow != MyACostCentreTable.Rows.Count); countRow = (countRow + 1))
                 {
-                    ACostCentreAccess.DeleteUsingTemplate(MyACostCentreTable[countRow], null, ATransaction);
-                }
+                                    ACostCentreAccess.DeleteUsingTemplate(MyACostCentreTable[countRow], null, ATransaction);
+                                }
             }
             ACostCentreTypesAccess.DeleteByPrimaryKey(ALedgerNumber, ACostCentreType, ATransaction);
         }
-        
+
         /// cascading delete
         public static void DeleteUsingTemplate(ACostCentreTypesRow ATemplateRow, StringCollection ATemplateOperators, TDBTransaction ATransaction, bool AWithCascDelete)
         {
@@ -3495,39 +3351,32 @@ namespace Ict.Petra.Shared.MCommon.Data.Cascading
                 ACostCentreAccess.LoadViaACostCentreTypesTemplate(out MyACostCentreTable, ATemplateRow, StringHelper.StrSplit("a_ledger_number_i,a_cost_centre_code_c", ","), ATransaction);
                 for (countRow = 0; (countRow != MyACostCentreTable.Rows.Count); countRow = (countRow + 1))
                 {
-                    ACostCentreAccess.DeleteUsingTemplate(MyACostCentreTable[countRow], null, ATransaction);
-                }
+                                    ACostCentreAccess.DeleteUsingTemplate(MyACostCentreTable[countRow], null, ATransaction);
+                                }
             }
             ACostCentreTypesAccess.DeleteUsingTemplate(ATemplateRow, ATemplateOperators, ATransaction);
         }
     }
-    
-    /// auto generated
-    public class ACostCentreCascading : TTypedDataAccess
-    {
-    }
-    
+
     /// auto generated
     public class AValidLedgerNumberCascading : TTypedDataAccess
     {
-        
         /// cascading delete
         public static void DeleteByPrimaryKey(Int32 ALedgerNumber, Int64 APartnerKey, TDBTransaction ATransaction, bool AWithCascDelete)
         {
             AValidLedgerNumberAccess.DeleteByPrimaryKey(ALedgerNumber, APartnerKey, ATransaction);
         }
-        
+
         /// cascading delete
         public static void DeleteUsingTemplate(AValidLedgerNumberRow ATemplateRow, StringCollection ATemplateOperators, TDBTransaction ATransaction, bool AWithCascDelete)
         {
             AValidLedgerNumberAccess.DeleteUsingTemplate(ATemplateRow, ATemplateOperators, ATransaction);
         }
     }
-    
+
     /// auto generated
     public class ABudgetRevisionCascading : TTypedDataAccess
     {
-        
         /// cascading delete
         public static void DeleteByPrimaryKey(Int32 ALedgerNumber, Int32 AYear, Int32 ARevision, TDBTransaction ATransaction, bool AWithCascDelete)
         {
@@ -3543,7 +3392,7 @@ namespace Ict.Petra.Shared.MCommon.Data.Cascading
             }
             ABudgetRevisionAccess.DeleteByPrimaryKey(ALedgerNumber, AYear, ARevision, ATransaction);
         }
-        
+
         /// cascading delete
         public static void DeleteUsingTemplate(ABudgetRevisionRow ATemplateRow, StringCollection ATemplateOperators, TDBTransaction ATransaction, bool AWithCascDelete)
         {
@@ -3560,11 +3409,10 @@ namespace Ict.Petra.Shared.MCommon.Data.Cascading
             ABudgetRevisionAccess.DeleteUsingTemplate(ATemplateRow, ATemplateOperators, ATransaction);
         }
     }
-    
+
     /// auto generated
     public class ABudgetCascading : TTypedDataAccess
     {
-        
         /// cascading delete
         public static void DeleteByPrimaryKey(Int32 ABudgetSequence, TDBTransaction ATransaction, bool AWithCascDelete)
         {
@@ -3580,7 +3428,7 @@ namespace Ict.Petra.Shared.MCommon.Data.Cascading
             }
             ABudgetAccess.DeleteByPrimaryKey(ABudgetSequence, ATransaction);
         }
-        
+
         /// cascading delete
         public static void DeleteUsingTemplate(ABudgetRow ATemplateRow, StringCollection ATemplateOperators, TDBTransaction ATransaction, bool AWithCascDelete)
         {
@@ -3597,28 +3445,26 @@ namespace Ict.Petra.Shared.MCommon.Data.Cascading
             ABudgetAccess.DeleteUsingTemplate(ATemplateRow, ATemplateOperators, ATransaction);
         }
     }
-    
+
     /// auto generated
     public class ABudgetPeriodCascading : TTypedDataAccess
     {
-        
         /// cascading delete
         public static void DeleteByPrimaryKey(Int32 ABudgetSequence, Int32 APeriodNumber, TDBTransaction ATransaction, bool AWithCascDelete)
         {
             ABudgetPeriodAccess.DeleteByPrimaryKey(ABudgetSequence, APeriodNumber, ATransaction);
         }
-        
+
         /// cascading delete
         public static void DeleteUsingTemplate(ABudgetPeriodRow ATemplateRow, StringCollection ATemplateOperators, TDBTransaction ATransaction, bool AWithCascDelete)
         {
             ABudgetPeriodAccess.DeleteUsingTemplate(ATemplateRow, ATemplateOperators, ATransaction);
         }
     }
-    
+
     /// auto generated
     public class AAccountingPeriodCascading : TTypedDataAccess
     {
-        
         /// cascading delete
         public static void DeleteByPrimaryKey(Int32 ALedgerNumber, Int32 AAccountingPeriodNumber, TDBTransaction ATransaction, bool AWithCascDelete)
         {
@@ -3632,8 +3478,7 @@ namespace Ict.Petra.Shared.MCommon.Data.Cascading
                     AIchStewardshipCascading.DeleteUsingTemplate(MyAIchStewardshipTable[countRow], null, ATransaction, AWithCascDelete);
                 }
                 AProcessedFeeTable MyAProcessedFeeTable = null;
-                AProcessedFeeAccess.LoadViaAAccountingPeriod(out MyAProcessedFeeTable, ALedgerNumber, AAccountingPeriodNumber, StringHelper.StrSplit("a_ledger_number_i,a_batch_number_i,a_gift_transaction_number_i,a_detail_number_i," +
-                            "a_fee_code_c", ","), ATransaction);
+                AProcessedFeeAccess.LoadViaAAccountingPeriod(out MyAProcessedFeeTable, ALedgerNumber, AAccountingPeriodNumber, StringHelper.StrSplit("a_ledger_number_i,a_batch_number_i,a_gift_transaction_number_i,a_detail_number_i,a_fee_code_c", ","), ATransaction);
                 for (countRow = 0; (countRow != MyAProcessedFeeTable.Rows.Count); countRow = (countRow + 1))
                 {
                     AProcessedFeeCascading.DeleteUsingTemplate(MyAProcessedFeeTable[countRow], null, ATransaction, AWithCascDelete);
@@ -3677,7 +3522,7 @@ namespace Ict.Petra.Shared.MCommon.Data.Cascading
             }
             AAccountingPeriodAccess.DeleteByPrimaryKey(ALedgerNumber, AAccountingPeriodNumber, ATransaction);
         }
-        
+
         /// cascading delete
         public static void DeleteUsingTemplate(AAccountingPeriodRow ATemplateRow, StringCollection ATemplateOperators, TDBTransaction ATransaction, bool AWithCascDelete)
         {
@@ -3691,8 +3536,7 @@ namespace Ict.Petra.Shared.MCommon.Data.Cascading
                     AIchStewardshipCascading.DeleteUsingTemplate(MyAIchStewardshipTable[countRow], null, ATransaction, AWithCascDelete);
                 }
                 AProcessedFeeTable MyAProcessedFeeTable = null;
-                AProcessedFeeAccess.LoadViaAAccountingPeriodTemplate(out MyAProcessedFeeTable, ATemplateRow, StringHelper.StrSplit("a_ledger_number_i,a_batch_number_i,a_gift_transaction_number_i,a_detail_number_i," +
-                            "a_fee_code_c", ","), ATransaction);
+                AProcessedFeeAccess.LoadViaAAccountingPeriodTemplate(out MyAProcessedFeeTable, ATemplateRow, StringHelper.StrSplit("a_ledger_number_i,a_batch_number_i,a_gift_transaction_number_i,a_detail_number_i,a_fee_code_c", ","), ATransaction);
                 for (countRow = 0; (countRow != MyAProcessedFeeTable.Rows.Count); countRow = (countRow + 1))
                 {
                     AProcessedFeeCascading.DeleteUsingTemplate(MyAProcessedFeeTable[countRow], null, ATransaction, AWithCascDelete);
@@ -3737,45 +3581,42 @@ namespace Ict.Petra.Shared.MCommon.Data.Cascading
             AAccountingPeriodAccess.DeleteUsingTemplate(ATemplateRow, ATemplateOperators, ATransaction);
         }
     }
-    
+
     /// auto generated
     public class AAccountingSystemParameterCascading : TTypedDataAccess
     {
-        
         /// cascading delete
         public static void DeleteByPrimaryKey(Int32 ALedgerNumber, TDBTransaction ATransaction, bool AWithCascDelete)
         {
             AAccountingSystemParameterAccess.DeleteByPrimaryKey(ALedgerNumber, ATransaction);
         }
-        
+
         /// cascading delete
         public static void DeleteUsingTemplate(AAccountingSystemParameterRow ATemplateRow, StringCollection ATemplateOperators, TDBTransaction ATransaction, bool AWithCascDelete)
         {
             AAccountingSystemParameterAccess.DeleteUsingTemplate(ATemplateRow, ATemplateOperators, ATransaction);
         }
     }
-    
+
     /// auto generated
     public class AAnalysisStoreTableCascading : TTypedDataAccess
     {
-        
         /// cascading delete
         public static void DeleteByPrimaryKey(String AStoreName, TDBTransaction ATransaction, bool AWithCascDelete)
         {
             AAnalysisStoreTableAccess.DeleteByPrimaryKey(AStoreName, ATransaction);
         }
-        
+
         /// cascading delete
         public static void DeleteUsingTemplate(AAnalysisStoreTableRow ATemplateRow, StringCollection ATemplateOperators, TDBTransaction ATransaction, bool AWithCascDelete)
         {
             AAnalysisStoreTableAccess.DeleteUsingTemplate(ATemplateRow, ATemplateOperators, ATransaction);
         }
     }
-    
+
     /// auto generated
     public class AAnalysisTypeCascading : TTypedDataAccess
     {
-        
         /// cascading delete
         public static void DeleteByPrimaryKey(String AAnalysisTypeCode, TDBTransaction ATransaction, bool AWithCascDelete)
         {
@@ -3797,7 +3638,7 @@ namespace Ict.Petra.Shared.MCommon.Data.Cascading
             }
             AAnalysisTypeAccess.DeleteByPrimaryKey(AAnalysisTypeCode, ATransaction);
         }
-        
+
         /// cascading delete
         public static void DeleteUsingTemplate(AAnalysisTypeRow ATemplateRow, StringCollection ATemplateOperators, TDBTransaction ATransaction, bool AWithCascDelete)
         {
@@ -3820,11 +3661,10 @@ namespace Ict.Petra.Shared.MCommon.Data.Cascading
             AAnalysisTypeAccess.DeleteUsingTemplate(ATemplateRow, ATemplateOperators, ATransaction);
         }
     }
-    
+
     /// auto generated
     public class AAnalysisAttributeCascading : TTypedDataAccess
     {
-        
         /// cascading delete
         public static void DeleteByPrimaryKey(Int32 ALedgerNumber, String AAccountCode, String AAnalysisTypeCode, TDBTransaction ATransaction, bool AWithCascDelete)
         {
@@ -3832,29 +3672,25 @@ namespace Ict.Petra.Shared.MCommon.Data.Cascading
             if ((AWithCascDelete == true))
             {
                 APrevYearTransAnalAttribTable MyAPrevYearTransAnalAttribTable = null;
-                APrevYearTransAnalAttribAccess.LoadViaAAnalysisAttribute(out MyAPrevYearTransAnalAttribTable, ALedgerNumber, AAccountCode, AAnalysisTypeCode, StringHelper.StrSplit("a_ledger_number_i,a_batch_number_i,a_journal_number_i,a_transaction_number_i,a_an" +
-                            "alysis_type_code_c", ","), ATransaction);
+                APrevYearTransAnalAttribAccess.LoadViaAAnalysisAttribute(out MyAPrevYearTransAnalAttribTable, ALedgerNumber, AAccountCode, AAnalysisTypeCode, StringHelper.StrSplit("a_ledger_number_i,a_batch_number_i,a_journal_number_i,a_transaction_number_i,a_analysis_type_code_c", ","), ATransaction);
                 for (countRow = 0; (countRow != MyAPrevYearTransAnalAttribTable.Rows.Count); countRow = (countRow + 1))
                 {
                     APrevYearTransAnalAttribCascading.DeleteUsingTemplate(MyAPrevYearTransAnalAttribTable[countRow], null, ATransaction, AWithCascDelete);
                 }
                 AThisyearoldTransAnalAttribTable MyAThisyearoldTransAnalAttribTable = null;
-                AThisyearoldTransAnalAttribAccess.LoadViaAAnalysisAttribute(out MyAThisyearoldTransAnalAttribTable, ALedgerNumber, AAccountCode, AAnalysisTypeCode, StringHelper.StrSplit("a_ledger_number_i,a_batch_number_i,a_journal_number_i,a_transaction_number_i,a_an" +
-                            "alysis_type_code_c", ","), ATransaction);
+                AThisyearoldTransAnalAttribAccess.LoadViaAAnalysisAttribute(out MyAThisyearoldTransAnalAttribTable, ALedgerNumber, AAccountCode, AAnalysisTypeCode, StringHelper.StrSplit("a_ledger_number_i,a_batch_number_i,a_journal_number_i,a_transaction_number_i,a_analysis_type_code_c", ","), ATransaction);
                 for (countRow = 0; (countRow != MyAThisyearoldTransAnalAttribTable.Rows.Count); countRow = (countRow + 1))
                 {
                     AThisyearoldTransAnalAttribCascading.DeleteUsingTemplate(MyAThisyearoldTransAnalAttribTable[countRow], null, ATransaction, AWithCascDelete);
                 }
                 ARecurringTransAnalAttribTable MyARecurringTransAnalAttribTable = null;
-                ARecurringTransAnalAttribAccess.LoadViaAAnalysisAttribute(out MyARecurringTransAnalAttribTable, ALedgerNumber, AAccountCode, AAnalysisTypeCode, StringHelper.StrSplit("a_ledger_number_i,a_batch_number_i,a_journal_number_i,a_transaction_number_i,a_an" +
-                            "alysis_type_code_c", ","), ATransaction);
+                ARecurringTransAnalAttribAccess.LoadViaAAnalysisAttribute(out MyARecurringTransAnalAttribTable, ALedgerNumber, AAccountCode, AAnalysisTypeCode, StringHelper.StrSplit("a_ledger_number_i,a_batch_number_i,a_journal_number_i,a_transaction_number_i,a_analysis_type_code_c", ","), ATransaction);
                 for (countRow = 0; (countRow != MyARecurringTransAnalAttribTable.Rows.Count); countRow = (countRow + 1))
                 {
                     ARecurringTransAnalAttribCascading.DeleteUsingTemplate(MyARecurringTransAnalAttribTable[countRow], null, ATransaction, AWithCascDelete);
                 }
                 ATransAnalAttribTable MyATransAnalAttribTable = null;
-                ATransAnalAttribAccess.LoadViaAAnalysisAttribute(out MyATransAnalAttribTable, ALedgerNumber, AAccountCode, AAnalysisTypeCode, StringHelper.StrSplit("a_ledger_number_i,a_batch_number_i,a_journal_number_i,a_transaction_number_i,a_an" +
-                            "alysis_type_code_c", ","), ATransaction);
+                ATransAnalAttribAccess.LoadViaAAnalysisAttribute(out MyATransAnalAttribTable, ALedgerNumber, AAccountCode, AAnalysisTypeCode, StringHelper.StrSplit("a_ledger_number_i,a_batch_number_i,a_journal_number_i,a_transaction_number_i,a_analysis_type_code_c", ","), ATransaction);
                 for (countRow = 0; (countRow != MyATransAnalAttribTable.Rows.Count); countRow = (countRow + 1))
                 {
                     ATransAnalAttribCascading.DeleteUsingTemplate(MyATransAnalAttribTable[countRow], null, ATransaction, AWithCascDelete);
@@ -3868,7 +3704,7 @@ namespace Ict.Petra.Shared.MCommon.Data.Cascading
             }
             AAnalysisAttributeAccess.DeleteByPrimaryKey(ALedgerNumber, AAccountCode, AAnalysisTypeCode, ATransaction);
         }
-        
+
         /// cascading delete
         public static void DeleteUsingTemplate(AAnalysisAttributeRow ATemplateRow, StringCollection ATemplateOperators, TDBTransaction ATransaction, bool AWithCascDelete)
         {
@@ -3876,29 +3712,25 @@ namespace Ict.Petra.Shared.MCommon.Data.Cascading
             if ((AWithCascDelete == true))
             {
                 APrevYearTransAnalAttribTable MyAPrevYearTransAnalAttribTable = null;
-                APrevYearTransAnalAttribAccess.LoadViaAAnalysisAttributeTemplate(out MyAPrevYearTransAnalAttribTable, ATemplateRow, StringHelper.StrSplit("a_ledger_number_i,a_batch_number_i,a_journal_number_i,a_transaction_number_i,a_an" +
-                            "alysis_type_code_c", ","), ATransaction);
+                APrevYearTransAnalAttribAccess.LoadViaAAnalysisAttributeTemplate(out MyAPrevYearTransAnalAttribTable, ATemplateRow, StringHelper.StrSplit("a_ledger_number_i,a_batch_number_i,a_journal_number_i,a_transaction_number_i,a_analysis_type_code_c", ","), ATransaction);
                 for (countRow = 0; (countRow != MyAPrevYearTransAnalAttribTable.Rows.Count); countRow = (countRow + 1))
                 {
                     APrevYearTransAnalAttribCascading.DeleteUsingTemplate(MyAPrevYearTransAnalAttribTable[countRow], null, ATransaction, AWithCascDelete);
                 }
                 AThisyearoldTransAnalAttribTable MyAThisyearoldTransAnalAttribTable = null;
-                AThisyearoldTransAnalAttribAccess.LoadViaAAnalysisAttributeTemplate(out MyAThisyearoldTransAnalAttribTable, ATemplateRow, StringHelper.StrSplit("a_ledger_number_i,a_batch_number_i,a_journal_number_i,a_transaction_number_i,a_an" +
-                            "alysis_type_code_c", ","), ATransaction);
+                AThisyearoldTransAnalAttribAccess.LoadViaAAnalysisAttributeTemplate(out MyAThisyearoldTransAnalAttribTable, ATemplateRow, StringHelper.StrSplit("a_ledger_number_i,a_batch_number_i,a_journal_number_i,a_transaction_number_i,a_analysis_type_code_c", ","), ATransaction);
                 for (countRow = 0; (countRow != MyAThisyearoldTransAnalAttribTable.Rows.Count); countRow = (countRow + 1))
                 {
                     AThisyearoldTransAnalAttribCascading.DeleteUsingTemplate(MyAThisyearoldTransAnalAttribTable[countRow], null, ATransaction, AWithCascDelete);
                 }
                 ARecurringTransAnalAttribTable MyARecurringTransAnalAttribTable = null;
-                ARecurringTransAnalAttribAccess.LoadViaAAnalysisAttributeTemplate(out MyARecurringTransAnalAttribTable, ATemplateRow, StringHelper.StrSplit("a_ledger_number_i,a_batch_number_i,a_journal_number_i,a_transaction_number_i,a_an" +
-                            "alysis_type_code_c", ","), ATransaction);
+                ARecurringTransAnalAttribAccess.LoadViaAAnalysisAttributeTemplate(out MyARecurringTransAnalAttribTable, ATemplateRow, StringHelper.StrSplit("a_ledger_number_i,a_batch_number_i,a_journal_number_i,a_transaction_number_i,a_analysis_type_code_c", ","), ATransaction);
                 for (countRow = 0; (countRow != MyARecurringTransAnalAttribTable.Rows.Count); countRow = (countRow + 1))
                 {
                     ARecurringTransAnalAttribCascading.DeleteUsingTemplate(MyARecurringTransAnalAttribTable[countRow], null, ATransaction, AWithCascDelete);
                 }
                 ATransAnalAttribTable MyATransAnalAttribTable = null;
-                ATransAnalAttribAccess.LoadViaAAnalysisAttributeTemplate(out MyATransAnalAttribTable, ATemplateRow, StringHelper.StrSplit("a_ledger_number_i,a_batch_number_i,a_journal_number_i,a_transaction_number_i,a_an" +
-                            "alysis_type_code_c", ","), ATransaction);
+                ATransAnalAttribAccess.LoadViaAAnalysisAttributeTemplate(out MyATransAnalAttribTable, ATemplateRow, StringHelper.StrSplit("a_ledger_number_i,a_batch_number_i,a_journal_number_i,a_transaction_number_i,a_analysis_type_code_c", ","), ATransaction);
                 for (countRow = 0; (countRow != MyATransAnalAttribTable.Rows.Count); countRow = (countRow + 1))
                 {
                     ATransAnalAttribCascading.DeleteUsingTemplate(MyATransAnalAttribTable[countRow], null, ATransaction, AWithCascDelete);
@@ -3913,130 +3745,122 @@ namespace Ict.Petra.Shared.MCommon.Data.Cascading
             AAnalysisAttributeAccess.DeleteUsingTemplate(ATemplateRow, ATemplateOperators, ATransaction);
         }
     }
-    
+
     /// auto generated
     public class ACorporateExchangeRateCascading : TTypedDataAccess
     {
-        
         /// cascading delete
         public static void DeleteByPrimaryKey(String AFromCurrencyCode, String AToCurrencyCode, System.DateTime ADateEffectiveFrom, TDBTransaction ATransaction, bool AWithCascDelete)
         {
             ACorporateExchangeRateAccess.DeleteByPrimaryKey(AFromCurrencyCode, AToCurrencyCode, ADateEffectiveFrom, ATransaction);
         }
-        
+
         /// cascading delete
         public static void DeleteUsingTemplate(ACorporateExchangeRateRow ATemplateRow, StringCollection ATemplateOperators, TDBTransaction ATransaction, bool AWithCascDelete)
         {
             ACorporateExchangeRateAccess.DeleteUsingTemplate(ATemplateRow, ATemplateOperators, ATransaction);
         }
     }
-    
+
     /// auto generated
     public class ADailyExchangeRateCascading : TTypedDataAccess
     {
-        
         /// cascading delete
         public static void DeleteByPrimaryKey(String AFromCurrencyCode, String AToCurrencyCode, System.DateTime ADateEffectiveFrom, Int32 ATimeEffectiveFrom, TDBTransaction ATransaction, bool AWithCascDelete)
         {
             ADailyExchangeRateAccess.DeleteByPrimaryKey(AFromCurrencyCode, AToCurrencyCode, ADateEffectiveFrom, ATimeEffectiveFrom, ATransaction);
         }
-        
+
         /// cascading delete
         public static void DeleteUsingTemplate(ADailyExchangeRateRow ATemplateRow, StringCollection ATemplateOperators, TDBTransaction ATransaction, bool AWithCascDelete)
         {
             ADailyExchangeRateAccess.DeleteUsingTemplate(ATemplateRow, ATemplateOperators, ATransaction);
         }
     }
-    
+
     /// auto generated
     public class PEmailCascading : TTypedDataAccess
     {
-        
         /// cascading delete
         public static void DeleteByPrimaryKey(String AEmailAddress, TDBTransaction ATransaction, bool AWithCascDelete)
         {
             PEmailAccess.DeleteByPrimaryKey(AEmailAddress, ATransaction);
         }
-        
+
         /// cascading delete
         public static void DeleteUsingTemplate(PEmailRow ATemplateRow, StringCollection ATemplateOperators, TDBTransaction ATransaction, bool AWithCascDelete)
         {
             PEmailAccess.DeleteUsingTemplate(ATemplateRow, ATemplateOperators, ATransaction);
         }
     }
-    
+
     /// auto generated
     public class AEmailDestinationCascading : TTypedDataAccess
     {
-        
         /// cascading delete
         public static void DeleteByPrimaryKey(String AFileCode, String AConditionalValue, Int64 APartnerKey, TDBTransaction ATransaction, bool AWithCascDelete)
         {
             AEmailDestinationAccess.DeleteByPrimaryKey(AFileCode, AConditionalValue, APartnerKey, ATransaction);
         }
-        
+
         /// cascading delete
         public static void DeleteUsingTemplate(AEmailDestinationRow ATemplateRow, StringCollection ATemplateOperators, TDBTransaction ATransaction, bool AWithCascDelete)
         {
             AEmailDestinationAccess.DeleteUsingTemplate(ATemplateRow, ATemplateOperators, ATransaction);
         }
     }
-    
+
     /// auto generated
     public class AFeesPayableCascading : TTypedDataAccess
     {
-        
         /// cascading delete
         public static void DeleteByPrimaryKey(Int32 ALedgerNumber, String AFeeCode, TDBTransaction ATransaction, bool AWithCascDelete)
         {
             AFeesPayableAccess.DeleteByPrimaryKey(ALedgerNumber, AFeeCode, ATransaction);
         }
-        
+
         /// cascading delete
         public static void DeleteUsingTemplate(AFeesPayableRow ATemplateRow, StringCollection ATemplateOperators, TDBTransaction ATransaction, bool AWithCascDelete)
         {
             AFeesPayableAccess.DeleteUsingTemplate(ATemplateRow, ATemplateOperators, ATransaction);
         }
     }
-    
+
     /// auto generated
     public class AFeesReceivableCascading : TTypedDataAccess
     {
-        
         /// cascading delete
         public static void DeleteByPrimaryKey(Int32 ALedgerNumber, String AFeeCode, TDBTransaction ATransaction, bool AWithCascDelete)
         {
             AFeesReceivableAccess.DeleteByPrimaryKey(ALedgerNumber, AFeeCode, ATransaction);
         }
-        
+
         /// cascading delete
         public static void DeleteUsingTemplate(AFeesReceivableRow ATemplateRow, StringCollection ATemplateOperators, TDBTransaction ATransaction, bool AWithCascDelete)
         {
             AFeesReceivableAccess.DeleteUsingTemplate(ATemplateRow, ATemplateOperators, ATransaction);
         }
     }
-    
+
     /// auto generated
     public class AFinStatementGroupCascading : TTypedDataAccess
     {
-        
         /// cascading delete
         public static void DeleteByPrimaryKey(Int32 ALedgerNumber, String AFinStatementGroup, String AAccountCode, String AReportSection, TDBTransaction ATransaction, bool AWithCascDelete)
         {
             AFinStatementGroupAccess.DeleteByPrimaryKey(ALedgerNumber, AFinStatementGroup, AAccountCode, AReportSection, ATransaction);
         }
-        
+
         /// cascading delete
         public static void DeleteUsingTemplate(AFinStatementGroupRow ATemplateRow, StringCollection ATemplateOperators, TDBTransaction ATransaction, bool AWithCascDelete)
         {
             AFinStatementGroupAccess.DeleteUsingTemplate(ATemplateRow, ATemplateOperators, ATransaction);
         }
     }
-    
+
     /// auto generated
     public class AFormCascading : TTypedDataAccess
     {
-        
         /// cascading delete
         public static void DeleteByPrimaryKey(String AFormCode, String AFormName, TDBTransaction ATransaction, bool AWithCascDelete)
         {
@@ -4052,7 +3876,7 @@ namespace Ict.Petra.Shared.MCommon.Data.Cascading
             }
             AFormAccess.DeleteByPrimaryKey(AFormCode, AFormName, ATransaction);
         }
-        
+
         /// cascading delete
         public static void DeleteUsingTemplate(AFormRow ATemplateRow, StringCollection ATemplateOperators, TDBTransaction ATransaction, bool AWithCascDelete)
         {
@@ -4069,11 +3893,10 @@ namespace Ict.Petra.Shared.MCommon.Data.Cascading
             AFormAccess.DeleteUsingTemplate(ATemplateRow, ATemplateOperators, ATransaction);
         }
     }
-    
+
     /// auto generated
     public class AFormElementTypeCascading : TTypedDataAccess
     {
-        
         /// cascading delete
         public static void DeleteByPrimaryKey(String AFormCode, String AFormElementTypeCode, TDBTransaction ATransaction, bool AWithCascDelete)
         {
@@ -4089,7 +3912,7 @@ namespace Ict.Petra.Shared.MCommon.Data.Cascading
             }
             AFormElementTypeAccess.DeleteByPrimaryKey(AFormCode, AFormElementTypeCode, ATransaction);
         }
-        
+
         /// cascading delete
         public static void DeleteUsingTemplate(AFormElementTypeRow ATemplateRow, StringCollection ATemplateOperators, TDBTransaction ATransaction, bool AWithCascDelete)
         {
@@ -4106,28 +3929,26 @@ namespace Ict.Petra.Shared.MCommon.Data.Cascading
             AFormElementTypeAccess.DeleteUsingTemplate(ATemplateRow, ATemplateOperators, ATransaction);
         }
     }
-    
+
     /// auto generated
     public class AFormElementCascading : TTypedDataAccess
     {
-        
         /// cascading delete
         public static void DeleteByPrimaryKey(String AFormCode, String AFormName, Int32 AFormSequence, TDBTransaction ATransaction, bool AWithCascDelete)
         {
             AFormElementAccess.DeleteByPrimaryKey(AFormCode, AFormName, AFormSequence, ATransaction);
         }
-        
+
         /// cascading delete
         public static void DeleteUsingTemplate(AFormElementRow ATemplateRow, StringCollection ATemplateOperators, TDBTransaction ATransaction, bool AWithCascDelete)
         {
             AFormElementAccess.DeleteUsingTemplate(ATemplateRow, ATemplateOperators, ATransaction);
         }
     }
-    
+
     /// auto generated
     public class AFreeformAnalysisCascading : TTypedDataAccess
     {
-        
         /// cascading delete
         public static void DeleteByPrimaryKey(Int32 ALedgerNumber, String AAnalysisTypeCode, String AAnalysisValue, TDBTransaction ATransaction, bool AWithCascDelete)
         {
@@ -4135,29 +3956,25 @@ namespace Ict.Petra.Shared.MCommon.Data.Cascading
             if ((AWithCascDelete == true))
             {
                 APrevYearTransAnalAttribTable MyAPrevYearTransAnalAttribTable = null;
-                APrevYearTransAnalAttribAccess.LoadViaAFreeformAnalysis(out MyAPrevYearTransAnalAttribTable, ALedgerNumber, AAnalysisTypeCode, AAnalysisValue, StringHelper.StrSplit("a_ledger_number_i,a_batch_number_i,a_journal_number_i,a_transaction_number_i,a_an" +
-                            "alysis_type_code_c", ","), ATransaction);
+                APrevYearTransAnalAttribAccess.LoadViaAFreeformAnalysis(out MyAPrevYearTransAnalAttribTable, ALedgerNumber, AAnalysisTypeCode, AAnalysisValue, StringHelper.StrSplit("a_ledger_number_i,a_batch_number_i,a_journal_number_i,a_transaction_number_i,a_analysis_type_code_c", ","), ATransaction);
                 for (countRow = 0; (countRow != MyAPrevYearTransAnalAttribTable.Rows.Count); countRow = (countRow + 1))
                 {
                     APrevYearTransAnalAttribCascading.DeleteUsingTemplate(MyAPrevYearTransAnalAttribTable[countRow], null, ATransaction, AWithCascDelete);
                 }
                 AThisyearoldTransAnalAttribTable MyAThisyearoldTransAnalAttribTable = null;
-                AThisyearoldTransAnalAttribAccess.LoadViaAFreeformAnalysis(out MyAThisyearoldTransAnalAttribTable, ALedgerNumber, AAnalysisTypeCode, AAnalysisValue, StringHelper.StrSplit("a_ledger_number_i,a_batch_number_i,a_journal_number_i,a_transaction_number_i,a_an" +
-                            "alysis_type_code_c", ","), ATransaction);
+                AThisyearoldTransAnalAttribAccess.LoadViaAFreeformAnalysis(out MyAThisyearoldTransAnalAttribTable, ALedgerNumber, AAnalysisTypeCode, AAnalysisValue, StringHelper.StrSplit("a_ledger_number_i,a_batch_number_i,a_journal_number_i,a_transaction_number_i,a_analysis_type_code_c", ","), ATransaction);
                 for (countRow = 0; (countRow != MyAThisyearoldTransAnalAttribTable.Rows.Count); countRow = (countRow + 1))
                 {
                     AThisyearoldTransAnalAttribCascading.DeleteUsingTemplate(MyAThisyearoldTransAnalAttribTable[countRow], null, ATransaction, AWithCascDelete);
                 }
                 ARecurringTransAnalAttribTable MyARecurringTransAnalAttribTable = null;
-                ARecurringTransAnalAttribAccess.LoadViaAFreeformAnalysis(out MyARecurringTransAnalAttribTable, ALedgerNumber, AAnalysisTypeCode, AAnalysisValue, StringHelper.StrSplit("a_ledger_number_i,a_batch_number_i,a_journal_number_i,a_transaction_number_i,a_an" +
-                            "alysis_type_code_c", ","), ATransaction);
+                ARecurringTransAnalAttribAccess.LoadViaAFreeformAnalysis(out MyARecurringTransAnalAttribTable, ALedgerNumber, AAnalysisTypeCode, AAnalysisValue, StringHelper.StrSplit("a_ledger_number_i,a_batch_number_i,a_journal_number_i,a_transaction_number_i,a_analysis_type_code_c", ","), ATransaction);
                 for (countRow = 0; (countRow != MyARecurringTransAnalAttribTable.Rows.Count); countRow = (countRow + 1))
                 {
                     ARecurringTransAnalAttribCascading.DeleteUsingTemplate(MyARecurringTransAnalAttribTable[countRow], null, ATransaction, AWithCascDelete);
                 }
                 ATransAnalAttribTable MyATransAnalAttribTable = null;
-                ATransAnalAttribAccess.LoadViaAFreeformAnalysis(out MyATransAnalAttribTable, ALedgerNumber, AAnalysisTypeCode, AAnalysisValue, StringHelper.StrSplit("a_ledger_number_i,a_batch_number_i,a_journal_number_i,a_transaction_number_i,a_an" +
-                            "alysis_type_code_c", ","), ATransaction);
+                ATransAnalAttribAccess.LoadViaAFreeformAnalysis(out MyATransAnalAttribTable, ALedgerNumber, AAnalysisTypeCode, AAnalysisValue, StringHelper.StrSplit("a_ledger_number_i,a_batch_number_i,a_journal_number_i,a_transaction_number_i,a_analysis_type_code_c", ","), ATransaction);
                 for (countRow = 0; (countRow != MyATransAnalAttribTable.Rows.Count); countRow = (countRow + 1))
                 {
                     ATransAnalAttribCascading.DeleteUsingTemplate(MyATransAnalAttribTable[countRow], null, ATransaction, AWithCascDelete);
@@ -4171,7 +3988,7 @@ namespace Ict.Petra.Shared.MCommon.Data.Cascading
             }
             AFreeformAnalysisAccess.DeleteByPrimaryKey(ALedgerNumber, AAnalysisTypeCode, AAnalysisValue, ATransaction);
         }
-        
+
         /// cascading delete
         public static void DeleteUsingTemplate(AFreeformAnalysisRow ATemplateRow, StringCollection ATemplateOperators, TDBTransaction ATransaction, bool AWithCascDelete)
         {
@@ -4179,29 +3996,25 @@ namespace Ict.Petra.Shared.MCommon.Data.Cascading
             if ((AWithCascDelete == true))
             {
                 APrevYearTransAnalAttribTable MyAPrevYearTransAnalAttribTable = null;
-                APrevYearTransAnalAttribAccess.LoadViaAFreeformAnalysisTemplate(out MyAPrevYearTransAnalAttribTable, ATemplateRow, StringHelper.StrSplit("a_ledger_number_i,a_batch_number_i,a_journal_number_i,a_transaction_number_i,a_an" +
-                            "alysis_type_code_c", ","), ATransaction);
+                APrevYearTransAnalAttribAccess.LoadViaAFreeformAnalysisTemplate(out MyAPrevYearTransAnalAttribTable, ATemplateRow, StringHelper.StrSplit("a_ledger_number_i,a_batch_number_i,a_journal_number_i,a_transaction_number_i,a_analysis_type_code_c", ","), ATransaction);
                 for (countRow = 0; (countRow != MyAPrevYearTransAnalAttribTable.Rows.Count); countRow = (countRow + 1))
                 {
                     APrevYearTransAnalAttribCascading.DeleteUsingTemplate(MyAPrevYearTransAnalAttribTable[countRow], null, ATransaction, AWithCascDelete);
                 }
                 AThisyearoldTransAnalAttribTable MyAThisyearoldTransAnalAttribTable = null;
-                AThisyearoldTransAnalAttribAccess.LoadViaAFreeformAnalysisTemplate(out MyAThisyearoldTransAnalAttribTable, ATemplateRow, StringHelper.StrSplit("a_ledger_number_i,a_batch_number_i,a_journal_number_i,a_transaction_number_i,a_an" +
-                            "alysis_type_code_c", ","), ATransaction);
+                AThisyearoldTransAnalAttribAccess.LoadViaAFreeformAnalysisTemplate(out MyAThisyearoldTransAnalAttribTable, ATemplateRow, StringHelper.StrSplit("a_ledger_number_i,a_batch_number_i,a_journal_number_i,a_transaction_number_i,a_analysis_type_code_c", ","), ATransaction);
                 for (countRow = 0; (countRow != MyAThisyearoldTransAnalAttribTable.Rows.Count); countRow = (countRow + 1))
                 {
                     AThisyearoldTransAnalAttribCascading.DeleteUsingTemplate(MyAThisyearoldTransAnalAttribTable[countRow], null, ATransaction, AWithCascDelete);
                 }
                 ARecurringTransAnalAttribTable MyARecurringTransAnalAttribTable = null;
-                ARecurringTransAnalAttribAccess.LoadViaAFreeformAnalysisTemplate(out MyARecurringTransAnalAttribTable, ATemplateRow, StringHelper.StrSplit("a_ledger_number_i,a_batch_number_i,a_journal_number_i,a_transaction_number_i,a_an" +
-                            "alysis_type_code_c", ","), ATransaction);
+                ARecurringTransAnalAttribAccess.LoadViaAFreeformAnalysisTemplate(out MyARecurringTransAnalAttribTable, ATemplateRow, StringHelper.StrSplit("a_ledger_number_i,a_batch_number_i,a_journal_number_i,a_transaction_number_i,a_analysis_type_code_c", ","), ATransaction);
                 for (countRow = 0; (countRow != MyARecurringTransAnalAttribTable.Rows.Count); countRow = (countRow + 1))
                 {
                     ARecurringTransAnalAttribCascading.DeleteUsingTemplate(MyARecurringTransAnalAttribTable[countRow], null, ATransaction, AWithCascDelete);
                 }
                 ATransAnalAttribTable MyATransAnalAttribTable = null;
-                ATransAnalAttribAccess.LoadViaAFreeformAnalysisTemplate(out MyATransAnalAttribTable, ATemplateRow, StringHelper.StrSplit("a_ledger_number_i,a_batch_number_i,a_journal_number_i,a_transaction_number_i,a_an" +
-                            "alysis_type_code_c", ","), ATransaction);
+                ATransAnalAttribAccess.LoadViaAFreeformAnalysisTemplate(out MyATransAnalAttribTable, ATemplateRow, StringHelper.StrSplit("a_ledger_number_i,a_batch_number_i,a_journal_number_i,a_transaction_number_i,a_analysis_type_code_c", ","), ATransaction);
                 for (countRow = 0; (countRow != MyATransAnalAttribTable.Rows.Count); countRow = (countRow + 1))
                 {
                     ATransAnalAttribCascading.DeleteUsingTemplate(MyATransAnalAttribTable[countRow], null, ATransaction, AWithCascDelete);
@@ -4216,11 +4029,10 @@ namespace Ict.Petra.Shared.MCommon.Data.Cascading
             AFreeformAnalysisAccess.DeleteUsingTemplate(ATemplateRow, ATemplateOperators, ATransaction);
         }
     }
-    
+
     /// auto generated
     public class AGeneralLedgerMasterCascading : TTypedDataAccess
     {
-        
         /// cascading delete
         public static void DeleteByPrimaryKey(Int32 AGlmSequence, TDBTransaction ATransaction, bool AWithCascDelete)
         {
@@ -4236,7 +4048,7 @@ namespace Ict.Petra.Shared.MCommon.Data.Cascading
             }
             AGeneralLedgerMasterAccess.DeleteByPrimaryKey(AGlmSequence, ATransaction);
         }
-        
+
         /// cascading delete
         public static void DeleteUsingTemplate(AGeneralLedgerMasterRow ATemplateRow, StringCollection ATemplateOperators, TDBTransaction ATransaction, bool AWithCascDelete)
         {
@@ -4253,45 +4065,42 @@ namespace Ict.Petra.Shared.MCommon.Data.Cascading
             AGeneralLedgerMasterAccess.DeleteUsingTemplate(ATemplateRow, ATemplateOperators, ATransaction);
         }
     }
-    
+
     /// auto generated
     public class AGeneralLedgerMasterPeriodCascading : TTypedDataAccess
     {
-        
         /// cascading delete
         public static void DeleteByPrimaryKey(Int32 AGlmSequence, Int32 APeriodNumber, TDBTransaction ATransaction, bool AWithCascDelete)
         {
             AGeneralLedgerMasterPeriodAccess.DeleteByPrimaryKey(AGlmSequence, APeriodNumber, ATransaction);
         }
-        
+
         /// cascading delete
         public static void DeleteUsingTemplate(AGeneralLedgerMasterPeriodRow ATemplateRow, StringCollection ATemplateOperators, TDBTransaction ATransaction, bool AWithCascDelete)
         {
             AGeneralLedgerMasterPeriodAccess.DeleteUsingTemplate(ATemplateRow, ATemplateOperators, ATransaction);
         }
     }
-    
+
     /// auto generated
     public class AIchStewardshipCascading : TTypedDataAccess
     {
-        
         /// cascading delete
         public static void DeleteByPrimaryKey(Int32 ALedgerNumber, Int32 APeriodNumber, Int32 AIchNumber, String ACostCentreCode, TDBTransaction ATransaction, bool AWithCascDelete)
         {
             AIchStewardshipAccess.DeleteByPrimaryKey(ALedgerNumber, APeriodNumber, AIchNumber, ACostCentreCode, ATransaction);
         }
-        
+
         /// cascading delete
         public static void DeleteUsingTemplate(AIchStewardshipRow ATemplateRow, StringCollection ATemplateOperators, TDBTransaction ATransaction, bool AWithCascDelete)
         {
             AIchStewardshipAccess.DeleteUsingTemplate(ATemplateRow, ATemplateOperators, ATransaction);
         }
     }
-    
+
     /// auto generated
     public class AMethodOfGivingCascading : TTypedDataAccess
     {
-        
         /// cascading delete
         public static void DeleteByPrimaryKey(String AMethodOfGivingCode, TDBTransaction ATransaction, bool AWithCascDelete)
         {
@@ -4313,7 +4122,7 @@ namespace Ict.Petra.Shared.MCommon.Data.Cascading
             }
             AMethodOfGivingAccess.DeleteByPrimaryKey(AMethodOfGivingCode, ATransaction);
         }
-        
+
         /// cascading delete
         public static void DeleteUsingTemplate(AMethodOfGivingRow ATemplateRow, StringCollection ATemplateOperators, TDBTransaction ATransaction, bool AWithCascDelete)
         {
@@ -4336,11 +4145,10 @@ namespace Ict.Petra.Shared.MCommon.Data.Cascading
             AMethodOfGivingAccess.DeleteUsingTemplate(ATemplateRow, ATemplateOperators, ATransaction);
         }
     }
-    
+
     /// auto generated
     public class AMethodOfPaymentCascading : TTypedDataAccess
     {
-        
         /// cascading delete
         public static void DeleteByPrimaryKey(String AMethodOfPaymentCode, TDBTransaction ATransaction, bool AWithCascDelete)
         {
@@ -4374,7 +4182,7 @@ namespace Ict.Petra.Shared.MCommon.Data.Cascading
             }
             AMethodOfPaymentAccess.DeleteByPrimaryKey(AMethodOfPaymentCode, ATransaction);
         }
-        
+
         /// cascading delete
         public static void DeleteUsingTemplate(AMethodOfPaymentRow ATemplateRow, StringCollection ATemplateOperators, TDBTransaction ATransaction, bool AWithCascDelete)
         {
@@ -4409,11 +4217,10 @@ namespace Ict.Petra.Shared.MCommon.Data.Cascading
             AMethodOfPaymentAccess.DeleteUsingTemplate(ATemplateRow, ATemplateOperators, ATransaction);
         }
     }
-    
+
     /// auto generated
     public class AMotivationGroupCascading : TTypedDataAccess
     {
-        
         /// cascading delete
         public static void DeleteByPrimaryKey(Int32 ALedgerNumber, String AMotivationGroupCode, TDBTransaction ATransaction, bool AWithCascDelete)
         {
@@ -4429,7 +4236,7 @@ namespace Ict.Petra.Shared.MCommon.Data.Cascading
             }
             AMotivationGroupAccess.DeleteByPrimaryKey(ALedgerNumber, AMotivationGroupCode, ATransaction);
         }
-        
+
         /// cascading delete
         public static void DeleteUsingTemplate(AMotivationGroupRow ATemplateRow, StringCollection ATemplateOperators, TDBTransaction ATransaction, bool AWithCascDelete)
         {
@@ -4446,11 +4253,10 @@ namespace Ict.Petra.Shared.MCommon.Data.Cascading
             AMotivationGroupAccess.DeleteUsingTemplate(ATemplateRow, ATemplateOperators, ATransaction);
         }
     }
-    
+
     /// auto generated
     public class AMotivationDetailCascading : TTypedDataAccess
     {
-        
         /// cascading delete
         public static void DeleteByPrimaryKey(Int32 ALedgerNumber, String AMotivationGroupCode, String AMotivationDetailCode, TDBTransaction ATransaction, bool AWithCascDelete)
         {
@@ -4470,8 +4276,7 @@ namespace Ict.Petra.Shared.MCommon.Data.Cascading
                     AEpMatchCascading.DeleteUsingTemplate(MyAEpMatchTable[countRow], null, ATransaction, AWithCascDelete);
                 }
                 AMotivationDetailFeeTable MyAMotivationDetailFeeTable = null;
-                AMotivationDetailFeeAccess.LoadViaAMotivationDetail(out MyAMotivationDetailFeeTable, ALedgerNumber, AMotivationGroupCode, AMotivationDetailCode, StringHelper.StrSplit("a_ledger_number_i,a_motivation_group_code_c,a_motivation_detail_code_c,a_fee_code" +
-                            "_c", ","), ATransaction);
+                AMotivationDetailFeeAccess.LoadViaAMotivationDetail(out MyAMotivationDetailFeeTable, ALedgerNumber, AMotivationGroupCode, AMotivationDetailCode, StringHelper.StrSplit("a_ledger_number_i,a_motivation_group_code_c,a_motivation_detail_code_c,a_fee_code_c", ","), ATransaction);
                 for (countRow = 0; (countRow != MyAMotivationDetailFeeTable.Rows.Count); countRow = (countRow + 1))
                 {
                     AMotivationDetailFeeCascading.DeleteUsingTemplate(MyAMotivationDetailFeeTable[countRow], null, ATransaction, AWithCascDelete);
@@ -4489,8 +4294,7 @@ namespace Ict.Petra.Shared.MCommon.Data.Cascading
                     AGiftDetailCascading.DeleteUsingTemplate(MyAGiftDetailTable[countRow], null, ATransaction, AWithCascDelete);
                 }
                 SGroupMotivationTable MySGroupMotivationTable = null;
-                SGroupMotivationAccess.LoadViaAMotivationDetail(out MySGroupMotivationTable, ALedgerNumber, AMotivationGroupCode, AMotivationDetailCode, StringHelper.StrSplit("s_group_id_c,s_group_unit_key_n,a_ledger_number_i,a_motivation_group_code_c,a_mot" +
-                            "ivation_detail_code_c", ","), ATransaction);
+                SGroupMotivationAccess.LoadViaAMotivationDetail(out MySGroupMotivationTable, ALedgerNumber, AMotivationGroupCode, AMotivationDetailCode, StringHelper.StrSplit("s_group_id_c,s_group_unit_key_n,a_ledger_number_i,a_motivation_group_code_c,a_motivation_detail_code_c", ","), ATransaction);
                 for (countRow = 0; (countRow != MySGroupMotivationTable.Rows.Count); countRow = (countRow + 1))
                 {
                     SGroupMotivationCascading.DeleteUsingTemplate(MySGroupMotivationTable[countRow], null, ATransaction, AWithCascDelete);
@@ -4504,7 +4308,7 @@ namespace Ict.Petra.Shared.MCommon.Data.Cascading
             }
             AMotivationDetailAccess.DeleteByPrimaryKey(ALedgerNumber, AMotivationGroupCode, AMotivationDetailCode, ATransaction);
         }
-        
+
         /// cascading delete
         public static void DeleteUsingTemplate(AMotivationDetailRow ATemplateRow, StringCollection ATemplateOperators, TDBTransaction ATransaction, bool AWithCascDelete)
         {
@@ -4524,8 +4328,7 @@ namespace Ict.Petra.Shared.MCommon.Data.Cascading
                     AEpMatchCascading.DeleteUsingTemplate(MyAEpMatchTable[countRow], null, ATransaction, AWithCascDelete);
                 }
                 AMotivationDetailFeeTable MyAMotivationDetailFeeTable = null;
-                AMotivationDetailFeeAccess.LoadViaAMotivationDetailTemplate(out MyAMotivationDetailFeeTable, ATemplateRow, StringHelper.StrSplit("a_ledger_number_i,a_motivation_group_code_c,a_motivation_detail_code_c,a_fee_code" +
-                            "_c", ","), ATransaction);
+                AMotivationDetailFeeAccess.LoadViaAMotivationDetailTemplate(out MyAMotivationDetailFeeTable, ATemplateRow, StringHelper.StrSplit("a_ledger_number_i,a_motivation_group_code_c,a_motivation_detail_code_c,a_fee_code_c", ","), ATransaction);
                 for (countRow = 0; (countRow != MyAMotivationDetailFeeTable.Rows.Count); countRow = (countRow + 1))
                 {
                     AMotivationDetailFeeCascading.DeleteUsingTemplate(MyAMotivationDetailFeeTable[countRow], null, ATransaction, AWithCascDelete);
@@ -4543,8 +4346,7 @@ namespace Ict.Petra.Shared.MCommon.Data.Cascading
                     AGiftDetailCascading.DeleteUsingTemplate(MyAGiftDetailTable[countRow], null, ATransaction, AWithCascDelete);
                 }
                 SGroupMotivationTable MySGroupMotivationTable = null;
-                SGroupMotivationAccess.LoadViaAMotivationDetailTemplate(out MySGroupMotivationTable, ATemplateRow, StringHelper.StrSplit("s_group_id_c,s_group_unit_key_n,a_ledger_number_i,a_motivation_group_code_c,a_mot" +
-                            "ivation_detail_code_c", ","), ATransaction);
+                SGroupMotivationAccess.LoadViaAMotivationDetailTemplate(out MySGroupMotivationTable, ATemplateRow, StringHelper.StrSplit("s_group_id_c,s_group_unit_key_n,a_ledger_number_i,a_motivation_group_code_c,a_motivation_detail_code_c", ","), ATransaction);
                 for (countRow = 0; (countRow != MySGroupMotivationTable.Rows.Count); countRow = (countRow + 1))
                 {
                     SGroupMotivationCascading.DeleteUsingTemplate(MySGroupMotivationTable[countRow], null, ATransaction, AWithCascDelete);
@@ -4559,45 +4361,42 @@ namespace Ict.Petra.Shared.MCommon.Data.Cascading
             AMotivationDetailAccess.DeleteUsingTemplate(ATemplateRow, ATemplateOperators, ATransaction);
         }
     }
-    
+
     /// auto generated
     public class AMotivationDetailFeeCascading : TTypedDataAccess
     {
-        
         /// cascading delete
         public static void DeleteByPrimaryKey(Int32 ALedgerNumber, String AMotivationGroupCode, String AMotivationDetailCode, String AFeeCode, TDBTransaction ATransaction, bool AWithCascDelete)
         {
             AMotivationDetailFeeAccess.DeleteByPrimaryKey(ALedgerNumber, AMotivationGroupCode, AMotivationDetailCode, AFeeCode, ATransaction);
         }
-        
+
         /// cascading delete
         public static void DeleteUsingTemplate(AMotivationDetailFeeRow ATemplateRow, StringCollection ATemplateOperators, TDBTransaction ATransaction, bool AWithCascDelete)
         {
             AMotivationDetailFeeAccess.DeleteUsingTemplate(ATemplateRow, ATemplateOperators, ATransaction);
         }
     }
-    
+
     /// auto generated
     public class AProcessedFeeCascading : TTypedDataAccess
     {
-        
         /// cascading delete
         public static void DeleteByPrimaryKey(Int32 ALedgerNumber, Int32 ABatchNumber, Int32 AGiftTransactionNumber, Int32 ADetailNumber, String AFeeCode, TDBTransaction ATransaction, bool AWithCascDelete)
         {
             AProcessedFeeAccess.DeleteByPrimaryKey(ALedgerNumber, ABatchNumber, AGiftTransactionNumber, ADetailNumber, AFeeCode, ATransaction);
         }
-        
+
         /// cascading delete
         public static void DeleteUsingTemplate(AProcessedFeeRow ATemplateRow, StringCollection ATemplateOperators, TDBTransaction ATransaction, bool AWithCascDelete)
         {
             AProcessedFeeAccess.DeleteUsingTemplate(ATemplateRow, ATemplateOperators, ATransaction);
         }
     }
-    
+
     /// auto generated
     public class ATransactionTypeCascading : TTypedDataAccess
     {
-        
         /// cascading delete
         public static void DeleteByPrimaryKey(Int32 ALedgerNumber, String ASubSystemCode, String ATransactionTypeCode, TDBTransaction ATransaction, bool AWithCascDelete)
         {
@@ -4631,7 +4430,7 @@ namespace Ict.Petra.Shared.MCommon.Data.Cascading
             }
             ATransactionTypeAccess.DeleteByPrimaryKey(ALedgerNumber, ASubSystemCode, ATransactionTypeCode, ATransaction);
         }
-        
+
         /// cascading delete
         public static void DeleteUsingTemplate(ATransactionTypeRow ATemplateRow, StringCollection ATemplateOperators, TDBTransaction ATransaction, bool AWithCascDelete)
         {
@@ -4666,11 +4465,10 @@ namespace Ict.Petra.Shared.MCommon.Data.Cascading
             ATransactionTypeAccess.DeleteUsingTemplate(ATemplateRow, ATemplateOperators, ATransaction);
         }
     }
-    
+
     /// auto generated
     public class APreviousYearBatchCascading : TTypedDataAccess
     {
-        
         /// cascading delete
         public static void DeleteByPrimaryKey(Int32 ALedgerNumber, Int32 ABatchNumber, TDBTransaction ATransaction, bool AWithCascDelete)
         {
@@ -4686,7 +4484,7 @@ namespace Ict.Petra.Shared.MCommon.Data.Cascading
             }
             APreviousYearBatchAccess.DeleteByPrimaryKey(ALedgerNumber, ABatchNumber, ATransaction);
         }
-        
+
         /// cascading delete
         public static void DeleteUsingTemplate(APreviousYearBatchRow ATemplateRow, StringCollection ATemplateOperators, TDBTransaction ATransaction, bool AWithCascDelete)
         {
@@ -4703,11 +4501,10 @@ namespace Ict.Petra.Shared.MCommon.Data.Cascading
             APreviousYearBatchAccess.DeleteUsingTemplate(ATemplateRow, ATemplateOperators, ATransaction);
         }
     }
-    
+
     /// auto generated
     public class APreviousYearJournalCascading : TTypedDataAccess
     {
-        
         /// cascading delete
         public static void DeleteByPrimaryKey(Int32 ALedgerNumber, Int32 ABatchNumber, Int32 AJournalNumber, TDBTransaction ATransaction, bool AWithCascDelete)
         {
@@ -4723,7 +4520,7 @@ namespace Ict.Petra.Shared.MCommon.Data.Cascading
             }
             APreviousYearJournalAccess.DeleteByPrimaryKey(ALedgerNumber, ABatchNumber, AJournalNumber, ATransaction);
         }
-        
+
         /// cascading delete
         public static void DeleteUsingTemplate(APreviousYearJournalRow ATemplateRow, StringCollection ATemplateOperators, TDBTransaction ATransaction, bool AWithCascDelete)
         {
@@ -4740,11 +4537,10 @@ namespace Ict.Petra.Shared.MCommon.Data.Cascading
             APreviousYearJournalAccess.DeleteUsingTemplate(ATemplateRow, ATemplateOperators, ATransaction);
         }
     }
-    
+
     /// auto generated
     public class APreviousYearTransactionCascading : TTypedDataAccess
     {
-        
         /// cascading delete
         public static void DeleteByPrimaryKey(Int32 ALedgerNumber, Int32 ABatchNumber, Int32 AJournalNumber, Int32 ATransactionNumber, TDBTransaction ATransaction, bool AWithCascDelete)
         {
@@ -4752,8 +4548,7 @@ namespace Ict.Petra.Shared.MCommon.Data.Cascading
             if ((AWithCascDelete == true))
             {
                 APrevYearTransAnalAttribTable MyAPrevYearTransAnalAttribTable = null;
-                APrevYearTransAnalAttribAccess.LoadViaAPreviousYearTransaction(out MyAPrevYearTransAnalAttribTable, ALedgerNumber, ABatchNumber, AJournalNumber, ATransactionNumber, StringHelper.StrSplit("a_ledger_number_i,a_batch_number_i,a_journal_number_i,a_transaction_number_i,a_an" +
-                            "alysis_type_code_c", ","), ATransaction);
+                APrevYearTransAnalAttribAccess.LoadViaAPreviousYearTransaction(out MyAPrevYearTransAnalAttribTable, ALedgerNumber, ABatchNumber, AJournalNumber, ATransactionNumber, StringHelper.StrSplit("a_ledger_number_i,a_batch_number_i,a_journal_number_i,a_transaction_number_i,a_analysis_type_code_c", ","), ATransaction);
                 for (countRow = 0; (countRow != MyAPrevYearTransAnalAttribTable.Rows.Count); countRow = (countRow + 1))
                 {
                     APrevYearTransAnalAttribCascading.DeleteUsingTemplate(MyAPrevYearTransAnalAttribTable[countRow], null, ATransaction, AWithCascDelete);
@@ -4761,7 +4556,7 @@ namespace Ict.Petra.Shared.MCommon.Data.Cascading
             }
             APreviousYearTransactionAccess.DeleteByPrimaryKey(ALedgerNumber, ABatchNumber, AJournalNumber, ATransactionNumber, ATransaction);
         }
-        
+
         /// cascading delete
         public static void DeleteUsingTemplate(APreviousYearTransactionRow ATemplateRow, StringCollection ATemplateOperators, TDBTransaction ATransaction, bool AWithCascDelete)
         {
@@ -4769,8 +4564,7 @@ namespace Ict.Petra.Shared.MCommon.Data.Cascading
             if ((AWithCascDelete == true))
             {
                 APrevYearTransAnalAttribTable MyAPrevYearTransAnalAttribTable = null;
-                APrevYearTransAnalAttribAccess.LoadViaAPreviousYearTransactionTemplate(out MyAPrevYearTransAnalAttribTable, ATemplateRow, StringHelper.StrSplit("a_ledger_number_i,a_batch_number_i,a_journal_number_i,a_transaction_number_i,a_an" +
-                            "alysis_type_code_c", ","), ATransaction);
+                APrevYearTransAnalAttribAccess.LoadViaAPreviousYearTransactionTemplate(out MyAPrevYearTransAnalAttribTable, ATemplateRow, StringHelper.StrSplit("a_ledger_number_i,a_batch_number_i,a_journal_number_i,a_transaction_number_i,a_analysis_type_code_c", ","), ATransaction);
                 for (countRow = 0; (countRow != MyAPrevYearTransAnalAttribTable.Rows.Count); countRow = (countRow + 1))
                 {
                     APrevYearTransAnalAttribCascading.DeleteUsingTemplate(MyAPrevYearTransAnalAttribTable[countRow], null, ATransaction, AWithCascDelete);
@@ -4779,45 +4573,42 @@ namespace Ict.Petra.Shared.MCommon.Data.Cascading
             APreviousYearTransactionAccess.DeleteUsingTemplate(ATemplateRow, ATemplateOperators, ATransaction);
         }
     }
-    
+
     /// auto generated
     public class APrevYearTransAnalAttribCascading : TTypedDataAccess
     {
-        
         /// cascading delete
         public static void DeleteByPrimaryKey(Int32 ALedgerNumber, Int32 ABatchNumber, Int32 AJournalNumber, Int32 ATransactionNumber, String AAnalysisTypeCode, TDBTransaction ATransaction, bool AWithCascDelete)
         {
             APrevYearTransAnalAttribAccess.DeleteByPrimaryKey(ALedgerNumber, ABatchNumber, AJournalNumber, ATransactionNumber, AAnalysisTypeCode, ATransaction);
         }
-        
+
         /// cascading delete
         public static void DeleteUsingTemplate(APrevYearTransAnalAttribRow ATemplateRow, StringCollection ATemplateOperators, TDBTransaction ATransaction, bool AWithCascDelete)
         {
             APrevYearTransAnalAttribAccess.DeleteUsingTemplate(ATemplateRow, ATemplateOperators, ATransaction);
         }
     }
-    
+
     /// auto generated
     public class APrevYearCorpExRateCascading : TTypedDataAccess
     {
-        
         /// cascading delete
         public static void DeleteByPrimaryKey(String AFromCurrencyCode, String AToCurrencyCode, System.DateTime ADateEffectiveFrom, TDBTransaction ATransaction, bool AWithCascDelete)
         {
             APrevYearCorpExRateAccess.DeleteByPrimaryKey(AFromCurrencyCode, AToCurrencyCode, ADateEffectiveFrom, ATransaction);
         }
-        
+
         /// cascading delete
         public static void DeleteUsingTemplate(APrevYearCorpExRateRow ATemplateRow, StringCollection ATemplateOperators, TDBTransaction ATransaction, bool AWithCascDelete)
         {
             APrevYearCorpExRateAccess.DeleteUsingTemplate(ATemplateRow, ATemplateOperators, ATransaction);
         }
     }
-    
+
     /// auto generated
     public class AThisYearOldBatchCascading : TTypedDataAccess
     {
-        
         /// cascading delete
         public static void DeleteByPrimaryKey(Int32 ALedgerNumber, Int32 ABatchNumber, TDBTransaction ATransaction, bool AWithCascDelete)
         {
@@ -4833,7 +4624,7 @@ namespace Ict.Petra.Shared.MCommon.Data.Cascading
             }
             AThisYearOldBatchAccess.DeleteByPrimaryKey(ALedgerNumber, ABatchNumber, ATransaction);
         }
-        
+
         /// cascading delete
         public static void DeleteUsingTemplate(AThisYearOldBatchRow ATemplateRow, StringCollection ATemplateOperators, TDBTransaction ATransaction, bool AWithCascDelete)
         {
@@ -4850,11 +4641,10 @@ namespace Ict.Petra.Shared.MCommon.Data.Cascading
             AThisYearOldBatchAccess.DeleteUsingTemplate(ATemplateRow, ATemplateOperators, ATransaction);
         }
     }
-    
+
     /// auto generated
     public class AThisYearOldJournalCascading : TTypedDataAccess
     {
-        
         /// cascading delete
         public static void DeleteByPrimaryKey(Int32 ALedgerNumber, Int32 ABatchNumber, Int32 AJournalNumber, TDBTransaction ATransaction, bool AWithCascDelete)
         {
@@ -4870,7 +4660,7 @@ namespace Ict.Petra.Shared.MCommon.Data.Cascading
             }
             AThisYearOldJournalAccess.DeleteByPrimaryKey(ALedgerNumber, ABatchNumber, AJournalNumber, ATransaction);
         }
-        
+
         /// cascading delete
         public static void DeleteUsingTemplate(AThisYearOldJournalRow ATemplateRow, StringCollection ATemplateOperators, TDBTransaction ATransaction, bool AWithCascDelete)
         {
@@ -4887,11 +4677,10 @@ namespace Ict.Petra.Shared.MCommon.Data.Cascading
             AThisYearOldJournalAccess.DeleteUsingTemplate(ATemplateRow, ATemplateOperators, ATransaction);
         }
     }
-    
+
     /// auto generated
     public class AThisYearOldTransactionCascading : TTypedDataAccess
     {
-        
         /// cascading delete
         public static void DeleteByPrimaryKey(Int32 ALedgerNumber, Int32 ABatchNumber, Int32 AJournalNumber, Int32 ATransactionNumber, TDBTransaction ATransaction, bool AWithCascDelete)
         {
@@ -4899,8 +4688,7 @@ namespace Ict.Petra.Shared.MCommon.Data.Cascading
             if ((AWithCascDelete == true))
             {
                 AThisyearoldTransAnalAttribTable MyAThisyearoldTransAnalAttribTable = null;
-                AThisyearoldTransAnalAttribAccess.LoadViaAThisYearOldTransaction(out MyAThisyearoldTransAnalAttribTable, ALedgerNumber, ABatchNumber, AJournalNumber, ATransactionNumber, StringHelper.StrSplit("a_ledger_number_i,a_batch_number_i,a_journal_number_i,a_transaction_number_i,a_an" +
-                            "alysis_type_code_c", ","), ATransaction);
+                AThisyearoldTransAnalAttribAccess.LoadViaAThisYearOldTransaction(out MyAThisyearoldTransAnalAttribTable, ALedgerNumber, ABatchNumber, AJournalNumber, ATransactionNumber, StringHelper.StrSplit("a_ledger_number_i,a_batch_number_i,a_journal_number_i,a_transaction_number_i,a_analysis_type_code_c", ","), ATransaction);
                 for (countRow = 0; (countRow != MyAThisyearoldTransAnalAttribTable.Rows.Count); countRow = (countRow + 1))
                 {
                     AThisyearoldTransAnalAttribCascading.DeleteUsingTemplate(MyAThisyearoldTransAnalAttribTable[countRow], null, ATransaction, AWithCascDelete);
@@ -4908,7 +4696,7 @@ namespace Ict.Petra.Shared.MCommon.Data.Cascading
             }
             AThisYearOldTransactionAccess.DeleteByPrimaryKey(ALedgerNumber, ABatchNumber, AJournalNumber, ATransactionNumber, ATransaction);
         }
-        
+
         /// cascading delete
         public static void DeleteUsingTemplate(AThisYearOldTransactionRow ATemplateRow, StringCollection ATemplateOperators, TDBTransaction ATransaction, bool AWithCascDelete)
         {
@@ -4916,8 +4704,7 @@ namespace Ict.Petra.Shared.MCommon.Data.Cascading
             if ((AWithCascDelete == true))
             {
                 AThisyearoldTransAnalAttribTable MyAThisyearoldTransAnalAttribTable = null;
-                AThisyearoldTransAnalAttribAccess.LoadViaAThisYearOldTransactionTemplate(out MyAThisyearoldTransAnalAttribTable, ATemplateRow, StringHelper.StrSplit("a_ledger_number_i,a_batch_number_i,a_journal_number_i,a_transaction_number_i,a_an" +
-                            "alysis_type_code_c", ","), ATransaction);
+                AThisyearoldTransAnalAttribAccess.LoadViaAThisYearOldTransactionTemplate(out MyAThisyearoldTransAnalAttribTable, ATemplateRow, StringHelper.StrSplit("a_ledger_number_i,a_batch_number_i,a_journal_number_i,a_transaction_number_i,a_analysis_type_code_c", ","), ATransaction);
                 for (countRow = 0; (countRow != MyAThisyearoldTransAnalAttribTable.Rows.Count); countRow = (countRow + 1))
                 {
                     AThisyearoldTransAnalAttribCascading.DeleteUsingTemplate(MyAThisyearoldTransAnalAttribTable[countRow], null, ATransaction, AWithCascDelete);
@@ -4926,28 +4713,26 @@ namespace Ict.Petra.Shared.MCommon.Data.Cascading
             AThisYearOldTransactionAccess.DeleteUsingTemplate(ATemplateRow, ATemplateOperators, ATransaction);
         }
     }
-    
+
     /// auto generated
     public class AThisyearoldTransAnalAttribCascading : TTypedDataAccess
     {
-        
         /// cascading delete
         public static void DeleteByPrimaryKey(Int32 ALedgerNumber, Int32 ABatchNumber, Int32 AJournalNumber, Int32 ATransactionNumber, String AAnalysisTypeCode, TDBTransaction ATransaction, bool AWithCascDelete)
         {
             AThisyearoldTransAnalAttribAccess.DeleteByPrimaryKey(ALedgerNumber, ABatchNumber, AJournalNumber, ATransactionNumber, AAnalysisTypeCode, ATransaction);
         }
-        
+
         /// cascading delete
         public static void DeleteUsingTemplate(AThisyearoldTransAnalAttribRow ATemplateRow, StringCollection ATemplateOperators, TDBTransaction ATransaction, bool AWithCascDelete)
         {
             AThisyearoldTransAnalAttribAccess.DeleteUsingTemplate(ATemplateRow, ATemplateOperators, ATransaction);
         }
     }
-    
+
     /// auto generated
     public class ARecurringBatchCascading : TTypedDataAccess
     {
-        
         /// cascading delete
         public static void DeleteByPrimaryKey(Int32 ALedgerNumber, Int32 ABatchNumber, TDBTransaction ATransaction, bool AWithCascDelete)
         {
@@ -4963,7 +4748,7 @@ namespace Ict.Petra.Shared.MCommon.Data.Cascading
             }
             ARecurringBatchAccess.DeleteByPrimaryKey(ALedgerNumber, ABatchNumber, ATransaction);
         }
-        
+
         /// cascading delete
         public static void DeleteUsingTemplate(ARecurringBatchRow ATemplateRow, StringCollection ATemplateOperators, TDBTransaction ATransaction, bool AWithCascDelete)
         {
@@ -4980,11 +4765,10 @@ namespace Ict.Petra.Shared.MCommon.Data.Cascading
             ARecurringBatchAccess.DeleteUsingTemplate(ATemplateRow, ATemplateOperators, ATransaction);
         }
     }
-    
+
     /// auto generated
     public class ARecurringJournalCascading : TTypedDataAccess
     {
-        
         /// cascading delete
         public static void DeleteByPrimaryKey(Int32 ALedgerNumber, Int32 ABatchNumber, Int32 AJournalNumber, TDBTransaction ATransaction, bool AWithCascDelete)
         {
@@ -5000,7 +4784,7 @@ namespace Ict.Petra.Shared.MCommon.Data.Cascading
             }
             ARecurringJournalAccess.DeleteByPrimaryKey(ALedgerNumber, ABatchNumber, AJournalNumber, ATransaction);
         }
-        
+
         /// cascading delete
         public static void DeleteUsingTemplate(ARecurringJournalRow ATemplateRow, StringCollection ATemplateOperators, TDBTransaction ATransaction, bool AWithCascDelete)
         {
@@ -5017,11 +4801,10 @@ namespace Ict.Petra.Shared.MCommon.Data.Cascading
             ARecurringJournalAccess.DeleteUsingTemplate(ATemplateRow, ATemplateOperators, ATransaction);
         }
     }
-    
+
     /// auto generated
     public class ARecurringTransactionCascading : TTypedDataAccess
     {
-        
         /// cascading delete
         public static void DeleteByPrimaryKey(Int32 ALedgerNumber, Int32 ABatchNumber, Int32 AJournalNumber, Int32 ATransactionNumber, TDBTransaction ATransaction, bool AWithCascDelete)
         {
@@ -5029,8 +4812,7 @@ namespace Ict.Petra.Shared.MCommon.Data.Cascading
             if ((AWithCascDelete == true))
             {
                 ARecurringTransAnalAttribTable MyARecurringTransAnalAttribTable = null;
-                ARecurringTransAnalAttribAccess.LoadViaARecurringTransaction(out MyARecurringTransAnalAttribTable, ALedgerNumber, ABatchNumber, AJournalNumber, ATransactionNumber, StringHelper.StrSplit("a_ledger_number_i,a_batch_number_i,a_journal_number_i,a_transaction_number_i,a_an" +
-                            "alysis_type_code_c", ","), ATransaction);
+                ARecurringTransAnalAttribAccess.LoadViaARecurringTransaction(out MyARecurringTransAnalAttribTable, ALedgerNumber, ABatchNumber, AJournalNumber, ATransactionNumber, StringHelper.StrSplit("a_ledger_number_i,a_batch_number_i,a_journal_number_i,a_transaction_number_i,a_analysis_type_code_c", ","), ATransaction);
                 for (countRow = 0; (countRow != MyARecurringTransAnalAttribTable.Rows.Count); countRow = (countRow + 1))
                 {
                     ARecurringTransAnalAttribCascading.DeleteUsingTemplate(MyARecurringTransAnalAttribTable[countRow], null, ATransaction, AWithCascDelete);
@@ -5038,7 +4820,7 @@ namespace Ict.Petra.Shared.MCommon.Data.Cascading
             }
             ARecurringTransactionAccess.DeleteByPrimaryKey(ALedgerNumber, ABatchNumber, AJournalNumber, ATransactionNumber, ATransaction);
         }
-        
+
         /// cascading delete
         public static void DeleteUsingTemplate(ARecurringTransactionRow ATemplateRow, StringCollection ATemplateOperators, TDBTransaction ATransaction, bool AWithCascDelete)
         {
@@ -5046,8 +4828,7 @@ namespace Ict.Petra.Shared.MCommon.Data.Cascading
             if ((AWithCascDelete == true))
             {
                 ARecurringTransAnalAttribTable MyARecurringTransAnalAttribTable = null;
-                ARecurringTransAnalAttribAccess.LoadViaARecurringTransactionTemplate(out MyARecurringTransAnalAttribTable, ATemplateRow, StringHelper.StrSplit("a_ledger_number_i,a_batch_number_i,a_journal_number_i,a_transaction_number_i,a_an" +
-                            "alysis_type_code_c", ","), ATransaction);
+                ARecurringTransAnalAttribAccess.LoadViaARecurringTransactionTemplate(out MyARecurringTransAnalAttribTable, ATemplateRow, StringHelper.StrSplit("a_ledger_number_i,a_batch_number_i,a_journal_number_i,a_transaction_number_i,a_analysis_type_code_c", ","), ATransaction);
                 for (countRow = 0; (countRow != MyARecurringTransAnalAttribTable.Rows.Count); countRow = (countRow + 1))
                 {
                     ARecurringTransAnalAttribCascading.DeleteUsingTemplate(MyARecurringTransAnalAttribTable[countRow], null, ATransaction, AWithCascDelete);
@@ -5056,28 +4837,26 @@ namespace Ict.Petra.Shared.MCommon.Data.Cascading
             ARecurringTransactionAccess.DeleteUsingTemplate(ATemplateRow, ATemplateOperators, ATransaction);
         }
     }
-    
+
     /// auto generated
     public class ARecurringTransAnalAttribCascading : TTypedDataAccess
     {
-        
         /// cascading delete
         public static void DeleteByPrimaryKey(Int32 ALedgerNumber, Int32 ABatchNumber, Int32 AJournalNumber, Int32 ATransactionNumber, String AAnalysisTypeCode, TDBTransaction ATransaction, bool AWithCascDelete)
         {
             ARecurringTransAnalAttribAccess.DeleteByPrimaryKey(ALedgerNumber, ABatchNumber, AJournalNumber, ATransactionNumber, AAnalysisTypeCode, ATransaction);
         }
-        
+
         /// cascading delete
         public static void DeleteUsingTemplate(ARecurringTransAnalAttribRow ATemplateRow, StringCollection ATemplateOperators, TDBTransaction ATransaction, bool AWithCascDelete)
         {
             ARecurringTransAnalAttribAccess.DeleteUsingTemplate(ATemplateRow, ATemplateOperators, ATransaction);
         }
     }
-    
+
     /// auto generated
     public class ARecurringGiftBatchCascading : TTypedDataAccess
     {
-        
         /// cascading delete
         public static void DeleteByPrimaryKey(Int32 ALedgerNumber, Int32 ABatchNumber, TDBTransaction ATransaction, bool AWithCascDelete)
         {
@@ -5093,7 +4872,7 @@ namespace Ict.Petra.Shared.MCommon.Data.Cascading
             }
             ARecurringGiftBatchAccess.DeleteByPrimaryKey(ALedgerNumber, ABatchNumber, ATransaction);
         }
-        
+
         /// cascading delete
         public static void DeleteUsingTemplate(ARecurringGiftBatchRow ATemplateRow, StringCollection ATemplateOperators, TDBTransaction ATransaction, bool AWithCascDelete)
         {
@@ -5110,11 +4889,10 @@ namespace Ict.Petra.Shared.MCommon.Data.Cascading
             ARecurringGiftBatchAccess.DeleteUsingTemplate(ATemplateRow, ATemplateOperators, ATransaction);
         }
     }
-    
+
     /// auto generated
     public class ARecurringGiftCascading : TTypedDataAccess
     {
-        
         /// cascading delete
         public static void DeleteByPrimaryKey(Int32 ALedgerNumber, Int32 ABatchNumber, Int32 AGiftTransactionNumber, TDBTransaction ATransaction, bool AWithCascDelete)
         {
@@ -5130,7 +4908,7 @@ namespace Ict.Petra.Shared.MCommon.Data.Cascading
             }
             ARecurringGiftAccess.DeleteByPrimaryKey(ALedgerNumber, ABatchNumber, AGiftTransactionNumber, ATransaction);
         }
-        
+
         /// cascading delete
         public static void DeleteUsingTemplate(ARecurringGiftRow ATemplateRow, StringCollection ATemplateOperators, TDBTransaction ATransaction, bool AWithCascDelete)
         {
@@ -5147,28 +4925,26 @@ namespace Ict.Petra.Shared.MCommon.Data.Cascading
             ARecurringGiftAccess.DeleteUsingTemplate(ATemplateRow, ATemplateOperators, ATransaction);
         }
     }
-    
+
     /// auto generated
     public class ARecurringGiftDetailCascading : TTypedDataAccess
     {
-        
         /// cascading delete
         public static void DeleteByPrimaryKey(Int32 ALedgerNumber, Int32 ABatchNumber, Int32 AGiftTransactionNumber, Int32 ADetailNumber, TDBTransaction ATransaction, bool AWithCascDelete)
         {
             ARecurringGiftDetailAccess.DeleteByPrimaryKey(ALedgerNumber, ABatchNumber, AGiftTransactionNumber, ADetailNumber, ATransaction);
         }
-        
+
         /// cascading delete
         public static void DeleteUsingTemplate(ARecurringGiftDetailRow ATemplateRow, StringCollection ATemplateOperators, TDBTransaction ATransaction, bool AWithCascDelete)
         {
             ARecurringGiftDetailAccess.DeleteUsingTemplate(ATemplateRow, ATemplateOperators, ATransaction);
         }
     }
-    
+
     /// auto generated
     public class AGiftBatchCascading : TTypedDataAccess
     {
-        
         /// cascading delete
         public static void DeleteByPrimaryKey(Int32 ALedgerNumber, Int32 ABatchNumber, TDBTransaction ATransaction, bool AWithCascDelete)
         {
@@ -5184,7 +4960,7 @@ namespace Ict.Petra.Shared.MCommon.Data.Cascading
             }
             AGiftBatchAccess.DeleteByPrimaryKey(ALedgerNumber, ABatchNumber, ATransaction);
         }
-        
+
         /// cascading delete
         public static void DeleteUsingTemplate(AGiftBatchRow ATemplateRow, StringCollection ATemplateOperators, TDBTransaction ATransaction, bool AWithCascDelete)
         {
@@ -5201,11 +4977,10 @@ namespace Ict.Petra.Shared.MCommon.Data.Cascading
             AGiftBatchAccess.DeleteUsingTemplate(ATemplateRow, ATemplateOperators, ATransaction);
         }
     }
-    
+
     /// auto generated
     public class AGiftCascading : TTypedDataAccess
     {
-        
         /// cascading delete
         public static void DeleteByPrimaryKey(Int32 ALedgerNumber, Int32 ABatchNumber, Int32 AGiftTransactionNumber, TDBTransaction ATransaction, bool AWithCascDelete)
         {
@@ -5219,8 +4994,7 @@ namespace Ict.Petra.Shared.MCommon.Data.Cascading
                     AGiftDetailCascading.DeleteUsingTemplate(MyAGiftDetailTable[countRow], null, ATransaction, AWithCascDelete);
                 }
                 SGroupGiftTable MySGroupGiftTable = null;
-                SGroupGiftAccess.LoadViaAGift(out MySGroupGiftTable, ALedgerNumber, ABatchNumber, AGiftTransactionNumber, StringHelper.StrSplit("s_group_id_c,s_group_unit_key_n,a_ledger_number_i,a_batch_number_i,a_gift_transac" +
-                            "tion_number_i", ","), ATransaction);
+                SGroupGiftAccess.LoadViaAGift(out MySGroupGiftTable, ALedgerNumber, ABatchNumber, AGiftTransactionNumber, StringHelper.StrSplit("s_group_id_c,s_group_unit_key_n,a_ledger_number_i,a_batch_number_i,a_gift_transaction_number_i", ","), ATransaction);
                 for (countRow = 0; (countRow != MySGroupGiftTable.Rows.Count); countRow = (countRow + 1))
                 {
                     SGroupGiftCascading.DeleteUsingTemplate(MySGroupGiftTable[countRow], null, ATransaction, AWithCascDelete);
@@ -5228,7 +5002,7 @@ namespace Ict.Petra.Shared.MCommon.Data.Cascading
             }
             AGiftAccess.DeleteByPrimaryKey(ALedgerNumber, ABatchNumber, AGiftTransactionNumber, ATransaction);
         }
-        
+
         /// cascading delete
         public static void DeleteUsingTemplate(AGiftRow ATemplateRow, StringCollection ATemplateOperators, TDBTransaction ATransaction, bool AWithCascDelete)
         {
@@ -5242,8 +5016,7 @@ namespace Ict.Petra.Shared.MCommon.Data.Cascading
                     AGiftDetailCascading.DeleteUsingTemplate(MyAGiftDetailTable[countRow], null, ATransaction, AWithCascDelete);
                 }
                 SGroupGiftTable MySGroupGiftTable = null;
-                SGroupGiftAccess.LoadViaAGiftTemplate(out MySGroupGiftTable, ATemplateRow, StringHelper.StrSplit("s_group_id_c,s_group_unit_key_n,a_ledger_number_i,a_batch_number_i,a_gift_transac" +
-                            "tion_number_i", ","), ATransaction);
+                SGroupGiftAccess.LoadViaAGiftTemplate(out MySGroupGiftTable, ATemplateRow, StringHelper.StrSplit("s_group_id_c,s_group_unit_key_n,a_ledger_number_i,a_batch_number_i,a_gift_transaction_number_i", ","), ATransaction);
                 for (countRow = 0; (countRow != MySGroupGiftTable.Rows.Count); countRow = (countRow + 1))
                 {
                     SGroupGiftCascading.DeleteUsingTemplate(MySGroupGiftTable[countRow], null, ATransaction, AWithCascDelete);
@@ -5252,28 +5025,26 @@ namespace Ict.Petra.Shared.MCommon.Data.Cascading
             AGiftAccess.DeleteUsingTemplate(ATemplateRow, ATemplateOperators, ATransaction);
         }
     }
-    
+
     /// auto generated
     public class AGiftDetailCascading : TTypedDataAccess
     {
-        
         /// cascading delete
         public static void DeleteByPrimaryKey(Int32 ALedgerNumber, Int32 ABatchNumber, Int32 AGiftTransactionNumber, Int32 ADetailNumber, TDBTransaction ATransaction, bool AWithCascDelete)
         {
             AGiftDetailAccess.DeleteByPrimaryKey(ALedgerNumber, ABatchNumber, AGiftTransactionNumber, ADetailNumber, ATransaction);
         }
-        
+
         /// cascading delete
         public static void DeleteUsingTemplate(AGiftDetailRow ATemplateRow, StringCollection ATemplateOperators, TDBTransaction ATransaction, bool AWithCascDelete)
         {
             AGiftDetailAccess.DeleteUsingTemplate(ATemplateRow, ATemplateOperators, ATransaction);
         }
     }
-    
+
     /// auto generated
     public class ABatchCascading : TTypedDataAccess
     {
-        
         /// cascading delete
         public static void DeleteByPrimaryKey(Int32 ALedgerNumber, Int32 ABatchNumber, TDBTransaction ATransaction, bool AWithCascDelete)
         {
@@ -5289,7 +5060,7 @@ namespace Ict.Petra.Shared.MCommon.Data.Cascading
             }
             ABatchAccess.DeleteByPrimaryKey(ALedgerNumber, ABatchNumber, ATransaction);
         }
-        
+
         /// cascading delete
         public static void DeleteUsingTemplate(ABatchRow ATemplateRow, StringCollection ATemplateOperators, TDBTransaction ATransaction, bool AWithCascDelete)
         {
@@ -5306,11 +5077,10 @@ namespace Ict.Petra.Shared.MCommon.Data.Cascading
             ABatchAccess.DeleteUsingTemplate(ATemplateRow, ATemplateOperators, ATransaction);
         }
     }
-    
+
     /// auto generated
     public class AJournalCascading : TTypedDataAccess
     {
-        
         /// cascading delete
         public static void DeleteByPrimaryKey(Int32 ALedgerNumber, Int32 ABatchNumber, Int32 AJournalNumber, TDBTransaction ATransaction, bool AWithCascDelete)
         {
@@ -5326,7 +5096,7 @@ namespace Ict.Petra.Shared.MCommon.Data.Cascading
             }
             AJournalAccess.DeleteByPrimaryKey(ALedgerNumber, ABatchNumber, AJournalNumber, ATransaction);
         }
-        
+
         /// cascading delete
         public static void DeleteUsingTemplate(AJournalRow ATemplateRow, StringCollection ATemplateOperators, TDBTransaction ATransaction, bool AWithCascDelete)
         {
@@ -5343,11 +5113,10 @@ namespace Ict.Petra.Shared.MCommon.Data.Cascading
             AJournalAccess.DeleteUsingTemplate(ATemplateRow, ATemplateOperators, ATransaction);
         }
     }
-    
+
     /// auto generated
     public class ATransactionCascading : TTypedDataAccess
     {
-        
         /// cascading delete
         public static void DeleteByPrimaryKey(Int32 ALedgerNumber, Int32 ABatchNumber, Int32 AJournalNumber, Int32 ATransactionNumber, TDBTransaction ATransaction, bool AWithCascDelete)
         {
@@ -5355,8 +5124,7 @@ namespace Ict.Petra.Shared.MCommon.Data.Cascading
             if ((AWithCascDelete == true))
             {
                 ATransAnalAttribTable MyATransAnalAttribTable = null;
-                ATransAnalAttribAccess.LoadViaATransaction(out MyATransAnalAttribTable, ALedgerNumber, ABatchNumber, AJournalNumber, ATransactionNumber, StringHelper.StrSplit("a_ledger_number_i,a_batch_number_i,a_journal_number_i,a_transaction_number_i,a_an" +
-                            "alysis_type_code_c", ","), ATransaction);
+                ATransAnalAttribAccess.LoadViaATransaction(out MyATransAnalAttribTable, ALedgerNumber, ABatchNumber, AJournalNumber, ATransactionNumber, StringHelper.StrSplit("a_ledger_number_i,a_batch_number_i,a_journal_number_i,a_transaction_number_i,a_analysis_type_code_c", ","), ATransaction);
                 for (countRow = 0; (countRow != MyATransAnalAttribTable.Rows.Count); countRow = (countRow + 1))
                 {
                     ATransAnalAttribCascading.DeleteUsingTemplate(MyATransAnalAttribTable[countRow], null, ATransaction, AWithCascDelete);
@@ -5364,7 +5132,7 @@ namespace Ict.Petra.Shared.MCommon.Data.Cascading
             }
             ATransactionAccess.DeleteByPrimaryKey(ALedgerNumber, ABatchNumber, AJournalNumber, ATransactionNumber, ATransaction);
         }
-        
+
         /// cascading delete
         public static void DeleteUsingTemplate(ATransactionRow ATemplateRow, StringCollection ATemplateOperators, TDBTransaction ATransaction, bool AWithCascDelete)
         {
@@ -5372,8 +5140,7 @@ namespace Ict.Petra.Shared.MCommon.Data.Cascading
             if ((AWithCascDelete == true))
             {
                 ATransAnalAttribTable MyATransAnalAttribTable = null;
-                ATransAnalAttribAccess.LoadViaATransactionTemplate(out MyATransAnalAttribTable, ATemplateRow, StringHelper.StrSplit("a_ledger_number_i,a_batch_number_i,a_journal_number_i,a_transaction_number_i,a_an" +
-                            "alysis_type_code_c", ","), ATransaction);
+                ATransAnalAttribAccess.LoadViaATransactionTemplate(out MyATransAnalAttribTable, ATemplateRow, StringHelper.StrSplit("a_ledger_number_i,a_batch_number_i,a_journal_number_i,a_transaction_number_i,a_analysis_type_code_c", ","), ATransaction);
                 for (countRow = 0; (countRow != MyATransAnalAttribTable.Rows.Count); countRow = (countRow + 1))
                 {
                     ATransAnalAttribCascading.DeleteUsingTemplate(MyATransAnalAttribTable[countRow], null, ATransaction, AWithCascDelete);
@@ -5382,96 +5149,90 @@ namespace Ict.Petra.Shared.MCommon.Data.Cascading
             ATransactionAccess.DeleteUsingTemplate(ATemplateRow, ATemplateOperators, ATransaction);
         }
     }
-    
+
     /// auto generated
     public class ATransAnalAttribCascading : TTypedDataAccess
     {
-        
         /// cascading delete
         public static void DeleteByPrimaryKey(Int32 ALedgerNumber, Int32 ABatchNumber, Int32 AJournalNumber, Int32 ATransactionNumber, String AAnalysisTypeCode, TDBTransaction ATransaction, bool AWithCascDelete)
         {
             ATransAnalAttribAccess.DeleteByPrimaryKey(ALedgerNumber, ABatchNumber, AJournalNumber, ATransactionNumber, AAnalysisTypeCode, ATransaction);
         }
-        
+
         /// cascading delete
         public static void DeleteUsingTemplate(ATransAnalAttribRow ATemplateRow, StringCollection ATemplateOperators, TDBTransaction ATransaction, bool AWithCascDelete)
         {
             ATransAnalAttribAccess.DeleteUsingTemplate(ATemplateRow, ATemplateOperators, ATransaction);
         }
     }
-    
+
     /// auto generated
     public class ASuspenseAccountCascading : TTypedDataAccess
     {
-        
         /// cascading delete
         public static void DeleteByPrimaryKey(Int32 ALedgerNumber, String ASuspenseAccountCode, TDBTransaction ATransaction, bool AWithCascDelete)
         {
             ASuspenseAccountAccess.DeleteByPrimaryKey(ALedgerNumber, ASuspenseAccountCode, ATransaction);
         }
-        
+
         /// cascading delete
         public static void DeleteUsingTemplate(ASuspenseAccountRow ATemplateRow, StringCollection ATemplateOperators, TDBTransaction ATransaction, bool AWithCascDelete)
         {
             ASuspenseAccountAccess.DeleteUsingTemplate(ATemplateRow, ATemplateOperators, ATransaction);
         }
     }
-    
+
     /// auto generated
     public class ASpecialTransTypeCascading : TTypedDataAccess
     {
-        
         /// cascading delete
         public static void DeleteByPrimaryKey(String ASubSystemCode, String ATransactionTypeCode, TDBTransaction ATransaction, bool AWithCascDelete)
         {
             ASpecialTransTypeAccess.DeleteByPrimaryKey(ASubSystemCode, ATransactionTypeCode, ATransaction);
         }
-        
+
         /// cascading delete
         public static void DeleteUsingTemplate(ASpecialTransTypeRow ATemplateRow, StringCollection ATemplateOperators, TDBTransaction ATransaction, bool AWithCascDelete)
         {
             ASpecialTransTypeAccess.DeleteUsingTemplate(ATemplateRow, ATemplateOperators, ATransaction);
         }
     }
-    
+
     /// auto generated
     public class ASystemInterfaceCascading : TTypedDataAccess
     {
-        
         /// cascading delete
         public static void DeleteByPrimaryKey(Int32 ALedgerNumber, String ASubSystemCode, TDBTransaction ATransaction, bool AWithCascDelete)
         {
             ASystemInterfaceAccess.DeleteByPrimaryKey(ALedgerNumber, ASubSystemCode, ATransaction);
         }
-        
+
         /// cascading delete
         public static void DeleteUsingTemplate(ASystemInterfaceRow ATemplateRow, StringCollection ATemplateOperators, TDBTransaction ATransaction, bool AWithCascDelete)
         {
             ASystemInterfaceAccess.DeleteUsingTemplate(ATemplateRow, ATemplateOperators, ATransaction);
         }
     }
-    
+
     /// auto generated
     public class ACurrencyLanguageCascading : TTypedDataAccess
     {
-        
         /// cascading delete
         public static void DeleteByPrimaryKey(String ACurrencyCode, String ALanguageCode, TDBTransaction ATransaction, bool AWithCascDelete)
         {
             ACurrencyLanguageAccess.DeleteByPrimaryKey(ACurrencyCode, ALanguageCode, ATransaction);
         }
-        
+
         /// cascading delete
         public static void DeleteUsingTemplate(ACurrencyLanguageRow ATemplateRow, StringCollection ATemplateOperators, TDBTransaction ATransaction, bool AWithCascDelete)
         {
             ACurrencyLanguageAccess.DeleteUsingTemplate(ATemplateRow, ATemplateOperators, ATransaction);
         }
     }
-    
+
     /// auto generated
     public class AApSupplierCascading : TTypedDataAccess
     {
-        
         /// cascading delete
         public static void DeleteByPrimaryKey(Int64 APartnerKey, TDBTransaction ATransaction, bool AWithCascDelete)
         {
@@ -5487,7 +5248,7 @@ namespace Ict.Petra.Shared.MCommon.Data.Cascading
             }
             AApSupplierAccess.DeleteByPrimaryKey(APartnerKey, ATransaction);
         }
-        
+
         /// cascading delete
         public static void DeleteUsingTemplate(AApSupplierRow ATemplateRow, StringCollection ATemplateOperators, TDBTransaction ATransaction, bool AWithCascDelete)
         {
@@ -5504,27 +5265,27 @@ namespace Ict.Petra.Shared.MCommon.Data.Cascading
             AApSupplierAccess.DeleteUsingTemplate(ATemplateRow, ATemplateOperators, ATransaction);
         }
     }
-    
+
     /// auto generated
     public class AApDocumentCascading : TTypedDataAccess
     {
-        
         /// cascading delete
         public static void DeleteByPrimaryKey(Int32 ALedgerNumber, Int32 AApNumber, TDBTransaction ATransaction, bool AWithCascDelete)
         {
             int countRow;
             if ((AWithCascDelete == true))
             {
-                ACrdtNoteInvoiceLinkTable MyACrdtNoteInvoiceLinkTable = null;
-                ACrdtNoteInvoiceLinkAccess.LoadViaAApDocumentCreditNoteNumber(out MyACrdtNoteInvoiceLinkTable, ALedgerNumber, AApNumber, StringHelper.StrSplit("a_ledger_number_i,a_credit_note_number_i,a_invoice_number_i", ","), ATransaction);
-                for (countRow = 0; (countRow != MyACrdtNoteInvoiceLinkTable.Rows.Count); countRow = (countRow + 1))
+                ACrdtNoteInvoiceLinkTable MyACrdtNoteInvoiceLinkCreditNoteNumberTable = null;
+                ACrdtNoteInvoiceLinkAccess.LoadViaAApDocumentCreditNoteNumber(out MyACrdtNoteInvoiceLinkCreditNoteNumberTable, ALedgerNumber, AApNumber, StringHelper.StrSplit("a_ledger_number_i,a_credit_note_number_i,a_invoice_number_i", ","), ATransaction);
+                for (countRow = 0; (countRow != MyACrdtNoteInvoiceLinkCreditNoteNumberTable.Rows.Count); countRow = (countRow + 1))
                 {
-                    ACrdtNoteInvoiceLinkCascading.DeleteUsingTemplate(MyACrdtNoteInvoiceLinkTable[countRow], null, ATransaction, AWithCascDelete);
+                    ACrdtNoteInvoiceLinkCascading.DeleteUsingTemplate(MyACrdtNoteInvoiceLinkCreditNoteNumberTable[countRow], null, ATransaction, AWithCascDelete);
                 }
-                ACrdtNoteInvoiceLinkAccess.LoadViaAApDocumentInvoiceNumber(out MyACrdtNoteInvoiceLinkTable, ALedgerNumber, AApNumber, StringHelper.StrSplit("a_ledger_number_i,a_credit_note_number_i,a_invoice_number_i", ","), ATransaction);
-                for (countRow = 0; (countRow != MyACrdtNoteInvoiceLinkTable.Rows.Count); countRow = (countRow + 1))
+                ACrdtNoteInvoiceLinkTable MyACrdtNoteInvoiceLinkInvoiceNumberTable = null;
+                ACrdtNoteInvoiceLinkAccess.LoadViaAApDocumentInvoiceNumber(out MyACrdtNoteInvoiceLinkInvoiceNumberTable, ALedgerNumber, AApNumber, StringHelper.StrSplit("a_ledger_number_i,a_credit_note_number_i,a_invoice_number_i", ","), ATransaction);
+                for (countRow = 0; (countRow != MyACrdtNoteInvoiceLinkInvoiceNumberTable.Rows.Count); countRow = (countRow + 1))
                 {
-                    ACrdtNoteInvoiceLinkCascading.DeleteUsingTemplate(MyACrdtNoteInvoiceLinkTable[countRow], null, ATransaction, AWithCascDelete);
+                    ACrdtNoteInvoiceLinkCascading.DeleteUsingTemplate(MyACrdtNoteInvoiceLinkInvoiceNumberTable[countRow], null, ATransaction, AWithCascDelete);
                 }
                 AApDocumentDetailTable MyAApDocumentDetailTable = null;
                 AApDocumentDetailAccess.LoadViaAApDocument(out MyAApDocumentDetailTable, ALedgerNumber, AApNumber, StringHelper.StrSplit("a_ledger_number_i,a_ap_number_i,a_detail_number_i", ","), ATransaction);
@@ -5547,23 +5308,24 @@ namespace Ict.Petra.Shared.MCommon.Data.Cascading
             }
             AApDocumentAccess.DeleteByPrimaryKey(ALedgerNumber, AApNumber, ATransaction);
         }
-        
+
         /// cascading delete
         public static void DeleteUsingTemplate(AApDocumentRow ATemplateRow, StringCollection ATemplateOperators, TDBTransaction ATransaction, bool AWithCascDelete)
         {
             int countRow;
             if ((AWithCascDelete == true))
             {
-                ACrdtNoteInvoiceLinkTable MyACrdtNoteInvoiceLinkTable = null;
-                ACrdtNoteInvoiceLinkAccess.LoadViaAApDocumentCreditNoteNumberTemplate(out MyACrdtNoteInvoiceLinkTable, ATemplateRow, StringHelper.StrSplit("a_ledger_number_i,a_credit_note_number_i,a_invoice_number_i", ","), ATransaction);
-                for (countRow = 0; (countRow != MyACrdtNoteInvoiceLinkTable.Rows.Count); countRow = (countRow + 1))
+                ACrdtNoteInvoiceLinkTable MyACrdtNoteInvoiceLinkCreditNoteNumberTable = null;
+                ACrdtNoteInvoiceLinkAccess.LoadViaAApDocumentCreditNoteNumberTemplate(out MyACrdtNoteInvoiceLinkCreditNoteNumberTable, ATemplateRow, StringHelper.StrSplit("a_ledger_number_i,a_credit_note_number_i,a_invoice_number_i", ","), ATransaction);
+                for (countRow = 0; (countRow != MyACrdtNoteInvoiceLinkCreditNoteNumberTable.Rows.Count); countRow = (countRow + 1))
                 {
-                    ACrdtNoteInvoiceLinkCascading.DeleteUsingTemplate(MyACrdtNoteInvoiceLinkTable[countRow], null, ATransaction, AWithCascDelete);
+                    ACrdtNoteInvoiceLinkCascading.DeleteUsingTemplate(MyACrdtNoteInvoiceLinkCreditNoteNumberTable[countRow], null, ATransaction, AWithCascDelete);
                 }
-                ACrdtNoteInvoiceLinkAccess.LoadViaAApDocumentInvoiceNumberTemplate(out MyACrdtNoteInvoiceLinkTable, ATemplateRow, StringHelper.StrSplit("a_ledger_number_i,a_credit_note_number_i,a_invoice_number_i", ","), ATransaction);
-                for (countRow = 0; (countRow != MyACrdtNoteInvoiceLinkTable.Rows.Count); countRow = (countRow + 1))
+                ACrdtNoteInvoiceLinkTable MyACrdtNoteInvoiceLinkInvoiceNumberTable = null;
+                ACrdtNoteInvoiceLinkAccess.LoadViaAApDocumentInvoiceNumberTemplate(out MyACrdtNoteInvoiceLinkInvoiceNumberTable, ATemplateRow, StringHelper.StrSplit("a_ledger_number_i,a_credit_note_number_i,a_invoice_number_i", ","), ATransaction);
+                for (countRow = 0; (countRow != MyACrdtNoteInvoiceLinkInvoiceNumberTable.Rows.Count); countRow = (countRow + 1))
                 {
-                    ACrdtNoteInvoiceLinkCascading.DeleteUsingTemplate(MyACrdtNoteInvoiceLinkTable[countRow], null, ATransaction, AWithCascDelete);
+                    ACrdtNoteInvoiceLinkCascading.DeleteUsingTemplate(MyACrdtNoteInvoiceLinkInvoiceNumberTable[countRow], null, ATransaction, AWithCascDelete);
                 }
                 AApDocumentDetailTable MyAApDocumentDetailTable = null;
                 AApDocumentDetailAccess.LoadViaAApDocumentTemplate(out MyAApDocumentDetailTable, ATemplateRow, StringHelper.StrSplit("a_ledger_number_i,a_ap_number_i,a_detail_number_i", ","), ATransaction);
@@ -5587,28 +5349,26 @@ namespace Ict.Petra.Shared.MCommon.Data.Cascading
             AApDocumentAccess.DeleteUsingTemplate(ATemplateRow, ATemplateOperators, ATransaction);
         }
     }
-    
+
     /// auto generated
     public class ACrdtNoteInvoiceLinkCascading : TTypedDataAccess
     {
-        
         /// cascading delete
         public static void DeleteByPrimaryKey(Int32 ALedgerNumber, Int32 ACreditNoteNumber, Int32 AInvoiceNumber, TDBTransaction ATransaction, bool AWithCascDelete)
         {
             ACrdtNoteInvoiceLinkAccess.DeleteByPrimaryKey(ALedgerNumber, ACreditNoteNumber, AInvoiceNumber, ATransaction);
         }
-        
+
         /// cascading delete
         public static void DeleteUsingTemplate(ACrdtNoteInvoiceLinkRow ATemplateRow, StringCollection ATemplateOperators, TDBTransaction ATransaction, bool AWithCascDelete)
         {
             ACrdtNoteInvoiceLinkAccess.DeleteUsingTemplate(ATemplateRow, ATemplateOperators, ATransaction);
         }
     }
-    
+
     /// auto generated
     public class AApDocumentDetailCascading : TTypedDataAccess
     {
-        
         /// cascading delete
         public static void DeleteByPrimaryKey(Int32 ALedgerNumber, Int32 AApNumber, Int32 ADetailNumber, TDBTransaction ATransaction, bool AWithCascDelete)
         {
@@ -5624,7 +5384,7 @@ namespace Ict.Petra.Shared.MCommon.Data.Cascading
             }
             AApDocumentDetailAccess.DeleteByPrimaryKey(ALedgerNumber, AApNumber, ADetailNumber, ATransaction);
         }
-        
+
         /// cascading delete
         public static void DeleteUsingTemplate(AApDocumentDetailRow ATemplateRow, StringCollection ATemplateOperators, TDBTransaction ATransaction, bool AWithCascDelete)
         {
@@ -5641,11 +5401,10 @@ namespace Ict.Petra.Shared.MCommon.Data.Cascading
             AApDocumentDetailAccess.DeleteUsingTemplate(ATemplateRow, ATemplateOperators, ATransaction);
         }
     }
-    
+
     /// auto generated
     public class AApPaymentCascading : TTypedDataAccess
     {
-        
         /// cascading delete
         public static void DeleteByPrimaryKey(Int32 ALedgerNumber, Int32 APaymentNumber, TDBTransaction ATransaction, bool AWithCascDelete)
         {
@@ -5661,7 +5420,7 @@ namespace Ict.Petra.Shared.MCommon.Data.Cascading
             }
             AApPaymentAccess.DeleteByPrimaryKey(ALedgerNumber, APaymentNumber, ATransaction);
         }
-        
+
         /// cascading delete
         public static void DeleteUsingTemplate(AApPaymentRow ATemplateRow, StringCollection ATemplateOperators, TDBTransaction ATransaction, bool AWithCascDelete)
         {
@@ -5678,28 +5437,26 @@ namespace Ict.Petra.Shared.MCommon.Data.Cascading
             AApPaymentAccess.DeleteUsingTemplate(ATemplateRow, ATemplateOperators, ATransaction);
         }
     }
-    
+
     /// auto generated
     public class AApDocumentPaymentCascading : TTypedDataAccess
     {
-        
         /// cascading delete
         public static void DeleteByPrimaryKey(Int32 ALedgerNumber, Int32 AApNumber, Int32 APaymentNumber, TDBTransaction ATransaction, bool AWithCascDelete)
         {
             AApDocumentPaymentAccess.DeleteByPrimaryKey(ALedgerNumber, AApNumber, APaymentNumber, ATransaction);
         }
-        
+
         /// cascading delete
         public static void DeleteUsingTemplate(AApDocumentPaymentRow ATemplateRow, StringCollection ATemplateOperators, TDBTransaction ATransaction, bool AWithCascDelete)
         {
             AApDocumentPaymentAccess.DeleteUsingTemplate(ATemplateRow, ATemplateOperators, ATransaction);
         }
     }
-    
+
     /// auto generated
     public class AEpPaymentCascading : TTypedDataAccess
     {
-        
         /// cascading delete
         public static void DeleteByPrimaryKey(Int32 ALedgerNumber, Int32 APaymentNumber, TDBTransaction ATransaction, bool AWithCascDelete)
         {
@@ -5715,7 +5472,7 @@ namespace Ict.Petra.Shared.MCommon.Data.Cascading
             }
             AEpPaymentAccess.DeleteByPrimaryKey(ALedgerNumber, APaymentNumber, ATransaction);
         }
-        
+
         /// cascading delete
         public static void DeleteUsingTemplate(AEpPaymentRow ATemplateRow, StringCollection ATemplateOperators, TDBTransaction ATransaction, bool AWithCascDelete)
         {
@@ -5732,45 +5489,42 @@ namespace Ict.Petra.Shared.MCommon.Data.Cascading
             AEpPaymentAccess.DeleteUsingTemplate(ATemplateRow, ATemplateOperators, ATransaction);
         }
     }
-    
+
     /// auto generated
     public class AEpDocumentPaymentCascading : TTypedDataAccess
     {
-        
         /// cascading delete
         public static void DeleteByPrimaryKey(Int32 ALedgerNumber, Int32 AApNumber, Int32 APaymentNumber, TDBTransaction ATransaction, bool AWithCascDelete)
         {
             AEpDocumentPaymentAccess.DeleteByPrimaryKey(ALedgerNumber, AApNumber, APaymentNumber, ATransaction);
         }
-        
+
         /// cascading delete
         public static void DeleteUsingTemplate(AEpDocumentPaymentRow ATemplateRow, StringCollection ATemplateOperators, TDBTransaction ATransaction, bool AWithCascDelete)
         {
             AEpDocumentPaymentAccess.DeleteUsingTemplate(ATemplateRow, ATemplateOperators, ATransaction);
         }
     }
-    
+
     /// auto generated
     public class AApAnalAttribCascading : TTypedDataAccess
     {
-        
         /// cascading delete
         public static void DeleteByPrimaryKey(Int32 ALedgerNumber, Int32 AApNumber, Int32 ADetailNumber, String AAnalysisTypeCode, TDBTransaction ATransaction, bool AWithCascDelete)
         {
             AApAnalAttribAccess.DeleteByPrimaryKey(ALedgerNumber, AApNumber, ADetailNumber, AAnalysisTypeCode, ATransaction);
         }
-        
+
         /// cascading delete
         public static void DeleteUsingTemplate(AApAnalAttribRow ATemplateRow, StringCollection ATemplateOperators, TDBTransaction ATransaction, bool AWithCascDelete)
         {
             AApAnalAttribAccess.DeleteUsingTemplate(ATemplateRow, ATemplateOperators, ATransaction);
         }
     }
-    
+
     /// auto generated
     public class AArCategoryCascading : TTypedDataAccess
     {
-        
         /// cascading delete
         public static void DeleteByPrimaryKey(String AArCategoryCode, TDBTransaction ATransaction, bool AWithCascDelete)
         {
@@ -5798,7 +5552,7 @@ namespace Ict.Petra.Shared.MCommon.Data.Cascading
             }
             AArCategoryAccess.DeleteByPrimaryKey(AArCategoryCode, ATransaction);
         }
-        
+
         /// cascading delete
         public static void DeleteUsingTemplate(AArCategoryRow ATemplateRow, StringCollection ATemplateOperators, TDBTransaction ATransaction, bool AWithCascDelete)
         {
@@ -5827,11 +5581,10 @@ namespace Ict.Petra.Shared.MCommon.Data.Cascading
             AArCategoryAccess.DeleteUsingTemplate(ATemplateRow, ATemplateOperators, ATransaction);
         }
     }
-    
+
     /// auto generated
     public class AArArticleCascading : TTypedDataAccess
     {
-        
         /// cascading delete
         public static void DeleteByPrimaryKey(String AArArticleCode, TDBTransaction ATransaction, bool AWithCascDelete)
         {
@@ -5859,7 +5612,7 @@ namespace Ict.Petra.Shared.MCommon.Data.Cascading
             }
             AArArticleAccess.DeleteByPrimaryKey(AArArticleCode, ATransaction);
         }
-        
+
         /// cascading delete
         public static void DeleteUsingTemplate(AArArticleRow ATemplateRow, StringCollection ATemplateOperators, TDBTransaction ATransaction, bool AWithCascDelete)
         {
@@ -5888,11 +5641,10 @@ namespace Ict.Petra.Shared.MCommon.Data.Cascading
             AArArticleAccess.DeleteUsingTemplate(ATemplateRow, ATemplateOperators, ATransaction);
         }
     }
-    
+
     /// auto generated
     public class AArArticlePriceCascading : TTypedDataAccess
     {
-        
         /// cascading delete
         public static void DeleteByPrimaryKey(String AArArticleCode, System.DateTime AArDateValidFrom, TDBTransaction ATransaction, bool AWithCascDelete)
         {
@@ -5908,7 +5660,7 @@ namespace Ict.Petra.Shared.MCommon.Data.Cascading
             }
             AArArticlePriceAccess.DeleteByPrimaryKey(AArArticleCode, AArDateValidFrom, ATransaction);
         }
-        
+
         /// cascading delete
         public static void DeleteUsingTemplate(AArArticlePriceRow ATemplateRow, StringCollection ATemplateOperators, TDBTransaction ATransaction, bool AWithCascDelete)
         {
@@ -5925,11 +5677,10 @@ namespace Ict.Petra.Shared.MCommon.Data.Cascading
             AArArticlePriceAccess.DeleteUsingTemplate(ATemplateRow, ATemplateOperators, ATransaction);
         }
     }
-    
+
     /// auto generated
     public class AArDiscountCascading : TTypedDataAccess
     {
-        
         /// cascading delete
         public static void DeleteByPrimaryKey(String AArDiscountCode, System.DateTime AArDateValidFrom, TDBTransaction ATransaction, bool AWithCascDelete)
         {
@@ -5949,15 +5700,13 @@ namespace Ict.Petra.Shared.MCommon.Data.Cascading
                     AArDefaultDiscountCascading.DeleteUsingTemplate(MyAArDefaultDiscountTable[countRow], null, ATransaction, AWithCascDelete);
                 }
                 AArInvoiceDiscountTable MyAArInvoiceDiscountTable = null;
-                AArInvoiceDiscountAccess.LoadViaAArDiscount(out MyAArInvoiceDiscountTable, AArDiscountCode, AArDateValidFrom, StringHelper.StrSplit("a_ledger_number_i,a_invoice_key_i,a_ar_discount_code_c,a_ar_discount_date_valid_f" +
-                            "rom_d", ","), ATransaction);
+                AArInvoiceDiscountAccess.LoadViaAArDiscount(out MyAArInvoiceDiscountTable, AArDiscountCode, AArDateValidFrom, StringHelper.StrSplit("a_ledger_number_i,a_invoice_key_i,a_ar_discount_code_c,a_ar_discount_date_valid_from_d", ","), ATransaction);
                 for (countRow = 0; (countRow != MyAArInvoiceDiscountTable.Rows.Count); countRow = (countRow + 1))
                 {
                     AArInvoiceDiscountCascading.DeleteUsingTemplate(MyAArInvoiceDiscountTable[countRow], null, ATransaction, AWithCascDelete);
                 }
                 AArInvoiceDetailDiscountTable MyAArInvoiceDetailDiscountTable = null;
-                AArInvoiceDetailDiscountAccess.LoadViaAArDiscount(out MyAArInvoiceDetailDiscountTable, AArDiscountCode, AArDateValidFrom, StringHelper.StrSplit("a_ledger_number_i,a_invoice_key_i,a_detail_number_i,a_ar_discount_code_c,a_ar_dis" +
-                            "count_date_valid_from_d", ","), ATransaction);
+                AArInvoiceDetailDiscountAccess.LoadViaAArDiscount(out MyAArInvoiceDetailDiscountTable, AArDiscountCode, AArDateValidFrom, StringHelper.StrSplit("a_ledger_number_i,a_invoice_key_i,a_detail_number_i,a_ar_discount_code_c,a_ar_discount_date_valid_from_d", ","), ATransaction);
                 for (countRow = 0; (countRow != MyAArInvoiceDetailDiscountTable.Rows.Count); countRow = (countRow + 1))
                 {
                     AArInvoiceDetailDiscountCascading.DeleteUsingTemplate(MyAArInvoiceDetailDiscountTable[countRow], null, ATransaction, AWithCascDelete);
@@ -5965,7 +5714,7 @@ namespace Ict.Petra.Shared.MCommon.Data.Cascading
             }
             AArDiscountAccess.DeleteByPrimaryKey(AArDiscountCode, AArDateValidFrom, ATransaction);
         }
-        
+
         /// cascading delete
         public static void DeleteUsingTemplate(AArDiscountRow ATemplateRow, StringCollection ATemplateOperators, TDBTransaction ATransaction, bool AWithCascDelete)
         {
@@ -5985,15 +5734,13 @@ namespace Ict.Petra.Shared.MCommon.Data.Cascading
                     AArDefaultDiscountCascading.DeleteUsingTemplate(MyAArDefaultDiscountTable[countRow], null, ATransaction, AWithCascDelete);
                 }
                 AArInvoiceDiscountTable MyAArInvoiceDiscountTable = null;
-                AArInvoiceDiscountAccess.LoadViaAArDiscountTemplate(out MyAArInvoiceDiscountTable, ATemplateRow, StringHelper.StrSplit("a_ledger_number_i,a_invoice_key_i,a_ar_discount_code_c,a_ar_discount_date_valid_f" +
-                            "rom_d", ","), ATransaction);
+                AArInvoiceDiscountAccess.LoadViaAArDiscountTemplate(out MyAArInvoiceDiscountTable, ATemplateRow, StringHelper.StrSplit("a_ledger_number_i,a_invoice_key_i,a_ar_discount_code_c,a_ar_discount_date_valid_from_d", ","), ATransaction);
                 for (countRow = 0; (countRow != MyAArInvoiceDiscountTable.Rows.Count); countRow = (countRow + 1))
                 {
                     AArInvoiceDiscountCascading.DeleteUsingTemplate(MyAArInvoiceDiscountTable[countRow], null, ATransaction, AWithCascDelete);
                 }
                 AArInvoiceDetailDiscountTable MyAArInvoiceDetailDiscountTable = null;
-                AArInvoiceDetailDiscountAccess.LoadViaAArDiscountTemplate(out MyAArInvoiceDetailDiscountTable, ATemplateRow, StringHelper.StrSplit("a_ledger_number_i,a_invoice_key_i,a_detail_number_i,a_ar_discount_code_c,a_ar_dis" +
-                            "count_date_valid_from_d", ","), ATransaction);
+                AArInvoiceDetailDiscountAccess.LoadViaAArDiscountTemplate(out MyAArInvoiceDetailDiscountTable, ATemplateRow, StringHelper.StrSplit("a_ledger_number_i,a_invoice_key_i,a_detail_number_i,a_ar_discount_code_c,a_ar_discount_date_valid_from_d", ","), ATransaction);
                 for (countRow = 0; (countRow != MyAArInvoiceDetailDiscountTable.Rows.Count); countRow = (countRow + 1))
                 {
                     AArInvoiceDetailDiscountCascading.DeleteUsingTemplate(MyAArInvoiceDetailDiscountTable[countRow], null, ATransaction, AWithCascDelete);
@@ -6002,45 +5749,42 @@ namespace Ict.Petra.Shared.MCommon.Data.Cascading
             AArDiscountAccess.DeleteUsingTemplate(ATemplateRow, ATemplateOperators, ATransaction);
         }
     }
-    
+
     /// auto generated
     public class AArDiscountPerCategoryCascading : TTypedDataAccess
     {
-        
         /// cascading delete
         public static void DeleteByPrimaryKey(String AArCategoryCode, String AArDiscountCode, TDBTransaction ATransaction, bool AWithCascDelete)
         {
             AArDiscountPerCategoryAccess.DeleteByPrimaryKey(AArCategoryCode, AArDiscountCode, ATransaction);
         }
-        
+
         /// cascading delete
         public static void DeleteUsingTemplate(AArDiscountPerCategoryRow ATemplateRow, StringCollection ATemplateOperators, TDBTransaction ATransaction, bool AWithCascDelete)
         {
             AArDiscountPerCategoryAccess.DeleteUsingTemplate(ATemplateRow, ATemplateOperators, ATransaction);
         }
     }
-    
+
     /// auto generated
     public class AArDefaultDiscountCascading : TTypedDataAccess
     {
-        
         /// cascading delete
         public static void DeleteByPrimaryKey(String AArCategoryCode, String AArDiscountCode, System.DateTime AArDateValidFrom, TDBTransaction ATransaction, bool AWithCascDelete)
         {
             AArDefaultDiscountAccess.DeleteByPrimaryKey(AArCategoryCode, AArDiscountCode, AArDateValidFrom, ATransaction);
         }
-        
+
         /// cascading delete
         public static void DeleteUsingTemplate(AArDefaultDiscountRow ATemplateRow, StringCollection ATemplateOperators, TDBTransaction ATransaction, bool AWithCascDelete)
         {
             AArDefaultDiscountAccess.DeleteUsingTemplate(ATemplateRow, ATemplateOperators, ATransaction);
         }
     }
-    
+
     /// auto generated
     public class AArInvoiceCascading : TTypedDataAccess
     {
-        
         /// cascading delete
         public static void DeleteByPrimaryKey(Int32 ALedgerNumber, Int32 AKey, TDBTransaction ATransaction, bool AWithCascDelete)
         {
@@ -6054,8 +5798,7 @@ namespace Ict.Petra.Shared.MCommon.Data.Cascading
                     AArInvoiceDetailCascading.DeleteUsingTemplate(MyAArInvoiceDetailTable[countRow], null, ATransaction, AWithCascDelete);
                 }
                 AArInvoiceDiscountTable MyAArInvoiceDiscountTable = null;
-                AArInvoiceDiscountAccess.LoadViaAArInvoice(out MyAArInvoiceDiscountTable, ALedgerNumber, AKey, StringHelper.StrSplit("a_ledger_number_i,a_invoice_key_i,a_ar_discount_code_c,a_ar_discount_date_valid_f" +
-                            "rom_d", ","), ATransaction);
+                AArInvoiceDiscountAccess.LoadViaAArInvoice(out MyAArInvoiceDiscountTable, ALedgerNumber, AKey, StringHelper.StrSplit("a_ledger_number_i,a_invoice_key_i,a_ar_discount_code_c,a_ar_discount_date_valid_from_d", ","), ATransaction);
                 for (countRow = 0; (countRow != MyAArInvoiceDiscountTable.Rows.Count); countRow = (countRow + 1))
                 {
                     AArInvoiceDiscountCascading.DeleteUsingTemplate(MyAArInvoiceDiscountTable[countRow], null, ATransaction, AWithCascDelete);
@@ -6069,7 +5812,7 @@ namespace Ict.Petra.Shared.MCommon.Data.Cascading
             }
             AArInvoiceAccess.DeleteByPrimaryKey(ALedgerNumber, AKey, ATransaction);
         }
-        
+
         /// cascading delete
         public static void DeleteUsingTemplate(AArInvoiceRow ATemplateRow, StringCollection ATemplateOperators, TDBTransaction ATransaction, bool AWithCascDelete)
         {
@@ -6083,8 +5826,7 @@ namespace Ict.Petra.Shared.MCommon.Data.Cascading
                     AArInvoiceDetailCascading.DeleteUsingTemplate(MyAArInvoiceDetailTable[countRow], null, ATransaction, AWithCascDelete);
                 }
                 AArInvoiceDiscountTable MyAArInvoiceDiscountTable = null;
-                AArInvoiceDiscountAccess.LoadViaAArInvoiceTemplate(out MyAArInvoiceDiscountTable, ATemplateRow, StringHelper.StrSplit("a_ledger_number_i,a_invoice_key_i,a_ar_discount_code_c,a_ar_discount_date_valid_f" +
-                            "rom_d", ","), ATransaction);
+                AArInvoiceDiscountAccess.LoadViaAArInvoiceTemplate(out MyAArInvoiceDiscountTable, ATemplateRow, StringHelper.StrSplit("a_ledger_number_i,a_invoice_key_i,a_ar_discount_code_c,a_ar_discount_date_valid_from_d", ","), ATransaction);
                 for (countRow = 0; (countRow != MyAArInvoiceDiscountTable.Rows.Count); countRow = (countRow + 1))
                 {
                     AArInvoiceDiscountCascading.DeleteUsingTemplate(MyAArInvoiceDiscountTable[countRow], null, ATransaction, AWithCascDelete);
@@ -6099,11 +5841,10 @@ namespace Ict.Petra.Shared.MCommon.Data.Cascading
             AArInvoiceAccess.DeleteUsingTemplate(ATemplateRow, ATemplateOperators, ATransaction);
         }
     }
-    
+
     /// auto generated
     public class AArInvoiceDetailCascading : TTypedDataAccess
     {
-        
         /// cascading delete
         public static void DeleteByPrimaryKey(Int32 ALedgerNumber, Int32 AInvoiceKey, Int32 ADetailNumber, TDBTransaction ATransaction, bool AWithCascDelete)
         {
@@ -6111,8 +5852,7 @@ namespace Ict.Petra.Shared.MCommon.Data.Cascading
             if ((AWithCascDelete == true))
             {
                 AArInvoiceDetailDiscountTable MyAArInvoiceDetailDiscountTable = null;
-                AArInvoiceDetailDiscountAccess.LoadViaAArInvoiceDetail(out MyAArInvoiceDetailDiscountTable, ALedgerNumber, AInvoiceKey, ADetailNumber, StringHelper.StrSplit("a_ledger_number_i,a_invoice_key_i,a_detail_number_i,a_ar_discount_code_c,a_ar_dis" +
-                            "count_date_valid_from_d", ","), ATransaction);
+                AArInvoiceDetailDiscountAccess.LoadViaAArInvoiceDetail(out MyAArInvoiceDetailDiscountTable, ALedgerNumber, AInvoiceKey, ADetailNumber, StringHelper.StrSplit("a_ledger_number_i,a_invoice_key_i,a_detail_number_i,a_ar_discount_code_c,a_ar_discount_date_valid_from_d", ","), ATransaction);
                 for (countRow = 0; (countRow != MyAArInvoiceDetailDiscountTable.Rows.Count); countRow = (countRow + 1))
                 {
                     AArInvoiceDetailDiscountCascading.DeleteUsingTemplate(MyAArInvoiceDetailDiscountTable[countRow], null, ATransaction, AWithCascDelete);
@@ -6120,7 +5860,7 @@ namespace Ict.Petra.Shared.MCommon.Data.Cascading
             }
             AArInvoiceDetailAccess.DeleteByPrimaryKey(ALedgerNumber, AInvoiceKey, ADetailNumber, ATransaction);
         }
-        
+
         /// cascading delete
         public static void DeleteUsingTemplate(AArInvoiceDetailRow ATemplateRow, StringCollection ATemplateOperators, TDBTransaction ATransaction, bool AWithCascDelete)
         {
@@ -6128,8 +5868,7 @@ namespace Ict.Petra.Shared.MCommon.Data.Cascading
             if ((AWithCascDelete == true))
             {
                 AArInvoiceDetailDiscountTable MyAArInvoiceDetailDiscountTable = null;
-                AArInvoiceDetailDiscountAccess.LoadViaAArInvoiceDetailTemplate(out MyAArInvoiceDetailDiscountTable, ATemplateRow, StringHelper.StrSplit("a_ledger_number_i,a_invoice_key_i,a_detail_number_i,a_ar_discount_code_c,a_ar_dis" +
-                            "count_date_valid_from_d", ","), ATransaction);
+                AArInvoiceDetailDiscountAccess.LoadViaAArInvoiceDetailTemplate(out MyAArInvoiceDetailDiscountTable, ATemplateRow, StringHelper.StrSplit("a_ledger_number_i,a_invoice_key_i,a_detail_number_i,a_ar_discount_code_c,a_ar_discount_date_valid_from_d", ","), ATransaction);
                 for (countRow = 0; (countRow != MyAArInvoiceDetailDiscountTable.Rows.Count); countRow = (countRow + 1))
                 {
                     AArInvoiceDetailDiscountCascading.DeleteUsingTemplate(MyAArInvoiceDetailDiscountTable[countRow], null, ATransaction, AWithCascDelete);
@@ -6138,45 +5877,42 @@ namespace Ict.Petra.Shared.MCommon.Data.Cascading
             AArInvoiceDetailAccess.DeleteUsingTemplate(ATemplateRow, ATemplateOperators, ATransaction);
         }
     }
-    
+
     /// auto generated
     public class AArInvoiceDiscountCascading : TTypedDataAccess
     {
-        
         /// cascading delete
         public static void DeleteByPrimaryKey(Int32 ALedgerNumber, Int32 AInvoiceKey, String AArDiscountCode, System.DateTime AArDiscountDateValidFrom, TDBTransaction ATransaction, bool AWithCascDelete)
         {
             AArInvoiceDiscountAccess.DeleteByPrimaryKey(ALedgerNumber, AInvoiceKey, AArDiscountCode, AArDiscountDateValidFrom, ATransaction);
         }
-        
+
         /// cascading delete
         public static void DeleteUsingTemplate(AArInvoiceDiscountRow ATemplateRow, StringCollection ATemplateOperators, TDBTransaction ATransaction, bool AWithCascDelete)
         {
             AArInvoiceDiscountAccess.DeleteUsingTemplate(ATemplateRow, ATemplateOperators, ATransaction);
         }
     }
-    
+
     /// auto generated
     public class AArInvoiceDetailDiscountCascading : TTypedDataAccess
     {
-        
         /// cascading delete
         public static void DeleteByPrimaryKey(Int32 ALedgerNumber, Int32 AInvoiceKey, Int32 ADetailNumber, String AArDiscountCode, System.DateTime AArDiscountDateValidFrom, TDBTransaction ATransaction, bool AWithCascDelete)
         {
             AArInvoiceDetailDiscountAccess.DeleteByPrimaryKey(ALedgerNumber, AInvoiceKey, ADetailNumber, AArDiscountCode, AArDiscountDateValidFrom, ATransaction);
         }
-        
+
         /// cascading delete
         public static void DeleteUsingTemplate(AArInvoiceDetailDiscountRow ATemplateRow, StringCollection ATemplateOperators, TDBTransaction ATransaction, bool AWithCascDelete)
         {
             AArInvoiceDetailDiscountAccess.DeleteUsingTemplate(ATemplateRow, ATemplateOperators, ATransaction);
         }
     }
-    
+
     /// auto generated
     public class PtApplicantStatusCascading : TTypedDataAccess
     {
-        
         /// cascading delete
         public static void DeleteByPrimaryKey(String ACode, TDBTransaction ATransaction, bool AWithCascDelete)
         {
@@ -6198,7 +5934,7 @@ namespace Ict.Petra.Shared.MCommon.Data.Cascading
             }
             PtApplicantStatusAccess.DeleteByPrimaryKey(ACode, ATransaction);
         }
-        
+
         /// cascading delete
         public static void DeleteUsingTemplate(PtApplicantStatusRow ATemplateRow, StringCollection ATemplateOperators, TDBTransaction ATransaction, bool AWithCascDelete)
         {
@@ -6221,11 +5957,10 @@ namespace Ict.Petra.Shared.MCommon.Data.Cascading
             PtApplicantStatusAccess.DeleteUsingTemplate(ATemplateRow, ATemplateOperators, ATransaction);
         }
     }
-    
+
     /// auto generated
     public class PtApplicationTypeCascading : TTypedDataAccess
     {
-        
         /// cascading delete
         public static void DeleteByPrimaryKey(String AAppTypeName, TDBTransaction ATransaction, bool AWithCascDelete)
         {
@@ -6241,7 +5976,7 @@ namespace Ict.Petra.Shared.MCommon.Data.Cascading
             }
             PtApplicationTypeAccess.DeleteByPrimaryKey(AAppTypeName, ATransaction);
         }
-        
+
         /// cascading delete
         public static void DeleteUsingTemplate(PtApplicationTypeRow ATemplateRow, StringCollection ATemplateOperators, TDBTransaction ATransaction, bool AWithCascDelete)
         {
@@ -6258,58 +5993,58 @@ namespace Ict.Petra.Shared.MCommon.Data.Cascading
             PtApplicationTypeAccess.DeleteUsingTemplate(ATemplateRow, ATemplateOperators, ATransaction);
         }
     }
-    
+
     /// auto generated
     public class PtContactCascading : TTypedDataAccess
     {
-        
         /// cascading delete
         public static void DeleteByPrimaryKey(String AContactName, TDBTransaction ATransaction, bool AWithCascDelete)
         {
             int countRow;
             if ((AWithCascDelete == true))
             {
-                PmGeneralApplicationTable MyPmGeneralApplicationTable = null;
-                PmGeneralApplicationAccess.LoadViaPtContactGenContact1(out MyPmGeneralApplicationTable, AContactName, StringHelper.StrSplit("p_partner_key_n,pm_application_key_i,pm_registration_office_n", ","), ATransaction);
-                for (countRow = 0; (countRow != MyPmGeneralApplicationTable.Rows.Count); countRow = (countRow + 1))
+                PmGeneralApplicationTable MyPmGeneralApplicationGenContact1Table = null;
+                PmGeneralApplicationAccess.LoadViaPtContactGenContact1(out MyPmGeneralApplicationGenContact1Table, AContactName, StringHelper.StrSplit("p_partner_key_n,pm_application_key_i,pm_registration_office_n", ","), ATransaction);
+                for (countRow = 0; (countRow != MyPmGeneralApplicationGenContact1Table.Rows.Count); countRow = (countRow + 1))
                 {
-                    PmGeneralApplicationCascading.DeleteUsingTemplate(MyPmGeneralApplicationTable[countRow], null, ATransaction, AWithCascDelete);
+                    PmGeneralApplicationCascading.DeleteUsingTemplate(MyPmGeneralApplicationGenContact1Table[countRow], null, ATransaction, AWithCascDelete);
                 }
-                PmGeneralApplicationAccess.LoadViaPtContactGenContact2(out MyPmGeneralApplicationTable, AContactName, StringHelper.StrSplit("p_partner_key_n,pm_application_key_i,pm_registration_office_n", ","), ATransaction);
-                for (countRow = 0; (countRow != MyPmGeneralApplicationTable.Rows.Count); countRow = (countRow + 1))
+                PmGeneralApplicationTable MyPmGeneralApplicationGenContact2Table = null;
+                PmGeneralApplicationAccess.LoadViaPtContactGenContact2(out MyPmGeneralApplicationGenContact2Table, AContactName, StringHelper.StrSplit("p_partner_key_n,pm_application_key_i,pm_registration_office_n", ","), ATransaction);
+                for (countRow = 0; (countRow != MyPmGeneralApplicationGenContact2Table.Rows.Count); countRow = (countRow + 1))
                 {
-                    PmGeneralApplicationCascading.DeleteUsingTemplate(MyPmGeneralApplicationTable[countRow], null, ATransaction, AWithCascDelete);
+                    PmGeneralApplicationCascading.DeleteUsingTemplate(MyPmGeneralApplicationGenContact2Table[countRow], null, ATransaction, AWithCascDelete);
                 }
             }
             PtContactAccess.DeleteByPrimaryKey(AContactName, ATransaction);
         }
-        
+
         /// cascading delete
         public static void DeleteUsingTemplate(PtContactRow ATemplateRow, StringCollection ATemplateOperators, TDBTransaction ATransaction, bool AWithCascDelete)
         {
             int countRow;
             if ((AWithCascDelete == true))
             {
-                PmGeneralApplicationTable MyPmGeneralApplicationTable = null;
-                PmGeneralApplicationAccess.LoadViaPtContactGenContact1Template(out MyPmGeneralApplicationTable, ATemplateRow, StringHelper.StrSplit("p_partner_key_n,pm_application_key_i,pm_registration_office_n", ","), ATransaction);
-                for (countRow = 0; (countRow != MyPmGeneralApplicationTable.Rows.Count); countRow = (countRow + 1))
+                PmGeneralApplicationTable MyPmGeneralApplicationGenContact1Table = null;
+                PmGeneralApplicationAccess.LoadViaPtContactGenContact1Template(out MyPmGeneralApplicationGenContact1Table, ATemplateRow, StringHelper.StrSplit("p_partner_key_n,pm_application_key_i,pm_registration_office_n", ","), ATransaction);
+                for (countRow = 0; (countRow != MyPmGeneralApplicationGenContact1Table.Rows.Count); countRow = (countRow + 1))
                 {
-                    PmGeneralApplicationCascading.DeleteUsingTemplate(MyPmGeneralApplicationTable[countRow], null, ATransaction, AWithCascDelete);
+                    PmGeneralApplicationCascading.DeleteUsingTemplate(MyPmGeneralApplicationGenContact1Table[countRow], null, ATransaction, AWithCascDelete);
                 }
-                PmGeneralApplicationAccess.LoadViaPtContactGenContact2Template(out MyPmGeneralApplicationTable, ATemplateRow, StringHelper.StrSplit("p_partner_key_n,pm_application_key_i,pm_registration_office_n", ","), ATransaction);
-                for (countRow = 0; (countRow != MyPmGeneralApplicationTable.Rows.Count); countRow = (countRow + 1))
+                PmGeneralApplicationTable MyPmGeneralApplicationGenContact2Table = null;
+                PmGeneralApplicationAccess.LoadViaPtContactGenContact2Template(out MyPmGeneralApplicationGenContact2Table, ATemplateRow, StringHelper.StrSplit("p_partner_key_n,pm_application_key_i,pm_registration_office_n", ","), ATransaction);
+                for (countRow = 0; (countRow != MyPmGeneralApplicationGenContact2Table.Rows.Count); countRow = (countRow + 1))
                 {
-                    PmGeneralApplicationCascading.DeleteUsingTemplate(MyPmGeneralApplicationTable[countRow], null, ATransaction, AWithCascDelete);
+                    PmGeneralApplicationCascading.DeleteUsingTemplate(MyPmGeneralApplicationGenContact2Table[countRow], null, ATransaction, AWithCascDelete);
                 }
             }
             PtContactAccess.DeleteUsingTemplate(ATemplateRow, ATemplateOperators, ATransaction);
         }
     }
-    
+
     /// auto generated
     public class PmGeneralApplicationCascading : TTypedDataAccess
     {
-        
         /// cascading delete
         public static void DeleteByPrimaryKey(Int64 APartnerKey, Int32 AApplicationKey, Int64 ARegistrationOffice, TDBTransaction ATransaction, bool AWithCascDelete)
         {
@@ -6355,7 +6090,7 @@ namespace Ict.Petra.Shared.MCommon.Data.Cascading
             }
             PmGeneralApplicationAccess.DeleteByPrimaryKey(APartnerKey, AApplicationKey, ARegistrationOffice, ATransaction);
         }
-        
+
         /// cascading delete
         public static void DeleteUsingTemplate(PmGeneralApplicationRow ATemplateRow, StringCollection ATemplateOperators, TDBTransaction ATransaction, bool AWithCascDelete)
         {
@@ -6402,28 +6137,26 @@ namespace Ict.Petra.Shared.MCommon.Data.Cascading
             PmGeneralApplicationAccess.DeleteUsingTemplate(ATemplateRow, ATemplateOperators, ATransaction);
         }
     }
-    
+
     /// auto generated
     public class PmApplicationStatusHistoryCascading : TTypedDataAccess
     {
-        
         /// cascading delete
         public static void DeleteByPrimaryKey(Int64 AKey, TDBTransaction ATransaction, bool AWithCascDelete)
         {
             PmApplicationStatusHistoryAccess.DeleteByPrimaryKey(AKey, ATransaction);
         }
-        
+
         /// cascading delete
         public static void DeleteUsingTemplate(PmApplicationStatusHistoryRow ATemplateRow, StringCollection ATemplateOperators, TDBTransaction ATransaction, bool AWithCascDelete)
         {
             PmApplicationStatusHistoryAccess.DeleteUsingTemplate(ATemplateRow, ATemplateOperators, ATransaction);
         }
     }
-    
+
     /// auto generated
     public class PtSpecialApplicantCascading : TTypedDataAccess
     {
-        
         /// cascading delete
         public static void DeleteByPrimaryKey(String ACode, TDBTransaction ATransaction, bool AWithCascDelete)
         {
@@ -6439,7 +6172,7 @@ namespace Ict.Petra.Shared.MCommon.Data.Cascading
             }
             PtSpecialApplicantAccess.DeleteByPrimaryKey(ACode, ATransaction);
         }
-        
+
         /// cascading delete
         public static void DeleteUsingTemplate(PtSpecialApplicantRow ATemplateRow, StringCollection ATemplateOperators, TDBTransaction ATransaction, bool AWithCascDelete)
         {
@@ -6456,11 +6189,10 @@ namespace Ict.Petra.Shared.MCommon.Data.Cascading
             PtSpecialApplicantAccess.DeleteUsingTemplate(ATemplateRow, ATemplateOperators, ATransaction);
         }
     }
-    
+
     /// auto generated
     public class PtLeadershipRatingCascading : TTypedDataAccess
     {
-        
         /// cascading delete
         public static void DeleteByPrimaryKey(String ACode, TDBTransaction ATransaction, bool AWithCascDelete)
         {
@@ -6476,7 +6208,7 @@ namespace Ict.Petra.Shared.MCommon.Data.Cascading
             }
             PtLeadershipRatingAccess.DeleteByPrimaryKey(ACode, ATransaction);
         }
-        
+
         /// cascading delete
         public static void DeleteUsingTemplate(PtLeadershipRatingRow ATemplateRow, StringCollection ATemplateOperators, TDBTransaction ATransaction, bool AWithCascDelete)
         {
@@ -6493,162 +6225,166 @@ namespace Ict.Petra.Shared.MCommon.Data.Cascading
             PtLeadershipRatingAccess.DeleteUsingTemplate(ATemplateRow, ATemplateOperators, ATransaction);
         }
     }
-    
+
     /// auto generated
     public class PtArrivalPointCascading : TTypedDataAccess
     {
-        
         /// cascading delete
         public static void DeleteByPrimaryKey(String ACode, TDBTransaction ATransaction, bool AWithCascDelete)
         {
             int countRow;
             if ((AWithCascDelete == true))
             {
-                PmShortTermApplicationTable MyPmShortTermApplicationTable = null;
-                PmShortTermApplicationAccess.LoadViaPtArrivalPointArrivalPointCode(out MyPmShortTermApplicationTable, ACode, StringHelper.StrSplit("p_partner_key_n,pm_application_key_i,pm_registration_office_n", ","), ATransaction);
-                for (countRow = 0; (countRow != MyPmShortTermApplicationTable.Rows.Count); countRow = (countRow + 1))
+                PmShortTermApplicationTable MyPmShortTermApplicationArrivalPointCodeTable = null;
+                PmShortTermApplicationAccess.LoadViaPtArrivalPointArrivalPointCode(out MyPmShortTermApplicationArrivalPointCodeTable, ACode, StringHelper.StrSplit("p_partner_key_n,pm_application_key_i,pm_registration_office_n", ","), ATransaction);
+                for (countRow = 0; (countRow != MyPmShortTermApplicationArrivalPointCodeTable.Rows.Count); countRow = (countRow + 1))
                 {
-                    PmShortTermApplicationCascading.DeleteUsingTemplate(MyPmShortTermApplicationTable[countRow], null, ATransaction, AWithCascDelete);
+                    PmShortTermApplicationCascading.DeleteUsingTemplate(MyPmShortTermApplicationArrivalPointCodeTable[countRow], null, ATransaction, AWithCascDelete);
                 }
-                PmShortTermApplicationAccess.LoadViaPtArrivalPointDeparturePointCode(out MyPmShortTermApplicationTable, ACode, StringHelper.StrSplit("p_partner_key_n,pm_application_key_i,pm_registration_office_n", ","), ATransaction);
-                for (countRow = 0; (countRow != MyPmShortTermApplicationTable.Rows.Count); countRow = (countRow + 1))
+                PmShortTermApplicationTable MyPmShortTermApplicationDeparturePointCodeTable = null;
+                PmShortTermApplicationAccess.LoadViaPtArrivalPointDeparturePointCode(out MyPmShortTermApplicationDeparturePointCodeTable, ACode, StringHelper.StrSplit("p_partner_key_n,pm_application_key_i,pm_registration_office_n", ","), ATransaction);
+                for (countRow = 0; (countRow != MyPmShortTermApplicationDeparturePointCodeTable.Rows.Count); countRow = (countRow + 1))
                 {
-                    PmShortTermApplicationCascading.DeleteUsingTemplate(MyPmShortTermApplicationTable[countRow], null, ATransaction, AWithCascDelete);
+                    PmShortTermApplicationCascading.DeleteUsingTemplate(MyPmShortTermApplicationDeparturePointCodeTable[countRow], null, ATransaction, AWithCascDelete);
                 }
             }
             PtArrivalPointAccess.DeleteByPrimaryKey(ACode, ATransaction);
         }
-        
+
         /// cascading delete
         public static void DeleteUsingTemplate(PtArrivalPointRow ATemplateRow, StringCollection ATemplateOperators, TDBTransaction ATransaction, bool AWithCascDelete)
         {
             int countRow;
             if ((AWithCascDelete == true))
             {
-                PmShortTermApplicationTable MyPmShortTermApplicationTable = null;
-                PmShortTermApplicationAccess.LoadViaPtArrivalPointArrivalPointCodeTemplate(out MyPmShortTermApplicationTable, ATemplateRow, StringHelper.StrSplit("p_partner_key_n,pm_application_key_i,pm_registration_office_n", ","), ATransaction);
-                for (countRow = 0; (countRow != MyPmShortTermApplicationTable.Rows.Count); countRow = (countRow + 1))
+                PmShortTermApplicationTable MyPmShortTermApplicationArrivalPointCodeTable = null;
+                PmShortTermApplicationAccess.LoadViaPtArrivalPointArrivalPointCodeTemplate(out MyPmShortTermApplicationArrivalPointCodeTable, ATemplateRow, StringHelper.StrSplit("p_partner_key_n,pm_application_key_i,pm_registration_office_n", ","), ATransaction);
+                for (countRow = 0; (countRow != MyPmShortTermApplicationArrivalPointCodeTable.Rows.Count); countRow = (countRow + 1))
                 {
-                    PmShortTermApplicationCascading.DeleteUsingTemplate(MyPmShortTermApplicationTable[countRow], null, ATransaction, AWithCascDelete);
+                    PmShortTermApplicationCascading.DeleteUsingTemplate(MyPmShortTermApplicationArrivalPointCodeTable[countRow], null, ATransaction, AWithCascDelete);
                 }
-                PmShortTermApplicationAccess.LoadViaPtArrivalPointDeparturePointCodeTemplate(out MyPmShortTermApplicationTable, ATemplateRow, StringHelper.StrSplit("p_partner_key_n,pm_application_key_i,pm_registration_office_n", ","), ATransaction);
-                for (countRow = 0; (countRow != MyPmShortTermApplicationTable.Rows.Count); countRow = (countRow + 1))
+                PmShortTermApplicationTable MyPmShortTermApplicationDeparturePointCodeTable = null;
+                PmShortTermApplicationAccess.LoadViaPtArrivalPointDeparturePointCodeTemplate(out MyPmShortTermApplicationDeparturePointCodeTable, ATemplateRow, StringHelper.StrSplit("p_partner_key_n,pm_application_key_i,pm_registration_office_n", ","), ATransaction);
+                for (countRow = 0; (countRow != MyPmShortTermApplicationDeparturePointCodeTable.Rows.Count); countRow = (countRow + 1))
                 {
-                    PmShortTermApplicationCascading.DeleteUsingTemplate(MyPmShortTermApplicationTable[countRow], null, ATransaction, AWithCascDelete);
+                    PmShortTermApplicationCascading.DeleteUsingTemplate(MyPmShortTermApplicationDeparturePointCodeTable[countRow], null, ATransaction, AWithCascDelete);
                 }
             }
             PtArrivalPointAccess.DeleteUsingTemplate(ATemplateRow, ATemplateOperators, ATransaction);
         }
     }
-    
+
     /// auto generated
     public class PtXyzTbdPreferenceLevelCascading : TTypedDataAccess
     {
-        
         /// cascading delete
         public static void DeleteByPrimaryKey(String ACode, TDBTransaction ATransaction, bool AWithCascDelete)
         {
             int countRow;
             if ((AWithCascDelete == true))
             {
-                PmShortTermApplicationTable MyPmShortTermApplicationTable = null;
-                PmShortTermApplicationAccess.LoadViaPtXyzTbdPreferenceLevelStCountryPref(out MyPmShortTermApplicationTable, ACode, StringHelper.StrSplit("p_partner_key_n,pm_application_key_i,pm_registration_office_n", ","), ATransaction);
-                for (countRow = 0; (countRow != MyPmShortTermApplicationTable.Rows.Count); countRow = (countRow + 1))
+                PmShortTermApplicationTable MyPmShortTermApplicationStCountryPrefTable = null;
+                PmShortTermApplicationAccess.LoadViaPtXyzTbdPreferenceLevelStCountryPref(out MyPmShortTermApplicationStCountryPrefTable, ACode, StringHelper.StrSplit("p_partner_key_n,pm_application_key_i,pm_registration_office_n", ","), ATransaction);
+                for (countRow = 0; (countRow != MyPmShortTermApplicationStCountryPrefTable.Rows.Count); countRow = (countRow + 1))
                 {
-                    PmShortTermApplicationCascading.DeleteUsingTemplate(MyPmShortTermApplicationTable[countRow], null, ATransaction, AWithCascDelete);
+                    PmShortTermApplicationCascading.DeleteUsingTemplate(MyPmShortTermApplicationStCountryPrefTable[countRow], null, ATransaction, AWithCascDelete);
                 }
-                PmShortTermApplicationAccess.LoadViaPtXyzTbdPreferenceLevelStActivityPref(out MyPmShortTermApplicationTable, ACode, StringHelper.StrSplit("p_partner_key_n,pm_application_key_i,pm_registration_office_n", ","), ATransaction);
-                for (countRow = 0; (countRow != MyPmShortTermApplicationTable.Rows.Count); countRow = (countRow + 1))
+                PmShortTermApplicationTable MyPmShortTermApplicationStActivityPrefTable = null;
+                PmShortTermApplicationAccess.LoadViaPtXyzTbdPreferenceLevelStActivityPref(out MyPmShortTermApplicationStActivityPrefTable, ACode, StringHelper.StrSplit("p_partner_key_n,pm_application_key_i,pm_registration_office_n", ","), ATransaction);
+                for (countRow = 0; (countRow != MyPmShortTermApplicationStActivityPrefTable.Rows.Count); countRow = (countRow + 1))
                 {
-                    PmShortTermApplicationCascading.DeleteUsingTemplate(MyPmShortTermApplicationTable[countRow], null, ATransaction, AWithCascDelete);
+                    PmShortTermApplicationCascading.DeleteUsingTemplate(MyPmShortTermApplicationStActivityPrefTable[countRow], null, ATransaction, AWithCascDelete);
                 }
             }
             PtXyzTbdPreferenceLevelAccess.DeleteByPrimaryKey(ACode, ATransaction);
         }
-        
+
         /// cascading delete
         public static void DeleteUsingTemplate(PtXyzTbdPreferenceLevelRow ATemplateRow, StringCollection ATemplateOperators, TDBTransaction ATransaction, bool AWithCascDelete)
         {
             int countRow;
             if ((AWithCascDelete == true))
             {
-                PmShortTermApplicationTable MyPmShortTermApplicationTable = null;
-                PmShortTermApplicationAccess.LoadViaPtXyzTbdPreferenceLevelStCountryPrefTemplate(out MyPmShortTermApplicationTable, ATemplateRow, StringHelper.StrSplit("p_partner_key_n,pm_application_key_i,pm_registration_office_n", ","), ATransaction);
-                for (countRow = 0; (countRow != MyPmShortTermApplicationTable.Rows.Count); countRow = (countRow + 1))
+                PmShortTermApplicationTable MyPmShortTermApplicationStCountryPrefTable = null;
+                PmShortTermApplicationAccess.LoadViaPtXyzTbdPreferenceLevelStCountryPrefTemplate(out MyPmShortTermApplicationStCountryPrefTable, ATemplateRow, StringHelper.StrSplit("p_partner_key_n,pm_application_key_i,pm_registration_office_n", ","), ATransaction);
+                for (countRow = 0; (countRow != MyPmShortTermApplicationStCountryPrefTable.Rows.Count); countRow = (countRow + 1))
                 {
-                    PmShortTermApplicationCascading.DeleteUsingTemplate(MyPmShortTermApplicationTable[countRow], null, ATransaction, AWithCascDelete);
+                    PmShortTermApplicationCascading.DeleteUsingTemplate(MyPmShortTermApplicationStCountryPrefTable[countRow], null, ATransaction, AWithCascDelete);
                 }
-                PmShortTermApplicationAccess.LoadViaPtXyzTbdPreferenceLevelStActivityPrefTemplate(out MyPmShortTermApplicationTable, ATemplateRow, StringHelper.StrSplit("p_partner_key_n,pm_application_key_i,pm_registration_office_n", ","), ATransaction);
-                for (countRow = 0; (countRow != MyPmShortTermApplicationTable.Rows.Count); countRow = (countRow + 1))
+                PmShortTermApplicationTable MyPmShortTermApplicationStActivityPrefTable = null;
+                PmShortTermApplicationAccess.LoadViaPtXyzTbdPreferenceLevelStActivityPrefTemplate(out MyPmShortTermApplicationStActivityPrefTable, ATemplateRow, StringHelper.StrSplit("p_partner_key_n,pm_application_key_i,pm_registration_office_n", ","), ATransaction);
+                for (countRow = 0; (countRow != MyPmShortTermApplicationStActivityPrefTable.Rows.Count); countRow = (countRow + 1))
                 {
-                    PmShortTermApplicationCascading.DeleteUsingTemplate(MyPmShortTermApplicationTable[countRow], null, ATransaction, AWithCascDelete);
+                    PmShortTermApplicationCascading.DeleteUsingTemplate(MyPmShortTermApplicationStActivityPrefTable[countRow], null, ATransaction, AWithCascDelete);
                 }
             }
             PtXyzTbdPreferenceLevelAccess.DeleteUsingTemplate(ATemplateRow, ATemplateOperators, ATransaction);
         }
     }
-    
+
     /// auto generated
     public class PtCongressCodeCascading : TTypedDataAccess
     {
-        
         /// cascading delete
         public static void DeleteByPrimaryKey(String ACode, TDBTransaction ATransaction, bool AWithCascDelete)
         {
             int countRow;
             if ((AWithCascDelete == true))
             {
-                PmShortTermApplicationTable MyPmShortTermApplicationTable = null;
-                PmShortTermApplicationAccess.LoadViaPtCongressCodeStPreCongressCode(out MyPmShortTermApplicationTable, ACode, StringHelper.StrSplit("p_partner_key_n,pm_application_key_i,pm_registration_office_n", ","), ATransaction);
-                for (countRow = 0; (countRow != MyPmShortTermApplicationTable.Rows.Count); countRow = (countRow + 1))
+                PmShortTermApplicationTable MyPmShortTermApplicationStPreCongressCodeTable = null;
+                PmShortTermApplicationAccess.LoadViaPtCongressCodeStPreCongressCode(out MyPmShortTermApplicationStPreCongressCodeTable, ACode, StringHelper.StrSplit("p_partner_key_n,pm_application_key_i,pm_registration_office_n", ","), ATransaction);
+                for (countRow = 0; (countRow != MyPmShortTermApplicationStPreCongressCodeTable.Rows.Count); countRow = (countRow + 1))
                 {
-                    PmShortTermApplicationCascading.DeleteUsingTemplate(MyPmShortTermApplicationTable[countRow], null, ATransaction, AWithCascDelete);
+                    PmShortTermApplicationCascading.DeleteUsingTemplate(MyPmShortTermApplicationStPreCongressCodeTable[countRow], null, ATransaction, AWithCascDelete);
                 }
-                PmShortTermApplicationAccess.LoadViaPtCongressCodeStCongressCode(out MyPmShortTermApplicationTable, ACode, StringHelper.StrSplit("p_partner_key_n,pm_application_key_i,pm_registration_office_n", ","), ATransaction);
-                for (countRow = 0; (countRow != MyPmShortTermApplicationTable.Rows.Count); countRow = (countRow + 1))
+                PmShortTermApplicationTable MyPmShortTermApplicationStCongressCodeTable = null;
+                PmShortTermApplicationAccess.LoadViaPtCongressCodeStCongressCode(out MyPmShortTermApplicationStCongressCodeTable, ACode, StringHelper.StrSplit("p_partner_key_n,pm_application_key_i,pm_registration_office_n", ","), ATransaction);
+                for (countRow = 0; (countRow != MyPmShortTermApplicationStCongressCodeTable.Rows.Count); countRow = (countRow + 1))
                 {
-                    PmShortTermApplicationCascading.DeleteUsingTemplate(MyPmShortTermApplicationTable[countRow], null, ATransaction, AWithCascDelete);
+                    PmShortTermApplicationCascading.DeleteUsingTemplate(MyPmShortTermApplicationStCongressCodeTable[countRow], null, ATransaction, AWithCascDelete);
                 }
-                PmShortTermApplicationAccess.LoadViaPtCongressCodeXyzTbdRole(out MyPmShortTermApplicationTable, ACode, StringHelper.StrSplit("p_partner_key_n,pm_application_key_i,pm_registration_office_n", ","), ATransaction);
-                for (countRow = 0; (countRow != MyPmShortTermApplicationTable.Rows.Count); countRow = (countRow + 1))
+                PmShortTermApplicationTable MyPmShortTermApplicationXyzTbdRoleTable = null;
+                PmShortTermApplicationAccess.LoadViaPtCongressCodeXyzTbdRole(out MyPmShortTermApplicationXyzTbdRoleTable, ACode, StringHelper.StrSplit("p_partner_key_n,pm_application_key_i,pm_registration_office_n", ","), ATransaction);
+                for (countRow = 0; (countRow != MyPmShortTermApplicationXyzTbdRoleTable.Rows.Count); countRow = (countRow + 1))
                 {
-                    PmShortTermApplicationCascading.DeleteUsingTemplate(MyPmShortTermApplicationTable[countRow], null, ATransaction, AWithCascDelete);
+                    PmShortTermApplicationCascading.DeleteUsingTemplate(MyPmShortTermApplicationXyzTbdRoleTable[countRow], null, ATransaction, AWithCascDelete);
                 }
             }
             PtCongressCodeAccess.DeleteByPrimaryKey(ACode, ATransaction);
         }
-        
+
         /// cascading delete
         public static void DeleteUsingTemplate(PtCongressCodeRow ATemplateRow, StringCollection ATemplateOperators, TDBTransaction ATransaction, bool AWithCascDelete)
         {
             int countRow;
             if ((AWithCascDelete == true))
             {
-                PmShortTermApplicationTable MyPmShortTermApplicationTable = null;
-                PmShortTermApplicationAccess.LoadViaPtCongressCodeStPreCongressCodeTemplate(out MyPmShortTermApplicationTable, ATemplateRow, StringHelper.StrSplit("p_partner_key_n,pm_application_key_i,pm_registration_office_n", ","), ATransaction);
-                for (countRow = 0; (countRow != MyPmShortTermApplicationTable.Rows.Count); countRow = (countRow + 1))
+                PmShortTermApplicationTable MyPmShortTermApplicationStPreCongressCodeTable = null;
+                PmShortTermApplicationAccess.LoadViaPtCongressCodeStPreCongressCodeTemplate(out MyPmShortTermApplicationStPreCongressCodeTable, ATemplateRow, StringHelper.StrSplit("p_partner_key_n,pm_application_key_i,pm_registration_office_n", ","), ATransaction);
+                for (countRow = 0; (countRow != MyPmShortTermApplicationStPreCongressCodeTable.Rows.Count); countRow = (countRow + 1))
                 {
-                    PmShortTermApplicationCascading.DeleteUsingTemplate(MyPmShortTermApplicationTable[countRow], null, ATransaction, AWithCascDelete);
+                    PmShortTermApplicationCascading.DeleteUsingTemplate(MyPmShortTermApplicationStPreCongressCodeTable[countRow], null, ATransaction, AWithCascDelete);
                 }
-                PmShortTermApplicationAccess.LoadViaPtCongressCodeStCongressCodeTemplate(out MyPmShortTermApplicationTable, ATemplateRow, StringHelper.StrSplit("p_partner_key_n,pm_application_key_i,pm_registration_office_n", ","), ATransaction);
-                for (countRow = 0; (countRow != MyPmShortTermApplicationTable.Rows.Count); countRow = (countRow + 1))
+                PmShortTermApplicationTable MyPmShortTermApplicationStCongressCodeTable = null;
+                PmShortTermApplicationAccess.LoadViaPtCongressCodeStCongressCodeTemplate(out MyPmShortTermApplicationStCongressCodeTable, ATemplateRow, StringHelper.StrSplit("p_partner_key_n,pm_application_key_i,pm_registration_office_n", ","), ATransaction);
+                for (countRow = 0; (countRow != MyPmShortTermApplicationStCongressCodeTable.Rows.Count); countRow = (countRow + 1))
                 {
-                    PmShortTermApplicationCascading.DeleteUsingTemplate(MyPmShortTermApplicationTable[countRow], null, ATransaction, AWithCascDelete);
+                    PmShortTermApplicationCascading.DeleteUsingTemplate(MyPmShortTermApplicationStCongressCodeTable[countRow], null, ATransaction, AWithCascDelete);
                 }
-                PmShortTermApplicationAccess.LoadViaPtCongressCodeXyzTbdRoleTemplate(out MyPmShortTermApplicationTable, ATemplateRow, StringHelper.StrSplit("p_partner_key_n,pm_application_key_i,pm_registration_office_n", ","), ATransaction);
-                for (countRow = 0; (countRow != MyPmShortTermApplicationTable.Rows.Count); countRow = (countRow + 1))
+                PmShortTermApplicationTable MyPmShortTermApplicationXyzTbdRoleTable = null;
+                PmShortTermApplicationAccess.LoadViaPtCongressCodeXyzTbdRoleTemplate(out MyPmShortTermApplicationXyzTbdRoleTable, ATemplateRow, StringHelper.StrSplit("p_partner_key_n,pm_application_key_i,pm_registration_office_n", ","), ATransaction);
+                for (countRow = 0; (countRow != MyPmShortTermApplicationXyzTbdRoleTable.Rows.Count); countRow = (countRow + 1))
                 {
-                    PmShortTermApplicationCascading.DeleteUsingTemplate(MyPmShortTermApplicationTable[countRow], null, ATransaction, AWithCascDelete);
+                    PmShortTermApplicationCascading.DeleteUsingTemplate(MyPmShortTermApplicationXyzTbdRoleTable[countRow], null, ATransaction, AWithCascDelete);
                 }
             }
             PtCongressCodeAccess.DeleteUsingTemplate(ATemplateRow, ATemplateOperators, ATransaction);
         }
     }
-    
+
     /// auto generated
     public class PtPartyTypeCascading : TTypedDataAccess
     {
-        
         /// cascading delete
         public static void DeleteByPrimaryKey(String ACode, TDBTransaction ATransaction, bool AWithCascDelete)
         {
@@ -6664,7 +6400,7 @@ namespace Ict.Petra.Shared.MCommon.Data.Cascading
             }
             PtPartyTypeAccess.DeleteByPrimaryKey(ACode, ATransaction);
         }
-        
+
         /// cascading delete
         public static void DeleteUsingTemplate(PtPartyTypeRow ATemplateRow, StringCollection ATemplateOperators, TDBTransaction ATransaction, bool AWithCascDelete)
         {
@@ -6681,92 +6417,90 @@ namespace Ict.Petra.Shared.MCommon.Data.Cascading
             PtPartyTypeAccess.DeleteUsingTemplate(ATemplateRow, ATemplateOperators, ATransaction);
         }
     }
-    
+
     /// auto generated
     public class PtTravelTypeCascading : TTypedDataAccess
     {
-        
         /// cascading delete
         public static void DeleteByPrimaryKey(String ACode, TDBTransaction ATransaction, bool AWithCascDelete)
         {
             int countRow;
             if ((AWithCascDelete == true))
             {
-                PmShortTermApplicationTable MyPmShortTermApplicationTable = null;
-                PmShortTermApplicationAccess.LoadViaPtTravelTypeTravelTypeToCongCode(out MyPmShortTermApplicationTable, ACode, StringHelper.StrSplit("p_partner_key_n,pm_application_key_i,pm_registration_office_n", ","), ATransaction);
-                for (countRow = 0; (countRow != MyPmShortTermApplicationTable.Rows.Count); countRow = (countRow + 1))
+                PmShortTermApplicationTable MyPmShortTermApplicationTravelTypeToCongCodeTable = null;
+                PmShortTermApplicationAccess.LoadViaPtTravelTypeTravelTypeToCongCode(out MyPmShortTermApplicationTravelTypeToCongCodeTable, ACode, StringHelper.StrSplit("p_partner_key_n,pm_application_key_i,pm_registration_office_n", ","), ATransaction);
+                for (countRow = 0; (countRow != MyPmShortTermApplicationTravelTypeToCongCodeTable.Rows.Count); countRow = (countRow + 1))
                 {
-                    PmShortTermApplicationCascading.DeleteUsingTemplate(MyPmShortTermApplicationTable[countRow], null, ATransaction, AWithCascDelete);
+                    PmShortTermApplicationCascading.DeleteUsingTemplate(MyPmShortTermApplicationTravelTypeToCongCodeTable[countRow], null, ATransaction, AWithCascDelete);
                 }
-                PmShortTermApplicationAccess.LoadViaPtTravelTypeTravelTypeFromCongCode(out MyPmShortTermApplicationTable, ACode, StringHelper.StrSplit("p_partner_key_n,pm_application_key_i,pm_registration_office_n", ","), ATransaction);
-                for (countRow = 0; (countRow != MyPmShortTermApplicationTable.Rows.Count); countRow = (countRow + 1))
+                PmShortTermApplicationTable MyPmShortTermApplicationTravelTypeFromCongCodeTable = null;
+                PmShortTermApplicationAccess.LoadViaPtTravelTypeTravelTypeFromCongCode(out MyPmShortTermApplicationTravelTypeFromCongCodeTable, ACode, StringHelper.StrSplit("p_partner_key_n,pm_application_key_i,pm_registration_office_n", ","), ATransaction);
+                for (countRow = 0; (countRow != MyPmShortTermApplicationTravelTypeFromCongCodeTable.Rows.Count); countRow = (countRow + 1))
                 {
-                    PmShortTermApplicationCascading.DeleteUsingTemplate(MyPmShortTermApplicationTable[countRow], null, ATransaction, AWithCascDelete);
+                    PmShortTermApplicationCascading.DeleteUsingTemplate(MyPmShortTermApplicationTravelTypeFromCongCodeTable[countRow], null, ATransaction, AWithCascDelete);
                 }
             }
             PtTravelTypeAccess.DeleteByPrimaryKey(ACode, ATransaction);
         }
-        
+
         /// cascading delete
         public static void DeleteUsingTemplate(PtTravelTypeRow ATemplateRow, StringCollection ATemplateOperators, TDBTransaction ATransaction, bool AWithCascDelete)
         {
             int countRow;
             if ((AWithCascDelete == true))
             {
-                PmShortTermApplicationTable MyPmShortTermApplicationTable = null;
-                PmShortTermApplicationAccess.LoadViaPtTravelTypeTravelTypeToCongCodeTemplate(out MyPmShortTermApplicationTable, ATemplateRow, StringHelper.StrSplit("p_partner_key_n,pm_application_key_i,pm_registration_office_n", ","), ATransaction);
-                for (countRow = 0; (countRow != MyPmShortTermApplicationTable.Rows.Count); countRow = (countRow + 1))
+                PmShortTermApplicationTable MyPmShortTermApplicationTravelTypeToCongCodeTable = null;
+                PmShortTermApplicationAccess.LoadViaPtTravelTypeTravelTypeToCongCodeTemplate(out MyPmShortTermApplicationTravelTypeToCongCodeTable, ATemplateRow, StringHelper.StrSplit("p_partner_key_n,pm_application_key_i,pm_registration_office_n", ","), ATransaction);
+                for (countRow = 0; (countRow != MyPmShortTermApplicationTravelTypeToCongCodeTable.Rows.Count); countRow = (countRow + 1))
                 {
-                    PmShortTermApplicationCascading.DeleteUsingTemplate(MyPmShortTermApplicationTable[countRow], null, ATransaction, AWithCascDelete);
+                    PmShortTermApplicationCascading.DeleteUsingTemplate(MyPmShortTermApplicationTravelTypeToCongCodeTable[countRow], null, ATransaction, AWithCascDelete);
                 }
-                PmShortTermApplicationAccess.LoadViaPtTravelTypeTravelTypeFromCongCodeTemplate(out MyPmShortTermApplicationTable, ATemplateRow, StringHelper.StrSplit("p_partner_key_n,pm_application_key_i,pm_registration_office_n", ","), ATransaction);
-                for (countRow = 0; (countRow != MyPmShortTermApplicationTable.Rows.Count); countRow = (countRow + 1))
+                PmShortTermApplicationTable MyPmShortTermApplicationTravelTypeFromCongCodeTable = null;
+                PmShortTermApplicationAccess.LoadViaPtTravelTypeTravelTypeFromCongCodeTemplate(out MyPmShortTermApplicationTravelTypeFromCongCodeTable, ATemplateRow, StringHelper.StrSplit("p_partner_key_n,pm_application_key_i,pm_registration_office_n", ","), ATransaction);
+                for (countRow = 0; (countRow != MyPmShortTermApplicationTravelTypeFromCongCodeTable.Rows.Count); countRow = (countRow + 1))
                 {
-                    PmShortTermApplicationCascading.DeleteUsingTemplate(MyPmShortTermApplicationTable[countRow], null, ATransaction, AWithCascDelete);
+                    PmShortTermApplicationCascading.DeleteUsingTemplate(MyPmShortTermApplicationTravelTypeFromCongCodeTable[countRow], null, ATransaction, AWithCascDelete);
                 }
             }
             PtTravelTypeAccess.DeleteUsingTemplate(ATemplateRow, ATemplateOperators, ATransaction);
         }
     }
-    
+
     /// auto generated
     public class PmShortTermApplicationCascading : TTypedDataAccess
     {
-        
         /// cascading delete
         public static void DeleteByPrimaryKey(Int64 APartnerKey, Int32 AApplicationKey, Int64 ARegistrationOffice, TDBTransaction ATransaction, bool AWithCascDelete)
         {
             PmShortTermApplicationAccess.DeleteByPrimaryKey(APartnerKey, AApplicationKey, ARegistrationOffice, ATransaction);
         }
-        
+
         /// cascading delete
         public static void DeleteUsingTemplate(PmShortTermApplicationRow ATemplateRow, StringCollection ATemplateOperators, TDBTransaction ATransaction, bool AWithCascDelete)
         {
             PmShortTermApplicationAccess.DeleteUsingTemplate(ATemplateRow, ATemplateOperators, ATransaction);
         }
     }
-    
+
     /// auto generated
     public class PmYearProgramApplicationCascading : TTypedDataAccess
     {
-        
         /// cascading delete
         public static void DeleteByPrimaryKey(Int64 APartnerKey, Int32 AApplicationKey, Int64 ARegistrationOffice, TDBTransaction ATransaction, bool AWithCascDelete)
         {
             PmYearProgramApplicationAccess.DeleteByPrimaryKey(APartnerKey, AApplicationKey, ARegistrationOffice, ATransaction);
         }
-        
+
         /// cascading delete
         public static void DeleteUsingTemplate(PmYearProgramApplicationRow ATemplateRow, StringCollection ATemplateOperators, TDBTransaction ATransaction, bool AWithCascDelete)
         {
             PmYearProgramApplicationAccess.DeleteUsingTemplate(ATemplateRow, ATemplateOperators, ATransaction);
         }
     }
-    
+
     /// auto generated
     public class PtAppFormTypesCascading : TTypedDataAccess
     {
-        
         /// cascading delete
         public static void DeleteByPrimaryKey(String AFormName, TDBTransaction ATransaction, bool AWithCascDelete)
         {
@@ -6782,7 +6516,7 @@ namespace Ict.Petra.Shared.MCommon.Data.Cascading
             }
             PtAppFormTypesAccess.DeleteByPrimaryKey(AFormName, ATransaction);
         }
-        
+
         /// cascading delete
         public static void DeleteUsingTemplate(PtAppFormTypesRow ATemplateRow, StringCollection ATemplateOperators, TDBTransaction ATransaction, bool AWithCascDelete)
         {
@@ -6799,11 +6533,10 @@ namespace Ict.Petra.Shared.MCommon.Data.Cascading
             PtAppFormTypesAccess.DeleteUsingTemplate(ATemplateRow, ATemplateOperators, ATransaction);
         }
     }
-    
+
     /// auto generated
     public class PmApplicationFormsCascading : TTypedDataAccess
     {
-        
         /// cascading delete
         public static void DeleteByPrimaryKey(Int64 APartnerKey, Int32 AApplicationKey, Int64 ARegistrationOffice, String AFormName, TDBTransaction ATransaction, bool AWithCascDelete)
         {
@@ -6819,7 +6552,7 @@ namespace Ict.Petra.Shared.MCommon.Data.Cascading
             }
             PmApplicationFormsAccess.DeleteByPrimaryKey(APartnerKey, AApplicationKey, ARegistrationOffice, AFormName, ATransaction);
         }
-        
+
         /// cascading delete
         public static void DeleteUsingTemplate(PmApplicationFormsRow ATemplateRow, StringCollection ATemplateOperators, TDBTransaction ATransaction, bool AWithCascDelete)
         {
@@ -6836,11 +6569,10 @@ namespace Ict.Petra.Shared.MCommon.Data.Cascading
             PmApplicationFormsAccess.DeleteUsingTemplate(ATemplateRow, ATemplateOperators, ATransaction);
         }
     }
-    
+
     /// auto generated
     public class PmDocumentCategoryCascading : TTypedDataAccess
     {
-        
         /// cascading delete
         public static void DeleteByPrimaryKey(String ACode, TDBTransaction ATransaction, bool AWithCascDelete)
         {
@@ -6856,7 +6588,7 @@ namespace Ict.Petra.Shared.MCommon.Data.Cascading
             }
             PmDocumentCategoryAccess.DeleteByPrimaryKey(ACode, ATransaction);
         }
-        
+
         /// cascading delete
         public static void DeleteUsingTemplate(PmDocumentCategoryRow ATemplateRow, StringCollection ATemplateOperators, TDBTransaction ATransaction, bool AWithCascDelete)
         {
@@ -6873,11 +6605,10 @@ namespace Ict.Petra.Shared.MCommon.Data.Cascading
             PmDocumentCategoryAccess.DeleteUsingTemplate(ATemplateRow, ATemplateOperators, ATransaction);
         }
     }
-    
+
     /// auto generated
     public class PmDocumentTypeCascading : TTypedDataAccess
     {
-        
         /// cascading delete
         public static void DeleteByPrimaryKey(String ADocCode, TDBTransaction ATransaction, bool AWithCascDelete)
         {
@@ -6893,7 +6624,7 @@ namespace Ict.Petra.Shared.MCommon.Data.Cascading
             }
             PmDocumentTypeAccess.DeleteByPrimaryKey(ADocCode, ATransaction);
         }
-        
+
         /// cascading delete
         public static void DeleteUsingTemplate(PmDocumentTypeRow ATemplateRow, StringCollection ATemplateOperators, TDBTransaction ATransaction, bool AWithCascDelete)
         {
@@ -6910,11 +6641,10 @@ namespace Ict.Petra.Shared.MCommon.Data.Cascading
             PmDocumentTypeAccess.DeleteUsingTemplate(ATemplateRow, ATemplateOperators, ATransaction);
         }
     }
-    
+
     /// auto generated
     public class PmDocumentCascading : TTypedDataAccess
     {
-        
         /// cascading delete
         public static void DeleteByPrimaryKey(Int64 ASiteKey, Int64 ADocumentKey, TDBTransaction ATransaction, bool AWithCascDelete)
         {
@@ -6930,7 +6660,7 @@ namespace Ict.Petra.Shared.MCommon.Data.Cascading
             }
             PmDocumentAccess.DeleteByPrimaryKey(ASiteKey, ADocumentKey, ATransaction);
         }
-        
+
         /// cascading delete
         public static void DeleteUsingTemplate(PmDocumentRow ATemplateRow, StringCollection ATemplateOperators, TDBTransaction ATransaction, bool AWithCascDelete)
         {
@@ -6947,11 +6677,10 @@ namespace Ict.Petra.Shared.MCommon.Data.Cascading
             PmDocumentAccess.DeleteUsingTemplate(ATemplateRow, ATemplateOperators, ATransaction);
         }
     }
-    
+
     /// auto generated
     public class PtPassportTypeCascading : TTypedDataAccess
     {
-        
         /// cascading delete
         public static void DeleteByPrimaryKey(String ACode, TDBTransaction ATransaction, bool AWithCascDelete)
         {
@@ -6967,7 +6696,7 @@ namespace Ict.Petra.Shared.MCommon.Data.Cascading
             }
             PtPassportTypeAccess.DeleteByPrimaryKey(ACode, ATransaction);
         }
-        
+
         /// cascading delete
         public static void DeleteUsingTemplate(PtPassportTypeRow ATemplateRow, StringCollection ATemplateOperators, TDBTransaction ATransaction, bool AWithCascDelete)
         {
@@ -6984,45 +6713,42 @@ namespace Ict.Petra.Shared.MCommon.Data.Cascading
             PtPassportTypeAccess.DeleteUsingTemplate(ATemplateRow, ATemplateOperators, ATransaction);
         }
     }
-    
+
     /// auto generated
     public class PmPassportDetailsCascading : TTypedDataAccess
     {
-        
         /// cascading delete
         public static void DeleteByPrimaryKey(Int64 APartnerKey, String APassportNumber, TDBTransaction ATransaction, bool AWithCascDelete)
         {
             PmPassportDetailsAccess.DeleteByPrimaryKey(APartnerKey, APassportNumber, ATransaction);
         }
-        
+
         /// cascading delete
         public static void DeleteUsingTemplate(PmPassportDetailsRow ATemplateRow, StringCollection ATemplateOperators, TDBTransaction ATransaction, bool AWithCascDelete)
         {
             PmPassportDetailsAccess.DeleteUsingTemplate(ATemplateRow, ATemplateOperators, ATransaction);
         }
     }
-    
+
     /// auto generated
     public class PmLongTermSupportFiguresCascading : TTypedDataAccess
     {
-        
         /// cascading delete
         public static void DeleteByPrimaryKey(Int64 APartnerKey, Int32 ARecordNumber, TDBTransaction ATransaction, bool AWithCascDelete)
         {
             PmLongTermSupportFiguresAccess.DeleteByPrimaryKey(APartnerKey, ARecordNumber, ATransaction);
         }
-        
+
         /// cascading delete
         public static void DeleteUsingTemplate(PmLongTermSupportFiguresRow ATemplateRow, StringCollection ATemplateOperators, TDBTransaction ATransaction, bool AWithCascDelete)
         {
             PmLongTermSupportFiguresAccess.DeleteUsingTemplate(ATemplateRow, ATemplateOperators, ATransaction);
         }
     }
-    
+
     /// auto generated
     public class PtLanguageLevelCascading : TTypedDataAccess
     {
-        
         /// cascading delete
         public static void DeleteByPrimaryKey(Int32 ALanguageLevel, TDBTransaction ATransaction, bool AWithCascDelete)
         {
@@ -7036,8 +6762,7 @@ namespace Ict.Petra.Shared.MCommon.Data.Cascading
                     PmPersonLanguageCascading.DeleteUsingTemplate(MyPmPersonLanguageTable[countRow], null, ATransaction, AWithCascDelete);
                 }
                 UmJobLanguageTable MyUmJobLanguageTable = null;
-                UmJobLanguageAccess.LoadViaPtLanguageLevel(out MyUmJobLanguageTable, ALanguageLevel, StringHelper.StrSplit("pm_unit_key_n,pt_position_name_c,pt_position_scope_c,um_job_key_i,p_language_code" +
-                            "_c", ","), ATransaction);
+                UmJobLanguageAccess.LoadViaPtLanguageLevel(out MyUmJobLanguageTable, ALanguageLevel, StringHelper.StrSplit("pm_unit_key_n,pt_position_name_c,pt_position_scope_c,um_job_key_i,p_language_code_c", ","), ATransaction);
                 for (countRow = 0; (countRow != MyUmJobLanguageTable.Rows.Count); countRow = (countRow + 1))
                 {
                     UmJobLanguageCascading.DeleteUsingTemplate(MyUmJobLanguageTable[countRow], null, ATransaction, AWithCascDelete);
@@ -7051,7 +6776,7 @@ namespace Ict.Petra.Shared.MCommon.Data.Cascading
             }
             PtLanguageLevelAccess.DeleteByPrimaryKey(ALanguageLevel, ATransaction);
         }
-        
+
         /// cascading delete
         public static void DeleteUsingTemplate(PtLanguageLevelRow ATemplateRow, StringCollection ATemplateOperators, TDBTransaction ATransaction, bool AWithCascDelete)
         {
@@ -7065,8 +6790,7 @@ namespace Ict.Petra.Shared.MCommon.Data.Cascading
                     PmPersonLanguageCascading.DeleteUsingTemplate(MyPmPersonLanguageTable[countRow], null, ATransaction, AWithCascDelete);
                 }
                 UmJobLanguageTable MyUmJobLanguageTable = null;
-                UmJobLanguageAccess.LoadViaPtLanguageLevelTemplate(out MyUmJobLanguageTable, ATemplateRow, StringHelper.StrSplit("pm_unit_key_n,pt_position_name_c,pt_position_scope_c,um_job_key_i,p_language_code" +
-                            "_c", ","), ATransaction);
+                UmJobLanguageAccess.LoadViaPtLanguageLevelTemplate(out MyUmJobLanguageTable, ATemplateRow, StringHelper.StrSplit("pm_unit_key_n,pt_position_name_c,pt_position_scope_c,um_job_key_i,p_language_code_c", ","), ATransaction);
                 for (countRow = 0; (countRow != MyUmJobLanguageTable.Rows.Count); countRow = (countRow + 1))
                 {
                     UmJobLanguageCascading.DeleteUsingTemplate(MyUmJobLanguageTable[countRow], null, ATransaction, AWithCascDelete);
@@ -7081,28 +6805,26 @@ namespace Ict.Petra.Shared.MCommon.Data.Cascading
             PtLanguageLevelAccess.DeleteUsingTemplate(ATemplateRow, ATemplateOperators, ATransaction);
         }
     }
-    
+
     /// auto generated
     public class PmPersonLanguageCascading : TTypedDataAccess
     {
-        
         /// cascading delete
         public static void DeleteByPrimaryKey(Int64 APartnerKey, String ALanguageCode, TDBTransaction ATransaction, bool AWithCascDelete)
         {
             PmPersonLanguageAccess.DeleteByPrimaryKey(APartnerKey, ALanguageCode, ATransaction);
         }
-        
+
         /// cascading delete
         public static void DeleteUsingTemplate(PmPersonLanguageRow ATemplateRow, StringCollection ATemplateOperators, TDBTransaction ATransaction, bool AWithCascDelete)
         {
             PmPersonLanguageAccess.DeleteUsingTemplate(ATemplateRow, ATemplateOperators, ATransaction);
         }
     }
-    
+
     /// auto generated
     public class PtValuableItemCascading : TTypedDataAccess
     {
-        
         /// cascading delete
         public static void DeleteByPrimaryKey(String AValuableItemName, TDBTransaction ATransaction, bool AWithCascDelete)
         {
@@ -7118,7 +6840,7 @@ namespace Ict.Petra.Shared.MCommon.Data.Cascading
             }
             PtValuableItemAccess.DeleteByPrimaryKey(AValuableItemName, ATransaction);
         }
-        
+
         /// cascading delete
         public static void DeleteUsingTemplate(PtValuableItemRow ATemplateRow, StringCollection ATemplateOperators, TDBTransaction ATransaction, bool AWithCascDelete)
         {
@@ -7135,45 +6857,42 @@ namespace Ict.Petra.Shared.MCommon.Data.Cascading
             PtValuableItemAccess.DeleteUsingTemplate(ATemplateRow, ATemplateOperators, ATransaction);
         }
     }
-    
+
     /// auto generated
     public class PmOwnershipCascading : TTypedDataAccess
     {
-        
         /// cascading delete
         public static void DeleteByPrimaryKey(Int64 APartnerKey, String AValuableItemName, TDBTransaction ATransaction, bool AWithCascDelete)
         {
             PmOwnershipAccess.DeleteByPrimaryKey(APartnerKey, AValuableItemName, ATransaction);
         }
-        
+
         /// cascading delete
         public static void DeleteUsingTemplate(PmOwnershipRow ATemplateRow, StringCollection ATemplateOperators, TDBTransaction ATransaction, bool AWithCascDelete)
         {
             PmOwnershipAccess.DeleteUsingTemplate(ATemplateRow, ATemplateOperators, ATransaction);
         }
     }
-    
+
     /// auto generated
     public class PmPastExperienceCascading : TTypedDataAccess
     {
-        
         /// cascading delete
         public static void DeleteByPrimaryKey(Int64 ASiteKey, Int64 AKey, TDBTransaction ATransaction, bool AWithCascDelete)
         {
             PmPastExperienceAccess.DeleteByPrimaryKey(ASiteKey, AKey, ATransaction);
         }
-        
+
         /// cascading delete
         public static void DeleteUsingTemplate(PmPastExperienceRow ATemplateRow, StringCollection ATemplateOperators, TDBTransaction ATransaction, bool AWithCascDelete)
         {
             PmPastExperienceAccess.DeleteUsingTemplate(ATemplateRow, ATemplateOperators, ATransaction);
         }
     }
-    
+
     /// auto generated
     public class PtAbilityAreaCascading : TTypedDataAccess
     {
-        
         /// cascading delete
         public static void DeleteByPrimaryKey(String AAbilityAreaName, TDBTransaction ATransaction, bool AWithCascDelete)
         {
@@ -7187,8 +6906,7 @@ namespace Ict.Petra.Shared.MCommon.Data.Cascading
                     PmPersonAbilityCascading.DeleteUsingTemplate(MyPmPersonAbilityTable[countRow], null, ATransaction, AWithCascDelete);
                 }
                 UmJobRequirementTable MyUmJobRequirementTable = null;
-                UmJobRequirementAccess.LoadViaPtAbilityArea(out MyUmJobRequirementTable, AAbilityAreaName, StringHelper.StrSplit("pm_unit_key_n,pt_position_name_c,pt_position_scope_c,um_job_key_i,pt_ability_area" +
-                            "_name_c", ","), ATransaction);
+                UmJobRequirementAccess.LoadViaPtAbilityArea(out MyUmJobRequirementTable, AAbilityAreaName, StringHelper.StrSplit("pm_unit_key_n,pt_position_name_c,pt_position_scope_c,um_job_key_i,pt_ability_area_name_c", ","), ATransaction);
                 for (countRow = 0; (countRow != MyUmJobRequirementTable.Rows.Count); countRow = (countRow + 1))
                 {
                     UmJobRequirementCascading.DeleteUsingTemplate(MyUmJobRequirementTable[countRow], null, ATransaction, AWithCascDelete);
@@ -7202,7 +6920,7 @@ namespace Ict.Petra.Shared.MCommon.Data.Cascading
             }
             PtAbilityAreaAccess.DeleteByPrimaryKey(AAbilityAreaName, ATransaction);
         }
-        
+
         /// cascading delete
         public static void DeleteUsingTemplate(PtAbilityAreaRow ATemplateRow, StringCollection ATemplateOperators, TDBTransaction ATransaction, bool AWithCascDelete)
         {
@@ -7216,8 +6934,7 @@ namespace Ict.Petra.Shared.MCommon.Data.Cascading
                     PmPersonAbilityCascading.DeleteUsingTemplate(MyPmPersonAbilityTable[countRow], null, ATransaction, AWithCascDelete);
                 }
                 UmJobRequirementTable MyUmJobRequirementTable = null;
-                UmJobRequirementAccess.LoadViaPtAbilityAreaTemplate(out MyUmJobRequirementTable, ATemplateRow, StringHelper.StrSplit("pm_unit_key_n,pt_position_name_c,pt_position_scope_c,um_job_key_i,pt_ability_area" +
-                            "_name_c", ","), ATransaction);
+                UmJobRequirementAccess.LoadViaPtAbilityAreaTemplate(out MyUmJobRequirementTable, ATemplateRow, StringHelper.StrSplit("pm_unit_key_n,pt_position_name_c,pt_position_scope_c,um_job_key_i,pt_ability_area_name_c", ","), ATransaction);
                 for (countRow = 0; (countRow != MyUmJobRequirementTable.Rows.Count); countRow = (countRow + 1))
                 {
                     UmJobRequirementCascading.DeleteUsingTemplate(MyUmJobRequirementTable[countRow], null, ATransaction, AWithCascDelete);
@@ -7232,11 +6949,10 @@ namespace Ict.Petra.Shared.MCommon.Data.Cascading
             PtAbilityAreaAccess.DeleteUsingTemplate(ATemplateRow, ATemplateOperators, ATransaction);
         }
     }
-    
+
     /// auto generated
     public class PtAbilityLevelCascading : TTypedDataAccess
     {
-        
         /// cascading delete
         public static void DeleteByPrimaryKey(Int32 AAbilityLevel, TDBTransaction ATransaction, bool AWithCascDelete)
         {
@@ -7250,8 +6966,7 @@ namespace Ict.Petra.Shared.MCommon.Data.Cascading
                     PmPersonAbilityCascading.DeleteUsingTemplate(MyPmPersonAbilityTable[countRow], null, ATransaction, AWithCascDelete);
                 }
                 UmJobRequirementTable MyUmJobRequirementTable = null;
-                UmJobRequirementAccess.LoadViaPtAbilityLevel(out MyUmJobRequirementTable, AAbilityLevel, StringHelper.StrSplit("pm_unit_key_n,pt_position_name_c,pt_position_scope_c,um_job_key_i,pt_ability_area" +
-                            "_name_c", ","), ATransaction);
+                UmJobRequirementAccess.LoadViaPtAbilityLevel(out MyUmJobRequirementTable, AAbilityLevel, StringHelper.StrSplit("pm_unit_key_n,pt_position_name_c,pt_position_scope_c,um_job_key_i,pt_ability_area_name_c", ","), ATransaction);
                 for (countRow = 0; (countRow != MyUmJobRequirementTable.Rows.Count); countRow = (countRow + 1))
                 {
                     UmJobRequirementCascading.DeleteUsingTemplate(MyUmJobRequirementTable[countRow], null, ATransaction, AWithCascDelete);
@@ -7265,7 +6980,7 @@ namespace Ict.Petra.Shared.MCommon.Data.Cascading
             }
             PtAbilityLevelAccess.DeleteByPrimaryKey(AAbilityLevel, ATransaction);
         }
-        
+
         /// cascading delete
         public static void DeleteUsingTemplate(PtAbilityLevelRow ATemplateRow, StringCollection ATemplateOperators, TDBTransaction ATransaction, bool AWithCascDelete)
         {
@@ -7279,8 +6994,7 @@ namespace Ict.Petra.Shared.MCommon.Data.Cascading
                     PmPersonAbilityCascading.DeleteUsingTemplate(MyPmPersonAbilityTable[countRow], null, ATransaction, AWithCascDelete);
                 }
                 UmJobRequirementTable MyUmJobRequirementTable = null;
-                UmJobRequirementAccess.LoadViaPtAbilityLevelTemplate(out MyUmJobRequirementTable, ATemplateRow, StringHelper.StrSplit("pm_unit_key_n,pt_position_name_c,pt_position_scope_c,um_job_key_i,pt_ability_area" +
-                            "_name_c", ","), ATransaction);
+                UmJobRequirementAccess.LoadViaPtAbilityLevelTemplate(out MyUmJobRequirementTable, ATemplateRow, StringHelper.StrSplit("pm_unit_key_n,pt_position_name_c,pt_position_scope_c,um_job_key_i,pt_ability_area_name_c", ","), ATransaction);
                 for (countRow = 0; (countRow != MyUmJobRequirementTable.Rows.Count); countRow = (countRow + 1))
                 {
                     UmJobRequirementCascading.DeleteUsingTemplate(MyUmJobRequirementTable[countRow], null, ATransaction, AWithCascDelete);
@@ -7295,28 +7009,26 @@ namespace Ict.Petra.Shared.MCommon.Data.Cascading
             PtAbilityLevelAccess.DeleteUsingTemplate(ATemplateRow, ATemplateOperators, ATransaction);
         }
     }
-    
+
     /// auto generated
     public class PmPersonAbilityCascading : TTypedDataAccess
     {
-        
         /// cascading delete
         public static void DeleteByPrimaryKey(Int64 APartnerKey, String AAbilityAreaName, TDBTransaction ATransaction, bool AWithCascDelete)
         {
             PmPersonAbilityAccess.DeleteByPrimaryKey(APartnerKey, AAbilityAreaName, ATransaction);
         }
-        
+
         /// cascading delete
         public static void DeleteUsingTemplate(PmPersonAbilityRow ATemplateRow, StringCollection ATemplateOperators, TDBTransaction ATransaction, bool AWithCascDelete)
         {
             PmPersonAbilityAccess.DeleteUsingTemplate(ATemplateRow, ATemplateOperators, ATransaction);
         }
     }
-    
+
     /// auto generated
     public class PtQualificationAreaCascading : TTypedDataAccess
     {
-        
         /// cascading delete
         public static void DeleteByPrimaryKey(String AQualificationAreaName, TDBTransaction ATransaction, bool AWithCascDelete)
         {
@@ -7330,8 +7042,7 @@ namespace Ict.Petra.Shared.MCommon.Data.Cascading
                     PmPersonQualificationCascading.DeleteUsingTemplate(MyPmPersonQualificationTable[countRow], null, ATransaction, AWithCascDelete);
                 }
                 UmJobQualificationTable MyUmJobQualificationTable = null;
-                UmJobQualificationAccess.LoadViaPtQualificationArea(out MyUmJobQualificationTable, AQualificationAreaName, StringHelper.StrSplit("pm_unit_key_n,pt_position_name_c,pt_position_scope_c,um_job_key_i,pt_qualificatio" +
-                            "n_area_name_c", ","), ATransaction);
+                UmJobQualificationAccess.LoadViaPtQualificationArea(out MyUmJobQualificationTable, AQualificationAreaName, StringHelper.StrSplit("pm_unit_key_n,pt_position_name_c,pt_position_scope_c,um_job_key_i,pt_qualification_area_name_c", ","), ATransaction);
                 for (countRow = 0; (countRow != MyUmJobQualificationTable.Rows.Count); countRow = (countRow + 1))
                 {
                     UmJobQualificationCascading.DeleteUsingTemplate(MyUmJobQualificationTable[countRow], null, ATransaction, AWithCascDelete);
@@ -7339,7 +7050,7 @@ namespace Ict.Petra.Shared.MCommon.Data.Cascading
             }
             PtQualificationAreaAccess.DeleteByPrimaryKey(AQualificationAreaName, ATransaction);
         }
-        
+
         /// cascading delete
         public static void DeleteUsingTemplate(PtQualificationAreaRow ATemplateRow, StringCollection ATemplateOperators, TDBTransaction ATransaction, bool AWithCascDelete)
         {
@@ -7353,8 +7064,7 @@ namespace Ict.Petra.Shared.MCommon.Data.Cascading
                     PmPersonQualificationCascading.DeleteUsingTemplate(MyPmPersonQualificationTable[countRow], null, ATransaction, AWithCascDelete);
                 }
                 UmJobQualificationTable MyUmJobQualificationTable = null;
-                UmJobQualificationAccess.LoadViaPtQualificationAreaTemplate(out MyUmJobQualificationTable, ATemplateRow, StringHelper.StrSplit("pm_unit_key_n,pt_position_name_c,pt_position_scope_c,um_job_key_i,pt_qualificatio" +
-                            "n_area_name_c", ","), ATransaction);
+                UmJobQualificationAccess.LoadViaPtQualificationAreaTemplate(out MyUmJobQualificationTable, ATemplateRow, StringHelper.StrSplit("pm_unit_key_n,pt_position_name_c,pt_position_scope_c,um_job_key_i,pt_qualification_area_name_c", ","), ATransaction);
                 for (countRow = 0; (countRow != MyUmJobQualificationTable.Rows.Count); countRow = (countRow + 1))
                 {
                     UmJobQualificationCascading.DeleteUsingTemplate(MyUmJobQualificationTable[countRow], null, ATransaction, AWithCascDelete);
@@ -7363,11 +7073,10 @@ namespace Ict.Petra.Shared.MCommon.Data.Cascading
             PtQualificationAreaAccess.DeleteUsingTemplate(ATemplateRow, ATemplateOperators, ATransaction);
         }
     }
-    
+
     /// auto generated
     public class PtQualificationLevelCascading : TTypedDataAccess
     {
-        
         /// cascading delete
         public static void DeleteByPrimaryKey(Int32 AQualificationLevel, TDBTransaction ATransaction, bool AWithCascDelete)
         {
@@ -7381,8 +7090,7 @@ namespace Ict.Petra.Shared.MCommon.Data.Cascading
                     PmPersonQualificationCascading.DeleteUsingTemplate(MyPmPersonQualificationTable[countRow], null, ATransaction, AWithCascDelete);
                 }
                 UmJobQualificationTable MyUmJobQualificationTable = null;
-                UmJobQualificationAccess.LoadViaPtQualificationLevel(out MyUmJobQualificationTable, AQualificationLevel, StringHelper.StrSplit("pm_unit_key_n,pt_position_name_c,pt_position_scope_c,um_job_key_i,pt_qualificatio" +
-                            "n_area_name_c", ","), ATransaction);
+                UmJobQualificationAccess.LoadViaPtQualificationLevel(out MyUmJobQualificationTable, AQualificationLevel, StringHelper.StrSplit("pm_unit_key_n,pt_position_name_c,pt_position_scope_c,um_job_key_i,pt_qualification_area_name_c", ","), ATransaction);
                 for (countRow = 0; (countRow != MyUmJobQualificationTable.Rows.Count); countRow = (countRow + 1))
                 {
                     UmJobQualificationCascading.DeleteUsingTemplate(MyUmJobQualificationTable[countRow], null, ATransaction, AWithCascDelete);
@@ -7390,7 +7098,7 @@ namespace Ict.Petra.Shared.MCommon.Data.Cascading
             }
             PtQualificationLevelAccess.DeleteByPrimaryKey(AQualificationLevel, ATransaction);
         }
-        
+
         /// cascading delete
         public static void DeleteUsingTemplate(PtQualificationLevelRow ATemplateRow, StringCollection ATemplateOperators, TDBTransaction ATransaction, bool AWithCascDelete)
         {
@@ -7404,8 +7112,7 @@ namespace Ict.Petra.Shared.MCommon.Data.Cascading
                     PmPersonQualificationCascading.DeleteUsingTemplate(MyPmPersonQualificationTable[countRow], null, ATransaction, AWithCascDelete);
                 }
                 UmJobQualificationTable MyUmJobQualificationTable = null;
-                UmJobQualificationAccess.LoadViaPtQualificationLevelTemplate(out MyUmJobQualificationTable, ATemplateRow, StringHelper.StrSplit("pm_unit_key_n,pt_position_name_c,pt_position_scope_c,um_job_key_i,pt_qualificatio" +
-                            "n_area_name_c", ","), ATransaction);
+                UmJobQualificationAccess.LoadViaPtQualificationLevelTemplate(out MyUmJobQualificationTable, ATemplateRow, StringHelper.StrSplit("pm_unit_key_n,pt_position_name_c,pt_position_scope_c,um_job_key_i,pt_qualification_area_name_c", ","), ATransaction);
                 for (countRow = 0; (countRow != MyUmJobQualificationTable.Rows.Count); countRow = (countRow + 1))
                 {
                     UmJobQualificationCascading.DeleteUsingTemplate(MyUmJobQualificationTable[countRow], null, ATransaction, AWithCascDelete);
@@ -7414,28 +7121,26 @@ namespace Ict.Petra.Shared.MCommon.Data.Cascading
             PtQualificationLevelAccess.DeleteUsingTemplate(ATemplateRow, ATemplateOperators, ATransaction);
         }
     }
-    
+
     /// auto generated
     public class PmPersonQualificationCascading : TTypedDataAccess
     {
-        
         /// cascading delete
         public static void DeleteByPrimaryKey(Int64 APartnerKey, String AQualificationAreaName, TDBTransaction ATransaction, bool AWithCascDelete)
         {
             PmPersonQualificationAccess.DeleteByPrimaryKey(APartnerKey, AQualificationAreaName, ATransaction);
         }
-        
+
         /// cascading delete
         public static void DeleteUsingTemplate(PmPersonQualificationRow ATemplateRow, StringCollection ATemplateOperators, TDBTransaction ATransaction, bool AWithCascDelete)
         {
             PmPersonQualificationAccess.DeleteUsingTemplate(ATemplateRow, ATemplateOperators, ATransaction);
         }
     }
-    
+
     /// auto generated
     public class PtSkillCategoryCascading : TTypedDataAccess
     {
-        
         /// cascading delete
         public static void DeleteByPrimaryKey(String ACode, TDBTransaction ATransaction, bool AWithCascDelete)
         {
@@ -7451,7 +7156,7 @@ namespace Ict.Petra.Shared.MCommon.Data.Cascading
             }
             PtSkillCategoryAccess.DeleteByPrimaryKey(ACode, ATransaction);
         }
-        
+
         /// cascading delete
         public static void DeleteUsingTemplate(PtSkillCategoryRow ATemplateRow, StringCollection ATemplateOperators, TDBTransaction ATransaction, bool AWithCascDelete)
         {
@@ -7468,11 +7173,10 @@ namespace Ict.Petra.Shared.MCommon.Data.Cascading
             PtSkillCategoryAccess.DeleteUsingTemplate(ATemplateRow, ATemplateOperators, ATransaction);
         }
     }
-    
+
     /// auto generated
     public class PtSkillLevelCascading : TTypedDataAccess
     {
-        
         /// cascading delete
         public static void DeleteByPrimaryKey(Int32 ALevel, TDBTransaction ATransaction, bool AWithCascDelete)
         {
@@ -7488,7 +7192,7 @@ namespace Ict.Petra.Shared.MCommon.Data.Cascading
             }
             PtSkillLevelAccess.DeleteByPrimaryKey(ALevel, ATransaction);
         }
-        
+
         /// cascading delete
         public static void DeleteUsingTemplate(PtSkillLevelRow ATemplateRow, StringCollection ATemplateOperators, TDBTransaction ATransaction, bool AWithCascDelete)
         {
@@ -7505,45 +7209,42 @@ namespace Ict.Petra.Shared.MCommon.Data.Cascading
             PtSkillLevelAccess.DeleteUsingTemplate(ATemplateRow, ATemplateOperators, ATransaction);
         }
     }
-    
+
     /// auto generated
     public class PmPersonSkillCascading : TTypedDataAccess
     {
-        
         /// cascading delete
         public static void DeleteByPrimaryKey(Int32 APersonSkillKey, TDBTransaction ATransaction, bool AWithCascDelete)
         {
             PmPersonSkillAccess.DeleteByPrimaryKey(APersonSkillKey, ATransaction);
         }
-        
+
         /// cascading delete
         public static void DeleteUsingTemplate(PmPersonSkillRow ATemplateRow, StringCollection ATemplateOperators, TDBTransaction ATransaction, bool AWithCascDelete)
         {
             PmPersonSkillAccess.DeleteUsingTemplate(ATemplateRow, ATemplateOperators, ATransaction);
         }
     }
-    
+
     /// auto generated
     public class PmFormalEducationCascading : TTypedDataAccess
     {
-        
         /// cascading delete
         public static void DeleteByPrimaryKey(Int32 AFormalEducationKey, TDBTransaction ATransaction, bool AWithCascDelete)
         {
             PmFormalEducationAccess.DeleteByPrimaryKey(AFormalEducationKey, ATransaction);
         }
-        
+
         /// cascading delete
         public static void DeleteUsingTemplate(PmFormalEducationRow ATemplateRow, StringCollection ATemplateOperators, TDBTransaction ATransaction, bool AWithCascDelete)
         {
             PmFormalEducationAccess.DeleteUsingTemplate(ATemplateRow, ATemplateOperators, ATransaction);
         }
     }
-    
+
     /// auto generated
     public class PtDriverStatusCascading : TTypedDataAccess
     {
-        
         /// cascading delete
         public static void DeleteByPrimaryKey(String ACode, TDBTransaction ATransaction, bool AWithCascDelete)
         {
@@ -7559,7 +7260,7 @@ namespace Ict.Petra.Shared.MCommon.Data.Cascading
             }
             PtDriverStatusAccess.DeleteByPrimaryKey(ACode, ATransaction);
         }
-        
+
         /// cascading delete
         public static void DeleteUsingTemplate(PtDriverStatusRow ATemplateRow, StringCollection ATemplateOperators, TDBTransaction ATransaction, bool AWithCascDelete)
         {
@@ -7576,55 +7277,42 @@ namespace Ict.Petra.Shared.MCommon.Data.Cascading
             PtDriverStatusAccess.DeleteUsingTemplate(ATemplateRow, ATemplateOperators, ATransaction);
         }
     }
-    
-    /// auto generated
-    public class PtPersonalDataLabelsCascading : TTypedDataAccess
-    {
-    }
-    
+
     /// auto generated
     public class PmPersonalDataCascading : TTypedDataAccess
     {
-        
         /// cascading delete
         public static void DeleteByPrimaryKey(Int64 APartnerKey, TDBTransaction ATransaction, bool AWithCascDelete)
         {
             PmPersonalDataAccess.DeleteByPrimaryKey(APartnerKey, ATransaction);
         }
-        
+
         /// cascading delete
         public static void DeleteUsingTemplate(PmPersonalDataRow ATemplateRow, StringCollection ATemplateOperators, TDBTransaction ATransaction, bool AWithCascDelete)
         {
             PmPersonalDataAccess.DeleteUsingTemplate(ATemplateRow, ATemplateOperators, ATransaction);
         }
     }
-    
-    /// auto generated
-    public class PtOfficeSpecificDataLabelsCascading : TTypedDataAccess
-    {
-    }
-    
+
     /// auto generated
     public class PmPersOfficeSpecificDataCascading : TTypedDataAccess
     {
-        
         /// cascading delete
         public static void DeleteByPrimaryKey(Int64 APartnerKey, TDBTransaction ATransaction, bool AWithCascDelete)
         {
             PmPersOfficeSpecificDataAccess.DeleteByPrimaryKey(APartnerKey, ATransaction);
         }
-        
+
         /// cascading delete
         public static void DeleteUsingTemplate(PmPersOfficeSpecificDataRow ATemplateRow, StringCollection ATemplateOperators, TDBTransaction ATransaction, bool AWithCascDelete)
         {
             PmPersOfficeSpecificDataAccess.DeleteUsingTemplate(ATemplateRow, ATemplateOperators, ATransaction);
         }
     }
-    
+
     /// auto generated
     public class PDataLabelCascading : TTypedDataAccess
     {
-        
         /// cascading delete
         public static void DeleteByPrimaryKey(Int32 AKey, TDBTransaction ATransaction, bool AWithCascDelete)
         {
@@ -7658,7 +7346,7 @@ namespace Ict.Petra.Shared.MCommon.Data.Cascading
             }
             PDataLabelAccess.DeleteByPrimaryKey(AKey, ATransaction);
         }
-        
+
         /// cascading delete
         public static void DeleteUsingTemplate(PDataLabelRow ATemplateRow, StringCollection ATemplateOperators, TDBTransaction ATransaction, bool AWithCascDelete)
         {
@@ -7693,62 +7381,58 @@ namespace Ict.Petra.Shared.MCommon.Data.Cascading
             PDataLabelAccess.DeleteUsingTemplate(ATemplateRow, ATemplateOperators, ATransaction);
         }
     }
-    
+
     /// auto generated
     public class PDataLabelUseCascading : TTypedDataAccess
     {
-        
         /// cascading delete
         public static void DeleteByPrimaryKey(Int32 ADataLabelKey, String AUse, TDBTransaction ATransaction, bool AWithCascDelete)
         {
             PDataLabelUseAccess.DeleteByPrimaryKey(ADataLabelKey, AUse, ATransaction);
         }
-        
+
         /// cascading delete
         public static void DeleteUsingTemplate(PDataLabelUseRow ATemplateRow, StringCollection ATemplateOperators, TDBTransaction ATransaction, bool AWithCascDelete)
         {
             PDataLabelUseAccess.DeleteUsingTemplate(ATemplateRow, ATemplateOperators, ATransaction);
         }
     }
-    
+
     /// auto generated
     public class PDataLabelValuePartnerCascading : TTypedDataAccess
     {
-        
         /// cascading delete
         public static void DeleteByPrimaryKey(Int64 APartnerKey, Int32 ADataLabelKey, TDBTransaction ATransaction, bool AWithCascDelete)
         {
             PDataLabelValuePartnerAccess.DeleteByPrimaryKey(APartnerKey, ADataLabelKey, ATransaction);
         }
-        
+
         /// cascading delete
         public static void DeleteUsingTemplate(PDataLabelValuePartnerRow ATemplateRow, StringCollection ATemplateOperators, TDBTransaction ATransaction, bool AWithCascDelete)
         {
             PDataLabelValuePartnerAccess.DeleteUsingTemplate(ATemplateRow, ATemplateOperators, ATransaction);
         }
     }
-    
+
     /// auto generated
     public class PDataLabelValueApplicationCascading : TTypedDataAccess
     {
-        
         /// cascading delete
         public static void DeleteByPrimaryKey(Int64 APartnerKey, Int32 AApplicationKey, Int64 ARegistrationOffice, Int32 ADataLabelKey, TDBTransaction ATransaction, bool AWithCascDelete)
         {
             PDataLabelValueApplicationAccess.DeleteByPrimaryKey(APartnerKey, AApplicationKey, ARegistrationOffice, ADataLabelKey, ATransaction);
         }
-        
+
         /// cascading delete
         public static void DeleteUsingTemplate(PDataLabelValueApplicationRow ATemplateRow, StringCollection ATemplateOperators, TDBTransaction ATransaction, bool AWithCascDelete)
         {
             PDataLabelValueApplicationAccess.DeleteUsingTemplate(ATemplateRow, ATemplateOperators, ATransaction);
         }
     }
-    
+
     /// auto generated
     public class PDataLabelLookupCategoryCascading : TTypedDataAccess
     {
-        
         /// cascading delete
         public static void DeleteByPrimaryKey(String ACategoryCode, TDBTransaction ATransaction, bool AWithCascDelete)
         {
@@ -7770,7 +7454,7 @@ namespace Ict.Petra.Shared.MCommon.Data.Cascading
             }
             PDataLabelLookupCategoryAccess.DeleteByPrimaryKey(ACategoryCode, ATransaction);
         }
-        
+
         /// cascading delete
         public static void DeleteUsingTemplate(PDataLabelLookupCategoryRow ATemplateRow, StringCollection ATemplateOperators, TDBTransaction ATransaction, bool AWithCascDelete)
         {
@@ -7793,62 +7477,58 @@ namespace Ict.Petra.Shared.MCommon.Data.Cascading
             PDataLabelLookupCategoryAccess.DeleteUsingTemplate(ATemplateRow, ATemplateOperators, ATransaction);
         }
     }
-    
+
     /// auto generated
     public class PDataLabelLookupCascading : TTypedDataAccess
     {
-        
         /// cascading delete
         public static void DeleteByPrimaryKey(String ACategoryCode, String AValueCode, TDBTransaction ATransaction, bool AWithCascDelete)
         {
             PDataLabelLookupAccess.DeleteByPrimaryKey(ACategoryCode, AValueCode, ATransaction);
         }
-        
+
         /// cascading delete
         public static void DeleteUsingTemplate(PDataLabelLookupRow ATemplateRow, StringCollection ATemplateOperators, TDBTransaction ATransaction, bool AWithCascDelete)
         {
             PDataLabelLookupAccess.DeleteUsingTemplate(ATemplateRow, ATemplateOperators, ATransaction);
         }
     }
-    
+
     /// auto generated
     public class PmInterviewCascading : TTypedDataAccess
     {
-        
         /// cascading delete
         public static void DeleteByPrimaryKey(Int64 APartnerKey, System.DateTime AInterviewDate, String AInterviewer, String AInterviewedFor, TDBTransaction ATransaction, bool AWithCascDelete)
         {
             PmInterviewAccess.DeleteByPrimaryKey(APartnerKey, AInterviewDate, AInterviewer, AInterviewedFor, ATransaction);
         }
-        
+
         /// cascading delete
         public static void DeleteUsingTemplate(PmInterviewRow ATemplateRow, StringCollection ATemplateOperators, TDBTransaction ATransaction, bool AWithCascDelete)
         {
             PmInterviewAccess.DeleteUsingTemplate(ATemplateRow, ATemplateOperators, ATransaction);
         }
     }
-    
+
     /// auto generated
     public class PmPersonEvaluationCascading : TTypedDataAccess
     {
-        
         /// cascading delete
         public static void DeleteByPrimaryKey(Int64 APartnerKey, System.DateTime AEvaluationDate, String AEvaluator, TDBTransaction ATransaction, bool AWithCascDelete)
         {
             PmPersonEvaluationAccess.DeleteByPrimaryKey(APartnerKey, AEvaluationDate, AEvaluator, ATransaction);
         }
-        
+
         /// cascading delete
         public static void DeleteUsingTemplate(PmPersonEvaluationRow ATemplateRow, StringCollection ATemplateOperators, TDBTransaction ATransaction, bool AWithCascDelete)
         {
             PmPersonEvaluationAccess.DeleteUsingTemplate(ATemplateRow, ATemplateOperators, ATransaction);
         }
     }
-    
+
     /// auto generated
     public class PtVisionAreaCascading : TTypedDataAccess
     {
-        
         /// cascading delete
         public static void DeleteByPrimaryKey(String AVisionAreaName, TDBTransaction ATransaction, bool AWithCascDelete)
         {
@@ -7862,8 +7542,7 @@ namespace Ict.Petra.Shared.MCommon.Data.Cascading
                     PmPersonVisionCascading.DeleteUsingTemplate(MyPmPersonVisionTable[countRow], null, ATransaction, AWithCascDelete);
                 }
                 UmJobVisionTable MyUmJobVisionTable = null;
-                UmJobVisionAccess.LoadViaPtVisionArea(out MyUmJobVisionTable, AVisionAreaName, StringHelper.StrSplit("pm_unit_key_n,pt_position_name_c,pt_position_scope_c,um_job_key_i,pt_vision_area_" +
-                            "name_c", ","), ATransaction);
+                UmJobVisionAccess.LoadViaPtVisionArea(out MyUmJobVisionTable, AVisionAreaName, StringHelper.StrSplit("pm_unit_key_n,pt_position_name_c,pt_position_scope_c,um_job_key_i,pt_vision_area_name_c", ","), ATransaction);
                 for (countRow = 0; (countRow != MyUmJobVisionTable.Rows.Count); countRow = (countRow + 1))
                 {
                     UmJobVisionCascading.DeleteUsingTemplate(MyUmJobVisionTable[countRow], null, ATransaction, AWithCascDelete);
@@ -7877,7 +7556,7 @@ namespace Ict.Petra.Shared.MCommon.Data.Cascading
             }
             PtVisionAreaAccess.DeleteByPrimaryKey(AVisionAreaName, ATransaction);
         }
-        
+
         /// cascading delete
         public static void DeleteUsingTemplate(PtVisionAreaRow ATemplateRow, StringCollection ATemplateOperators, TDBTransaction ATransaction, bool AWithCascDelete)
         {
@@ -7891,8 +7570,7 @@ namespace Ict.Petra.Shared.MCommon.Data.Cascading
                     PmPersonVisionCascading.DeleteUsingTemplate(MyPmPersonVisionTable[countRow], null, ATransaction, AWithCascDelete);
                 }
                 UmJobVisionTable MyUmJobVisionTable = null;
-                UmJobVisionAccess.LoadViaPtVisionAreaTemplate(out MyUmJobVisionTable, ATemplateRow, StringHelper.StrSplit("pm_unit_key_n,pt_position_name_c,pt_position_scope_c,um_job_key_i,pt_vision_area_" +
-                            "name_c", ","), ATransaction);
+                UmJobVisionAccess.LoadViaPtVisionAreaTemplate(out MyUmJobVisionTable, ATemplateRow, StringHelper.StrSplit("pm_unit_key_n,pt_position_name_c,pt_position_scope_c,um_job_key_i,pt_vision_area_name_c", ","), ATransaction);
                 for (countRow = 0; (countRow != MyUmJobVisionTable.Rows.Count); countRow = (countRow + 1))
                 {
                     UmJobVisionCascading.DeleteUsingTemplate(MyUmJobVisionTable[countRow], null, ATransaction, AWithCascDelete);
@@ -7907,11 +7585,10 @@ namespace Ict.Petra.Shared.MCommon.Data.Cascading
             PtVisionAreaAccess.DeleteUsingTemplate(ATemplateRow, ATemplateOperators, ATransaction);
         }
     }
-    
+
     /// auto generated
     public class PtVisionLevelCascading : TTypedDataAccess
     {
-        
         /// cascading delete
         public static void DeleteByPrimaryKey(Int32 AVisionLevel, TDBTransaction ATransaction, bool AWithCascDelete)
         {
@@ -7925,8 +7602,7 @@ namespace Ict.Petra.Shared.MCommon.Data.Cascading
                     PmPersonVisionCascading.DeleteUsingTemplate(MyPmPersonVisionTable[countRow], null, ATransaction, AWithCascDelete);
                 }
                 UmJobVisionTable MyUmJobVisionTable = null;
-                UmJobVisionAccess.LoadViaPtVisionLevel(out MyUmJobVisionTable, AVisionLevel, StringHelper.StrSplit("pm_unit_key_n,pt_position_name_c,pt_position_scope_c,um_job_key_i,pt_vision_area_" +
-                            "name_c", ","), ATransaction);
+                UmJobVisionAccess.LoadViaPtVisionLevel(out MyUmJobVisionTable, AVisionLevel, StringHelper.StrSplit("pm_unit_key_n,pt_position_name_c,pt_position_scope_c,um_job_key_i,pt_vision_area_name_c", ","), ATransaction);
                 for (countRow = 0; (countRow != MyUmJobVisionTable.Rows.Count); countRow = (countRow + 1))
                 {
                     UmJobVisionCascading.DeleteUsingTemplate(MyUmJobVisionTable[countRow], null, ATransaction, AWithCascDelete);
@@ -7940,7 +7616,7 @@ namespace Ict.Petra.Shared.MCommon.Data.Cascading
             }
             PtVisionLevelAccess.DeleteByPrimaryKey(AVisionLevel, ATransaction);
         }
-        
+
         /// cascading delete
         public static void DeleteUsingTemplate(PtVisionLevelRow ATemplateRow, StringCollection ATemplateOperators, TDBTransaction ATransaction, bool AWithCascDelete)
         {
@@ -7954,8 +7630,7 @@ namespace Ict.Petra.Shared.MCommon.Data.Cascading
                     PmPersonVisionCascading.DeleteUsingTemplate(MyPmPersonVisionTable[countRow], null, ATransaction, AWithCascDelete);
                 }
                 UmJobVisionTable MyUmJobVisionTable = null;
-                UmJobVisionAccess.LoadViaPtVisionLevelTemplate(out MyUmJobVisionTable, ATemplateRow, StringHelper.StrSplit("pm_unit_key_n,pt_position_name_c,pt_position_scope_c,um_job_key_i,pt_vision_area_" +
-                            "name_c", ","), ATransaction);
+                UmJobVisionAccess.LoadViaPtVisionLevelTemplate(out MyUmJobVisionTable, ATemplateRow, StringHelper.StrSplit("pm_unit_key_n,pt_position_name_c,pt_position_scope_c,um_job_key_i,pt_vision_area_name_c", ","), ATransaction);
                 for (countRow = 0; (countRow != MyUmJobVisionTable.Rows.Count); countRow = (countRow + 1))
                 {
                     UmJobVisionCascading.DeleteUsingTemplate(MyUmJobVisionTable[countRow], null, ATransaction, AWithCascDelete);
@@ -7970,45 +7645,42 @@ namespace Ict.Petra.Shared.MCommon.Data.Cascading
             PtVisionLevelAccess.DeleteUsingTemplate(ATemplateRow, ATemplateOperators, ATransaction);
         }
     }
-    
+
     /// auto generated
     public class PmPersonVisionCascading : TTypedDataAccess
     {
-        
         /// cascading delete
         public static void DeleteByPrimaryKey(Int64 APartnerKey, String AVisionAreaName, TDBTransaction ATransaction, bool AWithCascDelete)
         {
             PmPersonVisionAccess.DeleteByPrimaryKey(APartnerKey, AVisionAreaName, ATransaction);
         }
-        
+
         /// cascading delete
         public static void DeleteUsingTemplate(PmPersonVisionRow ATemplateRow, StringCollection ATemplateOperators, TDBTransaction ATransaction, bool AWithCascDelete)
         {
             PmPersonVisionAccess.DeleteUsingTemplate(ATemplateRow, ATemplateOperators, ATransaction);
         }
     }
-    
+
     /// auto generated
     public class PmSpecialNeedCascading : TTypedDataAccess
     {
-        
         /// cascading delete
         public static void DeleteByPrimaryKey(Int64 APartnerKey, TDBTransaction ATransaction, bool AWithCascDelete)
         {
             PmSpecialNeedAccess.DeleteByPrimaryKey(APartnerKey, ATransaction);
         }
-        
+
         /// cascading delete
         public static void DeleteUsingTemplate(PmSpecialNeedRow ATemplateRow, StringCollection ATemplateOperators, TDBTransaction ATransaction, bool AWithCascDelete)
         {
             PmSpecialNeedAccess.DeleteUsingTemplate(ATemplateRow, ATemplateOperators, ATransaction);
         }
     }
-    
+
     /// auto generated
     public class PmStaffDataCascading : TTypedDataAccess
     {
-        
         /// cascading delete
         public static void DeleteByPrimaryKey(Int64 ASiteKey, Int64 AKey, TDBTransaction ATransaction, bool AWithCascDelete)
         {
@@ -8024,7 +7696,7 @@ namespace Ict.Petra.Shared.MCommon.Data.Cascading
             }
             PmStaffDataAccess.DeleteByPrimaryKey(ASiteKey, AKey, ATransaction);
         }
-        
+
         /// cascading delete
         public static void DeleteUsingTemplate(PmStaffDataRow ATemplateRow, StringCollection ATemplateOperators, TDBTransaction ATransaction, bool AWithCascDelete)
         {
@@ -8041,11 +7713,10 @@ namespace Ict.Petra.Shared.MCommon.Data.Cascading
             PmStaffDataAccess.DeleteUsingTemplate(ATemplateRow, ATemplateOperators, ATransaction);
         }
     }
-    
+
     /// auto generated
     public class PmCommitmentStatusCascading : TTypedDataAccess
     {
-        
         /// cascading delete
         public static void DeleteByPrimaryKey(String ACode, TDBTransaction ATransaction, bool AWithCascDelete)
         {
@@ -8067,7 +7738,7 @@ namespace Ict.Petra.Shared.MCommon.Data.Cascading
             }
             PmCommitmentStatusAccess.DeleteByPrimaryKey(ACode, ATransaction);
         }
-        
+
         /// cascading delete
         public static void DeleteUsingTemplate(PmCommitmentStatusRow ATemplateRow, StringCollection ATemplateOperators, TDBTransaction ATransaction, bool AWithCascDelete)
         {
@@ -8090,45 +7761,42 @@ namespace Ict.Petra.Shared.MCommon.Data.Cascading
             PmCommitmentStatusAccess.DeleteUsingTemplate(ATemplateRow, ATemplateOperators, ATransaction);
         }
     }
-    
+
     /// auto generated
     public class PmPersonCommitmentStatusCascading : TTypedDataAccess
     {
-        
         /// cascading delete
         public static void DeleteByPrimaryKey(Int64 APartnerKey, String AStatusCode, System.DateTime AStatusSince, TDBTransaction ATransaction, bool AWithCascDelete)
         {
             PmPersonCommitmentStatusAccess.DeleteByPrimaryKey(APartnerKey, AStatusCode, AStatusSince, ATransaction);
         }
-        
+
         /// cascading delete
         public static void DeleteUsingTemplate(PmPersonCommitmentStatusRow ATemplateRow, StringCollection ATemplateOperators, TDBTransaction ATransaction, bool AWithCascDelete)
         {
             PmPersonCommitmentStatusAccess.DeleteUsingTemplate(ATemplateRow, ATemplateOperators, ATransaction);
         }
     }
-    
+
     /// auto generated
     public class PtReportsCascading : TTypedDataAccess
     {
-        
         /// cascading delete
         public static void DeleteByPrimaryKey(String AReportName, TDBTransaction ATransaction, bool AWithCascDelete)
         {
             PtReportsAccess.DeleteByPrimaryKey(AReportName, ATransaction);
         }
-        
+
         /// cascading delete
         public static void DeleteUsingTemplate(PtReportsRow ATemplateRow, StringCollection ATemplateOperators, TDBTransaction ATransaction, bool AWithCascDelete)
         {
             PtReportsAccess.DeleteUsingTemplate(ATemplateRow, ATemplateOperators, ATransaction);
         }
     }
-    
+
     /// auto generated
     public class PtPositionCascading : TTypedDataAccess
     {
-        
         /// cascading delete
         public static void DeleteByPrimaryKey(String APositionName, String APositionScope, TDBTransaction ATransaction, bool AWithCascDelete)
         {
@@ -8150,7 +7818,7 @@ namespace Ict.Petra.Shared.MCommon.Data.Cascading
             }
             PtPositionAccess.DeleteByPrimaryKey(APositionName, APositionScope, ATransaction);
         }
-        
+
         /// cascading delete
         public static void DeleteUsingTemplate(PtPositionRow ATemplateRow, StringCollection ATemplateOperators, TDBTransaction ATransaction, bool AWithCascDelete)
         {
@@ -8173,11 +7841,10 @@ namespace Ict.Petra.Shared.MCommon.Data.Cascading
             PtPositionAccess.DeleteUsingTemplate(ATemplateRow, ATemplateOperators, ATransaction);
         }
     }
-    
+
     /// auto generated
     public class UmJobCascading : TTypedDataAccess
     {
-        
         /// cascading delete
         public static void DeleteByPrimaryKey(Int64 AUnitKey, String APositionName, String APositionScope, Int32 AJobKey, TDBTransaction ATransaction, bool AWithCascDelete)
         {
@@ -8185,36 +7852,31 @@ namespace Ict.Petra.Shared.MCommon.Data.Cascading
             if ((AWithCascDelete == true))
             {
                 UmJobRequirementTable MyUmJobRequirementTable = null;
-                UmJobRequirementAccess.LoadViaUmJob(out MyUmJobRequirementTable, AUnitKey, APositionName, APositionScope, AJobKey, StringHelper.StrSplit("pm_unit_key_n,pt_position_name_c,pt_position_scope_c,um_job_key_i,pt_ability_area" +
-                            "_name_c", ","), ATransaction);
+                UmJobRequirementAccess.LoadViaUmJob(out MyUmJobRequirementTable, AUnitKey, APositionName, APositionScope, AJobKey, StringHelper.StrSplit("pm_unit_key_n,pt_position_name_c,pt_position_scope_c,um_job_key_i,pt_ability_area_name_c", ","), ATransaction);
                 for (countRow = 0; (countRow != MyUmJobRequirementTable.Rows.Count); countRow = (countRow + 1))
                 {
                     UmJobRequirementCascading.DeleteUsingTemplate(MyUmJobRequirementTable[countRow], null, ATransaction, AWithCascDelete);
                 }
                 UmJobLanguageTable MyUmJobLanguageTable = null;
-                UmJobLanguageAccess.LoadViaUmJob(out MyUmJobLanguageTable, AUnitKey, APositionName, APositionScope, AJobKey, StringHelper.StrSplit("pm_unit_key_n,pt_position_name_c,pt_position_scope_c,um_job_key_i,p_language_code" +
-                            "_c", ","), ATransaction);
+                UmJobLanguageAccess.LoadViaUmJob(out MyUmJobLanguageTable, AUnitKey, APositionName, APositionScope, AJobKey, StringHelper.StrSplit("pm_unit_key_n,pt_position_name_c,pt_position_scope_c,um_job_key_i,p_language_code_c", ","), ATransaction);
                 for (countRow = 0; (countRow != MyUmJobLanguageTable.Rows.Count); countRow = (countRow + 1))
                 {
                     UmJobLanguageCascading.DeleteUsingTemplate(MyUmJobLanguageTable[countRow], null, ATransaction, AWithCascDelete);
                 }
                 UmJobQualificationTable MyUmJobQualificationTable = null;
-                UmJobQualificationAccess.LoadViaUmJob(out MyUmJobQualificationTable, AUnitKey, APositionName, APositionScope, AJobKey, StringHelper.StrSplit("pm_unit_key_n,pt_position_name_c,pt_position_scope_c,um_job_key_i,pt_qualificatio" +
-                            "n_area_name_c", ","), ATransaction);
+                UmJobQualificationAccess.LoadViaUmJob(out MyUmJobQualificationTable, AUnitKey, APositionName, APositionScope, AJobKey, StringHelper.StrSplit("pm_unit_key_n,pt_position_name_c,pt_position_scope_c,um_job_key_i,pt_qualification_area_name_c", ","), ATransaction);
                 for (countRow = 0; (countRow != MyUmJobQualificationTable.Rows.Count); countRow = (countRow + 1))
                 {
                     UmJobQualificationCascading.DeleteUsingTemplate(MyUmJobQualificationTable[countRow], null, ATransaction, AWithCascDelete);
                 }
                 UmJobVisionTable MyUmJobVisionTable = null;
-                UmJobVisionAccess.LoadViaUmJob(out MyUmJobVisionTable, AUnitKey, APositionName, APositionScope, AJobKey, StringHelper.StrSplit("pm_unit_key_n,pt_position_name_c,pt_position_scope_c,um_job_key_i,pt_vision_area_" +
-                            "name_c", ","), ATransaction);
+                UmJobVisionAccess.LoadViaUmJob(out MyUmJobVisionTable, AUnitKey, APositionName, APositionScope, AJobKey, StringHelper.StrSplit("pm_unit_key_n,pt_position_name_c,pt_position_scope_c,um_job_key_i,pt_vision_area_name_c", ","), ATransaction);
                 for (countRow = 0; (countRow != MyUmJobVisionTable.Rows.Count); countRow = (countRow + 1))
                 {
                     UmJobVisionCascading.DeleteUsingTemplate(MyUmJobVisionTable[countRow], null, ATransaction, AWithCascDelete);
                 }
                 PmJobAssignmentTable MyPmJobAssignmentTable = null;
-                PmJobAssignmentAccess.LoadViaUmJob(out MyPmJobAssignmentTable, AUnitKey, APositionName, APositionScope, AJobKey, StringHelper.StrSplit("p_partner_key_n,pm_unit_key_n,pt_position_name_c,pt_position_scope_c,um_job_key_i" +
-                            ",pm_job_assignment_key_i", ","), ATransaction);
+                PmJobAssignmentAccess.LoadViaUmJob(out MyPmJobAssignmentTable, AUnitKey, APositionName, APositionScope, AJobKey, StringHelper.StrSplit("p_partner_key_n,pm_unit_key_n,pt_position_name_c,pt_position_scope_c,um_job_key_i,pm_job_assignment_key_i", ","), ATransaction);
                 for (countRow = 0; (countRow != MyPmJobAssignmentTable.Rows.Count); countRow = (countRow + 1))
                 {
                     PmJobAssignmentCascading.DeleteUsingTemplate(MyPmJobAssignmentTable[countRow], null, ATransaction, AWithCascDelete);
@@ -8228,7 +7890,7 @@ namespace Ict.Petra.Shared.MCommon.Data.Cascading
             }
             UmJobAccess.DeleteByPrimaryKey(AUnitKey, APositionName, APositionScope, AJobKey, ATransaction);
         }
-        
+
         /// cascading delete
         public static void DeleteUsingTemplate(UmJobRow ATemplateRow, StringCollection ATemplateOperators, TDBTransaction ATransaction, bool AWithCascDelete)
         {
@@ -8236,36 +7898,31 @@ namespace Ict.Petra.Shared.MCommon.Data.Cascading
             if ((AWithCascDelete == true))
             {
                 UmJobRequirementTable MyUmJobRequirementTable = null;
-                UmJobRequirementAccess.LoadViaUmJobTemplate(out MyUmJobRequirementTable, ATemplateRow, StringHelper.StrSplit("pm_unit_key_n,pt_position_name_c,pt_position_scope_c,um_job_key_i,pt_ability_area" +
-                            "_name_c", ","), ATransaction);
+                UmJobRequirementAccess.LoadViaUmJobTemplate(out MyUmJobRequirementTable, ATemplateRow, StringHelper.StrSplit("pm_unit_key_n,pt_position_name_c,pt_position_scope_c,um_job_key_i,pt_ability_area_name_c", ","), ATransaction);
                 for (countRow = 0; (countRow != MyUmJobRequirementTable.Rows.Count); countRow = (countRow + 1))
                 {
                     UmJobRequirementCascading.DeleteUsingTemplate(MyUmJobRequirementTable[countRow], null, ATransaction, AWithCascDelete);
                 }
                 UmJobLanguageTable MyUmJobLanguageTable = null;
-                UmJobLanguageAccess.LoadViaUmJobTemplate(out MyUmJobLanguageTable, ATemplateRow, StringHelper.StrSplit("pm_unit_key_n,pt_position_name_c,pt_position_scope_c,um_job_key_i,p_language_code" +
-                            "_c", ","), ATransaction);
+                UmJobLanguageAccess.LoadViaUmJobTemplate(out MyUmJobLanguageTable, ATemplateRow, StringHelper.StrSplit("pm_unit_key_n,pt_position_name_c,pt_position_scope_c,um_job_key_i,p_language_code_c", ","), ATransaction);
                 for (countRow = 0; (countRow != MyUmJobLanguageTable.Rows.Count); countRow = (countRow + 1))
                 {
                     UmJobLanguageCascading.DeleteUsingTemplate(MyUmJobLanguageTable[countRow], null, ATransaction, AWithCascDelete);
                 }
                 UmJobQualificationTable MyUmJobQualificationTable = null;
-                UmJobQualificationAccess.LoadViaUmJobTemplate(out MyUmJobQualificationTable, ATemplateRow, StringHelper.StrSplit("pm_unit_key_n,pt_position_name_c,pt_position_scope_c,um_job_key_i,pt_qualificatio" +
-                            "n_area_name_c", ","), ATransaction);
+                UmJobQualificationAccess.LoadViaUmJobTemplate(out MyUmJobQualificationTable, ATemplateRow, StringHelper.StrSplit("pm_unit_key_n,pt_position_name_c,pt_position_scope_c,um_job_key_i,pt_qualification_area_name_c", ","), ATransaction);
                 for (countRow = 0; (countRow != MyUmJobQualificationTable.Rows.Count); countRow = (countRow + 1))
                 {
                     UmJobQualificationCascading.DeleteUsingTemplate(MyUmJobQualificationTable[countRow], null, ATransaction, AWithCascDelete);
                 }
                 UmJobVisionTable MyUmJobVisionTable = null;
-                UmJobVisionAccess.LoadViaUmJobTemplate(out MyUmJobVisionTable, ATemplateRow, StringHelper.StrSplit("pm_unit_key_n,pt_position_name_c,pt_position_scope_c,um_job_key_i,pt_vision_area_" +
-                            "name_c", ","), ATransaction);
+                UmJobVisionAccess.LoadViaUmJobTemplate(out MyUmJobVisionTable, ATemplateRow, StringHelper.StrSplit("pm_unit_key_n,pt_position_name_c,pt_position_scope_c,um_job_key_i,pt_vision_area_name_c", ","), ATransaction);
                 for (countRow = 0; (countRow != MyUmJobVisionTable.Rows.Count); countRow = (countRow + 1))
                 {
                     UmJobVisionCascading.DeleteUsingTemplate(MyUmJobVisionTable[countRow], null, ATransaction, AWithCascDelete);
                 }
                 PmJobAssignmentTable MyPmJobAssignmentTable = null;
-                PmJobAssignmentAccess.LoadViaUmJobTemplate(out MyPmJobAssignmentTable, ATemplateRow, StringHelper.StrSplit("p_partner_key_n,pm_unit_key_n,pt_position_name_c,pt_position_scope_c,um_job_key_i" +
-                            ",pm_job_assignment_key_i", ","), ATransaction);
+                PmJobAssignmentAccess.LoadViaUmJobTemplate(out MyPmJobAssignmentTable, ATemplateRow, StringHelper.StrSplit("p_partner_key_n,pm_unit_key_n,pt_position_name_c,pt_position_scope_c,um_job_key_i,pm_job_assignment_key_i", ","), ATransaction);
                 for (countRow = 0; (countRow != MyPmJobAssignmentTable.Rows.Count); countRow = (countRow + 1))
                 {
                     PmJobAssignmentCascading.DeleteUsingTemplate(MyPmJobAssignmentTable[countRow], null, ATransaction, AWithCascDelete);
@@ -8280,79 +7937,74 @@ namespace Ict.Petra.Shared.MCommon.Data.Cascading
             UmJobAccess.DeleteUsingTemplate(ATemplateRow, ATemplateOperators, ATransaction);
         }
     }
-    
+
     /// auto generated
     public class UmJobRequirementCascading : TTypedDataAccess
     {
-        
         /// cascading delete
         public static void DeleteByPrimaryKey(Int64 AUnitKey, String APositionName, String APositionScope, Int32 AJobKey, String AAbilityAreaName, TDBTransaction ATransaction, bool AWithCascDelete)
         {
             UmJobRequirementAccess.DeleteByPrimaryKey(AUnitKey, APositionName, APositionScope, AJobKey, AAbilityAreaName, ATransaction);
         }
-        
+
         /// cascading delete
         public static void DeleteUsingTemplate(UmJobRequirementRow ATemplateRow, StringCollection ATemplateOperators, TDBTransaction ATransaction, bool AWithCascDelete)
         {
             UmJobRequirementAccess.DeleteUsingTemplate(ATemplateRow, ATemplateOperators, ATransaction);
         }
     }
-    
+
     /// auto generated
     public class UmJobLanguageCascading : TTypedDataAccess
     {
-        
         /// cascading delete
         public static void DeleteByPrimaryKey(Int64 AUnitKey, String APositionName, String APositionScope, Int32 AJobKey, String ALanguageCode, TDBTransaction ATransaction, bool AWithCascDelete)
         {
             UmJobLanguageAccess.DeleteByPrimaryKey(AUnitKey, APositionName, APositionScope, AJobKey, ALanguageCode, ATransaction);
         }
-        
+
         /// cascading delete
         public static void DeleteUsingTemplate(UmJobLanguageRow ATemplateRow, StringCollection ATemplateOperators, TDBTransaction ATransaction, bool AWithCascDelete)
         {
             UmJobLanguageAccess.DeleteUsingTemplate(ATemplateRow, ATemplateOperators, ATransaction);
         }
     }
-    
+
     /// auto generated
     public class UmJobQualificationCascading : TTypedDataAccess
     {
-        
         /// cascading delete
         public static void DeleteByPrimaryKey(Int64 AUnitKey, String APositionName, String APositionScope, Int32 AJobKey, String AQualificationAreaName, TDBTransaction ATransaction, bool AWithCascDelete)
         {
             UmJobQualificationAccess.DeleteByPrimaryKey(AUnitKey, APositionName, APositionScope, AJobKey, AQualificationAreaName, ATransaction);
         }
-        
+
         /// cascading delete
         public static void DeleteUsingTemplate(UmJobQualificationRow ATemplateRow, StringCollection ATemplateOperators, TDBTransaction ATransaction, bool AWithCascDelete)
         {
             UmJobQualificationAccess.DeleteUsingTemplate(ATemplateRow, ATemplateOperators, ATransaction);
         }
     }
-    
+
     /// auto generated
     public class UmJobVisionCascading : TTypedDataAccess
     {
-        
         /// cascading delete
         public static void DeleteByPrimaryKey(Int64 AUnitKey, String APositionName, String APositionScope, Int32 AJobKey, String AVisionAreaName, TDBTransaction ATransaction, bool AWithCascDelete)
         {
             UmJobVisionAccess.DeleteByPrimaryKey(AUnitKey, APositionName, APositionScope, AJobKey, AVisionAreaName, ATransaction);
         }
-        
+
         /// cascading delete
         public static void DeleteUsingTemplate(UmJobVisionRow ATemplateRow, StringCollection ATemplateOperators, TDBTransaction ATransaction, bool AWithCascDelete)
         {
             UmJobVisionAccess.DeleteUsingTemplate(ATemplateRow, ATemplateOperators, ATransaction);
         }
     }
-    
+
     /// auto generated
     public class PtAssignmentTypeCascading : TTypedDataAccess
     {
-        
         /// cascading delete
         public static void DeleteByPrimaryKey(String AAssignmentTypeCode, TDBTransaction ATransaction, bool AWithCascDelete)
         {
@@ -8360,8 +8012,7 @@ namespace Ict.Petra.Shared.MCommon.Data.Cascading
             if ((AWithCascDelete == true))
             {
                 PmJobAssignmentTable MyPmJobAssignmentTable = null;
-                PmJobAssignmentAccess.LoadViaPtAssignmentType(out MyPmJobAssignmentTable, AAssignmentTypeCode, StringHelper.StrSplit("p_partner_key_n,pm_unit_key_n,pt_position_name_c,pt_position_scope_c,um_job_key_i" +
-                            ",pm_job_assignment_key_i", ","), ATransaction);
+                PmJobAssignmentAccess.LoadViaPtAssignmentType(out MyPmJobAssignmentTable, AAssignmentTypeCode, StringHelper.StrSplit("p_partner_key_n,pm_unit_key_n,pt_position_name_c,pt_position_scope_c,um_job_key_i,pm_job_assignment_key_i", ","), ATransaction);
                 for (countRow = 0; (countRow != MyPmJobAssignmentTable.Rows.Count); countRow = (countRow + 1))
                 {
                     PmJobAssignmentCascading.DeleteUsingTemplate(MyPmJobAssignmentTable[countRow], null, ATransaction, AWithCascDelete);
@@ -8369,7 +8020,7 @@ namespace Ict.Petra.Shared.MCommon.Data.Cascading
             }
             PtAssignmentTypeAccess.DeleteByPrimaryKey(AAssignmentTypeCode, ATransaction);
         }
-        
+
         /// cascading delete
         public static void DeleteUsingTemplate(PtAssignmentTypeRow ATemplateRow, StringCollection ATemplateOperators, TDBTransaction ATransaction, bool AWithCascDelete)
         {
@@ -8377,8 +8028,7 @@ namespace Ict.Petra.Shared.MCommon.Data.Cascading
             if ((AWithCascDelete == true))
             {
                 PmJobAssignmentTable MyPmJobAssignmentTable = null;
-                PmJobAssignmentAccess.LoadViaPtAssignmentTypeTemplate(out MyPmJobAssignmentTable, ATemplateRow, StringHelper.StrSplit("p_partner_key_n,pm_unit_key_n,pt_position_name_c,pt_position_scope_c,um_job_key_i" +
-                            ",pm_job_assignment_key_i", ","), ATransaction);
+                PmJobAssignmentAccess.LoadViaPtAssignmentTypeTemplate(out MyPmJobAssignmentTable, ATemplateRow, StringHelper.StrSplit("p_partner_key_n,pm_unit_key_n,pt_position_name_c,pt_position_scope_c,um_job_key_i,pm_job_assignment_key_i", ","), ATransaction);
                 for (countRow = 0; (countRow != MyPmJobAssignmentTable.Rows.Count); countRow = (countRow + 1))
                 {
                     PmJobAssignmentCascading.DeleteUsingTemplate(MyPmJobAssignmentTable[countRow], null, ATransaction, AWithCascDelete);
@@ -8387,11 +8037,10 @@ namespace Ict.Petra.Shared.MCommon.Data.Cascading
             PtAssignmentTypeAccess.DeleteUsingTemplate(ATemplateRow, ATemplateOperators, ATransaction);
         }
     }
-    
+
     /// auto generated
     public class PtLeavingCodeCascading : TTypedDataAccess
     {
-        
         /// cascading delete
         public static void DeleteByPrimaryKey(String ALeavingCodeInd, TDBTransaction ATransaction, bool AWithCascDelete)
         {
@@ -8399,8 +8048,7 @@ namespace Ict.Petra.Shared.MCommon.Data.Cascading
             if ((AWithCascDelete == true))
             {
                 PmJobAssignmentTable MyPmJobAssignmentTable = null;
-                PmJobAssignmentAccess.LoadViaPtLeavingCode(out MyPmJobAssignmentTable, ALeavingCodeInd, StringHelper.StrSplit("p_partner_key_n,pm_unit_key_n,pt_position_name_c,pt_position_scope_c,um_job_key_i" +
-                            ",pm_job_assignment_key_i", ","), ATransaction);
+                PmJobAssignmentAccess.LoadViaPtLeavingCode(out MyPmJobAssignmentTable, ALeavingCodeInd, StringHelper.StrSplit("p_partner_key_n,pm_unit_key_n,pt_position_name_c,pt_position_scope_c,um_job_key_i,pm_job_assignment_key_i", ","), ATransaction);
                 for (countRow = 0; (countRow != MyPmJobAssignmentTable.Rows.Count); countRow = (countRow + 1))
                 {
                     PmJobAssignmentCascading.DeleteUsingTemplate(MyPmJobAssignmentTable[countRow], null, ATransaction, AWithCascDelete);
@@ -8408,7 +8056,7 @@ namespace Ict.Petra.Shared.MCommon.Data.Cascading
             }
             PtLeavingCodeAccess.DeleteByPrimaryKey(ALeavingCodeInd, ATransaction);
         }
-        
+
         /// cascading delete
         public static void DeleteUsingTemplate(PtLeavingCodeRow ATemplateRow, StringCollection ATemplateOperators, TDBTransaction ATransaction, bool AWithCascDelete)
         {
@@ -8416,8 +8064,7 @@ namespace Ict.Petra.Shared.MCommon.Data.Cascading
             if ((AWithCascDelete == true))
             {
                 PmJobAssignmentTable MyPmJobAssignmentTable = null;
-                PmJobAssignmentAccess.LoadViaPtLeavingCodeTemplate(out MyPmJobAssignmentTable, ATemplateRow, StringHelper.StrSplit("p_partner_key_n,pm_unit_key_n,pt_position_name_c,pt_position_scope_c,um_job_key_i" +
-                            ",pm_job_assignment_key_i", ","), ATransaction);
+                PmJobAssignmentAccess.LoadViaPtLeavingCodeTemplate(out MyPmJobAssignmentTable, ATemplateRow, StringHelper.StrSplit("p_partner_key_n,pm_unit_key_n,pt_position_name_c,pt_position_scope_c,um_job_key_i,pm_job_assignment_key_i", ","), ATransaction);
                 for (countRow = 0; (countRow != MyPmJobAssignmentTable.Rows.Count); countRow = (countRow + 1))
                 {
                     PmJobAssignmentCascading.DeleteUsingTemplate(MyPmJobAssignmentTable[countRow], null, ATransaction, AWithCascDelete);
@@ -8426,113 +8073,106 @@ namespace Ict.Petra.Shared.MCommon.Data.Cascading
             PtLeavingCodeAccess.DeleteUsingTemplate(ATemplateRow, ATemplateOperators, ATransaction);
         }
     }
-    
+
     /// auto generated
     public class PmJobAssignmentCascading : TTypedDataAccess
     {
-        
         /// cascading delete
         public static void DeleteByPrimaryKey(Int64 APartnerKey, Int64 AUnitKey, String APositionName, String APositionScope, Int32 AJobKey, Int32 AJobAssignmentKey, TDBTransaction ATransaction, bool AWithCascDelete)
         {
             PmJobAssignmentAccess.DeleteByPrimaryKey(APartnerKey, AUnitKey, APositionName, APositionScope, AJobKey, AJobAssignmentKey, ATransaction);
         }
-        
+
         /// cascading delete
         public static void DeleteUsingTemplate(PmJobAssignmentRow ATemplateRow, StringCollection ATemplateOperators, TDBTransaction ATransaction, bool AWithCascDelete)
         {
             PmJobAssignmentAccess.DeleteUsingTemplate(ATemplateRow, ATemplateOperators, ATransaction);
         }
     }
-    
+
     /// auto generated
     public class UmUnitAbilityCascading : TTypedDataAccess
     {
-        
         /// cascading delete
         public static void DeleteByPrimaryKey(Int64 APartnerKey, String AAbilityAreaName, TDBTransaction ATransaction, bool AWithCascDelete)
         {
             UmUnitAbilityAccess.DeleteByPrimaryKey(APartnerKey, AAbilityAreaName, ATransaction);
         }
-        
+
         /// cascading delete
         public static void DeleteUsingTemplate(UmUnitAbilityRow ATemplateRow, StringCollection ATemplateOperators, TDBTransaction ATransaction, bool AWithCascDelete)
         {
             UmUnitAbilityAccess.DeleteUsingTemplate(ATemplateRow, ATemplateOperators, ATransaction);
         }
     }
-    
+
     /// auto generated
     public class UmUnitLanguageCascading : TTypedDataAccess
     {
-        
         /// cascading delete
         public static void DeleteByPrimaryKey(Int64 APartnerKey, String ALanguageCode, Int32 ALanguageLevel, TDBTransaction ATransaction, bool AWithCascDelete)
         {
             UmUnitLanguageAccess.DeleteByPrimaryKey(APartnerKey, ALanguageCode, ALanguageLevel, ATransaction);
         }
-        
+
         /// cascading delete
         public static void DeleteUsingTemplate(UmUnitLanguageRow ATemplateRow, StringCollection ATemplateOperators, TDBTransaction ATransaction, bool AWithCascDelete)
         {
             UmUnitLanguageAccess.DeleteUsingTemplate(ATemplateRow, ATemplateOperators, ATransaction);
         }
     }
-    
+
     /// auto generated
     public class UmUnitVisionCascading : TTypedDataAccess
     {
-        
         /// cascading delete
         public static void DeleteByPrimaryKey(Int64 APartnerKey, String AVisionAreaName, TDBTransaction ATransaction, bool AWithCascDelete)
         {
             UmUnitVisionAccess.DeleteByPrimaryKey(APartnerKey, AVisionAreaName, ATransaction);
         }
-        
+
         /// cascading delete
         public static void DeleteUsingTemplate(UmUnitVisionRow ATemplateRow, StringCollection ATemplateOperators, TDBTransaction ATransaction, bool AWithCascDelete)
         {
             UmUnitVisionAccess.DeleteUsingTemplate(ATemplateRow, ATemplateOperators, ATransaction);
         }
     }
-    
+
     /// auto generated
     public class UmUnitCostCascading : TTypedDataAccess
     {
-        
         /// cascading delete
         public static void DeleteByPrimaryKey(Int64 APartnerKey, System.DateTime AValidFromDate, TDBTransaction ATransaction, bool AWithCascDelete)
         {
             UmUnitCostAccess.DeleteByPrimaryKey(APartnerKey, AValidFromDate, ATransaction);
         }
-        
+
         /// cascading delete
         public static void DeleteUsingTemplate(UmUnitCostRow ATemplateRow, StringCollection ATemplateOperators, TDBTransaction ATransaction, bool AWithCascDelete)
         {
             UmUnitCostAccess.DeleteUsingTemplate(ATemplateRow, ATemplateOperators, ATransaction);
         }
     }
-    
+
     /// auto generated
     public class UmUnitEvaluationCascading : TTypedDataAccess
     {
-        
         /// cascading delete
         public static void DeleteByPrimaryKey(Int64 APartnerKey, System.DateTime ADateOfEvaluation, Decimal AEvaluationNumber, TDBTransaction ATransaction, bool AWithCascDelete)
         {
             UmUnitEvaluationAccess.DeleteByPrimaryKey(APartnerKey, ADateOfEvaluation, AEvaluationNumber, ATransaction);
         }
-        
+
         /// cascading delete
         public static void DeleteUsingTemplate(UmUnitEvaluationRow ATemplateRow, StringCollection ATemplateOperators, TDBTransaction ATransaction, bool AWithCascDelete)
         {
             UmUnitEvaluationAccess.DeleteUsingTemplate(ATemplateRow, ATemplateOperators, ATransaction);
         }
     }
-    
+
     /// auto generated
     public class PcConferenceCascading : TTypedDataAccess
     {
-        
         /// cascading delete
         public static void DeleteByPrimaryKey(Int64 AConferenceKey, TDBTransaction ATransaction, bool AWithCascDelete)
         {
@@ -8546,8 +8186,7 @@ namespace Ict.Petra.Shared.MCommon.Data.Cascading
                     PcConferenceOptionCascading.DeleteUsingTemplate(MyPcConferenceOptionTable[countRow], null, ATransaction, AWithCascDelete);
                 }
                 PcDiscountTable MyPcDiscountTable = null;
-                PcDiscountAccess.LoadViaPcConference(out MyPcDiscountTable, AConferenceKey, StringHelper.StrSplit("pc_conference_key_n,pc_discount_criteria_code_c,pc_cost_type_code_c,pc_validity_c" +
-                            ",pc_up_to_age_i", ","), ATransaction);
+                PcDiscountAccess.LoadViaPcConference(out MyPcDiscountTable, AConferenceKey, StringHelper.StrSplit("pc_conference_key_n,pc_discount_criteria_code_c,pc_cost_type_code_c,pc_validity_c,pc_up_to_age_i", ","), ATransaction);
                 for (countRow = 0; (countRow != MyPcDiscountTable.Rows.Count); countRow = (countRow + 1))
                 {
                     PcDiscountCascading.DeleteUsingTemplate(MyPcDiscountTable[countRow], null, ATransaction, AWithCascDelete);
@@ -8585,7 +8224,7 @@ namespace Ict.Petra.Shared.MCommon.Data.Cascading
             }
             PcConferenceAccess.DeleteByPrimaryKey(AConferenceKey, ATransaction);
         }
-        
+
         /// cascading delete
         public static void DeleteUsingTemplate(PcConferenceRow ATemplateRow, StringCollection ATemplateOperators, TDBTransaction ATransaction, bool AWithCascDelete)
         {
@@ -8599,8 +8238,7 @@ namespace Ict.Petra.Shared.MCommon.Data.Cascading
                     PcConferenceOptionCascading.DeleteUsingTemplate(MyPcConferenceOptionTable[countRow], null, ATransaction, AWithCascDelete);
                 }
                 PcDiscountTable MyPcDiscountTable = null;
-                PcDiscountAccess.LoadViaPcConferenceTemplate(out MyPcDiscountTable, ATemplateRow, StringHelper.StrSplit("pc_conference_key_n,pc_discount_criteria_code_c,pc_cost_type_code_c,pc_validity_c" +
-                            ",pc_up_to_age_i", ","), ATransaction);
+                PcDiscountAccess.LoadViaPcConferenceTemplate(out MyPcDiscountTable, ATemplateRow, StringHelper.StrSplit("pc_conference_key_n,pc_discount_criteria_code_c,pc_cost_type_code_c,pc_validity_c,pc_up_to_age_i", ","), ATransaction);
                 for (countRow = 0; (countRow != MyPcDiscountTable.Rows.Count); countRow = (countRow + 1))
                 {
                     PcDiscountCascading.DeleteUsingTemplate(MyPcDiscountTable[countRow], null, ATransaction, AWithCascDelete);
@@ -8639,11 +8277,10 @@ namespace Ict.Petra.Shared.MCommon.Data.Cascading
             PcConferenceAccess.DeleteUsingTemplate(ATemplateRow, ATemplateOperators, ATransaction);
         }
     }
-    
+
     /// auto generated
     public class PcCostTypeCascading : TTypedDataAccess
     {
-        
         /// cascading delete
         public static void DeleteByPrimaryKey(String ACostTypeCode, TDBTransaction ATransaction, bool AWithCascDelete)
         {
@@ -8651,8 +8288,7 @@ namespace Ict.Petra.Shared.MCommon.Data.Cascading
             if ((AWithCascDelete == true))
             {
                 PcDiscountTable MyPcDiscountTable = null;
-                PcDiscountAccess.LoadViaPcCostType(out MyPcDiscountTable, ACostTypeCode, StringHelper.StrSplit("pc_conference_key_n,pc_discount_criteria_code_c,pc_cost_type_code_c,pc_validity_c" +
-                            ",pc_up_to_age_i", ","), ATransaction);
+                PcDiscountAccess.LoadViaPcCostType(out MyPcDiscountTable, ACostTypeCode, StringHelper.StrSplit("pc_conference_key_n,pc_discount_criteria_code_c,pc_cost_type_code_c,pc_validity_c,pc_up_to_age_i", ","), ATransaction);
                 for (countRow = 0; (countRow != MyPcDiscountTable.Rows.Count); countRow = (countRow + 1))
                 {
                     PcDiscountCascading.DeleteUsingTemplate(MyPcDiscountTable[countRow], null, ATransaction, AWithCascDelete);
@@ -8666,7 +8302,7 @@ namespace Ict.Petra.Shared.MCommon.Data.Cascading
             }
             PcCostTypeAccess.DeleteByPrimaryKey(ACostTypeCode, ATransaction);
         }
-        
+
         /// cascading delete
         public static void DeleteUsingTemplate(PcCostTypeRow ATemplateRow, StringCollection ATemplateOperators, TDBTransaction ATransaction, bool AWithCascDelete)
         {
@@ -8674,8 +8310,7 @@ namespace Ict.Petra.Shared.MCommon.Data.Cascading
             if ((AWithCascDelete == true))
             {
                 PcDiscountTable MyPcDiscountTable = null;
-                PcDiscountAccess.LoadViaPcCostTypeTemplate(out MyPcDiscountTable, ATemplateRow, StringHelper.StrSplit("pc_conference_key_n,pc_discount_criteria_code_c,pc_cost_type_code_c,pc_validity_c" +
-                            ",pc_up_to_age_i", ","), ATransaction);
+                PcDiscountAccess.LoadViaPcCostTypeTemplate(out MyPcDiscountTable, ATemplateRow, StringHelper.StrSplit("pc_conference_key_n,pc_discount_criteria_code_c,pc_cost_type_code_c,pc_validity_c,pc_up_to_age_i", ","), ATransaction);
                 for (countRow = 0; (countRow != MyPcDiscountTable.Rows.Count); countRow = (countRow + 1))
                 {
                     PcDiscountCascading.DeleteUsingTemplate(MyPcDiscountTable[countRow], null, ATransaction, AWithCascDelete);
@@ -8690,11 +8325,10 @@ namespace Ict.Petra.Shared.MCommon.Data.Cascading
             PcCostTypeAccess.DeleteUsingTemplate(ATemplateRow, ATemplateOperators, ATransaction);
         }
     }
-    
+
     /// auto generated
     public class PcConferenceOptionTypeCascading : TTypedDataAccess
     {
-        
         /// cascading delete
         public static void DeleteByPrimaryKey(String AOptionTypeCode, TDBTransaction ATransaction, bool AWithCascDelete)
         {
@@ -8710,7 +8344,7 @@ namespace Ict.Petra.Shared.MCommon.Data.Cascading
             }
             PcConferenceOptionTypeAccess.DeleteByPrimaryKey(AOptionTypeCode, ATransaction);
         }
-        
+
         /// cascading delete
         public static void DeleteUsingTemplate(PcConferenceOptionTypeRow ATemplateRow, StringCollection ATemplateOperators, TDBTransaction ATransaction, bool AWithCascDelete)
         {
@@ -8727,28 +8361,26 @@ namespace Ict.Petra.Shared.MCommon.Data.Cascading
             PcConferenceOptionTypeAccess.DeleteUsingTemplate(ATemplateRow, ATemplateOperators, ATransaction);
         }
     }
-    
+
     /// auto generated
     public class PcConferenceOptionCascading : TTypedDataAccess
     {
-        
         /// cascading delete
         public static void DeleteByPrimaryKey(Int64 AConferenceKey, String AOptionTypeCode, TDBTransaction ATransaction, bool AWithCascDelete)
         {
             PcConferenceOptionAccess.DeleteByPrimaryKey(AConferenceKey, AOptionTypeCode, ATransaction);
         }
-        
+
         /// cascading delete
         public static void DeleteUsingTemplate(PcConferenceOptionRow ATemplateRow, StringCollection ATemplateOperators, TDBTransaction ATransaction, bool AWithCascDelete)
         {
             PcConferenceOptionAccess.DeleteUsingTemplate(ATemplateRow, ATemplateOperators, ATransaction);
         }
     }
-    
+
     /// auto generated
     public class PcDiscountCriteriaCascading : TTypedDataAccess
     {
-        
         /// cascading delete
         public static void DeleteByPrimaryKey(String ADiscountCriteriaCode, TDBTransaction ATransaction, bool AWithCascDelete)
         {
@@ -8756,8 +8388,7 @@ namespace Ict.Petra.Shared.MCommon.Data.Cascading
             if ((AWithCascDelete == true))
             {
                 PcDiscountTable MyPcDiscountTable = null;
-                PcDiscountAccess.LoadViaPcDiscountCriteria(out MyPcDiscountTable, ADiscountCriteriaCode, StringHelper.StrSplit("pc_conference_key_n,pc_discount_criteria_code_c,pc_cost_type_code_c,pc_validity_c" +
-                            ",pc_up_to_age_i", ","), ATransaction);
+                PcDiscountAccess.LoadViaPcDiscountCriteria(out MyPcDiscountTable, ADiscountCriteriaCode, StringHelper.StrSplit("pc_conference_key_n,pc_discount_criteria_code_c,pc_cost_type_code_c,pc_validity_c,pc_up_to_age_i", ","), ATransaction);
                 for (countRow = 0; (countRow != MyPcDiscountTable.Rows.Count); countRow = (countRow + 1))
                 {
                     PcDiscountCascading.DeleteUsingTemplate(MyPcDiscountTable[countRow], null, ATransaction, AWithCascDelete);
@@ -8765,7 +8396,7 @@ namespace Ict.Petra.Shared.MCommon.Data.Cascading
             }
             PcDiscountCriteriaAccess.DeleteByPrimaryKey(ADiscountCriteriaCode, ATransaction);
         }
-        
+
         /// cascading delete
         public static void DeleteUsingTemplate(PcDiscountCriteriaRow ATemplateRow, StringCollection ATemplateOperators, TDBTransaction ATransaction, bool AWithCascDelete)
         {
@@ -8773,8 +8404,7 @@ namespace Ict.Petra.Shared.MCommon.Data.Cascading
             if ((AWithCascDelete == true))
             {
                 PcDiscountTable MyPcDiscountTable = null;
-                PcDiscountAccess.LoadViaPcDiscountCriteriaTemplate(out MyPcDiscountTable, ATemplateRow, StringHelper.StrSplit("pc_conference_key_n,pc_discount_criteria_code_c,pc_cost_type_code_c,pc_validity_c" +
-                            ",pc_up_to_age_i", ","), ATransaction);
+                PcDiscountAccess.LoadViaPcDiscountCriteriaTemplate(out MyPcDiscountTable, ATemplateRow, StringHelper.StrSplit("pc_conference_key_n,pc_discount_criteria_code_c,pc_cost_type_code_c,pc_validity_c,pc_up_to_age_i", ","), ATransaction);
                 for (countRow = 0; (countRow != MyPcDiscountTable.Rows.Count); countRow = (countRow + 1))
                 {
                     PcDiscountCascading.DeleteUsingTemplate(MyPcDiscountTable[countRow], null, ATransaction, AWithCascDelete);
@@ -8783,28 +8413,26 @@ namespace Ict.Petra.Shared.MCommon.Data.Cascading
             PcDiscountCriteriaAccess.DeleteUsingTemplate(ATemplateRow, ATemplateOperators, ATransaction);
         }
     }
-    
+
     /// auto generated
     public class PcDiscountCascading : TTypedDataAccess
     {
-        
         /// cascading delete
         public static void DeleteByPrimaryKey(Int64 AConferenceKey, String ADiscountCriteriaCode, String ACostTypeCode, String AValidity, Int32 AUpToAge, TDBTransaction ATransaction, bool AWithCascDelete)
         {
             PcDiscountAccess.DeleteByPrimaryKey(AConferenceKey, ADiscountCriteriaCode, ACostTypeCode, AValidity, AUpToAge, ATransaction);
         }
-        
+
         /// cascading delete
         public static void DeleteUsingTemplate(PcDiscountRow ATemplateRow, StringCollection ATemplateOperators, TDBTransaction ATransaction, bool AWithCascDelete)
         {
             PcDiscountAccess.DeleteUsingTemplate(ATemplateRow, ATemplateOperators, ATransaction);
         }
     }
-    
+
     /// auto generated
     public class PcAttendeeCascading : TTypedDataAccess
     {
-        
         /// cascading delete
         public static void DeleteByPrimaryKey(Int64 AConferenceKey, Int64 APartnerKey, TDBTransaction ATransaction, bool AWithCascDelete)
         {
@@ -8832,7 +8460,7 @@ namespace Ict.Petra.Shared.MCommon.Data.Cascading
             }
             PcAttendeeAccess.DeleteByPrimaryKey(AConferenceKey, APartnerKey, ATransaction);
         }
-        
+
         /// cascading delete
         public static void DeleteUsingTemplate(PcAttendeeRow ATemplateRow, StringCollection ATemplateOperators, TDBTransaction ATransaction, bool AWithCascDelete)
         {
@@ -8861,96 +8489,90 @@ namespace Ict.Petra.Shared.MCommon.Data.Cascading
             PcAttendeeAccess.DeleteUsingTemplate(ATemplateRow, ATemplateOperators, ATransaction);
         }
     }
-    
+
     /// auto generated
     public class PcConferenceCostCascading : TTypedDataAccess
     {
-        
         /// cascading delete
         public static void DeleteByPrimaryKey(Int64 AConferenceKey, Int32 AOptionDays, TDBTransaction ATransaction, bool AWithCascDelete)
         {
             PcConferenceCostAccess.DeleteByPrimaryKey(AConferenceKey, AOptionDays, ATransaction);
         }
-        
+
         /// cascading delete
         public static void DeleteUsingTemplate(PcConferenceCostRow ATemplateRow, StringCollection ATemplateOperators, TDBTransaction ATransaction, bool AWithCascDelete)
         {
             PcConferenceCostAccess.DeleteUsingTemplate(ATemplateRow, ATemplateOperators, ATransaction);
         }
     }
-    
+
     /// auto generated
     public class PcExtraCostCascading : TTypedDataAccess
     {
-        
         /// cascading delete
         public static void DeleteByPrimaryKey(Int64 AConferenceKey, Int64 APartnerKey, Int32 AExtraCostKey, TDBTransaction ATransaction, bool AWithCascDelete)
         {
             PcExtraCostAccess.DeleteByPrimaryKey(AConferenceKey, APartnerKey, AExtraCostKey, ATransaction);
         }
-        
+
         /// cascading delete
         public static void DeleteUsingTemplate(PcExtraCostRow ATemplateRow, StringCollection ATemplateOperators, TDBTransaction ATransaction, bool AWithCascDelete)
         {
             PcExtraCostAccess.DeleteUsingTemplate(ATemplateRow, ATemplateOperators, ATransaction);
         }
     }
-    
+
     /// auto generated
     public class PcEarlyLateCascading : TTypedDataAccess
     {
-        
         /// cascading delete
         public static void DeleteByPrimaryKey(Int64 AConferenceKey, System.DateTime AApplicable, TDBTransaction ATransaction, bool AWithCascDelete)
         {
             PcEarlyLateAccess.DeleteByPrimaryKey(AConferenceKey, AApplicable, ATransaction);
         }
-        
+
         /// cascading delete
         public static void DeleteUsingTemplate(PcEarlyLateRow ATemplateRow, StringCollection ATemplateOperators, TDBTransaction ATransaction, bool AWithCascDelete)
         {
             PcEarlyLateAccess.DeleteUsingTemplate(ATemplateRow, ATemplateOperators, ATransaction);
         }
     }
-    
+
     /// auto generated
     public class PcGroupCascading : TTypedDataAccess
     {
-        
         /// cascading delete
         public static void DeleteByPrimaryKey(Int64 AConferenceKey, Int64 APartnerKey, String AGroupType, String AGroupName, TDBTransaction ATransaction, bool AWithCascDelete)
         {
             PcGroupAccess.DeleteByPrimaryKey(AConferenceKey, APartnerKey, AGroupType, AGroupName, ATransaction);
         }
-        
+
         /// cascading delete
         public static void DeleteUsingTemplate(PcGroupRow ATemplateRow, StringCollection ATemplateOperators, TDBTransaction ATransaction, bool AWithCascDelete)
         {
             PcGroupAccess.DeleteUsingTemplate(ATemplateRow, ATemplateOperators, ATransaction);
         }
     }
-    
+
     /// auto generated
     public class PcSupplementCascading : TTypedDataAccess
     {
-        
         /// cascading delete
         public static void DeleteByPrimaryKey(Int64 AConferenceKey, String AXyzTbdType, TDBTransaction ATransaction, bool AWithCascDelete)
         {
             PcSupplementAccess.DeleteByPrimaryKey(AConferenceKey, AXyzTbdType, ATransaction);
         }
-        
+
         /// cascading delete
         public static void DeleteUsingTemplate(PcSupplementRow ATemplateRow, StringCollection ATemplateOperators, TDBTransaction ATransaction, bool AWithCascDelete)
         {
             PcSupplementAccess.DeleteUsingTemplate(ATemplateRow, ATemplateOperators, ATransaction);
         }
     }
-    
+
     /// auto generated
     public class PcBuildingCascading : TTypedDataAccess
     {
-        
         /// cascading delete
         public static void DeleteByPrimaryKey(Int64 AVenueKey, String ABuildingCode, TDBTransaction ATransaction, bool AWithCascDelete)
         {
@@ -8966,7 +8588,7 @@ namespace Ict.Petra.Shared.MCommon.Data.Cascading
             }
             PcBuildingAccess.DeleteByPrimaryKey(AVenueKey, ABuildingCode, ATransaction);
         }
-        
+
         /// cascading delete
         public static void DeleteUsingTemplate(PcBuildingRow ATemplateRow, StringCollection ATemplateOperators, TDBTransaction ATransaction, bool AWithCascDelete)
         {
@@ -8983,11 +8605,10 @@ namespace Ict.Petra.Shared.MCommon.Data.Cascading
             PcBuildingAccess.DeleteUsingTemplate(ATemplateRow, ATemplateOperators, ATransaction);
         }
     }
-    
+
     /// auto generated
     public class PcRoomCascading : TTypedDataAccess
     {
-        
         /// cascading delete
         public static void DeleteByPrimaryKey(Int64 AVenueKey, String ABuildingCode, String ARoomNumber, TDBTransaction ATransaction, bool AWithCascDelete)
         {
@@ -9009,7 +8630,7 @@ namespace Ict.Petra.Shared.MCommon.Data.Cascading
             }
             PcRoomAccess.DeleteByPrimaryKey(AVenueKey, ABuildingCode, ARoomNumber, ATransaction);
         }
-        
+
         /// cascading delete
         public static void DeleteUsingTemplate(PcRoomRow ATemplateRow, StringCollection ATemplateOperators, TDBTransaction ATransaction, bool AWithCascDelete)
         {
@@ -9032,11 +8653,10 @@ namespace Ict.Petra.Shared.MCommon.Data.Cascading
             PcRoomAccess.DeleteUsingTemplate(ATemplateRow, ATemplateOperators, ATransaction);
         }
     }
-    
+
     /// auto generated
     public class PcRoomAllocCascading : TTypedDataAccess
     {
-        
         /// cascading delete
         public static void DeleteByPrimaryKey(Int32 AKey, TDBTransaction ATransaction, bool AWithCascDelete)
         {
@@ -9052,7 +8672,7 @@ namespace Ict.Petra.Shared.MCommon.Data.Cascading
             }
             PcRoomAllocAccess.DeleteByPrimaryKey(AKey, ATransaction);
         }
-        
+
         /// cascading delete
         public static void DeleteUsingTemplate(PcRoomAllocRow ATemplateRow, StringCollection ATemplateOperators, TDBTransaction ATransaction, bool AWithCascDelete)
         {
@@ -9069,11 +8689,10 @@ namespace Ict.Petra.Shared.MCommon.Data.Cascading
             PcRoomAllocAccess.DeleteUsingTemplate(ATemplateRow, ATemplateOperators, ATransaction);
         }
     }
-    
+
     /// auto generated
     public class PcRoomAttributeTypeCascading : TTypedDataAccess
     {
-        
         /// cascading delete
         public static void DeleteByPrimaryKey(String ACode, TDBTransaction ATransaction, bool AWithCascDelete)
         {
@@ -9089,7 +8708,7 @@ namespace Ict.Petra.Shared.MCommon.Data.Cascading
             }
             PcRoomAttributeTypeAccess.DeleteByPrimaryKey(ACode, ATransaction);
         }
-        
+
         /// cascading delete
         public static void DeleteUsingTemplate(PcRoomAttributeTypeRow ATemplateRow, StringCollection ATemplateOperators, TDBTransaction ATransaction, bool AWithCascDelete)
         {
@@ -9106,62 +8725,58 @@ namespace Ict.Petra.Shared.MCommon.Data.Cascading
             PcRoomAttributeTypeAccess.DeleteUsingTemplate(ATemplateRow, ATemplateOperators, ATransaction);
         }
     }
-    
+
     /// auto generated
     public class PcRoomAttributeCascading : TTypedDataAccess
     {
-        
         /// cascading delete
         public static void DeleteByPrimaryKey(Int64 AVenueKey, String ABuildingCode, String ARoomNumber, String ARoomAttrTypeCode, TDBTransaction ATransaction, bool AWithCascDelete)
         {
             PcRoomAttributeAccess.DeleteByPrimaryKey(AVenueKey, ABuildingCode, ARoomNumber, ARoomAttrTypeCode, ATransaction);
         }
-        
+
         /// cascading delete
         public static void DeleteUsingTemplate(PcRoomAttributeRow ATemplateRow, StringCollection ATemplateOperators, TDBTransaction ATransaction, bool AWithCascDelete)
         {
             PcRoomAttributeAccess.DeleteUsingTemplate(ATemplateRow, ATemplateOperators, ATransaction);
         }
     }
-    
+
     /// auto generated
     public class PcConferenceVenueCascading : TTypedDataAccess
     {
-        
         /// cascading delete
         public static void DeleteByPrimaryKey(Int64 AConferenceKey, Int64 AVenueKey, TDBTransaction ATransaction, bool AWithCascDelete)
         {
             PcConferenceVenueAccess.DeleteByPrimaryKey(AConferenceKey, AVenueKey, ATransaction);
         }
-        
+
         /// cascading delete
         public static void DeleteUsingTemplate(PcConferenceVenueRow ATemplateRow, StringCollection ATemplateOperators, TDBTransaction ATransaction, bool AWithCascDelete)
         {
             PcConferenceVenueAccess.DeleteUsingTemplate(ATemplateRow, ATemplateOperators, ATransaction);
         }
     }
-    
+
     /// auto generated
     public class PhRoomBookingCascading : TTypedDataAccess
     {
-        
         /// cascading delete
         public static void DeleteByPrimaryKey(Int32 ABookingKey, Int32 ARoomAllocKey, TDBTransaction ATransaction, bool AWithCascDelete)
         {
             PhRoomBookingAccess.DeleteByPrimaryKey(ABookingKey, ARoomAllocKey, ATransaction);
         }
-        
+
         /// cascading delete
         public static void DeleteUsingTemplate(PhRoomBookingRow ATemplateRow, StringCollection ATemplateOperators, TDBTransaction ATransaction, bool AWithCascDelete)
         {
             PhRoomBookingAccess.DeleteUsingTemplate(ATemplateRow, ATemplateOperators, ATransaction);
         }
     }
-    
+
     /// auto generated
     public class PhBookingCascading : TTypedDataAccess
     {
-        
         /// cascading delete
         public static void DeleteByPrimaryKey(Int32 AKey, TDBTransaction ATransaction, bool AWithCascDelete)
         {
@@ -9177,7 +8792,7 @@ namespace Ict.Petra.Shared.MCommon.Data.Cascading
             }
             PhBookingAccess.DeleteByPrimaryKey(AKey, ATransaction);
         }
-        
+
         /// cascading delete
         public static void DeleteUsingTemplate(PhBookingRow ATemplateRow, StringCollection ATemplateOperators, TDBTransaction ATransaction, bool AWithCascDelete)
         {
@@ -9194,28 +8809,26 @@ namespace Ict.Petra.Shared.MCommon.Data.Cascading
             PhBookingAccess.DeleteUsingTemplate(ATemplateRow, ATemplateOperators, ATransaction);
         }
     }
-    
+
     /// auto generated
     public class PTaxCascading : TTypedDataAccess
     {
-        
         /// cascading delete
         public static void DeleteByPrimaryKey(Int64 APartnerKey, String ATaxType, String ATaxRef, TDBTransaction ATransaction, bool AWithCascDelete)
         {
             PTaxAccess.DeleteByPrimaryKey(APartnerKey, ATaxType, ATaxRef, ATransaction);
         }
-        
+
         /// cascading delete
         public static void DeleteUsingTemplate(PTaxRow ATemplateRow, StringCollection ATemplateOperators, TDBTransaction ATransaction, bool AWithCascDelete)
         {
             PTaxAccess.DeleteUsingTemplate(ATemplateRow, ATemplateOperators, ATransaction);
         }
     }
-    
+
     /// auto generated
     public class PInterestCategoryCascading : TTypedDataAccess
     {
-        
         /// cascading delete
         public static void DeleteByPrimaryKey(String ACategory, TDBTransaction ATransaction, bool AWithCascDelete)
         {
@@ -9231,7 +8844,7 @@ namespace Ict.Petra.Shared.MCommon.Data.Cascading
             }
             PInterestCategoryAccess.DeleteByPrimaryKey(ACategory, ATransaction);
         }
-        
+
         /// cascading delete
         public static void DeleteUsingTemplate(PInterestCategoryRow ATemplateRow, StringCollection ATemplateOperators, TDBTransaction ATransaction, bool AWithCascDelete)
         {
@@ -9248,11 +8861,10 @@ namespace Ict.Petra.Shared.MCommon.Data.Cascading
             PInterestCategoryAccess.DeleteUsingTemplate(ATemplateRow, ATemplateOperators, ATransaction);
         }
     }
-    
+
     /// auto generated
     public class PInterestCascading : TTypedDataAccess
     {
-        
         /// cascading delete
         public static void DeleteByPrimaryKey(String AInterest, TDBTransaction ATransaction, bool AWithCascDelete)
         {
@@ -9268,7 +8880,7 @@ namespace Ict.Petra.Shared.MCommon.Data.Cascading
             }
             PInterestAccess.DeleteByPrimaryKey(AInterest, ATransaction);
         }
-        
+
         /// cascading delete
         public static void DeleteUsingTemplate(PInterestRow ATemplateRow, StringCollection ATemplateOperators, TDBTransaction ATransaction, bool AWithCascDelete)
         {
@@ -9285,45 +8897,42 @@ namespace Ict.Petra.Shared.MCommon.Data.Cascading
             PInterestAccess.DeleteUsingTemplate(ATemplateRow, ATemplateOperators, ATransaction);
         }
     }
-    
+
     /// auto generated
     public class PPartnerInterestCascading : TTypedDataAccess
     {
-        
         /// cascading delete
         public static void DeleteByPrimaryKey(Int64 APartnerKey, Int32 AInterestNumber, TDBTransaction ATransaction, bool AWithCascDelete)
         {
             PPartnerInterestAccess.DeleteByPrimaryKey(APartnerKey, AInterestNumber, ATransaction);
         }
-        
+
         /// cascading delete
         public static void DeleteUsingTemplate(PPartnerInterestRow ATemplateRow, StringCollection ATemplateOperators, TDBTransaction ATransaction, bool AWithCascDelete)
         {
             PPartnerInterestAccess.DeleteUsingTemplate(ATemplateRow, ATemplateOperators, ATransaction);
         }
     }
-    
+
     /// auto generated
     public class PPartnerMergeCascading : TTypedDataAccess
     {
-        
         /// cascading delete
         public static void DeleteByPrimaryKey(Int64 AMergeFrom, TDBTransaction ATransaction, bool AWithCascDelete)
         {
             PPartnerMergeAccess.DeleteByPrimaryKey(AMergeFrom, ATransaction);
         }
-        
+
         /// cascading delete
         public static void DeleteUsingTemplate(PPartnerMergeRow ATemplateRow, StringCollection ATemplateOperators, TDBTransaction ATransaction, bool AWithCascDelete)
         {
             PPartnerMergeAccess.DeleteUsingTemplate(ATemplateRow, ATemplateOperators, ATransaction);
         }
     }
-    
+
     /// auto generated
     public class PReminderCategoryCascading : TTypedDataAccess
     {
-        
         /// cascading delete
         public static void DeleteByPrimaryKey(String ACode, TDBTransaction ATransaction, bool AWithCascDelete)
         {
@@ -9339,7 +8948,7 @@ namespace Ict.Petra.Shared.MCommon.Data.Cascading
             }
             PReminderCategoryAccess.DeleteByPrimaryKey(ACode, ATransaction);
         }
-        
+
         /// cascading delete
         public static void DeleteUsingTemplate(PReminderCategoryRow ATemplateRow, StringCollection ATemplateOperators, TDBTransaction ATransaction, bool AWithCascDelete)
         {
@@ -9356,11 +8965,10 @@ namespace Ict.Petra.Shared.MCommon.Data.Cascading
             PReminderCategoryAccess.DeleteUsingTemplate(ATemplateRow, ATemplateOperators, ATransaction);
         }
     }
-    
+
     /// auto generated
     public class PPartnerReminderCascading : TTypedDataAccess
     {
-        
         /// cascading delete
         public static void DeleteByPrimaryKey(Int64 APartnerKey, Int32 AContactId, Int32 AReminderId, TDBTransaction ATransaction, bool AWithCascDelete)
         {
@@ -9382,7 +8990,7 @@ namespace Ict.Petra.Shared.MCommon.Data.Cascading
             }
             PPartnerReminderAccess.DeleteByPrimaryKey(APartnerKey, AContactId, AReminderId, ATransaction);
         }
-        
+
         /// cascading delete
         public static void DeleteUsingTemplate(PPartnerReminderRow ATemplateRow, StringCollection ATemplateOperators, TDBTransaction ATransaction, bool AWithCascDelete)
         {
@@ -9405,45 +9013,42 @@ namespace Ict.Petra.Shared.MCommon.Data.Cascading
             PPartnerReminderAccess.DeleteUsingTemplate(ATemplateRow, ATemplateOperators, ATransaction);
         }
     }
-    
+
     /// auto generated
     public class PPartnerFieldOfServiceCascading : TTypedDataAccess
     {
-        
         /// cascading delete
         public static void DeleteByPrimaryKey(Int32 AKey, TDBTransaction ATransaction, bool AWithCascDelete)
         {
             PPartnerFieldOfServiceAccess.DeleteByPrimaryKey(AKey, ATransaction);
         }
-        
+
         /// cascading delete
         public static void DeleteUsingTemplate(PPartnerFieldOfServiceRow ATemplateRow, StringCollection ATemplateOperators, TDBTransaction ATransaction, bool AWithCascDelete)
         {
             PPartnerFieldOfServiceAccess.DeleteUsingTemplate(ATemplateRow, ATemplateOperators, ATransaction);
         }
     }
-    
+
     /// auto generated
     public class PPartnerShortCodeCascading : TTypedDataAccess
     {
-        
         /// cascading delete
         public static void DeleteByPrimaryKey(Int64 APartnerKey, String APartnerShortCode, TDBTransaction ATransaction, bool AWithCascDelete)
         {
             PPartnerShortCodeAccess.DeleteByPrimaryKey(APartnerKey, APartnerShortCode, ATransaction);
         }
-        
+
         /// cascading delete
         public static void DeleteUsingTemplate(PPartnerShortCodeRow ATemplateRow, StringCollection ATemplateOperators, TDBTransaction ATransaction, bool AWithCascDelete)
         {
             PPartnerShortCodeAccess.DeleteUsingTemplate(ATemplateRow, ATemplateOperators, ATransaction);
         }
     }
-    
+
     /// auto generated
     public class PProcessCascading : TTypedDataAccess
     {
-        
         /// cascading delete
         public static void DeleteByPrimaryKey(String AProcessCode, TDBTransaction ATransaction, bool AWithCascDelete)
         {
@@ -9465,7 +9070,7 @@ namespace Ict.Petra.Shared.MCommon.Data.Cascading
             }
             PProcessAccess.DeleteByPrimaryKey(AProcessCode, ATransaction);
         }
-        
+
         /// cascading delete
         public static void DeleteUsingTemplate(PProcessRow ATemplateRow, StringCollection ATemplateOperators, TDBTransaction ATransaction, bool AWithCascDelete)
         {
@@ -9488,11 +9093,10 @@ namespace Ict.Petra.Shared.MCommon.Data.Cascading
             PProcessAccess.DeleteUsingTemplate(ATemplateRow, ATemplateOperators, ATransaction);
         }
     }
-    
+
     /// auto generated
     public class PStateCascading : TTypedDataAccess
     {
-        
         /// cascading delete
         public static void DeleteByPrimaryKey(String AProcessCode, String AStateCode, TDBTransaction ATransaction, bool AWithCascDelete)
         {
@@ -9508,7 +9112,7 @@ namespace Ict.Petra.Shared.MCommon.Data.Cascading
             }
             PStateAccess.DeleteByPrimaryKey(AProcessCode, AStateCode, ATransaction);
         }
-        
+
         /// cascading delete
         public static void DeleteUsingTemplate(PStateRow ATemplateRow, StringCollection ATemplateOperators, TDBTransaction ATransaction, bool AWithCascDelete)
         {
@@ -9525,11 +9129,10 @@ namespace Ict.Petra.Shared.MCommon.Data.Cascading
             PStateAccess.DeleteUsingTemplate(ATemplateRow, ATemplateOperators, ATransaction);
         }
     }
-    
+
     /// auto generated
     public class PActionCascading : TTypedDataAccess
     {
-        
         /// cascading delete
         public static void DeleteByPrimaryKey(String AProcessCode, String AActionCode, TDBTransaction ATransaction, bool AWithCascDelete)
         {
@@ -9545,7 +9148,7 @@ namespace Ict.Petra.Shared.MCommon.Data.Cascading
             }
             PActionAccess.DeleteByPrimaryKey(AProcessCode, AActionCode, ATransaction);
         }
-        
+
         /// cascading delete
         public static void DeleteUsingTemplate(PActionRow ATemplateRow, StringCollection ATemplateOperators, TDBTransaction ATransaction, bool AWithCascDelete)
         {
@@ -9562,45 +9165,42 @@ namespace Ict.Petra.Shared.MCommon.Data.Cascading
             PActionAccess.DeleteUsingTemplate(ATemplateRow, ATemplateOperators, ATransaction);
         }
     }
-    
+
     /// auto generated
     public class PPartnerStateCascading : TTypedDataAccess
     {
-        
         /// cascading delete
         public static void DeleteByPrimaryKey(Int64 APartnerKey, Int32 AStateIndex, TDBTransaction ATransaction, bool AWithCascDelete)
         {
             PPartnerStateAccess.DeleteByPrimaryKey(APartnerKey, AStateIndex, ATransaction);
         }
-        
+
         /// cascading delete
         public static void DeleteUsingTemplate(PPartnerStateRow ATemplateRow, StringCollection ATemplateOperators, TDBTransaction ATransaction, bool AWithCascDelete)
         {
             PPartnerStateAccess.DeleteUsingTemplate(ATemplateRow, ATemplateOperators, ATransaction);
         }
     }
-    
+
     /// auto generated
     public class PPartnerActionCascading : TTypedDataAccess
     {
-        
         /// cascading delete
         public static void DeleteByPrimaryKey(Int64 APartnerKey, Int32 AActionNumber, TDBTransaction ATransaction, bool AWithCascDelete)
         {
             PPartnerActionAccess.DeleteByPrimaryKey(APartnerKey, AActionNumber, ATransaction);
         }
-        
+
         /// cascading delete
         public static void DeleteUsingTemplate(PPartnerActionRow ATemplateRow, StringCollection ATemplateOperators, TDBTransaction ATransaction, bool AWithCascDelete)
         {
             PPartnerActionAccess.DeleteUsingTemplate(ATemplateRow, ATemplateOperators, ATransaction);
         }
     }
-    
+
     /// auto generated
     public class PFirstContactCascading : TTypedDataAccess
     {
-        
         /// cascading delete
         public static void DeleteByPrimaryKey(String AFirstContactCode, TDBTransaction ATransaction, bool AWithCascDelete)
         {
@@ -9611,12 +9211,12 @@ namespace Ict.Petra.Shared.MCommon.Data.Cascading
                 PPartnerAccess.LoadViaPFirstContact(out MyPPartnerTable, AFirstContactCode, StringHelper.StrSplit("p_partner_key_n", ","), ATransaction);
                 for (countRow = 0; (countRow != MyPPartnerTable.Rows.Count); countRow = (countRow + 1))
                 {
-                    PPartnerAccess.DeleteUsingTemplate(MyPPartnerTable[countRow], null, ATransaction);
-                }
+                                    PPartnerAccess.DeleteUsingTemplate(MyPPartnerTable[countRow], null, ATransaction);
+                                }
             }
             PFirstContactAccess.DeleteByPrimaryKey(AFirstContactCode, ATransaction);
         }
-        
+
         /// cascading delete
         public static void DeleteUsingTemplate(PFirstContactRow ATemplateRow, StringCollection ATemplateOperators, TDBTransaction ATransaction, bool AWithCascDelete)
         {
@@ -9627,17 +9227,16 @@ namespace Ict.Petra.Shared.MCommon.Data.Cascading
                 PPartnerAccess.LoadViaPFirstContactTemplate(out MyPPartnerTable, ATemplateRow, StringHelper.StrSplit("p_partner_key_n", ","), ATransaction);
                 for (countRow = 0; (countRow != MyPPartnerTable.Rows.Count); countRow = (countRow + 1))
                 {
-                    PPartnerAccess.DeleteUsingTemplate(MyPPartnerTable[countRow], null, ATransaction);
-                }
+                                    PPartnerAccess.DeleteUsingTemplate(MyPPartnerTable[countRow], null, ATransaction);
+                                }
             }
             PFirstContactAccess.DeleteUsingTemplate(ATemplateRow, ATemplateOperators, ATransaction);
         }
     }
-    
+
     /// auto generated
     public class AKeyFocusAreaCascading : TTypedDataAccess
     {
-        
         /// cascading delete
         public static void DeleteByPrimaryKey(String AKeyFocusArea, TDBTransaction ATransaction, bool AWithCascDelete)
         {
@@ -9648,12 +9247,12 @@ namespace Ict.Petra.Shared.MCommon.Data.Cascading
                 ACostCentreAccess.LoadViaAKeyFocusArea(out MyACostCentreTable, AKeyFocusArea, StringHelper.StrSplit("a_ledger_number_i,a_cost_centre_code_c", ","), ATransaction);
                 for (countRow = 0; (countRow != MyACostCentreTable.Rows.Count); countRow = (countRow + 1))
                 {
-                    ACostCentreAccess.DeleteUsingTemplate(MyACostCentreTable[countRow], null, ATransaction);
-                }
+                                    ACostCentreAccess.DeleteUsingTemplate(MyACostCentreTable[countRow], null, ATransaction);
+                                }
             }
             AKeyFocusAreaAccess.DeleteByPrimaryKey(AKeyFocusArea, ATransaction);
         }
-        
+
         /// cascading delete
         public static void DeleteUsingTemplate(AKeyFocusAreaRow ATemplateRow, StringCollection ATemplateOperators, TDBTransaction ATransaction, bool AWithCascDelete)
         {
@@ -9664,34 +9263,32 @@ namespace Ict.Petra.Shared.MCommon.Data.Cascading
                 ACostCentreAccess.LoadViaAKeyFocusAreaTemplate(out MyACostCentreTable, ATemplateRow, StringHelper.StrSplit("a_ledger_number_i,a_cost_centre_code_c", ","), ATransaction);
                 for (countRow = 0; (countRow != MyACostCentreTable.Rows.Count); countRow = (countRow + 1))
                 {
-                    ACostCentreAccess.DeleteUsingTemplate(MyACostCentreTable[countRow], null, ATransaction);
-                }
+                                    ACostCentreAccess.DeleteUsingTemplate(MyACostCentreTable[countRow], null, ATransaction);
+                                }
             }
             AKeyFocusAreaAccess.DeleteUsingTemplate(ATemplateRow, ATemplateOperators, ATransaction);
         }
     }
-    
+
     /// auto generated
     public class SGroupFunctionCascading : TTypedDataAccess
     {
-        
         /// cascading delete
         public static void DeleteByPrimaryKey(String AGroupId, Int64 AUnitKey, String AFunctionId, TDBTransaction ATransaction, bool AWithCascDelete)
         {
             SGroupFunctionAccess.DeleteByPrimaryKey(AGroupId, AUnitKey, AFunctionId, ATransaction);
         }
-        
+
         /// cascading delete
         public static void DeleteUsingTemplate(SGroupFunctionRow ATemplateRow, StringCollection ATemplateOperators, TDBTransaction ATransaction, bool AWithCascDelete)
         {
             SGroupFunctionAccess.DeleteUsingTemplate(ATemplateRow, ATemplateOperators, ATransaction);
         }
     }
-    
+
     /// auto generated
     public class SFunctionCascading : TTypedDataAccess
     {
-        
         /// cascading delete
         public static void DeleteByPrimaryKey(String AFunctionId, TDBTransaction ATransaction, bool AWithCascDelete)
         {
@@ -9710,21 +9307,22 @@ namespace Ict.Petra.Shared.MCommon.Data.Cascading
                 {
                     SWorkflowStepCascading.DeleteUsingTemplate(MySWorkflowStepTable[countRow], null, ATransaction, AWithCascDelete);
                 }
-                SFunctionRelationshipTable MySFunctionRelationshipTable = null;
-                SFunctionRelationshipAccess.LoadViaSFunctionFunction1(out MySFunctionRelationshipTable, AFunctionId, StringHelper.StrSplit("s_function_1_c,s_function_2_c", ","), ATransaction);
-                for (countRow = 0; (countRow != MySFunctionRelationshipTable.Rows.Count); countRow = (countRow + 1))
+                SFunctionRelationshipTable MySFunctionRelationshipFunction1Table = null;
+                SFunctionRelationshipAccess.LoadViaSFunctionFunction1(out MySFunctionRelationshipFunction1Table, AFunctionId, StringHelper.StrSplit("s_function_1_c,s_function_2_c", ","), ATransaction);
+                for (countRow = 0; (countRow != MySFunctionRelationshipFunction1Table.Rows.Count); countRow = (countRow + 1))
                 {
-                    SFunctionRelationshipCascading.DeleteUsingTemplate(MySFunctionRelationshipTable[countRow], null, ATransaction, AWithCascDelete);
+                    SFunctionRelationshipCascading.DeleteUsingTemplate(MySFunctionRelationshipFunction1Table[countRow], null, ATransaction, AWithCascDelete);
                 }
-                SFunctionRelationshipAccess.LoadViaSFunctionFunction2(out MySFunctionRelationshipTable, AFunctionId, StringHelper.StrSplit("s_function_1_c,s_function_2_c", ","), ATransaction);
-                for (countRow = 0; (countRow != MySFunctionRelationshipTable.Rows.Count); countRow = (countRow + 1))
+                SFunctionRelationshipTable MySFunctionRelationshipFunction2Table = null;
+                SFunctionRelationshipAccess.LoadViaSFunctionFunction2(out MySFunctionRelationshipFunction2Table, AFunctionId, StringHelper.StrSplit("s_function_1_c,s_function_2_c", ","), ATransaction);
+                for (countRow = 0; (countRow != MySFunctionRelationshipFunction2Table.Rows.Count); countRow = (countRow + 1))
                 {
-                    SFunctionRelationshipCascading.DeleteUsingTemplate(MySFunctionRelationshipTable[countRow], null, ATransaction, AWithCascDelete);
+                    SFunctionRelationshipCascading.DeleteUsingTemplate(MySFunctionRelationshipFunction2Table[countRow], null, ATransaction, AWithCascDelete);
                 }
             }
             SFunctionAccess.DeleteByPrimaryKey(AFunctionId, ATransaction);
         }
-        
+
         /// cascading delete
         public static void DeleteUsingTemplate(SFunctionRow ATemplateRow, StringCollection ATemplateOperators, TDBTransaction ATransaction, bool AWithCascDelete)
         {
@@ -9743,60 +9341,58 @@ namespace Ict.Petra.Shared.MCommon.Data.Cascading
                 {
                     SWorkflowStepCascading.DeleteUsingTemplate(MySWorkflowStepTable[countRow], null, ATransaction, AWithCascDelete);
                 }
-                SFunctionRelationshipTable MySFunctionRelationshipTable = null;
-                SFunctionRelationshipAccess.LoadViaSFunctionFunction1Template(out MySFunctionRelationshipTable, ATemplateRow, StringHelper.StrSplit("s_function_1_c,s_function_2_c", ","), ATransaction);
-                for (countRow = 0; (countRow != MySFunctionRelationshipTable.Rows.Count); countRow = (countRow + 1))
+                SFunctionRelationshipTable MySFunctionRelationshipFunction1Table = null;
+                SFunctionRelationshipAccess.LoadViaSFunctionFunction1Template(out MySFunctionRelationshipFunction1Table, ATemplateRow, StringHelper.StrSplit("s_function_1_c,s_function_2_c", ","), ATransaction);
+                for (countRow = 0; (countRow != MySFunctionRelationshipFunction1Table.Rows.Count); countRow = (countRow + 1))
                 {
-                    SFunctionRelationshipCascading.DeleteUsingTemplate(MySFunctionRelationshipTable[countRow], null, ATransaction, AWithCascDelete);
+                    SFunctionRelationshipCascading.DeleteUsingTemplate(MySFunctionRelationshipFunction1Table[countRow], null, ATransaction, AWithCascDelete);
                 }
-                SFunctionRelationshipAccess.LoadViaSFunctionFunction2Template(out MySFunctionRelationshipTable, ATemplateRow, StringHelper.StrSplit("s_function_1_c,s_function_2_c", ","), ATransaction);
-                for (countRow = 0; (countRow != MySFunctionRelationshipTable.Rows.Count); countRow = (countRow + 1))
+                SFunctionRelationshipTable MySFunctionRelationshipFunction2Table = null;
+                SFunctionRelationshipAccess.LoadViaSFunctionFunction2Template(out MySFunctionRelationshipFunction2Table, ATemplateRow, StringHelper.StrSplit("s_function_1_c,s_function_2_c", ","), ATransaction);
+                for (countRow = 0; (countRow != MySFunctionRelationshipFunction2Table.Rows.Count); countRow = (countRow + 1))
                 {
-                    SFunctionRelationshipCascading.DeleteUsingTemplate(MySFunctionRelationshipTable[countRow], null, ATransaction, AWithCascDelete);
+                    SFunctionRelationshipCascading.DeleteUsingTemplate(MySFunctionRelationshipFunction2Table[countRow], null, ATransaction, AWithCascDelete);
                 }
             }
             SFunctionAccess.DeleteUsingTemplate(ATemplateRow, ATemplateOperators, ATransaction);
         }
     }
-    
+
     /// auto generated
     public class SJobGroupCascading : TTypedDataAccess
     {
-        
         /// cascading delete
         public static void DeleteByPrimaryKey(String APositionName, String APositionScope, Int32 AJobKey, String AGroupId, Int64 AUnitKey, TDBTransaction ATransaction, bool AWithCascDelete)
         {
             SJobGroupAccess.DeleteByPrimaryKey(APositionName, APositionScope, AJobKey, AGroupId, AUnitKey, ATransaction);
         }
-        
+
         /// cascading delete
         public static void DeleteUsingTemplate(SJobGroupRow ATemplateRow, StringCollection ATemplateOperators, TDBTransaction ATransaction, bool AWithCascDelete)
         {
             SJobGroupAccess.DeleteUsingTemplate(ATemplateRow, ATemplateOperators, ATransaction);
         }
     }
-    
+
     /// auto generated
     public class SGroupPartnerSetCascading : TTypedDataAccess
     {
-        
         /// cascading delete
         public static void DeleteByPrimaryKey(String AGroupId, Int64 AGroupUnitKey, String APartnerSetId, Int64 APartnerSetUnitKey, TDBTransaction ATransaction, bool AWithCascDelete)
         {
             SGroupPartnerSetAccess.DeleteByPrimaryKey(AGroupId, AGroupUnitKey, APartnerSetId, APartnerSetUnitKey, ATransaction);
         }
-        
+
         /// cascading delete
         public static void DeleteUsingTemplate(SGroupPartnerSetRow ATemplateRow, StringCollection ATemplateOperators, TDBTransaction ATransaction, bool AWithCascDelete)
         {
             SGroupPartnerSetAccess.DeleteUsingTemplate(ATemplateRow, ATemplateOperators, ATransaction);
         }
     }
-    
+
     /// auto generated
     public class PPartnerSetCascading : TTypedDataAccess
     {
-        
         /// cascading delete
         public static void DeleteByPrimaryKey(String APartnerSetId, Int64 AUnitKey, TDBTransaction ATransaction, bool AWithCascDelete)
         {
@@ -9818,7 +9414,7 @@ namespace Ict.Petra.Shared.MCommon.Data.Cascading
             }
             PPartnerSetAccess.DeleteByPrimaryKey(APartnerSetId, AUnitKey, ATransaction);
         }
-        
+
         /// cascading delete
         public static void DeleteUsingTemplate(PPartnerSetRow ATemplateRow, StringCollection ATemplateOperators, TDBTransaction ATransaction, bool AWithCascDelete)
         {
@@ -9841,249 +9437,234 @@ namespace Ict.Petra.Shared.MCommon.Data.Cascading
             PPartnerSetAccess.DeleteUsingTemplate(ATemplateRow, ATemplateOperators, ATransaction);
         }
     }
-    
+
     /// auto generated
     public class PPartnerSetPartnerCascading : TTypedDataAccess
     {
-        
         /// cascading delete
         public static void DeleteByPrimaryKey(String APartnerSetId, Int64 APartnerSetUnitKey, Int64 APartnerKey, TDBTransaction ATransaction, bool AWithCascDelete)
         {
             PPartnerSetPartnerAccess.DeleteByPrimaryKey(APartnerSetId, APartnerSetUnitKey, APartnerKey, ATransaction);
         }
-        
+
         /// cascading delete
         public static void DeleteUsingTemplate(PPartnerSetPartnerRow ATemplateRow, StringCollection ATemplateOperators, TDBTransaction ATransaction, bool AWithCascDelete)
         {
             PPartnerSetPartnerAccess.DeleteUsingTemplate(ATemplateRow, ATemplateOperators, ATransaction);
         }
     }
-    
+
     /// auto generated
     public class SGroupGiftCascading : TTypedDataAccess
     {
-        
         /// cascading delete
         public static void DeleteByPrimaryKey(String AGroupId, Int64 AGroupUnitKey, Int32 ALedgerNumber, Int32 ABatchNumber, Int32 AGiftTransactionNumber, TDBTransaction ATransaction, bool AWithCascDelete)
         {
             SGroupGiftAccess.DeleteByPrimaryKey(AGroupId, AGroupUnitKey, ALedgerNumber, ABatchNumber, AGiftTransactionNumber, ATransaction);
         }
-        
+
         /// cascading delete
         public static void DeleteUsingTemplate(SGroupGiftRow ATemplateRow, StringCollection ATemplateOperators, TDBTransaction ATransaction, bool AWithCascDelete)
         {
             SGroupGiftAccess.DeleteUsingTemplate(ATemplateRow, ATemplateOperators, ATransaction);
         }
     }
-    
+
     /// auto generated
     public class SGroupMotivationCascading : TTypedDataAccess
     {
-        
         /// cascading delete
         public static void DeleteByPrimaryKey(String AGroupId, Int64 AGroupUnitKey, Int32 ALedgerNumber, String AMotivationGroupCode, String AMotivationDetailCode, TDBTransaction ATransaction, bool AWithCascDelete)
         {
             SGroupMotivationAccess.DeleteByPrimaryKey(AGroupId, AGroupUnitKey, ALedgerNumber, AMotivationGroupCode, AMotivationDetailCode, ATransaction);
         }
-        
+
         /// cascading delete
         public static void DeleteUsingTemplate(SGroupMotivationRow ATemplateRow, StringCollection ATemplateOperators, TDBTransaction ATransaction, bool AWithCascDelete)
         {
             SGroupMotivationAccess.DeleteUsingTemplate(ATemplateRow, ATemplateOperators, ATransaction);
         }
     }
-    
+
     /// auto generated
     public class SGroupPartnerContactCascading : TTypedDataAccess
     {
-        
         /// cascading delete
         public static void DeleteByPrimaryKey(String AGroupId, Int64 AGroupUnitKey, Int32 AContactId, TDBTransaction ATransaction, bool AWithCascDelete)
         {
             SGroupPartnerContactAccess.DeleteByPrimaryKey(AGroupId, AGroupUnitKey, AContactId, ATransaction);
         }
-        
+
         /// cascading delete
         public static void DeleteUsingTemplate(SGroupPartnerContactRow ATemplateRow, StringCollection ATemplateOperators, TDBTransaction ATransaction, bool AWithCascDelete)
         {
             SGroupPartnerContactAccess.DeleteUsingTemplate(ATemplateRow, ATemplateOperators, ATransaction);
         }
     }
-    
+
     /// auto generated
     public class SGroupPartnerReminderCascading : TTypedDataAccess
     {
-        
         /// cascading delete
         public static void DeleteByPrimaryKey(String AGroupId, Int64 AGroupUnitKey, Int64 APartnerKey, Int32 AContactId, Int32 AReminderId, TDBTransaction ATransaction, bool AWithCascDelete)
         {
             SGroupPartnerReminderAccess.DeleteByPrimaryKey(AGroupId, AGroupUnitKey, APartnerKey, AContactId, AReminderId, ATransaction);
         }
-        
+
         /// cascading delete
         public static void DeleteUsingTemplate(SGroupPartnerReminderRow ATemplateRow, StringCollection ATemplateOperators, TDBTransaction ATransaction, bool AWithCascDelete)
         {
             SGroupPartnerReminderAccess.DeleteUsingTemplate(ATemplateRow, ATemplateOperators, ATransaction);
         }
     }
-    
+
     /// auto generated
     public class SGroupLocationCascading : TTypedDataAccess
     {
-        
         /// cascading delete
         public static void DeleteByPrimaryKey(String AGroupId, Int64 AGroupUnitKey, Int64 ASiteKey, Int32 ALocationKey, TDBTransaction ATransaction, bool AWithCascDelete)
         {
             SGroupLocationAccess.DeleteByPrimaryKey(AGroupId, AGroupUnitKey, ASiteKey, ALocationKey, ATransaction);
         }
-        
+
         /// cascading delete
         public static void DeleteUsingTemplate(SGroupLocationRow ATemplateRow, StringCollection ATemplateOperators, TDBTransaction ATransaction, bool AWithCascDelete)
         {
             SGroupLocationAccess.DeleteUsingTemplate(ATemplateRow, ATemplateOperators, ATransaction);
         }
     }
-    
+
     /// auto generated
     public class SGroupPartnerLocationCascading : TTypedDataAccess
     {
-        
         /// cascading delete
         public static void DeleteByPrimaryKey(String AGroupId, Int64 AGroupUnitKey, Int64 APartnerKey, Int64 ASiteKey, Int32 ALocationKey, TDBTransaction ATransaction, bool AWithCascDelete)
         {
             SGroupPartnerLocationAccess.DeleteByPrimaryKey(AGroupId, AGroupUnitKey, APartnerKey, ASiteKey, ALocationKey, ATransaction);
         }
-        
+
         /// cascading delete
         public static void DeleteUsingTemplate(SGroupPartnerLocationRow ATemplateRow, StringCollection ATemplateOperators, TDBTransaction ATransaction, bool AWithCascDelete)
         {
             SGroupPartnerLocationAccess.DeleteUsingTemplate(ATemplateRow, ATemplateOperators, ATransaction);
         }
     }
-    
+
     /// auto generated
     public class SGroupDataLabelCascading : TTypedDataAccess
     {
-        
         /// cascading delete
         public static void DeleteByPrimaryKey(String AGroupId, Int64 AGroupUnitKey, Int32 ADataLabelKey, TDBTransaction ATransaction, bool AWithCascDelete)
         {
             SGroupDataLabelAccess.DeleteByPrimaryKey(AGroupId, AGroupUnitKey, ADataLabelKey, ATransaction);
         }
-        
+
         /// cascading delete
         public static void DeleteUsingTemplate(SGroupDataLabelRow ATemplateRow, StringCollection ATemplateOperators, TDBTransaction ATransaction, bool AWithCascDelete)
         {
             SGroupDataLabelAccess.DeleteUsingTemplate(ATemplateRow, ATemplateOperators, ATransaction);
         }
     }
-    
+
     /// auto generated
     public class SGroupLedgerCascading : TTypedDataAccess
     {
-        
         /// cascading delete
         public static void DeleteByPrimaryKey(String AGroupId, Int64 AGroupUnitKey, Int32 ALedgerNumber, TDBTransaction ATransaction, bool AWithCascDelete)
         {
             SGroupLedgerAccess.DeleteByPrimaryKey(AGroupId, AGroupUnitKey, ALedgerNumber, ATransaction);
         }
-        
+
         /// cascading delete
         public static void DeleteUsingTemplate(SGroupLedgerRow ATemplateRow, StringCollection ATemplateOperators, TDBTransaction ATransaction, bool AWithCascDelete)
         {
             SGroupLedgerAccess.DeleteUsingTemplate(ATemplateRow, ATemplateOperators, ATransaction);
         }
     }
-    
+
     /// auto generated
     public class SGroupCostCentreCascading : TTypedDataAccess
     {
-        
         /// cascading delete
         public static void DeleteByPrimaryKey(String AGroupId, Int64 AGroupUnitKey, Int32 ALedgerNumber, String ACostCentreCode, TDBTransaction ATransaction, bool AWithCascDelete)
         {
             SGroupCostCentreAccess.DeleteByPrimaryKey(AGroupId, AGroupUnitKey, ALedgerNumber, ACostCentreCode, ATransaction);
         }
-        
+
         /// cascading delete
         public static void DeleteUsingTemplate(SGroupCostCentreRow ATemplateRow, StringCollection ATemplateOperators, TDBTransaction ATransaction, bool AWithCascDelete)
         {
             SGroupCostCentreAccess.DeleteUsingTemplate(ATemplateRow, ATemplateOperators, ATransaction);
         }
     }
-    
+
     /// auto generated
     public class SGroupExtractCascading : TTypedDataAccess
     {
-        
         /// cascading delete
         public static void DeleteByPrimaryKey(String AGroupId, Int64 AGroupUnitKey, Int32 AExtractId, TDBTransaction ATransaction, bool AWithCascDelete)
         {
             SGroupExtractAccess.DeleteByPrimaryKey(AGroupId, AGroupUnitKey, AExtractId, ATransaction);
         }
-        
+
         /// cascading delete
         public static void DeleteUsingTemplate(SGroupExtractRow ATemplateRow, StringCollection ATemplateOperators, TDBTransaction ATransaction, bool AWithCascDelete)
         {
             SGroupExtractAccess.DeleteUsingTemplate(ATemplateRow, ATemplateOperators, ATransaction);
         }
     }
-    
+
     /// auto generated
     public class SChangeEventCascading : TTypedDataAccess
     {
-        
         /// cascading delete
         public static void DeleteByPrimaryKey(String ATableName, String ARowid, TDBTransaction ATransaction, bool AWithCascDelete)
         {
             SChangeEventAccess.DeleteByPrimaryKey(ATableName, ARowid, ATransaction);
         }
-        
+
         /// cascading delete
         public static void DeleteUsingTemplate(SChangeEventRow ATemplateRow, StringCollection ATemplateOperators, TDBTransaction ATransaction, bool AWithCascDelete)
         {
             SChangeEventAccess.DeleteUsingTemplate(ATemplateRow, ATemplateOperators, ATransaction);
         }
     }
-    
+
     /// auto generated
     public class SLabelCascading : TTypedDataAccess
     {
-        
         /// cascading delete
         public static void DeleteByPrimaryKey(String ALabelName, TDBTransaction ATransaction, bool AWithCascDelete)
         {
             SLabelAccess.DeleteByPrimaryKey(ALabelName, ATransaction);
         }
-        
+
         /// cascading delete
         public static void DeleteUsingTemplate(SLabelRow ATemplateRow, StringCollection ATemplateOperators, TDBTransaction ATransaction, bool AWithCascDelete)
         {
             SLabelAccess.DeleteUsingTemplate(ATemplateRow, ATemplateOperators, ATransaction);
         }
     }
-    
+
     /// auto generated
     public class PPartnerCommentCascading : TTypedDataAccess
     {
-        
         /// cascading delete
         public static void DeleteByPrimaryKey(Int64 APartnerKey, Int32 AIndex, Int32 ASequence, TDBTransaction ATransaction, bool AWithCascDelete)
         {
             PPartnerCommentAccess.DeleteByPrimaryKey(APartnerKey, AIndex, ASequence, ATransaction);
         }
-        
+
         /// cascading delete
         public static void DeleteUsingTemplate(PPartnerCommentRow ATemplateRow, StringCollection ATemplateOperators, TDBTransaction ATransaction, bool AWithCascDelete)
         {
             PPartnerCommentAccess.DeleteUsingTemplate(ATemplateRow, ATemplateOperators, ATransaction);
         }
     }
-    
+
     /// auto generated
     public class PProposalSubmissionTypeCascading : TTypedDataAccess
     {
-        
         /// cascading delete
         public static void DeleteByPrimaryKey(String ASubmissionTypeCode, TDBTransaction ATransaction, bool AWithCascDelete)
         {
@@ -10099,7 +9680,7 @@ namespace Ict.Petra.Shared.MCommon.Data.Cascading
             }
             PProposalSubmissionTypeAccess.DeleteByPrimaryKey(ASubmissionTypeCode, ATransaction);
         }
-        
+
         /// cascading delete
         public static void DeleteUsingTemplate(PProposalSubmissionTypeRow ATemplateRow, StringCollection ATemplateOperators, TDBTransaction ATransaction, bool AWithCascDelete)
         {
@@ -10116,11 +9697,10 @@ namespace Ict.Petra.Shared.MCommon.Data.Cascading
             PProposalSubmissionTypeAccess.DeleteUsingTemplate(ATemplateRow, ATemplateOperators, ATransaction);
         }
     }
-    
+
     /// auto generated
     public class PFoundationCascading : TTypedDataAccess
     {
-        
         /// cascading delete
         public static void DeleteByPrimaryKey(Int64 APartnerKey, TDBTransaction ATransaction, bool AWithCascDelete)
         {
@@ -10148,7 +9728,7 @@ namespace Ict.Petra.Shared.MCommon.Data.Cascading
             }
             PFoundationAccess.DeleteByPrimaryKey(APartnerKey, ATransaction);
         }
-        
+
         /// cascading delete
         public static void DeleteUsingTemplate(PFoundationRow ATemplateRow, StringCollection ATemplateOperators, TDBTransaction ATransaction, bool AWithCascDelete)
         {
@@ -10177,11 +9757,10 @@ namespace Ict.Petra.Shared.MCommon.Data.Cascading
             PFoundationAccess.DeleteUsingTemplate(ATemplateRow, ATemplateOperators, ATransaction);
         }
     }
-    
+
     /// auto generated
     public class PFoundationProposalStatusCascading : TTypedDataAccess
     {
-        
         /// cascading delete
         public static void DeleteByPrimaryKey(String AStatusCode, TDBTransaction ATransaction, bool AWithCascDelete)
         {
@@ -10197,7 +9776,7 @@ namespace Ict.Petra.Shared.MCommon.Data.Cascading
             }
             PFoundationProposalStatusAccess.DeleteByPrimaryKey(AStatusCode, ATransaction);
         }
-        
+
         /// cascading delete
         public static void DeleteUsingTemplate(PFoundationProposalStatusRow ATemplateRow, StringCollection ATemplateOperators, TDBTransaction ATransaction, bool AWithCascDelete)
         {
@@ -10214,11 +9793,10 @@ namespace Ict.Petra.Shared.MCommon.Data.Cascading
             PFoundationProposalStatusAccess.DeleteUsingTemplate(ATemplateRow, ATemplateOperators, ATransaction);
         }
     }
-    
+
     /// auto generated
     public class PFoundationProposalCascading : TTypedDataAccess
     {
-        
         /// cascading delete
         public static void DeleteByPrimaryKey(Int64 AFoundationPartnerKey, Int32 AFoundationProposalKey, TDBTransaction ATransaction, bool AWithCascDelete)
         {
@@ -10234,7 +9812,7 @@ namespace Ict.Petra.Shared.MCommon.Data.Cascading
             }
             PFoundationProposalAccess.DeleteByPrimaryKey(AFoundationPartnerKey, AFoundationProposalKey, ATransaction);
         }
-        
+
         /// cascading delete
         public static void DeleteUsingTemplate(PFoundationProposalRow ATemplateRow, StringCollection ATemplateOperators, TDBTransaction ATransaction, bool AWithCascDelete)
         {
@@ -10251,45 +9829,42 @@ namespace Ict.Petra.Shared.MCommon.Data.Cascading
             PFoundationProposalAccess.DeleteUsingTemplate(ATemplateRow, ATemplateOperators, ATransaction);
         }
     }
-    
+
     /// auto generated
     public class PFoundationProposalDetailCascading : TTypedDataAccess
     {
-        
         /// cascading delete
         public static void DeleteByPrimaryKey(Int64 AFoundationPartnerKey, Int32 AFoundationProposalKey, Int32 AProposalDetailId, TDBTransaction ATransaction, bool AWithCascDelete)
         {
             PFoundationProposalDetailAccess.DeleteByPrimaryKey(AFoundationPartnerKey, AFoundationProposalKey, AProposalDetailId, ATransaction);
         }
-        
+
         /// cascading delete
         public static void DeleteUsingTemplate(PFoundationProposalDetailRow ATemplateRow, StringCollection ATemplateOperators, TDBTransaction ATransaction, bool AWithCascDelete)
         {
             PFoundationProposalDetailAccess.DeleteUsingTemplate(ATemplateRow, ATemplateOperators, ATransaction);
         }
     }
-    
+
     /// auto generated
     public class PFoundationDeadlineCascading : TTypedDataAccess
     {
-        
         /// cascading delete
         public static void DeleteByPrimaryKey(Int64 AFoundationPartnerKey, Int32 AFoundationDeadlineKey, TDBTransaction ATransaction, bool AWithCascDelete)
         {
             PFoundationDeadlineAccess.DeleteByPrimaryKey(AFoundationPartnerKey, AFoundationDeadlineKey, ATransaction);
         }
-        
+
         /// cascading delete
         public static void DeleteUsingTemplate(PFoundationDeadlineRow ATemplateRow, StringCollection ATemplateOperators, TDBTransaction ATransaction, bool AWithCascDelete)
         {
             PFoundationDeadlineAccess.DeleteUsingTemplate(ATemplateRow, ATemplateOperators, ATransaction);
         }
     }
-    
+
     /// auto generated
     public class SWorkflowDefinitionCascading : TTypedDataAccess
     {
-        
         /// cascading delete
         public static void DeleteByPrimaryKey(Int32 AWorkflowId, TDBTransaction ATransaction, bool AWithCascDelete)
         {
@@ -10323,7 +9898,7 @@ namespace Ict.Petra.Shared.MCommon.Data.Cascading
             }
             SWorkflowDefinitionAccess.DeleteByPrimaryKey(AWorkflowId, ATransaction);
         }
-        
+
         /// cascading delete
         public static void DeleteUsingTemplate(SWorkflowDefinitionRow ATemplateRow, StringCollection ATemplateOperators, TDBTransaction ATransaction, bool AWithCascDelete)
         {
@@ -10358,79 +9933,74 @@ namespace Ict.Petra.Shared.MCommon.Data.Cascading
             SWorkflowDefinitionAccess.DeleteUsingTemplate(ATemplateRow, ATemplateOperators, ATransaction);
         }
     }
-    
+
     /// auto generated
     public class SWorkflowUserCascading : TTypedDataAccess
     {
-        
         /// cascading delete
         public static void DeleteByPrimaryKey(Int32 AWorkflowId, String AUserId, TDBTransaction ATransaction, bool AWithCascDelete)
         {
             SWorkflowUserAccess.DeleteByPrimaryKey(AWorkflowId, AUserId, ATransaction);
         }
-        
+
         /// cascading delete
         public static void DeleteUsingTemplate(SWorkflowUserRow ATemplateRow, StringCollection ATemplateOperators, TDBTransaction ATransaction, bool AWithCascDelete)
         {
             SWorkflowUserAccess.DeleteUsingTemplate(ATemplateRow, ATemplateOperators, ATransaction);
         }
     }
-    
+
     /// auto generated
     public class SWorkflowGroupCascading : TTypedDataAccess
     {
-        
         /// cascading delete
         public static void DeleteByPrimaryKey(Int32 AWorkflowId, String AGroupId, Int64 AGroupUnitKey, TDBTransaction ATransaction, bool AWithCascDelete)
         {
             SWorkflowGroupAccess.DeleteByPrimaryKey(AWorkflowId, AGroupId, AGroupUnitKey, ATransaction);
         }
-        
+
         /// cascading delete
         public static void DeleteUsingTemplate(SWorkflowGroupRow ATemplateRow, StringCollection ATemplateOperators, TDBTransaction ATransaction, bool AWithCascDelete)
         {
             SWorkflowGroupAccess.DeleteUsingTemplate(ATemplateRow, ATemplateOperators, ATransaction);
         }
     }
-    
+
     /// auto generated
     public class SWorkflowStepCascading : TTypedDataAccess
     {
-        
         /// cascading delete
         public static void DeleteByPrimaryKey(Int32 AWorkflowId, Int32 AStepNumber, TDBTransaction ATransaction, bool AWithCascDelete)
         {
             SWorkflowStepAccess.DeleteByPrimaryKey(AWorkflowId, AStepNumber, ATransaction);
         }
-        
+
         /// cascading delete
         public static void DeleteUsingTemplate(SWorkflowStepRow ATemplateRow, StringCollection ATemplateOperators, TDBTransaction ATransaction, bool AWithCascDelete)
         {
             SWorkflowStepAccess.DeleteUsingTemplate(ATemplateRow, ATemplateOperators, ATransaction);
         }
     }
-    
+
     /// auto generated
     public class SFunctionRelationshipCascading : TTypedDataAccess
     {
-        
         /// cascading delete
         public static void DeleteByPrimaryKey(String AFunction1, String AFunction2, TDBTransaction ATransaction, bool AWithCascDelete)
         {
             SFunctionRelationshipAccess.DeleteByPrimaryKey(AFunction1, AFunction2, ATransaction);
         }
-        
+
         /// cascading delete
         public static void DeleteUsingTemplate(SFunctionRelationshipRow ATemplateRow, StringCollection ATemplateOperators, TDBTransaction ATransaction, bool AWithCascDelete)
         {
             SFunctionRelationshipAccess.DeleteUsingTemplate(ATemplateRow, ATemplateOperators, ATransaction);
         }
     }
-    
+
     /// auto generated
     public class SWorkflowInstanceCascading : TTypedDataAccess
     {
-        
         /// cascading delete
         public static void DeleteByPrimaryKey(Int32 AWorkflowInstanceId, TDBTransaction ATransaction, bool AWithCascDelete)
         {
@@ -10446,7 +10016,7 @@ namespace Ict.Petra.Shared.MCommon.Data.Cascading
             }
             SWorkflowInstanceAccess.DeleteByPrimaryKey(AWorkflowInstanceId, ATransaction);
         }
-        
+
         /// cascading delete
         public static void DeleteUsingTemplate(SWorkflowInstanceRow ATemplateRow, StringCollection ATemplateOperators, TDBTransaction ATransaction, bool AWithCascDelete)
         {
@@ -10463,28 +10033,26 @@ namespace Ict.Petra.Shared.MCommon.Data.Cascading
             SWorkflowInstanceAccess.DeleteUsingTemplate(ATemplateRow, ATemplateOperators, ATransaction);
         }
     }
-    
+
     /// auto generated
     public class SWorkflowInstanceStepCascading : TTypedDataAccess
     {
-        
         /// cascading delete
         public static void DeleteByPrimaryKey(Int32 AWorkflowInstanceId, Int32 AStepNumber, TDBTransaction ATransaction, bool AWithCascDelete)
         {
             SWorkflowInstanceStepAccess.DeleteByPrimaryKey(AWorkflowInstanceId, AStepNumber, ATransaction);
         }
-        
+
         /// cascading delete
         public static void DeleteUsingTemplate(SWorkflowInstanceStepRow ATemplateRow, StringCollection ATemplateOperators, TDBTransaction ATransaction, bool AWithCascDelete)
         {
             SWorkflowInstanceStepAccess.DeleteUsingTemplate(ATemplateRow, ATemplateOperators, ATransaction);
         }
     }
-    
+
     /// auto generated
     public class PFileInfoCascading : TTypedDataAccess
     {
-        
         /// cascading delete
         public static void DeleteByPrimaryKey(Int64 AKey, TDBTransaction ATransaction, bool AWithCascDelete)
         {
@@ -10542,7 +10110,7 @@ namespace Ict.Petra.Shared.MCommon.Data.Cascading
             }
             PFileInfoAccess.DeleteByPrimaryKey(AKey, ATransaction);
         }
-        
+
         /// cascading delete
         public static void DeleteUsingTemplate(PFileInfoRow ATemplateRow, StringCollection ATemplateOperators, TDBTransaction ATransaction, bool AWithCascDelete)
         {
@@ -10601,113 +10169,106 @@ namespace Ict.Petra.Shared.MCommon.Data.Cascading
             PFileInfoAccess.DeleteUsingTemplate(ATemplateRow, ATemplateOperators, ATransaction);
         }
     }
-    
+
     /// auto generated
     public class PPartnerFileCascading : TTypedDataAccess
     {
-        
         /// cascading delete
         public static void DeleteByPrimaryKey(Int64 AFileInfoKey, TDBTransaction ATransaction, bool AWithCascDelete)
         {
             PPartnerFileAccess.DeleteByPrimaryKey(AFileInfoKey, ATransaction);
         }
-        
+
         /// cascading delete
         public static void DeleteUsingTemplate(PPartnerFileRow ATemplateRow, StringCollection ATemplateOperators, TDBTransaction ATransaction, bool AWithCascDelete)
         {
             PPartnerFileAccess.DeleteUsingTemplate(ATemplateRow, ATemplateOperators, ATransaction);
         }
     }
-    
+
     /// auto generated
     public class PmPersonFileCascading : TTypedDataAccess
     {
-        
         /// cascading delete
         public static void DeleteByPrimaryKey(Int64 AFileInfoKey, TDBTransaction ATransaction, bool AWithCascDelete)
         {
             PmPersonFileAccess.DeleteByPrimaryKey(AFileInfoKey, ATransaction);
         }
-        
+
         /// cascading delete
         public static void DeleteUsingTemplate(PmPersonFileRow ATemplateRow, StringCollection ATemplateOperators, TDBTransaction ATransaction, bool AWithCascDelete)
         {
             PmPersonFileAccess.DeleteUsingTemplate(ATemplateRow, ATemplateOperators, ATransaction);
         }
     }
-    
+
     /// auto generated
     public class PPartnerContactFileCascading : TTypedDataAccess
     {
-        
         /// cascading delete
         public static void DeleteByPrimaryKey(Int64 AFileInfoKey, TDBTransaction ATransaction, bool AWithCascDelete)
         {
             PPartnerContactFileAccess.DeleteByPrimaryKey(AFileInfoKey, ATransaction);
         }
-        
+
         /// cascading delete
         public static void DeleteUsingTemplate(PPartnerContactFileRow ATemplateRow, StringCollection ATemplateOperators, TDBTransaction ATransaction, bool AWithCascDelete)
         {
             PPartnerContactFileAccess.DeleteUsingTemplate(ATemplateRow, ATemplateOperators, ATransaction);
         }
     }
-    
+
     /// auto generated
     public class PmDocumentFileCascading : TTypedDataAccess
     {
-        
         /// cascading delete
         public static void DeleteByPrimaryKey(Int64 AFileInfoKey, TDBTransaction ATransaction, bool AWithCascDelete)
         {
             PmDocumentFileAccess.DeleteByPrimaryKey(AFileInfoKey, ATransaction);
         }
-        
+
         /// cascading delete
         public static void DeleteUsingTemplate(PmDocumentFileRow ATemplateRow, StringCollection ATemplateOperators, TDBTransaction ATransaction, bool AWithCascDelete)
         {
             PmDocumentFileAccess.DeleteUsingTemplate(ATemplateRow, ATemplateOperators, ATransaction);
         }
     }
-    
+
     /// auto generated
     public class PmApplicationFileCascading : TTypedDataAccess
     {
-        
         /// cascading delete
         public static void DeleteByPrimaryKey(Int64 AFileInfoKey, TDBTransaction ATransaction, bool AWithCascDelete)
         {
             PmApplicationFileAccess.DeleteByPrimaryKey(AFileInfoKey, ATransaction);
         }
-        
+
         /// cascading delete
         public static void DeleteUsingTemplate(PmApplicationFileRow ATemplateRow, StringCollection ATemplateOperators, TDBTransaction ATransaction, bool AWithCascDelete)
         {
             PmApplicationFileAccess.DeleteUsingTemplate(ATemplateRow, ATemplateOperators, ATransaction);
         }
     }
-    
+
     /// auto generated
     public class PmApplicationFormsFileCascading : TTypedDataAccess
     {
-        
         /// cascading delete
         public static void DeleteByPrimaryKey(Int64 AFileInfoKey, TDBTransaction ATransaction, bool AWithCascDelete)
         {
             PmApplicationFormsFileAccess.DeleteByPrimaryKey(AFileInfoKey, ATransaction);
         }
-        
+
         /// cascading delete
         public static void DeleteUsingTemplate(PmApplicationFormsFileRow ATemplateRow, StringCollection ATemplateOperators, TDBTransaction ATransaction, bool AWithCascDelete)
         {
             PmApplicationFormsFileAccess.DeleteUsingTemplate(ATemplateRow, ATemplateOperators, ATransaction);
         }
     }
-    
+
     /// auto generated
     public class SVolumeCascading : TTypedDataAccess
     {
-        
         /// cascading delete
         public static void DeleteByPrimaryKey(String AName, TDBTransaction ATransaction, bool AWithCascDelete)
         {
@@ -10735,7 +10296,7 @@ namespace Ict.Petra.Shared.MCommon.Data.Cascading
             }
             SVolumeAccess.DeleteByPrimaryKey(AName, ATransaction);
         }
-        
+
         /// cascading delete
         public static void DeleteUsingTemplate(SVolumeRow ATemplateRow, StringCollection ATemplateOperators, TDBTransaction ATransaction, bool AWithCascDelete)
         {
@@ -10764,28 +10325,26 @@ namespace Ict.Petra.Shared.MCommon.Data.Cascading
             SVolumeAccess.DeleteUsingTemplate(ATemplateRow, ATemplateOperators, ATransaction);
         }
     }
-    
+
     /// auto generated
     public class SDefaultFileVolumeCascading : TTypedDataAccess
     {
-        
         /// cascading delete
         public static void DeleteByPrimaryKey(String AGroupName, String AArea, TDBTransaction ATransaction, bool AWithCascDelete)
         {
             SDefaultFileVolumeAccess.DeleteByPrimaryKey(AGroupName, AArea, ATransaction);
         }
-        
+
         /// cascading delete
         public static void DeleteUsingTemplate(SDefaultFileVolumeRow ATemplateRow, StringCollection ATemplateOperators, TDBTransaction ATransaction, bool AWithCascDelete)
         {
             SDefaultFileVolumeAccess.DeleteUsingTemplate(ATemplateRow, ATemplateOperators, ATransaction);
         }
     }
-    
+
     /// auto generated
     public class SVolumePartnerGroupCascading : TTypedDataAccess
     {
-        
         /// cascading delete
         public static void DeleteByPrimaryKey(String AName, TDBTransaction ATransaction, bool AWithCascDelete)
         {
@@ -10807,7 +10366,7 @@ namespace Ict.Petra.Shared.MCommon.Data.Cascading
             }
             SVolumePartnerGroupAccess.DeleteByPrimaryKey(AName, ATransaction);
         }
-        
+
         /// cascading delete
         public static void DeleteUsingTemplate(SVolumePartnerGroupRow ATemplateRow, StringCollection ATemplateOperators, TDBTransaction ATransaction, bool AWithCascDelete)
         {
@@ -10830,34 +10389,32 @@ namespace Ict.Petra.Shared.MCommon.Data.Cascading
             SVolumePartnerGroupAccess.DeleteUsingTemplate(ATemplateRow, ATemplateOperators, ATransaction);
         }
     }
-    
+
     /// auto generated
     public class SVolumePartnerGroupPartnerCascading : TTypedDataAccess
     {
-        
         /// cascading delete
         public static void DeleteByPrimaryKey(String AGroupName, Int64 APartnerKey, TDBTransaction ATransaction, bool AWithCascDelete)
         {
             SVolumePartnerGroupPartnerAccess.DeleteByPrimaryKey(AGroupName, APartnerKey, ATransaction);
         }
-        
+
         /// cascading delete
         public static void DeleteUsingTemplate(SVolumePartnerGroupPartnerRow ATemplateRow, StringCollection ATemplateOperators, TDBTransaction ATransaction, bool AWithCascDelete)
         {
             SVolumePartnerGroupPartnerAccess.DeleteUsingTemplate(ATemplateRow, ATemplateOperators, ATransaction);
         }
     }
-    
+
     /// auto generated
     public class SGroupFileInfoCascading : TTypedDataAccess
     {
-        
         /// cascading delete
         public static void DeleteByPrimaryKey(String AGroupId, Int64 AGroupUnitKey, Int64 AFileInfoKey, TDBTransaction ATransaction, bool AWithCascDelete)
         {
             SGroupFileInfoAccess.DeleteByPrimaryKey(AGroupId, AGroupUnitKey, AFileInfoKey, ATransaction);
         }
-        
+
         /// cascading delete
         public static void DeleteUsingTemplate(SGroupFileInfoRow ATemplateRow, StringCollection ATemplateOperators, TDBTransaction ATransaction, bool AWithCascDelete)
         {

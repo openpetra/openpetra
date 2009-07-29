@@ -25,6 +25,7 @@
  ************************************************************************/
 using System;
 using System.Collections;
+using System.Collections.Specialized;
 using System.Xml;
 using System.IO;
 using System.Text.RegularExpressions;
@@ -41,6 +42,7 @@ namespace Ict.Tools.CodeGeneration
         public String FTemplateCode = "";
         public String FDestinationFile = "";
         public SortedList FCodelets = new SortedList();
+        public SortedList FSnippets = new SortedList();
 
         public ProcessTemplate()
         {
@@ -57,9 +59,50 @@ namespace Ict.Tools.CodeGeneration
             StreamReader r;
             r = File.OpenText(AFullPath);
             FTemplateCode = r.ReadToEnd();
+            
+            // split off snippets (identified by "{##")
+            if (FTemplateCode.Contains("{##"))
+            {
+                StringCollection snippets = StringHelper.StrSplit(FTemplateCode, "{##");
+                
+                // first part is the actual template code
+                FTemplateCode = snippets[0];
+
+                for (int counter = 1; counter < snippets.Count; counter ++)
+                {
+                    string snippetName = snippets[counter].Substring(0, snippets[counter].IndexOf("}"));
+                    string snippetText = snippets[counter].Substring(snippets[counter].IndexOf(Environment.NewLine));
+                    FSnippets.Add(snippetName, snippetText);
+                }
+            }
+            
             r.Close();
         }
 
+        /// <summary>
+        /// get the specified snippet, in a new Template
+        /// </summary>
+        /// <param name="ASnippetName"></param>
+        /// <returns></returns>
+        public ProcessTemplate GetSnippet(string ASnippetName)
+        {
+            ProcessTemplate snippetTemplate = new ProcessTemplate();
+            snippetTemplate.FTemplateCode = (string)FSnippets[ASnippetName];
+            snippetTemplate.FSnippets = this.FSnippets;
+            return snippetTemplate;
+        }
+        
+        /// <summary>
+        /// insert the snippet into the current template, into the given codelet
+        /// </summary>
+        /// <param name="ACodeletName"></param>
+        /// <param name="ASnippet"></param>
+        public void InsertSnippet(string ACodeletName, ProcessTemplate ASnippet)
+        {
+            ASnippet.ReplaceCodelets();
+            AddToCodelet(ACodeletName, ASnippet.FTemplateCode);
+        }
+        
         // check if all placeholders have been replaced in the template; ignore IFDEF
         public Boolean CheckTemplateCompletion(string s)
         {
@@ -108,21 +151,72 @@ namespace Ict.Tools.CodeGeneration
                         Environment.NewLine + "We are missing the ENDIF for: " + name);
                 }
 
-                string before = s.Substring(0, posPlaceholder - 1);
-                string after = s.Substring(s.IndexOf("}", posPlaceholderAfter) + 1);
-
-                if (before.EndsWith(Environment.NewLine) || after.StartsWith(Environment.NewLine))
-                {
-                    before = before.Substring(0, before.Length - Environment.NewLine.Length + 1);
-                }
+                string before = s.Substring(0, s.LastIndexOf(Environment.NewLine, posPlaceholder + 1));
+                string after = s.Substring(s.IndexOf(Environment.NewLine, posPlaceholderAfter));
 
                 s = before + after;
+                    
                 posPlaceholder = s.IndexOf("{#IFDEF ");
             }
 
             return s;
         }
 
+        public string RemoveDefinedIFNDEF(string s, string APlaceHolderName)
+        {
+            int posPlaceholder = s.IndexOf("{#IFNDEF " + APlaceHolderName + "}");
+
+            while (posPlaceholder > -1)
+            {
+                int posPlaceholderAfter = s.IndexOf("{#ENDIFN " + APlaceHolderName + "}");
+
+                if (posPlaceholderAfter == -1)
+                {
+                    Console.WriteLine("problem in area: " + Environment.NewLine +
+                                      s.Substring(posPlaceholder - 200, 500));
+                    throw new Exception("The template has a bug. " +
+                        Environment.NewLine + "We are missing the ENDIFN for: " + APlaceHolderName);
+                }
+
+                string before = s.Substring(0, s.LastIndexOf(Environment.NewLine, posPlaceholder + 1));
+                string after = s.Substring(s.IndexOf(Environment.NewLine, posPlaceholderAfter));
+
+                s = before + after;
+                    
+                posPlaceholder = s.IndexOf("{#IFNDEF " + APlaceHolderName + "}");
+            }
+
+            return s;
+        }
+        
+        public string ActivateDefinedIFDEF(string s, string APlaceholder)
+        {
+            s = s.Replace("{#IFDEF " + APlaceholder + "}" + Environment.NewLine, "");
+            s = s.Replace("{#IFDEF " + APlaceholder + "}", "");
+            s = s.Replace("{#ENDIF " + APlaceholder + "}" + Environment.NewLine, "");
+            s = s.Replace("{#ENDIF " + APlaceholder + "}", "");
+            return s;
+        }
+
+        public string ActivateUndefinedIFNDEFs(string s)
+        {
+            int posPlaceholder = s.IndexOf("{#IFNDEF ");
+
+            while (posPlaceholder > -1)
+            {
+                string name = s.Substring(posPlaceholder + 9, s.IndexOf("}", posPlaceholder) - posPlaceholder - 9);
+                
+                s = s.Replace("{#IFNDEF " + name + "}" + Environment.NewLine, "");
+                s = s.Replace("{#IFNDEF " + name + "}", "");
+                s = s.Replace("{#ENDIFN " + name + "}" + Environment.NewLine, "");
+                s = s.Replace("{#ENDIFN " + name + "}", "");
+
+                posPlaceholder = s.IndexOf("{#IFNDEF " + name + "}");
+            }
+
+            return s;
+        }
+        
         private int GetNextParameterisedTemplate(string APlaceholder, int posPlaceholder, ref ArrayList result)
         {
             int posEndPlaceholder = FTemplateCode.IndexOf("}", posPlaceholder);
@@ -217,6 +311,29 @@ namespace Ict.Tools.CodeGeneration
             return FCodelets.GetByIndex(index).ToString();
         }
 
+        /// <summary>
+        /// add code to existing code that will be replaced later
+        /// </summary>
+        /// <param name="APlaceholder"></param>
+        /// <param name="ACodelet"></param>
+        /// <param name="AAddDuplicates"></param>
+        /// <returns></returns>
+        public string AddToCodelet(string APlaceholder, string ACodelet, bool AAddDuplicates)
+        {
+            if (!FCodelets.ContainsKey(APlaceholder + FCodeletPostfix))
+            {
+                FCodelets.Add(APlaceholder + FCodeletPostfix, "");
+            }
+
+            int index = FCodelets.IndexOfKey(APlaceholder + FCodeletPostfix);
+            if (!AAddDuplicates && FCodelets.GetByIndex(index).ToString().Contains(ACodelet))
+            {
+                return FCodelets.GetByIndex(index).ToString();
+            }
+            FCodelets.SetByIndex(index, FCodelets.GetByIndex(index) + ACodelet);
+            return FCodelets.GetByIndex(index).ToString();
+        }
+        
         // create a new codelet, overwrites existing one
         public string SetCodelet(string APlaceholder, string ACodelet)
         {
@@ -298,44 +415,45 @@ namespace Ict.Tools.CodeGeneration
                     AValue = "";
                 }
 
-                FTemplateCode = FTemplateCode.Replace("{#IFDEF " + APlaceholder + "}" + Environment.NewLine, "");
-                FTemplateCode = FTemplateCode.Replace("{#IFDEF " + APlaceholder + "}", "");
-                FTemplateCode = FTemplateCode.Replace(Environment.NewLine + "{#ENDIF " + APlaceholder + "}", "");
-                FTemplateCode = FTemplateCode.Replace("{#ENDIF " + APlaceholder + "}", "");
+                if (AValue.Length > 0)
+                {
+                    FTemplateCode = ActivateDefinedIFDEF(FTemplateCode, APlaceholder);
+                    FTemplateCode = RemoveDefinedIFNDEF(FTemplateCode, APlaceholder);
+                }
 
                 // automatically indent to the same indentation as the placeholder
                 int posPlaceholder = FTemplateCode.IndexOf("{#" + APlaceholder + "}");
 
-                if (posPlaceholder < 1)
+                if (posPlaceholder < 0)
                 {
                     return false; // place holder cannot be found, so no replacement necessary
                 }
 
-                int posNewline = FTemplateCode.LastIndexOf(Environment.NewLine, posPlaceholder);
-                string whitespaces = "";
-
-                if (posNewline != -1)
+                string placeHolderLine = FTemplateCode.Substring(FTemplateCode.LastIndexOf(Environment.NewLine, posPlaceholder + 1) + Environment.NewLine.Length + 1);
+                placeHolderLine = placeHolderLine.Substring(0, placeHolderLine.IndexOf(Environment.NewLine));
+                if (placeHolderLine.Trim() == "{#" + APlaceholder + "}")
                 {
-                    whitespaces = FTemplateCode.Substring(posNewline, posPlaceholder - posNewline);
-                }
-
-                // only indent if the placeholder is at the beginning of a line
-                if (whitespaces.Trim().Length == 0)
-                {
+                    // replace the whole line
+                    int posNewline = FTemplateCode.LastIndexOf(Environment.NewLine, posPlaceholder + 1);
+                    string before = FTemplateCode.Substring(0, posNewline);
+                    string after = FTemplateCode.Substring(FTemplateCode.IndexOf(Environment.NewLine, posPlaceholder + 1));
+    
+                    // indent the value by the given whitespaces
+                    string whitespaces = FTemplateCode.Substring(posNewline, posPlaceholder - posNewline);
                     AValue = AValue.Replace(Environment.NewLine, whitespaces);
+                    if (!AValue.StartsWith(Environment.NewLine))
+                    {
+                        AValue = whitespaces + AValue;
+                    }
+                    
+                    FTemplateCode = before + AValue + after;
                 }
-
-                // if there is a newline after the place holder, make sure that there is no 2 newlines in the end
-                // remove the newline from the value if there is one at the end of value
-                posNewline = FTemplateCode.IndexOf(Environment.NewLine, posPlaceholder);
-                int LengthBrackets = 3; // {# }
-
-                if (posNewline == posPlaceholder + LengthBrackets + APlaceholder.Length)
+                else
                 {
-                    AValue = AValue.TrimEnd();
+                    // replace just the placeholder
+                    FTemplateCode = FTemplateCode.Replace("{#" + APlaceholder + "}", AValue);
                 }
 
-                FTemplateCode = FTemplateCode.Replace("{#" + APlaceholder + "}", AValue);
                 return true;
             }
 
@@ -402,6 +520,7 @@ namespace Ict.Tools.CodeGeneration
         {
             ReplaceCodelets();
             FTemplateCode = RemoveUndefinedIFDEFs(FTemplateCode);
+            FTemplateCode = ActivateUndefinedIFNDEFs(FTemplateCode);
             FTemplateCode = BeautifyCode(FTemplateCode);
             FDestinationFile = System.IO.Path.GetDirectoryName(AXAMLFilename) +
                                System.IO.Path.DirectorySeparatorChar +

@@ -69,8 +69,7 @@ namespace Ict.Tools.CodeGeneration
             return ReturnValue;
         }
 
-        // convert the type from the xml file to an ODBC type
-
+        /// convert the type from the xml file to an ODBC type
         public static CodeExpression ToOdbcType(TTableField tableField)
         {
             CodeExpression ReturnValue;
@@ -103,8 +102,36 @@ namespace Ict.Tools.CodeGeneration
             return ReturnValue;
         }
 
-        // convert a list of fields to an array of expressions, StringCollection
-
+        /// convert the type from the xml file to an ODBC type
+        public static string ToOdbcTypeString(TTableField tableField)
+        {
+            if (tableField.strType == "number")
+            {
+                return "OdbcType.Decimal";
+            }
+            else if (tableField.strType == "varchar")
+            {
+                return "OdbcType.VarChar";
+            }
+            else if (tableField.strType == "bit")
+            {
+                return "OdbcType.Bit";
+            }
+            else if (tableField.strType == "date")
+            {
+                return "OdbcType.Date";
+            }
+            else if (tableField.strType == "integer")
+            {
+                return "OdbcType.Int";
+            }
+            else
+            {
+                return "OdbcType.Int";
+            }
+        }
+        
+        /// convert a list of fields to an array of expressions, StringCollection
         public static CodeExpression[] FieldListToStringExpressionArray(TDataSetTable table, StringCollection fields)
         {
             ArrayList fieldNames;
@@ -145,8 +172,7 @@ namespace Ict.Tools.CodeGeneration
             return (CodeExpression[])fieldNames.ToArray(typeof(CodePrimitiveExpression));
         }
 
-        // convert a list of fields to an array of expressions
-
+        /// convert a list of fields to an array of expressions
         public static CodeExpression[] FieldListToExpressionArray(TDataSetTable table, StringCollection fields)
         {
             ArrayList fieldNames;
@@ -161,8 +187,7 @@ namespace Ict.Tools.CodeGeneration
             return (CodeExpression[])fieldNames.ToArray(typeof(CodePropertyReferenceExpression));
         }
 
-        // convert a list of fields to an array of expressions
-
+        /// convert a list of fields to an array of expressions
         public static CodeExpression[] FieldListToExpressionArray(TTable table, StringCollection fields)
         {
             ArrayList fieldNames;
@@ -177,8 +202,7 @@ namespace Ict.Tools.CodeGeneration
             return (CodeExpression[])fieldNames.ToArray(typeof(CodeFieldReferenceExpression));
         }
 
-        // convert a list of custom fields to an array of expressions; not using table nice names
-
+        /// convert a list of custom fields to an array of expressions; not using table nice names
         public static CodeExpression[] FieldListToExpressionArray(StringCollection fields)
         {
             ArrayList fieldNames;
@@ -193,8 +217,7 @@ namespace Ict.Tools.CodeGeneration
             return (CodeExpression[])fieldNames.ToArray(typeof(CodeFieldReferenceExpression));
         }
 
-        // using declarations
-
+        /// using declarations
         public static void AddImports(CodeNamespace cns)
         {
             cns.Imports.Add(new CodeNamespaceImport("System"));

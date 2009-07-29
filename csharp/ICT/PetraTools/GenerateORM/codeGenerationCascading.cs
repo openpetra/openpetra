@@ -41,441 +41,165 @@ namespace Ict.Tools.CodeGeneration.DataStore
     public class codeGenerationCascading
     {
         /// to avoid huge cascading deletes, which we will probably not allow anyways (e.g. s_user)
-        public const Int32 CASCADING_DELETE_MAX_REFERENCES = 10;
+        public const Int32 CASCADING_DELETE_MAX_REFERENCES = 9;
 
-        public static CodeMemberMethod CreateDeleteByPrimaryKeyCascading(CodeNamespace ACns,
-            TDataDefinitionStore AStore,
-            TTable ATable,
-            string ATypedTableName)
+        private static void PrepareCodeletsPrimaryKey(
+                TTable ACurrentTable,
+                out string csvListPrimaryKeyFields,
+                out string formalParametersPrimaryKey,
+                out string actualParametersPrimaryKey)
         {
-            CodeMemberMethod myCode;
-            String MyTable;
-            CodeExpression TheRow;
+            csvListPrimaryKeyFields = "";
+            formalParametersPrimaryKey = "";
+            actualParametersPrimaryKey = "";
+            int counterPrimaryKeyField = 0;
 
-            CodeStatement[] loopContentTable;
-            ArrayList StatementList;
-            StringCollection LocalVariables;
-            String LoadViaProcedureName;
-            String DifferentField;
-            myCode = new CodeMemberMethod();
-            myCode.Name = "DeleteByPrimaryKey";
-            myCode.Comments.Add(new CodeCommentStatement("cascading delete", true));
-            myCode.Attributes = MemberAttributes.Static | MemberAttributes.Public;
-            codeGenerationAccess.AddPrimaryKeyParameters(myCode, ATable);
-            myCode.Parameters.Add(CodeDom.Param("TDBTransaction", "ATransaction"));
-            myCode.Parameters.Add(CodeDom.Param("System.Boolean", "AWithCascDelete"));
-            StatementList = new ArrayList();
-            LocalVariables = new StringCollection();
-
-            foreach (TConstraint constraint in ATable.FReferenced)
+            if (!ACurrentTable.HasPrimaryKey())
             {
-                if (AStore.GetTable(constraint.strThisTable).HasPrimaryKey())
-                {
-                    codeGenerationAccess.AddDifferentNamespace(ACns, AStore.GetTable(constraint.strThisTable).strGroup, ATable.strGroup);
-                    MyTable = "My" + TTable.NiceTableName(constraint.strThisTable) + "Table";
-
-                    if (!LocalVariables.Contains(MyTable))
-                    {
-                        StatementList.Add(CodeDom.VarDecl(TTable.NiceTableName(constraint.strThisTable) + "Table", MyTable,
-                                CodeDom._Const(null)));
-                        LocalVariables.Add(MyTable);
-                    }
-
-                    // check if other foreign key exists that references the same table, e.g.
-                    // PBankAccess.LoadViaPPartnerPartnerKey
-                    // PBankAccess.LoadViaPPartnerContactPartnerKey
-                    DifferentField = codeGenerationAccess.FindOtherConstraintSameOtherTable(AStore.GetTable(
-                            constraint.strThisTable).
-                        grpConstraint.List, constraint);
-                    LoadViaProcedureName = ATypedTableName;
-
-                    if (DifferentField.Length != 0)
-                    {
-                        LoadViaProcedureName = ATypedTableName + TTable.NiceFieldName(DifferentField);
-                    }
-
-                    // get all rows of the table that reference the row that should be deleted
-                    StatementList.Add(CodeDom.Eval(CodeDom.MethodInvoke(CodeDom.Local(TTable.NiceTableName(constraint.strThisTable) +
-                                    "Access"), "LoadVia" + LoadViaProcedureName,
-                                codeGenerationAccess.GetActualParameters(new
-                                    CodeDirectionExpression(
-                                        FieldDirection.
-                                        Out,
-                                        CodeDom
-                                        .
-                                        Local(MyTable)),
-                                    CodeDom.
-                                    GlobalMethodInvoke(
-                                        "StringHelper.StrSplit", new CodeExpression[]
-                                        {
-                                            CodeDom
-                                            .
-                                            _Const(
-                                                StringHelper
-                                                .
-                                                StrMerge(AStore.GetTable(constraint.strThisTable).GetPrimaryKey().
-                                                    strThisFields,
-                                                    ",")),
-                                            CodeDom
-                                            .
-                                            _Const((
-                                                    String)(",")
-                                                )
-                                        }),
-                                    CodeDom.Local(
-                                        "ATransaction"),
-                                    ATable
-                                    ))));
-                    TheRow = CodeDom.IndexerRef(CodeDom.Local(MyTable), new CodeExpression[] { CodeDom.Local("countRow") });
-
-                    if (AStore.GetTable(constraint.strThisTable).FReferenced.Count < CASCADING_DELETE_MAX_REFERENCES)
-                    {
-                        loopContentTable = new CodeStatement[]
-                        {
-                            CodeDom.Eval(CodeDom.MethodInvoke(CodeDom.Local(TTable.NiceTableName(constraint.strThisTable) + "Cascading"),
-                                    "DeleteUsingTemplate", new CodeExpression[]
-                                    { TheRow, CodeDom._Const(null), CodeDom.Local("ATransaction"),
-                                      CodeDom.Local("AWithCascDelete"
-                                          ) }))
-                        };
-                    }
-                    else
-                    {
-                        loopContentTable = new CodeStatement[]
-                        {
-                            CodeDom.Eval(CodeDom.MethodInvoke(CodeDom.Local(TTable.NiceTableName(constraint.strThisTable) + "Access"),
-                                    "DeleteUsingTemplate", new CodeExpression[]
-                                    { TheRow, CodeDom._Const(null), CodeDom.Local("ATransaction") }))
-                        };
-                    }
-
-                    // Result.Statements.Add(CodeSnippetStatement.Create('for theRow in ATable do'));
-                    StatementList.Add(new CodeIterationStatement(CodeDom.Let(CodeDom.Local("countRow"),
-                                CodeDom._Const((System.Object) 0)),
-                            CodeDom.Inequals(CodeDom.Local("countRow"),
-                                CodeDom.PropRef(CodeDom.PropRef(CodeDom.Local(MyTable),
-                                        "Rows"),
-                                    "Count")),
-                            CodeDom.Let(CodeDom.Local("countRow"),
-                                new CodeBinaryOperatorExpression(CodeDom.Local("countRow"),
-                                    CodeBinaryOperatorType.Add,
-                                    CodeDom._Const((System.
-                                                    Object)(1)))),
-                            loopContentTable));
-
-                    // countRow := 0
-                    // countRow <> Table.Rows.Count
-                    // countRow := countRow + 1
-                }
+                return;
             }
-
-            if (StatementList.Count > 0)
+            
+            foreach (string field in ACurrentTable.GetPrimaryKey().strThisFields)
             {
-                myCode.Statements.Add(CodeDom.VarDecl(typeof(System.Int32), "countRow", null));
-                myCode.Statements.Add(new CodeConditionStatement(
-                        CodeDom.Equals(CodeDom.Local("AWithCascDelete"),
-                            CodeDom._Const((System.Object)true)),
-                        CodeDom.MakeCodeStatementArray(StatementList), new CodeStatement[] { }));
-            }
-
-            myCode.Statements.Add(CodeDom.Eval(CodeDom.MethodInvoke(CodeDom.Local(ATypedTableName + "Access"), "DeleteByPrimaryKey",
-                        codeGenerationAccess.GetActualParameters(null, null,
-                            CodeDom.Local("ATransaction"),
-                            ATable))));
-            return myCode;
-        }
-
-        public static CodeMemberMethod CreateDeleteUsingTemplateCascading(TDataDefinitionStore AStore, TTable ATable, string ATypedTableName)
-        {
-            CodeMemberMethod myCode;
-            String MyTable;
-            CodeExpression TheRow;
-
-            CodeStatement[] loopContentTable;
-            ArrayList StatementList;
-            ArrayList DeleteAllReferencingThisPrimaryKey;
-            StringCollection LocalVariables;
-            String LoadViaProcedureName;
-            String DifferentField;
-            myCode = new CodeMemberMethod();
-            myCode.Name = "DeleteUsingTemplate";
-            myCode.Comments.Add(new CodeCommentStatement("cascading delete", true));
-            myCode.Attributes = MemberAttributes.Static | MemberAttributes.Public;
-            myCode.Parameters.Add(CodeDom.Param(ATypedTableName + "Row", "ATemplateRow"));
-            myCode.Parameters.Add(CodeDom.Param("StringCollection", "ATemplateOperators"));
-            myCode.Parameters.Add(CodeDom.Param("TDBTransaction", "ATransaction"));
-            myCode.Parameters.Add(CodeDom.Param("System.Boolean", "AWithCascDelete"));
-            StatementList = new ArrayList();
-
-            /*
-             * // get the rows (primary key values only) that would be deleted
-             * // loadusingtemplate
-             * StatementList.Add (
-             * VarDecl(ATypedTableName+'Table', 'MyTable',
-             * CodeDom._Const(nil)));
-             * StatementList.Add (
-             * Eval(CodeDom.MethodInvoke(CodeDom.Local(ATypedTableName+'Access'),
-             * 'LoadUsingTemplate',
-             * CodeExpression[].Create(CodeDom.Local('MyTable'), CodeDom.Local('ATemplateRow'),
-             *   CodeDom.GlobalMethodInvoke('StringHelper.StrSplit',
-             *       CodeExpression[].Create(
-             *           CodeDom._Const(strmerge(ATable.GetPrimaryKey().strThisFields, ',')),
-             *           CodeDom._Const(','))),
-             *   CodeDom.Local('ATransaction')))));
-             * myCode.Statements.Add( VarDecl(typeof(System.Int32), 'countTemplateRow', nil));
-             */
-            LocalVariables = new StringCollection();
-
-            // for each row, delete the rows in the depending tables
-            foreach (TConstraint constraint in ATable.FReferenced)
-            {
-                if (AStore.GetTable(constraint.strThisTable).HasPrimaryKey())
+                if (counterPrimaryKeyField > 0)
                 {
-                    MyTable = "My" + TTable.NiceTableName(constraint.strThisTable) + "Table";
-
-                    if (!LocalVariables.Contains(MyTable))
-                    {
-                        StatementList.Add(CodeDom.VarDecl(TTable.NiceTableName(constraint.strThisTable) + "Table", MyTable,
-                                CodeDom._Const(null)));
-                        LocalVariables.Add(MyTable);
-                    }
-
-                    DeleteAllReferencingThisPrimaryKey = new ArrayList();
-
-                    // check if other foreign key exists that references the same table, e.g.
-                    // PBankAccess.LoadViaPPartnerPartnerKey
-                    // PBankAccess.LoadViaPPartnerContactPartnerKey
-                    DifferentField = codeGenerationAccess.FindOtherConstraintSameOtherTable(AStore.GetTable(
-                            constraint.strThisTable).
-                        grpConstraint.List, constraint);
-                    LoadViaProcedureName = ATypedTableName;
-
-                    if (DifferentField.Length != 0)
-                    {
-                        LoadViaProcedureName = ATypedTableName + TTable.NiceFieldName(DifferentField);
-                    }
-
-                    // get all rows of the table that reference the row that should be deleted
-                    // DeleteAllReferencingThisPrimaryKey
-                    StatementList.Add(CodeDom.Eval(CodeDom.MethodInvoke(CodeDom.Local(TTable.NiceTableName(constraint.strThisTable) +
-                                    "Access"), "LoadVia" + LoadViaProcedureName +
-                                "Template", new CodeExpression[]
-                                { new CodeDirectionExpression(FieldDirection.Out,
-                                      CodeDom.Local(MyTable)),
-                                  CodeDom.Local("ATemplateRow"),
-                                  CodeDom.GlobalMethodInvoke("StringHelper.StrSplit",
-                                      new CodeExpression[]
-                                      {
-                                          CodeDom._Const(StringHelper.
-                                              StrMerge(
-                                                  AStore
-                                                  .
-                                                  GetTable(
-                                                      constraint.strThisTable).GetPrimaryKey().
-                                                  strThisFields,
-                                                  ",")),
-                                          CodeDom._Const((String)(",")
-                                              )
-                                      }),
-                                  CodeDom.Local("ATransaction"
-                                      ) })));
-
-                    // IndexerRef(CodeDom.PropRef(CodeDom.Local('MyTable'), 'Row'), CodeExpression[].Create(CodeDom.Local('countRow'))),
-                    TheRow = CodeDom.IndexerRef(CodeDom.Local(MyTable), new CodeExpression[] { CodeDom.Local("countRow") });
-
-                    if (AStore.GetTable(constraint.strThisTable).FReferenced.Count < CASCADING_DELETE_MAX_REFERENCES)
-                    {
-                        loopContentTable =
-                            new CodeStatement[] {
-                            CodeDom.Eval(CodeDom.MethodInvoke(CodeDom.Local(TTable.NiceTableName(constraint.
-                                            strThisTable) +
-                                        "Cascading"),
-                                    "DeleteUsingTemplate",
-                                    new CodeExpression[] { TheRow,
-                                                           CodeDom._Const(null),
-                                                           CodeDom.Local(
-                                                               "ATransaction"),
-                                                           CodeDom.Local(
-                                                               "AWithCascDelete") }))
-                        };
-                    }
-                    else
-                    {
-                        loopContentTable =
-                            new CodeStatement[] {
-                            CodeDom.Eval(CodeDom.MethodInvoke(CodeDom.Local(TTable.NiceTableName(constraint.
-                                            strThisTable) +
-                                        "Access"),
-                                    "DeleteUsingTemplate",
-                                    new CodeExpression[] { TheRow,
-                                                           CodeDom._Const(null),
-                                                           CodeDom.Local(
-                                                               "ATransaction") }))
-                        };
-                    }
-
-                    // Result.Statements.Add(CodeSnippetStatement.Create('for theRow in ATable do'));
-                    // DeleteAllReferencingThisPrimaryKey
-                    StatementList.Add(new CodeIterationStatement(CodeDom.Let(CodeDom.Local("countRow"),
-                                CodeDom._Const((System.Object) 0)),
-                            CodeDom.Inequals(CodeDom.Local("countRow"),
-                                CodeDom.PropRef(CodeDom.PropRef(CodeDom.Local(MyTable),
-                                        "Rows"),
-                                    "Count")),
-                            CodeDom.Let(CodeDom.Local("countRow"),
-                                new CodeBinaryOperatorExpression(CodeDom.Local("countRow"),
-                                    CodeBinaryOperatorType.Add,
-                                    CodeDom._Const((System.
-                                                    Object)(1)))),
-                            loopContentTable));
-
-                    // countRow := 0
-                    // countRow <> Table.Rows.Count
-                    // countRow := countRow + 1
-
-                    /* StatementList.Add(CodeIterationStatement.Create(
-                     * Let(CodeDom.Local('countTemplateRow'), CodeDom._Const((System.Object)0)), // countTemplateRow := 0
-                     * Inequals(CodeDom.Local('countTemplateRow'), CodeDom.PropRef(CodeDom.PropRef(CodeDom.Local('MyTable'), 'Rows'), 'Count')), // countRow <> Table.Rows.Count
-                     *   Let(CodeDom.Local('countTemplateRow'),  // countRow := countRow + 1
-                     *     CodeBinaryOperatorExpression.Create(CodeDom.Local('countTemplateRow'),
-                     *     CodeBinaryOperatorType.Add,
-                     *     CodeDom._Const(System.Object(1)))),
-                     * MakeCodeStatementArray(DeleteAllReferencingThisPrimaryKey)
-                     * ));
-                     */
+                    csvListPrimaryKeyFields += ",";
+                    formalParametersPrimaryKey += ", ";
+                    actualParametersPrimaryKey += ", ";
                 }
-            }
-
-            if (StatementList.Count > 0)
-            {
-                myCode.Statements.Add(CodeDom.VarDecl(typeof(System.Int32), "countRow", null));
-                myCode.Statements.Add(new CodeConditionStatement(CodeDom.Equals(CodeDom.Local("AWithCascDelete"),
-                            CodeDom._Const((System.Object)true)),
-                        CodeDom.MakeCodeStatementArray(StatementList), new CodeStatement[] { }));
-            }
-
-            // call normal deleteusingtemplate
-            myCode.Statements.Add(CodeDom.Eval(CodeDom.MethodInvoke(CodeDom.Local(ATypedTableName + "Access"), "DeleteUsingTemplate",
-                        new CodeExpression[]
-                        { CodeDom.Local("ATemplateRow"), CodeDom.Local("ATemplateOperators"),
-                          CodeDom.Local("ATransaction") })));
-            return myCode;
-        }
-
-        public static void AddDeleteTable(CodeNamespace ACns,
-            TDataDefinitionStore AStore,
-            TTable ATable,
-            string ATypedTableName,
-            string ATableName,
-            ref CodeTypeDeclaration ATableClass)
-        {
-            if (ATable.HasPrimaryKey())
-            {
-                // for the moment, don't implement it for too big tables, e.g. s_user)
-                if (ATable.FReferenced.Count < CASCADING_DELETE_MAX_REFERENCES)
-                {
-                    ATableClass.Members.Add(CreateDeleteByPrimaryKeyCascading(ACns, AStore, ATable, ATypedTableName));
-                }
-
-                // for the moment, don't implement it for too big tables, e.g. s_user)
-                if (ATable.FReferenced.Count < CASCADING_DELETE_MAX_REFERENCES)
-                {
-                    ATableClass.Members.Add(CreateDeleteUsingTemplateCascading(AStore, ATable, ATypedTableName));
-                }
+                
+                TTableField typedField = ACurrentTable.GetField(field);
+                
+                csvListPrimaryKeyFields += field;
+                formalParametersPrimaryKey += typedField.GetDotNetType() + " A" + TTable.NiceFieldName(field);
+                actualParametersPrimaryKey += "A" + TTable.NiceFieldName(field);
+                
+                counterPrimaryKeyField++;
             }
         }
 
-        // create the class for accessing the database (datastore)
-
-        public static CodeTypeDeclaration Access(CodeNamespace ACns,
-            TDataDefinitionStore AStore,
-            TTable table,
-            string typedTableName,
-            string tableName)
+        /// <summary>
+        /// code for cascading functions
+        /// </summary>
+        /// <param name="AStore"></param>
+        /// <param name="ACurrentTable"></param>
+        /// <param name="ATemplate"></param>
+        /// <param name="ASnippet"></param>
+        /// <returns>false if no cascading available</returns>
+        private static bool InsertMainProcedures(TDataDefinitionStore AStore, TTable ACurrentTable, ProcessTemplate ATemplate, ProcessTemplate ASnippet)
         {
-            CodeTypeDeclaration Result;
-
-            Result = new CodeTypeDeclaration(typedTableName + "Cascading");
-            Result.IsClass = true;
-            Result.Comments.Add(new CodeCommentStatement("auto generated", true));
-            Result.BaseTypes.Add("TTypedDataAccess");
-            AddDeleteTable(ACns, AStore, table, typedTableName, tableName, ref Result);
-            return Result;
-        }
-
-        public static Boolean WriteTypedDataCascading(TDataDefinitionStore store, string AFilePath, string ANamespaceName, string AFileName)
-        {
-            FileStream outFile;
-            String OutFileName;
-            TextWriter tw;
-            string tableName;
-            CodeNamespace cns;
-
-            Console.WriteLine("writing namespace " + ANamespaceName);
-            OutFileName = AFilePath + AFileName + ".cs";
-            outFile = new FileStream(OutFileName + ".new", FileMode.Create, FileAccess.Write);
-
-            if (outFile == null)
+            // for the moment, don't implement it for too big tables, e.g. s_user)
+            if (!ACurrentTable.HasPrimaryKey() || ACurrentTable.FReferenced.Count > CASCADING_DELETE_MAX_REFERENCES)
             {
                 return false;
             }
 
-            CSharpCodeProvider gen = new CSharpCodeProvider();
-            cns = new CodeNamespace(ANamespaceName);
-            tw = new StreamWriter(outFile);
-            tw.WriteLine("/* Auto generated with nant generateORM");
-            tw.WriteLine(" * Do not modify this file manually!");
-            tw.WriteLine(" */");
-            cns.Imports.Add(new CodeNamespaceImport("System"));
-            cns.Imports.Add(new CodeNamespaceImport("System.Collections.Specialized"));
-            cns.Imports.Add(new CodeNamespaceImport("System.Data"));
-            cns.Imports.Add(new CodeNamespaceImport("System.Data.Odbc"));
-            cns.Imports.Add(new CodeNamespaceImport("Ict.Common"));
-            cns.Imports.Add(new CodeNamespaceImport("Ict.Common.DB"));
-            cns.Imports.Add(new CodeNamespaceImport("Ict.Common.Verification"));
-            cns.Imports.Add(new CodeNamespaceImport("Ict.Common.Data"));
+            ASnippet.AddToCodelet("TABLENAME", TTable.NiceTableName(ACurrentTable.strName));
 
-            // cns.Imports.Add (CodeNamespaceImport.Create ('Ict.Petra.Shared.UserInfo'));
-            cns.Imports.Add(new CodeNamespaceImport("Ict.Petra.Shared.MPartner.Partner.Data"));
-            cns.Imports.Add(new CodeNamespaceImport("Ict.Petra.Shared.MPartner.Partner.Data.Access"));
-            cns.Imports.Add(new CodeNamespaceImport("Ict.Petra.Shared.MPartner.Mailroom.Data"));
-            cns.Imports.Add(new CodeNamespaceImport("Ict.Petra.Shared.MPartner.Mailroom.Data.Access"));
-            cns.Imports.Add(new CodeNamespaceImport("Ict.Petra.Shared.MPersonnel.Personnel.Data"));
-            cns.Imports.Add(new CodeNamespaceImport("Ict.Petra.Shared.MPersonnel.Personnel.Data.Access"));
-            cns.Imports.Add(new CodeNamespaceImport("Ict.Petra.Shared.MPersonnel.Units.Data"));
-            cns.Imports.Add(new CodeNamespaceImport("Ict.Petra.Shared.MPersonnel.Units.Data.Access"));
-            cns.Imports.Add(new CodeNamespaceImport("Ict.Petra.Shared.MConference.Data"));
-            cns.Imports.Add(new CodeNamespaceImport("Ict.Petra.Shared.MConference.Data.Access"));
-            cns.Imports.Add(new CodeNamespaceImport("Ict.Petra.Shared.MFinance.Account.Data"));
-            cns.Imports.Add(new CodeNamespaceImport("Ict.Petra.Shared.MFinance.Account.Data.Access"));
-            cns.Imports.Add(new CodeNamespaceImport("Ict.Petra.Shared.MFinance.Gift.Data"));
-            cns.Imports.Add(new CodeNamespaceImport("Ict.Petra.Shared.MFinance.Gift.Data.Access"));
-            cns.Imports.Add(new CodeNamespaceImport("Ict.Petra.Shared.MFinance.AP.Data"));
-            cns.Imports.Add(new CodeNamespaceImport("Ict.Petra.Shared.MFinance.AP.Data.Access"));
-            cns.Imports.Add(new CodeNamespaceImport("Ict.Petra.Shared.MFinance.AR.Data"));
-            cns.Imports.Add(new CodeNamespaceImport("Ict.Petra.Shared.MFinance.AR.Data.Access"));
-            cns.Imports.Add(new CodeNamespaceImport("Ict.Petra.Shared.MSysMan.Data"));
-            cns.Imports.Add(new CodeNamespaceImport("Ict.Petra.Shared.MSysMan.Data.Access"));
-            cns.Imports.Add(new CodeNamespaceImport("Ict.Petra.Shared.MCommon.Data"));
-            cns.Imports.Add(new CodeNamespaceImport("Ict.Petra.Shared.MCommon.Data.Access"));
-            cns.Imports.Add(new CodeNamespaceImport("Ict.Petra.Shared.MHospitality.Data"));
-            cns.Imports.Add(new CodeNamespaceImport("Ict.Petra.Shared.MHospitality.Data.Access"));
+            string csvListPrimaryKeyFields;
+            string formalParametersPrimaryKey;
+            string actualParametersPrimaryKey;
 
-            foreach (TTable currentTable in store.GetTables())
+            PrepareCodeletsPrimaryKey(ACurrentTable,
+                    out csvListPrimaryKeyFields,
+                    out formalParametersPrimaryKey,
+                    out actualParametersPrimaryKey);
+            
+            ASnippet.AddToCodelet("CSVLISTPRIMARYKEYFIELDS", csvListPrimaryKeyFields);
+            ASnippet.AddToCodelet("FORMALPARAMETERSPRIMARYKEY", formalParametersPrimaryKey);
+            ASnippet.AddToCodelet("ACTUALPARAMETERSPRIMARYKEY", actualParametersPrimaryKey);
+            
+            foreach (TConstraint constraint in ACurrentTable.FReferenced)
             {
-                tableName = TTable.NiceTableName(currentTable.strName) + "Table";
-                cns.Types.Add(Access(cns, store, currentTable, TTable.NiceTableName(currentTable.strName), tableName));
+                if (AStore.GetTable(constraint.strThisTable).HasPrimaryKey())
+                {
+                    string csvListOtherPrimaryKeyFields;
+                    string notUsed;
+                    TTable OtherTable = AStore.GetTable(constraint.strThisTable);
+                    PrepareCodeletsPrimaryKey(OtherTable,
+                            out csvListOtherPrimaryKeyFields,
+                            out notUsed,
+                            out notUsed);
+
+                    // check if other foreign key exists that references the same table, e.g.
+                    // PBankAccess.LoadViaPPartnerPartnerKey
+                    // PBankAccess.LoadViaPPartnerContactPartnerKey
+                    string DifferentField = codeGenerationAccess.FindOtherConstraintSameOtherTable(
+                        OtherTable.grpConstraint.List, 
+                        constraint);
+                    string LoadViaProcedureName = TTable.NiceTableName(ACurrentTable.strName);
+                    string MyOtherTableName = "My" + TTable.NiceTableName(constraint.strThisTable);
+
+                    if (DifferentField.Length != 0)
+                    {
+                        LoadViaProcedureName += TTable.NiceFieldName(DifferentField);
+                        MyOtherTableName += TTable.NiceFieldName(DifferentField);
+                    }
+                    
+                    ProcessTemplate snippetDelete = ASnippet.GetSnippet("DELETEBYPRIMARYKEYCASCADING");
+                    snippetDelete.SetCodelet("OTHERTABLENAME", TTable.NiceTableName(constraint.strThisTable));
+                    snippetDelete.SetCodelet("MYOTHERTABLENAME", MyOtherTableName);
+                    snippetDelete.SetCodelet("VIAPROCEDURENAME", "Via" + LoadViaProcedureName);
+                    snippetDelete.SetCodelet("CSVLISTOTHERPRIMARYKEYFIELDS", csvListOtherPrimaryKeyFields);
+                    if (OtherTable.FReferenced.Count <= CASCADING_DELETE_MAX_REFERENCES)
+                    {
+                        snippetDelete.SetCodelet("OTHERTABLEALSOCASCADING", "true");
+                    }
+                    ASnippet.InsertSnippet("DELETEBYPRIMARYKEYCASCADING", snippetDelete);
+                    
+                    snippetDelete = ASnippet.GetSnippet("DELETEBYTEMPLATECASCADING");
+                    snippetDelete.SetCodelet("OTHERTABLENAME", TTable.NiceTableName(constraint.strThisTable));
+                    snippetDelete.SetCodelet("MYOTHERTABLENAME", MyOtherTableName);
+                    snippetDelete.SetCodelet("VIAPROCEDURENAME", "Via" + LoadViaProcedureName);
+                    snippetDelete.SetCodelet("CSVLISTOTHERPRIMARYKEYFIELDS", csvListOtherPrimaryKeyFields);
+                    if (OtherTable.FReferenced.Count <= CASCADING_DELETE_MAX_REFERENCES)
+                    {
+                        snippetDelete.SetCodelet("OTHERTABLEALSOCASCADING", "true");
+                    }
+                    ASnippet.InsertSnippet("DELETEBYTEMPLATECASCADING", snippetDelete);
+                }
             }
+            return true;
+        }
+        
+        public static Boolean WriteTypedDataCascading(TDataDefinitionStore AStore, string AFilePath, string ANamespaceName, string AFileName)
+        {
+            Console.WriteLine("writing namespace " + ANamespaceName);
+            
+            TAppSettingsManager opts = new TAppSettingsManager(false);
+            string templateDir = opts.GetValue("TemplateDir", true);
+            ProcessTemplate Template = new ProcessTemplate(templateDir + Path.DirectorySeparatorChar +
+                                                           "ORM" + Path.DirectorySeparatorChar + 
+                                                           "DataCascading.cs");
 
-            CodeGeneratorOptions opt = new CodeGeneratorOptions();
-            opt.BracingStyle = "C";
-            gen.GenerateCodeFromNamespace(cns, tw, opt);
-            tw.Close();
+            Template.InsertSnippet("FILEHEADER", Template.GetSnippet("FILEHEADER"));
 
-            if (TTextFile.UpdateFile(OutFileName) == true)
+            Template.AddToCodelet("NAMESPACE", ANamespaceName);
+
+            // load default header with license and copyright
+            StreamReader sr = new StreamReader(templateDir + Path.DirectorySeparatorChar + "EmptyFileComment.txt");
+            string fileheader = sr.ReadToEnd();
+            sr.Close();
+            fileheader = fileheader.Replace(">>>> Put your full name or just a shortname here <<<<", "auto generated");
+            Template.AddToCodelet("GPLFILEHEADER", fileheader);
+
+            foreach (TTable currentTable in AStore.GetTables())
             {
-                System.Console.WriteLine("   Writing file " + OutFileName);
+                ProcessTemplate snippet = Template.GetSnippet("TABLECASCADING");
+                
+                if (InsertMainProcedures(AStore, currentTable, Template, snippet))
+                {
+                    Template.AddToCodelet("USINGNAMESPACES", 
+                                  codeGenerationAccess.GetNamespace(currentTable.strGroup), false);
+                    Template.AddToCodelet("USINGNAMESPACES", 
+                                  codeGenerationAccess.GetNamespace(currentTable.strGroup).Replace(
+                                              ".Data;", ".Data.Access;"), false);
+                
+                    Template.InsertSnippet("TABLECASCADINGLOOP", snippet);
+                }
             }
+            
+            Template.FinishWriting(AFilePath + AFileName + ".cs", ".cs", true);
 
             return true;
         }
