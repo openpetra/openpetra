@@ -34022,8 +34022,7 @@ namespace Ict.Petra.Shared.MFinance.Account.Data
         }
     }
     
-    /// Fees owed to another ledger.
-    ///(e.g. admin grant)
+    /// Fees owed to another ledger. (e.g. admin grant)
     [Serializable()]
     public class AFeesPayableTable : TTypedDataTable
     {
@@ -34612,8 +34611,7 @@ namespace Ict.Petra.Shared.MFinance.Account.Data
         }
     }
     
-    /// Fees owed to another ledger.
-    ///(e.g. admin grant)
+    /// Fees owed to another ledger. (e.g. admin grant)
     [Serializable()]
     public class AFeesPayableRow : System.Data.DataRow
     {
@@ -35143,8 +35141,7 @@ namespace Ict.Petra.Shared.MFinance.Account.Data
         }
     }
     
-    /// Charges to collect from other ledgers.
-    ///(e.g. office admin fee)
+    /// Charges to collect from other ledgers. (e.g. office admin fee)
     [Serializable()]
     public class AFeesReceivableTable : TTypedDataTable
     {
@@ -35733,8 +35730,7 @@ namespace Ict.Petra.Shared.MFinance.Account.Data
         }
     }
     
-    /// Charges to collect from other ledgers.
-    ///(e.g. office admin fee)
+    /// Charges to collect from other ledgers. (e.g. office admin fee)
     [Serializable()]
     public class AFeesReceivableRow : System.Data.DataRow
     {
@@ -51352,8 +51348,7 @@ namespace Ict.Petra.Shared.MFinance.Account.Data
         /// Indicates whether the ILT transaction has been transferred to transaction for ILT file.
         public DataColumn ColumnToIltFlag;
         
-        /// To flag a transaction as having come from a source ledger and
-        ///been processed in an ilt porcessing centre
+        /// To flag a transaction as having come from a source ledger and been processed in an ilt processing centre
         public DataColumn ColumnSourceFlag;
         
         /// Reference number/code for the transaction
@@ -51900,8 +51895,8 @@ namespace Ict.Petra.Shared.MFinance.Account.Data
         /// get help text for column
         public static string GetSourceFlagHelp()
         {
-            return "To flag a transaction as having come from a source ledger and\r\nbeen processed in " +
-                "an ilt porcessing centre";
+            return "To flag a transaction as having come from a source ledger and been processed in a" +
+                "n ilt processing centre";
         }
         
         /// get label of column
@@ -52979,8 +52974,7 @@ namespace Ict.Petra.Shared.MFinance.Account.Data
             }
         }
         
-        /// To flag a transaction as having come from a source ledger and
-        ///been processed in an ilt porcessing centre
+        /// To flag a transaction as having come from a source ledger and been processed in an ilt processing centre
         public Boolean SourceFlag
         {
             get
@@ -58469,8 +58463,7 @@ namespace Ict.Petra.Shared.MFinance.Account.Data
         /// Indicates whether the ILT transaction has been transferred to transaction for ILT file.
         public DataColumn ColumnToIltFlag;
         
-        /// To flag a transaction as having come from a source ledger and
-        ///been processed in an ilt porcessing centre
+        /// To flag a transaction as having come from a source ledger and been processed in an ilt processing centre
         public DataColumn ColumnSourceFlag;
         
         /// Reference number/code for the transaction
@@ -59020,8 +59013,8 @@ namespace Ict.Petra.Shared.MFinance.Account.Data
         /// get help text for column
         public static string GetSourceFlagHelp()
         {
-            return "To flag a transaction as having come from a source ledger and\r\nbeen processed in " +
-                "an ilt porcessing centre";
+            return "To flag a transaction as having come from a source ledger and been processed in a" +
+                "n ilt processing centre";
         }
         
         /// get label of column
@@ -60130,8 +60123,7 @@ namespace Ict.Petra.Shared.MFinance.Account.Data
             }
         }
         
-        /// To flag a transaction as having come from a source ledger and
-        ///been processed in an ilt porcessing centre
+        /// To flag a transaction as having come from a source ledger and been processed in an ilt processing centre
         public Boolean SourceFlag
         {
             get
@@ -71339,8 +71331,7 @@ namespace Ict.Petra.Shared.MFinance.Account.Data
         /// Indicates whether the ILT transaction has been transferred to transaction for ILT file.
         public DataColumn ColumnToIltFlag;
         
-        /// To flag a transaction as having come from a source ledger and
-        ///been processed in an ilt processing centre
+        /// To flag a transaction as having come from a source ledger and been processed in an ilt processing centre
         public DataColumn ColumnSourceFlag;
         
         /// Reference number/code for the transaction
@@ -71894,8 +71885,8 @@ namespace Ict.Petra.Shared.MFinance.Account.Data
         /// get help text for column
         public static string GetSourceFlagHelp()
         {
-            return "To flag a transaction as having come from a source ledger and\r\nbeen processed in " +
-                "an ilt processing centre";
+            return "To flag a transaction as having come from a source ledger and been processed in a" +
+                "n ilt processing centre";
         }
         
         /// get label of column
@@ -73035,8 +73026,7 @@ namespace Ict.Petra.Shared.MFinance.Account.Data
             }
         }
         
-        /// To flag a transaction as having come from a source ledger and
-        ///been processed in an ilt processing centre
+        /// To flag a transaction as having come from a source ledger and been processed in an ilt processing centre
         public Boolean SourceFlag
         {
             get

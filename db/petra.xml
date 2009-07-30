@@ -35,9 +35,9 @@
     <tablefield name="p_deletable_l"
                 type="bit"
                 descr="This defines if the language code can be deleted.
-This can only be updated by the system manager.
-At the risk of serious operational integrity.
-Default to Yes"
+&lt;br/&gt;This can only be updated by the system manager.
+&lt;br/&gt;At the risk of serious operational integrity.
+&lt;br/&gt;Default to Yes"
                 format="Yes/No"
                 label="Deletable"
                 columnlabel="Deletable"
@@ -137,9 +137,9 @@ Default to Yes"
     <tablefield name="p_deletable_l"
                 type="bit"
                 descr="This defines if the international postal type code can be deleted.
-This can only be updated by the system manager.
-At the risk of serious operational integrity.
-Default to Yes"
+&lt;br/&gt;This can only be updated by the system manager.
+&lt;br/&gt;At the risk of serious operational integrity.
+&lt;br/&gt;Default to Yes"
                 format="Yes/No"
                 label="Deletable"
                 columnlabel="Deletable"
@@ -161,7 +161,7 @@ Default to Yes"
     <tablefield name="p_country_code_c"
                 type="varchar"
                 descr="This is a code which identifies a country.
-It is the ISO code (ISO 3166)"
+&lt;br/&gt;It is the ISO code (ISO 3166)"
                 format="X(4)"
                 label="Country Code"
                 help="Enter an internationally accepted (ISO) country code"
@@ -238,9 +238,9 @@ It is the ISO code (ISO 3166)"
     <tablefield name="p_deletable_l"
                 type="bit"
                 descr="This defines if the country code can be deleted.
-This can only be updated by the system manager.
-At the risk of serious operational integrity.
-Default to Yes"
+&lt;br/&gt;This can only be updated by the system manager.
+&lt;br/&gt;At the risk of serious operational integrity.
+&lt;br/&gt;Default to Yes"
                 format="Yes/No"
                 label="Deletable"
                 columnlabel="Deletable"
@@ -1994,7 +1994,7 @@ Default to Yes"
     <tablefield name="p_status_code_c"
                 type="varchar"
                 descr="This code describes the status of a partner.
-Eg,  Active, Deceased etc"
+&lt;br/&gt;Eg,  Active, Deceased etc"
                 format="X(8)"
                 label="Partner Status"
                 help="Enter a partner status"
@@ -2024,9 +2024,9 @@ Eg,  Active, Deceased etc"
     <tablefield name="p_deletable_l"
                 type="bit"
                 descr="This defines if the partner status code can be deleted.
-This can only be updated by the system manager.
-At the risk of serious operational integrity.
-Default to Yes"
+&lt;br/&gt;This can only be updated by the system manager.
+&lt;br/&gt;At the risk of serious operational integrity.
+&lt;br/&gt;Default to Yes"
                 format="Yes/No"
                 label="Deletable"
                 columnlabel="Deletable"
@@ -2073,9 +2073,9 @@ Default to Yes"
     <tablefield name="p_deletable_l"
                 type="bit"
                 descr="This defines if the acquisition code can be deleted.
-This can only be updated by the system manager.
-At the risk of serious operational integrity.
-Default to Yes"
+&lt;br/&gt;This can only be updated by the system manager.
+&lt;br/&gt;At the risk of serious operational integrity.
+&lt;br/&gt;Default to Yes"
                 format="Yes/No"
                 label="Deletable"
                 columnlabel="Deletable"
@@ -2119,9 +2119,9 @@ Default to Yes"
     <tablefield name="p_deletable_l"
                 type="bit"
                 descr="This defines if the adressee type code can be deleted.
-This can only be updated by the system manager.
-At the risk of serious operational integrity.
-Default to Yes"
+&lt;br/&gt;This can only be updated by the system manager.
+&lt;br/&gt;At the risk of serious operational integrity.
+&lt;br/&gt;Default to Yes"
                 format="Yes/No"
                 label="Deletable"
                 columnlabel="Deletable"
@@ -2237,7 +2237,7 @@ Default to Yes"
     <tablefield name="p_printed_name_c"
                 type="varchar"
                 descr="Partner name how it should appear as printed version (to be used if mechanism
-to build short name from first and last name does not work e.g. in case of different surnames for husband and wife)"
+&lt;br/&gt;to build short name from first and last name does not work e.g. in case of different surnames for husband and wife)"
                 format="X(80)"
                 label="Printed Name"
                 help="Enter the name that can be used for printing if normal mechanism can not be used"/>
@@ -2270,7 +2270,7 @@ to build short name from first and last name does not work e.g. in case of diffe
     <tablefield name="p_status_code_c"
                 type="varchar"
                 descr="This code describes the status of a partner.
-Eg,  Active, Deceased etc"
+&lt;br/&gt;Eg,  Active, Deceased etc"
                 format="X(8)"
                 label="Partner Status"
                 help="Select a partner status"/>
@@ -2382,7 +2382,7 @@ Eg,  Active, Deceased etc"
     <tablefield name="p_timezone_c"
                 type="varchar"
                 descr="Timezone that applies to the partner (address does not necessarily determine that).
-This refers to data in the International Address Book."
+&lt;br/&gt;This refers to data in the International Address Book."
                 format="X(50)"/>                
     <!-- Constraints on table p_partner -->
     <primarykey name="p_partner_pk"
@@ -2588,7 +2588,7 @@ This refers to data in the International Address Book."
     <tablefield name="p_country_code_c"
                 type="varchar"
                 descr="This is a code which identifies a country.
-It is taken from the ISO 3166-1-alpha-2 code elements."
+&lt;br/&gt;It is taken from the ISO 3166-1-alpha-2 code elements."
                 format="X(4)"
                 label="Country Code"
                 help="Select a country code"/>
@@ -2999,7 +2999,7 @@ It is taken from the ISO 3166-1-alpha-2 code elements."
     <tablefield name="p_type_deletable_l"
                 type="bit"
                 descr="This defines if the type code can be deleted.
-This can only be updated by the system manager."
+&lt;br/&gt;This can only be updated by the system manager."
                 format="Yes/No"
                 label="Deletable"
                 help="Enter &quot;&quot;YES&quot;&quot; or &quot;&quot;NO&quot;&quot;"
@@ -3055,7 +3055,7 @@ This can only be updated by the system manager."
     <tablefield name="um_minimum_i"
                 type="integer"
                 descr="Indicates the minimum number of staff required.
-(Computed from um_jobs.)"
+&lt;br/&gt;(Computed from um_jobs.)"
                 format="+&gt;99"
                 label="Minimum Staff"
                 help="Enter the minimum number of staff required."
@@ -3063,7 +3063,7 @@ This can only be updated by the system manager."
     <tablefield name="um_maximum_i"
                 type="integer"
                 descr="Indicates the maximum number of staff required.
-(Computed from um_jobs.)"
+&lt;br/&gt;(Computed from um_jobs.)"
                 format="+&gt;99"
                 label="Maximum Staff"
                 help="Enter the maximum number of staff required."
@@ -3071,7 +3071,7 @@ This can only be updated by the system manager."
     <tablefield name="um_present_i"
                 type="integer"
                 descr="Indicates the present number on staff.
-(Computed from um_jobs.)"
+&lt;br/&gt;(Computed from um_jobs.)"
                 format="+&gt;99"
                 label="Present Staff"
                 help="Enter the present number on staff."
@@ -3079,7 +3079,7 @@ This can only be updated by the system manager."
     <tablefield name="um_part_timers_i"
                 type="integer"
                 descr="Number of part-timers acceptable.
-(Computed from um_jobs.)"
+&lt;br/&gt;(Computed from um_jobs.)"
                 format="+&gt;99"
                 label="Part-Timers"
                 help="Enter the number of part_timers acceptable."
@@ -3110,7 +3110,7 @@ This can only be updated by the system manager."
     <tablefield name="p_country_code_c"
                 type="varchar"
                 descr="This is a code which identifies a country.
-It is the ISO code"
+&lt;br/&gt;It is the ISO code"
                 format="X(4)"
                 label="Country Code"
                 help="Country in which this Unit is found"
@@ -3171,7 +3171,7 @@ It is the ISO code"
                 type="number"
                 length="10"
                 descr="This is an alias of the partner key. This is used to identify parent-child relationships. It consists of the fund id followed 
-by a computer generated six digit number."
+&lt;br/&gt;by a computer generated six digit number."
                 format="9999999999"
                 label="Parent Unit Key"
                 help="Enter the partner key of the parent."
@@ -3181,7 +3181,7 @@ by a computer generated six digit number."
                 type="number"
                 length="10"
                 descr="This is an alias of the partner key. This is used to identify parent-child relationships. It consists of the fund id followed 
-by a computer generated six digit number."
+&lt;br/&gt;by a computer generated six digit number."
                 format="9999999999"
                 label="Child Unit Key"
                 help="Enter the partner key of the child."
@@ -3391,9 +3391,9 @@ by a computer generated six digit number."
     <tablefield name="p_deletable_l"
                 type="bit"
                 descr="This defines if the occupation code can be deleted.
-This can only be updated by the system manager.
-At the risk of serious operational integrity.
-Default to Yes"
+&lt;br/&gt;This can only be updated by the system manager.
+&lt;br/&gt;At the risk of serious operational integrity.
+&lt;br/&gt;Default to Yes"
                 format="Yes/No"
                 label="Deletable"
                 columnlabel="Deletable"
@@ -3512,7 +3512,7 @@ Default to Yes"
                 type="number"
                 length="10"
                 descr="A cross reference to the family record of this person.
-It should be set to ? (not 0 because such a record does not exist!) when there is no family record."
+&lt;br/&gt;It should be set to ? (not 0 because such a record does not exist!) when there is no family record."
                 format="9999999999"
                 label="Partner Key"
                 help="Enter the partner key of the Family record"
@@ -3520,7 +3520,7 @@ It should be set to ? (not 0 because such a record does not exist!) when there i
     <tablefield name="p_family_id_i"
                 type="integer"
                 descr="This field indicates the family id of the individual.
-ID&apos;s 0 and 1 are used for parents; 2, 3, 4 ... 9 are used for children."
+&lt;br/&gt;ID&apos;s 0 and 1 are used for parents; 2, 3, 4 ... 9 are used for children."
                 format="&gt;9"
                 label="Family ID"
                 columnlabel="Family ID"
@@ -3639,9 +3639,9 @@ ID&apos;s 0 and 1 are used for parents; 2, 3, 4 ... 9 are used for children."
     <tablefield name="p_deletable_l"
                 type="bit"
                 descr="This defines if the denomination code can be deleted.
-This can only be updated by the system manager.
-At the risk of serious operational integrity.
-Default to Yes"
+&lt;br/&gt;This can only be updated by the system manager.
+&lt;br/&gt;At the risk of serious operational integrity.
+&lt;br/&gt;Default to Yes"
                 format="Yes/No"
                 label="Deletable"
                 columnlabel="Deletable"
@@ -3781,9 +3781,9 @@ Default to Yes"
     <tablefield name="p_deletable_l"
                 type="bit"
                 descr="This defines if the business code can be deleted.
-This can only be updated by the system manager.
-At the risk of serious operational integrity.
-Default to Yes"
+&lt;br/&gt;This can only be updated by the system manager.
+&lt;br/&gt;At the risk of serious operational integrity.
+&lt;br/&gt;Default to Yes"
                 format="Yes/No"
                 label="Deletable"
                 columnlabel="Deletable"
@@ -4737,7 +4737,7 @@ Default to Yes"
     <tablefield name="p_type_deletable_l"
                 type="bit"
                 descr="This defines if the type code can be deleted.
-This can only be updated by the system manager."
+&lt;br/&gt;This can only be updated by the system manager."
                 format="Yes/No"
                 label="Deletable"
                 help="Select if deletable"
@@ -4943,8 +4943,8 @@ This can only be updated by the system manager."
     <tablefield name="p_deletable_l"
                 type="bit"
                 descr="This defines if the relation name can be deleted.
-This can only be updated by the system manager.
-It default to Yes."
+&lt;br/&gt;This can only be updated by the system manager.
+&lt;br/&gt;It default to Yes."
                 format="Yes/No"
                 label="Deletable"
                 help="Select if deletable"
@@ -5674,8 +5674,8 @@ It default to Yes."
   </table>
   <table name="p_addressee_title_override"
          descr="This is used to override titles that might be different in the address than that in the letter.
-Eg ,      German     Herr   Herrn
-&quot;&quot;Leibe Herr Starling&quot;&quot; in the letter and &quot;&quot;Herrn Starling&quot;&quot; in the address."
+&lt;br/&gt;Eg      German     Herr   Herrn
+&lt;br/&gt;&quot;&quot;Sehr geehrter Herr Starling&quot;&quot; in the letter and &quot;&quot;Herrn Starling&quot;&quot; in the address."
          area="Petra Data"
          label="Address Title Override"
          dumpname="p_addtit"
@@ -5781,7 +5781,7 @@ Eg ,      German     Herr   Herrn
     <tablefield name="p_country_code_c"
                 type="varchar"
                 descr="This is a code which identifies a country.
-It is taken from the ISO 3166-1-alpha-2 code elements."
+&lt;br/&gt;It is taken from the ISO 3166-1-alpha-2 code elements."
                 format="X(4)"
                 label="Country Code"
                 help="Select a country code"
@@ -6723,9 +6723,9 @@ It is taken from the ISO 3166-1-alpha-2 code elements."
     <tablefield name="p_deletable_l"
                 type="bit"
                 descr="This defines if the method of contact code can be deleted.
-This can only be updated by the system manager.
-At the risk of serious operational integrity.
-Default to Yes"
+&lt;br/&gt;This can only be updated by the system manager.
+&lt;br/&gt;At the risk of serious operational integrity.
+&lt;br/&gt;Default to Yes"
                 format="Yes/No"
                 label="Deletable"
                 columnlabel="Deletable"
@@ -8314,7 +8314,7 @@ Default to Yes"
     <tablefield name="a_budget_status_l"
                 type="bit"
                 descr="Has the budget been &quot;&quot;posted&quot;&quot; to the general ledger master
-and account files."
+&lt;br/&gt;and account files."
                 format="Posted/Unposted"
                 label="Budget Posted Status"
                 initial="Posted"/>
@@ -8893,9 +8893,9 @@ and account files."
     <tablefield name="p_deletable_l"
                 type="bit"
                 descr="This defines if the email code can be deleted.
-This can only be updated by the system manager.
-At the risk of serious operational integrity.
-Default to Yes"
+&lt;br/&gt;This can only be updated by the system manager.
+&lt;br/&gt;At the risk of serious operational integrity.
+&lt;br/&gt;Default to Yes"
                 format="Yes/No"
                 label="Deletable"
                 columnlabel="Deletable"
@@ -8959,8 +8959,7 @@ Default to Yes"
     <!-- Explicit Indexes on table a_email_destination  -->
   </table>
   <table name="a_fees_payable"
-         descr="Fees owed to another ledger.
-(e.g. admin grant)"
+         descr="Fees owed to another ledger. (e.g. admin grant)"
          area="Petra Data"
          label="Admin. Grants Payable"
          dumpname="a_admin_"
@@ -9053,8 +9052,7 @@ Default to Yes"
     <!-- Explicit Indexes on table a_fees_payable  -->
   </table>
   <table name="a_fees_receivable"
-         descr="Charges to collect from other ledgers.
-(e.g. office admin fee)"
+         descr="Charges to collect from other ledgers. (e.g. office admin fee)"
          area="Petra Data"
          label="Admin. Grants Receivable"
          dumpname="a_admchg"
@@ -10903,8 +10901,7 @@ Default to Yes"
                 initial="no"/>
     <tablefield name="a_source_flag_l"
                 type="bit"
-                descr="To flag a transaction as having come from a source ledger and
-been processed in an ilt porcessing centre"
+                descr="To flag a transaction as having come from a source ledger and been processed in an ilt processing centre"
                 format="Yes/No"
                 label="Source Transaction"
                 initial="no"/>
@@ -11533,8 +11530,7 @@ been processed in an ilt porcessing centre"
                 initial="no"/>
     <tablefield name="a_source_flag_l"
                 type="bit"
-                descr="To flag a transaction as having come from a source ledger and
-been processed in an ilt porcessing centre"
+                descr="To flag a transaction as having come from a source ledger and been processed in an ilt processing centre"
                 format="Yes/No"
                 label="Source Transaction"
                 initial="no"/>
@@ -13782,8 +13778,7 @@ been processed in an ilt porcessing centre"
                 initial="no"/>
     <tablefield name="a_source_flag_l"
                 type="bit"
-                descr="To flag a transaction as having come from a source ledger and
-been processed in an ilt processing centre"
+                descr="To flag a transaction as having come from a source ledger and been processed in an ilt processing centre"
                 format="Yes/No"
                 label="Source Transaction"
                 initial="no"/>
@@ -15651,7 +15646,7 @@ been processed in an ilt processing centre"
     <tablefield name="pm_old_link_c"
                 type="varchar"
                 descr="Describes the timeframe for the xyz_tbd, e.g. Easter, Winter,
-yearly conference."
+&lt;br/&gt;yearly conference."
                 format="X(16)"
                 label="Xyz_tbd"
                 columnlabel="Xyz_tbd"
@@ -16423,7 +16418,7 @@ yearly conference."
     <tablefield name="pm_st_basic_xyz_tbd_identifier_c"
                 type="varchar"
                 descr="Describes the timeframe for the xyz_tbd, e.g. Easter, Winter,
-yearly conference."
+&lt;br/&gt;yearly conference."
                 format="X(16)"
                 label="Xyz_tbd"
                 columnlabel="Xyz_tbd"
@@ -16478,8 +16473,7 @@ yearly conference."
                 initial="0"/>
     <tablefield name="pm_st_scholarship_approved_by_c"
                 type="varchar"
-                descr="Indicate who authorized the scholarship.
-                             "
+                descr="Indicate who authorized the scholarship."
                 format="X(20)"
                 label="Scholarship Authorized By:"
                 columnlabel="Scholarship Authorized By:"
@@ -16867,7 +16861,7 @@ yearly conference."
     <tablefield name="pm_st_comment_c"
                 type="varchar"
                 descr="Comments pertaining to the xyz_tbd.
-(Made obsolete: use pm_general_application.pm_comment_c)"
+&lt;br/&gt;(Made obsolete: use pm_general_application.pm_comment_c)"
                 format="X(74)"
                 label="Xyz_tbd Comments"
                 columnlabel="Xyz_tbd Comments"
@@ -17090,7 +17084,7 @@ yearly conference."
                 length="24"
                 decimals="10"
                 descr="Indicates the agreed upon joining charge for the conference
-and / or the summer xyz_tbd."
+&lt;br/&gt;and / or the summer xyz_tbd."
                 format="&gt;&gt;&gt;,&gt;&gt;&gt;,&gt;&gt;&gt;.99"
                 label="Agreed Joining Charge"
                 help="Enter the agreed upon joining charge."
@@ -18194,7 +18188,7 @@ and / or the summer xyz_tbd."
   </table>
   <table name="pm_person_language"
          descr="This table contains detail about the
-language the person speaks."
+&lt;br/&gt;language the person speaks."
          area="Petra Data"
          label="Personal Language"
          dumpname="pm_pe_la"
@@ -18349,7 +18343,7 @@ language the person speaks."
   </table>
   <table name="pm_ownership"
          descr="This table describes various things owned by a person whether items of
-value or physical characteristics."
+&lt;br/&gt;value or physical characteristics."
          area="Petra Data"
          label="Valuable Item"
          dumpname="pm_owner"
@@ -18399,7 +18393,7 @@ value or physical characteristics."
     <tablefield name="pm_marks_of_identification_c"
                 type="varchar"
                 descr="This field lists various physical marks that may help to
-identify the item. "
+&lt;br/&gt;identify the item. "
                 format="X(30)"
                 label="Identifying Marks"
                 columnlabel="Identifying Marks"
@@ -18622,7 +18616,7 @@ identify the item. "
   </table>
   <table name="pt_ability_level"
          descr="This is the degree to which an ability
-is possessed, e.g. a little. professional."
+&lt;br/&gt;is possessed, e.g. a little. professional."
          area="Petra Data"
          label="Ability Level"
          dumpname="pt_ab_lv"
@@ -18677,7 +18671,7 @@ is possessed, e.g. a little. professional."
   </table>
   <table name="pm_person_ability"
          descr="This table describes the ability or
-abilities one possesses."
+&lt;br/&gt;abilities one possesses."
          area="Petra Data"
          label="Personal Ability"
          dumpname="pm_pe_ab"
@@ -18914,7 +18908,7 @@ abilities one possesses."
     <tablefield name="pm_informal_flag_l"
                 type="bit"
                 descr="This field indicate whether the qualifications are the result of
-informal training."
+&lt;br/&gt;informal training."
                 format="Yes/No"
                 label="Informal Training"
                 columnlabel="Informal Training"
@@ -21498,7 +21492,7 @@ informal training."
     <tablefield name="pm_informal_flag_l"
                 type="bit"
                 descr="This field indicate whether the qualifications can be the result of
-informal training."
+&lt;br/&gt;informal training."
                 format="Yes/No"
                 label="Informal Training"
                 columnlabel="Informal Training"
@@ -21608,8 +21602,7 @@ informal training."
     <!-- Explicit Indexes on table um_job_vision  -->
   </table>
   <table name="pt_assignment_type"
-         descr="Describes whether a person is
-full-time, part-time, etc."
+         descr="Describes whether a person is full-time, part-time, etc."
          area="Petra Data"
          label="Assignment Type"
          dumpname="pt_as_ty"
@@ -21662,8 +21655,7 @@ full-time, part-time, etc."
     <!-- Explicit Indexes on table pt_assignment_type  -->
   </table>
   <table name="pt_leaving_code"
-         descr="This describes the reason a person
-left a particular position."
+         descr="This describes the reason a person left a particular position."
          area="Petra Data"
          label="Leaving Code"
          dumpname="pt_le_cd"
@@ -21671,7 +21663,7 @@ left a particular position."
     <tablefield name="pt_leaving_code_ind_c"
                 type="varchar"
                 descr="This is the one letter code that indicates why a person left
-a particular position."
+&lt;br/&gt;a particular position."
                 format="X(2)"
                 label="Leaving Code"
                 columnlabel="Leaving Code"

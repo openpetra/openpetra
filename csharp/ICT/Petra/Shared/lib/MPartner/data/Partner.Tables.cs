@@ -8128,18 +8128,7 @@ namespace Ict.Petra.Shared.MPartner.Partner.Data
         /// The distance in km of this location to the location 0 if location 0 was on the same latitude; this is for improving query performance
         public DataColumn ColumnGeoKmY;
         
-        /// The accuracy of the stored geo data; 
-        ///                -2: server did not respond;
-        ///                -1: not processed yet;
-        ///                0: Unknown Location;
-        ///                1: Country level accuracy;
-        ///                2: Region;
-        ///                3: Sub-Region;
-        ///                4: Town/City/Village;
-        ///                5: Post code;
-        ///                6: Street;
-        ///                7: Intersection;
-        ///                8: Address level accuracy
+        /// The accuracy of the stored geo data;                  -2: server did not respond;                 -1: not processed yet;                 0: Unknown Location;                 1: Country level accuracy;                 2: Region;                 3: Sub-Region;                 4: Town/City/Village;                 5: Post code;                 6: Street;                 7: Intersection;                 8: Address level accuracy
         public DataColumn ColumnGeoAccuracy;
         
         /// Indicates whether or not the location has restricted access. If it does then the access will be controlled by s_group_location.
@@ -8584,18 +8573,7 @@ namespace Ict.Petra.Shared.MPartner.Partner.Data
         /// get help text for column
         public static string GetGeoAccuracyHelp()
         {
-            return @"The accuracy of the stored geo data; 
-                -2: server did not respond;
-                -1: not processed yet;
-                0: Unknown Location;
-                1: Country level accuracy;
-                2: Region;
-                3: Sub-Region;
-                4: Town/City/Village;
-                5: Post code;
-                6: Street;
-                7: Intersection;
-                8: Address level accuracy";
+            return @"The accuracy of the stored geo data;                  -2: server did not respond;                 -1: not processed yet;                 0: Unknown Location;                 1: Country level accuracy;                 2: Region;                 3: Sub-Region;                 4: Town/City/Village;                 5: Post code;                 6: Street;                 7: Intersection;                 8: Address level accuracy";
         }
         
         /// get label of column
@@ -9427,18 +9405,7 @@ namespace Ict.Petra.Shared.MPartner.Partner.Data
             }
         }
         
-        /// The accuracy of the stored geo data; 
-        ///                -2: server did not respond;
-        ///                -1: not processed yet;
-        ///                0: Unknown Location;
-        ///                1: Country level accuracy;
-        ///                2: Region;
-        ///                3: Sub-Region;
-        ///                4: Town/City/Village;
-        ///                5: Post code;
-        ///                6: Street;
-        ///                7: Intersection;
-        ///                8: Address level accuracy
+        /// The accuracy of the stored geo data;                  -2: server did not respond;                 -1: not processed yet;                 0: Unknown Location;                 1: Country level accuracy;                 2: Region;                 3: Sub-Region;                 4: Town/City/Village;                 5: Post code;                 6: Street;                 7: Intersection;                 8: Address level accuracy
         public Int32 GeoAccuracy
         {
             get

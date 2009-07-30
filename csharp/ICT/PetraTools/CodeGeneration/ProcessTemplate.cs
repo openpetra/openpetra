@@ -71,7 +71,11 @@ namespace Ict.Tools.CodeGeneration
                 for (int counter = 1; counter < snippets.Count; counter ++)
                 {
                     string snippetName = snippets[counter].Substring(0, snippets[counter].IndexOf("}"));
-                    string snippetText = snippets[counter].Substring(snippets[counter].IndexOf(Environment.NewLine));
+                    // exclude first newline
+                    string snippetText = snippets[counter].Substring(snippets[counter].IndexOf(Environment.NewLine) + Environment.NewLine.Length);
+                    
+                    // remove all whitespaces from the end
+                    snippetText = snippetText.TrimEnd(new char[] {'\n', '\r', ' ', '\t'});
                     FSnippets.Add(snippetName, snippetText);
                 }
             }
@@ -88,6 +92,10 @@ namespace Ict.Tools.CodeGeneration
         {
             ProcessTemplate snippetTemplate = new ProcessTemplate();
             snippetTemplate.FTemplateCode = (string)FSnippets[ASnippetName];
+            if (snippetTemplate.FTemplateCode == null)
+            {
+                throw new Exception("cannot find snippet with name " + ASnippetName);
+            }
             snippetTemplate.FSnippets = this.FSnippets;
             return snippetTemplate;
         }
@@ -100,6 +108,10 @@ namespace Ict.Tools.CodeGeneration
         public void InsertSnippet(string ACodeletName, ProcessTemplate ASnippet)
         {
             ASnippet.ReplaceCodelets();
+            if (FCodelets.ContainsKey(ACodeletName))
+            {
+                AddToCodelet(ACodeletName, Environment.NewLine);    
+            }
             AddToCodelet(ACodeletName, ASnippet.FTemplateCode);
         }
         
@@ -434,17 +446,21 @@ namespace Ict.Tools.CodeGeneration
                 if (placeHolderLine.Trim() == "{#" + APlaceholder + "}")
                 {
                     // replace the whole line
-                    int posNewline = FTemplateCode.LastIndexOf(Environment.NewLine, posPlaceholder + 1);
+                    int posNewline = FTemplateCode.Substring(0, posPlaceholder).LastIndexOf(Environment.NewLine);
                     string before = FTemplateCode.Substring(0, posNewline);
                     string after = FTemplateCode.Substring(FTemplateCode.IndexOf(Environment.NewLine, posPlaceholder + 1));
     
                     // indent the value by the given whitespaces
                     string whitespaces = FTemplateCode.Substring(posNewline, posPlaceholder - posNewline);
-                    AValue = AValue.Replace(Environment.NewLine, whitespaces);
-                    if (!AValue.StartsWith(Environment.NewLine))
-                    {
-                        AValue = whitespaces + AValue;
-                    }
+                    AValue = whitespaces + AValue.Replace(Environment.NewLine, whitespaces).TrimEnd(new char[] {'\n', '\r', ' ', '\t'});
+                    
+                    // for debugging
+//                    if (false && APlaceholder == "ODBCPARAMETERSFOREIGNKEY")
+//                    {
+//                        FTemplateCode = before + ">" + AValue + "<" + after;
+//                        Console.WriteLine(FTemplateCode.Substring(before.Length - 20, AValue.Length + 60));
+//                        Environment.Exit(-2);
+//                    }
                     
                     FTemplateCode = before + AValue + after;
                 }

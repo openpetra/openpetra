@@ -10806,7 +10806,8 @@ namespace Ict.Petra.Shared.MPersonnel.Personnel.Data.Access
         }
     }
 
-    /// This table contains detail about the language the person speaks.
+    /// This table contains detail about the
+    /// language the person speaks.
     public class PmPersonLanguageAccess : TTypedDataAccess
     {
 
@@ -11702,7 +11703,8 @@ namespace Ict.Petra.Shared.MPersonnel.Personnel.Data.Access
         }
     }
 
-    /// This table describes various things owned by a person whether items of value or physical characteristics.
+    /// This table describes various things owned by a person whether items of
+    /// value or physical characteristics.
     public class PmOwnershipAccess : TTypedDataAccess
     {
 
@@ -13068,7 +13070,8 @@ namespace Ict.Petra.Shared.MPersonnel.Personnel.Data.Access
         }
     }
 
-    /// This is the degree to which an ability is possessed, e.g. a little. professional.
+    /// This is the degree to which an ability
+    /// is possessed, e.g. a little. professional.
     public class PtAbilityLevelAccess : TTypedDataAccess
     {
 
@@ -13289,7 +13292,8 @@ namespace Ict.Petra.Shared.MPersonnel.Personnel.Data.Access
         }
     }
 
-    /// This table describes the ability or abilities one possesses.
+    /// This table describes the ability or
+    /// abilities one possesses.
     public class PmPersonAbilityAccess : TTypedDataAccess
     {
 

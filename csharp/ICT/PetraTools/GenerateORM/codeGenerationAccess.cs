@@ -524,11 +524,21 @@ namespace Ict.Tools.CodeGeneration.DataStore
 
         private static void InsertMainProcedures(TDataDefinitionStore AStore, TTable ACurrentTable, ProcessTemplate ATemplate, ProcessTemplate ASnippet)
         {
-            ASnippet.AddToCodelet("TABLENAME", TTable.NiceTableName(ACurrentTable.strName));
-            ASnippet.AddToCodelet("TABLE_DESCRIPTION", ACurrentTable.strDescription);
-            ASnippet.AddToCodelet("SQLTABLENAME", ACurrentTable.strName);
-            ASnippet.AddToCodelet("VIAOTHERTABLE", "");
-            ASnippet.AddToCodelet("VIALINKTABLE", "");
+            ASnippet.SetCodelet("TABLENAME", TTable.NiceTableName(ACurrentTable.strName));
+            StringCollection descrLines = StringHelper.StrSplit(ACurrentTable.strDescription, Environment.NewLine);
+            int countDescrLines = 0;
+            foreach (string line in descrLines)
+            {
+                ASnippet.AddToCodelet("TABLE_DESCRIPTION", "/// " + line);
+                countDescrLines++;
+                if (countDescrLines != descrLines.Count)
+                {
+                    ASnippet.AddToCodelet("TABLE_DESCRIPTION", Environment.NewLine);
+                }
+            }
+            ASnippet.SetCodelet("SQLTABLENAME", ACurrentTable.strName);
+            ASnippet.SetCodelet("VIAOTHERTABLE", "");
+            ASnippet.SetCodelet("VIALINKTABLE", "");
 
             string csvListPrimaryKeyFields;
             string formalParametersPrimaryKey;
@@ -543,11 +553,11 @@ namespace Ict.Tools.CodeGeneration.DataStore
                     out whereClausePrimaryKey,
                     out odbcParametersPrimaryKey);
             
-            ASnippet.AddToCodelet("CSVLISTPRIMARYKEYFIELDS", csvListPrimaryKeyFields);
-            ASnippet.AddToCodelet("FORMALPARAMETERSPRIMARYKEY", formalParametersPrimaryKey);
-            ASnippet.AddToCodelet("ACTUALPARAMETERSPRIMARYKEY", actualParametersPrimaryKey);
-            ASnippet.AddToCodelet("WHERECLAUSEPRIMARYKEY", whereClausePrimaryKey);
-            ASnippet.AddToCodelet("ODBCPARAMETERSPRIMARYKEY", odbcParametersPrimaryKey);
+            ASnippet.SetCodelet("CSVLISTPRIMARYKEYFIELDS", csvListPrimaryKeyFields);
+            ASnippet.SetCodelet("FORMALPARAMETERSPRIMARYKEY", formalParametersPrimaryKey);
+            ASnippet.SetCodelet("ACTUALPARAMETERSPRIMARYKEY", actualParametersPrimaryKey);
+            ASnippet.SetCodelet("WHERECLAUSEPRIMARYKEY", whereClausePrimaryKey);
+            ASnippet.SetCodelet("ODBCPARAMETERSPRIMARYKEY", odbcParametersPrimaryKey);
                     
             foreach (TTableField tablefield in ACurrentTable.grpTableField.List)
             {
@@ -555,13 +565,13 @@ namespace Ict.Tools.CodeGeneration.DataStore
                 // yes: get the next value of that sequence and assign to row
                 if (tablefield.strSequence.Length > 0)
                 {
-                    ASnippet.AddToCodelet("SEQUENCECAST", "");
+                    ASnippet.SetCodelet("SEQUENCECAST", "");
                     if (codeGenerationPetra.ToDelphiType(tablefield) != "Int64")
                     {
                         ASnippet.AddToCodelet("SEQUENCECAST", "(" + codeGenerationPetra.ToDelphiType(tablefield) + ")");
                     }
-                    ASnippet.AddToCodelet("SEQUENCEFIELD", TTable.NiceFieldName(tablefield));
-                    ASnippet.AddToCodelet("SEQUENCENAME", tablefield.strSequence);
+                    ASnippet.SetCodelet("SEQUENCEFIELD", TTable.NiceFieldName(tablefield));
+                    ASnippet.SetCodelet("SEQUENCENAME", tablefield.strSequence);
 
                     // assume only one sequence per table
                     break;
@@ -583,16 +593,14 @@ namespace Ict.Tools.CodeGeneration.DataStore
                                                            "ORM" + Path.DirectorySeparatorChar + 
                                                            "DataAccess.cs");
 
-            Template.InsertSnippet("FILEHEADER", Template.GetSnippet("FILEHEADER"));
-
-            Template.AddToCodelet("NAMESPACE", ANamespaceName);
+            Template.SetCodelet("NAMESPACE", ANamespaceName);
 
             // load default header with license and copyright
             StreamReader sr = new StreamReader(templateDir + Path.DirectorySeparatorChar + "EmptyFileComment.txt");
             string fileheader = sr.ReadToEnd();
             sr.Close();
             fileheader = fileheader.Replace(">>>> Put your full name or just a shortname here <<<<", "auto generated");
-            Template.AddToCodelet("GPLFILEHEADER", fileheader);
+            Template.SetCodelet("GPLFILEHEADER", fileheader);
 
             foreach (TTable currentTable in AStore.GetTables())
             {

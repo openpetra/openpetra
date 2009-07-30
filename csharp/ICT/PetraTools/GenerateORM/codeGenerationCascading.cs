@@ -172,8 +172,6 @@ namespace Ict.Tools.CodeGeneration.DataStore
                                                            "ORM" + Path.DirectorySeparatorChar + 
                                                            "DataCascading.cs");
 
-            Template.InsertSnippet("FILEHEADER", Template.GetSnippet("FILEHEADER"));
-
             Template.AddToCodelet("NAMESPACE", ANamespaceName);
 
             // load default header with license and copyright

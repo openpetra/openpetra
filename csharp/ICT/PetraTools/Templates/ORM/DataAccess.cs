@@ -20,7 +20,7 @@ namespace {#NAMESPACE}
 
 {##TABLEACCESS}
 
-/// {#TABLE_DESCRIPTION}
+{#TABLE_DESCRIPTION}
 public class {#TABLENAME}Access : TTypedDataAccess
 {
 

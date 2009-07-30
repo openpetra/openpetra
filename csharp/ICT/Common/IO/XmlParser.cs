@@ -120,7 +120,8 @@ namespace Ict.Common.IO
             try
             {
                 XmlReaderSettings settings = new XmlReaderSettings();
-		settings.ProhibitDtd = false;
+                settings.IgnoreWhitespace = false;
+                settings.ProhibitDtd = false;
 
                 // TODO there seems to be problems finding the dtd file on Mono; so no validation there for the moment
                 // also see http://bytes.com/groups/net-xml/178914-exception-xmldocumet-load
@@ -135,7 +136,7 @@ namespace Ict.Common.IO
 
                 settings.ValidationEventHandler += new ValidationEventHandler(eventHandler);
 
-		reader = XmlReader.Create(new StreamReader(filename), settings);
+                reader = XmlReader.Create(new StreamReader(filename), settings);
 
                 myDoc = new XmlDocument();
                 myDoc.Load(reader);
@@ -300,6 +301,8 @@ namespace Ict.Common.IO
             if (node != null)
             {
                 ReturnValue = node.Value;
+                ReturnValue = ReturnValue.Replace(" <br/>", Environment.NewLine);
+                ReturnValue = ReturnValue.Replace("<br/>", Environment.NewLine);
             }
 
             return ReturnValue;

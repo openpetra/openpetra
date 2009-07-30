@@ -8339,8 +8339,8 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data
     }
     
     /// This is used to override titles that might be different in the address than that in the letter.
-    ///Eg ,      German     Herr   Herrn
-    ///&quot;&quot;Leibe Herr Starling&quot;&quot; in the letter and &quot;&quot;Herrn Starling&quot;&quot; in the address.
+    ///Eg      German     Herr   Herrn
+    ///&quot;&quot;Sehr geehrter Herr Starling&quot;&quot; in the letter and &quot;&quot;Herrn Starling&quot;&quot; in the address.
     [Serializable()]
     public class PAddresseeTitleOverrideTable : TTypedDataTable
     {
@@ -8726,8 +8726,8 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data
     }
     
     /// This is used to override titles that might be different in the address than that in the letter.
-    ///Eg ,      German     Herr   Herrn
-    ///&quot;&quot;Leibe Herr Starling&quot;&quot; in the letter and &quot;&quot;Herrn Starling&quot;&quot; in the address.
+    ///Eg      German     Herr   Herrn
+    ///&quot;&quot;Sehr geehrter Herr Starling&quot;&quot; in the letter and &quot;&quot;Herrn Starling&quot;&quot; in the address.
     [Serializable()]
     public class PAddresseeTitleOverrideRow : System.Data.DataRow
     {

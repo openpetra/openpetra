@@ -13249,7 +13249,6 @@ namespace Ict.Petra.Shared.MPersonnel.Personnel.Data
         public DataColumn ColumnStScholarshipAmount;
         
         /// Indicate who authorized the scholarship.
-        ///                             
         public DataColumn ColumnStScholarshipApprovedBy;
         
         /// Indicates the date of the review of the scholarship.
@@ -16086,7 +16085,6 @@ namespace Ict.Petra.Shared.MPersonnel.Personnel.Data
         }
         
         /// Indicate who authorized the scholarship.
-        ///                             
         public String StScholarshipApprovedBy
         {
             get

@@ -3317,7 +3317,9 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data.Access
         }
     }
 
-    /// This is used to override titles that might be different in the address than that in the letter. Eg ,      German     Herr   Herrn ""Leibe Herr Starling"" in the letter and ""Herrn Starling"" in the address.
+    /// This is used to override titles that might be different in the address than that in the letter.
+    /// Eg      German     Herr   Herrn
+    /// ""Sehr geehrter Herr Starling"" in the letter and ""Herrn Starling"" in the address.
     public class PAddresseeTitleOverrideAccess : TTypedDataAccess
     {
 

@@ -6686,8 +6686,7 @@ namespace Ict.Petra.Shared.MPersonnel.Units.Data
         }
     }
     
-    /// Describes whether a person is
-    ///full-time, part-time, etc.
+    /// Describes whether a person is full-time, part-time, etc.
     [Serializable()]
     public class PtAssignmentTypeTable : TTypedDataTable
     {
@@ -7138,8 +7137,7 @@ namespace Ict.Petra.Shared.MPersonnel.Units.Data
         }
     }
     
-    /// Describes whether a person is
-    ///full-time, part-time, etc.
+    /// Describes whether a person is full-time, part-time, etc.
     [Serializable()]
     public class PtAssignmentTypeRow : System.Data.DataRow
     {
@@ -7567,8 +7565,7 @@ namespace Ict.Petra.Shared.MPersonnel.Units.Data
         }
     }
     
-    /// This describes the reason a person
-    ///left a particular position.
+    /// This describes the reason a person left a particular position.
     [Serializable()]
     public class PtLeavingCodeTable : TTypedDataTable
     {
@@ -8020,8 +8017,7 @@ namespace Ict.Petra.Shared.MPersonnel.Units.Data
         }
     }
     
-    /// This describes the reason a person
-    ///left a particular position.
+    /// This describes the reason a person left a particular position.
     [Serializable()]
     public class PtLeavingCodeRow : System.Data.DataRow
     {
