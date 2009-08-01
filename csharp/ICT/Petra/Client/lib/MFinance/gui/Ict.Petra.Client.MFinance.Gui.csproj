@@ -207,6 +207,9 @@
     <Compile Include="UC_GLBatches.Designer.cs">
       <DependentUpon>UC_GLBatches.cs</DependentUpon>
     </Compile>
+    <Compile Include="UC_GLBatches.ManualCode.cs">
+      <DependentUpon>UC_GLBatches.cs</DependentUpon>
+    </Compile>
     <Compile Include="UC_GLJournals.cs" />
     <Compile Include="UC_GLJournals.Designer.cs">
       <DependentUpon>UC_GLJournals.cs</DependentUpon>

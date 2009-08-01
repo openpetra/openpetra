@@ -49,13 +49,13 @@ namespace Ict.Petra.Client.MFinance.Gui.AccountsPayable
 {
 
   /// auto generated: Supplier Transactions
-  public partial class TFrmAccountsPayableSupplierTransactions: System.Windows.Forms.Form, Ict.Petra.Client.CommonForms.IFrmPetra
+  public partial class TFrmAPSupplierTransactions: System.Windows.Forms.Form, Ict.Petra.Client.CommonForms.IFrmPetra
   {
     private Ict.Petra.Client.CommonForms.TFrmPetraUtils FPetraUtilsObject;
     private Ict.Petra.Shared.MFinance.AP.Data.AccountsPayableTDS FMainDS;
 
     /// constructor
-    public TFrmAccountsPayableSupplierTransactions(IntPtr AParentFormHandle) : base()
+    public TFrmAPSupplierTransactions(IntPtr AParentFormHandle) : base()
     {
       //
       // Required for Windows Form Designer support
@@ -108,8 +108,8 @@ namespace Ict.Petra.Client.MFinance.Gui.AccountsPayable
       #endregion
 
       FPetraUtilsObject = new Ict.Petra.Client.CommonForms.TFrmPetraUtils(AParentFormHandle, this, stbMain);
-      FPetraUtilsObject.SetStatusBarText(txtCurrentSupplierCurrency, Catalog.GetString("The currency code to use for this supplier."));
       FMainDS = new Ict.Petra.Shared.MFinance.AP.Data.AccountsPayableTDS();
+      FPetraUtilsObject.SetStatusBarText(txtCurrentSupplierCurrency, Catalog.GetString("The currency code to use for this supplier."));
       grdResult.Columns.Clear();
       grdResult.AddTextColumn("AP Number", FMainDS.AApDocument.ColumnApNumber);
       grdResult.AddTextColumn("Invoice Number", FMainDS.AApDocument.ColumnDocumentCode);

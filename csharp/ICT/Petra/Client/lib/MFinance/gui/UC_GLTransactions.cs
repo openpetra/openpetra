@@ -68,7 +68,22 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
       this.lblLedgerNumber.Text = Catalog.GetString("LedgerNumber:");
       this.btnAdd.Text = Catalog.GetString("Add");
       this.btnRemove.Text = Catalog.GetString("Remove");
-      this.lblDetailNarrative.Text = Catalog.GetString("DetailNarrative:");
+      this.lblDetailCostCentreCode.Text = Catalog.GetString("Cost Centre Code:");
+      this.lblDetailAccountCode.Text = Catalog.GetString("Account Code:");
+      this.lblDetailNarrative.Text = Catalog.GetString("Narrative:");
+      this.lblDetailReference.Text = Catalog.GetString("Reference:");
+      this.lblDetailTransactionDate.Text = Catalog.GetString("Transaction Date:");
+      this.lblDetailKeyMinistryKey.Text = Catalog.GetString("Key Ministry:");
+      this.lblTransactionCurrency.Text = Catalog.GetString("TODOTransactionCurrency:");
+      this.lblBaseCurrency.Text = Catalog.GetString("TODOBaseCurrency:");
+      this.lblDebitAmount.Text = Catalog.GetString("Dr Amount:");
+      this.lblDebitAmountBase.Text = Catalog.GetString("Dr Amount:");
+      this.lblCreditAmount.Text = Catalog.GetString("Cr Amount:");
+      this.lblCreditAmountBase.Text = Catalog.GetString("Cr Amount:");
+      this.lblDebitTotalAmount.Text = Catalog.GetString("Debit Total:");
+      this.lblDebitTotalAmountBase.Text = Catalog.GetString("Debit Total:");
+      this.lblCreditTotalAmount.Text = Catalog.GetString("Debit Total:");
+      this.lblCreditTotalAmountBase.Text = Catalog.GetString("Debit Total:");
       #endregion
 
     }
@@ -94,7 +109,12 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
     /// needs to be called after FMainDS and FPetraUtilsObject have been set
     public void InitUserControl()
     {
+      FPetraUtilsObject.SetStatusBarText(cmbDetailCostCentreCode, Catalog.GetString("Enter a cost centre code (department or fund)."));
+      FPetraUtilsObject.SetStatusBarText(cmbDetailAccountCode, Catalog.GetString("Enter an account code."));
       FPetraUtilsObject.SetStatusBarText(txtDetailNarrative, Catalog.GetString("Enter a description of the transaction."));
+      FPetraUtilsObject.SetStatusBarText(txtDetailReference, Catalog.GetString("(Optional) Enter a reference code."));
+      FPetraUtilsObject.SetStatusBarText(dtpDetailTransactionDate, Catalog.GetString("The date the transaction is to take effect (same as journal)."));
+      FPetraUtilsObject.SetStatusBarText(cmbDetailKeyMinistryKey, Catalog.GetString("Key ministry to which this transaction applies (just for fund transfers)"));
       grdDetails.Columns.Clear();
       grdDetails.AddTextColumn("Transaction Number", FMainDS.ATransaction.ColumnTransactionNumber);
       grdDetails.AddTextColumn("Transaction Posted Status", FMainDS.ATransaction.ColumnTransactionStatus);
@@ -114,6 +134,8 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
       myDataView.AllowNew = false;
       grdDetails.DataSource = new DevAge.ComponentModel.BoundDataView(myDataView);
       grdDetails.AutoSizeCells();
+
+      ShowData();
     }
 
     /// automatically generated, create a new record of ATransaction and display on the edit screen
@@ -121,6 +143,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
     public bool CreateNewATransaction()
     {
         Ict.Petra.Shared.MFinance.GL.Data.GLBatchTDSATransactionRow NewRow = FMainDS.ATransaction.NewRowTyped(true);
+
         FMainDS.ATransaction.Rows.Add(NewRow);
 
         FPetraUtilsObject.SetChangedFlag();
@@ -218,6 +241,8 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
 
     private void ShowDetails(Int32 ACurrentDetailIndex)
     {
+        cmbDetailCostCentreCode.SetSelectedString(FMainDS.ATransaction[ACurrentDetailIndex].CostCentreCode);
+        cmbDetailAccountCode.SetSelectedString(FMainDS.ATransaction[ACurrentDetailIndex].AccountCode);
         if (FMainDS.ATransaction[ACurrentDetailIndex].IsNarrativeNull())
         {
             txtDetailNarrative.Text = String.Empty;
@@ -225,6 +250,23 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
         else
         {
             txtDetailNarrative.Text = FMainDS.ATransaction[ACurrentDetailIndex].Narrative;
+        }
+        if (FMainDS.ATransaction[ACurrentDetailIndex].IsReferenceNull())
+        {
+            txtDetailReference.Text = String.Empty;
+        }
+        else
+        {
+            txtDetailReference.Text = FMainDS.ATransaction[ACurrentDetailIndex].Reference;
+        }
+        dtpDetailTransactionDate.Value = FMainDS.ATransaction[ACurrentDetailIndex].TransactionDate;
+        if (FMainDS.ATransaction[ACurrentDetailIndex].IsKeyMinistryKeyNull())
+        {
+            cmbDetailKeyMinistryKey.SelectedIndex = -1;
+        }
+        else
+        {
+            cmbDetailKeyMinistryKey.SetSelectedInt64(FMainDS.ATransaction[ACurrentDetailIndex].KeyMinistryKey);
         }
     }
 
@@ -246,6 +288,8 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
     {
         if (ACurrentDetailIndex != -1)
         {
+            FMainDS.ATransaction[ACurrentDetailIndex].CostCentreCode = cmbDetailCostCentreCode.GetSelectedString();
+            FMainDS.ATransaction[ACurrentDetailIndex].AccountCode = cmbDetailAccountCode.GetSelectedString();
             if (txtDetailNarrative.Text.Length == 0)
             {
                 FMainDS.ATransaction[ACurrentDetailIndex].SetNarrativeNull();
@@ -253,6 +297,23 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             else
             {
                 FMainDS.ATransaction[ACurrentDetailIndex].Narrative = txtDetailNarrative.Text;
+            }
+            if (txtDetailReference.Text.Length == 0)
+            {
+                FMainDS.ATransaction[ACurrentDetailIndex].SetReferenceNull();
+            }
+            else
+            {
+                FMainDS.ATransaction[ACurrentDetailIndex].Reference = txtDetailReference.Text;
+            }
+            FMainDS.ATransaction[ACurrentDetailIndex].TransactionDate = dtpDetailTransactionDate.Value;
+            if (cmbDetailKeyMinistryKey.SelectedIndex == -1)
+            {
+                FMainDS.ATransaction[ACurrentDetailIndex].SetKeyMinistryKeyNull();
+            }
+            else
+            {
+                FMainDS.ATransaction[ACurrentDetailIndex].KeyMinistryKey = cmbDetailKeyMinistryKey.GetSelectedInt64();
             }
         }
     }

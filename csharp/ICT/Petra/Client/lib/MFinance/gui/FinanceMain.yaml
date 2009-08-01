@@ -5,6 +5,7 @@ RootNode:
     FormTitle: Finance Module OpenPetra.org 
     Namespace: Ict.Petra.Client.MFinance.Gui
     HasManualCodeInOtherFile: true
+    PropertyForSubScreens: LedgerNumber
     Controls:
         # panel could show the details of the currently selected ledger, eg. current period, etc
         pnlTODO: {Dock=Fill}
@@ -26,7 +27,7 @@ RootNode:
                mniSetupAccounts: {Label=&Accounts}
            mniGLBatch:
                Label:G&L Batch
-               mniGLCurrentPeriod: {Label=&Current Period, ActionOpenScreen=Ict.Petra.Client.MFinance.Gui.GL.TFrmGLBatches}
+               mniGLCurrentPeriod: {Label=&Current Period, ActionOpenScreen=Ict.Petra.Client.MFinance.Gui.GL.TFrmGLBatch}
                mniGLPreviousPeriods: {Label=&Previous Periods}
                mniSeparator: {Label=-}
                mniGLRecurring: {Label=&Recurring}
@@ -39,7 +40,7 @@ RootNode:
            mniSeparator: {Label=-}
            mniGiftReceipting:
                Label: &Gift Receipting
-               mniImportBankStatements: {Label=Import &Bank statements, ActionClick=ImportBankStatements}
+               mniImportBankStatements: {Label=Import &Bank statements, ActionOpenScreen=Ict.Petra.Client.MFinance.Gui.TFrmBankStatementImport}
                mniGiftBatch: {Label=&Gift Batch}
                mniRecurringGiftBatch: {Label=&Recurring Gift Batch}
                mniSeparator: {Label=-}
@@ -47,7 +48,7 @@ RootNode:
                mniGiftExport: {Label=Gift E&xport}
                mniSeparator: {Label=-}
                mniGiftReceipts: {Label=&Print Receipts}
-           mniAccountsPayable: {Label=&Accounts Payable, ActionClick=AccountsPayable}
+           mniAccountsPayable: {Label=&Accounts Payable, ActionOpenScreen=Ict.Petra.Client.MFinance.Gui.AccountsPayable.TFrmAPMain}
            mniBudget: {Label=&Budget}
            mniClearingHouse:
                Label: &Clearing House

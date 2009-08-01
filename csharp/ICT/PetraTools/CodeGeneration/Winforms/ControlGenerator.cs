@@ -258,12 +258,8 @@ namespace Ict.Tools.CodeGeneration.Winforms
             {
                 return ctrl.controlName + ".SelectedIndex = (" + AFieldOrNull + "?1:0);";
             }
-            else if (AFieldTypeDotNet != "String")
-            {
-                return ctrl.controlName + ".SetSelectedInt(" + AFieldOrNull + ");";
-            }
 
-            return ctrl.controlName + ".SetSelectedString(" + AFieldOrNull + ");";
+            return ctrl.controlName + ".SetSelected" + AFieldTypeDotNet + "(" + AFieldOrNull + ");";
         }
 
         protected override string GetControlValue(TControlDef ctrl, string AFieldTypeDotNet)
@@ -277,12 +273,8 @@ namespace Ict.Tools.CodeGeneration.Winforms
             {
                 return ctrl.controlName + ".SelectedIndex == 1";
             }
-            else if (AFieldTypeDotNet != "String")
-            {
-                return ctrl.controlName + ".GetSelectedInt()";
-            }
 
-            return ctrl.controlName + ".GetSelectedString()";
+            return ctrl.controlName + ".GetSelected" + AFieldTypeDotNet + "()";
         }
 
         public override void SetControlProperties(IFormWriter writer, TControlDef ctrl)

@@ -37,7 +37,7 @@ using Ict.Petra.Client.CommonControls;
 
 namespace Ict.Petra.Client.MFinance.Gui.GL
 {
-    partial class TFrmGLBatches
+    partial class TFrmGLBatch
     {
         /// <summary>
         /// Designer variable used to keep track of non-visual components.
@@ -67,7 +67,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
         /// </summary>
         private void InitializeComponent()
         {
-            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(TFrmGLBatches));
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(TFrmGLBatch));
 
             this.pnlContent = new System.Windows.Forms.Panel();
             this.tabGLBatch = new System.Windows.Forms.TabControl();
@@ -332,7 +332,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             this.stbMain.AutoSize = true;
 
             //
-            // TFrmGLBatches
+            // TFrmGLBatch
             //
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(660, 500);
@@ -343,7 +343,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             this.MainMenuStrip = mnuMain;
             this.Controls.Add(this.stbMain);
             this.Icon = (System.Drawing.Icon)resources.GetObject("$this.Icon");
-            this.Name = "TFrmGLBatches";
+            this.Name = "TFrmGLBatch";
             this.Text = "GL Batches";
 
 	        this.Activated += new System.EventHandler(this.TFrmPetra_Activated);

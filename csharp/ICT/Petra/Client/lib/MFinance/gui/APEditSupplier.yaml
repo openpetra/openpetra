@@ -1,7 +1,6 @@
 RootNode:
     BaseYaml: ../../../CommonForms/PetraEditForm.yaml
     FormTitle: AP Supplier Edit
-    ClassName: TFrmAccountsPayableEditSupplier
     Namespace: Ict.Petra.Client.MFinance.Gui.AccountsPayable
     UIConnectorType: Ict.Petra.Shared.Interfaces.MFinance.AccountsPayable.UIConnectors.IAccountsPayableUIConnectorsSupplierEdit
     UIConnectorCreate: TRemote.MFinance.AccountsPayable.UIConnectors.SupplierEdit

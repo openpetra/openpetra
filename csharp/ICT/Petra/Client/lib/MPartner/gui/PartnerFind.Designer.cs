@@ -190,6 +190,7 @@ namespace Ict.Petra.Client.MPartner.Gui
             this.ucoFindByPartnerDetails.Name = "ucoFindByPartnerDetails";
             this.ucoFindByPartnerDetails.Dock = System.Windows.Forms.DockStyle.Fill;
             this.tpgFindPartner.Text = "Find by Partner Details";
+            this.tpgFindPartner.Dock = System.Windows.Forms.DockStyle.Fill;
             //
             // tpgFindBankDetails
             //
@@ -197,6 +198,7 @@ namespace Ict.Petra.Client.MPartner.Gui
             this.tpgFindBankDetails.Name = "tpgFindBankDetails";
             this.tpgFindBankDetails.AutoSize = true;
             this.tpgFindBankDetails.Text = "Find by Bank Details";
+            this.tpgFindBankDetails.Dock = System.Windows.Forms.DockStyle.Fill;
             //
             // tabPartnerFindMethods
             //
@@ -204,7 +206,6 @@ namespace Ict.Petra.Client.MPartner.Gui
             this.tabPartnerFindMethods.Dock = System.Windows.Forms.DockStyle.Fill;
             this.tabPartnerFindMethods.Controls.Add(this.tpgFindPartner);
             this.tabPartnerFindMethods.Controls.Add(this.tpgFindBankDetails);
-            this.tabPartnerFindMethods.Dock = System.Windows.Forms.DockStyle.Fill;
             //
             // pnlModalButtons
             //

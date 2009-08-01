@@ -45,7 +45,7 @@ using Ict.Petra.Shared.Interfaces.MFinance.AccountsPayable.UIConnectors;
 
 namespace Ict.Petra.Client.MFinance.Gui.AccountsPayable
 {
-    public partial class TFrmAccountsPayableMain
+    public partial class TFrmAPMain
     {
         private IAccountsPayableUIConnectorsFind FSupplierFindObject = null;
         private bool FKeepUpSearchFinishedCheck = false;

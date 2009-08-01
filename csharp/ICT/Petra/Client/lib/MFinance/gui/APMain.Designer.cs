@@ -37,7 +37,7 @@ using Ict.Petra.Client.CommonControls;
 
 namespace Ict.Petra.Client.MFinance.Gui.AccountsPayable
 {
-    partial class TFrmAccountsPayableMain
+    partial class TFrmAPMain
     {
         /// <summary>
         /// Designer variable used to keep track of non-visual components.
@@ -67,7 +67,7 @@ namespace Ict.Petra.Client.MFinance.Gui.AccountsPayable
         /// </summary>
         private void InitializeComponent()
         {
-            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(TFrmAccountsPayableMain));
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(TFrmAPMain));
 
             this.pnlContent = new System.Windows.Forms.Panel();
             this.tableLayoutPanel1 = new System.Windows.Forms.TableLayoutPanel();
@@ -422,6 +422,7 @@ namespace Ict.Petra.Client.MFinance.Gui.AccountsPayable
             this.tableLayoutPanel5.Controls.Add(this.grdSupplierResult, 0, 1);
             this.tableLayoutPanel5.SetColumnSpan(this.grdSupplierResult, 2);
             this.tpgSuppliers.Text = "Suppliers";
+            this.tpgSuppliers.Dock = System.Windows.Forms.DockStyle.Fill;
             //
             // tpgOutstandingInvoices
             //
@@ -532,6 +533,7 @@ namespace Ict.Petra.Client.MFinance.Gui.AccountsPayable
             this.tableLayoutPanel7.Controls.Add(this.grdInvoiceResult, 0, 1);
             this.tableLayoutPanel7.SetColumnSpan(this.grdInvoiceResult, 2);
             this.tpgOutstandingInvoices.Text = "OutstandingInvoices";
+            this.tpgOutstandingInvoices.Dock = System.Windows.Forms.DockStyle.Fill;
             //
             // tabSearchResult
             //
@@ -539,7 +541,6 @@ namespace Ict.Petra.Client.MFinance.Gui.AccountsPayable
             this.tabSearchResult.Dock = System.Windows.Forms.DockStyle.Fill;
             this.tabSearchResult.Controls.Add(this.tpgSuppliers);
             this.tabSearchResult.Controls.Add(this.tpgOutstandingInvoices);
-            this.tabSearchResult.Dock = System.Windows.Forms.DockStyle.Fill;
             this.tableLayoutPanel1.Controls.Add(this.tabSearchResult, 0, 3);
             this.tableLayoutPanel1.SetColumnSpan(this.tabSearchResult, 2);
             //
@@ -816,7 +817,7 @@ namespace Ict.Petra.Client.MFinance.Gui.AccountsPayable
             this.stbMain.AutoSize = true;
 
             //
-            // TFrmAccountsPayableMain
+            // TFrmAPMain
             //
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(754, 623);
@@ -827,7 +828,7 @@ namespace Ict.Petra.Client.MFinance.Gui.AccountsPayable
             this.MainMenuStrip = mnuMain;
             this.Controls.Add(this.stbMain);
             this.Icon = (System.Drawing.Icon)resources.GetObject("$this.Icon");
-            this.Name = "TFrmAccountsPayableMain";
+            this.Name = "TFrmAPMain";
             this.Text = "Accounts Payable";
 
 	        this.Activated += new System.EventHandler(this.TFrmPetra_Activated);

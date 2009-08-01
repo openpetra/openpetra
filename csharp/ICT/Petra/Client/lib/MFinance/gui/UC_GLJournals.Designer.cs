@@ -86,6 +86,16 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             this.tableLayoutPanel4 = new System.Windows.Forms.TableLayoutPanel();
             this.txtDetailJournalDescription = new System.Windows.Forms.TextBox();
             this.lblDetailJournalDescription = new System.Windows.Forms.Label();
+            this.cmbDetailSubSystemCode = new Ict.Common.Controls.TCmbAutoComplete();
+            this.lblDetailSubSystemCode = new System.Windows.Forms.Label();
+            this.cmbDetailTransactionTypeCode = new Ict.Common.Controls.TCmbAutoComplete();
+            this.lblDetailTransactionTypeCode = new System.Windows.Forms.Label();
+            this.cmbDetailTransactionCurrency = new Ict.Petra.Client.CommonControls.TCmbAutoPopulated();
+            this.lblDetailTransactionCurrency = new System.Windows.Forms.Label();
+            this.dtpDetailDateEffective = new System.Windows.Forms.DateTimePicker();
+            this.lblDetailDateEffective = new System.Windows.Forms.Label();
+            this.txtDetailExchangeRateToBase = new System.Windows.Forms.TextBox();
+            this.lblDetailExchangeRateToBase = new System.Windows.Forms.Label();
 
             this.pnlContent.SuspendLayout();
             this.tableLayoutPanel1.SuspendLayout();
@@ -227,7 +237,12 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             this.tableLayoutPanel4.ColumnCount = 2;
             this.tableLayoutPanel4.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
             this.tableLayoutPanel4.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
-            this.tableLayoutPanel4.RowCount = 1;
+            this.tableLayoutPanel4.RowCount = 6;
+            this.tableLayoutPanel4.RowStyles.Add(new System.Windows.Forms.RowStyle());
+            this.tableLayoutPanel4.RowStyles.Add(new System.Windows.Forms.RowStyle());
+            this.tableLayoutPanel4.RowStyles.Add(new System.Windows.Forms.RowStyle());
+            this.tableLayoutPanel4.RowStyles.Add(new System.Windows.Forms.RowStyle());
+            this.tableLayoutPanel4.RowStyles.Add(new System.Windows.Forms.RowStyle());
             this.tableLayoutPanel4.RowStyles.Add(new System.Windows.Forms.RowStyle());
             this.pnlDetails.Controls.Add(this.tableLayoutPanel4);
             //
@@ -242,10 +257,91 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             this.lblDetailJournalDescription.Location = new System.Drawing.Point(2,2);
             this.lblDetailJournalDescription.Name = "lblDetailJournalDescription";
             this.lblDetailJournalDescription.AutoSize = true;
-            this.lblDetailJournalDescription.Text = "DetailJournalDescription:";
+            this.lblDetailJournalDescription.Text = "Journal Description:";
             this.lblDetailJournalDescription.Margin = new System.Windows.Forms.Padding(3, 7, 3, 0);
             this.tableLayoutPanel4.Controls.Add(this.lblDetailJournalDescription, 0, 0);
             this.tableLayoutPanel4.Controls.Add(this.txtDetailJournalDescription, 1, 0);
+            //
+            // cmbDetailSubSystemCode
+            //
+            this.cmbDetailSubSystemCode.Location = new System.Drawing.Point(2,2);
+            this.cmbDetailSubSystemCode.Name = "cmbDetailSubSystemCode";
+            this.cmbDetailSubSystemCode.Size = new System.Drawing.Size(150, 28);
+            //
+            // lblDetailSubSystemCode
+            //
+            this.lblDetailSubSystemCode.Location = new System.Drawing.Point(2,2);
+            this.lblDetailSubSystemCode.Name = "lblDetailSubSystemCode";
+            this.lblDetailSubSystemCode.AutoSize = true;
+            this.lblDetailSubSystemCode.Text = "Sub System:";
+            this.lblDetailSubSystemCode.Margin = new System.Windows.Forms.Padding(3, 7, 3, 0);
+            this.tableLayoutPanel4.Controls.Add(this.lblDetailSubSystemCode, 0, 1);
+            this.tableLayoutPanel4.Controls.Add(this.cmbDetailSubSystemCode, 1, 1);
+            //
+            // cmbDetailTransactionTypeCode
+            //
+            this.cmbDetailTransactionTypeCode.Location = new System.Drawing.Point(2,2);
+            this.cmbDetailTransactionTypeCode.Name = "cmbDetailTransactionTypeCode";
+            this.cmbDetailTransactionTypeCode.Size = new System.Drawing.Size(150, 28);
+            //
+            // lblDetailTransactionTypeCode
+            //
+            this.lblDetailTransactionTypeCode.Location = new System.Drawing.Point(2,2);
+            this.lblDetailTransactionTypeCode.Name = "lblDetailTransactionTypeCode";
+            this.lblDetailTransactionTypeCode.AutoSize = true;
+            this.lblDetailTransactionTypeCode.Text = "Transaction Type:";
+            this.lblDetailTransactionTypeCode.Margin = new System.Windows.Forms.Padding(3, 7, 3, 0);
+            this.tableLayoutPanel4.Controls.Add(this.lblDetailTransactionTypeCode, 0, 2);
+            this.tableLayoutPanel4.Controls.Add(this.cmbDetailTransactionTypeCode, 1, 2);
+            //
+            // cmbDetailTransactionCurrency
+            //
+            this.cmbDetailTransactionCurrency.Location = new System.Drawing.Point(2,2);
+            this.cmbDetailTransactionCurrency.Name = "cmbDetailTransactionCurrency";
+            this.cmbDetailTransactionCurrency.Size = new System.Drawing.Size(150, 28);
+            this.cmbDetailTransactionCurrency.ListTable = TCmbAutoPopulated.TListTableEnum.CurrencyCodeList;
+            //
+            // lblDetailTransactionCurrency
+            //
+            this.lblDetailTransactionCurrency.Location = new System.Drawing.Point(2,2);
+            this.lblDetailTransactionCurrency.Name = "lblDetailTransactionCurrency";
+            this.lblDetailTransactionCurrency.AutoSize = true;
+            this.lblDetailTransactionCurrency.Text = "Currency:";
+            this.lblDetailTransactionCurrency.Margin = new System.Windows.Forms.Padding(3, 7, 3, 0);
+            this.tableLayoutPanel4.Controls.Add(this.lblDetailTransactionCurrency, 0, 3);
+            this.tableLayoutPanel4.Controls.Add(this.cmbDetailTransactionCurrency, 1, 3);
+            //
+            // dtpDetailDateEffective
+            //
+            this.dtpDetailDateEffective.Location = new System.Drawing.Point(2,2);
+            this.dtpDetailDateEffective.Name = "dtpDetailDateEffective";
+            this.dtpDetailDateEffective.Size = new System.Drawing.Size(150, 28);
+            //
+            // lblDetailDateEffective
+            //
+            this.lblDetailDateEffective.Location = new System.Drawing.Point(2,2);
+            this.lblDetailDateEffective.Name = "lblDetailDateEffective";
+            this.lblDetailDateEffective.AutoSize = true;
+            this.lblDetailDateEffective.Text = "Effective Date:";
+            this.lblDetailDateEffective.Margin = new System.Windows.Forms.Padding(3, 7, 3, 0);
+            this.tableLayoutPanel4.Controls.Add(this.lblDetailDateEffective, 0, 4);
+            this.tableLayoutPanel4.Controls.Add(this.dtpDetailDateEffective, 1, 4);
+            //
+            // txtDetailExchangeRateToBase
+            //
+            this.txtDetailExchangeRateToBase.Location = new System.Drawing.Point(2,2);
+            this.txtDetailExchangeRateToBase.Name = "txtDetailExchangeRateToBase";
+            this.txtDetailExchangeRateToBase.Size = new System.Drawing.Size(150, 28);
+            //
+            // lblDetailExchangeRateToBase
+            //
+            this.lblDetailExchangeRateToBase.Location = new System.Drawing.Point(2,2);
+            this.lblDetailExchangeRateToBase.Name = "lblDetailExchangeRateToBase";
+            this.lblDetailExchangeRateToBase.AutoSize = true;
+            this.lblDetailExchangeRateToBase.Text = "Exchange Rate to Base:";
+            this.lblDetailExchangeRateToBase.Margin = new System.Windows.Forms.Padding(3, 7, 3, 0);
+            this.tableLayoutPanel4.Controls.Add(this.lblDetailExchangeRateToBase, 0, 5);
+            this.tableLayoutPanel4.Controls.Add(this.txtDetailExchangeRateToBase, 1, 5);
             this.tableLayoutPanel1.Controls.Add(this.pnlBatches, 0, 1);
             this.tableLayoutPanel1.SetColumnSpan(this.pnlBatches, 2);
 
@@ -291,5 +387,15 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
         private System.Windows.Forms.TableLayoutPanel tableLayoutPanel4;
         private System.Windows.Forms.TextBox txtDetailJournalDescription;
         private System.Windows.Forms.Label lblDetailJournalDescription;
+        private Ict.Common.Controls.TCmbAutoComplete cmbDetailSubSystemCode;
+        private System.Windows.Forms.Label lblDetailSubSystemCode;
+        private Ict.Common.Controls.TCmbAutoComplete cmbDetailTransactionTypeCode;
+        private System.Windows.Forms.Label lblDetailTransactionTypeCode;
+        private Ict.Petra.Client.CommonControls.TCmbAutoPopulated cmbDetailTransactionCurrency;
+        private System.Windows.Forms.Label lblDetailTransactionCurrency;
+        private System.Windows.Forms.DateTimePicker dtpDetailDateEffective;
+        private System.Windows.Forms.Label lblDetailDateEffective;
+        private System.Windows.Forms.TextBox txtDetailExchangeRateToBase;
+        private System.Windows.Forms.Label lblDetailExchangeRateToBase;
     }
 }

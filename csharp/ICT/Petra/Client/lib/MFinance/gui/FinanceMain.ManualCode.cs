@@ -73,27 +73,5 @@ namespace Ict.Petra.Client.MFinance.Gui
             // todo: load ledger details, display on the main finance screen, etc.
             // MessageBox.Show("selected ledger: " + FLedgerNumber.ToString());
         }
-
-        /// <summary>
-        /// import bank statements and put them in the right sub system (gift, ap, gl, etc)
-        /// </summary>
-        public void ImportBankStatements(object sender, EventArgs e)
-        {
-            TFrmBankStatementImport window = new TFrmBankStatementImport();
-
-            window.Show();
-        }
-
-        /// <summary>
-        /// show the accounts payable main screen
-        /// </summary>
-        public void AccountsPayable(object sender, EventArgs e)
-        {
-            // TODO: use scaffolding for opening screens?
-            TFrmAccountsPayableMain window = new TFrmAccountsPayableMain(this.Handle);
-
-            window.LedgerNumber = this.FLedgerNumber;
-            window.Show();
-        }
     }
 }

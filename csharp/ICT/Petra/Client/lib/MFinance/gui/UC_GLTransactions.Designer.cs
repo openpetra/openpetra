@@ -84,8 +84,38 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             this.btnRemove = new System.Windows.Forms.Button();
             this.pnlDetails = new System.Windows.Forms.Panel();
             this.tableLayoutPanel4 = new System.Windows.Forms.TableLayoutPanel();
+            this.cmbDetailCostCentreCode = new Ict.Common.Controls.TCmbAutoComplete();
+            this.lblDetailCostCentreCode = new System.Windows.Forms.Label();
+            this.cmbDetailAccountCode = new Ict.Common.Controls.TCmbAutoComplete();
+            this.lblDetailAccountCode = new System.Windows.Forms.Label();
             this.txtDetailNarrative = new System.Windows.Forms.TextBox();
             this.lblDetailNarrative = new System.Windows.Forms.Label();
+            this.txtDetailReference = new System.Windows.Forms.TextBox();
+            this.lblDetailReference = new System.Windows.Forms.Label();
+            this.dtpDetailTransactionDate = new System.Windows.Forms.DateTimePicker();
+            this.lblDetailTransactionDate = new System.Windows.Forms.Label();
+            this.cmbDetailKeyMinistryKey = new Ict.Common.Controls.TCmbAutoComplete();
+            this.lblDetailKeyMinistryKey = new System.Windows.Forms.Label();
+            this.pnlDetailAmounts = new System.Windows.Forms.Panel();
+            this.tableLayoutPanel5 = new System.Windows.Forms.TableLayoutPanel();
+            this.lblTransactionCurrency = new System.Windows.Forms.Label();
+            this.lblBaseCurrency = new System.Windows.Forms.Label();
+            this.txtDebitAmount = new System.Windows.Forms.TextBox();
+            this.lblDebitAmount = new System.Windows.Forms.Label();
+            this.txtDebitAmountBase = new System.Windows.Forms.TextBox();
+            this.lblDebitAmountBase = new System.Windows.Forms.Label();
+            this.txtCreditAmount = new System.Windows.Forms.TextBox();
+            this.lblCreditAmount = new System.Windows.Forms.Label();
+            this.txtCreditAmountBase = new System.Windows.Forms.TextBox();
+            this.lblCreditAmountBase = new System.Windows.Forms.Label();
+            this.txtDebitTotalAmount = new System.Windows.Forms.TextBox();
+            this.lblDebitTotalAmount = new System.Windows.Forms.Label();
+            this.txtDebitTotalAmountBase = new System.Windows.Forms.TextBox();
+            this.lblDebitTotalAmountBase = new System.Windows.Forms.Label();
+            this.txtCreditTotalAmount = new System.Windows.Forms.TextBox();
+            this.lblCreditTotalAmount = new System.Windows.Forms.Label();
+            this.txtCreditTotalAmountBase = new System.Windows.Forms.TextBox();
+            this.lblCreditTotalAmountBase = new System.Windows.Forms.Label();
 
             this.pnlContent.SuspendLayout();
             this.tableLayoutPanel1.SuspendLayout();
@@ -97,6 +127,8 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             this.tableLayoutPanel3.SuspendLayout();
             this.pnlDetails.SuspendLayout();
             this.tableLayoutPanel4.SuspendLayout();
+            this.pnlDetailAmounts.SuspendLayout();
+            this.tableLayoutPanel5.SuspendLayout();
 
             //
             // pnlContent
@@ -227,9 +259,47 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             this.tableLayoutPanel4.ColumnCount = 2;
             this.tableLayoutPanel4.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
             this.tableLayoutPanel4.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
-            this.tableLayoutPanel4.RowCount = 1;
+            this.tableLayoutPanel4.RowCount = 7;
+            this.tableLayoutPanel4.RowStyles.Add(new System.Windows.Forms.RowStyle());
+            this.tableLayoutPanel4.RowStyles.Add(new System.Windows.Forms.RowStyle());
+            this.tableLayoutPanel4.RowStyles.Add(new System.Windows.Forms.RowStyle());
+            this.tableLayoutPanel4.RowStyles.Add(new System.Windows.Forms.RowStyle());
+            this.tableLayoutPanel4.RowStyles.Add(new System.Windows.Forms.RowStyle());
+            this.tableLayoutPanel4.RowStyles.Add(new System.Windows.Forms.RowStyle());
             this.tableLayoutPanel4.RowStyles.Add(new System.Windows.Forms.RowStyle());
             this.pnlDetails.Controls.Add(this.tableLayoutPanel4);
+            //
+            // cmbDetailCostCentreCode
+            //
+            this.cmbDetailCostCentreCode.Location = new System.Drawing.Point(2,2);
+            this.cmbDetailCostCentreCode.Name = "cmbDetailCostCentreCode";
+            this.cmbDetailCostCentreCode.Size = new System.Drawing.Size(150, 28);
+            //
+            // lblDetailCostCentreCode
+            //
+            this.lblDetailCostCentreCode.Location = new System.Drawing.Point(2,2);
+            this.lblDetailCostCentreCode.Name = "lblDetailCostCentreCode";
+            this.lblDetailCostCentreCode.AutoSize = true;
+            this.lblDetailCostCentreCode.Text = "Cost Centre Code:";
+            this.lblDetailCostCentreCode.Margin = new System.Windows.Forms.Padding(3, 7, 3, 0);
+            this.tableLayoutPanel4.Controls.Add(this.lblDetailCostCentreCode, 0, 0);
+            this.tableLayoutPanel4.Controls.Add(this.cmbDetailCostCentreCode, 1, 0);
+            //
+            // cmbDetailAccountCode
+            //
+            this.cmbDetailAccountCode.Location = new System.Drawing.Point(2,2);
+            this.cmbDetailAccountCode.Name = "cmbDetailAccountCode";
+            this.cmbDetailAccountCode.Size = new System.Drawing.Size(150, 28);
+            //
+            // lblDetailAccountCode
+            //
+            this.lblDetailAccountCode.Location = new System.Drawing.Point(2,2);
+            this.lblDetailAccountCode.Name = "lblDetailAccountCode";
+            this.lblDetailAccountCode.AutoSize = true;
+            this.lblDetailAccountCode.Text = "Account Code:";
+            this.lblDetailAccountCode.Margin = new System.Windows.Forms.Padding(3, 7, 3, 0);
+            this.tableLayoutPanel4.Controls.Add(this.lblDetailAccountCode, 0, 1);
+            this.tableLayoutPanel4.Controls.Add(this.cmbDetailAccountCode, 1, 1);
             //
             // txtDetailNarrative
             //
@@ -242,10 +312,239 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             this.lblDetailNarrative.Location = new System.Drawing.Point(2,2);
             this.lblDetailNarrative.Name = "lblDetailNarrative";
             this.lblDetailNarrative.AutoSize = true;
-            this.lblDetailNarrative.Text = "DetailNarrative:";
+            this.lblDetailNarrative.Text = "Narrative:";
             this.lblDetailNarrative.Margin = new System.Windows.Forms.Padding(3, 7, 3, 0);
-            this.tableLayoutPanel4.Controls.Add(this.lblDetailNarrative, 0, 0);
-            this.tableLayoutPanel4.Controls.Add(this.txtDetailNarrative, 1, 0);
+            this.tableLayoutPanel4.Controls.Add(this.lblDetailNarrative, 0, 2);
+            this.tableLayoutPanel4.Controls.Add(this.txtDetailNarrative, 1, 2);
+            //
+            // txtDetailReference
+            //
+            this.txtDetailReference.Location = new System.Drawing.Point(2,2);
+            this.txtDetailReference.Name = "txtDetailReference";
+            this.txtDetailReference.Size = new System.Drawing.Size(150, 28);
+            //
+            // lblDetailReference
+            //
+            this.lblDetailReference.Location = new System.Drawing.Point(2,2);
+            this.lblDetailReference.Name = "lblDetailReference";
+            this.lblDetailReference.AutoSize = true;
+            this.lblDetailReference.Text = "Reference:";
+            this.lblDetailReference.Margin = new System.Windows.Forms.Padding(3, 7, 3, 0);
+            this.tableLayoutPanel4.Controls.Add(this.lblDetailReference, 0, 3);
+            this.tableLayoutPanel4.Controls.Add(this.txtDetailReference, 1, 3);
+            //
+            // dtpDetailTransactionDate
+            //
+            this.dtpDetailTransactionDate.Location = new System.Drawing.Point(2,2);
+            this.dtpDetailTransactionDate.Name = "dtpDetailTransactionDate";
+            this.dtpDetailTransactionDate.Size = new System.Drawing.Size(150, 28);
+            //
+            // lblDetailTransactionDate
+            //
+            this.lblDetailTransactionDate.Location = new System.Drawing.Point(2,2);
+            this.lblDetailTransactionDate.Name = "lblDetailTransactionDate";
+            this.lblDetailTransactionDate.AutoSize = true;
+            this.lblDetailTransactionDate.Text = "Transaction Date:";
+            this.lblDetailTransactionDate.Margin = new System.Windows.Forms.Padding(3, 7, 3, 0);
+            this.tableLayoutPanel4.Controls.Add(this.lblDetailTransactionDate, 0, 4);
+            this.tableLayoutPanel4.Controls.Add(this.dtpDetailTransactionDate, 1, 4);
+            //
+            // cmbDetailKeyMinistryKey
+            //
+            this.cmbDetailKeyMinistryKey.Location = new System.Drawing.Point(2,2);
+            this.cmbDetailKeyMinistryKey.Name = "cmbDetailKeyMinistryKey";
+            this.cmbDetailKeyMinistryKey.Size = new System.Drawing.Size(150, 28);
+            //
+            // lblDetailKeyMinistryKey
+            //
+            this.lblDetailKeyMinistryKey.Location = new System.Drawing.Point(2,2);
+            this.lblDetailKeyMinistryKey.Name = "lblDetailKeyMinistryKey";
+            this.lblDetailKeyMinistryKey.AutoSize = true;
+            this.lblDetailKeyMinistryKey.Text = "Key Ministry:";
+            this.lblDetailKeyMinistryKey.Margin = new System.Windows.Forms.Padding(3, 7, 3, 0);
+            this.tableLayoutPanel4.Controls.Add(this.lblDetailKeyMinistryKey, 0, 5);
+            this.tableLayoutPanel4.Controls.Add(this.cmbDetailKeyMinistryKey, 1, 5);
+            //
+            // pnlDetailAmounts
+            //
+            this.pnlDetailAmounts.Location = new System.Drawing.Point(2,2);
+            this.pnlDetailAmounts.Name = "pnlDetailAmounts";
+            this.pnlDetailAmounts.AutoSize = true;
+            //
+            // tableLayoutPanel5
+            //
+            this.tableLayoutPanel5.Location = new System.Drawing.Point(2,2);
+            this.tableLayoutPanel5.Name = "tableLayoutPanel5";
+            this.tableLayoutPanel5.AutoSize = true;
+            this.tableLayoutPanel5.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.tableLayoutPanel5.ColumnCount = 4;
+            this.tableLayoutPanel5.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
+            this.tableLayoutPanel5.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
+            this.tableLayoutPanel5.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
+            this.tableLayoutPanel5.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
+            this.tableLayoutPanel5.RowCount = 5;
+            this.tableLayoutPanel5.RowStyles.Add(new System.Windows.Forms.RowStyle());
+            this.tableLayoutPanel5.RowStyles.Add(new System.Windows.Forms.RowStyle());
+            this.tableLayoutPanel5.RowStyles.Add(new System.Windows.Forms.RowStyle());
+            this.tableLayoutPanel5.RowStyles.Add(new System.Windows.Forms.RowStyle());
+            this.tableLayoutPanel5.RowStyles.Add(new System.Windows.Forms.RowStyle());
+            this.pnlDetailAmounts.Controls.Add(this.tableLayoutPanel5);
+            //
+            // lblTransactionCurrency
+            //
+            this.lblTransactionCurrency.Location = new System.Drawing.Point(2,2);
+            this.lblTransactionCurrency.Name = "lblTransactionCurrency";
+            this.lblTransactionCurrency.AutoSize = true;
+            this.lblTransactionCurrency.Text = "TODOTransactionCurrency:";
+            this.lblTransactionCurrency.Margin = new System.Windows.Forms.Padding(3, 7, 3, 0);
+            this.tableLayoutPanel5.Controls.Add(this.lblTransactionCurrency, 0, 0);
+            this.tableLayoutPanel5.SetColumnSpan(this.lblTransactionCurrency, 2);
+            //
+            // lblBaseCurrency
+            //
+            this.lblBaseCurrency.Location = new System.Drawing.Point(2,2);
+            this.lblBaseCurrency.Name = "lblBaseCurrency";
+            this.lblBaseCurrency.AutoSize = true;
+            this.lblBaseCurrency.Text = "TODOBaseCurrency:";
+            this.lblBaseCurrency.Margin = new System.Windows.Forms.Padding(3, 7, 3, 0);
+            this.tableLayoutPanel5.Controls.Add(this.lblBaseCurrency, 2, 0);
+            this.tableLayoutPanel5.SetColumnSpan(this.lblBaseCurrency, 2);
+            //
+            // txtDebitAmount
+            //
+            this.txtDebitAmount.Location = new System.Drawing.Point(2,2);
+            this.txtDebitAmount.Name = "txtDebitAmount";
+            this.txtDebitAmount.Size = new System.Drawing.Size(150, 28);
+            //
+            // lblDebitAmount
+            //
+            this.lblDebitAmount.Location = new System.Drawing.Point(2,2);
+            this.lblDebitAmount.Name = "lblDebitAmount";
+            this.lblDebitAmount.AutoSize = true;
+            this.lblDebitAmount.Text = "Dr Amount:";
+            this.lblDebitAmount.Margin = new System.Windows.Forms.Padding(3, 7, 3, 0);
+            this.tableLayoutPanel5.Controls.Add(this.lblDebitAmount, 0, 1);
+            this.tableLayoutPanel5.Controls.Add(this.txtDebitAmount, 1, 1);
+            //
+            // txtDebitAmountBase
+            //
+            this.txtDebitAmountBase.Location = new System.Drawing.Point(2,2);
+            this.txtDebitAmountBase.Name = "txtDebitAmountBase";
+            this.txtDebitAmountBase.Size = new System.Drawing.Size(150, 28);
+            this.txtDebitAmountBase.ReadOnly = true;
+            //
+            // lblDebitAmountBase
+            //
+            this.lblDebitAmountBase.Location = new System.Drawing.Point(2,2);
+            this.lblDebitAmountBase.Name = "lblDebitAmountBase";
+            this.lblDebitAmountBase.AutoSize = true;
+            this.lblDebitAmountBase.Text = "Dr Amount:";
+            this.lblDebitAmountBase.Margin = new System.Windows.Forms.Padding(3, 7, 3, 0);
+            this.tableLayoutPanel5.Controls.Add(this.lblDebitAmountBase, 2, 1);
+            this.tableLayoutPanel5.Controls.Add(this.txtDebitAmountBase, 3, 1);
+            //
+            // txtCreditAmount
+            //
+            this.txtCreditAmount.Location = new System.Drawing.Point(2,2);
+            this.txtCreditAmount.Name = "txtCreditAmount";
+            this.txtCreditAmount.Size = new System.Drawing.Size(150, 28);
+            //
+            // lblCreditAmount
+            //
+            this.lblCreditAmount.Location = new System.Drawing.Point(2,2);
+            this.lblCreditAmount.Name = "lblCreditAmount";
+            this.lblCreditAmount.AutoSize = true;
+            this.lblCreditAmount.Text = "Cr Amount:";
+            this.lblCreditAmount.Margin = new System.Windows.Forms.Padding(3, 7, 3, 0);
+            this.tableLayoutPanel5.Controls.Add(this.lblCreditAmount, 0, 2);
+            this.tableLayoutPanel5.Controls.Add(this.txtCreditAmount, 1, 2);
+            //
+            // txtCreditAmountBase
+            //
+            this.txtCreditAmountBase.Location = new System.Drawing.Point(2,2);
+            this.txtCreditAmountBase.Name = "txtCreditAmountBase";
+            this.txtCreditAmountBase.Size = new System.Drawing.Size(150, 28);
+            this.txtCreditAmountBase.ReadOnly = true;
+            //
+            // lblCreditAmountBase
+            //
+            this.lblCreditAmountBase.Location = new System.Drawing.Point(2,2);
+            this.lblCreditAmountBase.Name = "lblCreditAmountBase";
+            this.lblCreditAmountBase.AutoSize = true;
+            this.lblCreditAmountBase.Text = "Cr Amount:";
+            this.lblCreditAmountBase.Margin = new System.Windows.Forms.Padding(3, 7, 3, 0);
+            this.tableLayoutPanel5.Controls.Add(this.lblCreditAmountBase, 2, 2);
+            this.tableLayoutPanel5.Controls.Add(this.txtCreditAmountBase, 3, 2);
+            //
+            // txtDebitTotalAmount
+            //
+            this.txtDebitTotalAmount.Location = new System.Drawing.Point(2,2);
+            this.txtDebitTotalAmount.Name = "txtDebitTotalAmount";
+            this.txtDebitTotalAmount.Size = new System.Drawing.Size(150, 28);
+            this.txtDebitTotalAmount.ReadOnly = true;
+            //
+            // lblDebitTotalAmount
+            //
+            this.lblDebitTotalAmount.Location = new System.Drawing.Point(2,2);
+            this.lblDebitTotalAmount.Name = "lblDebitTotalAmount";
+            this.lblDebitTotalAmount.AutoSize = true;
+            this.lblDebitTotalAmount.Text = "Debit Total:";
+            this.lblDebitTotalAmount.Margin = new System.Windows.Forms.Padding(3, 7, 3, 0);
+            this.tableLayoutPanel5.Controls.Add(this.lblDebitTotalAmount, 0, 3);
+            this.tableLayoutPanel5.Controls.Add(this.txtDebitTotalAmount, 1, 3);
+            //
+            // txtDebitTotalAmountBase
+            //
+            this.txtDebitTotalAmountBase.Location = new System.Drawing.Point(2,2);
+            this.txtDebitTotalAmountBase.Name = "txtDebitTotalAmountBase";
+            this.txtDebitTotalAmountBase.Size = new System.Drawing.Size(150, 28);
+            this.txtDebitTotalAmountBase.ReadOnly = true;
+            //
+            // lblDebitTotalAmountBase
+            //
+            this.lblDebitTotalAmountBase.Location = new System.Drawing.Point(2,2);
+            this.lblDebitTotalAmountBase.Name = "lblDebitTotalAmountBase";
+            this.lblDebitTotalAmountBase.AutoSize = true;
+            this.lblDebitTotalAmountBase.Text = "Debit Total:";
+            this.lblDebitTotalAmountBase.Margin = new System.Windows.Forms.Padding(3, 7, 3, 0);
+            this.tableLayoutPanel5.Controls.Add(this.lblDebitTotalAmountBase, 2, 3);
+            this.tableLayoutPanel5.Controls.Add(this.txtDebitTotalAmountBase, 3, 3);
+            //
+            // txtCreditTotalAmount
+            //
+            this.txtCreditTotalAmount.Location = new System.Drawing.Point(2,2);
+            this.txtCreditTotalAmount.Name = "txtCreditTotalAmount";
+            this.txtCreditTotalAmount.Size = new System.Drawing.Size(150, 28);
+            this.txtCreditTotalAmount.ReadOnly = true;
+            //
+            // lblCreditTotalAmount
+            //
+            this.lblCreditTotalAmount.Location = new System.Drawing.Point(2,2);
+            this.lblCreditTotalAmount.Name = "lblCreditTotalAmount";
+            this.lblCreditTotalAmount.AutoSize = true;
+            this.lblCreditTotalAmount.Text = "Debit Total:";
+            this.lblCreditTotalAmount.Margin = new System.Windows.Forms.Padding(3, 7, 3, 0);
+            this.tableLayoutPanel5.Controls.Add(this.lblCreditTotalAmount, 0, 4);
+            this.tableLayoutPanel5.Controls.Add(this.txtCreditTotalAmount, 1, 4);
+            //
+            // txtCreditTotalAmountBase
+            //
+            this.txtCreditTotalAmountBase.Location = new System.Drawing.Point(2,2);
+            this.txtCreditTotalAmountBase.Name = "txtCreditTotalAmountBase";
+            this.txtCreditTotalAmountBase.Size = new System.Drawing.Size(150, 28);
+            this.txtCreditTotalAmountBase.ReadOnly = true;
+            //
+            // lblCreditTotalAmountBase
+            //
+            this.lblCreditTotalAmountBase.Location = new System.Drawing.Point(2,2);
+            this.lblCreditTotalAmountBase.Name = "lblCreditTotalAmountBase";
+            this.lblCreditTotalAmountBase.AutoSize = true;
+            this.lblCreditTotalAmountBase.Text = "Debit Total:";
+            this.lblCreditTotalAmountBase.Margin = new System.Windows.Forms.Padding(3, 7, 3, 0);
+            this.tableLayoutPanel5.Controls.Add(this.lblCreditTotalAmountBase, 2, 4);
+            this.tableLayoutPanel5.Controls.Add(this.txtCreditTotalAmountBase, 3, 4);
+            this.tableLayoutPanel4.Controls.Add(this.pnlDetailAmounts, 0, 6);
+            this.tableLayoutPanel4.SetColumnSpan(this.pnlDetailAmounts, 2);
             this.tableLayoutPanel1.Controls.Add(this.pnlBatches, 0, 1);
             this.tableLayoutPanel1.SetColumnSpan(this.pnlBatches, 2);
 
@@ -261,6 +560,8 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
 
 	
 	
+            this.tableLayoutPanel5.ResumeLayout(false);
+            this.pnlDetailAmounts.ResumeLayout(false);
             this.tableLayoutPanel4.ResumeLayout(false);
             this.pnlDetails.ResumeLayout(false);
             this.tableLayoutPanel3.ResumeLayout(false);
@@ -289,7 +590,37 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
         private System.Windows.Forms.Button btnRemove;
         private System.Windows.Forms.Panel pnlDetails;
         private System.Windows.Forms.TableLayoutPanel tableLayoutPanel4;
+        private Ict.Common.Controls.TCmbAutoComplete cmbDetailCostCentreCode;
+        private System.Windows.Forms.Label lblDetailCostCentreCode;
+        private Ict.Common.Controls.TCmbAutoComplete cmbDetailAccountCode;
+        private System.Windows.Forms.Label lblDetailAccountCode;
         private System.Windows.Forms.TextBox txtDetailNarrative;
         private System.Windows.Forms.Label lblDetailNarrative;
+        private System.Windows.Forms.TextBox txtDetailReference;
+        private System.Windows.Forms.Label lblDetailReference;
+        private System.Windows.Forms.DateTimePicker dtpDetailTransactionDate;
+        private System.Windows.Forms.Label lblDetailTransactionDate;
+        private Ict.Common.Controls.TCmbAutoComplete cmbDetailKeyMinistryKey;
+        private System.Windows.Forms.Label lblDetailKeyMinistryKey;
+        private System.Windows.Forms.Panel pnlDetailAmounts;
+        private System.Windows.Forms.TableLayoutPanel tableLayoutPanel5;
+        private System.Windows.Forms.Label lblTransactionCurrency;
+        private System.Windows.Forms.Label lblBaseCurrency;
+        private System.Windows.Forms.TextBox txtDebitAmount;
+        private System.Windows.Forms.Label lblDebitAmount;
+        private System.Windows.Forms.TextBox txtDebitAmountBase;
+        private System.Windows.Forms.Label lblDebitAmountBase;
+        private System.Windows.Forms.TextBox txtCreditAmount;
+        private System.Windows.Forms.Label lblCreditAmount;
+        private System.Windows.Forms.TextBox txtCreditAmountBase;
+        private System.Windows.Forms.Label lblCreditAmountBase;
+        private System.Windows.Forms.TextBox txtDebitTotalAmount;
+        private System.Windows.Forms.Label lblDebitTotalAmount;
+        private System.Windows.Forms.TextBox txtDebitTotalAmountBase;
+        private System.Windows.Forms.Label lblDebitTotalAmountBase;
+        private System.Windows.Forms.TextBox txtCreditTotalAmount;
+        private System.Windows.Forms.Label lblCreditTotalAmount;
+        private System.Windows.Forms.TextBox txtCreditTotalAmountBase;
+        private System.Windows.Forms.Label lblCreditTotalAmountBase;
     }
 }

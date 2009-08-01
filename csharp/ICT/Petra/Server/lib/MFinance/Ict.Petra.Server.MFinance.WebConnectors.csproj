@@ -1,4 +1,4 @@
-<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+﻿<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
     <ProjectGuid>{C68F7EC9-BE30-4F11-869A-2C9E5A758880}</ProjectGuid>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
@@ -91,6 +91,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AP.EditTransaction.cs" />
+    <Compile Include="GL.Transactions.cs" />
     <Compile Include="WebConnectors.AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>

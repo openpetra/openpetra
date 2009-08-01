@@ -49,12 +49,12 @@ namespace Ict.Petra.Client.MFinance.Gui.AccountsPayable
 {
 
   /// auto generated: Accounts Payable
-  public partial class TFrmAccountsPayableMain: System.Windows.Forms.Form, Ict.Petra.Client.CommonForms.IFrmPetra
+  public partial class TFrmAPMain: System.Windows.Forms.Form, Ict.Petra.Client.CommonForms.IFrmPetra
   {
     private Ict.Petra.Client.CommonForms.TFrmPetraUtils FPetraUtilsObject;
 
     /// constructor
-    public TFrmAccountsPayableMain(IntPtr AParentFormHandle) : base()
+    public TFrmAPMain(IntPtr AParentFormHandle) : base()
     {
       //
       // Required for Windows Form Designer support

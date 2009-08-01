@@ -1,7 +1,6 @@
 RootNode:
     BaseYaml: ../../../CommonForms/PetraForm.yaml
     FormTitle: Supplier Transactions
-    ClassName: TFrmAccountsPayableSupplierTransactions
     Namespace: Ict.Petra.Client.MFinance.Gui.AccountsPayable
     DatasetType: Ict.Petra.Shared.MFinance.AP.Data.AccountsPayableTDS
     MasterTable: AApSupplier

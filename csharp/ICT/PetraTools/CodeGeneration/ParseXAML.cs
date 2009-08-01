@@ -26,6 +26,7 @@
 using System;
 using DDW;
 using System.Xml;
+using System.IO;
 using System.Collections;
 using System.Collections.Specialized;
 using System.Collections.Generic;
@@ -60,7 +61,20 @@ namespace Ict.Tools.CodeGeneration
             FCodeStorage.FUtilObjectClass = TYml2Xml.GetAttribute(formNode, "UtilObjectClass");
             FCodeStorage.FFormTitle = TYml2Xml.GetAttribute(formNode, "FormTitle");
             FCodeStorage.FNamespace = TYml2Xml.GetAttribute(formNode, "Namespace");
-            FCodeStorage.FClassName = "TFrm" + System.IO.Path.GetFileNameWithoutExtension(FCodeStorage.FFilename);
+
+            if (FCodeStorage.FBaseClass == "System.Windows.Forms.UserControl")
+            {
+                FCodeStorage.FClassName = "T" + Path.GetFileNameWithoutExtension(FCodeStorage.FFilename);
+            }
+            else
+            {
+                FCodeStorage.FClassName = "TFrm" + Path.GetFileNameWithoutExtension(FCodeStorage.FFilename);
+            }
+
+            if (FCodeStorage.HasAttribute("ClassName"))
+            {
+                FCodeStorage.FClassName = FCodeStorage.GetAttribute("ClassName");
+            }
 
             if (TYml2Xml.HasAttribute(formNode, "WindowHeight"))
             {
@@ -70,11 +84,6 @@ namespace Ict.Tools.CodeGeneration
             if (TYml2Xml.HasAttribute(formNode, "WindowWidth"))
             {
                 FCodeStorage.FWidth = Convert.ToInt32(TYml2Xml.GetAttribute(formNode, "WindowWidth"));
-            }
-
-            if (TYml2Xml.HasAttribute(formNode, "ClassName"))
-            {
-                FCodeStorage.FClassName = TXMLParser.GetAttribute(formNode, "ClassName");
             }
         }
 

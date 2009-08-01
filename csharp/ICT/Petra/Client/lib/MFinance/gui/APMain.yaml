@@ -1,7 +1,6 @@
 RootNode:
     BaseYaml: ../../../CommonForms/PetraForm.yaml
     FormTitle: Accounts Payable
-    ClassName: TFrmAccountsPayableMain
     Namespace: Ict.Petra.Client.MFinance.Gui.AccountsPayable
     FormType: browse
     Template: windowFind

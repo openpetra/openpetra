@@ -75,28 +75,41 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             this.tableLayoutPanel2 = new System.Windows.Forms.TableLayoutPanel();
             this.txtLedgerNumber = new System.Windows.Forms.TextBox();
             this.lblLedgerNumber = new System.Windows.Forms.Label();
+            this.rgrShowBatches = new System.Windows.Forms.GroupBox();
+            this.tableLayoutPanel3 = new System.Windows.Forms.TableLayoutPanel();
+            this.rbtPosting = new System.Windows.Forms.RadioButton();
+            this.rbtEditing = new System.Windows.Forms.RadioButton();
+            this.rbtAll = new System.Windows.Forms.RadioButton();
             this.pnlBatches = new System.Windows.Forms.Panel();
             this.pnlDetailGrid = new System.Windows.Forms.Panel();
             this.grdDetails = new Ict.Common.Controls.TSgrdDataGridPaged();
             this.pnlDetailButtons = new System.Windows.Forms.Panel();
-            this.tableLayoutPanel3 = new System.Windows.Forms.TableLayoutPanel();
-            this.btnAdd = new System.Windows.Forms.Button();
-            this.btnRemove = new System.Windows.Forms.Button();
-            this.pnlDetails = new System.Windows.Forms.Panel();
             this.tableLayoutPanel4 = new System.Windows.Forms.TableLayoutPanel();
+            this.btnNew = new System.Windows.Forms.Button();
+            this.btnDelete = new System.Windows.Forms.Button();
+            this.pnlDetails = new System.Windows.Forms.Panel();
+            this.tableLayoutPanel5 = new System.Windows.Forms.TableLayoutPanel();
             this.txtDetailBatchDescription = new System.Windows.Forms.TextBox();
             this.lblDetailBatchDescription = new System.Windows.Forms.Label();
+            this.txtDetailBatchControlTotal = new System.Windows.Forms.TextBox();
+            this.lblDetailBatchControlTotal = new System.Windows.Forms.Label();
+            this.dtpDetailDateEffective = new System.Windows.Forms.DateTimePicker();
+            this.lblDetailDateEffective = new System.Windows.Forms.Label();
+            this.dtpDateCantBeBeyond = new System.Windows.Forms.DateTimePicker();
+            this.lblDateCantBeBeyond = new System.Windows.Forms.Label();
 
             this.pnlContent.SuspendLayout();
             this.tableLayoutPanel1.SuspendLayout();
             this.pnlLedgerInfo.SuspendLayout();
             this.tableLayoutPanel2.SuspendLayout();
+            this.rgrShowBatches.SuspendLayout();
+            this.tableLayoutPanel3.SuspendLayout();
             this.pnlBatches.SuspendLayout();
             this.pnlDetailGrid.SuspendLayout();
             this.pnlDetailButtons.SuspendLayout();
-            this.tableLayoutPanel3.SuspendLayout();
-            this.pnlDetails.SuspendLayout();
             this.tableLayoutPanel4.SuspendLayout();
+            this.pnlDetails.SuspendLayout();
+            this.tableLayoutPanel5.SuspendLayout();
 
             //
             // pnlContent
@@ -113,7 +126,8 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             this.tableLayoutPanel1.ColumnCount = 2;
             this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
             this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
-            this.tableLayoutPanel1.RowCount = 2;
+            this.tableLayoutPanel1.RowCount = 3;
+            this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle());
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle());
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle());
             this.pnlContent.Controls.Add(this.tableLayoutPanel1);
@@ -155,6 +169,60 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             this.tableLayoutPanel1.Controls.Add(this.pnlLedgerInfo, 0, 0);
             this.tableLayoutPanel1.SetColumnSpan(this.pnlLedgerInfo, 2);
             //
+            // rgrShowBatches
+            //
+            this.rgrShowBatches.Location = new System.Drawing.Point(2,2);
+            this.rgrShowBatches.Name = "rgrShowBatches";
+            this.rgrShowBatches.AutoSize = true;
+            //
+            // tableLayoutPanel3
+            //
+            this.tableLayoutPanel3.Location = new System.Drawing.Point(2,2);
+            this.tableLayoutPanel3.Name = "tableLayoutPanel3";
+            this.tableLayoutPanel3.AutoSize = true;
+            this.tableLayoutPanel3.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.tableLayoutPanel3.ColumnCount = 6;
+            this.tableLayoutPanel3.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
+            this.tableLayoutPanel3.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
+            this.tableLayoutPanel3.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
+            this.tableLayoutPanel3.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
+            this.tableLayoutPanel3.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
+            this.tableLayoutPanel3.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
+            this.tableLayoutPanel3.RowCount = 1;
+            this.tableLayoutPanel3.RowStyles.Add(new System.Windows.Forms.RowStyle());
+            this.rgrShowBatches.Controls.Add(this.tableLayoutPanel3);
+            //
+            // rbtPosting
+            //
+            this.rbtPosting.Location = new System.Drawing.Point(2,2);
+            this.rbtPosting.Name = "rbtPosting";
+            this.rbtPosting.AutoSize = true;
+            this.rbtPosting.Text = "Posting";
+            this.rbtPosting.Checked = true;
+            this.tableLayoutPanel3.Controls.Add(this.rbtPosting, 0, 0);
+            this.tableLayoutPanel3.SetColumnSpan(this.rbtPosting, 2);
+            //
+            // rbtEditing
+            //
+            this.rbtEditing.Location = new System.Drawing.Point(2,2);
+            this.rbtEditing.Name = "rbtEditing";
+            this.rbtEditing.AutoSize = true;
+            this.rbtEditing.Text = "Editing";
+            this.tableLayoutPanel3.Controls.Add(this.rbtEditing, 2, 0);
+            this.tableLayoutPanel3.SetColumnSpan(this.rbtEditing, 2);
+            //
+            // rbtAll
+            //
+            this.rbtAll.Location = new System.Drawing.Point(2,2);
+            this.rbtAll.Name = "rbtAll";
+            this.rbtAll.AutoSize = true;
+            this.rbtAll.Text = "All";
+            this.tableLayoutPanel3.Controls.Add(this.rbtAll, 4, 0);
+            this.tableLayoutPanel3.SetColumnSpan(this.rbtAll, 2);
+            this.rgrShowBatches.Text = "Show batches available for";
+            this.tableLayoutPanel1.Controls.Add(this.rgrShowBatches, 0, 1);
+            this.tableLayoutPanel1.SetColumnSpan(this.rgrShowBatches, 2);
+            //
             // pnlBatches
             //
             this.pnlBatches.Name = "pnlBatches";
@@ -180,44 +248,6 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             this.pnlDetailButtons.Dock = System.Windows.Forms.DockStyle.Right;
             this.pnlDetailButtons.AutoSize = true;
             //
-            // tableLayoutPanel3
-            //
-            this.tableLayoutPanel3.Location = new System.Drawing.Point(2,2);
-            this.tableLayoutPanel3.Name = "tableLayoutPanel3";
-            this.tableLayoutPanel3.AutoSize = true;
-            this.tableLayoutPanel3.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.tableLayoutPanel3.ColumnCount = 2;
-            this.tableLayoutPanel3.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
-            this.tableLayoutPanel3.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
-            this.tableLayoutPanel3.RowCount = 2;
-            this.tableLayoutPanel3.RowStyles.Add(new System.Windows.Forms.RowStyle());
-            this.tableLayoutPanel3.RowStyles.Add(new System.Windows.Forms.RowStyle());
-            this.pnlDetailButtons.Controls.Add(this.tableLayoutPanel3);
-            //
-            // btnAdd
-            //
-            this.btnAdd.Location = new System.Drawing.Point(2,2);
-            this.btnAdd.Name = "btnAdd";
-            this.btnAdd.AutoSize = true;
-            this.btnAdd.Text = "Add";
-            this.tableLayoutPanel3.Controls.Add(this.btnAdd, 0, 0);
-            this.tableLayoutPanel3.SetColumnSpan(this.btnAdd, 2);
-            //
-            // btnRemove
-            //
-            this.btnRemove.Location = new System.Drawing.Point(2,2);
-            this.btnRemove.Name = "btnRemove";
-            this.btnRemove.AutoSize = true;
-            this.btnRemove.Text = "Remove";
-            this.tableLayoutPanel3.Controls.Add(this.btnRemove, 0, 1);
-            this.tableLayoutPanel3.SetColumnSpan(this.btnRemove, 2);
-            //
-            // pnlDetails
-            //
-            this.pnlDetails.Name = "pnlDetails";
-            this.pnlDetails.Dock = System.Windows.Forms.DockStyle.Bottom;
-            this.pnlDetails.AutoSize = true;
-            //
             // tableLayoutPanel4
             //
             this.tableLayoutPanel4.Location = new System.Drawing.Point(2,2);
@@ -227,9 +257,53 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             this.tableLayoutPanel4.ColumnCount = 2;
             this.tableLayoutPanel4.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
             this.tableLayoutPanel4.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
-            this.tableLayoutPanel4.RowCount = 1;
+            this.tableLayoutPanel4.RowCount = 2;
             this.tableLayoutPanel4.RowStyles.Add(new System.Windows.Forms.RowStyle());
-            this.pnlDetails.Controls.Add(this.tableLayoutPanel4);
+            this.tableLayoutPanel4.RowStyles.Add(new System.Windows.Forms.RowStyle());
+            this.pnlDetailButtons.Controls.Add(this.tableLayoutPanel4);
+            //
+            // btnNew
+            //
+            this.btnNew.Location = new System.Drawing.Point(2,2);
+            this.btnNew.Name = "btnNew";
+            this.btnNew.AutoSize = true;
+            this.btnNew.Click += new System.EventHandler(this.NewRow);
+            this.btnNew.Text = "&Add";
+            this.tableLayoutPanel4.Controls.Add(this.btnNew, 0, 0);
+            this.tableLayoutPanel4.SetColumnSpan(this.btnNew, 2);
+            //
+            // btnDelete
+            //
+            this.btnDelete.Location = new System.Drawing.Point(2,2);
+            this.btnDelete.Name = "btnDelete";
+            this.btnDelete.AutoSize = true;
+            this.btnDelete.Click += new System.EventHandler(this.CancelRow);
+            this.btnDelete.Text = "&Delete";
+            this.tableLayoutPanel4.Controls.Add(this.btnDelete, 0, 1);
+            this.tableLayoutPanel4.SetColumnSpan(this.btnDelete, 2);
+            //
+            // pnlDetails
+            //
+            this.pnlDetails.Name = "pnlDetails";
+            this.pnlDetails.Dock = System.Windows.Forms.DockStyle.Bottom;
+            this.pnlDetails.AutoSize = true;
+            //
+            // tableLayoutPanel5
+            //
+            this.tableLayoutPanel5.Location = new System.Drawing.Point(2,2);
+            this.tableLayoutPanel5.Name = "tableLayoutPanel5";
+            this.tableLayoutPanel5.AutoSize = true;
+            this.tableLayoutPanel5.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.tableLayoutPanel5.ColumnCount = 4;
+            this.tableLayoutPanel5.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
+            this.tableLayoutPanel5.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
+            this.tableLayoutPanel5.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
+            this.tableLayoutPanel5.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
+            this.tableLayoutPanel5.RowCount = 3;
+            this.tableLayoutPanel5.RowStyles.Add(new System.Windows.Forms.RowStyle());
+            this.tableLayoutPanel5.RowStyles.Add(new System.Windows.Forms.RowStyle());
+            this.tableLayoutPanel5.RowStyles.Add(new System.Windows.Forms.RowStyle());
+            this.pnlDetails.Controls.Add(this.tableLayoutPanel5);
             //
             // txtDetailBatchDescription
             //
@@ -242,11 +316,59 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             this.lblDetailBatchDescription.Location = new System.Drawing.Point(2,2);
             this.lblDetailBatchDescription.Name = "lblDetailBatchDescription";
             this.lblDetailBatchDescription.AutoSize = true;
-            this.lblDetailBatchDescription.Text = "DetailBatchDescription:";
+            this.lblDetailBatchDescription.Text = "Batch Description:";
             this.lblDetailBatchDescription.Margin = new System.Windows.Forms.Padding(3, 7, 3, 0);
-            this.tableLayoutPanel4.Controls.Add(this.lblDetailBatchDescription, 0, 0);
-            this.tableLayoutPanel4.Controls.Add(this.txtDetailBatchDescription, 1, 0);
-            this.tableLayoutPanel1.Controls.Add(this.pnlBatches, 0, 1);
+            this.tableLayoutPanel5.Controls.Add(this.lblDetailBatchDescription, 0, 0);
+            this.tableLayoutPanel5.Controls.Add(this.txtDetailBatchDescription, 1, 0);
+            //
+            // txtDetailBatchControlTotal
+            //
+            this.txtDetailBatchControlTotal.Location = new System.Drawing.Point(2,2);
+            this.txtDetailBatchControlTotal.Name = "txtDetailBatchControlTotal";
+            this.txtDetailBatchControlTotal.Size = new System.Drawing.Size(150, 28);
+            //
+            // lblDetailBatchControlTotal
+            //
+            this.lblDetailBatchControlTotal.Location = new System.Drawing.Point(2,2);
+            this.lblDetailBatchControlTotal.Name = "lblDetailBatchControlTotal";
+            this.lblDetailBatchControlTotal.AutoSize = true;
+            this.lblDetailBatchControlTotal.Text = "Batch Hash Total:";
+            this.lblDetailBatchControlTotal.Margin = new System.Windows.Forms.Padding(3, 7, 3, 0);
+            this.tableLayoutPanel5.Controls.Add(this.lblDetailBatchControlTotal, 0, 1);
+            this.tableLayoutPanel5.Controls.Add(this.txtDetailBatchControlTotal, 1, 1);
+            //
+            // dtpDetailDateEffective
+            //
+            this.dtpDetailDateEffective.Location = new System.Drawing.Point(2,2);
+            this.dtpDetailDateEffective.Name = "dtpDetailDateEffective";
+            this.dtpDetailDateEffective.Size = new System.Drawing.Size(150, 28);
+            //
+            // lblDetailDateEffective
+            //
+            this.lblDetailDateEffective.Location = new System.Drawing.Point(2,2);
+            this.lblDetailDateEffective.Name = "lblDetailDateEffective";
+            this.lblDetailDateEffective.AutoSize = true;
+            this.lblDetailDateEffective.Text = "Effective Date:";
+            this.lblDetailDateEffective.Margin = new System.Windows.Forms.Padding(3, 7, 3, 0);
+            this.tableLayoutPanel5.Controls.Add(this.lblDetailDateEffective, 0, 2);
+            this.tableLayoutPanel5.Controls.Add(this.dtpDetailDateEffective, 1, 2);
+            //
+            // dtpDateCantBeBeyond
+            //
+            this.dtpDateCantBeBeyond.Location = new System.Drawing.Point(2,2);
+            this.dtpDateCantBeBeyond.Name = "dtpDateCantBeBeyond";
+            this.dtpDateCantBeBeyond.Size = new System.Drawing.Size(150, 28);
+            //
+            // lblDateCantBeBeyond
+            //
+            this.lblDateCantBeBeyond.Location = new System.Drawing.Point(2,2);
+            this.lblDateCantBeBeyond.Name = "lblDateCantBeBeyond";
+            this.lblDateCantBeBeyond.AutoSize = true;
+            this.lblDateCantBeBeyond.Text = "Date can't be beyond:";
+            this.lblDateCantBeBeyond.Margin = new System.Windows.Forms.Padding(3, 7, 3, 0);
+            this.tableLayoutPanel5.Controls.Add(this.lblDateCantBeBeyond, 2, 2);
+            this.tableLayoutPanel5.Controls.Add(this.dtpDateCantBeBeyond, 3, 2);
+            this.tableLayoutPanel1.Controls.Add(this.pnlBatches, 0, 2);
             this.tableLayoutPanel1.SetColumnSpan(this.pnlBatches, 2);
 
             //
@@ -261,12 +383,14 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
 
 	
 	
-            this.tableLayoutPanel4.ResumeLayout(false);
+            this.tableLayoutPanel5.ResumeLayout(false);
             this.pnlDetails.ResumeLayout(false);
-            this.tableLayoutPanel3.ResumeLayout(false);
+            this.tableLayoutPanel4.ResumeLayout(false);
             this.pnlDetailButtons.ResumeLayout(false);
             this.pnlDetailGrid.ResumeLayout(false);
             this.pnlBatches.ResumeLayout(false);
+            this.tableLayoutPanel3.ResumeLayout(false);
+            this.rgrShowBatches.ResumeLayout(false);
             this.tableLayoutPanel2.ResumeLayout(false);
             this.pnlLedgerInfo.ResumeLayout(false);
             this.tableLayoutPanel1.ResumeLayout(false);
@@ -280,16 +404,27 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
         private System.Windows.Forms.TableLayoutPanel tableLayoutPanel2;
         private System.Windows.Forms.TextBox txtLedgerNumber;
         private System.Windows.Forms.Label lblLedgerNumber;
+        private System.Windows.Forms.GroupBox rgrShowBatches;
+        private System.Windows.Forms.TableLayoutPanel tableLayoutPanel3;
+        private System.Windows.Forms.RadioButton rbtPosting;
+        private System.Windows.Forms.RadioButton rbtEditing;
+        private System.Windows.Forms.RadioButton rbtAll;
         private System.Windows.Forms.Panel pnlBatches;
         private System.Windows.Forms.Panel pnlDetailGrid;
         private Ict.Common.Controls.TSgrdDataGridPaged grdDetails;
         private System.Windows.Forms.Panel pnlDetailButtons;
-        private System.Windows.Forms.TableLayoutPanel tableLayoutPanel3;
-        private System.Windows.Forms.Button btnAdd;
-        private System.Windows.Forms.Button btnRemove;
-        private System.Windows.Forms.Panel pnlDetails;
         private System.Windows.Forms.TableLayoutPanel tableLayoutPanel4;
+        private System.Windows.Forms.Button btnNew;
+        private System.Windows.Forms.Button btnDelete;
+        private System.Windows.Forms.Panel pnlDetails;
+        private System.Windows.Forms.TableLayoutPanel tableLayoutPanel5;
         private System.Windows.Forms.TextBox txtDetailBatchDescription;
         private System.Windows.Forms.Label lblDetailBatchDescription;
+        private System.Windows.Forms.TextBox txtDetailBatchControlTotal;
+        private System.Windows.Forms.Label lblDetailBatchControlTotal;
+        private System.Windows.Forms.DateTimePicker dtpDetailDateEffective;
+        private System.Windows.Forms.Label lblDetailDateEffective;
+        private System.Windows.Forms.DateTimePicker dtpDateCantBeBeyond;
+        private System.Windows.Forms.Label lblDateCantBeBeyond;
     }
 }

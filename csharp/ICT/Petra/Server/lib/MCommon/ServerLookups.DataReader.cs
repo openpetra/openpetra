@@ -49,10 +49,10 @@ namespace Ict.Petra.Server.MCommon.DataReader
         /// checks for permissions of the current user;
         /// </summary>
         /// <param name="ATablename"></param>
-        /// <param name="AKeys">we need to use a TTypedDataTable instead of a DataRow for the key values since DataRow cannot be serialized on its own in .net</param>
+        /// <param name="ASearchCriteria">a set of search criteria</param>
         /// <param name="AResultTable">returns typed datatable</param>
         /// <returns></returns>
-        public static bool GetData(string ATablename, TTypedDataTable AKeys, out TTypedDataTable AResultTable)
+        public static bool GetData(string ATablename, TSearchCriteria[] ASearchCriteria, out TTypedDataTable AResultTable)
         {
             // TODO: check access permissions for the current user
 
@@ -68,13 +68,13 @@ namespace Ict.Petra.Server.MCommon.DataReader
                 if (ATablename == AApSupplierTable.GetTableDBName())
                 {
                     AApSupplierTable typedTable;
-                    AApSupplierAccess.LoadUsingTemplate(out typedTable, (AApSupplierRow)AKeys.Rows[0], ReadTransaction);
+                    AApSupplierAccess.LoadUsingTemplate(out typedTable, ASearchCriteria, ReadTransaction);
                     tempTable = typedTable;
                 }
                 else if (ATablename == AApDocumentTable.GetTableDBName())
                 {
                     AApDocumentTable typedTable;
-                    AApDocumentAccess.LoadUsingTemplate(out typedTable, (AApDocumentRow)AKeys.Rows[0], ReadTransaction);
+                    AApDocumentAccess.LoadUsingTemplate(out typedTable, ASearchCriteria, ReadTransaction);
                     tempTable = typedTable;
                 }
                 else if (ATablename == ACurrencyTable.GetTableDBName())

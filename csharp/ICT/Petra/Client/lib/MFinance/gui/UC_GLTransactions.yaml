@@ -1,7 +1,6 @@
 RootNode:
     BaseClass: System.Windows.Forms.UserControl
     UtilObjectClass: TFrmPetraEditUtils
-    ClassName: TUC_GLTransactions
     Namespace: Ict.Petra.Client.MFinance.Gui.GL
     DatasetType: Ict.Petra.Shared.MFinance.GL.Data.GLBatchTDS
     DetailTable: ATransaction
@@ -35,6 +34,27 @@ RootNode:
                 AnalysisAttributes: {Label=Analysis Attributes, Type=String}
         pnlDetails:
             Dock: Bottom
+            Controls: [cmbDetailCostCentreCode, cmbDetailAccountCode, txtDetailNarrative, txtDetailReference, dtpDetailTransactionDate, cmbDetailKeyMinistryKey, pnlDetailAmounts]
+        cmbDetailCostCentreCode: {Label=Cost Centre Code}
+        cmbDetailAccountCode: {Label=Account Code}
+        txtDetailNarrative: {Label=Narrative}
+        txtDetailReference: {Label=Reference}
+        dtpDetailTransactionDate: {Label=Transaction Date}
+        cmbDetailKeyMinistryKey: {Label=Key Ministry, TODOSELECTPARTNERKEYMIN}
+        pnlDetailAmounts:
             Controls:
-                Row0: [txtDetailNarrative]
-        txtDetailNarrative: {NoAttribute=true}
+                Row0: [lblTransactionCurrency, lblBaseCurrency]
+                Row1: [txtDebitAmount, txtDebitAmountBase]
+                Row2: [txtCreditAmount, txtCreditAmountBase]
+                Row3: [txtDebitTotalAmount, txtDebitTotalAmountBase]
+                Row4: [txtCreditTotalAmount, txtCreditTotalAmountBase]
+        lblTransactionCurrency: {Label=TODOTransactionCurrency}
+        lblBaseCurrency: {Label=TODOBaseCurrency}
+        txtDebitAmount: {Label=Dr Amount}
+        txtCreditAmount: {Label=Cr Amount}
+        txtDebitAmountBase: {Label=Dr Amount, ReadOnly=true}
+        txtCreditAmountBase: {Label=Cr Amount, ReadOnly=true}
+        txtDebitTotalAmount: {Label=Debit Total, ReadOnly=true}
+        txtCreditTotalAmount: {Label=Debit Total, ReadOnly=true}
+        txtDebitTotalAmountBase: {Label=Debit Total, ReadOnly=true}
+        txtCreditTotalAmountBase: {Label=Debit Total, ReadOnly=true} 

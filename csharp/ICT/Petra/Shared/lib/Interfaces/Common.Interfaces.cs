@@ -105,7 +105,7 @@ namespace Ict.Petra.Shared.Interfaces.MCommon.DataReader
     {
         /// <summary>auto generated from Instantiator (Ict.Petra.Server.MCommon.Instantiator.DataReader.TDataReaderNamespace)</summary>
         bool GetData(string ATablename,
-                     Ict.Common.Data.TTypedDataTable AKeys,
+                     TSearchCriteria[] ASearchCriteria,
                      out Ict.Common.Data.TTypedDataTable AResultTable);
         /// <summary>auto generated from Instantiator (Ict.Petra.Server.MCommon.Instantiator.DataReader.TDataReaderNamespace)</summary>
         TSubmitChangesResult SaveData(string ATablename,

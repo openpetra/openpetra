@@ -50,7 +50,7 @@ namespace Ict.Petra.Client.MFinance.Gui.AccountsPayable
 {
 
   /// auto generated: AP Supplier Edit
-  public partial class TFrmAccountsPayableEditSupplier: System.Windows.Forms.Form, IFrmPetraEdit
+  public partial class TFrmAPEditSupplier: System.Windows.Forms.Form, IFrmPetraEdit
   {
     private TFrmPetraEditUtils FPetraUtilsObject;
 
@@ -58,7 +58,7 @@ namespace Ict.Petra.Client.MFinance.Gui.AccountsPayable
     private Ict.Petra.Shared.Interfaces.MFinance.AccountsPayable.UIConnectors.IAccountsPayableUIConnectorsSupplierEdit FUIConnector = null;
 
     /// constructor
-    public TFrmAccountsPayableEditSupplier(IntPtr AParentFormHandle) : base()
+    public TFrmAPEditSupplier(IntPtr AParentFormHandle) : base()
     {
       //
       // Required for Windows Form Designer support

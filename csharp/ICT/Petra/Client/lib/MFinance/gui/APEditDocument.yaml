@@ -1,7 +1,6 @@
 RootNode:
     BaseYaml: ../../../CommonForms/PetraEditForm.yaml
     FormTitle: AP Document Edit
-    ClassName: TFrmAccountsPayableEditDocument
     Namespace: Ict.Petra.Client.MFinance.Gui.AccountsPayable
     MasterTable: AApDocument
     DetailTable: AApDocumentDetail

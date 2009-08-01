@@ -315,6 +315,23 @@ namespace Ict.Tools.CodeGeneration.Winforms
                     "{" + Environment.NewLine;
                 ActionHandler += "    " + ctrl.GetAttribute("ActionOpenScreen") + " frm = new " + ctrl.GetAttribute("ActionOpenScreen") +
                                  "(this.Handle);" + Environment.NewLine;
+
+                // Does PropertyForSubScreens fit a property in the new screen? eg LedgerNumber
+                if (FCodeStorage.HasAttribute("PropertyForSubScreens"))
+                {
+                    string propertyName = FCodeStorage.GetAttribute("PropertyForSubScreens");
+
+                    if (FCodeStorage.ImplementationContains(ctrl.GetAttribute("ActionOpenScreen"), " " + propertyName + Environment.NewLine))
+                    {
+                        ActionHandler += "    frm." + propertyName + " = F" + propertyName + ";" + Environment.NewLine;
+                    }
+                }
+
+/*                for (string propertyName in FCodeStorage.GetFittingProperties(ctrl.GetAttribute("ActionOpenScreen")))
+ *              {
+ *                  ActionHandler += "    frm." + propertyName + " = F" + propertyName + ";" + Environment.NewLine;
+ *              }
+ */
                 ActionHandler += "    frm.Show();" + Environment.NewLine;
                 ActionHandler += "}" + Environment.NewLine + Environment.NewLine;
 

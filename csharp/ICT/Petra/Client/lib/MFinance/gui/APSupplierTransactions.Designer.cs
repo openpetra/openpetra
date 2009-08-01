@@ -37,7 +37,7 @@ using Ict.Petra.Client.CommonControls;
 
 namespace Ict.Petra.Client.MFinance.Gui.AccountsPayable
 {
-    partial class TFrmAccountsPayableSupplierTransactions
+    partial class TFrmAPSupplierTransactions
     {
         /// <summary>
         /// Designer variable used to keep track of non-visual components.
@@ -67,7 +67,7 @@ namespace Ict.Petra.Client.MFinance.Gui.AccountsPayable
         /// </summary>
         private void InitializeComponent()
         {
-            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(TFrmAccountsPayableSupplierTransactions));
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(TFrmAPSupplierTransactions));
 
             this.pnlContent = new System.Windows.Forms.Panel();
             this.pnlCurrentSupplierInfo = new System.Windows.Forms.Panel();
@@ -714,7 +714,7 @@ namespace Ict.Petra.Client.MFinance.Gui.AccountsPayable
             this.stbMain.AutoSize = true;
 
             //
-            // TFrmAccountsPayableSupplierTransactions
+            // TFrmAPSupplierTransactions
             //
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(754, 623);
@@ -725,7 +725,7 @@ namespace Ict.Petra.Client.MFinance.Gui.AccountsPayable
             this.MainMenuStrip = mnuMain;
             this.Controls.Add(this.stbMain);
             this.Icon = (System.Drawing.Icon)resources.GetObject("$this.Icon");
-            this.Name = "TFrmAccountsPayableSupplierTransactions";
+            this.Name = "TFrmAPSupplierTransactions";
             this.Text = "Supplier Transactions";
 
 	        this.Activated += new System.EventHandler(this.TFrmPetra_Activated);

@@ -1,7 +1,6 @@
 RootNode:
     BaseYaml: ../../../CommonForms/PetraEditForm.yaml
     FormTitle: Currency List
-    ClassName: TFrmSetupCurrency
     Namespace: Ict.Petra.Client.MFinance.Gui.Setup
     DetailTable: ACurrency
     DatatableType: Ict.Petra.Shared.MCommon.Data.ACurrency

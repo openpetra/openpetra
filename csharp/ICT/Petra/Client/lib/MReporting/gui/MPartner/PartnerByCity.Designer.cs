@@ -147,13 +147,13 @@ namespace Ict.Petra.Client.MReporting.Gui.MPartner
             this.tableLayoutPanel1.Controls.Add(this.lblCityName, 0, 0);
             this.tableLayoutPanel1.Controls.Add(this.txtCityName, 1, 0);
             this.tpgReportSpecific.Text = "Report parameters";
+            this.tpgReportSpecific.Dock = System.Windows.Forms.DockStyle.Fill;
             //
             // tabReportSettings
             //
             this.tabReportSettings.Name = "tabReportSettings";
             this.tabReportSettings.Dock = System.Windows.Forms.DockStyle.Fill;
             this.tabReportSettings.Controls.Add(this.tpgReportSpecific);
-            this.tabReportSettings.Dock = System.Windows.Forms.DockStyle.Fill;
             //
             // tbbGenerate
             //

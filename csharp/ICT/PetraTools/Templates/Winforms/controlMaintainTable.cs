@@ -77,6 +77,8 @@ namespace {#NAMESPACE}
       myDataView.AllowNew = false;
       grdDetails.DataSource = new DevAge.ComponentModel.BoundDataView(myDataView);
       grdDetails.AutoSizeCells();
+
+      ShowData();
     }
     
     {#EVENTHANDLERSIMPLEMENTATION}
@@ -86,6 +88,7 @@ namespace {#NAMESPACE}
     public bool CreateNew{#DETAILTABLE}()
     {
         {#DATATABLETYPE}Row NewRow = FMainDS.{#DETAILTABLE}.NewRowTyped(true);
+        {#INITNEWROWMANUAL}
         FMainDS.{#DETAILTABLE}.Rows.Add(NewRow);
         
         FPetraUtilsObject.SetChangedFlag();

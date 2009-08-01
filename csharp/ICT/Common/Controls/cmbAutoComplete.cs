@@ -1377,6 +1377,40 @@ namespace Ict.Common.Controls
         }
 
         /// <summary>
+        /// This function searches the ObjectCollection of a given ComboBox for a
+        /// string specified by SearchInt64.
+        /// </summary>
+        /// <param name="SearchInt64">The Int64 which is searched for.</param>
+        /// <returns>The index of the item if found or -1 if nothing is found.
+        /// </returns>
+        public int FindInt64InComboBox(Int64 SearchInt64)
+        {
+            foreach (object Item in Items)
+            {
+                System.Data.DataRowView TmpRowView = (System.Data.DataRowView)Item;
+                System.Int32 ColumnNum = (TmpRowView.DataView.Table.Columns.Count) - 1;
+
+                if (ColumnNum > 0)
+                {
+                    for (System.Int32 ColumnIndex = 0; ColumnIndex <= (ColumnNum); ColumnIndex += 1)
+                    {
+                        if (TmpRowView[ColumnIndex].GetType() == typeof(System.Int64))
+                        {
+                            Int64 ItemInt64 = System.Convert.ToInt64(TmpRowView[ColumnIndex]);
+
+                            if (ItemInt64 == SearchInt64)
+                            {
+                                return Items.IndexOf(Item);
+                            }
+                        }
+                    }
+                }
+            }
+
+            return -1;
+        }
+
+        /// <summary>
         /// This function gets the number of columns of the current DataSource.
         /// </summary>
         /// <returns>The number of columns of the current DataSource
@@ -1418,7 +1452,7 @@ namespace Ict.Common.Controls
         /// <param name="ColumnNumber">The column number of the data source; if -1, then the value column is used</param>
         /// <returns>-1 if nothing is selected
         /// </returns>
-        public int GetSelectedInt32(int ColumnNumber)
+        public Int32 GetSelectedInt32(int ColumnNumber)
         {
             if (ColumnNumber == -1)
             {
@@ -1442,9 +1476,44 @@ namespace Ict.Common.Controls
         /// get the int value of the default column
         /// </summary>
         /// <returns>selected int value</returns>
-        public int GetSelectedInt32()
+        public Int32 GetSelectedInt32()
         {
             return GetSelectedInt32(-1);
+        }
+
+        /// <summary>
+        /// This function returns the Int64 value of the selected item, first column
+        /// </summary>
+        /// <param name="ColumnNumber">The column number of the data source; if -1, then the value column is used</param>
+        /// <returns>-1 if nothing is selected
+        /// </returns>
+        public Int64 GetSelectedInt64(int ColumnNumber)
+        {
+            if (ColumnNumber == -1)
+            {
+                ColumnNumber = GetColumnNrOfValueMember();
+            }
+
+            if ((this.SelectedItem != null) && (this.SelectedItem != System.DBNull.Value))
+            {
+                DataRowView rowView = this.GetSelectedRowView();
+
+                if (rowView != null)
+                {
+                    return System.Convert.ToInt64(rowView[ColumnNumber]);
+                }
+            }
+
+            return -1;
+        }
+
+        /// <summary>
+        /// get the int value of the default column
+        /// </summary>
+        /// <returns>selected int value</returns>
+        public Int64 GetSelectedInt64()
+        {
+            return GetSelectedInt64(-1);
         }
 
         /// <summary>
@@ -1531,6 +1600,42 @@ namespace Ict.Common.Controls
         public bool SetSelectedInt32(System.Int32 ANr)
         {
             return SetSelectedInt32(ANr, -1);
+        }
+
+        /// <summary>
+        /// This function selects an item with the given Int64 value.
+        /// Select alternative index if the int value is not existing
+        /// </summary>
+        /// <param name="ANr">Int value to search for</param>
+        /// <param name="AAlternativeIndex">if the ANr cannot be found in the list, select the item with this index; it is by default -1</param>
+        /// <returns>false if the int value is not existing
+        /// </returns>
+        public bool SetSelectedInt64(System.Int64 ANr, System.Int32 AAlternativeIndex)
+        {
+            bool ReturnValue;
+
+            SelectedIndex = FindInt64InComboBox(ANr);
+            ReturnValue = true;
+
+            if ((SelectedIndex == -1) && (Items.Count > 0))
+            {
+                SelectedIndex = AAlternativeIndex;
+                ReturnValue = false;
+            }
+
+            return ReturnValue;
+        }
+
+        /// <summary>
+        /// This function selects an item with the given Int64 value.
+        /// Select first element if the int value is not existing
+        /// </summary>
+        /// <param name="ANr">Int value to search for</param>
+        /// <returns>false if the int value is not existing
+        /// </returns>
+        public bool SetSelectedInt64(System.Int64 ANr)
+        {
+            return SetSelectedInt64(ANr, -1);
         }
 
         /// <summary>

@@ -273,7 +273,23 @@ namespace Ict.Petra.Client.MFinance.Gui
     /// auto generated
     protected void OpenScreenGLCurrentPeriod(object sender, EventArgs e)
     {
-        Ict.Petra.Client.MFinance.Gui.GL.TFrmGLBatches frm = new Ict.Petra.Client.MFinance.Gui.GL.TFrmGLBatches(this.Handle);
+        Ict.Petra.Client.MFinance.Gui.GL.TFrmGLBatch frm = new Ict.Petra.Client.MFinance.Gui.GL.TFrmGLBatch(this.Handle);
+        frm.LedgerNumber = FLedgerNumber;
+        frm.Show();
+    }
+
+    /// auto generated
+    protected void OpenScreenImportBankStatements(object sender, EventArgs e)
+    {
+        Ict.Petra.Client.MFinance.Gui.TFrmBankStatementImport frm = new Ict.Petra.Client.MFinance.Gui.TFrmBankStatementImport(this.Handle);
+        frm.Show();
+    }
+
+    /// auto generated
+    protected void OpenScreenAccountsPayable(object sender, EventArgs e)
+    {
+        Ict.Petra.Client.MFinance.Gui.AccountsPayable.TFrmAPMain frm = new Ict.Petra.Client.MFinance.Gui.AccountsPayable.TFrmAPMain(this.Handle);
+        frm.LedgerNumber = FLedgerNumber;
         frm.Show();
     }
 

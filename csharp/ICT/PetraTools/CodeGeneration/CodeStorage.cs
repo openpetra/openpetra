@@ -97,6 +97,49 @@ namespace Ict.Tools.CodeGeneration
             return FManualCodeFileContent.Contains(ASearchText);
         }
 
+        /// <summary>
+        /// check if main or ManualCode file contains the search text
+        /// </summary>
+        /// <param name="ANamespaceAndClassname">only works for files in the same directory at the moment</param>
+        /// <param name="ASearchText"></param>
+        /// <returns></returns>
+        public bool ImplementationContains(string ANamespaceAndClassname, string ASearchText)
+        {
+            string pathAndName = System.IO.Path.GetDirectoryName(this.FFilename) +
+                                 System.IO.Path.DirectorySeparatorChar +
+                                 ANamespaceAndClassname.Substring(ANamespaceAndClassname.LastIndexOf(".") + 1 + 4);
+
+            if (System.IO.File.Exists(pathAndName + ".cs"))
+            {
+                System.IO.StreamReader r = new System.IO.StreamReader(pathAndName + ".cs");
+                string temp = r.ReadToEnd();
+                r.Close();
+
+                if (temp.Contains(ASearchText))
+                {
+                    return true;
+                }
+            }
+            else
+            {
+                Console.WriteLine("Warning naming conventions: cannot find file " + pathAndName + ".cs");
+            }
+
+            if (System.IO.File.Exists(pathAndName + ".ManualCode.cs"))
+            {
+                System.IO.StreamReader r = new System.IO.StreamReader(pathAndName + ".ManualCode.cs");
+                string temp = r.ReadToEnd();
+                r.Close();
+
+                if (temp.Contains(ASearchText))
+                {
+                    return true;
+                }
+            }
+
+            return false;
+        }
+
         public TControlDef GetControl(string AControlName)
         {
             if (FControlList.ContainsKey(AControlName))

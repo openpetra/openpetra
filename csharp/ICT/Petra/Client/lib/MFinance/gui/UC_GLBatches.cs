@@ -66,9 +66,16 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
 
       // this code has been inserted by GenerateI18N, all changes in this region will be overwritten by GenerateI18N
       this.lblLedgerNumber.Text = Catalog.GetString("LedgerNumber:");
-      this.btnAdd.Text = Catalog.GetString("Add");
-      this.btnRemove.Text = Catalog.GetString("Remove");
-      this.lblDetailBatchDescription.Text = Catalog.GetString("DetailBatchDescription:");
+      this.rbtPosting.Text = Catalog.GetString("Posting");
+      this.rbtEditing.Text = Catalog.GetString("Editing");
+      this.rbtAll.Text = Catalog.GetString("All");
+      this.rgrShowBatches.Text = Catalog.GetString("Show batches available for");
+      this.btnNew.Text = Catalog.GetString("&Add");
+      this.btnDelete.Text = Catalog.GetString("&Delete");
+      this.lblDetailBatchDescription.Text = Catalog.GetString("Batch Description:");
+      this.lblDetailBatchControlTotal.Text = Catalog.GetString("Batch Hash Total:");
+      this.lblDetailDateEffective.Text = Catalog.GetString("Effective Date:");
+      this.lblDateCantBeBeyond.Text = Catalog.GetString("Date can't be beyond:");
       #endregion
 
     }
@@ -95,6 +102,9 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
     public void InitUserControl()
     {
       FPetraUtilsObject.SetStatusBarText(txtDetailBatchDescription, Catalog.GetString("Enter a description for this general ledger batch."));
+      FPetraUtilsObject.SetStatusBarText(txtDetailBatchControlTotal, Catalog.GetString("(Optional) Enter the total amount of the batch (hash total)."));
+      FPetraUtilsObject.SetStatusBarText(dtpDetailDateEffective, Catalog.GetString("Enter the date for which this batch is to take effect."));
+      InitializeManualCode();
       grdDetails.Columns.Clear();
       grdDetails.AddTextColumn("Batch Number", FMainDS.ABatch.ColumnBatchNumber);
       grdDetails.AddTextColumn("Batch status", FMainDS.ABatch.ColumnBatchStatus);
@@ -103,11 +113,14 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
       grdDetails.AddTextColumn("Batch Credit Total", FMainDS.ABatch.ColumnBatchCreditTotal);
       grdDetails.AddTextColumn("Batch Control Total", FMainDS.ABatch.ColumnBatchControlTotal);
       grdDetails.AddTextColumn("Batch Description", FMainDS.ABatch.ColumnBatchDescription);
+      FPetraUtilsObject.ActionEnablingEvent += ActionEnabledEvent;
 
       DataView myDataView = FMainDS.ABatch.DefaultView;
       myDataView.AllowNew = false;
       grdDetails.DataSource = new DevAge.ComponentModel.BoundDataView(myDataView);
       grdDetails.AutoSizeCells();
+
+      ShowData();
     }
 
     /// automatically generated, create a new record of ABatch and display on the edit screen
@@ -115,6 +128,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
     public bool CreateNewABatch()
     {
         Ict.Petra.Shared.MFinance.Account.Data.ABatchRow NewRow = FMainDS.ABatch.NewRowTyped(true);
+        NewRowManual(ref NewRow);
         FMainDS.ABatch.Rows.Add(NewRow);
 
         FPetraUtilsObject.SetChangedFlag();
@@ -220,6 +234,15 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
         {
             txtDetailBatchDescription.Text = FMainDS.ABatch[ACurrentDetailIndex].BatchDescription;
         }
+        if (FMainDS.ABatch[ACurrentDetailIndex].IsBatchControlTotalNull())
+        {
+            txtDetailBatchControlTotal.Text = String.Empty;
+        }
+        else
+        {
+            txtDetailBatchControlTotal.Text = FMainDS.ABatch[ACurrentDetailIndex].BatchControlTotal.ToString();
+        }
+        dtpDetailDateEffective.Value = FMainDS.ABatch[ACurrentDetailIndex].DateEffective;
     }
 
     private Int32 FPreviouslySelectedDetailRow = -1;
@@ -248,6 +271,15 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             {
                 FMainDS.ABatch[ACurrentDetailIndex].BatchDescription = txtDetailBatchDescription.Text;
             }
+            if (txtDetailBatchControlTotal.Text.Length == 0)
+            {
+                FMainDS.ABatch[ACurrentDetailIndex].SetBatchControlTotalNull();
+            }
+            else
+            {
+                FMainDS.ABatch[ACurrentDetailIndex].BatchControlTotal = Convert.ToDouble(txtDetailBatchControlTotal.Text);
+            }
+            FMainDS.ABatch[ACurrentDetailIndex].DateEffective = dtpDetailDateEffective.Value;
         }
     }
 
@@ -283,6 +315,24 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
     {
         return (TFrmPetraUtils)FPetraUtilsObject;
     }
+#endregion
+
+#region Action Handling
+
+    /// auto generated
+    public void ActionEnabledEvent(object sender, ActionEventArgs e)
+    {
+        if (e.ActionName == "actNew")
+        {
+            btnNew.Enabled = e.Enabled;
+        }
+        if (e.ActionName == "actDelete")
+        {
+            btnDelete.Enabled = e.Enabled;
+        }
+
+    }
+
 #endregion
   }
 }

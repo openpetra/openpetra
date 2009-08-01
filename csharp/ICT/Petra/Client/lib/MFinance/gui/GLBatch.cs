@@ -49,13 +49,13 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
 {
 
   /// auto generated: GL Batches
-  public partial class TFrmGLBatches: System.Windows.Forms.Form, IFrmPetraEdit
+  public partial class TFrmGLBatch: System.Windows.Forms.Form, IFrmPetraEdit
   {
     private TFrmPetraEditUtils FPetraUtilsObject;
     private Ict.Petra.Shared.MFinance.GL.Data.GLBatchTDS FMainDS;
 
     /// constructor
-    public TFrmGLBatches(IntPtr AParentFormHandle) : base()
+    public TFrmGLBatch(IntPtr AParentFormHandle) : base()
     {
       //
       // Required for Windows Form Designer support
@@ -98,7 +98,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
       ucoTransactions.PetraUtilsObject = FPetraUtilsObject;
       ucoTransactions.MainDS = FMainDS;
       ucoTransactions.InitUserControl();
-
+      InitializeManualCode();
       FPetraUtilsObject.ActionEnablingEvent += ActionEnabledEvent;
 
       FPetraUtilsObject.InitActionState();

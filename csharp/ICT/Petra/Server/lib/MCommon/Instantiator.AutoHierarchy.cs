@@ -543,11 +543,11 @@ namespace Ict.Petra.Server.MCommon.Instantiator.DataReader
 
         /// generated method from interface
         public bool GetData(string ATablename,
-                            Ict.Common.Data.TTypedDataTable AKeys,
+                            TSearchCriteria[] ASearchCriteria,
                             out Ict.Common.Data.TTypedDataTable AResultTable)
         {
             #region ManualCode
-            return TCommonDataReader.GetData(ATablename, AKeys, out AResultTable);
+            return TCommonDataReader.GetData(ATablename, ASearchCriteria, out AResultTable);
             #endregion ManualCode
         }
 

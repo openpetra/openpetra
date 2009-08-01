@@ -68,7 +68,12 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
       this.lblLedgerNumber.Text = Catalog.GetString("LedgerNumber:");
       this.btnAdd.Text = Catalog.GetString("Add");
       this.btnRemove.Text = Catalog.GetString("Remove");
-      this.lblDetailJournalDescription.Text = Catalog.GetString("DetailJournalDescription:");
+      this.lblDetailJournalDescription.Text = Catalog.GetString("Journal Description:");
+      this.lblDetailSubSystemCode.Text = Catalog.GetString("Sub System:");
+      this.lblDetailTransactionTypeCode.Text = Catalog.GetString("Transaction Type:");
+      this.lblDetailTransactionCurrency.Text = Catalog.GetString("Currency:");
+      this.lblDetailDateEffective.Text = Catalog.GetString("Effective Date:");
+      this.lblDetailExchangeRateToBase.Text = Catalog.GetString("Exchange Rate to Base:");
       #endregion
 
     }
@@ -95,6 +100,12 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
     public void InitUserControl()
     {
       FPetraUtilsObject.SetStatusBarText(txtDetailJournalDescription, Catalog.GetString("Enter a description for this general ledger journal."));
+      FPetraUtilsObject.SetStatusBarText(cmbDetailSubSystemCode, Catalog.GetString("The subsystem from which this journal came."));
+      FPetraUtilsObject.SetStatusBarText(cmbDetailTransactionTypeCode, Catalog.GetString("Select the type of journal."));
+      FPetraUtilsObject.SetStatusBarText(cmbDetailTransactionCurrency, Catalog.GetString("Select a currency code to use for the journal transactions."));
+      cmbDetailTransactionCurrency.InitialiseUserControl();
+      FPetraUtilsObject.SetStatusBarText(dtpDetailDateEffective, Catalog.GetString("Enter the date for the journal to come into effect."));
+      FPetraUtilsObject.SetStatusBarText(txtDetailExchangeRateToBase, Catalog.GetString("Enter the exchange rate from the transaction currency to base."));
       grdDetails.Columns.Clear();
       grdDetails.AddTextColumn("Journal Number", FMainDS.AJournal.ColumnJournalNumber);
       grdDetails.AddTextColumn("Journal Status", FMainDS.AJournal.ColumnJournalStatus);
@@ -109,6 +120,8 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
       myDataView.AllowNew = false;
       grdDetails.DataSource = new DevAge.ComponentModel.BoundDataView(myDataView);
       grdDetails.AutoSizeCells();
+
+      ShowData();
     }
 
     /// automatically generated, create a new record of AJournal and display on the edit screen
@@ -116,6 +129,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
     public bool CreateNewAJournal()
     {
         Ict.Petra.Shared.MFinance.Account.Data.AJournalRow NewRow = FMainDS.AJournal.NewRowTyped(true);
+
         FMainDS.AJournal.Rows.Add(NewRow);
 
         FPetraUtilsObject.SetChangedFlag();
@@ -214,6 +228,18 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
     private void ShowDetails(Int32 ACurrentDetailIndex)
     {
         txtDetailJournalDescription.Text = FMainDS.AJournal[ACurrentDetailIndex].JournalDescription;
+        cmbDetailSubSystemCode.SetSelectedString(FMainDS.AJournal[ACurrentDetailIndex].SubSystemCode);
+        if (FMainDS.AJournal[ACurrentDetailIndex].IsTransactionTypeCodeNull())
+        {
+            cmbDetailTransactionTypeCode.SelectedIndex = -1;
+        }
+        else
+        {
+            cmbDetailTransactionTypeCode.SetSelectedString(FMainDS.AJournal[ACurrentDetailIndex].TransactionTypeCode);
+        }
+        cmbDetailTransactionCurrency.SetSelectedString(FMainDS.AJournal[ACurrentDetailIndex].TransactionCurrency);
+        dtpDetailDateEffective.Value = FMainDS.AJournal[ACurrentDetailIndex].DateEffective;
+        txtDetailExchangeRateToBase.Text = FMainDS.AJournal[ACurrentDetailIndex].ExchangeRateToBase.ToString();
     }
 
     private Int32 FPreviouslySelectedDetailRow = -1;
@@ -235,6 +261,17 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
         if (ACurrentDetailIndex != -1)
         {
             FMainDS.AJournal[ACurrentDetailIndex].JournalDescription = txtDetailJournalDescription.Text;
+            FMainDS.AJournal[ACurrentDetailIndex].SubSystemCode = cmbDetailSubSystemCode.GetSelectedString();
+            if (cmbDetailTransactionTypeCode.SelectedIndex == -1)
+            {
+                FMainDS.AJournal[ACurrentDetailIndex].SetTransactionTypeCodeNull();
+            }
+            else
+            {
+                FMainDS.AJournal[ACurrentDetailIndex].TransactionTypeCode = cmbDetailTransactionTypeCode.GetSelectedString();
+            }
+            FMainDS.AJournal[ACurrentDetailIndex].TransactionCurrency = cmbDetailTransactionCurrency.GetSelectedString();
+            FMainDS.AJournal[ACurrentDetailIndex].ExchangeRateToBase = Convert.ToDouble(txtDetailExchangeRateToBase.Text);
         }
     }
 

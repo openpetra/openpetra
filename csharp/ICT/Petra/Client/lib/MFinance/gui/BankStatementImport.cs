@@ -43,7 +43,7 @@ namespace Ict.Petra.Client.MFinance.Gui
         /// <summary>
         /// constructor
         /// </summary>
-        public TFrmBankStatementImport()
+        public TFrmBankStatementImport(IntPtr AParentFormHandle)
         {
             //
             // The InitializeComponent() call is required for Windows Forms designer support.

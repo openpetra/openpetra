@@ -1,7 +1,6 @@
 RootNode:
     BaseClass: System.Windows.Forms.UserControl
     UtilObjectClass: TFrmPetraEditUtils
-    ClassName: TUC_GLJournals
     Namespace: Ict.Petra.Client.MFinance.Gui.GL
     DatasetType: Ict.Petra.Shared.MFinance.GL.Data.GLBatchTDS
     DetailTable: AJournal
@@ -31,6 +30,10 @@ RootNode:
             Columns: [AJournal.JournalNumber, AJournal.JournalStatus, AJournal.JournalDebitTotal, AJournal.JournalCreditTotal, AJournal.TransactionCurrency, AJournal.JournalDescription, AJournal.SubSystemCode, AJournal.TransactionTypeCode]
         pnlDetails:
             Dock: Bottom
-            Controls:
-                Row0: [txtDetailJournalDescription]
-        txtDetailJournalDescription: {NoAttribute=true}
+            Controls: [txtDetailJournalDescription, cmbDetailSubSystemCode, cmbDetailTransactionTypeCode, cmbDetailTransactionCurrency, dtpDetailDateEffective, txtDetailExchangeRateToBase]
+        txtDetailJournalDescription: {Label=Journal Description}
+        cmbDetailSubSystemCode: {Label=Sub System}
+        cmbDetailTransactionTypeCode: {Label=Transaction Type}
+        cmbDetailTransactionCurrency: {Label=Currency, List=CurrencyCodeList}
+        dtpDetailDateEffective: {Label=Effective Date, ReadOnly=true}
+        txtDetailExchangeRateToBase: {Label= Exchange Rate to Base, TODOSaveToDailyExchangeRateTableWithDialog=think}

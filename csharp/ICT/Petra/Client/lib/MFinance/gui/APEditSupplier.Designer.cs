@@ -37,7 +37,7 @@ using Ict.Petra.Client.CommonControls;
 
 namespace Ict.Petra.Client.MFinance.Gui.AccountsPayable
 {
-    partial class TFrmAccountsPayableEditSupplier
+    partial class TFrmAPEditSupplier
     {
         /// <summary>
         /// Designer variable used to keep track of non-visual components.
@@ -67,7 +67,7 @@ namespace Ict.Petra.Client.MFinance.Gui.AccountsPayable
         /// </summary>
         private void InitializeComponent()
         {
-            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(TFrmAccountsPayableEditSupplier));
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(TFrmAPEditSupplier));
 
             this.pnlContent = new System.Windows.Forms.Panel();
             this.tableLayoutPanel1 = new System.Windows.Forms.TableLayoutPanel();
@@ -704,7 +704,7 @@ namespace Ict.Petra.Client.MFinance.Gui.AccountsPayable
             this.stbMain.AutoSize = true;
 
             //
-            // TFrmAccountsPayableEditSupplier
+            // TFrmAPEditSupplier
             //
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(660, 500);
@@ -715,7 +715,7 @@ namespace Ict.Petra.Client.MFinance.Gui.AccountsPayable
             this.MainMenuStrip = mnuMain;
             this.Controls.Add(this.stbMain);
             this.Icon = (System.Drawing.Icon)resources.GetObject("$this.Icon");
-            this.Name = "TFrmAccountsPayableEditSupplier";
+            this.Name = "TFrmAPEditSupplier";
             this.Text = "AP Supplier Edit";
 
 	        this.Activated += new System.EventHandler(this.TFrmPetra_Activated);

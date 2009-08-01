@@ -321,7 +321,7 @@ namespace Ict.Petra.Client.MFinance.Gui
             //
             this.mniImportBankStatements.Name = "mniImportBankStatements";
             this.mniImportBankStatements.AutoSize = true;
-            this.mniImportBankStatements.Click += new System.EventHandler(this.ImportBankStatements);
+            this.mniImportBankStatements.Click += new System.EventHandler(this.OpenScreenImportBankStatements);
             this.mniImportBankStatements.Text = "Import &Bank statements";
             //
             // mniGiftBatch
@@ -385,7 +385,7 @@ namespace Ict.Petra.Client.MFinance.Gui
             //
             this.mniAccountsPayable.Name = "mniAccountsPayable";
             this.mniAccountsPayable.AutoSize = true;
-            this.mniAccountsPayable.Click += new System.EventHandler(this.AccountsPayable);
+            this.mniAccountsPayable.Click += new System.EventHandler(this.OpenScreenAccountsPayable);
             this.mniAccountsPayable.Text = "&Accounts Payable";
             //
             // mniBudget

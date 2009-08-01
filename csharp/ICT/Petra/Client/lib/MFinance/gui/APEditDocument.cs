@@ -50,13 +50,13 @@ namespace Ict.Petra.Client.MFinance.Gui.AccountsPayable
 {
 
   /// auto generated: AP Document Edit
-  public partial class TFrmAccountsPayableEditDocument: System.Windows.Forms.Form, IFrmPetraEdit
+  public partial class TFrmAPEditDocument: System.Windows.Forms.Form, IFrmPetraEdit
   {
     private TFrmPetraEditUtils FPetraUtilsObject;
     private Ict.Petra.Shared.MFinance.AP.Data.AccountsPayableTDS FMainDS;
 
     /// constructor
-    public TFrmAccountsPayableEditDocument(IntPtr AParentFormHandle) : base()
+    public TFrmAPEditDocument(IntPtr AParentFormHandle) : base()
     {
       //
       // Required for Windows Form Designer support
