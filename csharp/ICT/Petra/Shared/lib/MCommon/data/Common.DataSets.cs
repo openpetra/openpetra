@@ -1,7 +1,31 @@
 /* Auto generated with nant generateORM
- * based on CommonTypedDataSets.xml
  * Do not modify this file manually!
  */
+/*************************************************************************
+ *
+ * DO NOT REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
+ *
+ * @Authors:
+ *       auto generated
+ *
+ * Copyright 2004-2009 by OM International
+ *
+ * This file is part of OpenPetra.org.
+ *
+ * OpenPetra.org is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * OpenPetra.org is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with OpenPetra.org.  If not, see <http://www.gnu.org/licenses/>.
+ *
+ ************************************************************************/
 namespace Ict.Petra.Shared.MCommon.Data
 {
     using Ict.Common;
@@ -11,43 +35,37 @@ namespace Ict.Petra.Shared.MCommon.Data
     using System.Data.Odbc;
     using Ict.Petra.Shared.MPartner.Partner.Data;
     using Ict.Petra.Shared.MPersonnel.Personnel.Data;
-    
-    
-    /// auto generated
+
+     /// auto generated
     [Serializable()]
     public class OfficeSpecificDataLabelsTDS : TTypedDataSet
     {
-        
+
         private PDataLabelTable TableDataLabelList;
-        
         private PDataLabelUseTable TableDataLabelUseList;
-        
         private PDataLabelLookupTable TableDataLabelLookupList;
-        
         private PDataLabelLookupCategoryTable TableDataLabelLookupCategoryList;
-        
         private PDataLabelValueApplicationTable TablePDataLabelValueApplication;
-        
         private PDataLabelValuePartnerTable TablePDataLabelValuePartner;
-        
+
         /// auto generated
-        public OfficeSpecificDataLabelsTDS() : 
+        public OfficeSpecificDataLabelsTDS() :
                 base("OfficeSpecificDataLabelsTDS")
         {
         }
-        
+
         /// auto generated for serialization
-        public OfficeSpecificDataLabelsTDS(System.Runtime.Serialization.SerializationInfo info, System.Runtime.Serialization.StreamingContext context) : 
+        public OfficeSpecificDataLabelsTDS(System.Runtime.Serialization.SerializationInfo info, System.Runtime.Serialization.StreamingContext context) :
                 base(info, context)
         {
         }
-        
+
         /// auto generated
-        public OfficeSpecificDataLabelsTDS(string ADatasetName) : 
+        public OfficeSpecificDataLabelsTDS(string ADatasetName) :
                 base(ADatasetName)
         {
         }
-        
+
         /// auto generated
         public PDataLabelTable DataLabelList
         {
@@ -56,7 +74,7 @@ namespace Ict.Petra.Shared.MCommon.Data
                 return this.TableDataLabelList;
             }
         }
-        
+
         /// auto generated
         public PDataLabelUseTable DataLabelUseList
         {
@@ -65,7 +83,7 @@ namespace Ict.Petra.Shared.MCommon.Data
                 return this.TableDataLabelUseList;
             }
         }
-        
+
         /// auto generated
         public PDataLabelLookupTable DataLabelLookupList
         {
@@ -74,7 +92,7 @@ namespace Ict.Petra.Shared.MCommon.Data
                 return this.TableDataLabelLookupList;
             }
         }
-        
+
         /// auto generated
         public PDataLabelLookupCategoryTable DataLabelLookupCategoryList
         {
@@ -83,7 +101,7 @@ namespace Ict.Petra.Shared.MCommon.Data
                 return this.TableDataLabelLookupCategoryList;
             }
         }
-        
+
         /// auto generated
         public PDataLabelValueApplicationTable PDataLabelValueApplication
         {
@@ -92,7 +110,7 @@ namespace Ict.Petra.Shared.MCommon.Data
                 return this.TablePDataLabelValueApplication;
             }
         }
-        
+
         /// auto generated
         public PDataLabelValuePartnerTable PDataLabelValuePartner
         {
@@ -101,13 +119,13 @@ namespace Ict.Petra.Shared.MCommon.Data
                 return this.TablePDataLabelValuePartner;
             }
         }
-        
+
         /// auto generated
         public new virtual OfficeSpecificDataLabelsTDS GetChangesTyped(bool removeEmptyTables)
         {
             return ((OfficeSpecificDataLabelsTDS)(base.GetChangesTyped(removeEmptyTables)));
         }
-        
+
         /// auto generated
         protected override void InitTables()
         {
@@ -118,7 +136,7 @@ namespace Ict.Petra.Shared.MCommon.Data
             this.Tables.Add(new PDataLabelValueApplicationTable("PDataLabelValueApplication"));
             this.Tables.Add(new PDataLabelValuePartnerTable("PDataLabelValuePartner"));
         }
-        
+
         /// auto generated
         protected override void InitTables(System.Data.DataSet ds)
         {
@@ -147,7 +165,7 @@ namespace Ict.Petra.Shared.MCommon.Data
                 this.Tables.Add(new PDataLabelValuePartnerTable("PDataLabelValuePartner"));
             }
         }
-        
+
         /// auto generated
         protected override void MapTables()
         {
@@ -178,7 +196,7 @@ namespace Ict.Petra.Shared.MCommon.Data
                 this.TablePDataLabelValuePartner.InitVars();
             }
         }
-        
+
         /// auto generated
         public override void InitVars()
         {
@@ -190,263 +208,206 @@ namespace Ict.Petra.Shared.MCommon.Data
             this.TablePDataLabelValueApplication = ((PDataLabelValueApplicationTable)(this.Tables["PDataLabelValueApplication"]));
             this.TablePDataLabelValuePartner = ((PDataLabelValuePartnerTable)(this.Tables["PDataLabelValuePartner"]));
         }
-        
+
         /// auto generated
         protected override void InitConstraints()
         {
-            if (((this.TableDataLabelLookupCategoryList != null) 
+
+            if (((this.TableDataLabelLookupCategoryList != null)
                         && (this.TableDataLabelList != null)))
             {
                 this.FConstraints.Add(new TTypedConstraint("FKDataLabel2", "DataLabelLookupCategoryList", new string[] {
                                 "p_category_code_c"}, "DataLabelList", new string[] {
                                 "p_lookup_category_code_c"}));
             }
-            if (((this.TableDataLabelList != null) 
-                        && (this.TableDataLabelUseList != null)))
-            {
-                this.FConstraints.Add(new TTypedConstraint("FKDataLabelUse1", "DataLabelList", new string[] {
-                                "p_key_i"}, "DataLabelUseList", new string[] {
-                                "p_data_label_key_i"}));
-            }
-            if (((this.TableDataLabelLookupCategoryList != null) 
+            if (((this.TableDataLabelLookupCategoryList != null)
                         && (this.TableDataLabelLookupList != null)))
             {
                 this.FConstraints.Add(new TTypedConstraint("FKDataLabelLookup1", "DataLabelLookupCategoryList", new string[] {
                                 "p_category_code_c"}, "DataLabelLookupList", new string[] {
                                 "p_category_code_c"}));
             }
-            if (((this.TableDataLabelList != null) 
+            if (((this.TableDataLabelList != null)
+                        && (this.TableDataLabelUseList != null)))
+            {
+                this.FConstraints.Add(new TTypedConstraint("FKDataLabelUse1", "DataLabelList", new string[] {
+                                "p_key_i"}, "DataLabelUseList", new string[] {
+                                "p_data_label_key_i"}));
+            }
+            if (((this.TableDataLabelList != null)
                         && (this.TablePDataLabelValueApplication != null)))
             {
                 this.FConstraints.Add(new TTypedConstraint("FKDataLabelValueApplication2", "DataLabelList", new string[] {
                                 "p_key_i"}, "PDataLabelValueApplication", new string[] {
                                 "p_data_label_key_i"}));
             }
-            if (((this.TableDataLabelList != null) 
+            if (((this.TableDataLabelList != null)
                         && (this.TablePDataLabelValuePartner != null)))
             {
                 this.FConstraints.Add(new TTypedConstraint("FKDataLabelValuePartner2", "DataLabelList", new string[] {
                                 "p_key_i"}, "PDataLabelValuePartner", new string[] {
                                 "p_data_label_key_i"}));
             }
+
             this.FRelations.Add(new TTypedRelation("LabelUse", "DataLabelList", new string[] {
                             "p_key_i"}, "DataLabelUseList", new string[] {
                             "p_data_label_key_i"}, false));
         }
     }
-    
-    /// auto generated custom table
+     /// auto generated
     [Serializable()]
-    public class CacheableTablesTDSContentsTable : TTypedDataTable
+    public class CacheableTablesTDS : TTypedDataSet
     {
-        
-        /// 
-        public DataColumn ColumnTableName;
-        
-        /// 
-        public DataColumn ColumnDataUpToDate;
-        
-        /// 
-        public DataColumn ColumnDataChanged;
-        
-        /// 
-        public DataColumn ColumnChangesSavedExternally;
-        
-        /// 
-        public DataColumn ColumnCachedSince;
-        
-        /// 
-        public DataColumn ColumnLastAccessed;
-        
-        /// 
-        public DataColumn ColumnHashCode;
-        
-        /// 
-        public DataColumn ColumnTableSize;
-        
-        /// constructor
-        public CacheableTablesTDSContentsTable() : 
-                base("Contents")
+
+        private CacheableTablesTDSContentsTable TableContents;
+
+        /// auto generated
+        public CacheableTablesTDS() :
+                base("CacheableTablesTDS")
         {
         }
-        
-        /// constructor
-        public CacheableTablesTDSContentsTable(string ATablename) : 
-                base(ATablename)
-        {
-        }
-        
-        /// constructor for serialization
-        public CacheableTablesTDSContentsTable(System.Runtime.Serialization.SerializationInfo info, System.Runtime.Serialization.StreamingContext context) : 
+
+        /// auto generated for serialization
+        public CacheableTablesTDS(System.Runtime.Serialization.SerializationInfo info, System.Runtime.Serialization.StreamingContext context) :
                 base(info, context)
         {
         }
-        
-        /// Access a typed row by index
-        public CacheableTablesTDSContentsRow this[int i]
+
+        /// auto generated
+        public CacheableTablesTDS(string ADatasetName) :
+                base(ADatasetName)
+        {
+        }
+
+        /// auto generated
+        public CacheableTablesTDSContentsTable Contents
         {
             get
             {
-                return ((CacheableTablesTDSContentsRow)(this.Rows[i]));
+                return this.TableContents;
             }
         }
-        
-        /// get the name of the field in the database for this column
-        public static string GetTableNameDBName()
+
+        /// auto generated
+        public new virtual CacheableTablesTDS GetChangesTyped(bool removeEmptyTables)
         {
-            return "TableName";
+            return ((CacheableTablesTDS)(base.GetChangesTyped(removeEmptyTables)));
         }
-        
-        /// get help text for column
-        public static string GetTableNameHelp()
+
+        /// auto generated
+        protected override void InitTables()
         {
-            return null;
+            this.Tables.Add(new CacheableTablesTDSContentsTable("Contents"));
         }
-        
-        /// get label of column
-        public static string GetTableNameLabel()
+
+        /// auto generated
+        protected override void InitTables(System.Data.DataSet ds)
         {
-            return "";
+            if ((ds.Tables.IndexOf("Contents") != -1))
+            {
+                this.Tables.Add(new CacheableTablesTDSContentsTable("Contents"));
+            }
         }
-        
-        /// get the name of the field in the database for this column
-        public static string GetDataUpToDateDBName()
+
+        /// auto generated
+        protected override void MapTables()
         {
-            return "DataUpToDate";
+            this.InitVars();
+            base.MapTables();
+            if ((this.TableContents != null))
+            {
+                this.TableContents.InitVars();
+            }
         }
-        
-        /// get help text for column
-        public static string GetDataUpToDateHelp()
+
+        /// auto generated
+        public override void InitVars()
         {
-            return null;
+            this.DataSetName = "CacheableTablesTDS";
+            this.TableContents = ((CacheableTablesTDSContentsTable)(this.Tables["Contents"]));
         }
-        
-        /// get label of column
-        public static string GetDataUpToDateLabel()
+
+        /// auto generated
+        protected override void InitConstraints()
         {
-            return "";
+
         }
-        
-        /// get the name of the field in the database for this column
-        public static string GetDataChangedDBName()
+    }
+
+    ///
+    [Serializable()]
+    public class CacheableTablesTDSContentsTable : TTypedDataTable
+    {
+        /// Name of the Cached DataTable
+        public DataColumn ColumnTableName;
+        /// Tells whether the data in the Cached DataTable is the same than the external source of the data
+        public DataColumn ColumnDataUpToDate;
+        /// Tells whether data in the Cached DataTable was changed
+        public DataColumn ColumnDataChanged;
+        /// Tells whether changed data in the CachedDataTable was saved externally
+        public DataColumn ColumnChangesSavedExternally;
+        /// Date and Time when the DataTable was added to the Cache
+        public DataColumn ColumnCachedSince;
+        /// Date and Time when the DataTable was last handed out of the Cache
+        public DataColumn ColumnLastAccessed;
+        /// HashCode of the Cached DataTable
+        public DataColumn ColumnHashCode;
+        /// Size of the contents of the Cached DataTable (in Bytes)
+        public DataColumn ColumnTableSize;
+
+        private static short TableId = -1;
+
+        private static bool FInitInfoValues = InitInfoValues();
+        private static bool InitInfoValues()
         {
-            return "DataChanged";
+            TableInfo.Add(TableId, new TTypedTableInfo(TableId, "CacheableTablesTDSContents", "CacheableTablesTDSContents",
+                new TTypedColumnInfo[] {
+                    new TTypedColumnInfo(0, "TableName", "TableName", OdbcType.Int, -1, false),
+                    new TTypedColumnInfo(1, "DataUpToDate", "DataUpToDate", OdbcType.Int, -1, false),
+                    new TTypedColumnInfo(2, "DataChanged", "DataChanged", OdbcType.Int, -1, false),
+                    new TTypedColumnInfo(3, "ChangesSavedExternally", "ChangesSavedExternally", OdbcType.Int, -1, false),
+                    new TTypedColumnInfo(4, "CachedSince", "CachedSince", OdbcType.Int, -1, false),
+                    new TTypedColumnInfo(5, "LastAccessed", "LastAccessed", OdbcType.Int, -1, false),
+                    new TTypedColumnInfo(6, "HashCode", "HashCode", OdbcType.Int, -1, false),
+                    new TTypedColumnInfo(7, "TableSize", "TableSize", OdbcType.Int, -1, false)
+                },
+                new string[] {
+
+                }));
+            return true;
         }
-        
-        /// get help text for column
-        public static string GetDataChangedHelp()
+
+        /// constructor
+        public CacheableTablesTDSContentsTable() :
+                base("CacheableTablesTDSContents")
         {
-            return null;
         }
-        
-        /// get label of column
-        public static string GetDataChangedLabel()
+
+        /// constructor
+        public CacheableTablesTDSContentsTable(string ATablename) :
+                base(ATablename)
         {
-            return "";
         }
-        
-        /// get the name of the field in the database for this column
-        public static string GetChangesSavedExternallyDBName()
+
+        /// constructor for serialization
+        public CacheableTablesTDSContentsTable(System.Runtime.Serialization.SerializationInfo info, System.Runtime.Serialization.StreamingContext context) :
+                base(info, context)
         {
-            return "ChangesSavedExternally";
         }
-        
-        /// get help text for column
-        public static string GetChangesSavedExternallyHelp()
+
+        /// create the columns
+        protected override void InitClass()
         {
-            return null;
+            this.Columns.Add(new System.Data.DataColumn("TableName", typeof(string)));
+            this.Columns.Add(new System.Data.DataColumn("DataUpToDate", typeof(bool)));
+            this.Columns.Add(new System.Data.DataColumn("DataChanged", typeof(bool)));
+            this.Columns.Add(new System.Data.DataColumn("ChangesSavedExternally", typeof(bool)));
+            this.Columns.Add(new System.Data.DataColumn("CachedSince", typeof(DateTime)));
+            this.Columns.Add(new System.Data.DataColumn("LastAccessed", typeof(DateTime)));
+            this.Columns.Add(new System.Data.DataColumn("HashCode", typeof(string)));
+            this.Columns.Add(new System.Data.DataColumn("TableSize", typeof(Int32)));
         }
-        
-        /// get label of column
-        public static string GetChangesSavedExternallyLabel()
-        {
-            return "";
-        }
-        
-        /// get the name of the field in the database for this column
-        public static string GetCachedSinceDBName()
-        {
-            return "CachedSince";
-        }
-        
-        /// get help text for column
-        public static string GetCachedSinceHelp()
-        {
-            return null;
-        }
-        
-        /// get label of column
-        public static string GetCachedSinceLabel()
-        {
-            return "";
-        }
-        
-        /// get the name of the field in the database for this column
-        public static string GetLastAccessedDBName()
-        {
-            return "LastAccessed";
-        }
-        
-        /// get help text for column
-        public static string GetLastAccessedHelp()
-        {
-            return null;
-        }
-        
-        /// get label of column
-        public static string GetLastAccessedLabel()
-        {
-            return "";
-        }
-        
-        /// get the name of the field in the database for this column
-        public static string GetHashCodeDBName()
-        {
-            return "HashCode";
-        }
-        
-        /// get help text for column
-        public static string GetHashCodeHelp()
-        {
-            return null;
-        }
-        
-        /// get label of column
-        public static string GetHashCodeLabel()
-        {
-            return "";
-        }
-        
-        /// get the name of the field in the database for this column
-        public static string GetTableSizeDBName()
-        {
-            return "TableSize";
-        }
-        
-        /// get help text for column
-        public static string GetTableSizeHelp()
-        {
-            return null;
-        }
-        
-        /// get label of column
-        public static string GetTableSizeLabel()
-        {
-            return "";
-        }
-        
-        /// CamelCase version of the tablename
-        public static string GetTableName()
-        {
-            return "Contents";
-        }
-        
-        /// original name of table in the database
-        public static string GetTableDBName()
-        {
-            return "Contents";
-        }
-        
+
         /// assign columns to properties, set primary key
         public override void InitVars()
         {
@@ -458,10 +419,17 @@ namespace Ict.Petra.Shared.MCommon.Data
             this.ColumnLastAccessed = this.Columns["LastAccessed"];
             this.ColumnHashCode = this.Columns["HashCode"];
             this.ColumnTableSize = this.Columns["TableSize"];
-            this.PrimaryKey = new System.Data.DataColumn[] {
-                    this.ColumnTableName};
         }
-        
+
+        /// Access a typed row by index
+        public CacheableTablesTDSContentsRow this[int i]
+        {
+            get
+            {
+                return ((CacheableTablesTDSContentsRow)(this.Rows[i]));
+            }
+        }
+
         /// create a new typed row
         public CacheableTablesTDSContentsRow NewRowTyped(bool AWithDefaultValues)
         {
@@ -472,81 +440,144 @@ namespace Ict.Petra.Shared.MCommon.Data
             }
             return ret;
         }
-        
+
+        /// create a new typed row, always with default values
+        public CacheableTablesTDSContentsRow NewRowTyped()
+        {
+            return this.NewRowTyped(true);
+        }
+
         /// new typed row using DataRowBuilder
         protected override System.Data.DataRow NewRowFromBuilder(System.Data.DataRowBuilder builder)
         {
             return new CacheableTablesTDSContentsRow(builder);
         }
-        
-        /// create the columns
-        protected override void InitClass()
+
+        /// get typed set of changes
+        public CacheableTablesTDSContentsTable GetChangesTyped()
         {
-            this.Columns.Add(new System.Data.DataColumn("TableName", typeof(String)));
-            this.Columns.Add(new System.Data.DataColumn("DataUpToDate", typeof(Boolean)));
-            this.Columns.Add(new System.Data.DataColumn("DataChanged", typeof(Boolean)));
-            this.Columns.Add(new System.Data.DataColumn("ChangesSavedExternally", typeof(Boolean)));
-            this.Columns.Add(new System.Data.DataColumn("CachedSince", typeof(DateTime)));
-            this.Columns.Add(new System.Data.DataColumn("LastAccessed", typeof(DateTime)));
-            this.Columns.Add(new System.Data.DataColumn("HashCode", typeof(String)));
-            this.Columns.Add(new System.Data.DataColumn("TableSize", typeof(Int32)));
+            return ((CacheableTablesTDSContentsTable)(base.GetChangesTypedInternal()));
         }
-        
-        /// prepare odbc parameters for given column
-        public override OdbcParameter CreateOdbcParameter(DataColumn ACol)
+
+        /// get an odbc parameter for the given column
+        public override OdbcParameter CreateOdbcParameter(Int32 AColumnNr)
         {
-            if ((ACol == ColumnTableName))
-            {
-                return new System.Data.Odbc.OdbcParameter("", OdbcType.Int);
-            }
-            if ((ACol == ColumnDataUpToDate))
-            {
-                return new System.Data.Odbc.OdbcParameter("", OdbcType.Int);
-            }
-            if ((ACol == ColumnDataChanged))
-            {
-                return new System.Data.Odbc.OdbcParameter("", OdbcType.Int);
-            }
-            if ((ACol == ColumnChangesSavedExternally))
-            {
-                return new System.Data.Odbc.OdbcParameter("", OdbcType.Int);
-            }
-            if ((ACol == ColumnCachedSince))
-            {
-                return new System.Data.Odbc.OdbcParameter("", OdbcType.Int);
-            }
-            if ((ACol == ColumnLastAccessed))
-            {
-                return new System.Data.Odbc.OdbcParameter("", OdbcType.Int);
-            }
-            if ((ACol == ColumnHashCode))
-            {
-                return new System.Data.Odbc.OdbcParameter("", OdbcType.Int);
-            }
-            if ((ACol == ColumnTableSize))
-            {
-                return new System.Data.Odbc.OdbcParameter("", OdbcType.Int);
-            }
-            return null;
+            return CreateOdbcParameter(TableId, AColumnNr);
         }
+
+        /// get the name of the field in the database for this column
+        protected static string GetTableNameDBName()
+        {
+            return "TableName";
+        }
+
+        /// get character length for column
+        public static short GetTableNameLength()
+        {
+            return -1;
+        }
+
+        /// get the name of the field in the database for this column
+        protected static string GetDataUpToDateDBName()
+        {
+            return "DataUpToDate";
+        }
+
+        /// get character length for column
+        public static short GetDataUpToDateLength()
+        {
+            return -1;
+        }
+
+        /// get the name of the field in the database for this column
+        protected static string GetDataChangedDBName()
+        {
+            return "DataChanged";
+        }
+
+        /// get character length for column
+        public static short GetDataChangedLength()
+        {
+            return -1;
+        }
+
+        /// get the name of the field in the database for this column
+        protected static string GetChangesSavedExternallyDBName()
+        {
+            return "ChangesSavedExternally";
+        }
+
+        /// get character length for column
+        public static short GetChangesSavedExternallyLength()
+        {
+            return -1;
+        }
+
+        /// get the name of the field in the database for this column
+        protected static string GetCachedSinceDBName()
+        {
+            return "CachedSince";
+        }
+
+        /// get character length for column
+        public static short GetCachedSinceLength()
+        {
+            return -1;
+        }
+
+        /// get the name of the field in the database for this column
+        protected static string GetLastAccessedDBName()
+        {
+            return "LastAccessed";
+        }
+
+        /// get character length for column
+        public static short GetLastAccessedLength()
+        {
+            return -1;
+        }
+
+        /// get the name of the field in the database for this column
+        protected static string GetHashCodeDBName()
+        {
+            return "HashCode";
+        }
+
+        /// get character length for column
+        public static short GetHashCodeLength()
+        {
+            return -1;
+        }
+
+        /// get the name of the field in the database for this column
+        protected static string GetTableSizeDBName()
+        {
+            return "TableSize";
+        }
+
+        /// get character length for column
+        public static short GetTableSizeLength()
+        {
+            return -1;
+        }
+
     }
-    
-    /// CustomRow auto generated
+
+    ///
     [Serializable()]
     public class CacheableTablesTDSContentsRow : System.Data.DataRow
     {
-        
         private CacheableTablesTDSContentsTable myTable;
-        
+
         /// Constructor
-        public CacheableTablesTDSContentsRow(System.Data.DataRowBuilder rb) : 
+        public CacheableTablesTDSContentsRow(System.Data.DataRowBuilder rb) :
                 base(rb)
         {
             this.myTable = ((CacheableTablesTDSContentsTable)(this.Table));
         }
-        
-        /// 
-        public String TableName
+
+        /// Name of the Cached DataTable
+        public string TableName
         {
             get
             {
@@ -558,21 +589,21 @@ namespace Ict.Petra.Shared.MCommon.Data
                 }
                 else
                 {
-                    return ((String)(ret));
+                    return ((string)(ret));
                 }
             }
             set
             {
-                if ((this.IsNull(this.myTable.ColumnTableName) 
-                            || (((String)(this[this.myTable.ColumnTableName])) != value)))
+                if ((this.IsNull(this.myTable.ColumnTableName)
+                            || (((string)(this[this.myTable.ColumnTableName])) != value)))
                 {
                     this[this.myTable.ColumnTableName] = value;
                 }
             }
         }
-        
-        /// 
-        public Boolean DataUpToDate
+
+        /// Tells whether the data in the Cached DataTable is the same than the external source of the data
+        public bool DataUpToDate
         {
             get
             {
@@ -584,21 +615,21 @@ namespace Ict.Petra.Shared.MCommon.Data
                 }
                 else
                 {
-                    return ((Boolean)(ret));
+                    return ((bool)(ret));
                 }
             }
             set
             {
-                if ((this.IsNull(this.myTable.ColumnDataUpToDate) 
-                            || (((Boolean)(this[this.myTable.ColumnDataUpToDate])) != value)))
+                if ((this.IsNull(this.myTable.ColumnDataUpToDate)
+                            || (((bool)(this[this.myTable.ColumnDataUpToDate])) != value)))
                 {
                     this[this.myTable.ColumnDataUpToDate] = value;
                 }
             }
         }
-        
-        /// 
-        public Boolean DataChanged
+
+        /// Tells whether data in the Cached DataTable was changed
+        public bool DataChanged
         {
             get
             {
@@ -610,21 +641,21 @@ namespace Ict.Petra.Shared.MCommon.Data
                 }
                 else
                 {
-                    return ((Boolean)(ret));
+                    return ((bool)(ret));
                 }
             }
             set
             {
-                if ((this.IsNull(this.myTable.ColumnDataChanged) 
-                            || (((Boolean)(this[this.myTable.ColumnDataChanged])) != value)))
+                if ((this.IsNull(this.myTable.ColumnDataChanged)
+                            || (((bool)(this[this.myTable.ColumnDataChanged])) != value)))
                 {
                     this[this.myTable.ColumnDataChanged] = value;
                 }
             }
         }
-        
-        /// 
-        public Boolean ChangesSavedExternally
+
+        /// Tells whether changed data in the CachedDataTable was saved externally
+        public bool ChangesSavedExternally
         {
             get
             {
@@ -636,20 +667,20 @@ namespace Ict.Petra.Shared.MCommon.Data
                 }
                 else
                 {
-                    return ((Boolean)(ret));
+                    return ((bool)(ret));
                 }
             }
             set
             {
-                if ((this.IsNull(this.myTable.ColumnChangesSavedExternally) 
-                            || (((Boolean)(this[this.myTable.ColumnChangesSavedExternally])) != value)))
+                if ((this.IsNull(this.myTable.ColumnChangesSavedExternally)
+                            || (((bool)(this[this.myTable.ColumnChangesSavedExternally])) != value)))
                 {
                     this[this.myTable.ColumnChangesSavedExternally] = value;
                 }
             }
         }
-        
-        /// 
+
+        /// Date and Time when the DataTable was added to the Cache
         public DateTime CachedSince
         {
             get
@@ -667,15 +698,15 @@ namespace Ict.Petra.Shared.MCommon.Data
             }
             set
             {
-                if ((this.IsNull(this.myTable.ColumnCachedSince) 
+                if ((this.IsNull(this.myTable.ColumnCachedSince)
                             || (((DateTime)(this[this.myTable.ColumnCachedSince])) != value)))
                 {
                     this[this.myTable.ColumnCachedSince] = value;
                 }
             }
         }
-        
-        /// 
+
+        /// Date and Time when the DataTable was last handed out of the Cache
         public DateTime LastAccessed
         {
             get
@@ -693,16 +724,16 @@ namespace Ict.Petra.Shared.MCommon.Data
             }
             set
             {
-                if ((this.IsNull(this.myTable.ColumnLastAccessed) 
+                if ((this.IsNull(this.myTable.ColumnLastAccessed)
                             || (((DateTime)(this[this.myTable.ColumnLastAccessed])) != value)))
                 {
                     this[this.myTable.ColumnLastAccessed] = value;
                 }
             }
         }
-        
-        /// 
-        public String HashCode
+
+        /// HashCode of the Cached DataTable
+        public string HashCode
         {
             get
             {
@@ -714,20 +745,20 @@ namespace Ict.Petra.Shared.MCommon.Data
                 }
                 else
                 {
-                    return ((String)(ret));
+                    return ((string)(ret));
                 }
             }
             set
             {
-                if ((this.IsNull(this.myTable.ColumnHashCode) 
-                            || (((String)(this[this.myTable.ColumnHashCode])) != value)))
+                if ((this.IsNull(this.myTable.ColumnHashCode)
+                            || (((string)(this[this.myTable.ColumnHashCode])) != value)))
                 {
                     this[this.myTable.ColumnHashCode] = value;
                 }
             }
         }
-        
-        /// 
+
+        /// Size of the contents of the Cached DataTable (in Bytes)
         public Int32 TableSize
         {
             get
@@ -745,14 +776,14 @@ namespace Ict.Petra.Shared.MCommon.Data
             }
             set
             {
-                if ((this.IsNull(this.myTable.ColumnTableSize) 
+                if ((this.IsNull(this.myTable.ColumnTableSize)
                             || (((Int32)(this[this.myTable.ColumnTableSize])) != value)))
                 {
                     this[this.myTable.ColumnTableSize] = value;
                 }
             }
         }
-        
+
         /// set default values
         public virtual void InitValues()
         {
@@ -765,216 +796,133 @@ namespace Ict.Petra.Shared.MCommon.Data
             this.SetNull(this.myTable.ColumnHashCode);
             this.SetNull(this.myTable.ColumnTableSize);
         }
-        
+
         /// test for NULL value
         public bool IsTableNameNull()
         {
             return this.IsNull(this.myTable.ColumnTableName);
         }
-        
+
         /// assign NULL value
         public void SetTableNameNull()
         {
             this.SetNull(this.myTable.ColumnTableName);
         }
-        
+
         /// test for NULL value
         public bool IsDataUpToDateNull()
         {
             return this.IsNull(this.myTable.ColumnDataUpToDate);
         }
-        
+
         /// assign NULL value
         public void SetDataUpToDateNull()
         {
             this.SetNull(this.myTable.ColumnDataUpToDate);
         }
-        
+
         /// test for NULL value
         public bool IsDataChangedNull()
         {
             return this.IsNull(this.myTable.ColumnDataChanged);
         }
-        
+
         /// assign NULL value
         public void SetDataChangedNull()
         {
             this.SetNull(this.myTable.ColumnDataChanged);
         }
-        
+
         /// test for NULL value
         public bool IsChangesSavedExternallyNull()
         {
             return this.IsNull(this.myTable.ColumnChangesSavedExternally);
         }
-        
+
         /// assign NULL value
         public void SetChangesSavedExternallyNull()
         {
             this.SetNull(this.myTable.ColumnChangesSavedExternally);
         }
-        
+
         /// test for NULL value
         public bool IsCachedSinceNull()
         {
             return this.IsNull(this.myTable.ColumnCachedSince);
         }
-        
+
         /// assign NULL value
         public void SetCachedSinceNull()
         {
             this.SetNull(this.myTable.ColumnCachedSince);
         }
-        
+
         /// test for NULL value
         public bool IsLastAccessedNull()
         {
             return this.IsNull(this.myTable.ColumnLastAccessed);
         }
-        
+
         /// assign NULL value
         public void SetLastAccessedNull()
         {
             this.SetNull(this.myTable.ColumnLastAccessed);
         }
-        
+
         /// test for NULL value
         public bool IsHashCodeNull()
         {
             return this.IsNull(this.myTable.ColumnHashCode);
         }
-        
+
         /// assign NULL value
         public void SetHashCodeNull()
         {
             this.SetNull(this.myTable.ColumnHashCode);
         }
-        
+
         /// test for NULL value
         public bool IsTableSizeNull()
         {
             return this.IsNull(this.myTable.ColumnTableSize);
         }
-        
+
         /// assign NULL value
         public void SetTableSizeNull()
         {
             this.SetNull(this.myTable.ColumnTableSize);
         }
     }
-    
-    /// auto generated
-    [Serializable()]
-    public class CacheableTablesTDS : TTypedDataSet
-    {
-        
-        private CacheableTablesTDSContentsTable TableContents;
-        
-        /// auto generated
-        public CacheableTablesTDS() : 
-                base("CacheableTablesTDS")
-        {
-        }
-        
-        /// auto generated for serialization
-        public CacheableTablesTDS(System.Runtime.Serialization.SerializationInfo info, System.Runtime.Serialization.StreamingContext context) : 
-                base(info, context)
-        {
-        }
-        
-        /// auto generated
-        public CacheableTablesTDS(string ADatasetName) : 
-                base(ADatasetName)
-        {
-        }
-        
-        /// auto generated
-        public CacheableTablesTDSContentsTable Contents
-        {
-            get
-            {
-                return this.TableContents;
-            }
-        }
-        
-        /// auto generated
-        public new virtual CacheableTablesTDS GetChangesTyped(bool removeEmptyTables)
-        {
-            return ((CacheableTablesTDS)(base.GetChangesTyped(removeEmptyTables)));
-        }
-        
-        /// auto generated
-        protected override void InitTables()
-        {
-            this.Tables.Add(new CacheableTablesTDSContentsTable("Contents"));
-        }
-        
-        /// auto generated
-        protected override void InitTables(System.Data.DataSet ds)
-        {
-            if ((ds.Tables.IndexOf("Contents") != -1))
-            {
-                this.Tables.Add(new CacheableTablesTDSContentsTable("Contents"));
-            }
-        }
-        
-        /// auto generated
-        protected override void MapTables()
-        {
-            this.InitVars();
-            base.MapTables();
-            if ((this.TableContents != null))
-            {
-                this.TableContents.InitVars();
-            }
-        }
-        
-        /// auto generated
-        public override void InitVars()
-        {
-            this.DataSetName = "CacheableTablesTDS";
-            this.TableContents = ((CacheableTablesTDSContentsTable)(this.Tables["Contents"]));
-        }
-        
-        /// auto generated
-        protected override void InitConstraints()
-        {
-        }
-    }
-    
-    /// auto generated
+
+     /// auto generated
     [Serializable()]
     public class FieldOfServiceTDS : TTypedDataSet
     {
-        
+
         private PPartnerTable TablePPartner;
-        
         private PPartnerFieldOfServiceTable TablePPartnerFieldOfService;
-        
         private PPersonTable TablePPerson;
-        
         private PFamilyTable TablePFamily;
-        
         private PmStaffDataTable TablePmStaffData;
-        
+
         /// auto generated
-        public FieldOfServiceTDS() : 
+        public FieldOfServiceTDS() :
                 base("FieldOfServiceTDS")
         {
         }
-        
+
         /// auto generated for serialization
-        public FieldOfServiceTDS(System.Runtime.Serialization.SerializationInfo info, System.Runtime.Serialization.StreamingContext context) : 
+        public FieldOfServiceTDS(System.Runtime.Serialization.SerializationInfo info, System.Runtime.Serialization.StreamingContext context) :
                 base(info, context)
         {
         }
-        
+
         /// auto generated
-        public FieldOfServiceTDS(string ADatasetName) : 
+        public FieldOfServiceTDS(string ADatasetName) :
                 base(ADatasetName)
         {
         }
-        
+
         /// auto generated
         public PPartnerTable PPartner
         {
@@ -983,7 +931,7 @@ namespace Ict.Petra.Shared.MCommon.Data
                 return this.TablePPartner;
             }
         }
-        
+
         /// auto generated
         public PPartnerFieldOfServiceTable PPartnerFieldOfService
         {
@@ -992,7 +940,7 @@ namespace Ict.Petra.Shared.MCommon.Data
                 return this.TablePPartnerFieldOfService;
             }
         }
-        
+
         /// auto generated
         public PPersonTable PPerson
         {
@@ -1001,7 +949,7 @@ namespace Ict.Petra.Shared.MCommon.Data
                 return this.TablePPerson;
             }
         }
-        
+
         /// auto generated
         public PFamilyTable PFamily
         {
@@ -1010,7 +958,7 @@ namespace Ict.Petra.Shared.MCommon.Data
                 return this.TablePFamily;
             }
         }
-        
+
         /// auto generated
         public PmStaffDataTable PmStaffData
         {
@@ -1019,13 +967,13 @@ namespace Ict.Petra.Shared.MCommon.Data
                 return this.TablePmStaffData;
             }
         }
-        
+
         /// auto generated
         public new virtual FieldOfServiceTDS GetChangesTyped(bool removeEmptyTables)
         {
             return ((FieldOfServiceTDS)(base.GetChangesTyped(removeEmptyTables)));
         }
-        
+
         /// auto generated
         protected override void InitTables()
         {
@@ -1035,7 +983,7 @@ namespace Ict.Petra.Shared.MCommon.Data
             this.Tables.Add(new PFamilyTable("PFamily"));
             this.Tables.Add(new PmStaffDataTable("PmStaffData"));
         }
-        
+
         /// auto generated
         protected override void InitTables(System.Data.DataSet ds)
         {
@@ -1060,7 +1008,7 @@ namespace Ict.Petra.Shared.MCommon.Data
                 this.Tables.Add(new PmStaffDataTable("PmStaffData"));
             }
         }
-        
+
         /// auto generated
         protected override void MapTables()
         {
@@ -1087,7 +1035,7 @@ namespace Ict.Petra.Shared.MCommon.Data
                 this.TablePmStaffData.InitVars();
             }
         }
-        
+
         /// auto generated
         public override void InitVars()
         {
@@ -1098,54 +1046,54 @@ namespace Ict.Petra.Shared.MCommon.Data
             this.TablePFamily = ((PFamilyTable)(this.Tables["PFamily"]));
             this.TablePmStaffData = ((PmStaffDataTable)(this.Tables["PmStaffData"]));
         }
-        
+
         /// auto generated
         protected override void InitConstraints()
         {
-            if (((this.TablePPartner != null) 
-                        && (this.TablePPartnerFieldOfService != null)))
-            {
-                this.FConstraints.Add(new TTypedConstraint("FKPartnerFieldOfService1", "PPartner", new string[] {
-                                "p_partner_key_n"}, "PPartnerFieldOfService", new string[] {
-                                "p_partner_key_n"}));
-            }
-            if (((this.TablePmStaffData != null) 
-                        && (this.TablePPartnerFieldOfService != null)))
-            {
-                this.FConstraints.Add(new TTypedConstraint("FKPartnerFieldOfService4", "PmStaffData", new string[] {
-                                "p_site_key_n",
-                                "pm_key_n"}, "PPartnerFieldOfService", new string[] {
-                                "p_commitment_site_key_n",
-                                "p_commitment_key_n"}));
-            }
-            if (((this.TablePPartner != null) 
-                        && (this.TablePPerson != null)))
-            {
-                this.FConstraints.Add(new TTypedConstraint("FKPerson1", "PPartner", new string[] {
-                                "p_partner_key_n"}, "PPerson", new string[] {
-                                "p_partner_key_n"}));
-            }
-            if (((this.TablePFamily != null) 
-                        && (this.TablePPerson != null)))
-            {
-                this.FConstraints.Add(new TTypedConstraint("FKPerson2", "PFamily", new string[] {
-                                "p_partner_key_n"}, "PPerson", new string[] {
-                                "p_family_key_n"}));
-            }
-            if (((this.TablePPartner != null) 
+
+            if (((this.TablePPartner != null)
                         && (this.TablePFamily != null)))
             {
                 this.FConstraints.Add(new TTypedConstraint("FKFamily1", "PPartner", new string[] {
                                 "p_partner_key_n"}, "PFamily", new string[] {
                                 "p_partner_key_n"}));
             }
-            if (((this.TablePPerson != null) 
+            if (((this.TablePPartner != null)
+                        && (this.TablePPartnerFieldOfService != null)))
+            {
+                this.FConstraints.Add(new TTypedConstraint("FKPartnerFieldOfService1", "PPartner", new string[] {
+                                "p_partner_key_n"}, "PPartnerFieldOfService", new string[] {
+                                "p_partner_key_n"}));
+            }
+            if (((this.TablePmStaffData != null)
+                        && (this.TablePPartnerFieldOfService != null)))
+            {
+                this.FConstraints.Add(new TTypedConstraint("FKPartnerFieldOfService4", "PmStaffData", new string[] {
+                                "p_site_key_n", "pm_key_n"}, "PPartnerFieldOfService", new string[] {
+                                "p_commitment_site_key_n", "p_commitment_key_n"}));
+            }
+            if (((this.TablePPartner != null)
+                        && (this.TablePPerson != null)))
+            {
+                this.FConstraints.Add(new TTypedConstraint("FKPerson1", "PPartner", new string[] {
+                                "p_partner_key_n"}, "PPerson", new string[] {
+                                "p_partner_key_n"}));
+            }
+            if (((this.TablePFamily != null)
+                        && (this.TablePPerson != null)))
+            {
+                this.FConstraints.Add(new TTypedConstraint("FKPerson2", "PFamily", new string[] {
+                                "p_partner_key_n"}, "PPerson", new string[] {
+                                "p_family_key_n"}));
+            }
+            if (((this.TablePPerson != null)
                         && (this.TablePmStaffData != null)))
             {
                 this.FConstraints.Add(new TTypedConstraint("FKStaffData1", "PPerson", new string[] {
                                 "p_partner_key_n"}, "PmStaffData", new string[] {
                                 "p_partner_key_n"}));
             }
+
         }
     }
 }

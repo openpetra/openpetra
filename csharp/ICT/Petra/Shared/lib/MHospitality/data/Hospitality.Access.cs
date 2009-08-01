@@ -191,6 +191,50 @@ namespace Ict.Petra.Shared.MHospitality.Data.Access
         }
 
         /// this method is called by all overloads
+        public static void LoadUsingTemplate(DataSet ADataSet, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        {
+            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClause(AFieldList, new string[] {
+                            "p_venue_key_n", "pc_building_code_c"}) + " FROM PUB_pc_building")
+                            + GenerateWhereClause(PcBuildingTable.GetColumnStringList(), ASearchCriteria))
+                            + GenerateOrderByClause(AOrderBy)), PcBuildingTable.GetTableName(), ATransaction,
+                            GetParametersForWhereClause(new PcBuildingTable(), ASearchCriteria), AStartRecord, AMaxRecords);
+        }
+
+        /// auto generated
+        public static void LoadUsingTemplate(DataSet AData, TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        {
+            LoadUsingTemplate(AData, ASearchCriteria, null, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static void LoadUsingTemplate(DataSet AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
+        {
+            LoadUsingTemplate(AData, ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static void LoadUsingTemplate(out PcBuildingTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        {
+            DataSet FillDataSet = new DataSet();
+            AData = new PcBuildingTable();
+            FillDataSet.Tables.Add(AData);
+            LoadUsingTemplate(FillDataSet, ASearchCriteria, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            FillDataSet.Tables.Remove(AData);
+        }
+
+        /// auto generated
+        public static void LoadUsingTemplate(out PcBuildingTable AData, TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        {
+            LoadUsingTemplate(out AData, ASearchCriteria, null, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static void LoadUsingTemplate(out PcBuildingTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
+        {
+            LoadUsingTemplate(out AData, ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
+        }
+
+        /// this method is called by all overloads
         public static int CountAll(TDBTransaction ATransaction)
         {
             return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar("SELECT COUNT(*) FROM PUB_pc_building", ATransaction, false));
@@ -211,6 +255,13 @@ namespace Ict.Petra.Shared.MHospitality.Data.Access
         public static int CountUsingTemplate(PcBuildingRow ATemplateRow, StringCollection ATemplateOperators, TDBTransaction ATransaction)
         {
             return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_pc_building" + GenerateWhereClause(PcBuildingTable.GetColumnStringList(), ATemplateRow, ATemplateOperators)), ATransaction, false, GetParametersForWhereClause(ATemplateRow)));
+        }
+
+        /// this method is called by all overloads
+        public static int CountUsingTemplate(TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        {
+            return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_pc_building" + GenerateWhereClause(PcBuildingTable.GetColumnStringList(), ASearchCriteria)), ATransaction, false,
+            GetParametersForWhereClause(new PcBuildingTable(), ASearchCriteria)));
         }
 
         /// auto generated
@@ -309,6 +360,51 @@ namespace Ict.Petra.Shared.MHospitality.Data.Access
         }
 
         /// auto generated
+        public static void LoadViaPVenueTemplate(DataSet ADataSet, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        {
+            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClauseLong("PUB_pc_building", AFieldList, new string[] {
+                            "p_venue_key_n", "pc_building_code_c"}) + " FROM PUB_pc_building, PUB_p_venue WHERE " +
+                            "PUB_pc_building.p_venue_key_n = PUB_p_venue.p_partner_key_n")
+                            + GenerateWhereClauseLong("PUB_p_venue", PVenueTable.GetColumnStringList(), ASearchCriteria))
+                            + GenerateOrderByClause(AOrderBy)), PcBuildingTable.GetTableName(), ATransaction,
+                            GetParametersForWhereClause(new PcBuildingTable(), ASearchCriteria), AStartRecord, AMaxRecords);
+        }
+
+        /// auto generated
+        public static void LoadViaPVenueTemplate(DataSet AData, TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        {
+            LoadViaPVenueTemplate(AData, ASearchCriteria, null, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static void LoadViaPVenueTemplate(DataSet AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
+        {
+            LoadViaPVenueTemplate(AData, ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static void LoadViaPVenueTemplate(out PcBuildingTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        {
+            DataSet FillDataSet = new DataSet();
+            AData = new PcBuildingTable();
+            FillDataSet.Tables.Add(AData);
+            LoadViaPVenueTemplate(FillDataSet, ASearchCriteria, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            FillDataSet.Tables.Remove(AData);
+        }
+
+        /// auto generated
+        public static void LoadViaPVenueTemplate(out PcBuildingTable AData, TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        {
+            LoadViaPVenueTemplate(out AData, ASearchCriteria, null, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static void LoadViaPVenueTemplate(out PcBuildingTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
+        {
+            LoadViaPVenueTemplate(out AData, ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
         public static int CountViaPVenue(Int64 APartnerKey, TDBTransaction ATransaction)
         {
             OdbcParameter[] ParametersArray = new OdbcParameter[1];
@@ -322,6 +418,15 @@ namespace Ict.Petra.Shared.MHospitality.Data.Access
         {
             return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_pc_building, PUB_p_venue WHERE " +
                 "PUB_pc_building.p_venue_key_n = PUB_p_venue.p_partner_key_n" + GenerateWhereClauseLong("PUB_p_venue", PVenueTable.GetColumnStringList(), ATemplateRow, ATemplateOperators)), ATransaction, false, GetParametersForWhereClause(ATemplateRow, PVenueTable.GetPrimKeyColumnOrdList())));
+        }
+
+        /// auto generated
+        public static int CountViaPVenueTemplate(TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        {
+            return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_pc_building, PUB_p_venue WHERE " +
+                "PUB_pc_building.p_venue_key_n = PUB_p_venue.p_partner_key_n" +
+                GenerateWhereClauseLong("PUB_p_venue", PVenueTable.GetColumnStringList(), ASearchCriteria)), ATransaction, false,
+                GetParametersForWhereClause(new PVenueTable(), ASearchCriteria)));
         }
 
         /// auto generated
@@ -339,6 +444,14 @@ namespace Ict.Petra.Shared.MHospitality.Data.Access
         public static void DeleteUsingTemplate(PcBuildingRow ATemplateRow, StringCollection ATemplateOperators, TDBTransaction ATransaction)
         {
             DBAccess.GDBAccessObj.ExecuteNonQuery(("DELETE FROM PUB_pc_building" + GenerateWhereClause(PcBuildingTable.GetColumnStringList(), ATemplateRow, ATemplateOperators)), ATransaction, false, GetParametersForWhereClause(ATemplateRow));
+        }
+
+        /// auto generated
+        public static void DeleteUsingTemplate(TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        {
+            DBAccess.GDBAccessObj.ExecuteNonQuery(("DELETE FROM PUB_pc_building" +
+                GenerateWhereClause(PcBuildingTable.GetColumnStringList(), ASearchCriteria)), ATransaction, false,
+                GetParametersForWhereClause(new PcBuildingTable(), ASearchCriteria));
         }
 
         /// auto generated
@@ -531,6 +644,50 @@ namespace Ict.Petra.Shared.MHospitality.Data.Access
         }
 
         /// this method is called by all overloads
+        public static void LoadUsingTemplate(DataSet ADataSet, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        {
+            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClause(AFieldList, new string[] {
+                            "p_venue_key_n", "pc_building_code_c", "pc_room_number_c"}) + " FROM PUB_pc_room")
+                            + GenerateWhereClause(PcRoomTable.GetColumnStringList(), ASearchCriteria))
+                            + GenerateOrderByClause(AOrderBy)), PcRoomTable.GetTableName(), ATransaction,
+                            GetParametersForWhereClause(new PcRoomTable(), ASearchCriteria), AStartRecord, AMaxRecords);
+        }
+
+        /// auto generated
+        public static void LoadUsingTemplate(DataSet AData, TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        {
+            LoadUsingTemplate(AData, ASearchCriteria, null, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static void LoadUsingTemplate(DataSet AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
+        {
+            LoadUsingTemplate(AData, ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static void LoadUsingTemplate(out PcRoomTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        {
+            DataSet FillDataSet = new DataSet();
+            AData = new PcRoomTable();
+            FillDataSet.Tables.Add(AData);
+            LoadUsingTemplate(FillDataSet, ASearchCriteria, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            FillDataSet.Tables.Remove(AData);
+        }
+
+        /// auto generated
+        public static void LoadUsingTemplate(out PcRoomTable AData, TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        {
+            LoadUsingTemplate(out AData, ASearchCriteria, null, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static void LoadUsingTemplate(out PcRoomTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
+        {
+            LoadUsingTemplate(out AData, ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
+        }
+
+        /// this method is called by all overloads
         public static int CountAll(TDBTransaction ATransaction)
         {
             return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar("SELECT COUNT(*) FROM PUB_pc_room", ATransaction, false));
@@ -553,6 +710,13 @@ namespace Ict.Petra.Shared.MHospitality.Data.Access
         public static int CountUsingTemplate(PcRoomRow ATemplateRow, StringCollection ATemplateOperators, TDBTransaction ATransaction)
         {
             return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_pc_room" + GenerateWhereClause(PcRoomTable.GetColumnStringList(), ATemplateRow, ATemplateOperators)), ATransaction, false, GetParametersForWhereClause(ATemplateRow)));
+        }
+
+        /// this method is called by all overloads
+        public static int CountUsingTemplate(TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        {
+            return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_pc_room" + GenerateWhereClause(PcRoomTable.GetColumnStringList(), ASearchCriteria)), ATransaction, false,
+            GetParametersForWhereClause(new PcRoomTable(), ASearchCriteria)));
         }
 
         /// auto generated
@@ -653,6 +817,51 @@ namespace Ict.Petra.Shared.MHospitality.Data.Access
         }
 
         /// auto generated
+        public static void LoadViaPcBuildingTemplate(DataSet ADataSet, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        {
+            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClauseLong("PUB_pc_room", AFieldList, new string[] {
+                            "p_venue_key_n", "pc_building_code_c", "pc_room_number_c"}) + " FROM PUB_pc_room, PUB_pc_building WHERE " +
+                            "PUB_pc_room.p_venue_key_n = PUB_pc_building.p_venue_key_n AND PUB_pc_room.pc_building_code_c = PUB_pc_building.pc_building_code_c")
+                            + GenerateWhereClauseLong("PUB_pc_building", PcBuildingTable.GetColumnStringList(), ASearchCriteria))
+                            + GenerateOrderByClause(AOrderBy)), PcRoomTable.GetTableName(), ATransaction,
+                            GetParametersForWhereClause(new PcRoomTable(), ASearchCriteria), AStartRecord, AMaxRecords);
+        }
+
+        /// auto generated
+        public static void LoadViaPcBuildingTemplate(DataSet AData, TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        {
+            LoadViaPcBuildingTemplate(AData, ASearchCriteria, null, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static void LoadViaPcBuildingTemplate(DataSet AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
+        {
+            LoadViaPcBuildingTemplate(AData, ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static void LoadViaPcBuildingTemplate(out PcRoomTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        {
+            DataSet FillDataSet = new DataSet();
+            AData = new PcRoomTable();
+            FillDataSet.Tables.Add(AData);
+            LoadViaPcBuildingTemplate(FillDataSet, ASearchCriteria, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            FillDataSet.Tables.Remove(AData);
+        }
+
+        /// auto generated
+        public static void LoadViaPcBuildingTemplate(out PcRoomTable AData, TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        {
+            LoadViaPcBuildingTemplate(out AData, ASearchCriteria, null, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static void LoadViaPcBuildingTemplate(out PcRoomTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
+        {
+            LoadViaPcBuildingTemplate(out AData, ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
         public static int CountViaPcBuilding(Int64 AVenueKey, String ABuildingCode, TDBTransaction ATransaction)
         {
             OdbcParameter[] ParametersArray = new OdbcParameter[2];
@@ -668,6 +877,180 @@ namespace Ict.Petra.Shared.MHospitality.Data.Access
         {
             return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_pc_room, PUB_pc_building WHERE " +
                 "PUB_pc_room.p_venue_key_n = PUB_pc_building.p_venue_key_n AND PUB_pc_room.pc_building_code_c = PUB_pc_building.pc_building_code_c" + GenerateWhereClauseLong("PUB_pc_building", PcBuildingTable.GetColumnStringList(), ATemplateRow, ATemplateOperators)), ATransaction, false, GetParametersForWhereClause(ATemplateRow, PcBuildingTable.GetPrimKeyColumnOrdList())));
+        }
+
+        /// auto generated
+        public static int CountViaPcBuildingTemplate(TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        {
+            return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_pc_room, PUB_pc_building WHERE " +
+                "PUB_pc_room.p_venue_key_n = PUB_pc_building.p_venue_key_n AND PUB_pc_room.pc_building_code_c = PUB_pc_building.pc_building_code_c" +
+                GenerateWhereClauseLong("PUB_pc_building", PcBuildingTable.GetColumnStringList(), ASearchCriteria)), ATransaction, false,
+                GetParametersForWhereClause(new PcBuildingTable(), ASearchCriteria)));
+        }
+
+        /// auto generated
+        public static void LoadViaPVenue(DataSet ADataSet, Int64 APartnerKey, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        {
+            OdbcParameter[] ParametersArray = new OdbcParameter[1];
+            ParametersArray[0] = new OdbcParameter("", OdbcType.Decimal, 10);
+            ParametersArray[0].Value = ((object)(APartnerKey));
+            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, ((GenerateSelectClause(AFieldList, new string[] {
+                            "p_venue_key_n", "pc_building_code_c", "pc_room_number_c"}) + " FROM PUB_pc_room WHERE p_venue_key_n = ?")
+                            + GenerateOrderByClause(AOrderBy)), PcRoomTable.GetTableName(), ATransaction, ParametersArray, AStartRecord, AMaxRecords);
+        }
+
+        /// auto generated
+        public static void LoadViaPVenue(DataSet AData, Int64 APartnerKey, TDBTransaction ATransaction)
+        {
+            LoadViaPVenue(AData, APartnerKey, null, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static void LoadViaPVenue(DataSet AData, Int64 APartnerKey, StringCollection AFieldList, TDBTransaction ATransaction)
+        {
+            LoadViaPVenue(AData, APartnerKey, AFieldList, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static void LoadViaPVenue(out PcRoomTable AData, Int64 APartnerKey, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        {
+            DataSet FillDataSet = new DataSet();
+            AData = new PcRoomTable();
+            FillDataSet.Tables.Add(AData);
+            LoadViaPVenue(FillDataSet, APartnerKey, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            FillDataSet.Tables.Remove(AData);
+        }
+
+        /// auto generated
+        public static void LoadViaPVenue(out PcRoomTable AData, Int64 APartnerKey, TDBTransaction ATransaction)
+        {
+            LoadViaPVenue(out AData, APartnerKey, null, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static void LoadViaPVenue(out PcRoomTable AData, Int64 APartnerKey, StringCollection AFieldList, TDBTransaction ATransaction)
+        {
+            LoadViaPVenue(out AData, APartnerKey, AFieldList, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static void LoadViaPVenueTemplate(DataSet ADataSet, PVenueRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        {
+            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClauseLong("PUB_pc_room", AFieldList, new string[] {
+                            "p_venue_key_n", "pc_building_code_c", "pc_room_number_c"}) + " FROM PUB_pc_room, PUB_p_venue WHERE " +
+                            "PUB_pc_room.p_venue_key_n = PUB_p_venue.p_partner_key_n")
+                            + GenerateWhereClauseLong("PUB_p_venue", PVenueTable.GetColumnStringList(), ATemplateRow, ATemplateOperators))
+                            + GenerateOrderByClause(AOrderBy)), PcRoomTable.GetTableName(), ATransaction, GetParametersForWhereClause(ATemplateRow), AStartRecord, AMaxRecords);
+        }
+
+        /// auto generated
+        public static void LoadViaPVenueTemplate(DataSet AData, PVenueRow ATemplateRow, TDBTransaction ATransaction)
+        {
+            LoadViaPVenueTemplate(AData, ATemplateRow, null, null, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static void LoadViaPVenueTemplate(DataSet AData, PVenueRow ATemplateRow, StringCollection AFieldList, TDBTransaction ATransaction)
+        {
+            LoadViaPVenueTemplate(AData, ATemplateRow, null, AFieldList, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static void LoadViaPVenueTemplate(out PcRoomTable AData, PVenueRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        {
+            DataSet FillDataSet = new DataSet();
+            AData = new PcRoomTable();
+            FillDataSet.Tables.Add(AData);
+            LoadViaPVenueTemplate(FillDataSet, ATemplateRow, ATemplateOperators, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            FillDataSet.Tables.Remove(AData);
+        }
+
+        /// auto generated
+        public static void LoadViaPVenueTemplate(out PcRoomTable AData, PVenueRow ATemplateRow, TDBTransaction ATransaction)
+        {
+            LoadViaPVenueTemplate(out AData, ATemplateRow, null, null, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static void LoadViaPVenueTemplate(out PcRoomTable AData, PVenueRow ATemplateRow, StringCollection AFieldList, TDBTransaction ATransaction)
+        {
+            LoadViaPVenueTemplate(out AData, ATemplateRow, null, AFieldList, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static void LoadViaPVenueTemplate(out PcRoomTable AData, PVenueRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction)
+        {
+            LoadViaPVenueTemplate(out AData, ATemplateRow, ATemplateOperators, AFieldList, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static void LoadViaPVenueTemplate(DataSet ADataSet, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        {
+            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClauseLong("PUB_pc_room", AFieldList, new string[] {
+                            "p_venue_key_n", "pc_building_code_c", "pc_room_number_c"}) + " FROM PUB_pc_room, PUB_p_venue WHERE " +
+                            "PUB_pc_room.p_venue_key_n = PUB_p_venue.p_partner_key_n")
+                            + GenerateWhereClauseLong("PUB_p_venue", PVenueTable.GetColumnStringList(), ASearchCriteria))
+                            + GenerateOrderByClause(AOrderBy)), PcRoomTable.GetTableName(), ATransaction,
+                            GetParametersForWhereClause(new PcRoomTable(), ASearchCriteria), AStartRecord, AMaxRecords);
+        }
+
+        /// auto generated
+        public static void LoadViaPVenueTemplate(DataSet AData, TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        {
+            LoadViaPVenueTemplate(AData, ASearchCriteria, null, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static void LoadViaPVenueTemplate(DataSet AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
+        {
+            LoadViaPVenueTemplate(AData, ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static void LoadViaPVenueTemplate(out PcRoomTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        {
+            DataSet FillDataSet = new DataSet();
+            AData = new PcRoomTable();
+            FillDataSet.Tables.Add(AData);
+            LoadViaPVenueTemplate(FillDataSet, ASearchCriteria, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            FillDataSet.Tables.Remove(AData);
+        }
+
+        /// auto generated
+        public static void LoadViaPVenueTemplate(out PcRoomTable AData, TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        {
+            LoadViaPVenueTemplate(out AData, ASearchCriteria, null, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static void LoadViaPVenueTemplate(out PcRoomTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
+        {
+            LoadViaPVenueTemplate(out AData, ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static int CountViaPVenue(Int64 APartnerKey, TDBTransaction ATransaction)
+        {
+            OdbcParameter[] ParametersArray = new OdbcParameter[1];
+            ParametersArray[0] = new OdbcParameter("", OdbcType.Decimal, 10);
+            ParametersArray[0].Value = ((object)(APartnerKey));
+            return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar("SELECT COUNT(*) FROM PUB_pc_room WHERE p_venue_key_n = ?", ATransaction, false, ParametersArray));
+        }
+
+        /// auto generated
+        public static int CountViaPVenueTemplate(PVenueRow ATemplateRow, StringCollection ATemplateOperators, TDBTransaction ATransaction)
+        {
+            return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_pc_room, PUB_p_venue WHERE " +
+                "PUB_pc_room.p_venue_key_n = PUB_p_venue.p_partner_key_n" + GenerateWhereClauseLong("PUB_p_venue", PVenueTable.GetColumnStringList(), ATemplateRow, ATemplateOperators)), ATransaction, false, GetParametersForWhereClause(ATemplateRow, PVenueTable.GetPrimKeyColumnOrdList())));
+        }
+
+        /// auto generated
+        public static int CountViaPVenueTemplate(TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        {
+            return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_pc_room, PUB_p_venue WHERE " +
+                "PUB_pc_room.p_venue_key_n = PUB_p_venue.p_partner_key_n" +
+                GenerateWhereClauseLong("PUB_p_venue", PVenueTable.GetColumnStringList(), ASearchCriteria)), ATransaction, false,
+                GetParametersForWhereClause(new PVenueTable(), ASearchCriteria)));
         }
 
         /// auto generated LoadViaLinkTable
@@ -766,6 +1149,51 @@ namespace Ict.Petra.Shared.MHospitality.Data.Access
             LoadViaPcRoomAttributeTypeTemplate(out AData, ATemplateRow, ATemplateOperators, AFieldList, ATransaction, null, 0, 0);
         }
 
+        /// auto generated
+        public static void LoadViaPcRoomAttributeTypeTemplate(DataSet ADataSet, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        {
+            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClauseLong("PUB_pc_room", AFieldList, new string[] {
+                            "p_venue_key_n", "pc_building_code_c", "pc_room_number_c"}) + " FROM PUB_pc_room, PUB_pc_room_attribute, PUB_pc_room_attribute_type WHERE " +
+                            "PUB_pc_room_attribute.p_venue_key_n = PUB_pc_room.p_venue_key_n AND PUB_pc_room_attribute.pc_building_code_c = PUB_pc_room.pc_building_code_c AND PUB_pc_room_attribute.pc_room_number_c = PUB_pc_room.pc_room_number_c AND PUB_pc_room_attribute.pc_room_attr_type_code_c = PUB_pc_room_attribute_type.pc_code_c")
+                            + GenerateWhereClauseLong("PUB_pc_room_attribute_type", PcRoomAttributeTypeTable.GetColumnStringList(), ASearchCriteria))
+                            + GenerateOrderByClause(AOrderBy)), PcRoomTable.GetTableName(), ATransaction,
+                            GetParametersForWhereClause(new PcRoomTable(), ASearchCriteria), AStartRecord, AMaxRecords);
+        }
+
+        /// auto generated
+        public static void LoadViaPcRoomAttributeTypeTemplate(DataSet AData, TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        {
+            LoadViaPcRoomAttributeTypeTemplate(AData, ASearchCriteria, null, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static void LoadViaPcRoomAttributeTypeTemplate(DataSet AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
+        {
+            LoadViaPcRoomAttributeTypeTemplate(AData, ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static void LoadViaPcRoomAttributeTypeTemplate(out PcRoomTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        {
+            DataSet FillDataSet = new DataSet();
+            AData = new PcRoomTable();
+            FillDataSet.Tables.Add(AData);
+            LoadViaPcRoomAttributeTypeTemplate(FillDataSet, ASearchCriteria, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            FillDataSet.Tables.Remove(AData);
+        }
+
+        /// auto generated
+        public static void LoadViaPcRoomAttributeTypeTemplate(out PcRoomTable AData, TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        {
+            LoadViaPcRoomAttributeTypeTemplate(out AData, ASearchCriteria, null, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static void LoadViaPcRoomAttributeTypeTemplate(out PcRoomTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
+        {
+            LoadViaPcRoomAttributeTypeTemplate(out AData, ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
+        }
+
         /// auto generated CountViaLinkTable
         public static int CountViaPcRoomAttributeType(String ACode, TDBTransaction ATransaction)
         {
@@ -786,6 +1214,15 @@ namespace Ict.Petra.Shared.MHospitality.Data.Access
         }
 
         /// auto generated
+        public static int CountViaPcRoomAttributeTypeTemplate(TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        {
+            return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_pc_room, PUB_pc_room_attribute, PUB_pc_room_attribute_type WHERE " +
+                        "PUB_pc_room_attribute.p_venue_key_n = PUB_pc_room.p_venue_key_n AND PUB_pc_room_attribute.pc_building_code_c = PUB_pc_room.pc_building_code_c AND PUB_pc_room_attribute.pc_room_number_c = PUB_pc_room.pc_room_number_c AND PUB_pc_room_attribute.pc_room_attr_type_code_c = PUB_pc_room_attribute_type.pc_code_c" +
+                        GenerateWhereClauseLong("PUB_pc_room_attribute", PcRoomTable.GetColumnStringList(), ASearchCriteria)), ATransaction, false,
+                        GetParametersForWhereClause(new PcRoomTable(), ASearchCriteria)));
+        }
+
+        /// auto generated
         public static void DeleteByPrimaryKey(Int64 AVenueKey, String ABuildingCode, String ARoomNumber, TDBTransaction ATransaction)
         {
             OdbcParameter[] ParametersArray = new OdbcParameter[3];
@@ -802,6 +1239,14 @@ namespace Ict.Petra.Shared.MHospitality.Data.Access
         public static void DeleteUsingTemplate(PcRoomRow ATemplateRow, StringCollection ATemplateOperators, TDBTransaction ATransaction)
         {
             DBAccess.GDBAccessObj.ExecuteNonQuery(("DELETE FROM PUB_pc_room" + GenerateWhereClause(PcRoomTable.GetColumnStringList(), ATemplateRow, ATemplateOperators)), ATransaction, false, GetParametersForWhereClause(ATemplateRow));
+        }
+
+        /// auto generated
+        public static void DeleteUsingTemplate(TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        {
+            DBAccess.GDBAccessObj.ExecuteNonQuery(("DELETE FROM PUB_pc_room" +
+                GenerateWhereClause(PcRoomTable.GetColumnStringList(), ASearchCriteria)), ATransaction, false,
+                GetParametersForWhereClause(new PcRoomTable(), ASearchCriteria));
         }
 
         /// auto generated
@@ -990,6 +1435,50 @@ namespace Ict.Petra.Shared.MHospitality.Data.Access
         }
 
         /// this method is called by all overloads
+        public static void LoadUsingTemplate(DataSet ADataSet, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        {
+            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClause(AFieldList, new string[] {
+                            "pc_key_i"}) + " FROM PUB_pc_room_alloc")
+                            + GenerateWhereClause(PcRoomAllocTable.GetColumnStringList(), ASearchCriteria))
+                            + GenerateOrderByClause(AOrderBy)), PcRoomAllocTable.GetTableName(), ATransaction,
+                            GetParametersForWhereClause(new PcRoomAllocTable(), ASearchCriteria), AStartRecord, AMaxRecords);
+        }
+
+        /// auto generated
+        public static void LoadUsingTemplate(DataSet AData, TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        {
+            LoadUsingTemplate(AData, ASearchCriteria, null, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static void LoadUsingTemplate(DataSet AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
+        {
+            LoadUsingTemplate(AData, ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static void LoadUsingTemplate(out PcRoomAllocTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        {
+            DataSet FillDataSet = new DataSet();
+            AData = new PcRoomAllocTable();
+            FillDataSet.Tables.Add(AData);
+            LoadUsingTemplate(FillDataSet, ASearchCriteria, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            FillDataSet.Tables.Remove(AData);
+        }
+
+        /// auto generated
+        public static void LoadUsingTemplate(out PcRoomAllocTable AData, TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        {
+            LoadUsingTemplate(out AData, ASearchCriteria, null, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static void LoadUsingTemplate(out PcRoomAllocTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
+        {
+            LoadUsingTemplate(out AData, ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
+        }
+
+        /// this method is called by all overloads
         public static int CountAll(TDBTransaction ATransaction)
         {
             return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar("SELECT COUNT(*) FROM PUB_pc_room_alloc", ATransaction, false));
@@ -1008,6 +1497,13 @@ namespace Ict.Petra.Shared.MHospitality.Data.Access
         public static int CountUsingTemplate(PcRoomAllocRow ATemplateRow, StringCollection ATemplateOperators, TDBTransaction ATransaction)
         {
             return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_pc_room_alloc" + GenerateWhereClause(PcRoomAllocTable.GetColumnStringList(), ATemplateRow, ATemplateOperators)), ATransaction, false, GetParametersForWhereClause(ATemplateRow)));
+        }
+
+        /// this method is called by all overloads
+        public static int CountUsingTemplate(TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        {
+            return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_pc_room_alloc" + GenerateWhereClause(PcRoomAllocTable.GetColumnStringList(), ASearchCriteria)), ATransaction, false,
+            GetParametersForWhereClause(new PcRoomAllocTable(), ASearchCriteria)));
         }
 
         /// auto generated
@@ -1108,6 +1604,51 @@ namespace Ict.Petra.Shared.MHospitality.Data.Access
         }
 
         /// auto generated
+        public static void LoadViaPcAttendeeTemplate(DataSet ADataSet, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        {
+            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClauseLong("PUB_pc_room_alloc", AFieldList, new string[] {
+                            "pc_key_i"}) + " FROM PUB_pc_room_alloc, PUB_pc_attendee WHERE " +
+                            "PUB_pc_room_alloc.pc_conference_key_n = PUB_pc_attendee.pc_conference_key_n AND PUB_pc_room_alloc.p_partner_key_n = PUB_pc_attendee.p_partner_key_n")
+                            + GenerateWhereClauseLong("PUB_pc_attendee", PcAttendeeTable.GetColumnStringList(), ASearchCriteria))
+                            + GenerateOrderByClause(AOrderBy)), PcRoomAllocTable.GetTableName(), ATransaction,
+                            GetParametersForWhereClause(new PcRoomAllocTable(), ASearchCriteria), AStartRecord, AMaxRecords);
+        }
+
+        /// auto generated
+        public static void LoadViaPcAttendeeTemplate(DataSet AData, TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        {
+            LoadViaPcAttendeeTemplate(AData, ASearchCriteria, null, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static void LoadViaPcAttendeeTemplate(DataSet AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
+        {
+            LoadViaPcAttendeeTemplate(AData, ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static void LoadViaPcAttendeeTemplate(out PcRoomAllocTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        {
+            DataSet FillDataSet = new DataSet();
+            AData = new PcRoomAllocTable();
+            FillDataSet.Tables.Add(AData);
+            LoadViaPcAttendeeTemplate(FillDataSet, ASearchCriteria, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            FillDataSet.Tables.Remove(AData);
+        }
+
+        /// auto generated
+        public static void LoadViaPcAttendeeTemplate(out PcRoomAllocTable AData, TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        {
+            LoadViaPcAttendeeTemplate(out AData, ASearchCriteria, null, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static void LoadViaPcAttendeeTemplate(out PcRoomAllocTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
+        {
+            LoadViaPcAttendeeTemplate(out AData, ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
         public static int CountViaPcAttendee(Int64 AConferenceKey, Int64 APartnerKey, TDBTransaction ATransaction)
         {
             OdbcParameter[] ParametersArray = new OdbcParameter[2];
@@ -1123,6 +1664,345 @@ namespace Ict.Petra.Shared.MHospitality.Data.Access
         {
             return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_pc_room_alloc, PUB_pc_attendee WHERE " +
                 "PUB_pc_room_alloc.pc_conference_key_n = PUB_pc_attendee.pc_conference_key_n AND PUB_pc_room_alloc.p_partner_key_n = PUB_pc_attendee.p_partner_key_n" + GenerateWhereClauseLong("PUB_pc_attendee", PcAttendeeTable.GetColumnStringList(), ATemplateRow, ATemplateOperators)), ATransaction, false, GetParametersForWhereClause(ATemplateRow, PcAttendeeTable.GetPrimKeyColumnOrdList())));
+        }
+
+        /// auto generated
+        public static int CountViaPcAttendeeTemplate(TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        {
+            return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_pc_room_alloc, PUB_pc_attendee WHERE " +
+                "PUB_pc_room_alloc.pc_conference_key_n = PUB_pc_attendee.pc_conference_key_n AND PUB_pc_room_alloc.p_partner_key_n = PUB_pc_attendee.p_partner_key_n" +
+                GenerateWhereClauseLong("PUB_pc_attendee", PcAttendeeTable.GetColumnStringList(), ASearchCriteria)), ATransaction, false,
+                GetParametersForWhereClause(new PcAttendeeTable(), ASearchCriteria)));
+        }
+
+        /// auto generated
+        public static void LoadViaPcConference(DataSet ADataSet, Int64 AConferenceKey, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        {
+            OdbcParameter[] ParametersArray = new OdbcParameter[1];
+            ParametersArray[0] = new OdbcParameter("", OdbcType.Decimal, 10);
+            ParametersArray[0].Value = ((object)(AConferenceKey));
+            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, ((GenerateSelectClause(AFieldList, new string[] {
+                            "pc_key_i"}) + " FROM PUB_pc_room_alloc WHERE pc_conference_key_n = ?")
+                            + GenerateOrderByClause(AOrderBy)), PcRoomAllocTable.GetTableName(), ATransaction, ParametersArray, AStartRecord, AMaxRecords);
+        }
+
+        /// auto generated
+        public static void LoadViaPcConference(DataSet AData, Int64 AConferenceKey, TDBTransaction ATransaction)
+        {
+            LoadViaPcConference(AData, AConferenceKey, null, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static void LoadViaPcConference(DataSet AData, Int64 AConferenceKey, StringCollection AFieldList, TDBTransaction ATransaction)
+        {
+            LoadViaPcConference(AData, AConferenceKey, AFieldList, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static void LoadViaPcConference(out PcRoomAllocTable AData, Int64 AConferenceKey, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        {
+            DataSet FillDataSet = new DataSet();
+            AData = new PcRoomAllocTable();
+            FillDataSet.Tables.Add(AData);
+            LoadViaPcConference(FillDataSet, AConferenceKey, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            FillDataSet.Tables.Remove(AData);
+        }
+
+        /// auto generated
+        public static void LoadViaPcConference(out PcRoomAllocTable AData, Int64 AConferenceKey, TDBTransaction ATransaction)
+        {
+            LoadViaPcConference(out AData, AConferenceKey, null, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static void LoadViaPcConference(out PcRoomAllocTable AData, Int64 AConferenceKey, StringCollection AFieldList, TDBTransaction ATransaction)
+        {
+            LoadViaPcConference(out AData, AConferenceKey, AFieldList, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static void LoadViaPcConferenceTemplate(DataSet ADataSet, PcConferenceRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        {
+            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClauseLong("PUB_pc_room_alloc", AFieldList, new string[] {
+                            "pc_key_i"}) + " FROM PUB_pc_room_alloc, PUB_pc_conference WHERE " +
+                            "PUB_pc_room_alloc.pc_conference_key_n = PUB_pc_conference.pc_conference_key_n")
+                            + GenerateWhereClauseLong("PUB_pc_conference", PcConferenceTable.GetColumnStringList(), ATemplateRow, ATemplateOperators))
+                            + GenerateOrderByClause(AOrderBy)), PcRoomAllocTable.GetTableName(), ATransaction, GetParametersForWhereClause(ATemplateRow), AStartRecord, AMaxRecords);
+        }
+
+        /// auto generated
+        public static void LoadViaPcConferenceTemplate(DataSet AData, PcConferenceRow ATemplateRow, TDBTransaction ATransaction)
+        {
+            LoadViaPcConferenceTemplate(AData, ATemplateRow, null, null, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static void LoadViaPcConferenceTemplate(DataSet AData, PcConferenceRow ATemplateRow, StringCollection AFieldList, TDBTransaction ATransaction)
+        {
+            LoadViaPcConferenceTemplate(AData, ATemplateRow, null, AFieldList, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static void LoadViaPcConferenceTemplate(out PcRoomAllocTable AData, PcConferenceRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        {
+            DataSet FillDataSet = new DataSet();
+            AData = new PcRoomAllocTable();
+            FillDataSet.Tables.Add(AData);
+            LoadViaPcConferenceTemplate(FillDataSet, ATemplateRow, ATemplateOperators, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            FillDataSet.Tables.Remove(AData);
+        }
+
+        /// auto generated
+        public static void LoadViaPcConferenceTemplate(out PcRoomAllocTable AData, PcConferenceRow ATemplateRow, TDBTransaction ATransaction)
+        {
+            LoadViaPcConferenceTemplate(out AData, ATemplateRow, null, null, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static void LoadViaPcConferenceTemplate(out PcRoomAllocTable AData, PcConferenceRow ATemplateRow, StringCollection AFieldList, TDBTransaction ATransaction)
+        {
+            LoadViaPcConferenceTemplate(out AData, ATemplateRow, null, AFieldList, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static void LoadViaPcConferenceTemplate(out PcRoomAllocTable AData, PcConferenceRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction)
+        {
+            LoadViaPcConferenceTemplate(out AData, ATemplateRow, ATemplateOperators, AFieldList, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static void LoadViaPcConferenceTemplate(DataSet ADataSet, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        {
+            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClauseLong("PUB_pc_room_alloc", AFieldList, new string[] {
+                            "pc_key_i"}) + " FROM PUB_pc_room_alloc, PUB_pc_conference WHERE " +
+                            "PUB_pc_room_alloc.pc_conference_key_n = PUB_pc_conference.pc_conference_key_n")
+                            + GenerateWhereClauseLong("PUB_pc_conference", PcConferenceTable.GetColumnStringList(), ASearchCriteria))
+                            + GenerateOrderByClause(AOrderBy)), PcRoomAllocTable.GetTableName(), ATransaction,
+                            GetParametersForWhereClause(new PcRoomAllocTable(), ASearchCriteria), AStartRecord, AMaxRecords);
+        }
+
+        /// auto generated
+        public static void LoadViaPcConferenceTemplate(DataSet AData, TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        {
+            LoadViaPcConferenceTemplate(AData, ASearchCriteria, null, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static void LoadViaPcConferenceTemplate(DataSet AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
+        {
+            LoadViaPcConferenceTemplate(AData, ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static void LoadViaPcConferenceTemplate(out PcRoomAllocTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        {
+            DataSet FillDataSet = new DataSet();
+            AData = new PcRoomAllocTable();
+            FillDataSet.Tables.Add(AData);
+            LoadViaPcConferenceTemplate(FillDataSet, ASearchCriteria, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            FillDataSet.Tables.Remove(AData);
+        }
+
+        /// auto generated
+        public static void LoadViaPcConferenceTemplate(out PcRoomAllocTable AData, TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        {
+            LoadViaPcConferenceTemplate(out AData, ASearchCriteria, null, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static void LoadViaPcConferenceTemplate(out PcRoomAllocTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
+        {
+            LoadViaPcConferenceTemplate(out AData, ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static int CountViaPcConference(Int64 AConferenceKey, TDBTransaction ATransaction)
+        {
+            OdbcParameter[] ParametersArray = new OdbcParameter[1];
+            ParametersArray[0] = new OdbcParameter("", OdbcType.Decimal, 10);
+            ParametersArray[0].Value = ((object)(AConferenceKey));
+            return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar("SELECT COUNT(*) FROM PUB_pc_room_alloc WHERE pc_conference_key_n = ?", ATransaction, false, ParametersArray));
+        }
+
+        /// auto generated
+        public static int CountViaPcConferenceTemplate(PcConferenceRow ATemplateRow, StringCollection ATemplateOperators, TDBTransaction ATransaction)
+        {
+            return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_pc_room_alloc, PUB_pc_conference WHERE " +
+                "PUB_pc_room_alloc.pc_conference_key_n = PUB_pc_conference.pc_conference_key_n" + GenerateWhereClauseLong("PUB_pc_conference", PcConferenceTable.GetColumnStringList(), ATemplateRow, ATemplateOperators)), ATransaction, false, GetParametersForWhereClause(ATemplateRow, PcConferenceTable.GetPrimKeyColumnOrdList())));
+        }
+
+        /// auto generated
+        public static int CountViaPcConferenceTemplate(TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        {
+            return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_pc_room_alloc, PUB_pc_conference WHERE " +
+                "PUB_pc_room_alloc.pc_conference_key_n = PUB_pc_conference.pc_conference_key_n" +
+                GenerateWhereClauseLong("PUB_pc_conference", PcConferenceTable.GetColumnStringList(), ASearchCriteria)), ATransaction, false,
+                GetParametersForWhereClause(new PcConferenceTable(), ASearchCriteria)));
+        }
+
+        /// auto generated
+        public static void LoadViaPPerson(DataSet ADataSet, Int64 APartnerKey, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        {
+            OdbcParameter[] ParametersArray = new OdbcParameter[1];
+            ParametersArray[0] = new OdbcParameter("", OdbcType.Decimal, 10);
+            ParametersArray[0].Value = ((object)(APartnerKey));
+            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, ((GenerateSelectClause(AFieldList, new string[] {
+                            "pc_key_i"}) + " FROM PUB_pc_room_alloc WHERE p_partner_key_n = ?")
+                            + GenerateOrderByClause(AOrderBy)), PcRoomAllocTable.GetTableName(), ATransaction, ParametersArray, AStartRecord, AMaxRecords);
+        }
+
+        /// auto generated
+        public static void LoadViaPPerson(DataSet AData, Int64 APartnerKey, TDBTransaction ATransaction)
+        {
+            LoadViaPPerson(AData, APartnerKey, null, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static void LoadViaPPerson(DataSet AData, Int64 APartnerKey, StringCollection AFieldList, TDBTransaction ATransaction)
+        {
+            LoadViaPPerson(AData, APartnerKey, AFieldList, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static void LoadViaPPerson(out PcRoomAllocTable AData, Int64 APartnerKey, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        {
+            DataSet FillDataSet = new DataSet();
+            AData = new PcRoomAllocTable();
+            FillDataSet.Tables.Add(AData);
+            LoadViaPPerson(FillDataSet, APartnerKey, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            FillDataSet.Tables.Remove(AData);
+        }
+
+        /// auto generated
+        public static void LoadViaPPerson(out PcRoomAllocTable AData, Int64 APartnerKey, TDBTransaction ATransaction)
+        {
+            LoadViaPPerson(out AData, APartnerKey, null, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static void LoadViaPPerson(out PcRoomAllocTable AData, Int64 APartnerKey, StringCollection AFieldList, TDBTransaction ATransaction)
+        {
+            LoadViaPPerson(out AData, APartnerKey, AFieldList, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static void LoadViaPPersonTemplate(DataSet ADataSet, PPersonRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        {
+            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClauseLong("PUB_pc_room_alloc", AFieldList, new string[] {
+                            "pc_key_i"}) + " FROM PUB_pc_room_alloc, PUB_p_person WHERE " +
+                            "PUB_pc_room_alloc.p_partner_key_n = PUB_p_person.p_partner_key_n")
+                            + GenerateWhereClauseLong("PUB_p_person", PPersonTable.GetColumnStringList(), ATemplateRow, ATemplateOperators))
+                            + GenerateOrderByClause(AOrderBy)), PcRoomAllocTable.GetTableName(), ATransaction, GetParametersForWhereClause(ATemplateRow), AStartRecord, AMaxRecords);
+        }
+
+        /// auto generated
+        public static void LoadViaPPersonTemplate(DataSet AData, PPersonRow ATemplateRow, TDBTransaction ATransaction)
+        {
+            LoadViaPPersonTemplate(AData, ATemplateRow, null, null, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static void LoadViaPPersonTemplate(DataSet AData, PPersonRow ATemplateRow, StringCollection AFieldList, TDBTransaction ATransaction)
+        {
+            LoadViaPPersonTemplate(AData, ATemplateRow, null, AFieldList, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static void LoadViaPPersonTemplate(out PcRoomAllocTable AData, PPersonRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        {
+            DataSet FillDataSet = new DataSet();
+            AData = new PcRoomAllocTable();
+            FillDataSet.Tables.Add(AData);
+            LoadViaPPersonTemplate(FillDataSet, ATemplateRow, ATemplateOperators, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            FillDataSet.Tables.Remove(AData);
+        }
+
+        /// auto generated
+        public static void LoadViaPPersonTemplate(out PcRoomAllocTable AData, PPersonRow ATemplateRow, TDBTransaction ATransaction)
+        {
+            LoadViaPPersonTemplate(out AData, ATemplateRow, null, null, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static void LoadViaPPersonTemplate(out PcRoomAllocTable AData, PPersonRow ATemplateRow, StringCollection AFieldList, TDBTransaction ATransaction)
+        {
+            LoadViaPPersonTemplate(out AData, ATemplateRow, null, AFieldList, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static void LoadViaPPersonTemplate(out PcRoomAllocTable AData, PPersonRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction)
+        {
+            LoadViaPPersonTemplate(out AData, ATemplateRow, ATemplateOperators, AFieldList, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static void LoadViaPPersonTemplate(DataSet ADataSet, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        {
+            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClauseLong("PUB_pc_room_alloc", AFieldList, new string[] {
+                            "pc_key_i"}) + " FROM PUB_pc_room_alloc, PUB_p_person WHERE " +
+                            "PUB_pc_room_alloc.p_partner_key_n = PUB_p_person.p_partner_key_n")
+                            + GenerateWhereClauseLong("PUB_p_person", PPersonTable.GetColumnStringList(), ASearchCriteria))
+                            + GenerateOrderByClause(AOrderBy)), PcRoomAllocTable.GetTableName(), ATransaction,
+                            GetParametersForWhereClause(new PcRoomAllocTable(), ASearchCriteria), AStartRecord, AMaxRecords);
+        }
+
+        /// auto generated
+        public static void LoadViaPPersonTemplate(DataSet AData, TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        {
+            LoadViaPPersonTemplate(AData, ASearchCriteria, null, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static void LoadViaPPersonTemplate(DataSet AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
+        {
+            LoadViaPPersonTemplate(AData, ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static void LoadViaPPersonTemplate(out PcRoomAllocTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        {
+            DataSet FillDataSet = new DataSet();
+            AData = new PcRoomAllocTable();
+            FillDataSet.Tables.Add(AData);
+            LoadViaPPersonTemplate(FillDataSet, ASearchCriteria, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            FillDataSet.Tables.Remove(AData);
+        }
+
+        /// auto generated
+        public static void LoadViaPPersonTemplate(out PcRoomAllocTable AData, TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        {
+            LoadViaPPersonTemplate(out AData, ASearchCriteria, null, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static void LoadViaPPersonTemplate(out PcRoomAllocTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
+        {
+            LoadViaPPersonTemplate(out AData, ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static int CountViaPPerson(Int64 APartnerKey, TDBTransaction ATransaction)
+        {
+            OdbcParameter[] ParametersArray = new OdbcParameter[1];
+            ParametersArray[0] = new OdbcParameter("", OdbcType.Decimal, 10);
+            ParametersArray[0].Value = ((object)(APartnerKey));
+            return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar("SELECT COUNT(*) FROM PUB_pc_room_alloc WHERE p_partner_key_n = ?", ATransaction, false, ParametersArray));
+        }
+
+        /// auto generated
+        public static int CountViaPPersonTemplate(PPersonRow ATemplateRow, StringCollection ATemplateOperators, TDBTransaction ATransaction)
+        {
+            return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_pc_room_alloc, PUB_p_person WHERE " +
+                "PUB_pc_room_alloc.p_partner_key_n = PUB_p_person.p_partner_key_n" + GenerateWhereClauseLong("PUB_p_person", PPersonTable.GetColumnStringList(), ATemplateRow, ATemplateOperators)), ATransaction, false, GetParametersForWhereClause(ATemplateRow, PPersonTable.GetPrimKeyColumnOrdList())));
+        }
+
+        /// auto generated
+        public static int CountViaPPersonTemplate(TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        {
+            return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_pc_room_alloc, PUB_p_person WHERE " +
+                "PUB_pc_room_alloc.p_partner_key_n = PUB_p_person.p_partner_key_n" +
+                GenerateWhereClauseLong("PUB_p_person", PPersonTable.GetColumnStringList(), ASearchCriteria)), ATransaction, false,
+                GetParametersForWhereClause(new PPersonTable(), ASearchCriteria)));
         }
 
         /// auto generated
@@ -1225,6 +2105,51 @@ namespace Ict.Petra.Shared.MHospitality.Data.Access
         }
 
         /// auto generated
+        public static void LoadViaPcRoomTemplate(DataSet ADataSet, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        {
+            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClauseLong("PUB_pc_room_alloc", AFieldList, new string[] {
+                            "pc_key_i"}) + " FROM PUB_pc_room_alloc, PUB_pc_room WHERE " +
+                            "PUB_pc_room_alloc.p_venue_key_n = PUB_pc_room.p_venue_key_n AND PUB_pc_room_alloc.pc_building_code_c = PUB_pc_room.pc_building_code_c AND PUB_pc_room_alloc.pc_room_number_c = PUB_pc_room.pc_room_number_c")
+                            + GenerateWhereClauseLong("PUB_pc_room", PcRoomTable.GetColumnStringList(), ASearchCriteria))
+                            + GenerateOrderByClause(AOrderBy)), PcRoomAllocTable.GetTableName(), ATransaction,
+                            GetParametersForWhereClause(new PcRoomAllocTable(), ASearchCriteria), AStartRecord, AMaxRecords);
+        }
+
+        /// auto generated
+        public static void LoadViaPcRoomTemplate(DataSet AData, TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        {
+            LoadViaPcRoomTemplate(AData, ASearchCriteria, null, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static void LoadViaPcRoomTemplate(DataSet AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
+        {
+            LoadViaPcRoomTemplate(AData, ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static void LoadViaPcRoomTemplate(out PcRoomAllocTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        {
+            DataSet FillDataSet = new DataSet();
+            AData = new PcRoomAllocTable();
+            FillDataSet.Tables.Add(AData);
+            LoadViaPcRoomTemplate(FillDataSet, ASearchCriteria, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            FillDataSet.Tables.Remove(AData);
+        }
+
+        /// auto generated
+        public static void LoadViaPcRoomTemplate(out PcRoomAllocTable AData, TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        {
+            LoadViaPcRoomTemplate(out AData, ASearchCriteria, null, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static void LoadViaPcRoomTemplate(out PcRoomAllocTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
+        {
+            LoadViaPcRoomTemplate(out AData, ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
         public static int CountViaPcRoom(Int64 AVenueKey, String ABuildingCode, String ARoomNumber, TDBTransaction ATransaction)
         {
             OdbcParameter[] ParametersArray = new OdbcParameter[3];
@@ -1242,6 +2167,15 @@ namespace Ict.Petra.Shared.MHospitality.Data.Access
         {
             return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_pc_room_alloc, PUB_pc_room WHERE " +
                 "PUB_pc_room_alloc.p_venue_key_n = PUB_pc_room.p_venue_key_n AND PUB_pc_room_alloc.pc_building_code_c = PUB_pc_room.pc_building_code_c AND PUB_pc_room_alloc.pc_room_number_c = PUB_pc_room.pc_room_number_c" + GenerateWhereClauseLong("PUB_pc_room", PcRoomTable.GetColumnStringList(), ATemplateRow, ATemplateOperators)), ATransaction, false, GetParametersForWhereClause(ATemplateRow, PcRoomTable.GetPrimKeyColumnOrdList())));
+        }
+
+        /// auto generated
+        public static int CountViaPcRoomTemplate(TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        {
+            return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_pc_room_alloc, PUB_pc_room WHERE " +
+                "PUB_pc_room_alloc.p_venue_key_n = PUB_pc_room.p_venue_key_n AND PUB_pc_room_alloc.pc_building_code_c = PUB_pc_room.pc_building_code_c AND PUB_pc_room_alloc.pc_room_number_c = PUB_pc_room.pc_room_number_c" +
+                GenerateWhereClauseLong("PUB_pc_room", PcRoomTable.GetColumnStringList(), ASearchCriteria)), ATransaction, false,
+                GetParametersForWhereClause(new PcRoomTable(), ASearchCriteria)));
         }
 
         /// auto generated LoadViaLinkTable
@@ -1340,6 +2274,51 @@ namespace Ict.Petra.Shared.MHospitality.Data.Access
             LoadViaPhBookingTemplate(out AData, ATemplateRow, ATemplateOperators, AFieldList, ATransaction, null, 0, 0);
         }
 
+        /// auto generated
+        public static void LoadViaPhBookingTemplate(DataSet ADataSet, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        {
+            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClauseLong("PUB_pc_room_alloc", AFieldList, new string[] {
+                            "pc_key_i"}) + " FROM PUB_pc_room_alloc, PUB_ph_room_booking, PUB_ph_booking WHERE " +
+                            "PUB_ph_room_booking.ph_room_alloc_key_i = PUB_pc_room_alloc.pc_key_i AND PUB_ph_room_booking.ph_booking_key_i = PUB_ph_booking.ph_key_i")
+                            + GenerateWhereClauseLong("PUB_ph_booking", PhBookingTable.GetColumnStringList(), ASearchCriteria))
+                            + GenerateOrderByClause(AOrderBy)), PcRoomAllocTable.GetTableName(), ATransaction,
+                            GetParametersForWhereClause(new PcRoomAllocTable(), ASearchCriteria), AStartRecord, AMaxRecords);
+        }
+
+        /// auto generated
+        public static void LoadViaPhBookingTemplate(DataSet AData, TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        {
+            LoadViaPhBookingTemplate(AData, ASearchCriteria, null, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static void LoadViaPhBookingTemplate(DataSet AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
+        {
+            LoadViaPhBookingTemplate(AData, ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static void LoadViaPhBookingTemplate(out PcRoomAllocTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        {
+            DataSet FillDataSet = new DataSet();
+            AData = new PcRoomAllocTable();
+            FillDataSet.Tables.Add(AData);
+            LoadViaPhBookingTemplate(FillDataSet, ASearchCriteria, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            FillDataSet.Tables.Remove(AData);
+        }
+
+        /// auto generated
+        public static void LoadViaPhBookingTemplate(out PcRoomAllocTable AData, TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        {
+            LoadViaPhBookingTemplate(out AData, ASearchCriteria, null, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static void LoadViaPhBookingTemplate(out PcRoomAllocTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
+        {
+            LoadViaPhBookingTemplate(out AData, ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
+        }
+
         /// auto generated CountViaLinkTable
         public static int CountViaPhBooking(Int32 AKey, TDBTransaction ATransaction)
         {
@@ -1360,6 +2339,15 @@ namespace Ict.Petra.Shared.MHospitality.Data.Access
         }
 
         /// auto generated
+        public static int CountViaPhBookingTemplate(TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        {
+            return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_pc_room_alloc, PUB_ph_room_booking, PUB_ph_booking WHERE " +
+                        "PUB_ph_room_booking.ph_room_alloc_key_i = PUB_pc_room_alloc.pc_key_i AND PUB_ph_room_booking.ph_booking_key_i = PUB_ph_booking.ph_key_i" +
+                        GenerateWhereClauseLong("PUB_ph_room_booking", PcRoomAllocTable.GetColumnStringList(), ASearchCriteria)), ATransaction, false,
+                        GetParametersForWhereClause(new PcRoomAllocTable(), ASearchCriteria)));
+        }
+
+        /// auto generated
         public static void DeleteByPrimaryKey(Int32 AKey, TDBTransaction ATransaction)
         {
             OdbcParameter[] ParametersArray = new OdbcParameter[1];
@@ -1372,6 +2360,14 @@ namespace Ict.Petra.Shared.MHospitality.Data.Access
         public static void DeleteUsingTemplate(PcRoomAllocRow ATemplateRow, StringCollection ATemplateOperators, TDBTransaction ATransaction)
         {
             DBAccess.GDBAccessObj.ExecuteNonQuery(("DELETE FROM PUB_pc_room_alloc" + GenerateWhereClause(PcRoomAllocTable.GetColumnStringList(), ATemplateRow, ATemplateOperators)), ATransaction, false, GetParametersForWhereClause(ATemplateRow));
+        }
+
+        /// auto generated
+        public static void DeleteUsingTemplate(TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        {
+            DBAccess.GDBAccessObj.ExecuteNonQuery(("DELETE FROM PUB_pc_room_alloc" +
+                GenerateWhereClause(PcRoomAllocTable.GetColumnStringList(), ASearchCriteria)), ATransaction, false,
+                GetParametersForWhereClause(new PcRoomAllocTable(), ASearchCriteria));
         }
 
         /// auto generated
@@ -1561,6 +2557,50 @@ namespace Ict.Petra.Shared.MHospitality.Data.Access
         }
 
         /// this method is called by all overloads
+        public static void LoadUsingTemplate(DataSet ADataSet, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        {
+            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClause(AFieldList, new string[] {
+                            "pc_code_c"}) + " FROM PUB_pc_room_attribute_type")
+                            + GenerateWhereClause(PcRoomAttributeTypeTable.GetColumnStringList(), ASearchCriteria))
+                            + GenerateOrderByClause(AOrderBy)), PcRoomAttributeTypeTable.GetTableName(), ATransaction,
+                            GetParametersForWhereClause(new PcRoomAttributeTypeTable(), ASearchCriteria), AStartRecord, AMaxRecords);
+        }
+
+        /// auto generated
+        public static void LoadUsingTemplate(DataSet AData, TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        {
+            LoadUsingTemplate(AData, ASearchCriteria, null, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static void LoadUsingTemplate(DataSet AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
+        {
+            LoadUsingTemplate(AData, ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static void LoadUsingTemplate(out PcRoomAttributeTypeTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        {
+            DataSet FillDataSet = new DataSet();
+            AData = new PcRoomAttributeTypeTable();
+            FillDataSet.Tables.Add(AData);
+            LoadUsingTemplate(FillDataSet, ASearchCriteria, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            FillDataSet.Tables.Remove(AData);
+        }
+
+        /// auto generated
+        public static void LoadUsingTemplate(out PcRoomAttributeTypeTable AData, TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        {
+            LoadUsingTemplate(out AData, ASearchCriteria, null, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static void LoadUsingTemplate(out PcRoomAttributeTypeTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
+        {
+            LoadUsingTemplate(out AData, ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
+        }
+
+        /// this method is called by all overloads
         public static int CountAll(TDBTransaction ATransaction)
         {
             return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar("SELECT COUNT(*) FROM PUB_pc_room_attribute_type", ATransaction, false));
@@ -1579,6 +2619,13 @@ namespace Ict.Petra.Shared.MHospitality.Data.Access
         public static int CountUsingTemplate(PcRoomAttributeTypeRow ATemplateRow, StringCollection ATemplateOperators, TDBTransaction ATransaction)
         {
             return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_pc_room_attribute_type" + GenerateWhereClause(PcRoomAttributeTypeTable.GetColumnStringList(), ATemplateRow, ATemplateOperators)), ATransaction, false, GetParametersForWhereClause(ATemplateRow)));
+        }
+
+        /// this method is called by all overloads
+        public static int CountUsingTemplate(TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        {
+            return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_pc_room_attribute_type" + GenerateWhereClause(PcRoomAttributeTypeTable.GetColumnStringList(), ASearchCriteria)), ATransaction, false,
+            GetParametersForWhereClause(new PcRoomAttributeTypeTable(), ASearchCriteria)));
         }
 
         /// auto generated LoadViaLinkTable
@@ -1681,6 +2728,51 @@ namespace Ict.Petra.Shared.MHospitality.Data.Access
             LoadViaPcRoomTemplate(out AData, ATemplateRow, ATemplateOperators, AFieldList, ATransaction, null, 0, 0);
         }
 
+        /// auto generated
+        public static void LoadViaPcRoomTemplate(DataSet ADataSet, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        {
+            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClauseLong("PUB_pc_room_attribute_type", AFieldList, new string[] {
+                            "pc_code_c"}) + " FROM PUB_pc_room_attribute_type, PUB_pc_room_attribute, PUB_pc_room WHERE " +
+                            "PUB_pc_room_attribute.pc_room_attr_type_code_c = PUB_pc_room_attribute_type.pc_code_c AND PUB_pc_room_attribute.p_venue_key_n = PUB_pc_room.p_venue_key_n AND PUB_pc_room_attribute.pc_building_code_c = PUB_pc_room.pc_building_code_c AND PUB_pc_room_attribute.pc_room_number_c = PUB_pc_room.pc_room_number_c")
+                            + GenerateWhereClauseLong("PUB_pc_room", PcRoomTable.GetColumnStringList(), ASearchCriteria))
+                            + GenerateOrderByClause(AOrderBy)), PcRoomAttributeTypeTable.GetTableName(), ATransaction,
+                            GetParametersForWhereClause(new PcRoomAttributeTypeTable(), ASearchCriteria), AStartRecord, AMaxRecords);
+        }
+
+        /// auto generated
+        public static void LoadViaPcRoomTemplate(DataSet AData, TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        {
+            LoadViaPcRoomTemplate(AData, ASearchCriteria, null, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static void LoadViaPcRoomTemplate(DataSet AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
+        {
+            LoadViaPcRoomTemplate(AData, ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static void LoadViaPcRoomTemplate(out PcRoomAttributeTypeTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        {
+            DataSet FillDataSet = new DataSet();
+            AData = new PcRoomAttributeTypeTable();
+            FillDataSet.Tables.Add(AData);
+            LoadViaPcRoomTemplate(FillDataSet, ASearchCriteria, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            FillDataSet.Tables.Remove(AData);
+        }
+
+        /// auto generated
+        public static void LoadViaPcRoomTemplate(out PcRoomAttributeTypeTable AData, TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        {
+            LoadViaPcRoomTemplate(out AData, ASearchCriteria, null, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static void LoadViaPcRoomTemplate(out PcRoomAttributeTypeTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
+        {
+            LoadViaPcRoomTemplate(out AData, ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
+        }
+
         /// auto generated CountViaLinkTable
         public static int CountViaPcRoom(Int64 AVenueKey, String ABuildingCode, String ARoomNumber, TDBTransaction ATransaction)
         {
@@ -1705,6 +2797,15 @@ namespace Ict.Petra.Shared.MHospitality.Data.Access
         }
 
         /// auto generated
+        public static int CountViaPcRoomTemplate(TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        {
+            return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_pc_room_attribute_type, PUB_pc_room_attribute, PUB_pc_room WHERE " +
+                        "PUB_pc_room_attribute.pc_room_attr_type_code_c = PUB_pc_room_attribute_type.pc_code_c AND PUB_pc_room_attribute.p_venue_key_n = PUB_pc_room.p_venue_key_n AND PUB_pc_room_attribute.pc_building_code_c = PUB_pc_room.pc_building_code_c AND PUB_pc_room_attribute.pc_room_number_c = PUB_pc_room.pc_room_number_c" +
+                        GenerateWhereClauseLong("PUB_pc_room_attribute", PcRoomAttributeTypeTable.GetColumnStringList(), ASearchCriteria)), ATransaction, false,
+                        GetParametersForWhereClause(new PcRoomAttributeTypeTable(), ASearchCriteria)));
+        }
+
+        /// auto generated
         public static void DeleteByPrimaryKey(String ACode, TDBTransaction ATransaction)
         {
             OdbcParameter[] ParametersArray = new OdbcParameter[1];
@@ -1717,6 +2818,14 @@ namespace Ict.Petra.Shared.MHospitality.Data.Access
         public static void DeleteUsingTemplate(PcRoomAttributeTypeRow ATemplateRow, StringCollection ATemplateOperators, TDBTransaction ATransaction)
         {
             DBAccess.GDBAccessObj.ExecuteNonQuery(("DELETE FROM PUB_pc_room_attribute_type" + GenerateWhereClause(PcRoomAttributeTypeTable.GetColumnStringList(), ATemplateRow, ATemplateOperators)), ATransaction, false, GetParametersForWhereClause(ATemplateRow));
+        }
+
+        /// auto generated
+        public static void DeleteUsingTemplate(TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        {
+            DBAccess.GDBAccessObj.ExecuteNonQuery(("DELETE FROM PUB_pc_room_attribute_type" +
+                GenerateWhereClause(PcRoomAttributeTypeTable.GetColumnStringList(), ASearchCriteria)), ATransaction, false,
+                GetParametersForWhereClause(new PcRoomAttributeTypeTable(), ASearchCriteria));
         }
 
         /// auto generated
@@ -1911,6 +3020,50 @@ namespace Ict.Petra.Shared.MHospitality.Data.Access
         }
 
         /// this method is called by all overloads
+        public static void LoadUsingTemplate(DataSet ADataSet, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        {
+            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClause(AFieldList, new string[] {
+                            "p_venue_key_n", "pc_building_code_c", "pc_room_number_c", "pc_room_attr_type_code_c"}) + " FROM PUB_pc_room_attribute")
+                            + GenerateWhereClause(PcRoomAttributeTable.GetColumnStringList(), ASearchCriteria))
+                            + GenerateOrderByClause(AOrderBy)), PcRoomAttributeTable.GetTableName(), ATransaction,
+                            GetParametersForWhereClause(new PcRoomAttributeTable(), ASearchCriteria), AStartRecord, AMaxRecords);
+        }
+
+        /// auto generated
+        public static void LoadUsingTemplate(DataSet AData, TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        {
+            LoadUsingTemplate(AData, ASearchCriteria, null, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static void LoadUsingTemplate(DataSet AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
+        {
+            LoadUsingTemplate(AData, ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static void LoadUsingTemplate(out PcRoomAttributeTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        {
+            DataSet FillDataSet = new DataSet();
+            AData = new PcRoomAttributeTable();
+            FillDataSet.Tables.Add(AData);
+            LoadUsingTemplate(FillDataSet, ASearchCriteria, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            FillDataSet.Tables.Remove(AData);
+        }
+
+        /// auto generated
+        public static void LoadUsingTemplate(out PcRoomAttributeTable AData, TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        {
+            LoadUsingTemplate(out AData, ASearchCriteria, null, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static void LoadUsingTemplate(out PcRoomAttributeTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
+        {
+            LoadUsingTemplate(out AData, ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
+        }
+
+        /// this method is called by all overloads
         public static int CountAll(TDBTransaction ATransaction)
         {
             return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar("SELECT COUNT(*) FROM PUB_pc_room_attribute", ATransaction, false));
@@ -1935,6 +3088,13 @@ namespace Ict.Petra.Shared.MHospitality.Data.Access
         public static int CountUsingTemplate(PcRoomAttributeRow ATemplateRow, StringCollection ATemplateOperators, TDBTransaction ATransaction)
         {
             return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_pc_room_attribute" + GenerateWhereClause(PcRoomAttributeTable.GetColumnStringList(), ATemplateRow, ATemplateOperators)), ATransaction, false, GetParametersForWhereClause(ATemplateRow)));
+        }
+
+        /// this method is called by all overloads
+        public static int CountUsingTemplate(TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        {
+            return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_pc_room_attribute" + GenerateWhereClause(PcRoomAttributeTable.GetColumnStringList(), ASearchCriteria)), ATransaction, false,
+            GetParametersForWhereClause(new PcRoomAttributeTable(), ASearchCriteria)));
         }
 
         /// auto generated
@@ -2037,6 +3197,51 @@ namespace Ict.Petra.Shared.MHospitality.Data.Access
         }
 
         /// auto generated
+        public static void LoadViaPcRoomTemplate(DataSet ADataSet, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        {
+            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClauseLong("PUB_pc_room_attribute", AFieldList, new string[] {
+                            "p_venue_key_n", "pc_building_code_c", "pc_room_number_c", "pc_room_attr_type_code_c"}) + " FROM PUB_pc_room_attribute, PUB_pc_room WHERE " +
+                            "PUB_pc_room_attribute.p_venue_key_n = PUB_pc_room.p_venue_key_n AND PUB_pc_room_attribute.pc_building_code_c = PUB_pc_room.pc_building_code_c AND PUB_pc_room_attribute.pc_room_number_c = PUB_pc_room.pc_room_number_c")
+                            + GenerateWhereClauseLong("PUB_pc_room", PcRoomTable.GetColumnStringList(), ASearchCriteria))
+                            + GenerateOrderByClause(AOrderBy)), PcRoomAttributeTable.GetTableName(), ATransaction,
+                            GetParametersForWhereClause(new PcRoomAttributeTable(), ASearchCriteria), AStartRecord, AMaxRecords);
+        }
+
+        /// auto generated
+        public static void LoadViaPcRoomTemplate(DataSet AData, TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        {
+            LoadViaPcRoomTemplate(AData, ASearchCriteria, null, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static void LoadViaPcRoomTemplate(DataSet AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
+        {
+            LoadViaPcRoomTemplate(AData, ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static void LoadViaPcRoomTemplate(out PcRoomAttributeTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        {
+            DataSet FillDataSet = new DataSet();
+            AData = new PcRoomAttributeTable();
+            FillDataSet.Tables.Add(AData);
+            LoadViaPcRoomTemplate(FillDataSet, ASearchCriteria, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            FillDataSet.Tables.Remove(AData);
+        }
+
+        /// auto generated
+        public static void LoadViaPcRoomTemplate(out PcRoomAttributeTable AData, TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        {
+            LoadViaPcRoomTemplate(out AData, ASearchCriteria, null, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static void LoadViaPcRoomTemplate(out PcRoomAttributeTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
+        {
+            LoadViaPcRoomTemplate(out AData, ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
         public static int CountViaPcRoom(Int64 AVenueKey, String ABuildingCode, String ARoomNumber, TDBTransaction ATransaction)
         {
             OdbcParameter[] ParametersArray = new OdbcParameter[3];
@@ -2054,6 +3259,15 @@ namespace Ict.Petra.Shared.MHospitality.Data.Access
         {
             return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_pc_room_attribute, PUB_pc_room WHERE " +
                 "PUB_pc_room_attribute.p_venue_key_n = PUB_pc_room.p_venue_key_n AND PUB_pc_room_attribute.pc_building_code_c = PUB_pc_room.pc_building_code_c AND PUB_pc_room_attribute.pc_room_number_c = PUB_pc_room.pc_room_number_c" + GenerateWhereClauseLong("PUB_pc_room", PcRoomTable.GetColumnStringList(), ATemplateRow, ATemplateOperators)), ATransaction, false, GetParametersForWhereClause(ATemplateRow, PcRoomTable.GetPrimKeyColumnOrdList())));
+        }
+
+        /// auto generated
+        public static int CountViaPcRoomTemplate(TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        {
+            return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_pc_room_attribute, PUB_pc_room WHERE " +
+                "PUB_pc_room_attribute.p_venue_key_n = PUB_pc_room.p_venue_key_n AND PUB_pc_room_attribute.pc_building_code_c = PUB_pc_room.pc_building_code_c AND PUB_pc_room_attribute.pc_room_number_c = PUB_pc_room.pc_room_number_c" +
+                GenerateWhereClauseLong("PUB_pc_room", PcRoomTable.GetColumnStringList(), ASearchCriteria)), ATransaction, false,
+                GetParametersForWhereClause(new PcRoomTable(), ASearchCriteria)));
         }
 
         /// auto generated
@@ -2152,6 +3366,51 @@ namespace Ict.Petra.Shared.MHospitality.Data.Access
         }
 
         /// auto generated
+        public static void LoadViaPcRoomAttributeTypeTemplate(DataSet ADataSet, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        {
+            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClauseLong("PUB_pc_room_attribute", AFieldList, new string[] {
+                            "p_venue_key_n", "pc_building_code_c", "pc_room_number_c", "pc_room_attr_type_code_c"}) + " FROM PUB_pc_room_attribute, PUB_pc_room_attribute_type WHERE " +
+                            "PUB_pc_room_attribute.pc_room_attr_type_code_c = PUB_pc_room_attribute_type.pc_code_c")
+                            + GenerateWhereClauseLong("PUB_pc_room_attribute_type", PcRoomAttributeTypeTable.GetColumnStringList(), ASearchCriteria))
+                            + GenerateOrderByClause(AOrderBy)), PcRoomAttributeTable.GetTableName(), ATransaction,
+                            GetParametersForWhereClause(new PcRoomAttributeTable(), ASearchCriteria), AStartRecord, AMaxRecords);
+        }
+
+        /// auto generated
+        public static void LoadViaPcRoomAttributeTypeTemplate(DataSet AData, TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        {
+            LoadViaPcRoomAttributeTypeTemplate(AData, ASearchCriteria, null, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static void LoadViaPcRoomAttributeTypeTemplate(DataSet AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
+        {
+            LoadViaPcRoomAttributeTypeTemplate(AData, ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static void LoadViaPcRoomAttributeTypeTemplate(out PcRoomAttributeTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        {
+            DataSet FillDataSet = new DataSet();
+            AData = new PcRoomAttributeTable();
+            FillDataSet.Tables.Add(AData);
+            LoadViaPcRoomAttributeTypeTemplate(FillDataSet, ASearchCriteria, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            FillDataSet.Tables.Remove(AData);
+        }
+
+        /// auto generated
+        public static void LoadViaPcRoomAttributeTypeTemplate(out PcRoomAttributeTable AData, TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        {
+            LoadViaPcRoomAttributeTypeTemplate(out AData, ASearchCriteria, null, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static void LoadViaPcRoomAttributeTypeTemplate(out PcRoomAttributeTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
+        {
+            LoadViaPcRoomAttributeTypeTemplate(out AData, ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
         public static int CountViaPcRoomAttributeType(String ACode, TDBTransaction ATransaction)
         {
             OdbcParameter[] ParametersArray = new OdbcParameter[1];
@@ -2165,6 +3424,15 @@ namespace Ict.Petra.Shared.MHospitality.Data.Access
         {
             return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_pc_room_attribute, PUB_pc_room_attribute_type WHERE " +
                 "PUB_pc_room_attribute.pc_room_attr_type_code_c = PUB_pc_room_attribute_type.pc_code_c" + GenerateWhereClauseLong("PUB_pc_room_attribute_type", PcRoomAttributeTypeTable.GetColumnStringList(), ATemplateRow, ATemplateOperators)), ATransaction, false, GetParametersForWhereClause(ATemplateRow, PcRoomAttributeTypeTable.GetPrimKeyColumnOrdList())));
+        }
+
+        /// auto generated
+        public static int CountViaPcRoomAttributeTypeTemplate(TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        {
+            return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_pc_room_attribute, PUB_pc_room_attribute_type WHERE " +
+                "PUB_pc_room_attribute.pc_room_attr_type_code_c = PUB_pc_room_attribute_type.pc_code_c" +
+                GenerateWhereClauseLong("PUB_pc_room_attribute_type", PcRoomAttributeTypeTable.GetColumnStringList(), ASearchCriteria)), ATransaction, false,
+                GetParametersForWhereClause(new PcRoomAttributeTypeTable(), ASearchCriteria)));
         }
 
         /// auto generated
@@ -2186,6 +3454,14 @@ namespace Ict.Petra.Shared.MHospitality.Data.Access
         public static void DeleteUsingTemplate(PcRoomAttributeRow ATemplateRow, StringCollection ATemplateOperators, TDBTransaction ATransaction)
         {
             DBAccess.GDBAccessObj.ExecuteNonQuery(("DELETE FROM PUB_pc_room_attribute" + GenerateWhereClause(PcRoomAttributeTable.GetColumnStringList(), ATemplateRow, ATemplateOperators)), ATransaction, false, GetParametersForWhereClause(ATemplateRow));
+        }
+
+        /// auto generated
+        public static void DeleteUsingTemplate(TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        {
+            DBAccess.GDBAccessObj.ExecuteNonQuery(("DELETE FROM PUB_pc_room_attribute" +
+                GenerateWhereClause(PcRoomAttributeTable.GetColumnStringList(), ASearchCriteria)), ATransaction, false,
+                GetParametersForWhereClause(new PcRoomAttributeTable(), ASearchCriteria));
         }
 
         /// auto generated
@@ -2376,6 +3652,50 @@ namespace Ict.Petra.Shared.MHospitality.Data.Access
         }
 
         /// this method is called by all overloads
+        public static void LoadUsingTemplate(DataSet ADataSet, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        {
+            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClause(AFieldList, new string[] {
+                            "ph_booking_key_i", "ph_room_alloc_key_i"}) + " FROM PUB_ph_room_booking")
+                            + GenerateWhereClause(PhRoomBookingTable.GetColumnStringList(), ASearchCriteria))
+                            + GenerateOrderByClause(AOrderBy)), PhRoomBookingTable.GetTableName(), ATransaction,
+                            GetParametersForWhereClause(new PhRoomBookingTable(), ASearchCriteria), AStartRecord, AMaxRecords);
+        }
+
+        /// auto generated
+        public static void LoadUsingTemplate(DataSet AData, TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        {
+            LoadUsingTemplate(AData, ASearchCriteria, null, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static void LoadUsingTemplate(DataSet AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
+        {
+            LoadUsingTemplate(AData, ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static void LoadUsingTemplate(out PhRoomBookingTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        {
+            DataSet FillDataSet = new DataSet();
+            AData = new PhRoomBookingTable();
+            FillDataSet.Tables.Add(AData);
+            LoadUsingTemplate(FillDataSet, ASearchCriteria, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            FillDataSet.Tables.Remove(AData);
+        }
+
+        /// auto generated
+        public static void LoadUsingTemplate(out PhRoomBookingTable AData, TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        {
+            LoadUsingTemplate(out AData, ASearchCriteria, null, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static void LoadUsingTemplate(out PhRoomBookingTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
+        {
+            LoadUsingTemplate(out AData, ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
+        }
+
+        /// this method is called by all overloads
         public static int CountAll(TDBTransaction ATransaction)
         {
             return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar("SELECT COUNT(*) FROM PUB_ph_room_booking", ATransaction, false));
@@ -2396,6 +3716,13 @@ namespace Ict.Petra.Shared.MHospitality.Data.Access
         public static int CountUsingTemplate(PhRoomBookingRow ATemplateRow, StringCollection ATemplateOperators, TDBTransaction ATransaction)
         {
             return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_ph_room_booking" + GenerateWhereClause(PhRoomBookingTable.GetColumnStringList(), ATemplateRow, ATemplateOperators)), ATransaction, false, GetParametersForWhereClause(ATemplateRow)));
+        }
+
+        /// this method is called by all overloads
+        public static int CountUsingTemplate(TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        {
+            return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_ph_room_booking" + GenerateWhereClause(PhRoomBookingTable.GetColumnStringList(), ASearchCriteria)), ATransaction, false,
+            GetParametersForWhereClause(new PhRoomBookingTable(), ASearchCriteria)));
         }
 
         /// auto generated
@@ -2494,6 +3821,51 @@ namespace Ict.Petra.Shared.MHospitality.Data.Access
         }
 
         /// auto generated
+        public static void LoadViaPhBookingTemplate(DataSet ADataSet, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        {
+            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClauseLong("PUB_ph_room_booking", AFieldList, new string[] {
+                            "ph_booking_key_i", "ph_room_alloc_key_i"}) + " FROM PUB_ph_room_booking, PUB_ph_booking WHERE " +
+                            "PUB_ph_room_booking.ph_booking_key_i = PUB_ph_booking.ph_key_i")
+                            + GenerateWhereClauseLong("PUB_ph_booking", PhBookingTable.GetColumnStringList(), ASearchCriteria))
+                            + GenerateOrderByClause(AOrderBy)), PhRoomBookingTable.GetTableName(), ATransaction,
+                            GetParametersForWhereClause(new PhRoomBookingTable(), ASearchCriteria), AStartRecord, AMaxRecords);
+        }
+
+        /// auto generated
+        public static void LoadViaPhBookingTemplate(DataSet AData, TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        {
+            LoadViaPhBookingTemplate(AData, ASearchCriteria, null, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static void LoadViaPhBookingTemplate(DataSet AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
+        {
+            LoadViaPhBookingTemplate(AData, ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static void LoadViaPhBookingTemplate(out PhRoomBookingTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        {
+            DataSet FillDataSet = new DataSet();
+            AData = new PhRoomBookingTable();
+            FillDataSet.Tables.Add(AData);
+            LoadViaPhBookingTemplate(FillDataSet, ASearchCriteria, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            FillDataSet.Tables.Remove(AData);
+        }
+
+        /// auto generated
+        public static void LoadViaPhBookingTemplate(out PhRoomBookingTable AData, TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        {
+            LoadViaPhBookingTemplate(out AData, ASearchCriteria, null, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static void LoadViaPhBookingTemplate(out PhRoomBookingTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
+        {
+            LoadViaPhBookingTemplate(out AData, ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
         public static int CountViaPhBooking(Int32 AKey, TDBTransaction ATransaction)
         {
             OdbcParameter[] ParametersArray = new OdbcParameter[1];
@@ -2507,6 +3879,15 @@ namespace Ict.Petra.Shared.MHospitality.Data.Access
         {
             return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_ph_room_booking, PUB_ph_booking WHERE " +
                 "PUB_ph_room_booking.ph_booking_key_i = PUB_ph_booking.ph_key_i" + GenerateWhereClauseLong("PUB_ph_booking", PhBookingTable.GetColumnStringList(), ATemplateRow, ATemplateOperators)), ATransaction, false, GetParametersForWhereClause(ATemplateRow, PhBookingTable.GetPrimKeyColumnOrdList())));
+        }
+
+        /// auto generated
+        public static int CountViaPhBookingTemplate(TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        {
+            return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_ph_room_booking, PUB_ph_booking WHERE " +
+                "PUB_ph_room_booking.ph_booking_key_i = PUB_ph_booking.ph_key_i" +
+                GenerateWhereClauseLong("PUB_ph_booking", PhBookingTable.GetColumnStringList(), ASearchCriteria)), ATransaction, false,
+                GetParametersForWhereClause(new PhBookingTable(), ASearchCriteria)));
         }
 
         /// auto generated
@@ -2605,6 +3986,51 @@ namespace Ict.Petra.Shared.MHospitality.Data.Access
         }
 
         /// auto generated
+        public static void LoadViaPcRoomAllocTemplate(DataSet ADataSet, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        {
+            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClauseLong("PUB_ph_room_booking", AFieldList, new string[] {
+                            "ph_booking_key_i", "ph_room_alloc_key_i"}) + " FROM PUB_ph_room_booking, PUB_pc_room_alloc WHERE " +
+                            "PUB_ph_room_booking.ph_room_alloc_key_i = PUB_pc_room_alloc.pc_key_i")
+                            + GenerateWhereClauseLong("PUB_pc_room_alloc", PcRoomAllocTable.GetColumnStringList(), ASearchCriteria))
+                            + GenerateOrderByClause(AOrderBy)), PhRoomBookingTable.GetTableName(), ATransaction,
+                            GetParametersForWhereClause(new PhRoomBookingTable(), ASearchCriteria), AStartRecord, AMaxRecords);
+        }
+
+        /// auto generated
+        public static void LoadViaPcRoomAllocTemplate(DataSet AData, TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        {
+            LoadViaPcRoomAllocTemplate(AData, ASearchCriteria, null, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static void LoadViaPcRoomAllocTemplate(DataSet AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
+        {
+            LoadViaPcRoomAllocTemplate(AData, ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static void LoadViaPcRoomAllocTemplate(out PhRoomBookingTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        {
+            DataSet FillDataSet = new DataSet();
+            AData = new PhRoomBookingTable();
+            FillDataSet.Tables.Add(AData);
+            LoadViaPcRoomAllocTemplate(FillDataSet, ASearchCriteria, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            FillDataSet.Tables.Remove(AData);
+        }
+
+        /// auto generated
+        public static void LoadViaPcRoomAllocTemplate(out PhRoomBookingTable AData, TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        {
+            LoadViaPcRoomAllocTemplate(out AData, ASearchCriteria, null, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static void LoadViaPcRoomAllocTemplate(out PhRoomBookingTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
+        {
+            LoadViaPcRoomAllocTemplate(out AData, ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
         public static int CountViaPcRoomAlloc(Int32 AKey, TDBTransaction ATransaction)
         {
             OdbcParameter[] ParametersArray = new OdbcParameter[1];
@@ -2618,6 +4044,15 @@ namespace Ict.Petra.Shared.MHospitality.Data.Access
         {
             return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_ph_room_booking, PUB_pc_room_alloc WHERE " +
                 "PUB_ph_room_booking.ph_room_alloc_key_i = PUB_pc_room_alloc.pc_key_i" + GenerateWhereClauseLong("PUB_pc_room_alloc", PcRoomAllocTable.GetColumnStringList(), ATemplateRow, ATemplateOperators)), ATransaction, false, GetParametersForWhereClause(ATemplateRow, PcRoomAllocTable.GetPrimKeyColumnOrdList())));
+        }
+
+        /// auto generated
+        public static int CountViaPcRoomAllocTemplate(TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        {
+            return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_ph_room_booking, PUB_pc_room_alloc WHERE " +
+                "PUB_ph_room_booking.ph_room_alloc_key_i = PUB_pc_room_alloc.pc_key_i" +
+                GenerateWhereClauseLong("PUB_pc_room_alloc", PcRoomAllocTable.GetColumnStringList(), ASearchCriteria)), ATransaction, false,
+                GetParametersForWhereClause(new PcRoomAllocTable(), ASearchCriteria)));
         }
 
         /// auto generated
@@ -2635,6 +4070,14 @@ namespace Ict.Petra.Shared.MHospitality.Data.Access
         public static void DeleteUsingTemplate(PhRoomBookingRow ATemplateRow, StringCollection ATemplateOperators, TDBTransaction ATransaction)
         {
             DBAccess.GDBAccessObj.ExecuteNonQuery(("DELETE FROM PUB_ph_room_booking" + GenerateWhereClause(PhRoomBookingTable.GetColumnStringList(), ATemplateRow, ATemplateOperators)), ATransaction, false, GetParametersForWhereClause(ATemplateRow));
+        }
+
+        /// auto generated
+        public static void DeleteUsingTemplate(TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        {
+            DBAccess.GDBAccessObj.ExecuteNonQuery(("DELETE FROM PUB_ph_room_booking" +
+                GenerateWhereClause(PhRoomBookingTable.GetColumnStringList(), ASearchCriteria)), ATransaction, false,
+                GetParametersForWhereClause(new PhRoomBookingTable(), ASearchCriteria));
         }
 
         /// auto generated
@@ -2823,6 +4266,50 @@ namespace Ict.Petra.Shared.MHospitality.Data.Access
         }
 
         /// this method is called by all overloads
+        public static void LoadUsingTemplate(DataSet ADataSet, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        {
+            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClause(AFieldList, new string[] {
+                            "ph_key_i"}) + " FROM PUB_ph_booking")
+                            + GenerateWhereClause(PhBookingTable.GetColumnStringList(), ASearchCriteria))
+                            + GenerateOrderByClause(AOrderBy)), PhBookingTable.GetTableName(), ATransaction,
+                            GetParametersForWhereClause(new PhBookingTable(), ASearchCriteria), AStartRecord, AMaxRecords);
+        }
+
+        /// auto generated
+        public static void LoadUsingTemplate(DataSet AData, TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        {
+            LoadUsingTemplate(AData, ASearchCriteria, null, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static void LoadUsingTemplate(DataSet AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
+        {
+            LoadUsingTemplate(AData, ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static void LoadUsingTemplate(out PhBookingTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        {
+            DataSet FillDataSet = new DataSet();
+            AData = new PhBookingTable();
+            FillDataSet.Tables.Add(AData);
+            LoadUsingTemplate(FillDataSet, ASearchCriteria, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            FillDataSet.Tables.Remove(AData);
+        }
+
+        /// auto generated
+        public static void LoadUsingTemplate(out PhBookingTable AData, TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        {
+            LoadUsingTemplate(out AData, ASearchCriteria, null, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static void LoadUsingTemplate(out PhBookingTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
+        {
+            LoadUsingTemplate(out AData, ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
+        }
+
+        /// this method is called by all overloads
         public static int CountAll(TDBTransaction ATransaction)
         {
             return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar("SELECT COUNT(*) FROM PUB_ph_booking", ATransaction, false));
@@ -2841,6 +4328,13 @@ namespace Ict.Petra.Shared.MHospitality.Data.Access
         public static int CountUsingTemplate(PhBookingRow ATemplateRow, StringCollection ATemplateOperators, TDBTransaction ATransaction)
         {
             return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_ph_booking" + GenerateWhereClause(PhBookingTable.GetColumnStringList(), ATemplateRow, ATemplateOperators)), ATransaction, false, GetParametersForWhereClause(ATemplateRow)));
+        }
+
+        /// this method is called by all overloads
+        public static int CountUsingTemplate(TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        {
+            return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_ph_booking" + GenerateWhereClause(PhBookingTable.GetColumnStringList(), ASearchCriteria)), ATransaction, false,
+            GetParametersForWhereClause(new PhBookingTable(), ASearchCriteria)));
         }
 
         /// auto generated
@@ -2939,6 +4433,51 @@ namespace Ict.Petra.Shared.MHospitality.Data.Access
         }
 
         /// auto generated
+        public static void LoadViaPPartnerTemplate(DataSet ADataSet, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        {
+            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClauseLong("PUB_ph_booking", AFieldList, new string[] {
+                            "ph_key_i"}) + " FROM PUB_ph_booking, PUB_p_partner WHERE " +
+                            "PUB_ph_booking.p_contact_key_n = PUB_p_partner.p_partner_key_n")
+                            + GenerateWhereClauseLong("PUB_p_partner", PPartnerTable.GetColumnStringList(), ASearchCriteria))
+                            + GenerateOrderByClause(AOrderBy)), PhBookingTable.GetTableName(), ATransaction,
+                            GetParametersForWhereClause(new PhBookingTable(), ASearchCriteria), AStartRecord, AMaxRecords);
+        }
+
+        /// auto generated
+        public static void LoadViaPPartnerTemplate(DataSet AData, TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        {
+            LoadViaPPartnerTemplate(AData, ASearchCriteria, null, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static void LoadViaPPartnerTemplate(DataSet AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
+        {
+            LoadViaPPartnerTemplate(AData, ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static void LoadViaPPartnerTemplate(out PhBookingTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        {
+            DataSet FillDataSet = new DataSet();
+            AData = new PhBookingTable();
+            FillDataSet.Tables.Add(AData);
+            LoadViaPPartnerTemplate(FillDataSet, ASearchCriteria, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            FillDataSet.Tables.Remove(AData);
+        }
+
+        /// auto generated
+        public static void LoadViaPPartnerTemplate(out PhBookingTable AData, TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        {
+            LoadViaPPartnerTemplate(out AData, ASearchCriteria, null, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static void LoadViaPPartnerTemplate(out PhBookingTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
+        {
+            LoadViaPPartnerTemplate(out AData, ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
         public static int CountViaPPartner(Int64 APartnerKey, TDBTransaction ATransaction)
         {
             OdbcParameter[] ParametersArray = new OdbcParameter[1];
@@ -2952,6 +4491,15 @@ namespace Ict.Petra.Shared.MHospitality.Data.Access
         {
             return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_ph_booking, PUB_p_partner WHERE " +
                 "PUB_ph_booking.p_contact_key_n = PUB_p_partner.p_partner_key_n" + GenerateWhereClauseLong("PUB_p_partner", PPartnerTable.GetColumnStringList(), ATemplateRow, ATemplateOperators)), ATransaction, false, GetParametersForWhereClause(ATemplateRow, PPartnerTable.GetPrimKeyColumnOrdList())));
+        }
+
+        /// auto generated
+        public static int CountViaPPartnerTemplate(TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        {
+            return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_ph_booking, PUB_p_partner WHERE " +
+                "PUB_ph_booking.p_contact_key_n = PUB_p_partner.p_partner_key_n" +
+                GenerateWhereClauseLong("PUB_p_partner", PPartnerTable.GetColumnStringList(), ASearchCriteria)), ATransaction, false,
+                GetParametersForWhereClause(new PPartnerTable(), ASearchCriteria)));
         }
 
         /// auto generated
@@ -3052,6 +4600,51 @@ namespace Ict.Petra.Shared.MHospitality.Data.Access
         }
 
         /// auto generated
+        public static void LoadViaAArInvoiceTemplate(DataSet ADataSet, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        {
+            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClauseLong("PUB_ph_booking", AFieldList, new string[] {
+                            "ph_key_i"}) + " FROM PUB_ph_booking, PUB_a_ar_invoice WHERE " +
+                            "PUB_ph_booking.a_ledger_number_for_invoice_i = PUB_a_ar_invoice.a_ledger_number_i AND PUB_ph_booking.a_ar_invoice_key_i = PUB_a_ar_invoice.a_key_i")
+                            + GenerateWhereClauseLong("PUB_a_ar_invoice", AArInvoiceTable.GetColumnStringList(), ASearchCriteria))
+                            + GenerateOrderByClause(AOrderBy)), PhBookingTable.GetTableName(), ATransaction,
+                            GetParametersForWhereClause(new PhBookingTable(), ASearchCriteria), AStartRecord, AMaxRecords);
+        }
+
+        /// auto generated
+        public static void LoadViaAArInvoiceTemplate(DataSet AData, TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        {
+            LoadViaAArInvoiceTemplate(AData, ASearchCriteria, null, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static void LoadViaAArInvoiceTemplate(DataSet AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
+        {
+            LoadViaAArInvoiceTemplate(AData, ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static void LoadViaAArInvoiceTemplate(out PhBookingTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        {
+            DataSet FillDataSet = new DataSet();
+            AData = new PhBookingTable();
+            FillDataSet.Tables.Add(AData);
+            LoadViaAArInvoiceTemplate(FillDataSet, ASearchCriteria, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            FillDataSet.Tables.Remove(AData);
+        }
+
+        /// auto generated
+        public static void LoadViaAArInvoiceTemplate(out PhBookingTable AData, TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        {
+            LoadViaAArInvoiceTemplate(out AData, ASearchCriteria, null, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static void LoadViaAArInvoiceTemplate(out PhBookingTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
+        {
+            LoadViaAArInvoiceTemplate(out AData, ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
         public static int CountViaAArInvoice(Int32 ALedgerNumber, Int32 AKey, TDBTransaction ATransaction)
         {
             OdbcParameter[] ParametersArray = new OdbcParameter[2];
@@ -3067,6 +4660,15 @@ namespace Ict.Petra.Shared.MHospitality.Data.Access
         {
             return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_ph_booking, PUB_a_ar_invoice WHERE " +
                 "PUB_ph_booking.a_ledger_number_for_invoice_i = PUB_a_ar_invoice.a_ledger_number_i AND PUB_ph_booking.a_ar_invoice_key_i = PUB_a_ar_invoice.a_key_i" + GenerateWhereClauseLong("PUB_a_ar_invoice", AArInvoiceTable.GetColumnStringList(), ATemplateRow, ATemplateOperators)), ATransaction, false, GetParametersForWhereClause(ATemplateRow, AArInvoiceTable.GetPrimKeyColumnOrdList())));
+        }
+
+        /// auto generated
+        public static int CountViaAArInvoiceTemplate(TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        {
+            return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_ph_booking, PUB_a_ar_invoice WHERE " +
+                "PUB_ph_booking.a_ledger_number_for_invoice_i = PUB_a_ar_invoice.a_ledger_number_i AND PUB_ph_booking.a_ar_invoice_key_i = PUB_a_ar_invoice.a_key_i" +
+                GenerateWhereClauseLong("PUB_a_ar_invoice", AArInvoiceTable.GetColumnStringList(), ASearchCriteria)), ATransaction, false,
+                GetParametersForWhereClause(new AArInvoiceTable(), ASearchCriteria)));
         }
 
         /// auto generated LoadViaLinkTable
@@ -3165,6 +4767,51 @@ namespace Ict.Petra.Shared.MHospitality.Data.Access
             LoadViaPcRoomAllocTemplate(out AData, ATemplateRow, ATemplateOperators, AFieldList, ATransaction, null, 0, 0);
         }
 
+        /// auto generated
+        public static void LoadViaPcRoomAllocTemplate(DataSet ADataSet, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        {
+            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClauseLong("PUB_ph_booking", AFieldList, new string[] {
+                            "ph_key_i"}) + " FROM PUB_ph_booking, PUB_ph_room_booking, PUB_pc_room_alloc WHERE " +
+                            "PUB_ph_room_booking.ph_booking_key_i = PUB_ph_booking.ph_key_i AND PUB_ph_room_booking.ph_room_alloc_key_i = PUB_pc_room_alloc.pc_key_i")
+                            + GenerateWhereClauseLong("PUB_pc_room_alloc", PcRoomAllocTable.GetColumnStringList(), ASearchCriteria))
+                            + GenerateOrderByClause(AOrderBy)), PhBookingTable.GetTableName(), ATransaction,
+                            GetParametersForWhereClause(new PhBookingTable(), ASearchCriteria), AStartRecord, AMaxRecords);
+        }
+
+        /// auto generated
+        public static void LoadViaPcRoomAllocTemplate(DataSet AData, TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        {
+            LoadViaPcRoomAllocTemplate(AData, ASearchCriteria, null, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static void LoadViaPcRoomAllocTemplate(DataSet AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
+        {
+            LoadViaPcRoomAllocTemplate(AData, ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static void LoadViaPcRoomAllocTemplate(out PhBookingTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        {
+            DataSet FillDataSet = new DataSet();
+            AData = new PhBookingTable();
+            FillDataSet.Tables.Add(AData);
+            LoadViaPcRoomAllocTemplate(FillDataSet, ASearchCriteria, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            FillDataSet.Tables.Remove(AData);
+        }
+
+        /// auto generated
+        public static void LoadViaPcRoomAllocTemplate(out PhBookingTable AData, TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        {
+            LoadViaPcRoomAllocTemplate(out AData, ASearchCriteria, null, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static void LoadViaPcRoomAllocTemplate(out PhBookingTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
+        {
+            LoadViaPcRoomAllocTemplate(out AData, ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
+        }
+
         /// auto generated CountViaLinkTable
         public static int CountViaPcRoomAlloc(Int32 AKey, TDBTransaction ATransaction)
         {
@@ -3185,6 +4832,15 @@ namespace Ict.Petra.Shared.MHospitality.Data.Access
         }
 
         /// auto generated
+        public static int CountViaPcRoomAllocTemplate(TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        {
+            return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_ph_booking, PUB_ph_room_booking, PUB_pc_room_alloc WHERE " +
+                        "PUB_ph_room_booking.ph_booking_key_i = PUB_ph_booking.ph_key_i AND PUB_ph_room_booking.ph_room_alloc_key_i = PUB_pc_room_alloc.pc_key_i" +
+                        GenerateWhereClauseLong("PUB_ph_room_booking", PhBookingTable.GetColumnStringList(), ASearchCriteria)), ATransaction, false,
+                        GetParametersForWhereClause(new PhBookingTable(), ASearchCriteria)));
+        }
+
+        /// auto generated
         public static void DeleteByPrimaryKey(Int32 AKey, TDBTransaction ATransaction)
         {
             OdbcParameter[] ParametersArray = new OdbcParameter[1];
@@ -3197,6 +4853,14 @@ namespace Ict.Petra.Shared.MHospitality.Data.Access
         public static void DeleteUsingTemplate(PhBookingRow ATemplateRow, StringCollection ATemplateOperators, TDBTransaction ATransaction)
         {
             DBAccess.GDBAccessObj.ExecuteNonQuery(("DELETE FROM PUB_ph_booking" + GenerateWhereClause(PhBookingTable.GetColumnStringList(), ATemplateRow, ATemplateOperators)), ATransaction, false, GetParametersForWhereClause(ATemplateRow));
+        }
+
+        /// auto generated
+        public static void DeleteUsingTemplate(TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        {
+            DBAccess.GDBAccessObj.ExecuteNonQuery(("DELETE FROM PUB_ph_booking" +
+                GenerateWhereClause(PhBookingTable.GetColumnStringList(), ASearchCriteria)), ATransaction, false,
+                GetParametersForWhereClause(new PhBookingTable(), ASearchCriteria));
         }
 
         /// auto generated

@@ -49,7 +49,7 @@ namespace Ict.Common
 
             // Get ComputerName and IPAddress(es) of the local computer
             ComputerName = Dns.GetHostName();
-            HostInfo = Dns.Resolve(ComputerName);
+            HostInfo = Dns.GetHostEntry(ComputerName);
 
             // Loop through all IPAddressses of the local computer
             IPAddresses = "";

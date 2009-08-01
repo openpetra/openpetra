@@ -1,6 +1,31 @@
 /* Auto generated with nant generateORM
  * Do not modify this file manually!
  */
+/*************************************************************************
+ *
+ * DO NOT REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
+ *
+ * @Authors:
+ *       auto generated
+ *
+ * Copyright 2004-2009 by OM International
+ *
+ * This file is part of OpenPetra.org.
+ *
+ * OpenPetra.org is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * OpenPetra.org is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with OpenPetra.org.  If not, see <http://www.gnu.org/licenses/>.
+ *
+ ************************************************************************/
 namespace Ict.Petra.Shared.MFinance.AP.Data
 {
     using System;
@@ -12,576 +37,95 @@ namespace Ict.Petra.Shared.MFinance.AP.Data
     using System.Xml;
     using Ict.Common;
     using Ict.Common.Data;
-    
-    
+
     /// This table defines the concept of a supplier in the AP system and is the centre of the AP system.
     [Serializable()]
     public class AApSupplierTable : TTypedDataTable
     {
-        
         /// Reference to the partner key for this supplier
         public DataColumn ColumnPartnerKey;
-        
         /// Number of months to display invoices and credit notes
         public DataColumn ColumnPreferredScreenDisplay;
-        
         /// Reference to default bank account to use to pay supplier with.
         public DataColumn ColumnDefaultBankAccount;
-        
         /// The default type of payment to use when paying this supplier.
         public DataColumn ColumnPaymentType;
-        
         /// The currency code to use for this supplier.
         public DataColumn ColumnCurrencyCode;
-        
         /// The default AP Account to use when paying this supplier.
         public DataColumn ColumnDefaultApAccount;
-        
         /// Default credit terms to use for invoices from this supplier.
         public DataColumn ColumnDefaultCreditTerms;
-        
         /// Default percentage discount to receive for early payments.
         public DataColumn ColumnDefaultDiscountPercentage;
-        
         /// Default number of days in which the discount percentage has effect.
         public DataColumn ColumnDefaultDiscountDays;
-        
         /// What type of supplier this is - normal, credit card, maybe something else.
         public DataColumn ColumnSupplierType;
-        
         /// Reference to the default expense Account to use for invoice details.
         public DataColumn ColumnDefaultExpAccount;
-        
         /// Reference to the default cost centre to use for invoice details.
         public DataColumn ColumnDefaultCostCentre;
-        
         /// The date the record was created.
         public DataColumn ColumnDateCreated;
-        
         /// User ID of who created this record.
         public DataColumn ColumnCreatedBy;
-        
         /// The date the record was modified.
         public DataColumn ColumnDateModified;
-        
         /// User ID of who last modified this record.
         public DataColumn ColumnModifiedBy;
-        
         /// This identifies the current version of the record.
         public DataColumn ColumnModificationId;
-        
+
+        private static short TableId = -1;
+
+        private static bool FInitInfoValues = InitInfoValues();
+        private static bool InitInfoValues()
+        {
+            TableInfo.Add(TableId, new TTypedTableInfo(TableId, "AApSupplier", "a_ap_supplier",
+                new TTypedColumnInfo[] {
+                    new TTypedColumnInfo(0, "PartnerKey", "p_partner_key_n", OdbcType.Decimal, 10, true),
+                    new TTypedColumnInfo(1, "PreferredScreenDisplay", "a_preferred_screen_display_i", OdbcType.Int, -1, false),
+                    new TTypedColumnInfo(2, "DefaultBankAccount", "a_default_bank_account_c", OdbcType.VarChar, 16, false),
+                    new TTypedColumnInfo(3, "PaymentType", "a_payment_type_c", OdbcType.VarChar, 24, false),
+                    new TTypedColumnInfo(4, "CurrencyCode", "a_currency_code_c", OdbcType.VarChar, 16, true),
+                    new TTypedColumnInfo(5, "DefaultApAccount", "a_default_ap_account_c", OdbcType.VarChar, 16, false),
+                    new TTypedColumnInfo(6, "DefaultCreditTerms", "a_default_credit_terms_i", OdbcType.Int, -1, false),
+                    new TTypedColumnInfo(7, "DefaultDiscountPercentage", "a_default_discount_percentage_n", OdbcType.Decimal, 24, false),
+                    new TTypedColumnInfo(8, "DefaultDiscountDays", "a_default_discount_days_i", OdbcType.Int, -1, false),
+                    new TTypedColumnInfo(9, "SupplierType", "a_supplier_type_c", OdbcType.VarChar, 24, false),
+                    new TTypedColumnInfo(10, "DefaultExpAccount", "a_default_exp_account_c", OdbcType.VarChar, 16, false),
+                    new TTypedColumnInfo(11, "DefaultCostCentre", "a_default_cost_centre_c", OdbcType.VarChar, 16, false),
+                    new TTypedColumnInfo(12, "DateCreated", "s_date_created_d", OdbcType.Date, -1, false),
+                    new TTypedColumnInfo(13, "CreatedBy", "s_created_by_c", OdbcType.VarChar, 20, false),
+                    new TTypedColumnInfo(14, "DateModified", "s_date_modified_d", OdbcType.Date, -1, false),
+                    new TTypedColumnInfo(15, "ModifiedBy", "s_modified_by_c", OdbcType.VarChar, 20, false),
+                    new TTypedColumnInfo(16, "ModificationId", "s_modification_id_c", OdbcType.VarChar, 150, false)
+                },
+                new string[] {
+                    "p_partner_key_n"
+                }));
+            return true;
+        }
+
         /// constructor
-        public AApSupplierTable() : 
+        public AApSupplierTable() :
                 base("AApSupplier")
         {
         }
-        
+
         /// constructor
-        public AApSupplierTable(string ATablename) : 
+        public AApSupplierTable(string ATablename) :
                 base(ATablename)
         {
         }
-        
+
         /// constructor for serialization
-        public AApSupplierTable(System.Runtime.Serialization.SerializationInfo info, System.Runtime.Serialization.StreamingContext context) : 
+        public AApSupplierTable(System.Runtime.Serialization.SerializationInfo info, System.Runtime.Serialization.StreamingContext context) :
                 base(info, context)
         {
         }
-        
-        /// Access a typed row by index
-        public AApSupplierRow this[int i]
-        {
-            get
-            {
-                return ((AApSupplierRow)(this.Rows[i]));
-            }
-        }
-        
-        /// get the name of the field in the database for this column
-        public static string GetPartnerKeyDBName()
-        {
-            return "p_partner_key_n";
-        }
-        
-        /// get help text for column
-        public static string GetPartnerKeyHelp()
-        {
-            return "Reference to the partner key for this supplier";
-        }
-        
-        /// get label of column
-        public static string GetPartnerKeyLabel()
-        {
-            return "Partner Key";
-        }
-        
-        /// get the name of the field in the database for this column
-        public static string GetPreferredScreenDisplayDBName()
-        {
-            return "a_preferred_screen_display_i";
-        }
-        
-        /// get help text for column
-        public static string GetPreferredScreenDisplayHelp()
-        {
-            return "Number of months to display invoices and credit notes";
-        }
-        
-        /// get label of column
-        public static string GetPreferredScreenDisplayLabel()
-        {
-            return "Preferred Screen Display";
-        }
-        
-        /// get the name of the field in the database for this column
-        public static string GetDefaultBankAccountDBName()
-        {
-            return "a_default_bank_account_c";
-        }
-        
-        /// get help text for column
-        public static string GetDefaultBankAccountHelp()
-        {
-            return "Reference to default bank account to use to pay supplier with.";
-        }
-        
-        /// get label of column
-        public static string GetDefaultBankAccountLabel()
-        {
-            return "Default Bank Account";
-        }
-        
-        /// get character length for column
-        public static short GetDefaultBankAccountLength()
-        {
-            return 8;
-        }
-        
-        /// get the name of the field in the database for this column
-        public static string GetPaymentTypeDBName()
-        {
-            return "a_payment_type_c";
-        }
-        
-        /// get help text for column
-        public static string GetPaymentTypeHelp()
-        {
-            return "The default type of payment to use when paying this supplier.";
-        }
-        
-        /// get label of column
-        public static string GetPaymentTypeLabel()
-        {
-            return "Default Payment Type";
-        }
-        
-        /// get character length for column
-        public static short GetPaymentTypeLength()
-        {
-            return 12;
-        }
-        
-        /// get the name of the field in the database for this column
-        public static string GetCurrencyCodeDBName()
-        {
-            return "a_currency_code_c";
-        }
-        
-        /// get help text for column
-        public static string GetCurrencyCodeHelp()
-        {
-            return "The currency code to use for this supplier.";
-        }
-        
-        /// get label of column
-        public static string GetCurrencyCodeLabel()
-        {
-            return "Currency";
-        }
-        
-        /// get character length for column
-        public static short GetCurrencyCodeLength()
-        {
-            return 8;
-        }
-        
-        /// get the name of the field in the database for this column
-        public static string GetDefaultApAccountDBName()
-        {
-            return "a_default_ap_account_c";
-        }
-        
-        /// get help text for column
-        public static string GetDefaultApAccountHelp()
-        {
-            return "The default AP Account to use when paying this supplier.";
-        }
-        
-        /// get label of column
-        public static string GetDefaultApAccountLabel()
-        {
-            return "Default AP Account";
-        }
-        
-        /// get character length for column
-        public static short GetDefaultApAccountLength()
-        {
-            return 8;
-        }
-        
-        /// get the name of the field in the database for this column
-        public static string GetDefaultCreditTermsDBName()
-        {
-            return "a_default_credit_terms_i";
-        }
-        
-        /// get help text for column
-        public static string GetDefaultCreditTermsHelp()
-        {
-            return "Default credit terms to use for invoices from this supplier.";
-        }
-        
-        /// get label of column
-        public static string GetDefaultCreditTermsLabel()
-        {
-            return "Default Credit Terms";
-        }
-        
-        /// get the name of the field in the database for this column
-        public static string GetDefaultDiscountPercentageDBName()
-        {
-            return "a_default_discount_percentage_n";
-        }
-        
-        /// get help text for column
-        public static string GetDefaultDiscountPercentageHelp()
-        {
-            return "Default percentage discount to receive for early payments.";
-        }
-        
-        /// get label of column
-        public static string GetDefaultDiscountPercentageLabel()
-        {
-            return "Default Discount Percentage";
-        }
-        
-        /// get display format for column
-        public static short GetDefaultDiscountPercentageLength()
-        {
-            return 19;
-        }
-        
-        /// get the name of the field in the database for this column
-        public static string GetDefaultDiscountDaysDBName()
-        {
-            return "a_default_discount_days_i";
-        }
-        
-        /// get help text for column
-        public static string GetDefaultDiscountDaysHelp()
-        {
-            return "Default number of days in which the discount percentage has effect.";
-        }
-        
-        /// get label of column
-        public static string GetDefaultDiscountDaysLabel()
-        {
-            return "Default Discount Days";
-        }
-        
-        /// get the name of the field in the database for this column
-        public static string GetSupplierTypeDBName()
-        {
-            return "a_supplier_type_c";
-        }
-        
-        /// get help text for column
-        public static string GetSupplierTypeHelp()
-        {
-            return "What type of supplier this is - normal, credit card, maybe something else.";
-        }
-        
-        /// get label of column
-        public static string GetSupplierTypeLabel()
-        {
-            return "Supplier Type";
-        }
-        
-        /// get character length for column
-        public static short GetSupplierTypeLength()
-        {
-            return 12;
-        }
-        
-        /// get the name of the field in the database for this column
-        public static string GetDefaultExpAccountDBName()
-        {
-            return "a_default_exp_account_c";
-        }
-        
-        /// get help text for column
-        public static string GetDefaultExpAccountHelp()
-        {
-            return "Reference to the default expense Account to use for invoice details.";
-        }
-        
-        /// get label of column
-        public static string GetDefaultExpAccountLabel()
-        {
-            return "Default Expense Account";
-        }
-        
-        /// get character length for column
-        public static short GetDefaultExpAccountLength()
-        {
-            return 8;
-        }
-        
-        /// get the name of the field in the database for this column
-        public static string GetDefaultCostCentreDBName()
-        {
-            return "a_default_cost_centre_c";
-        }
-        
-        /// get help text for column
-        public static string GetDefaultCostCentreHelp()
-        {
-            return "Reference to the default cost centre to use for invoice details.";
-        }
-        
-        /// get label of column
-        public static string GetDefaultCostCentreLabel()
-        {
-            return "Default Cost Centre";
-        }
-        
-        /// get character length for column
-        public static short GetDefaultCostCentreLength()
-        {
-            return 8;
-        }
-        
-        /// get the name of the field in the database for this column
-        public static string GetDateCreatedDBName()
-        {
-            return "s_date_created_d";
-        }
-        
-        /// get help text for column
-        public static string GetDateCreatedHelp()
-        {
-            return "The date the record was created.";
-        }
-        
-        /// get label of column
-        public static string GetDateCreatedLabel()
-        {
-            return "Created Date";
-        }
-        
-        /// get display format for column
-        public static short GetDateCreatedLength()
-        {
-            return 11;
-        }
-        
-        /// get the name of the field in the database for this column
-        public static string GetCreatedByDBName()
-        {
-            return "s_created_by_c";
-        }
-        
-        /// get help text for column
-        public static string GetCreatedByHelp()
-        {
-            return "User ID of who created this record.";
-        }
-        
-        /// get label of column
-        public static string GetCreatedByLabel()
-        {
-            return "Created By";
-        }
-        
-        /// get character length for column
-        public static short GetCreatedByLength()
-        {
-            return 10;
-        }
-        
-        /// get the name of the field in the database for this column
-        public static string GetDateModifiedDBName()
-        {
-            return "s_date_modified_d";
-        }
-        
-        /// get help text for column
-        public static string GetDateModifiedHelp()
-        {
-            return "The date the record was modified.";
-        }
-        
-        /// get label of column
-        public static string GetDateModifiedLabel()
-        {
-            return "Modified Date";
-        }
-        
-        /// get display format for column
-        public static short GetDateModifiedLength()
-        {
-            return 11;
-        }
-        
-        /// get the name of the field in the database for this column
-        public static string GetModifiedByDBName()
-        {
-            return "s_modified_by_c";
-        }
-        
-        /// get help text for column
-        public static string GetModifiedByHelp()
-        {
-            return "User ID of who last modified this record.";
-        }
-        
-        /// get label of column
-        public static string GetModifiedByLabel()
-        {
-            return "Modified By";
-        }
-        
-        /// get character length for column
-        public static short GetModifiedByLength()
-        {
-            return 10;
-        }
-        
-        /// get the name of the field in the database for this column
-        public static string GetModificationIdDBName()
-        {
-            return "s_modification_id_c";
-        }
-        
-        /// get help text for column
-        public static string GetModificationIdHelp()
-        {
-            return "This identifies the current version of the record.";
-        }
-        
-        /// get label of column
-        public static string GetModificationIdLabel()
-        {
-            return "";
-        }
-        
-        /// get character length for column
-        public static short GetModificationIdLength()
-        {
-            return 150;
-        }
-        
-        /// CamelCase version of the tablename
-        public static string GetTableName()
-        {
-            return "AApSupplier";
-        }
-        
-        /// original name of table in the database
-        public static string GetTableDBName()
-        {
-            return "a_ap_supplier";
-        }
-        
-        /// get table label for messages etc
-        public static string GetTableLabel()
-        {
-            return "a_ap_supplier";
-        }
-        
-        /// get the index number of fields that are part of the primary key
-        public static Int32[] GetPrimKeyColumnOrdList()
-        {
-            return new int[] {
-                    0};
-        }
-        
-        /// get the names of the columns
-        public static String[] GetColumnStringList()
-        {
-            return new string[] {
-                    "p_partner_key_n",
-                    "a_preferred_screen_display_i",
-                    "a_default_bank_account_c",
-                    "a_payment_type_c",
-                    "a_currency_code_c",
-                    "a_default_ap_account_c",
-                    "a_default_credit_terms_i",
-                    "a_default_discount_percentage_n",
-                    "a_default_discount_days_i",
-                    "a_supplier_type_c",
-                    "a_default_exp_account_c",
-                    "a_default_cost_centre_c",
-                    "s_date_created_d",
-                    "s_created_by_c",
-                    "s_date_modified_d",
-                    "s_modified_by_c",
-                    "s_modification_id_c"};
-        }
-        
-        /// assign columns to properties, set primary key
-        public override void InitVars()
-        {
-            this.ColumnPartnerKey = this.Columns["p_partner_key_n"];
-            this.ColumnPreferredScreenDisplay = this.Columns["a_preferred_screen_display_i"];
-            this.ColumnDefaultBankAccount = this.Columns["a_default_bank_account_c"];
-            this.ColumnPaymentType = this.Columns["a_payment_type_c"];
-            this.ColumnCurrencyCode = this.Columns["a_currency_code_c"];
-            this.ColumnDefaultApAccount = this.Columns["a_default_ap_account_c"];
-            this.ColumnDefaultCreditTerms = this.Columns["a_default_credit_terms_i"];
-            this.ColumnDefaultDiscountPercentage = this.Columns["a_default_discount_percentage_n"];
-            this.ColumnDefaultDiscountDays = this.Columns["a_default_discount_days_i"];
-            this.ColumnSupplierType = this.Columns["a_supplier_type_c"];
-            this.ColumnDefaultExpAccount = this.Columns["a_default_exp_account_c"];
-            this.ColumnDefaultCostCentre = this.Columns["a_default_cost_centre_c"];
-            this.ColumnDateCreated = this.Columns["s_date_created_d"];
-            this.ColumnCreatedBy = this.Columns["s_created_by_c"];
-            this.ColumnDateModified = this.Columns["s_date_modified_d"];
-            this.ColumnModifiedBy = this.Columns["s_modified_by_c"];
-            this.ColumnModificationId = this.Columns["s_modification_id_c"];
-            this.PrimaryKey = new System.Data.DataColumn[] {
-                    this.ColumnPartnerKey};
-        }
-        
-        /// get typed set of changes
-        public AApSupplierTable GetChangesTyped()
-        {
-            return ((AApSupplierTable)(base.GetChangesTypedInternal()));
-        }
-        
-        /// create a new typed row
-        public AApSupplierRow NewRowTyped(bool AWithDefaultValues)
-        {
-            AApSupplierRow ret = ((AApSupplierRow)(this.NewRow()));
-            if ((AWithDefaultValues == true))
-            {
-                ret.InitValues();
-            }
-            return ret;
-        }
-        
-        /// create a new typed row, always with default values
-        public AApSupplierRow NewRowTyped()
-        {
-            return this.NewRowTyped(true);
-        }
-        
-        /// new typed row using DataRowBuilder
-        protected override System.Data.DataRow NewRowFromBuilder(System.Data.DataRowBuilder builder)
-        {
-            return new AApSupplierRow(builder);
-        }
-        
+
         /// create the columns
         protected override void InitClass()
         {
@@ -603,96 +147,292 @@ namespace Ict.Petra.Shared.MFinance.AP.Data
             this.Columns.Add(new System.Data.DataColumn("s_modified_by_c", typeof(String)));
             this.Columns.Add(new System.Data.DataColumn("s_modification_id_c", typeof(String)));
         }
-        
-        /// prepare odbc parameters for given column
-        public override OdbcParameter CreateOdbcParameter(DataColumn ACol)
+
+        /// assign columns to properties, set primary key
+        public override void InitVars()
         {
-            if ((ACol == ColumnPartnerKey))
-            {
-                return new System.Data.Odbc.OdbcParameter("", OdbcType.Decimal, 10);
-            }
-            if ((ACol == ColumnPreferredScreenDisplay))
-            {
-                return new System.Data.Odbc.OdbcParameter("", OdbcType.Int);
-            }
-            if ((ACol == ColumnDefaultBankAccount))
-            {
-                return new System.Data.Odbc.OdbcParameter("", OdbcType.VarChar, 16);
-            }
-            if ((ACol == ColumnPaymentType))
-            {
-                return new System.Data.Odbc.OdbcParameter("", OdbcType.VarChar, 24);
-            }
-            if ((ACol == ColumnCurrencyCode))
-            {
-                return new System.Data.Odbc.OdbcParameter("", OdbcType.VarChar, 16);
-            }
-            if ((ACol == ColumnDefaultApAccount))
-            {
-                return new System.Data.Odbc.OdbcParameter("", OdbcType.VarChar, 16);
-            }
-            if ((ACol == ColumnDefaultCreditTerms))
-            {
-                return new System.Data.Odbc.OdbcParameter("", OdbcType.Int);
-            }
-            if ((ACol == ColumnDefaultDiscountPercentage))
-            {
-                return new System.Data.Odbc.OdbcParameter("", OdbcType.Decimal, 24);
-            }
-            if ((ACol == ColumnDefaultDiscountDays))
-            {
-                return new System.Data.Odbc.OdbcParameter("", OdbcType.Int);
-            }
-            if ((ACol == ColumnSupplierType))
-            {
-                return new System.Data.Odbc.OdbcParameter("", OdbcType.VarChar, 24);
-            }
-            if ((ACol == ColumnDefaultExpAccount))
-            {
-                return new System.Data.Odbc.OdbcParameter("", OdbcType.VarChar, 16);
-            }
-            if ((ACol == ColumnDefaultCostCentre))
-            {
-                return new System.Data.Odbc.OdbcParameter("", OdbcType.VarChar, 16);
-            }
-            if ((ACol == ColumnDateCreated))
-            {
-                return new System.Data.Odbc.OdbcParameter("", OdbcType.Date);
-            }
-            if ((ACol == ColumnCreatedBy))
-            {
-                return new System.Data.Odbc.OdbcParameter("", OdbcType.VarChar, 20);
-            }
-            if ((ACol == ColumnDateModified))
-            {
-                return new System.Data.Odbc.OdbcParameter("", OdbcType.Date);
-            }
-            if ((ACol == ColumnModifiedBy))
-            {
-                return new System.Data.Odbc.OdbcParameter("", OdbcType.VarChar, 20);
-            }
-            if ((ACol == ColumnModificationId))
-            {
-                return new System.Data.Odbc.OdbcParameter("", OdbcType.VarChar, 150);
-            }
-            return null;
+            this.ColumnPartnerKey = this.Columns["p_partner_key_n"];
+            this.ColumnPreferredScreenDisplay = this.Columns["a_preferred_screen_display_i"];
+            this.ColumnDefaultBankAccount = this.Columns["a_default_bank_account_c"];
+            this.ColumnPaymentType = this.Columns["a_payment_type_c"];
+            this.ColumnCurrencyCode = this.Columns["a_currency_code_c"];
+            this.ColumnDefaultApAccount = this.Columns["a_default_ap_account_c"];
+            this.ColumnDefaultCreditTerms = this.Columns["a_default_credit_terms_i"];
+            this.ColumnDefaultDiscountPercentage = this.Columns["a_default_discount_percentage_n"];
+            this.ColumnDefaultDiscountDays = this.Columns["a_default_discount_days_i"];
+            this.ColumnSupplierType = this.Columns["a_supplier_type_c"];
+            this.ColumnDefaultExpAccount = this.Columns["a_default_exp_account_c"];
+            this.ColumnDefaultCostCentre = this.Columns["a_default_cost_centre_c"];
+            this.ColumnDateCreated = this.Columns["s_date_created_d"];
+            this.ColumnCreatedBy = this.Columns["s_created_by_c"];
+            this.ColumnDateModified = this.Columns["s_date_modified_d"];
+            this.ColumnModifiedBy = this.Columns["s_modified_by_c"];
+            this.ColumnModificationId = this.Columns["s_modification_id_c"];
         }
+
+        /// Access a typed row by index
+        public AApSupplierRow this[int i]
+        {
+            get
+            {
+                return ((AApSupplierRow)(this.Rows[i]));
+            }
+        }
+
+        /// create a new typed row
+        public AApSupplierRow NewRowTyped(bool AWithDefaultValues)
+        {
+            AApSupplierRow ret = ((AApSupplierRow)(this.NewRow()));
+            if ((AWithDefaultValues == true))
+            {
+                ret.InitValues();
+            }
+            return ret;
+        }
+
+        /// create a new typed row, always with default values
+        public AApSupplierRow NewRowTyped()
+        {
+            return this.NewRowTyped(true);
+        }
+
+        /// new typed row using DataRowBuilder
+        protected override System.Data.DataRow NewRowFromBuilder(System.Data.DataRowBuilder builder)
+        {
+            return new AApSupplierRow(builder);
+        }
+
+        /// get typed set of changes
+        public AApSupplierTable GetChangesTyped()
+        {
+            return ((AApSupplierTable)(base.GetChangesTypedInternal()));
+        }
+
+        /// get an odbc parameter for the given column
+        public override OdbcParameter CreateOdbcParameter(Int32 AColumnNr)
+        {
+            return CreateOdbcParameter(TableId, AColumnNr);
+        }
+
+        /// get the name of the field in the database for this column
+        protected static string GetPartnerKeyDBName()
+        {
+            return "p_partner_key_n";
+        }
+
+        /// get character length for column
+        public static short GetPartnerKeyLength()
+        {
+            return 10;
+        }
+
+        /// get the name of the field in the database for this column
+        protected static string GetPreferredScreenDisplayDBName()
+        {
+            return "a_preferred_screen_display_i";
+        }
+
+        /// get character length for column
+        public static short GetPreferredScreenDisplayLength()
+        {
+            return -1;
+        }
+
+        /// get the name of the field in the database for this column
+        protected static string GetDefaultBankAccountDBName()
+        {
+            return "a_default_bank_account_c";
+        }
+
+        /// get character length for column
+        public static short GetDefaultBankAccountLength()
+        {
+            return 16;
+        }
+
+        /// get the name of the field in the database for this column
+        protected static string GetPaymentTypeDBName()
+        {
+            return "a_payment_type_c";
+        }
+
+        /// get character length for column
+        public static short GetPaymentTypeLength()
+        {
+            return 24;
+        }
+
+        /// get the name of the field in the database for this column
+        protected static string GetCurrencyCodeDBName()
+        {
+            return "a_currency_code_c";
+        }
+
+        /// get character length for column
+        public static short GetCurrencyCodeLength()
+        {
+            return 16;
+        }
+
+        /// get the name of the field in the database for this column
+        protected static string GetDefaultApAccountDBName()
+        {
+            return "a_default_ap_account_c";
+        }
+
+        /// get character length for column
+        public static short GetDefaultApAccountLength()
+        {
+            return 16;
+        }
+
+        /// get the name of the field in the database for this column
+        protected static string GetDefaultCreditTermsDBName()
+        {
+            return "a_default_credit_terms_i";
+        }
+
+        /// get character length for column
+        public static short GetDefaultCreditTermsLength()
+        {
+            return -1;
+        }
+
+        /// get the name of the field in the database for this column
+        protected static string GetDefaultDiscountPercentageDBName()
+        {
+            return "a_default_discount_percentage_n";
+        }
+
+        /// get character length for column
+        public static short GetDefaultDiscountPercentageLength()
+        {
+            return 24;
+        }
+
+        /// get the name of the field in the database for this column
+        protected static string GetDefaultDiscountDaysDBName()
+        {
+            return "a_default_discount_days_i";
+        }
+
+        /// get character length for column
+        public static short GetDefaultDiscountDaysLength()
+        {
+            return -1;
+        }
+
+        /// get the name of the field in the database for this column
+        protected static string GetSupplierTypeDBName()
+        {
+            return "a_supplier_type_c";
+        }
+
+        /// get character length for column
+        public static short GetSupplierTypeLength()
+        {
+            return 24;
+        }
+
+        /// get the name of the field in the database for this column
+        protected static string GetDefaultExpAccountDBName()
+        {
+            return "a_default_exp_account_c";
+        }
+
+        /// get character length for column
+        public static short GetDefaultExpAccountLength()
+        {
+            return 16;
+        }
+
+        /// get the name of the field in the database for this column
+        protected static string GetDefaultCostCentreDBName()
+        {
+            return "a_default_cost_centre_c";
+        }
+
+        /// get character length for column
+        public static short GetDefaultCostCentreLength()
+        {
+            return 16;
+        }
+
+        /// get the name of the field in the database for this column
+        protected static string GetDateCreatedDBName()
+        {
+            return "s_date_created_d";
+        }
+
+        /// get character length for column
+        public static short GetDateCreatedLength()
+        {
+            return -1;
+        }
+
+        /// get the name of the field in the database for this column
+        protected static string GetCreatedByDBName()
+        {
+            return "s_created_by_c";
+        }
+
+        /// get character length for column
+        public static short GetCreatedByLength()
+        {
+            return 20;
+        }
+
+        /// get the name of the field in the database for this column
+        protected static string GetDateModifiedDBName()
+        {
+            return "s_date_modified_d";
+        }
+
+        /// get character length for column
+        public static short GetDateModifiedLength()
+        {
+            return -1;
+        }
+
+        /// get the name of the field in the database for this column
+        protected static string GetModifiedByDBName()
+        {
+            return "s_modified_by_c";
+        }
+
+        /// get character length for column
+        public static short GetModifiedByLength()
+        {
+            return 20;
+        }
+
+        /// get the name of the field in the database for this column
+        protected static string GetModificationIdDBName()
+        {
+            return "s_modification_id_c";
+        }
+
+        /// get character length for column
+        public static short GetModificationIdLength()
+        {
+            return 150;
+        }
+
     }
-    
+
     /// This table defines the concept of a supplier in the AP system and is the centre of the AP system.
     [Serializable()]
     public class AApSupplierRow : System.Data.DataRow
     {
-        
         private AApSupplierTable myTable;
-        
+
         /// Constructor
-        public AApSupplierRow(System.Data.DataRowBuilder rb) : 
+        public AApSupplierRow(System.Data.DataRowBuilder rb) :
                 base(rb)
         {
             this.myTable = ((AApSupplierTable)(this.Table));
         }
-        
+
         /// Reference to the partner key for this supplier
         public Int64 PartnerKey
         {
@@ -711,14 +451,14 @@ namespace Ict.Petra.Shared.MFinance.AP.Data
             }
             set
             {
-                if ((this.IsNull(this.myTable.ColumnPartnerKey) 
+                if ((this.IsNull(this.myTable.ColumnPartnerKey)
                             || (((Int64)(this[this.myTable.ColumnPartnerKey])) != value)))
                 {
                     this[this.myTable.ColumnPartnerKey] = value;
                 }
             }
         }
-        
+
         /// Number of months to display invoices and credit notes
         public Int32 PreferredScreenDisplay
         {
@@ -737,14 +477,14 @@ namespace Ict.Petra.Shared.MFinance.AP.Data
             }
             set
             {
-                if ((this.IsNull(this.myTable.ColumnPreferredScreenDisplay) 
+                if ((this.IsNull(this.myTable.ColumnPreferredScreenDisplay)
                             || (((Int32)(this[this.myTable.ColumnPreferredScreenDisplay])) != value)))
                 {
                     this[this.myTable.ColumnPreferredScreenDisplay] = value;
                 }
             }
         }
-        
+
         /// Reference to default bank account to use to pay supplier with.
         public String DefaultBankAccount
         {
@@ -754,7 +494,7 @@ namespace Ict.Petra.Shared.MFinance.AP.Data
                 ret = this[this.myTable.ColumnDefaultBankAccount.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    return String.Empty;
+                    throw new System.Data.StrongTypingException("Error: DB null", null);
                 }
                 else
                 {
@@ -763,14 +503,14 @@ namespace Ict.Petra.Shared.MFinance.AP.Data
             }
             set
             {
-                if ((this.IsNull(this.myTable.ColumnDefaultBankAccount) 
+                if ((this.IsNull(this.myTable.ColumnDefaultBankAccount)
                             || (((String)(this[this.myTable.ColumnDefaultBankAccount])) != value)))
                 {
                     this[this.myTable.ColumnDefaultBankAccount] = value;
                 }
             }
         }
-        
+
         /// The default type of payment to use when paying this supplier.
         public String PaymentType
         {
@@ -780,7 +520,7 @@ namespace Ict.Petra.Shared.MFinance.AP.Data
                 ret = this[this.myTable.ColumnPaymentType.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    return String.Empty;
+                    throw new System.Data.StrongTypingException("Error: DB null", null);
                 }
                 else
                 {
@@ -789,14 +529,14 @@ namespace Ict.Petra.Shared.MFinance.AP.Data
             }
             set
             {
-                if ((this.IsNull(this.myTable.ColumnPaymentType) 
+                if ((this.IsNull(this.myTable.ColumnPaymentType)
                             || (((String)(this[this.myTable.ColumnPaymentType])) != value)))
                 {
                     this[this.myTable.ColumnPaymentType] = value;
                 }
             }
         }
-        
+
         /// The currency code to use for this supplier.
         public String CurrencyCode
         {
@@ -806,7 +546,7 @@ namespace Ict.Petra.Shared.MFinance.AP.Data
                 ret = this[this.myTable.ColumnCurrencyCode.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    return String.Empty;
+                    throw new System.Data.StrongTypingException("Error: DB null", null);
                 }
                 else
                 {
@@ -815,14 +555,14 @@ namespace Ict.Petra.Shared.MFinance.AP.Data
             }
             set
             {
-                if ((this.IsNull(this.myTable.ColumnCurrencyCode) 
+                if ((this.IsNull(this.myTable.ColumnCurrencyCode)
                             || (((String)(this[this.myTable.ColumnCurrencyCode])) != value)))
                 {
                     this[this.myTable.ColumnCurrencyCode] = value;
                 }
             }
         }
-        
+
         /// The default AP Account to use when paying this supplier.
         public String DefaultApAccount
         {
@@ -832,7 +572,7 @@ namespace Ict.Petra.Shared.MFinance.AP.Data
                 ret = this[this.myTable.ColumnDefaultApAccount.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    return String.Empty;
+                    throw new System.Data.StrongTypingException("Error: DB null", null);
                 }
                 else
                 {
@@ -841,14 +581,14 @@ namespace Ict.Petra.Shared.MFinance.AP.Data
             }
             set
             {
-                if ((this.IsNull(this.myTable.ColumnDefaultApAccount) 
+                if ((this.IsNull(this.myTable.ColumnDefaultApAccount)
                             || (((String)(this[this.myTable.ColumnDefaultApAccount])) != value)))
                 {
                     this[this.myTable.ColumnDefaultApAccount] = value;
                 }
             }
         }
-        
+
         /// Default credit terms to use for invoices from this supplier.
         public Int32 DefaultCreditTerms
         {
@@ -867,14 +607,14 @@ namespace Ict.Petra.Shared.MFinance.AP.Data
             }
             set
             {
-                if ((this.IsNull(this.myTable.ColumnDefaultCreditTerms) 
+                if ((this.IsNull(this.myTable.ColumnDefaultCreditTerms)
                             || (((Int32)(this[this.myTable.ColumnDefaultCreditTerms])) != value)))
                 {
                     this[this.myTable.ColumnDefaultCreditTerms] = value;
                 }
             }
         }
-        
+
         /// Default percentage discount to receive for early payments.
         public Double DefaultDiscountPercentage
         {
@@ -893,14 +633,14 @@ namespace Ict.Petra.Shared.MFinance.AP.Data
             }
             set
             {
-                if ((this.IsNull(this.myTable.ColumnDefaultDiscountPercentage) 
+                if ((this.IsNull(this.myTable.ColumnDefaultDiscountPercentage)
                             || (((Double)(this[this.myTable.ColumnDefaultDiscountPercentage])) != value)))
                 {
                     this[this.myTable.ColumnDefaultDiscountPercentage] = value;
                 }
             }
         }
-        
+
         /// Default number of days in which the discount percentage has effect.
         public Int32 DefaultDiscountDays
         {
@@ -919,14 +659,14 @@ namespace Ict.Petra.Shared.MFinance.AP.Data
             }
             set
             {
-                if ((this.IsNull(this.myTable.ColumnDefaultDiscountDays) 
+                if ((this.IsNull(this.myTable.ColumnDefaultDiscountDays)
                             || (((Int32)(this[this.myTable.ColumnDefaultDiscountDays])) != value)))
                 {
                     this[this.myTable.ColumnDefaultDiscountDays] = value;
                 }
             }
         }
-        
+
         /// What type of supplier this is - normal, credit card, maybe something else.
         public String SupplierType
         {
@@ -936,7 +676,7 @@ namespace Ict.Petra.Shared.MFinance.AP.Data
                 ret = this[this.myTable.ColumnSupplierType.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    return String.Empty;
+                    throw new System.Data.StrongTypingException("Error: DB null", null);
                 }
                 else
                 {
@@ -945,14 +685,14 @@ namespace Ict.Petra.Shared.MFinance.AP.Data
             }
             set
             {
-                if ((this.IsNull(this.myTable.ColumnSupplierType) 
+                if ((this.IsNull(this.myTable.ColumnSupplierType)
                             || (((String)(this[this.myTable.ColumnSupplierType])) != value)))
                 {
                     this[this.myTable.ColumnSupplierType] = value;
                 }
             }
         }
-        
+
         /// Reference to the default expense Account to use for invoice details.
         public String DefaultExpAccount
         {
@@ -962,7 +702,7 @@ namespace Ict.Petra.Shared.MFinance.AP.Data
                 ret = this[this.myTable.ColumnDefaultExpAccount.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    return String.Empty;
+                    throw new System.Data.StrongTypingException("Error: DB null", null);
                 }
                 else
                 {
@@ -971,14 +711,14 @@ namespace Ict.Petra.Shared.MFinance.AP.Data
             }
             set
             {
-                if ((this.IsNull(this.myTable.ColumnDefaultExpAccount) 
+                if ((this.IsNull(this.myTable.ColumnDefaultExpAccount)
                             || (((String)(this[this.myTable.ColumnDefaultExpAccount])) != value)))
                 {
                     this[this.myTable.ColumnDefaultExpAccount] = value;
                 }
             }
         }
-        
+
         /// Reference to the default cost centre to use for invoice details.
         public String DefaultCostCentre
         {
@@ -988,7 +728,7 @@ namespace Ict.Petra.Shared.MFinance.AP.Data
                 ret = this[this.myTable.ColumnDefaultCostCentre.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    return String.Empty;
+                    throw new System.Data.StrongTypingException("Error: DB null", null);
                 }
                 else
                 {
@@ -997,14 +737,14 @@ namespace Ict.Petra.Shared.MFinance.AP.Data
             }
             set
             {
-                if ((this.IsNull(this.myTable.ColumnDefaultCostCentre) 
+                if ((this.IsNull(this.myTable.ColumnDefaultCostCentre)
                             || (((String)(this[this.myTable.ColumnDefaultCostCentre])) != value)))
                 {
                     this[this.myTable.ColumnDefaultCostCentre] = value;
                 }
             }
         }
-        
+
         /// The date the record was created.
         public System.DateTime DateCreated
         {
@@ -1023,32 +763,14 @@ namespace Ict.Petra.Shared.MFinance.AP.Data
             }
             set
             {
-                if ((this.IsNull(this.myTable.ColumnDateCreated) 
+                if ((this.IsNull(this.myTable.ColumnDateCreated)
                             || (((System.DateTime)(this[this.myTable.ColumnDateCreated])) != value)))
                 {
                     this[this.myTable.ColumnDateCreated] = value;
                 }
             }
         }
-        
-        /// Returns the date value or the minimum date if the date is NULL
-        public System.DateTime DateCreatedLowNull
-        {
-            get
-            {
-                return TSaveConvert.ObjectToDate(this[this.myTable.ColumnDateCreated], TNullHandlingEnum.nhReturnLowestDate);
-            }
-        }
-        
-        /// Returns the date value or the maximum date if the date is NULL
-        public System.DateTime DateCreatedHighNull
-        {
-            get
-            {
-                return TSaveConvert.ObjectToDate(this[this.myTable.ColumnDateCreated.Ordinal], TNullHandlingEnum.nhReturnHighestDate);
-            }
-        }
-        
+
         /// User ID of who created this record.
         public String CreatedBy
         {
@@ -1058,7 +780,7 @@ namespace Ict.Petra.Shared.MFinance.AP.Data
                 ret = this[this.myTable.ColumnCreatedBy.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    return String.Empty;
+                    throw new System.Data.StrongTypingException("Error: DB null", null);
                 }
                 else
                 {
@@ -1067,14 +789,14 @@ namespace Ict.Petra.Shared.MFinance.AP.Data
             }
             set
             {
-                if ((this.IsNull(this.myTable.ColumnCreatedBy) 
+                if ((this.IsNull(this.myTable.ColumnCreatedBy)
                             || (((String)(this[this.myTable.ColumnCreatedBy])) != value)))
                 {
                     this[this.myTable.ColumnCreatedBy] = value;
                 }
             }
         }
-        
+
         /// The date the record was modified.
         public System.DateTime DateModified
         {
@@ -1093,32 +815,14 @@ namespace Ict.Petra.Shared.MFinance.AP.Data
             }
             set
             {
-                if ((this.IsNull(this.myTable.ColumnDateModified) 
+                if ((this.IsNull(this.myTable.ColumnDateModified)
                             || (((System.DateTime)(this[this.myTable.ColumnDateModified])) != value)))
                 {
                     this[this.myTable.ColumnDateModified] = value;
                 }
             }
         }
-        
-        /// Returns the date value or the minimum date if the date is NULL
-        public System.DateTime DateModifiedLowNull
-        {
-            get
-            {
-                return TSaveConvert.ObjectToDate(this[this.myTable.ColumnDateModified], TNullHandlingEnum.nhReturnLowestDate);
-            }
-        }
-        
-        /// Returns the date value or the maximum date if the date is NULL
-        public System.DateTime DateModifiedHighNull
-        {
-            get
-            {
-                return TSaveConvert.ObjectToDate(this[this.myTable.ColumnDateModified.Ordinal], TNullHandlingEnum.nhReturnHighestDate);
-            }
-        }
-        
+
         /// User ID of who last modified this record.
         public String ModifiedBy
         {
@@ -1128,7 +832,7 @@ namespace Ict.Petra.Shared.MFinance.AP.Data
                 ret = this[this.myTable.ColumnModifiedBy.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    return String.Empty;
+                    throw new System.Data.StrongTypingException("Error: DB null", null);
                 }
                 else
                 {
@@ -1137,14 +841,14 @@ namespace Ict.Petra.Shared.MFinance.AP.Data
             }
             set
             {
-                if ((this.IsNull(this.myTable.ColumnModifiedBy) 
+                if ((this.IsNull(this.myTable.ColumnModifiedBy)
                             || (((String)(this[this.myTable.ColumnModifiedBy])) != value)))
                 {
                     this[this.myTable.ColumnModifiedBy] = value;
                 }
             }
         }
-        
+
         /// This identifies the current version of the record.
         public String ModificationId
         {
@@ -1154,7 +858,7 @@ namespace Ict.Petra.Shared.MFinance.AP.Data
                 ret = this[this.myTable.ColumnModificationId.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    return String.Empty;
+                    throw new System.Data.StrongTypingException("Error: DB null", null);
                 }
                 else
                 {
@@ -1163,14 +867,14 @@ namespace Ict.Petra.Shared.MFinance.AP.Data
             }
             set
             {
-                if ((this.IsNull(this.myTable.ColumnModificationId) 
+                if ((this.IsNull(this.myTable.ColumnModificationId)
                             || (((String)(this[this.myTable.ColumnModificationId])) != value)))
                 {
                     this[this.myTable.ColumnModificationId] = value;
                 }
             }
         }
-        
+
         /// set default values
         public virtual void InitValues()
         {
@@ -1192,866 +896,312 @@ namespace Ict.Petra.Shared.MFinance.AP.Data
             this.SetNull(this.myTable.ColumnModifiedBy);
             this.SetNull(this.myTable.ColumnModificationId);
         }
-        
+
+        /// test for NULL value
+        public bool IsPartnerKeyNull()
+        {
+            return this.IsNull(this.myTable.ColumnPartnerKey);
+        }
+
+        /// assign NULL value
+        public void SetPartnerKeyNull()
+        {
+            this.SetNull(this.myTable.ColumnPartnerKey);
+        }
+
         /// test for NULL value
         public bool IsPreferredScreenDisplayNull()
         {
             return this.IsNull(this.myTable.ColumnPreferredScreenDisplay);
         }
-        
+
         /// assign NULL value
         public void SetPreferredScreenDisplayNull()
         {
             this.SetNull(this.myTable.ColumnPreferredScreenDisplay);
         }
-        
+
         /// test for NULL value
         public bool IsDefaultBankAccountNull()
         {
             return this.IsNull(this.myTable.ColumnDefaultBankAccount);
         }
-        
+
         /// assign NULL value
         public void SetDefaultBankAccountNull()
         {
             this.SetNull(this.myTable.ColumnDefaultBankAccount);
         }
-        
+
         /// test for NULL value
         public bool IsPaymentTypeNull()
         {
             return this.IsNull(this.myTable.ColumnPaymentType);
         }
-        
+
         /// assign NULL value
         public void SetPaymentTypeNull()
         {
             this.SetNull(this.myTable.ColumnPaymentType);
         }
-        
+
+        /// test for NULL value
+        public bool IsCurrencyCodeNull()
+        {
+            return this.IsNull(this.myTable.ColumnCurrencyCode);
+        }
+
+        /// assign NULL value
+        public void SetCurrencyCodeNull()
+        {
+            this.SetNull(this.myTable.ColumnCurrencyCode);
+        }
+
         /// test for NULL value
         public bool IsDefaultApAccountNull()
         {
             return this.IsNull(this.myTable.ColumnDefaultApAccount);
         }
-        
+
         /// assign NULL value
         public void SetDefaultApAccountNull()
         {
             this.SetNull(this.myTable.ColumnDefaultApAccount);
         }
-        
+
         /// test for NULL value
         public bool IsDefaultCreditTermsNull()
         {
             return this.IsNull(this.myTable.ColumnDefaultCreditTerms);
         }
-        
+
         /// assign NULL value
         public void SetDefaultCreditTermsNull()
         {
             this.SetNull(this.myTable.ColumnDefaultCreditTerms);
         }
-        
+
         /// test for NULL value
         public bool IsDefaultDiscountPercentageNull()
         {
             return this.IsNull(this.myTable.ColumnDefaultDiscountPercentage);
         }
-        
+
         /// assign NULL value
         public void SetDefaultDiscountPercentageNull()
         {
             this.SetNull(this.myTable.ColumnDefaultDiscountPercentage);
         }
-        
+
         /// test for NULL value
         public bool IsDefaultDiscountDaysNull()
         {
             return this.IsNull(this.myTable.ColumnDefaultDiscountDays);
         }
-        
+
         /// assign NULL value
         public void SetDefaultDiscountDaysNull()
         {
             this.SetNull(this.myTable.ColumnDefaultDiscountDays);
         }
-        
+
         /// test for NULL value
         public bool IsSupplierTypeNull()
         {
             return this.IsNull(this.myTable.ColumnSupplierType);
         }
-        
+
         /// assign NULL value
         public void SetSupplierTypeNull()
         {
             this.SetNull(this.myTable.ColumnSupplierType);
         }
-        
+
         /// test for NULL value
         public bool IsDefaultExpAccountNull()
         {
             return this.IsNull(this.myTable.ColumnDefaultExpAccount);
         }
-        
+
         /// assign NULL value
         public void SetDefaultExpAccountNull()
         {
             this.SetNull(this.myTable.ColumnDefaultExpAccount);
         }
-        
+
         /// test for NULL value
         public bool IsDefaultCostCentreNull()
         {
             return this.IsNull(this.myTable.ColumnDefaultCostCentre);
         }
-        
+
         /// assign NULL value
         public void SetDefaultCostCentreNull()
         {
             this.SetNull(this.myTable.ColumnDefaultCostCentre);
         }
-        
+
         /// test for NULL value
         public bool IsDateCreatedNull()
         {
             return this.IsNull(this.myTable.ColumnDateCreated);
         }
-        
+
         /// assign NULL value
         public void SetDateCreatedNull()
         {
             this.SetNull(this.myTable.ColumnDateCreated);
         }
-        
+
         /// test for NULL value
         public bool IsCreatedByNull()
         {
             return this.IsNull(this.myTable.ColumnCreatedBy);
         }
-        
+
         /// assign NULL value
         public void SetCreatedByNull()
         {
             this.SetNull(this.myTable.ColumnCreatedBy);
         }
-        
+
         /// test for NULL value
         public bool IsDateModifiedNull()
         {
             return this.IsNull(this.myTable.ColumnDateModified);
         }
-        
+
         /// assign NULL value
         public void SetDateModifiedNull()
         {
             this.SetNull(this.myTable.ColumnDateModified);
         }
-        
+
         /// test for NULL value
         public bool IsModifiedByNull()
         {
             return this.IsNull(this.myTable.ColumnModifiedBy);
         }
-        
+
         /// assign NULL value
         public void SetModifiedByNull()
         {
             this.SetNull(this.myTable.ColumnModifiedBy);
         }
-        
+
         /// test for NULL value
         public bool IsModificationIdNull()
         {
             return this.IsNull(this.myTable.ColumnModificationId);
         }
-        
+
         /// assign NULL value
         public void SetModificationIdNull()
         {
             this.SetNull(this.myTable.ColumnModificationId);
         }
     }
-    
+
     /// This is either an invoice or a credit note in the Accounts Payable system.
     [Serializable()]
     public class AApDocumentTable : TTypedDataTable
     {
-        
         /// Reference to the ledger for this invoice.
         public DataColumn ColumnLedgerNumber;
-        
         /// A unique key (together with the ledger number) to identify this document.
         public DataColumn ColumnApNumber;
-        
         /// Reference to the supplier that sent this invoice.
         public DataColumn ColumnPartnerKey;
-        
         /// A flag to indicate if this document is an invoice or a credit note.
         public DataColumn ColumnCreditNoteFlag;
-        
         /// The code given on the document itself (be it invoice or credit note). This will have to be unique for each supplier.
         public DataColumn ColumnDocumentCode;
-        
         /// Some kind of other reference needed.
         public DataColumn ColumnReference;
-        
         /// The date when this document was issued.
         public DataColumn ColumnDateIssued;
-        
         /// The date when this document was entered into the system.
         public DataColumn ColumnDateEntered;
-        
         /// Credit terms allowed for this invoice.
         public DataColumn ColumnCreditTerms;
-        
         /// The total amount of money that this document is worth.
         public DataColumn ColumnTotalAmount;
-        
         /// The exchange rate to the base currency at the time that the document was issued.
         public DataColumn ColumnExchangeRateToBase;
-        
         /// The percentage discount you get for early payment of this document in the case that it is an invoice.
         public DataColumn ColumnDiscountPercentage;
-        
         /// The number of days that the discount is valid for (0 for none).
         public DataColumn ColumnDiscountDays;
-        
         /// Reference to the AP Account to debit/credit when posting/paying the document.
         public DataColumn ColumnApAccount;
-        
         /// The number of the last item for this document. This is used simply to quickly get the next number if items are added.
         public DataColumn ColumnLastDetailNumber;
-        
         /// The current status of the invoice. The value can (for now) be one of: OPEN, APPROVED, POSTED, PARTPAID, or PAID.
         public DataColumn ColumnDocumentStatus;
-        
         /// The date the record was created.
         public DataColumn ColumnDateCreated;
-        
         /// User ID of who created this record.
         public DataColumn ColumnCreatedBy;
-        
         /// The date the record was modified.
         public DataColumn ColumnDateModified;
-        
         /// User ID of who last modified this record.
         public DataColumn ColumnModifiedBy;
-        
         /// This identifies the current version of the record.
         public DataColumn ColumnModificationId;
-        
+
+        private static short TableId = -1;
+
+        private static bool FInitInfoValues = InitInfoValues();
+        private static bool InitInfoValues()
+        {
+            TableInfo.Add(TableId, new TTypedTableInfo(TableId, "AApDocument", "a_ap_document",
+                new TTypedColumnInfo[] {
+                    new TTypedColumnInfo(0, "LedgerNumber", "a_ledger_number_i", OdbcType.Int, -1, true),
+                    new TTypedColumnInfo(1, "ApNumber", "a_ap_number_i", OdbcType.Int, -1, true),
+                    new TTypedColumnInfo(2, "PartnerKey", "p_partner_key_n", OdbcType.Decimal, 10, true),
+                    new TTypedColumnInfo(3, "CreditNoteFlag", "a_credit_note_flag_l", OdbcType.Bit, -1, true),
+                    new TTypedColumnInfo(4, "DocumentCode", "a_document_code_c", OdbcType.VarChar, 30, false),
+                    new TTypedColumnInfo(5, "Reference", "a_reference_c", OdbcType.VarChar, 100, false),
+                    new TTypedColumnInfo(6, "DateIssued", "a_date_issued_d", OdbcType.Date, -1, true),
+                    new TTypedColumnInfo(7, "DateEntered", "a_date_entered_d", OdbcType.Date, -1, true),
+                    new TTypedColumnInfo(8, "CreditTerms", "a_credit_terms_i", OdbcType.Int, -1, false),
+                    new TTypedColumnInfo(9, "TotalAmount", "a_total_amount_n", OdbcType.Decimal, 24, true),
+                    new TTypedColumnInfo(10, "ExchangeRateToBase", "a_exchange_rate_to_base_n", OdbcType.Decimal, 24, false),
+                    new TTypedColumnInfo(11, "DiscountPercentage", "a_discount_percentage_n", OdbcType.Decimal, 24, false),
+                    new TTypedColumnInfo(12, "DiscountDays", "a_discount_days_i", OdbcType.Int, -1, false),
+                    new TTypedColumnInfo(13, "ApAccount", "a_ap_account_c", OdbcType.VarChar, 16, false),
+                    new TTypedColumnInfo(14, "LastDetailNumber", "a_last_detail_number_i", OdbcType.Int, -1, true),
+                    new TTypedColumnInfo(15, "DocumentStatus", "a_document_status_c", OdbcType.VarChar, 16, false),
+                    new TTypedColumnInfo(16, "DateCreated", "s_date_created_d", OdbcType.Date, -1, false),
+                    new TTypedColumnInfo(17, "CreatedBy", "s_created_by_c", OdbcType.VarChar, 20, false),
+                    new TTypedColumnInfo(18, "DateModified", "s_date_modified_d", OdbcType.Date, -1, false),
+                    new TTypedColumnInfo(19, "ModifiedBy", "s_modified_by_c", OdbcType.VarChar, 20, false),
+                    new TTypedColumnInfo(20, "ModificationId", "s_modification_id_c", OdbcType.VarChar, 150, false)
+                },
+                new string[] {
+                    "a_ledger_number_i", "a_ap_number_i"
+                }));
+            return true;
+        }
+
         /// constructor
-        public AApDocumentTable() : 
+        public AApDocumentTable() :
                 base("AApDocument")
         {
         }
-        
+
         /// constructor
-        public AApDocumentTable(string ATablename) : 
+        public AApDocumentTable(string ATablename) :
                 base(ATablename)
         {
         }
-        
+
         /// constructor for serialization
-        public AApDocumentTable(System.Runtime.Serialization.SerializationInfo info, System.Runtime.Serialization.StreamingContext context) : 
+        public AApDocumentTable(System.Runtime.Serialization.SerializationInfo info, System.Runtime.Serialization.StreamingContext context) :
                 base(info, context)
         {
         }
-        
-        /// Access a typed row by index
-        public AApDocumentRow this[int i]
-        {
-            get
-            {
-                return ((AApDocumentRow)(this.Rows[i]));
-            }
-        }
-        
-        /// get the name of the field in the database for this column
-        public static string GetLedgerNumberDBName()
-        {
-            return "a_ledger_number_i";
-        }
-        
-        /// get help text for column
-        public static string GetLedgerNumberHelp()
-        {
-            return "Reference to the ledger for this invoice.";
-        }
-        
-        /// get label of column
-        public static string GetLedgerNumberLabel()
-        {
-            return "Ledger Number";
-        }
-        
-        /// get the name of the field in the database for this column
-        public static string GetApNumberDBName()
-        {
-            return "a_ap_number_i";
-        }
-        
-        /// get help text for column
-        public static string GetApNumberHelp()
-        {
-            return "A unique key (together with the ledger number) to identify this document.";
-        }
-        
-        /// get label of column
-        public static string GetApNumberLabel()
-        {
-            return "AP Number";
-        }
-        
-        /// get the name of the field in the database for this column
-        public static string GetPartnerKeyDBName()
-        {
-            return "p_partner_key_n";
-        }
-        
-        /// get help text for column
-        public static string GetPartnerKeyHelp()
-        {
-            return "Reference to the supplier that sent this invoice.";
-        }
-        
-        /// get label of column
-        public static string GetPartnerKeyLabel()
-        {
-            return "Supplier Partner Key";
-        }
-        
-        /// get the name of the field in the database for this column
-        public static string GetCreditNoteFlagDBName()
-        {
-            return "a_credit_note_flag_l";
-        }
-        
-        /// get help text for column
-        public static string GetCreditNoteFlagHelp()
-        {
-            return "A flag to indicate if this document is an invoice or a credit note.";
-        }
-        
-        /// get label of column
-        public static string GetCreditNoteFlagLabel()
-        {
-            return "Credit Note Flag";
-        }
-        
-        /// get display format for column
-        public static short GetCreditNoteFlagLength()
-        {
-            return 6;
-        }
-        
-        /// get the name of the field in the database for this column
-        public static string GetDocumentCodeDBName()
-        {
-            return "a_document_code_c";
-        }
-        
-        /// get help text for column
-        public static string GetDocumentCodeHelp()
-        {
-            return "The code given on the document itself (be it invoice or credit note). This will h" +
-                "ave to be unique for each supplier.";
-        }
-        
-        /// get label of column
-        public static string GetDocumentCodeLabel()
-        {
-            return "Invoice Number";
-        }
-        
-        /// get character length for column
-        public static short GetDocumentCodeLength()
-        {
-            return 15;
-        }
-        
-        /// get the name of the field in the database for this column
-        public static string GetReferenceDBName()
-        {
-            return "a_reference_c";
-        }
-        
-        /// get help text for column
-        public static string GetReferenceHelp()
-        {
-            return "Some kind of other reference needed.";
-        }
-        
-        /// get label of column
-        public static string GetReferenceLabel()
-        {
-            return "Reference";
-        }
-        
-        /// get character length for column
-        public static short GetReferenceLength()
-        {
-            return 50;
-        }
-        
-        /// get the name of the field in the database for this column
-        public static string GetDateIssuedDBName()
-        {
-            return "a_date_issued_d";
-        }
-        
-        /// get help text for column
-        public static string GetDateIssuedHelp()
-        {
-            return "The date when this document was issued.";
-        }
-        
-        /// get label of column
-        public static string GetDateIssuedLabel()
-        {
-            return "Date Issued";
-        }
-        
-        /// get display format for column
-        public static short GetDateIssuedLength()
-        {
-            return 11;
-        }
-        
-        /// get the name of the field in the database for this column
-        public static string GetDateEnteredDBName()
-        {
-            return "a_date_entered_d";
-        }
-        
-        /// get help text for column
-        public static string GetDateEnteredHelp()
-        {
-            return "The date when this document was entered into the system.";
-        }
-        
-        /// get label of column
-        public static string GetDateEnteredLabel()
-        {
-            return "Date Entered";
-        }
-        
-        /// get display format for column
-        public static short GetDateEnteredLength()
-        {
-            return 11;
-        }
-        
-        /// get the name of the field in the database for this column
-        public static string GetCreditTermsDBName()
-        {
-            return "a_credit_terms_i";
-        }
-        
-        /// get help text for column
-        public static string GetCreditTermsHelp()
-        {
-            return "Credit terms allowed for this invoice.";
-        }
-        
-        /// get label of column
-        public static string GetCreditTermsLabel()
-        {
-            return "Credit Terms";
-        }
-        
-        /// get the name of the field in the database for this column
-        public static string GetTotalAmountDBName()
-        {
-            return "a_total_amount_n";
-        }
-        
-        /// get help text for column
-        public static string GetTotalAmountHelp()
-        {
-            return "The total amount of money that this document is worth.";
-        }
-        
-        /// get label of column
-        public static string GetTotalAmountLabel()
-        {
-            return "Total Amount";
-        }
-        
-        /// get display format for column
-        public static short GetTotalAmountLength()
-        {
-            return 19;
-        }
-        
-        /// get the name of the field in the database for this column
-        public static string GetExchangeRateToBaseDBName()
-        {
-            return "a_exchange_rate_to_base_n";
-        }
-        
-        /// get help text for column
-        public static string GetExchangeRateToBaseHelp()
-        {
-            return "The exchange rate to the base currency at the time that the document was issued.";
-        }
-        
-        /// get label of column
-        public static string GetExchangeRateToBaseLabel()
-        {
-            return "Exchange Rate to Base";
-        }
-        
-        /// get display format for column
-        public static short GetExchangeRateToBaseLength()
-        {
-            return 18;
-        }
-        
-        /// get the name of the field in the database for this column
-        public static string GetDiscountPercentageDBName()
-        {
-            return "a_discount_percentage_n";
-        }
-        
-        /// get help text for column
-        public static string GetDiscountPercentageHelp()
-        {
-            return "The percentage discount you get for early payment of this document in the case th" +
-                "at it is an invoice.";
-        }
-        
-        /// get label of column
-        public static string GetDiscountPercentageLabel()
-        {
-            return "Discount Percentage";
-        }
-        
-        /// get display format for column
-        public static short GetDiscountPercentageLength()
-        {
-            return 18;
-        }
-        
-        /// get the name of the field in the database for this column
-        public static string GetDiscountDaysDBName()
-        {
-            return "a_discount_days_i";
-        }
-        
-        /// get help text for column
-        public static string GetDiscountDaysHelp()
-        {
-            return "The number of days that the discount is valid for (0 for none).";
-        }
-        
-        /// get label of column
-        public static string GetDiscountDaysLabel()
-        {
-            return "Discount Days";
-        }
-        
-        /// get the name of the field in the database for this column
-        public static string GetApAccountDBName()
-        {
-            return "a_ap_account_c";
-        }
-        
-        /// get help text for column
-        public static string GetApAccountHelp()
-        {
-            return "Reference to the AP Account to debit/credit when posting/paying the document.";
-        }
-        
-        /// get label of column
-        public static string GetApAccountLabel()
-        {
-            return "AP Account";
-        }
-        
-        /// get character length for column
-        public static short GetApAccountLength()
-        {
-            return 8;
-        }
-        
-        /// get the name of the field in the database for this column
-        public static string GetLastDetailNumberDBName()
-        {
-            return "a_last_detail_number_i";
-        }
-        
-        /// get help text for column
-        public static string GetLastDetailNumberHelp()
-        {
-            return "The number of the last item for this document. This is used simply to quickly get" +
-                " the next number if items are added.";
-        }
-        
-        /// get label of column
-        public static string GetLastDetailNumberLabel()
-        {
-            return "Last Detail Number";
-        }
-        
-        /// get the name of the field in the database for this column
-        public static string GetDocumentStatusDBName()
-        {
-            return "a_document_status_c";
-        }
-        
-        /// get help text for column
-        public static string GetDocumentStatusHelp()
-        {
-            return "The current status of the invoice. The value can (for now) be one of: OPEN, APPRO" +
-                "VED, POSTED, PARTPAID, or PAID.";
-        }
-        
-        /// get label of column
-        public static string GetDocumentStatusLabel()
-        {
-            return "Document Status";
-        }
-        
-        /// get character length for column
-        public static short GetDocumentStatusLength()
-        {
-            return 8;
-        }
-        
-        /// get the name of the field in the database for this column
-        public static string GetDateCreatedDBName()
-        {
-            return "s_date_created_d";
-        }
-        
-        /// get help text for column
-        public static string GetDateCreatedHelp()
-        {
-            return "The date the record was created.";
-        }
-        
-        /// get label of column
-        public static string GetDateCreatedLabel()
-        {
-            return "Created Date";
-        }
-        
-        /// get display format for column
-        public static short GetDateCreatedLength()
-        {
-            return 11;
-        }
-        
-        /// get the name of the field in the database for this column
-        public static string GetCreatedByDBName()
-        {
-            return "s_created_by_c";
-        }
-        
-        /// get help text for column
-        public static string GetCreatedByHelp()
-        {
-            return "User ID of who created this record.";
-        }
-        
-        /// get label of column
-        public static string GetCreatedByLabel()
-        {
-            return "Created By";
-        }
-        
-        /// get character length for column
-        public static short GetCreatedByLength()
-        {
-            return 10;
-        }
-        
-        /// get the name of the field in the database for this column
-        public static string GetDateModifiedDBName()
-        {
-            return "s_date_modified_d";
-        }
-        
-        /// get help text for column
-        public static string GetDateModifiedHelp()
-        {
-            return "The date the record was modified.";
-        }
-        
-        /// get label of column
-        public static string GetDateModifiedLabel()
-        {
-            return "Modified Date";
-        }
-        
-        /// get display format for column
-        public static short GetDateModifiedLength()
-        {
-            return 11;
-        }
-        
-        /// get the name of the field in the database for this column
-        public static string GetModifiedByDBName()
-        {
-            return "s_modified_by_c";
-        }
-        
-        /// get help text for column
-        public static string GetModifiedByHelp()
-        {
-            return "User ID of who last modified this record.";
-        }
-        
-        /// get label of column
-        public static string GetModifiedByLabel()
-        {
-            return "Modified By";
-        }
-        
-        /// get character length for column
-        public static short GetModifiedByLength()
-        {
-            return 10;
-        }
-        
-        /// get the name of the field in the database for this column
-        public static string GetModificationIdDBName()
-        {
-            return "s_modification_id_c";
-        }
-        
-        /// get help text for column
-        public static string GetModificationIdHelp()
-        {
-            return "This identifies the current version of the record.";
-        }
-        
-        /// get label of column
-        public static string GetModificationIdLabel()
-        {
-            return "";
-        }
-        
-        /// get character length for column
-        public static short GetModificationIdLength()
-        {
-            return 150;
-        }
-        
-        /// CamelCase version of the tablename
-        public static string GetTableName()
-        {
-            return "AApDocument";
-        }
-        
-        /// original name of table in the database
-        public static string GetTableDBName()
-        {
-            return "a_ap_document";
-        }
-        
-        /// get table label for messages etc
-        public static string GetTableLabel()
-        {
-            return "a_ap_document";
-        }
-        
-        /// get the index number of fields that are part of the primary key
-        public static Int32[] GetPrimKeyColumnOrdList()
-        {
-            return new int[] {
-                    0,
-                    1};
-        }
-        
-        /// get the names of the columns
-        public static String[] GetColumnStringList()
-        {
-            return new string[] {
-                    "a_ledger_number_i",
-                    "a_ap_number_i",
-                    "p_partner_key_n",
-                    "a_credit_note_flag_l",
-                    "a_document_code_c",
-                    "a_reference_c",
-                    "a_date_issued_d",
-                    "a_date_entered_d",
-                    "a_credit_terms_i",
-                    "a_total_amount_n",
-                    "a_exchange_rate_to_base_n",
-                    "a_discount_percentage_n",
-                    "a_discount_days_i",
-                    "a_ap_account_c",
-                    "a_last_detail_number_i",
-                    "a_document_status_c",
-                    "s_date_created_d",
-                    "s_created_by_c",
-                    "s_date_modified_d",
-                    "s_modified_by_c",
-                    "s_modification_id_c"};
-        }
-        
-        /// assign columns to properties, set primary key
-        public override void InitVars()
-        {
-            this.ColumnLedgerNumber = this.Columns["a_ledger_number_i"];
-            this.ColumnApNumber = this.Columns["a_ap_number_i"];
-            this.ColumnPartnerKey = this.Columns["p_partner_key_n"];
-            this.ColumnCreditNoteFlag = this.Columns["a_credit_note_flag_l"];
-            this.ColumnDocumentCode = this.Columns["a_document_code_c"];
-            this.ColumnReference = this.Columns["a_reference_c"];
-            this.ColumnDateIssued = this.Columns["a_date_issued_d"];
-            this.ColumnDateEntered = this.Columns["a_date_entered_d"];
-            this.ColumnCreditTerms = this.Columns["a_credit_terms_i"];
-            this.ColumnTotalAmount = this.Columns["a_total_amount_n"];
-            this.ColumnExchangeRateToBase = this.Columns["a_exchange_rate_to_base_n"];
-            this.ColumnDiscountPercentage = this.Columns["a_discount_percentage_n"];
-            this.ColumnDiscountDays = this.Columns["a_discount_days_i"];
-            this.ColumnApAccount = this.Columns["a_ap_account_c"];
-            this.ColumnLastDetailNumber = this.Columns["a_last_detail_number_i"];
-            this.ColumnDocumentStatus = this.Columns["a_document_status_c"];
-            this.ColumnDateCreated = this.Columns["s_date_created_d"];
-            this.ColumnCreatedBy = this.Columns["s_created_by_c"];
-            this.ColumnDateModified = this.Columns["s_date_modified_d"];
-            this.ColumnModifiedBy = this.Columns["s_modified_by_c"];
-            this.ColumnModificationId = this.Columns["s_modification_id_c"];
-            this.PrimaryKey = new System.Data.DataColumn[] {
-                    this.ColumnLedgerNumber,
-                    this.ColumnApNumber};
-        }
-        
-        /// get typed set of changes
-        public AApDocumentTable GetChangesTyped()
-        {
-            return ((AApDocumentTable)(base.GetChangesTypedInternal()));
-        }
-        
-        /// create a new typed row
-        public AApDocumentRow NewRowTyped(bool AWithDefaultValues)
-        {
-            AApDocumentRow ret = ((AApDocumentRow)(this.NewRow()));
-            if ((AWithDefaultValues == true))
-            {
-                ret.InitValues();
-            }
-            return ret;
-        }
-        
-        /// create a new typed row, always with default values
-        public AApDocumentRow NewRowTyped()
-        {
-            return this.NewRowTyped(true);
-        }
-        
-        /// new typed row using DataRowBuilder
-        protected override System.Data.DataRow NewRowFromBuilder(System.Data.DataRowBuilder builder)
-        {
-            return new AApDocumentRow(builder);
-        }
-        
+
         /// create the columns
         protected override void InitClass()
         {
@@ -2077,112 +1227,344 @@ namespace Ict.Petra.Shared.MFinance.AP.Data
             this.Columns.Add(new System.Data.DataColumn("s_modified_by_c", typeof(String)));
             this.Columns.Add(new System.Data.DataColumn("s_modification_id_c", typeof(String)));
         }
-        
-        /// prepare odbc parameters for given column
-        public override OdbcParameter CreateOdbcParameter(DataColumn ACol)
+
+        /// assign columns to properties, set primary key
+        public override void InitVars()
         {
-            if ((ACol == ColumnLedgerNumber))
-            {
-                return new System.Data.Odbc.OdbcParameter("", OdbcType.Int);
-            }
-            if ((ACol == ColumnApNumber))
-            {
-                return new System.Data.Odbc.OdbcParameter("", OdbcType.Int);
-            }
-            if ((ACol == ColumnPartnerKey))
-            {
-                return new System.Data.Odbc.OdbcParameter("", OdbcType.Decimal, 10);
-            }
-            if ((ACol == ColumnCreditNoteFlag))
-            {
-                return new System.Data.Odbc.OdbcParameter("", OdbcType.Bit);
-            }
-            if ((ACol == ColumnDocumentCode))
-            {
-                return new System.Data.Odbc.OdbcParameter("", OdbcType.VarChar, 30);
-            }
-            if ((ACol == ColumnReference))
-            {
-                return new System.Data.Odbc.OdbcParameter("", OdbcType.VarChar, 100);
-            }
-            if ((ACol == ColumnDateIssued))
-            {
-                return new System.Data.Odbc.OdbcParameter("", OdbcType.Date);
-            }
-            if ((ACol == ColumnDateEntered))
-            {
-                return new System.Data.Odbc.OdbcParameter("", OdbcType.Date);
-            }
-            if ((ACol == ColumnCreditTerms))
-            {
-                return new System.Data.Odbc.OdbcParameter("", OdbcType.Int);
-            }
-            if ((ACol == ColumnTotalAmount))
-            {
-                return new System.Data.Odbc.OdbcParameter("", OdbcType.Decimal, 24);
-            }
-            if ((ACol == ColumnExchangeRateToBase))
-            {
-                return new System.Data.Odbc.OdbcParameter("", OdbcType.Decimal, 24);
-            }
-            if ((ACol == ColumnDiscountPercentage))
-            {
-                return new System.Data.Odbc.OdbcParameter("", OdbcType.Decimal, 24);
-            }
-            if ((ACol == ColumnDiscountDays))
-            {
-                return new System.Data.Odbc.OdbcParameter("", OdbcType.Int);
-            }
-            if ((ACol == ColumnApAccount))
-            {
-                return new System.Data.Odbc.OdbcParameter("", OdbcType.VarChar, 16);
-            }
-            if ((ACol == ColumnLastDetailNumber))
-            {
-                return new System.Data.Odbc.OdbcParameter("", OdbcType.Int);
-            }
-            if ((ACol == ColumnDocumentStatus))
-            {
-                return new System.Data.Odbc.OdbcParameter("", OdbcType.VarChar, 16);
-            }
-            if ((ACol == ColumnDateCreated))
-            {
-                return new System.Data.Odbc.OdbcParameter("", OdbcType.Date);
-            }
-            if ((ACol == ColumnCreatedBy))
-            {
-                return new System.Data.Odbc.OdbcParameter("", OdbcType.VarChar, 20);
-            }
-            if ((ACol == ColumnDateModified))
-            {
-                return new System.Data.Odbc.OdbcParameter("", OdbcType.Date);
-            }
-            if ((ACol == ColumnModifiedBy))
-            {
-                return new System.Data.Odbc.OdbcParameter("", OdbcType.VarChar, 20);
-            }
-            if ((ACol == ColumnModificationId))
-            {
-                return new System.Data.Odbc.OdbcParameter("", OdbcType.VarChar, 150);
-            }
-            return null;
+            this.ColumnLedgerNumber = this.Columns["a_ledger_number_i"];
+            this.ColumnApNumber = this.Columns["a_ap_number_i"];
+            this.ColumnPartnerKey = this.Columns["p_partner_key_n"];
+            this.ColumnCreditNoteFlag = this.Columns["a_credit_note_flag_l"];
+            this.ColumnDocumentCode = this.Columns["a_document_code_c"];
+            this.ColumnReference = this.Columns["a_reference_c"];
+            this.ColumnDateIssued = this.Columns["a_date_issued_d"];
+            this.ColumnDateEntered = this.Columns["a_date_entered_d"];
+            this.ColumnCreditTerms = this.Columns["a_credit_terms_i"];
+            this.ColumnTotalAmount = this.Columns["a_total_amount_n"];
+            this.ColumnExchangeRateToBase = this.Columns["a_exchange_rate_to_base_n"];
+            this.ColumnDiscountPercentage = this.Columns["a_discount_percentage_n"];
+            this.ColumnDiscountDays = this.Columns["a_discount_days_i"];
+            this.ColumnApAccount = this.Columns["a_ap_account_c"];
+            this.ColumnLastDetailNumber = this.Columns["a_last_detail_number_i"];
+            this.ColumnDocumentStatus = this.Columns["a_document_status_c"];
+            this.ColumnDateCreated = this.Columns["s_date_created_d"];
+            this.ColumnCreatedBy = this.Columns["s_created_by_c"];
+            this.ColumnDateModified = this.Columns["s_date_modified_d"];
+            this.ColumnModifiedBy = this.Columns["s_modified_by_c"];
+            this.ColumnModificationId = this.Columns["s_modification_id_c"];
         }
+
+        /// Access a typed row by index
+        public AApDocumentRow this[int i]
+        {
+            get
+            {
+                return ((AApDocumentRow)(this.Rows[i]));
+            }
+        }
+
+        /// create a new typed row
+        public AApDocumentRow NewRowTyped(bool AWithDefaultValues)
+        {
+            AApDocumentRow ret = ((AApDocumentRow)(this.NewRow()));
+            if ((AWithDefaultValues == true))
+            {
+                ret.InitValues();
+            }
+            return ret;
+        }
+
+        /// create a new typed row, always with default values
+        public AApDocumentRow NewRowTyped()
+        {
+            return this.NewRowTyped(true);
+        }
+
+        /// new typed row using DataRowBuilder
+        protected override System.Data.DataRow NewRowFromBuilder(System.Data.DataRowBuilder builder)
+        {
+            return new AApDocumentRow(builder);
+        }
+
+        /// get typed set of changes
+        public AApDocumentTable GetChangesTyped()
+        {
+            return ((AApDocumentTable)(base.GetChangesTypedInternal()));
+        }
+
+        /// get an odbc parameter for the given column
+        public override OdbcParameter CreateOdbcParameter(Int32 AColumnNr)
+        {
+            return CreateOdbcParameter(TableId, AColumnNr);
+        }
+
+        /// get the name of the field in the database for this column
+        protected static string GetLedgerNumberDBName()
+        {
+            return "a_ledger_number_i";
+        }
+
+        /// get character length for column
+        public static short GetLedgerNumberLength()
+        {
+            return -1;
+        }
+
+        /// get the name of the field in the database for this column
+        protected static string GetApNumberDBName()
+        {
+            return "a_ap_number_i";
+        }
+
+        /// get character length for column
+        public static short GetApNumberLength()
+        {
+            return -1;
+        }
+
+        /// get the name of the field in the database for this column
+        protected static string GetPartnerKeyDBName()
+        {
+            return "p_partner_key_n";
+        }
+
+        /// get character length for column
+        public static short GetPartnerKeyLength()
+        {
+            return 10;
+        }
+
+        /// get the name of the field in the database for this column
+        protected static string GetCreditNoteFlagDBName()
+        {
+            return "a_credit_note_flag_l";
+        }
+
+        /// get character length for column
+        public static short GetCreditNoteFlagLength()
+        {
+            return -1;
+        }
+
+        /// get the name of the field in the database for this column
+        protected static string GetDocumentCodeDBName()
+        {
+            return "a_document_code_c";
+        }
+
+        /// get character length for column
+        public static short GetDocumentCodeLength()
+        {
+            return 30;
+        }
+
+        /// get the name of the field in the database for this column
+        protected static string GetReferenceDBName()
+        {
+            return "a_reference_c";
+        }
+
+        /// get character length for column
+        public static short GetReferenceLength()
+        {
+            return 100;
+        }
+
+        /// get the name of the field in the database for this column
+        protected static string GetDateIssuedDBName()
+        {
+            return "a_date_issued_d";
+        }
+
+        /// get character length for column
+        public static short GetDateIssuedLength()
+        {
+            return -1;
+        }
+
+        /// get the name of the field in the database for this column
+        protected static string GetDateEnteredDBName()
+        {
+            return "a_date_entered_d";
+        }
+
+        /// get character length for column
+        public static short GetDateEnteredLength()
+        {
+            return -1;
+        }
+
+        /// get the name of the field in the database for this column
+        protected static string GetCreditTermsDBName()
+        {
+            return "a_credit_terms_i";
+        }
+
+        /// get character length for column
+        public static short GetCreditTermsLength()
+        {
+            return -1;
+        }
+
+        /// get the name of the field in the database for this column
+        protected static string GetTotalAmountDBName()
+        {
+            return "a_total_amount_n";
+        }
+
+        /// get character length for column
+        public static short GetTotalAmountLength()
+        {
+            return 24;
+        }
+
+        /// get the name of the field in the database for this column
+        protected static string GetExchangeRateToBaseDBName()
+        {
+            return "a_exchange_rate_to_base_n";
+        }
+
+        /// get character length for column
+        public static short GetExchangeRateToBaseLength()
+        {
+            return 24;
+        }
+
+        /// get the name of the field in the database for this column
+        protected static string GetDiscountPercentageDBName()
+        {
+            return "a_discount_percentage_n";
+        }
+
+        /// get character length for column
+        public static short GetDiscountPercentageLength()
+        {
+            return 24;
+        }
+
+        /// get the name of the field in the database for this column
+        protected static string GetDiscountDaysDBName()
+        {
+            return "a_discount_days_i";
+        }
+
+        /// get character length for column
+        public static short GetDiscountDaysLength()
+        {
+            return -1;
+        }
+
+        /// get the name of the field in the database for this column
+        protected static string GetApAccountDBName()
+        {
+            return "a_ap_account_c";
+        }
+
+        /// get character length for column
+        public static short GetApAccountLength()
+        {
+            return 16;
+        }
+
+        /// get the name of the field in the database for this column
+        protected static string GetLastDetailNumberDBName()
+        {
+            return "a_last_detail_number_i";
+        }
+
+        /// get character length for column
+        public static short GetLastDetailNumberLength()
+        {
+            return -1;
+        }
+
+        /// get the name of the field in the database for this column
+        protected static string GetDocumentStatusDBName()
+        {
+            return "a_document_status_c";
+        }
+
+        /// get character length for column
+        public static short GetDocumentStatusLength()
+        {
+            return 16;
+        }
+
+        /// get the name of the field in the database for this column
+        protected static string GetDateCreatedDBName()
+        {
+            return "s_date_created_d";
+        }
+
+        /// get character length for column
+        public static short GetDateCreatedLength()
+        {
+            return -1;
+        }
+
+        /// get the name of the field in the database for this column
+        protected static string GetCreatedByDBName()
+        {
+            return "s_created_by_c";
+        }
+
+        /// get character length for column
+        public static short GetCreatedByLength()
+        {
+            return 20;
+        }
+
+        /// get the name of the field in the database for this column
+        protected static string GetDateModifiedDBName()
+        {
+            return "s_date_modified_d";
+        }
+
+        /// get character length for column
+        public static short GetDateModifiedLength()
+        {
+            return -1;
+        }
+
+        /// get the name of the field in the database for this column
+        protected static string GetModifiedByDBName()
+        {
+            return "s_modified_by_c";
+        }
+
+        /// get character length for column
+        public static short GetModifiedByLength()
+        {
+            return 20;
+        }
+
+        /// get the name of the field in the database for this column
+        protected static string GetModificationIdDBName()
+        {
+            return "s_modification_id_c";
+        }
+
+        /// get character length for column
+        public static short GetModificationIdLength()
+        {
+            return 150;
+        }
+
     }
-    
+
     /// This is either an invoice or a credit note in the Accounts Payable system.
     [Serializable()]
     public class AApDocumentRow : System.Data.DataRow
     {
-        
         private AApDocumentTable myTable;
-        
+
         /// Constructor
-        public AApDocumentRow(System.Data.DataRowBuilder rb) : 
+        public AApDocumentRow(System.Data.DataRowBuilder rb) :
                 base(rb)
         {
             this.myTable = ((AApDocumentTable)(this.Table));
         }
-        
+
         /// Reference to the ledger for this invoice.
         public Int32 LedgerNumber
         {
@@ -2201,14 +1583,14 @@ namespace Ict.Petra.Shared.MFinance.AP.Data
             }
             set
             {
-                if ((this.IsNull(this.myTable.ColumnLedgerNumber) 
+                if ((this.IsNull(this.myTable.ColumnLedgerNumber)
                             || (((Int32)(this[this.myTable.ColumnLedgerNumber])) != value)))
                 {
                     this[this.myTable.ColumnLedgerNumber] = value;
                 }
             }
         }
-        
+
         /// A unique key (together with the ledger number) to identify this document.
         public Int32 ApNumber
         {
@@ -2227,14 +1609,14 @@ namespace Ict.Petra.Shared.MFinance.AP.Data
             }
             set
             {
-                if ((this.IsNull(this.myTable.ColumnApNumber) 
+                if ((this.IsNull(this.myTable.ColumnApNumber)
                             || (((Int32)(this[this.myTable.ColumnApNumber])) != value)))
                 {
                     this[this.myTable.ColumnApNumber] = value;
                 }
             }
         }
-        
+
         /// Reference to the supplier that sent this invoice.
         public Int64 PartnerKey
         {
@@ -2253,14 +1635,14 @@ namespace Ict.Petra.Shared.MFinance.AP.Data
             }
             set
             {
-                if ((this.IsNull(this.myTable.ColumnPartnerKey) 
+                if ((this.IsNull(this.myTable.ColumnPartnerKey)
                             || (((Int64)(this[this.myTable.ColumnPartnerKey])) != value)))
                 {
                     this[this.myTable.ColumnPartnerKey] = value;
                 }
             }
         }
-        
+
         /// A flag to indicate if this document is an invoice or a credit note.
         public Boolean CreditNoteFlag
         {
@@ -2279,14 +1661,14 @@ namespace Ict.Petra.Shared.MFinance.AP.Data
             }
             set
             {
-                if ((this.IsNull(this.myTable.ColumnCreditNoteFlag) 
+                if ((this.IsNull(this.myTable.ColumnCreditNoteFlag)
                             || (((Boolean)(this[this.myTable.ColumnCreditNoteFlag])) != value)))
                 {
                     this[this.myTable.ColumnCreditNoteFlag] = value;
                 }
             }
         }
-        
+
         /// The code given on the document itself (be it invoice or credit note). This will have to be unique for each supplier.
         public String DocumentCode
         {
@@ -2296,7 +1678,7 @@ namespace Ict.Petra.Shared.MFinance.AP.Data
                 ret = this[this.myTable.ColumnDocumentCode.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    return String.Empty;
+                    throw new System.Data.StrongTypingException("Error: DB null", null);
                 }
                 else
                 {
@@ -2305,14 +1687,14 @@ namespace Ict.Petra.Shared.MFinance.AP.Data
             }
             set
             {
-                if ((this.IsNull(this.myTable.ColumnDocumentCode) 
+                if ((this.IsNull(this.myTable.ColumnDocumentCode)
                             || (((String)(this[this.myTable.ColumnDocumentCode])) != value)))
                 {
                     this[this.myTable.ColumnDocumentCode] = value;
                 }
             }
         }
-        
+
         /// Some kind of other reference needed.
         public String Reference
         {
@@ -2322,7 +1704,7 @@ namespace Ict.Petra.Shared.MFinance.AP.Data
                 ret = this[this.myTable.ColumnReference.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    return String.Empty;
+                    throw new System.Data.StrongTypingException("Error: DB null", null);
                 }
                 else
                 {
@@ -2331,14 +1713,14 @@ namespace Ict.Petra.Shared.MFinance.AP.Data
             }
             set
             {
-                if ((this.IsNull(this.myTable.ColumnReference) 
+                if ((this.IsNull(this.myTable.ColumnReference)
                             || (((String)(this[this.myTable.ColumnReference])) != value)))
                 {
                     this[this.myTable.ColumnReference] = value;
                 }
             }
         }
-        
+
         /// The date when this document was issued.
         public System.DateTime DateIssued
         {
@@ -2357,32 +1739,14 @@ namespace Ict.Petra.Shared.MFinance.AP.Data
             }
             set
             {
-                if ((this.IsNull(this.myTable.ColumnDateIssued) 
+                if ((this.IsNull(this.myTable.ColumnDateIssued)
                             || (((System.DateTime)(this[this.myTable.ColumnDateIssued])) != value)))
                 {
                     this[this.myTable.ColumnDateIssued] = value;
                 }
             }
         }
-        
-        /// Returns the date value or the minimum date if the date is NULL
-        public System.DateTime DateIssuedLowNull
-        {
-            get
-            {
-                return TSaveConvert.ObjectToDate(this[this.myTable.ColumnDateIssued], TNullHandlingEnum.nhReturnLowestDate);
-            }
-        }
-        
-        /// Returns the date value or the maximum date if the date is NULL
-        public System.DateTime DateIssuedHighNull
-        {
-            get
-            {
-                return TSaveConvert.ObjectToDate(this[this.myTable.ColumnDateIssued.Ordinal], TNullHandlingEnum.nhReturnHighestDate);
-            }
-        }
-        
+
         /// The date when this document was entered into the system.
         public System.DateTime DateEntered
         {
@@ -2401,32 +1765,14 @@ namespace Ict.Petra.Shared.MFinance.AP.Data
             }
             set
             {
-                if ((this.IsNull(this.myTable.ColumnDateEntered) 
+                if ((this.IsNull(this.myTable.ColumnDateEntered)
                             || (((System.DateTime)(this[this.myTable.ColumnDateEntered])) != value)))
                 {
                     this[this.myTable.ColumnDateEntered] = value;
                 }
             }
         }
-        
-        /// Returns the date value or the minimum date if the date is NULL
-        public System.DateTime DateEnteredLowNull
-        {
-            get
-            {
-                return TSaveConvert.ObjectToDate(this[this.myTable.ColumnDateEntered], TNullHandlingEnum.nhReturnLowestDate);
-            }
-        }
-        
-        /// Returns the date value or the maximum date if the date is NULL
-        public System.DateTime DateEnteredHighNull
-        {
-            get
-            {
-                return TSaveConvert.ObjectToDate(this[this.myTable.ColumnDateEntered.Ordinal], TNullHandlingEnum.nhReturnHighestDate);
-            }
-        }
-        
+
         /// Credit terms allowed for this invoice.
         public Int32 CreditTerms
         {
@@ -2445,14 +1791,14 @@ namespace Ict.Petra.Shared.MFinance.AP.Data
             }
             set
             {
-                if ((this.IsNull(this.myTable.ColumnCreditTerms) 
+                if ((this.IsNull(this.myTable.ColumnCreditTerms)
                             || (((Int32)(this[this.myTable.ColumnCreditTerms])) != value)))
                 {
                     this[this.myTable.ColumnCreditTerms] = value;
                 }
             }
         }
-        
+
         /// The total amount of money that this document is worth.
         public Double TotalAmount
         {
@@ -2471,14 +1817,14 @@ namespace Ict.Petra.Shared.MFinance.AP.Data
             }
             set
             {
-                if ((this.IsNull(this.myTable.ColumnTotalAmount) 
+                if ((this.IsNull(this.myTable.ColumnTotalAmount)
                             || (((Double)(this[this.myTable.ColumnTotalAmount])) != value)))
                 {
                     this[this.myTable.ColumnTotalAmount] = value;
                 }
             }
         }
-        
+
         /// The exchange rate to the base currency at the time that the document was issued.
         public Double ExchangeRateToBase
         {
@@ -2497,14 +1843,14 @@ namespace Ict.Petra.Shared.MFinance.AP.Data
             }
             set
             {
-                if ((this.IsNull(this.myTable.ColumnExchangeRateToBase) 
+                if ((this.IsNull(this.myTable.ColumnExchangeRateToBase)
                             || (((Double)(this[this.myTable.ColumnExchangeRateToBase])) != value)))
                 {
                     this[this.myTable.ColumnExchangeRateToBase] = value;
                 }
             }
         }
-        
+
         /// The percentage discount you get for early payment of this document in the case that it is an invoice.
         public Double DiscountPercentage
         {
@@ -2523,14 +1869,14 @@ namespace Ict.Petra.Shared.MFinance.AP.Data
             }
             set
             {
-                if ((this.IsNull(this.myTable.ColumnDiscountPercentage) 
+                if ((this.IsNull(this.myTable.ColumnDiscountPercentage)
                             || (((Double)(this[this.myTable.ColumnDiscountPercentage])) != value)))
                 {
                     this[this.myTable.ColumnDiscountPercentage] = value;
                 }
             }
         }
-        
+
         /// The number of days that the discount is valid for (0 for none).
         public Int32 DiscountDays
         {
@@ -2549,14 +1895,14 @@ namespace Ict.Petra.Shared.MFinance.AP.Data
             }
             set
             {
-                if ((this.IsNull(this.myTable.ColumnDiscountDays) 
+                if ((this.IsNull(this.myTable.ColumnDiscountDays)
                             || (((Int32)(this[this.myTable.ColumnDiscountDays])) != value)))
                 {
                     this[this.myTable.ColumnDiscountDays] = value;
                 }
             }
         }
-        
+
         /// Reference to the AP Account to debit/credit when posting/paying the document.
         public String ApAccount
         {
@@ -2566,7 +1912,7 @@ namespace Ict.Petra.Shared.MFinance.AP.Data
                 ret = this[this.myTable.ColumnApAccount.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    return String.Empty;
+                    throw new System.Data.StrongTypingException("Error: DB null", null);
                 }
                 else
                 {
@@ -2575,14 +1921,14 @@ namespace Ict.Petra.Shared.MFinance.AP.Data
             }
             set
             {
-                if ((this.IsNull(this.myTable.ColumnApAccount) 
+                if ((this.IsNull(this.myTable.ColumnApAccount)
                             || (((String)(this[this.myTable.ColumnApAccount])) != value)))
                 {
                     this[this.myTable.ColumnApAccount] = value;
                 }
             }
         }
-        
+
         /// The number of the last item for this document. This is used simply to quickly get the next number if items are added.
         public Int32 LastDetailNumber
         {
@@ -2601,14 +1947,14 @@ namespace Ict.Petra.Shared.MFinance.AP.Data
             }
             set
             {
-                if ((this.IsNull(this.myTable.ColumnLastDetailNumber) 
+                if ((this.IsNull(this.myTable.ColumnLastDetailNumber)
                             || (((Int32)(this[this.myTable.ColumnLastDetailNumber])) != value)))
                 {
                     this[this.myTable.ColumnLastDetailNumber] = value;
                 }
             }
         }
-        
+
         /// The current status of the invoice. The value can (for now) be one of: OPEN, APPROVED, POSTED, PARTPAID, or PAID.
         public String DocumentStatus
         {
@@ -2618,7 +1964,7 @@ namespace Ict.Petra.Shared.MFinance.AP.Data
                 ret = this[this.myTable.ColumnDocumentStatus.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    return String.Empty;
+                    throw new System.Data.StrongTypingException("Error: DB null", null);
                 }
                 else
                 {
@@ -2627,14 +1973,14 @@ namespace Ict.Petra.Shared.MFinance.AP.Data
             }
             set
             {
-                if ((this.IsNull(this.myTable.ColumnDocumentStatus) 
+                if ((this.IsNull(this.myTable.ColumnDocumentStatus)
                             || (((String)(this[this.myTable.ColumnDocumentStatus])) != value)))
                 {
                     this[this.myTable.ColumnDocumentStatus] = value;
                 }
             }
         }
-        
+
         /// The date the record was created.
         public System.DateTime DateCreated
         {
@@ -2653,32 +1999,14 @@ namespace Ict.Petra.Shared.MFinance.AP.Data
             }
             set
             {
-                if ((this.IsNull(this.myTable.ColumnDateCreated) 
+                if ((this.IsNull(this.myTable.ColumnDateCreated)
                             || (((System.DateTime)(this[this.myTable.ColumnDateCreated])) != value)))
                 {
                     this[this.myTable.ColumnDateCreated] = value;
                 }
             }
         }
-        
-        /// Returns the date value or the minimum date if the date is NULL
-        public System.DateTime DateCreatedLowNull
-        {
-            get
-            {
-                return TSaveConvert.ObjectToDate(this[this.myTable.ColumnDateCreated], TNullHandlingEnum.nhReturnLowestDate);
-            }
-        }
-        
-        /// Returns the date value or the maximum date if the date is NULL
-        public System.DateTime DateCreatedHighNull
-        {
-            get
-            {
-                return TSaveConvert.ObjectToDate(this[this.myTable.ColumnDateCreated.Ordinal], TNullHandlingEnum.nhReturnHighestDate);
-            }
-        }
-        
+
         /// User ID of who created this record.
         public String CreatedBy
         {
@@ -2688,7 +2016,7 @@ namespace Ict.Petra.Shared.MFinance.AP.Data
                 ret = this[this.myTable.ColumnCreatedBy.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    return String.Empty;
+                    throw new System.Data.StrongTypingException("Error: DB null", null);
                 }
                 else
                 {
@@ -2697,14 +2025,14 @@ namespace Ict.Petra.Shared.MFinance.AP.Data
             }
             set
             {
-                if ((this.IsNull(this.myTable.ColumnCreatedBy) 
+                if ((this.IsNull(this.myTable.ColumnCreatedBy)
                             || (((String)(this[this.myTable.ColumnCreatedBy])) != value)))
                 {
                     this[this.myTable.ColumnCreatedBy] = value;
                 }
             }
         }
-        
+
         /// The date the record was modified.
         public System.DateTime DateModified
         {
@@ -2723,32 +2051,14 @@ namespace Ict.Petra.Shared.MFinance.AP.Data
             }
             set
             {
-                if ((this.IsNull(this.myTable.ColumnDateModified) 
+                if ((this.IsNull(this.myTable.ColumnDateModified)
                             || (((System.DateTime)(this[this.myTable.ColumnDateModified])) != value)))
                 {
                     this[this.myTable.ColumnDateModified] = value;
                 }
             }
         }
-        
-        /// Returns the date value or the minimum date if the date is NULL
-        public System.DateTime DateModifiedLowNull
-        {
-            get
-            {
-                return TSaveConvert.ObjectToDate(this[this.myTable.ColumnDateModified], TNullHandlingEnum.nhReturnLowestDate);
-            }
-        }
-        
-        /// Returns the date value or the maximum date if the date is NULL
-        public System.DateTime DateModifiedHighNull
-        {
-            get
-            {
-                return TSaveConvert.ObjectToDate(this[this.myTable.ColumnDateModified.Ordinal], TNullHandlingEnum.nhReturnHighestDate);
-            }
-        }
-        
+
         /// User ID of who last modified this record.
         public String ModifiedBy
         {
@@ -2758,7 +2068,7 @@ namespace Ict.Petra.Shared.MFinance.AP.Data
                 ret = this[this.myTable.ColumnModifiedBy.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    return String.Empty;
+                    throw new System.Data.StrongTypingException("Error: DB null", null);
                 }
                 else
                 {
@@ -2767,14 +2077,14 @@ namespace Ict.Petra.Shared.MFinance.AP.Data
             }
             set
             {
-                if ((this.IsNull(this.myTable.ColumnModifiedBy) 
+                if ((this.IsNull(this.myTable.ColumnModifiedBy)
                             || (((String)(this[this.myTable.ColumnModifiedBy])) != value)))
                 {
                     this[this.myTable.ColumnModifiedBy] = value;
                 }
             }
         }
-        
+
         /// This identifies the current version of the record.
         public String ModificationId
         {
@@ -2784,7 +2094,7 @@ namespace Ict.Petra.Shared.MFinance.AP.Data
                 ret = this[this.myTable.ColumnModificationId.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    return String.Empty;
+                    throw new System.Data.StrongTypingException("Error: DB null", null);
                 }
                 else
                 {
@@ -2793,14 +2103,14 @@ namespace Ict.Petra.Shared.MFinance.AP.Data
             }
             set
             {
-                if ((this.IsNull(this.myTable.ColumnModificationId) 
+                if ((this.IsNull(this.myTable.ColumnModificationId)
                             || (((String)(this[this.myTable.ColumnModificationId])) != value)))
                 {
                     this[this.myTable.ColumnModificationId] = value;
                 }
             }
         }
-        
+
         /// set default values
         public virtual void InitValues()
         {
@@ -2826,510 +2136,324 @@ namespace Ict.Petra.Shared.MFinance.AP.Data
             this.SetNull(this.myTable.ColumnModifiedBy);
             this.SetNull(this.myTable.ColumnModificationId);
         }
-        
+
+        /// test for NULL value
+        public bool IsLedgerNumberNull()
+        {
+            return this.IsNull(this.myTable.ColumnLedgerNumber);
+        }
+
+        /// assign NULL value
+        public void SetLedgerNumberNull()
+        {
+            this.SetNull(this.myTable.ColumnLedgerNumber);
+        }
+
+        /// test for NULL value
+        public bool IsApNumberNull()
+        {
+            return this.IsNull(this.myTable.ColumnApNumber);
+        }
+
+        /// assign NULL value
+        public void SetApNumberNull()
+        {
+            this.SetNull(this.myTable.ColumnApNumber);
+        }
+
+        /// test for NULL value
+        public bool IsPartnerKeyNull()
+        {
+            return this.IsNull(this.myTable.ColumnPartnerKey);
+        }
+
+        /// assign NULL value
+        public void SetPartnerKeyNull()
+        {
+            this.SetNull(this.myTable.ColumnPartnerKey);
+        }
+
+        /// test for NULL value
+        public bool IsCreditNoteFlagNull()
+        {
+            return this.IsNull(this.myTable.ColumnCreditNoteFlag);
+        }
+
+        /// assign NULL value
+        public void SetCreditNoteFlagNull()
+        {
+            this.SetNull(this.myTable.ColumnCreditNoteFlag);
+        }
+
         /// test for NULL value
         public bool IsDocumentCodeNull()
         {
             return this.IsNull(this.myTable.ColumnDocumentCode);
         }
-        
+
         /// assign NULL value
         public void SetDocumentCodeNull()
         {
             this.SetNull(this.myTable.ColumnDocumentCode);
         }
-        
+
         /// test for NULL value
         public bool IsReferenceNull()
         {
             return this.IsNull(this.myTable.ColumnReference);
         }
-        
+
         /// assign NULL value
         public void SetReferenceNull()
         {
             this.SetNull(this.myTable.ColumnReference);
         }
-        
+
+        /// test for NULL value
+        public bool IsDateIssuedNull()
+        {
+            return this.IsNull(this.myTable.ColumnDateIssued);
+        }
+
+        /// assign NULL value
+        public void SetDateIssuedNull()
+        {
+            this.SetNull(this.myTable.ColumnDateIssued);
+        }
+
+        /// test for NULL value
+        public bool IsDateEnteredNull()
+        {
+            return this.IsNull(this.myTable.ColumnDateEntered);
+        }
+
+        /// assign NULL value
+        public void SetDateEnteredNull()
+        {
+            this.SetNull(this.myTable.ColumnDateEntered);
+        }
+
         /// test for NULL value
         public bool IsCreditTermsNull()
         {
             return this.IsNull(this.myTable.ColumnCreditTerms);
         }
-        
+
         /// assign NULL value
         public void SetCreditTermsNull()
         {
             this.SetNull(this.myTable.ColumnCreditTerms);
         }
-        
+
+        /// test for NULL value
+        public bool IsTotalAmountNull()
+        {
+            return this.IsNull(this.myTable.ColumnTotalAmount);
+        }
+
+        /// assign NULL value
+        public void SetTotalAmountNull()
+        {
+            this.SetNull(this.myTable.ColumnTotalAmount);
+        }
+
         /// test for NULL value
         public bool IsExchangeRateToBaseNull()
         {
             return this.IsNull(this.myTable.ColumnExchangeRateToBase);
         }
-        
+
         /// assign NULL value
         public void SetExchangeRateToBaseNull()
         {
             this.SetNull(this.myTable.ColumnExchangeRateToBase);
         }
-        
+
         /// test for NULL value
         public bool IsDiscountPercentageNull()
         {
             return this.IsNull(this.myTable.ColumnDiscountPercentage);
         }
-        
+
         /// assign NULL value
         public void SetDiscountPercentageNull()
         {
             this.SetNull(this.myTable.ColumnDiscountPercentage);
         }
-        
+
         /// test for NULL value
         public bool IsDiscountDaysNull()
         {
             return this.IsNull(this.myTable.ColumnDiscountDays);
         }
-        
+
         /// assign NULL value
         public void SetDiscountDaysNull()
         {
             this.SetNull(this.myTable.ColumnDiscountDays);
         }
-        
+
         /// test for NULL value
         public bool IsApAccountNull()
         {
             return this.IsNull(this.myTable.ColumnApAccount);
         }
-        
+
         /// assign NULL value
         public void SetApAccountNull()
         {
             this.SetNull(this.myTable.ColumnApAccount);
         }
-        
+
+        /// test for NULL value
+        public bool IsLastDetailNumberNull()
+        {
+            return this.IsNull(this.myTable.ColumnLastDetailNumber);
+        }
+
+        /// assign NULL value
+        public void SetLastDetailNumberNull()
+        {
+            this.SetNull(this.myTable.ColumnLastDetailNumber);
+        }
+
         /// test for NULL value
         public bool IsDocumentStatusNull()
         {
             return this.IsNull(this.myTable.ColumnDocumentStatus);
         }
-        
+
         /// assign NULL value
         public void SetDocumentStatusNull()
         {
             this.SetNull(this.myTable.ColumnDocumentStatus);
         }
-        
+
         /// test for NULL value
         public bool IsDateCreatedNull()
         {
             return this.IsNull(this.myTable.ColumnDateCreated);
         }
-        
+
         /// assign NULL value
         public void SetDateCreatedNull()
         {
             this.SetNull(this.myTable.ColumnDateCreated);
         }
-        
+
         /// test for NULL value
         public bool IsCreatedByNull()
         {
             return this.IsNull(this.myTable.ColumnCreatedBy);
         }
-        
+
         /// assign NULL value
         public void SetCreatedByNull()
         {
             this.SetNull(this.myTable.ColumnCreatedBy);
         }
-        
+
         /// test for NULL value
         public bool IsDateModifiedNull()
         {
             return this.IsNull(this.myTable.ColumnDateModified);
         }
-        
+
         /// assign NULL value
         public void SetDateModifiedNull()
         {
             this.SetNull(this.myTable.ColumnDateModified);
         }
-        
+
         /// test for NULL value
         public bool IsModifiedByNull()
         {
             return this.IsNull(this.myTable.ColumnModifiedBy);
         }
-        
+
         /// assign NULL value
         public void SetModifiedByNull()
         {
             this.SetNull(this.myTable.ColumnModifiedBy);
         }
-        
+
         /// test for NULL value
         public bool IsModificationIdNull()
         {
             return this.IsNull(this.myTable.ColumnModificationId);
         }
-        
+
         /// assign NULL value
         public void SetModificationIdNull()
         {
             this.SetNull(this.myTable.ColumnModificationId);
         }
     }
-    
+
     /// This table receives a new entry when a credit note is applied to an invoice. Since the invoices and credit notes share the same table, we need a way to link the two, and this is the role of this table.
     [Serializable()]
     public class ACrdtNoteInvoiceLinkTable : TTypedDataTable
     {
-        
         /// Reference to the ledger number.
         public DataColumn ColumnLedgerNumber;
-        
         /// Reference to the credit note.
         public DataColumn ColumnCreditNoteNumber;
-        
         /// Reference to the invoice.
         public DataColumn ColumnInvoiceNumber;
-        
-        /// 
+        ///
         public DataColumn ColumnAppliedDate;
-        
         /// The date the record was created.
         public DataColumn ColumnDateCreated;
-        
         /// User ID of who created this record.
         public DataColumn ColumnCreatedBy;
-        
         /// The date the record was modified.
         public DataColumn ColumnDateModified;
-        
         /// User ID of who last modified this record.
         public DataColumn ColumnModifiedBy;
-        
         /// This identifies the current version of the record.
         public DataColumn ColumnModificationId;
-        
+
+        private static short TableId = -1;
+
+        private static bool FInitInfoValues = InitInfoValues();
+        private static bool InitInfoValues()
+        {
+            TableInfo.Add(TableId, new TTypedTableInfo(TableId, "ACrdtNoteInvoiceLink", "a_crdt_note_invoice_link",
+                new TTypedColumnInfo[] {
+                    new TTypedColumnInfo(0, "LedgerNumber", "a_ledger_number_i", OdbcType.Int, -1, true),
+                    new TTypedColumnInfo(1, "CreditNoteNumber", "a_credit_note_number_i", OdbcType.Int, -1, true),
+                    new TTypedColumnInfo(2, "InvoiceNumber", "a_invoice_number_i", OdbcType.Int, -1, true),
+                    new TTypedColumnInfo(3, "AppliedDate", "a_applied_date_d", OdbcType.Date, -1, false),
+                    new TTypedColumnInfo(4, "DateCreated", "s_date_created_d", OdbcType.Date, -1, false),
+                    new TTypedColumnInfo(5, "CreatedBy", "s_created_by_c", OdbcType.VarChar, 20, false),
+                    new TTypedColumnInfo(6, "DateModified", "s_date_modified_d", OdbcType.Date, -1, false),
+                    new TTypedColumnInfo(7, "ModifiedBy", "s_modified_by_c", OdbcType.VarChar, 20, false),
+                    new TTypedColumnInfo(8, "ModificationId", "s_modification_id_c", OdbcType.VarChar, 150, false)
+                },
+                new string[] {
+                    "a_ledger_number_i", "a_credit_note_number_i", "a_invoice_number_i"
+                }));
+            return true;
+        }
+
         /// constructor
-        public ACrdtNoteInvoiceLinkTable() : 
+        public ACrdtNoteInvoiceLinkTable() :
                 base("ACrdtNoteInvoiceLink")
         {
         }
-        
+
         /// constructor
-        public ACrdtNoteInvoiceLinkTable(string ATablename) : 
+        public ACrdtNoteInvoiceLinkTable(string ATablename) :
                 base(ATablename)
         {
         }
-        
+
         /// constructor for serialization
-        public ACrdtNoteInvoiceLinkTable(System.Runtime.Serialization.SerializationInfo info, System.Runtime.Serialization.StreamingContext context) : 
+        public ACrdtNoteInvoiceLinkTable(System.Runtime.Serialization.SerializationInfo info, System.Runtime.Serialization.StreamingContext context) :
                 base(info, context)
         {
         }
-        
-        /// Access a typed row by index
-        public ACrdtNoteInvoiceLinkRow this[int i]
-        {
-            get
-            {
-                return ((ACrdtNoteInvoiceLinkRow)(this.Rows[i]));
-            }
-        }
-        
-        /// get the name of the field in the database for this column
-        public static string GetLedgerNumberDBName()
-        {
-            return "a_ledger_number_i";
-        }
-        
-        /// get help text for column
-        public static string GetLedgerNumberHelp()
-        {
-            return "Reference to the ledger number.";
-        }
-        
-        /// get label of column
-        public static string GetLedgerNumberLabel()
-        {
-            return "Ledger Number";
-        }
-        
-        /// get the name of the field in the database for this column
-        public static string GetCreditNoteNumberDBName()
-        {
-            return "a_credit_note_number_i";
-        }
-        
-        /// get help text for column
-        public static string GetCreditNoteNumberHelp()
-        {
-            return "Reference to the credit note.";
-        }
-        
-        /// get label of column
-        public static string GetCreditNoteNumberLabel()
-        {
-            return "Credit Note Number";
-        }
-        
-        /// get the name of the field in the database for this column
-        public static string GetInvoiceNumberDBName()
-        {
-            return "a_invoice_number_i";
-        }
-        
-        /// get help text for column
-        public static string GetInvoiceNumberHelp()
-        {
-            return "Reference to the invoice.";
-        }
-        
-        /// get label of column
-        public static string GetInvoiceNumberLabel()
-        {
-            return "Invoice Number";
-        }
-        
-        /// get the name of the field in the database for this column
-        public static string GetAppliedDateDBName()
-        {
-            return "a_applied_date_d";
-        }
-        
-        /// get help text for column
-        public static string GetAppliedDateHelp()
-        {
-            return "";
-        }
-        
-        /// get label of column
-        public static string GetAppliedDateLabel()
-        {
-            return "Applied Date";
-        }
-        
-        /// get display format for column
-        public static short GetAppliedDateLength()
-        {
-            return 11;
-        }
-        
-        /// get the name of the field in the database for this column
-        public static string GetDateCreatedDBName()
-        {
-            return "s_date_created_d";
-        }
-        
-        /// get help text for column
-        public static string GetDateCreatedHelp()
-        {
-            return "The date the record was created.";
-        }
-        
-        /// get label of column
-        public static string GetDateCreatedLabel()
-        {
-            return "Created Date";
-        }
-        
-        /// get display format for column
-        public static short GetDateCreatedLength()
-        {
-            return 11;
-        }
-        
-        /// get the name of the field in the database for this column
-        public static string GetCreatedByDBName()
-        {
-            return "s_created_by_c";
-        }
-        
-        /// get help text for column
-        public static string GetCreatedByHelp()
-        {
-            return "User ID of who created this record.";
-        }
-        
-        /// get label of column
-        public static string GetCreatedByLabel()
-        {
-            return "Created By";
-        }
-        
-        /// get character length for column
-        public static short GetCreatedByLength()
-        {
-            return 10;
-        }
-        
-        /// get the name of the field in the database for this column
-        public static string GetDateModifiedDBName()
-        {
-            return "s_date_modified_d";
-        }
-        
-        /// get help text for column
-        public static string GetDateModifiedHelp()
-        {
-            return "The date the record was modified.";
-        }
-        
-        /// get label of column
-        public static string GetDateModifiedLabel()
-        {
-            return "Modified Date";
-        }
-        
-        /// get display format for column
-        public static short GetDateModifiedLength()
-        {
-            return 11;
-        }
-        
-        /// get the name of the field in the database for this column
-        public static string GetModifiedByDBName()
-        {
-            return "s_modified_by_c";
-        }
-        
-        /// get help text for column
-        public static string GetModifiedByHelp()
-        {
-            return "User ID of who last modified this record.";
-        }
-        
-        /// get label of column
-        public static string GetModifiedByLabel()
-        {
-            return "Modified By";
-        }
-        
-        /// get character length for column
-        public static short GetModifiedByLength()
-        {
-            return 10;
-        }
-        
-        /// get the name of the field in the database for this column
-        public static string GetModificationIdDBName()
-        {
-            return "s_modification_id_c";
-        }
-        
-        /// get help text for column
-        public static string GetModificationIdHelp()
-        {
-            return "This identifies the current version of the record.";
-        }
-        
-        /// get label of column
-        public static string GetModificationIdLabel()
-        {
-            return "";
-        }
-        
-        /// get character length for column
-        public static short GetModificationIdLength()
-        {
-            return 150;
-        }
-        
-        /// CamelCase version of the tablename
-        public static string GetTableName()
-        {
-            return "ACrdtNoteInvoiceLink";
-        }
-        
-        /// original name of table in the database
-        public static string GetTableDBName()
-        {
-            return "a_crdt_note_invoice_link";
-        }
-        
-        /// get table label for messages etc
-        public static string GetTableLabel()
-        {
-            return "a_crdt_note_invoice_link";
-        }
-        
-        /// get the index number of fields that are part of the primary key
-        public static Int32[] GetPrimKeyColumnOrdList()
-        {
-            return new int[] {
-                    0,
-                    1,
-                    2};
-        }
-        
-        /// get the names of the columns
-        public static String[] GetColumnStringList()
-        {
-            return new string[] {
-                    "a_ledger_number_i",
-                    "a_credit_note_number_i",
-                    "a_invoice_number_i",
-                    "a_applied_date_d",
-                    "s_date_created_d",
-                    "s_created_by_c",
-                    "s_date_modified_d",
-                    "s_modified_by_c",
-                    "s_modification_id_c"};
-        }
-        
-        /// assign columns to properties, set primary key
-        public override void InitVars()
-        {
-            this.ColumnLedgerNumber = this.Columns["a_ledger_number_i"];
-            this.ColumnCreditNoteNumber = this.Columns["a_credit_note_number_i"];
-            this.ColumnInvoiceNumber = this.Columns["a_invoice_number_i"];
-            this.ColumnAppliedDate = this.Columns["a_applied_date_d"];
-            this.ColumnDateCreated = this.Columns["s_date_created_d"];
-            this.ColumnCreatedBy = this.Columns["s_created_by_c"];
-            this.ColumnDateModified = this.Columns["s_date_modified_d"];
-            this.ColumnModifiedBy = this.Columns["s_modified_by_c"];
-            this.ColumnModificationId = this.Columns["s_modification_id_c"];
-            this.PrimaryKey = new System.Data.DataColumn[] {
-                    this.ColumnLedgerNumber,
-                    this.ColumnCreditNoteNumber,
-                    this.ColumnInvoiceNumber};
-        }
-        
-        /// get typed set of changes
-        public ACrdtNoteInvoiceLinkTable GetChangesTyped()
-        {
-            return ((ACrdtNoteInvoiceLinkTable)(base.GetChangesTypedInternal()));
-        }
-        
-        /// create a new typed row
-        public ACrdtNoteInvoiceLinkRow NewRowTyped(bool AWithDefaultValues)
-        {
-            ACrdtNoteInvoiceLinkRow ret = ((ACrdtNoteInvoiceLinkRow)(this.NewRow()));
-            if ((AWithDefaultValues == true))
-            {
-                ret.InitValues();
-            }
-            return ret;
-        }
-        
-        /// create a new typed row, always with default values
-        public ACrdtNoteInvoiceLinkRow NewRowTyped()
-        {
-            return this.NewRowTyped(true);
-        }
-        
-        /// new typed row using DataRowBuilder
-        protected override System.Data.DataRow NewRowFromBuilder(System.Data.DataRowBuilder builder)
-        {
-            return new ACrdtNoteInvoiceLinkRow(builder);
-        }
-        
+
         /// create the columns
         protected override void InitClass()
         {
@@ -3343,64 +2467,188 @@ namespace Ict.Petra.Shared.MFinance.AP.Data
             this.Columns.Add(new System.Data.DataColumn("s_modified_by_c", typeof(String)));
             this.Columns.Add(new System.Data.DataColumn("s_modification_id_c", typeof(String)));
         }
-        
-        /// prepare odbc parameters for given column
-        public override OdbcParameter CreateOdbcParameter(DataColumn ACol)
+
+        /// assign columns to properties, set primary key
+        public override void InitVars()
         {
-            if ((ACol == ColumnLedgerNumber))
-            {
-                return new System.Data.Odbc.OdbcParameter("", OdbcType.Int);
-            }
-            if ((ACol == ColumnCreditNoteNumber))
-            {
-                return new System.Data.Odbc.OdbcParameter("", OdbcType.Int);
-            }
-            if ((ACol == ColumnInvoiceNumber))
-            {
-                return new System.Data.Odbc.OdbcParameter("", OdbcType.Int);
-            }
-            if ((ACol == ColumnAppliedDate))
-            {
-                return new System.Data.Odbc.OdbcParameter("", OdbcType.Date);
-            }
-            if ((ACol == ColumnDateCreated))
-            {
-                return new System.Data.Odbc.OdbcParameter("", OdbcType.Date);
-            }
-            if ((ACol == ColumnCreatedBy))
-            {
-                return new System.Data.Odbc.OdbcParameter("", OdbcType.VarChar, 20);
-            }
-            if ((ACol == ColumnDateModified))
-            {
-                return new System.Data.Odbc.OdbcParameter("", OdbcType.Date);
-            }
-            if ((ACol == ColumnModifiedBy))
-            {
-                return new System.Data.Odbc.OdbcParameter("", OdbcType.VarChar, 20);
-            }
-            if ((ACol == ColumnModificationId))
-            {
-                return new System.Data.Odbc.OdbcParameter("", OdbcType.VarChar, 150);
-            }
-            return null;
+            this.ColumnLedgerNumber = this.Columns["a_ledger_number_i"];
+            this.ColumnCreditNoteNumber = this.Columns["a_credit_note_number_i"];
+            this.ColumnInvoiceNumber = this.Columns["a_invoice_number_i"];
+            this.ColumnAppliedDate = this.Columns["a_applied_date_d"];
+            this.ColumnDateCreated = this.Columns["s_date_created_d"];
+            this.ColumnCreatedBy = this.Columns["s_created_by_c"];
+            this.ColumnDateModified = this.Columns["s_date_modified_d"];
+            this.ColumnModifiedBy = this.Columns["s_modified_by_c"];
+            this.ColumnModificationId = this.Columns["s_modification_id_c"];
         }
+
+        /// Access a typed row by index
+        public ACrdtNoteInvoiceLinkRow this[int i]
+        {
+            get
+            {
+                return ((ACrdtNoteInvoiceLinkRow)(this.Rows[i]));
+            }
+        }
+
+        /// create a new typed row
+        public ACrdtNoteInvoiceLinkRow NewRowTyped(bool AWithDefaultValues)
+        {
+            ACrdtNoteInvoiceLinkRow ret = ((ACrdtNoteInvoiceLinkRow)(this.NewRow()));
+            if ((AWithDefaultValues == true))
+            {
+                ret.InitValues();
+            }
+            return ret;
+        }
+
+        /// create a new typed row, always with default values
+        public ACrdtNoteInvoiceLinkRow NewRowTyped()
+        {
+            return this.NewRowTyped(true);
+        }
+
+        /// new typed row using DataRowBuilder
+        protected override System.Data.DataRow NewRowFromBuilder(System.Data.DataRowBuilder builder)
+        {
+            return new ACrdtNoteInvoiceLinkRow(builder);
+        }
+
+        /// get typed set of changes
+        public ACrdtNoteInvoiceLinkTable GetChangesTyped()
+        {
+            return ((ACrdtNoteInvoiceLinkTable)(base.GetChangesTypedInternal()));
+        }
+
+        /// get an odbc parameter for the given column
+        public override OdbcParameter CreateOdbcParameter(Int32 AColumnNr)
+        {
+            return CreateOdbcParameter(TableId, AColumnNr);
+        }
+
+        /// get the name of the field in the database for this column
+        protected static string GetLedgerNumberDBName()
+        {
+            return "a_ledger_number_i";
+        }
+
+        /// get character length for column
+        public static short GetLedgerNumberLength()
+        {
+            return -1;
+        }
+
+        /// get the name of the field in the database for this column
+        protected static string GetCreditNoteNumberDBName()
+        {
+            return "a_credit_note_number_i";
+        }
+
+        /// get character length for column
+        public static short GetCreditNoteNumberLength()
+        {
+            return -1;
+        }
+
+        /// get the name of the field in the database for this column
+        protected static string GetInvoiceNumberDBName()
+        {
+            return "a_invoice_number_i";
+        }
+
+        /// get character length for column
+        public static short GetInvoiceNumberLength()
+        {
+            return -1;
+        }
+
+        /// get the name of the field in the database for this column
+        protected static string GetAppliedDateDBName()
+        {
+            return "a_applied_date_d";
+        }
+
+        /// get character length for column
+        public static short GetAppliedDateLength()
+        {
+            return -1;
+        }
+
+        /// get the name of the field in the database for this column
+        protected static string GetDateCreatedDBName()
+        {
+            return "s_date_created_d";
+        }
+
+        /// get character length for column
+        public static short GetDateCreatedLength()
+        {
+            return -1;
+        }
+
+        /// get the name of the field in the database for this column
+        protected static string GetCreatedByDBName()
+        {
+            return "s_created_by_c";
+        }
+
+        /// get character length for column
+        public static short GetCreatedByLength()
+        {
+            return 20;
+        }
+
+        /// get the name of the field in the database for this column
+        protected static string GetDateModifiedDBName()
+        {
+            return "s_date_modified_d";
+        }
+
+        /// get character length for column
+        public static short GetDateModifiedLength()
+        {
+            return -1;
+        }
+
+        /// get the name of the field in the database for this column
+        protected static string GetModifiedByDBName()
+        {
+            return "s_modified_by_c";
+        }
+
+        /// get character length for column
+        public static short GetModifiedByLength()
+        {
+            return 20;
+        }
+
+        /// get the name of the field in the database for this column
+        protected static string GetModificationIdDBName()
+        {
+            return "s_modification_id_c";
+        }
+
+        /// get character length for column
+        public static short GetModificationIdLength()
+        {
+            return 150;
+        }
+
     }
-    
+
     /// This table receives a new entry when a credit note is applied to an invoice. Since the invoices and credit notes share the same table, we need a way to link the two, and this is the role of this table.
     [Serializable()]
     public class ACrdtNoteInvoiceLinkRow : System.Data.DataRow
     {
-        
         private ACrdtNoteInvoiceLinkTable myTable;
-        
+
         /// Constructor
-        public ACrdtNoteInvoiceLinkRow(System.Data.DataRowBuilder rb) : 
+        public ACrdtNoteInvoiceLinkRow(System.Data.DataRowBuilder rb) :
                 base(rb)
         {
             this.myTable = ((ACrdtNoteInvoiceLinkTable)(this.Table));
         }
-        
+
         /// Reference to the ledger number.
         public Int32 LedgerNumber
         {
@@ -3419,14 +2667,14 @@ namespace Ict.Petra.Shared.MFinance.AP.Data
             }
             set
             {
-                if ((this.IsNull(this.myTable.ColumnLedgerNumber) 
+                if ((this.IsNull(this.myTable.ColumnLedgerNumber)
                             || (((Int32)(this[this.myTable.ColumnLedgerNumber])) != value)))
                 {
                     this[this.myTable.ColumnLedgerNumber] = value;
                 }
             }
         }
-        
+
         /// Reference to the credit note.
         public Int32 CreditNoteNumber
         {
@@ -3445,14 +2693,14 @@ namespace Ict.Petra.Shared.MFinance.AP.Data
             }
             set
             {
-                if ((this.IsNull(this.myTable.ColumnCreditNoteNumber) 
+                if ((this.IsNull(this.myTable.ColumnCreditNoteNumber)
                             || (((Int32)(this[this.myTable.ColumnCreditNoteNumber])) != value)))
                 {
                     this[this.myTable.ColumnCreditNoteNumber] = value;
                 }
             }
         }
-        
+
         /// Reference to the invoice.
         public Int32 InvoiceNumber
         {
@@ -3471,15 +2719,15 @@ namespace Ict.Petra.Shared.MFinance.AP.Data
             }
             set
             {
-                if ((this.IsNull(this.myTable.ColumnInvoiceNumber) 
+                if ((this.IsNull(this.myTable.ColumnInvoiceNumber)
                             || (((Int32)(this[this.myTable.ColumnInvoiceNumber])) != value)))
                 {
                     this[this.myTable.ColumnInvoiceNumber] = value;
                 }
             }
         }
-        
-        /// 
+
+        ///
         public System.DateTime AppliedDate
         {
             get
@@ -3497,32 +2745,14 @@ namespace Ict.Petra.Shared.MFinance.AP.Data
             }
             set
             {
-                if ((this.IsNull(this.myTable.ColumnAppliedDate) 
+                if ((this.IsNull(this.myTable.ColumnAppliedDate)
                             || (((System.DateTime)(this[this.myTable.ColumnAppliedDate])) != value)))
                 {
                     this[this.myTable.ColumnAppliedDate] = value;
                 }
             }
         }
-        
-        /// Returns the date value or the minimum date if the date is NULL
-        public System.DateTime AppliedDateLowNull
-        {
-            get
-            {
-                return TSaveConvert.ObjectToDate(this[this.myTable.ColumnAppliedDate], TNullHandlingEnum.nhReturnLowestDate);
-            }
-        }
-        
-        /// Returns the date value or the maximum date if the date is NULL
-        public System.DateTime AppliedDateHighNull
-        {
-            get
-            {
-                return TSaveConvert.ObjectToDate(this[this.myTable.ColumnAppliedDate.Ordinal], TNullHandlingEnum.nhReturnHighestDate);
-            }
-        }
-        
+
         /// The date the record was created.
         public System.DateTime DateCreated
         {
@@ -3541,32 +2771,14 @@ namespace Ict.Petra.Shared.MFinance.AP.Data
             }
             set
             {
-                if ((this.IsNull(this.myTable.ColumnDateCreated) 
+                if ((this.IsNull(this.myTable.ColumnDateCreated)
                             || (((System.DateTime)(this[this.myTable.ColumnDateCreated])) != value)))
                 {
                     this[this.myTable.ColumnDateCreated] = value;
                 }
             }
         }
-        
-        /// Returns the date value or the minimum date if the date is NULL
-        public System.DateTime DateCreatedLowNull
-        {
-            get
-            {
-                return TSaveConvert.ObjectToDate(this[this.myTable.ColumnDateCreated], TNullHandlingEnum.nhReturnLowestDate);
-            }
-        }
-        
-        /// Returns the date value or the maximum date if the date is NULL
-        public System.DateTime DateCreatedHighNull
-        {
-            get
-            {
-                return TSaveConvert.ObjectToDate(this[this.myTable.ColumnDateCreated.Ordinal], TNullHandlingEnum.nhReturnHighestDate);
-            }
-        }
-        
+
         /// User ID of who created this record.
         public String CreatedBy
         {
@@ -3576,7 +2788,7 @@ namespace Ict.Petra.Shared.MFinance.AP.Data
                 ret = this[this.myTable.ColumnCreatedBy.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    return String.Empty;
+                    throw new System.Data.StrongTypingException("Error: DB null", null);
                 }
                 else
                 {
@@ -3585,14 +2797,14 @@ namespace Ict.Petra.Shared.MFinance.AP.Data
             }
             set
             {
-                if ((this.IsNull(this.myTable.ColumnCreatedBy) 
+                if ((this.IsNull(this.myTable.ColumnCreatedBy)
                             || (((String)(this[this.myTable.ColumnCreatedBy])) != value)))
                 {
                     this[this.myTable.ColumnCreatedBy] = value;
                 }
             }
         }
-        
+
         /// The date the record was modified.
         public System.DateTime DateModified
         {
@@ -3611,32 +2823,14 @@ namespace Ict.Petra.Shared.MFinance.AP.Data
             }
             set
             {
-                if ((this.IsNull(this.myTable.ColumnDateModified) 
+                if ((this.IsNull(this.myTable.ColumnDateModified)
                             || (((System.DateTime)(this[this.myTable.ColumnDateModified])) != value)))
                 {
                     this[this.myTable.ColumnDateModified] = value;
                 }
             }
         }
-        
-        /// Returns the date value or the minimum date if the date is NULL
-        public System.DateTime DateModifiedLowNull
-        {
-            get
-            {
-                return TSaveConvert.ObjectToDate(this[this.myTable.ColumnDateModified], TNullHandlingEnum.nhReturnLowestDate);
-            }
-        }
-        
-        /// Returns the date value or the maximum date if the date is NULL
-        public System.DateTime DateModifiedHighNull
-        {
-            get
-            {
-                return TSaveConvert.ObjectToDate(this[this.myTable.ColumnDateModified.Ordinal], TNullHandlingEnum.nhReturnHighestDate);
-            }
-        }
-        
+
         /// User ID of who last modified this record.
         public String ModifiedBy
         {
@@ -3646,7 +2840,7 @@ namespace Ict.Petra.Shared.MFinance.AP.Data
                 ret = this[this.myTable.ColumnModifiedBy.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    return String.Empty;
+                    throw new System.Data.StrongTypingException("Error: DB null", null);
                 }
                 else
                 {
@@ -3655,14 +2849,14 @@ namespace Ict.Petra.Shared.MFinance.AP.Data
             }
             set
             {
-                if ((this.IsNull(this.myTable.ColumnModifiedBy) 
+                if ((this.IsNull(this.myTable.ColumnModifiedBy)
                             || (((String)(this[this.myTable.ColumnModifiedBy])) != value)))
                 {
                     this[this.myTable.ColumnModifiedBy] = value;
                 }
             }
         }
-        
+
         /// This identifies the current version of the record.
         public String ModificationId
         {
@@ -3672,7 +2866,7 @@ namespace Ict.Petra.Shared.MFinance.AP.Data
                 ret = this[this.myTable.ColumnModificationId.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    return String.Empty;
+                    throw new System.Data.StrongTypingException("Error: DB null", null);
                 }
                 else
                 {
@@ -3681,14 +2875,14 @@ namespace Ict.Petra.Shared.MFinance.AP.Data
             }
             set
             {
-                if ((this.IsNull(this.myTable.ColumnModificationId) 
+                if ((this.IsNull(this.myTable.ColumnModificationId)
                             || (((String)(this[this.myTable.ColumnModificationId])) != value)))
                 {
                     this[this.myTable.ColumnModificationId] = value;
                 }
             }
         }
-        
+
         /// set default values
         public virtual void InitValues()
         {
@@ -3702,600 +2896,198 @@ namespace Ict.Petra.Shared.MFinance.AP.Data
             this.SetNull(this.myTable.ColumnModifiedBy);
             this.SetNull(this.myTable.ColumnModificationId);
         }
-        
+
+        /// test for NULL value
+        public bool IsLedgerNumberNull()
+        {
+            return this.IsNull(this.myTable.ColumnLedgerNumber);
+        }
+
+        /// assign NULL value
+        public void SetLedgerNumberNull()
+        {
+            this.SetNull(this.myTable.ColumnLedgerNumber);
+        }
+
+        /// test for NULL value
+        public bool IsCreditNoteNumberNull()
+        {
+            return this.IsNull(this.myTable.ColumnCreditNoteNumber);
+        }
+
+        /// assign NULL value
+        public void SetCreditNoteNumberNull()
+        {
+            this.SetNull(this.myTable.ColumnCreditNoteNumber);
+        }
+
+        /// test for NULL value
+        public bool IsInvoiceNumberNull()
+        {
+            return this.IsNull(this.myTable.ColumnInvoiceNumber);
+        }
+
+        /// assign NULL value
+        public void SetInvoiceNumberNull()
+        {
+            this.SetNull(this.myTable.ColumnInvoiceNumber);
+        }
+
         /// test for NULL value
         public bool IsAppliedDateNull()
         {
             return this.IsNull(this.myTable.ColumnAppliedDate);
         }
-        
+
         /// assign NULL value
         public void SetAppliedDateNull()
         {
             this.SetNull(this.myTable.ColumnAppliedDate);
         }
-        
+
         /// test for NULL value
         public bool IsDateCreatedNull()
         {
             return this.IsNull(this.myTable.ColumnDateCreated);
         }
-        
+
         /// assign NULL value
         public void SetDateCreatedNull()
         {
             this.SetNull(this.myTable.ColumnDateCreated);
         }
-        
+
         /// test for NULL value
         public bool IsCreatedByNull()
         {
             return this.IsNull(this.myTable.ColumnCreatedBy);
         }
-        
+
         /// assign NULL value
         public void SetCreatedByNull()
         {
             this.SetNull(this.myTable.ColumnCreatedBy);
         }
-        
+
         /// test for NULL value
         public bool IsDateModifiedNull()
         {
             return this.IsNull(this.myTable.ColumnDateModified);
         }
-        
+
         /// assign NULL value
         public void SetDateModifiedNull()
         {
             this.SetNull(this.myTable.ColumnDateModified);
         }
-        
+
         /// test for NULL value
         public bool IsModifiedByNull()
         {
             return this.IsNull(this.myTable.ColumnModifiedBy);
         }
-        
+
         /// assign NULL value
         public void SetModifiedByNull()
         {
             this.SetNull(this.myTable.ColumnModifiedBy);
         }
-        
+
         /// test for NULL value
         public bool IsModificationIdNull()
         {
             return this.IsNull(this.myTable.ColumnModificationId);
         }
-        
+
         /// assign NULL value
         public void SetModificationIdNull()
         {
             this.SetNull(this.myTable.ColumnModificationId);
         }
     }
-    
+
     /// An invoice or credit note consists out of several items, or details. This table contains all these details.
     [Serializable()]
     public class AApDocumentDetailTable : TTypedDataTable
     {
-        
         /// Reference to the ledger
         public DataColumn ColumnLedgerNumber;
-        
         /// Reference to the document
         public DataColumn ColumnApNumber;
-        
         /// A unique number for this detail for its document.
         public DataColumn ColumnDetailNumber;
-        
         /// Indicates if this detail has been approved or not.
         public DataColumn ColumnDetailApproved;
-        
         /// Reference to the cost centre to use for this detail.
         public DataColumn ColumnCostCentreCode;
-        
         /// Reference to the account to use for this detail
         public DataColumn ColumnAccountCode;
-        
         /// Some other reference to the item.
         public DataColumn ColumnItemRef;
-        
         /// A narrative about what this is.
         public DataColumn ColumnNarrative;
-        
         /// The amount of money this detail is worth.
         public DataColumn ColumnAmount;
-        
         /// The date when this detail was approved.
         public DataColumn ColumnApprovalDate;
-        
         /// The date the record was created.
         public DataColumn ColumnDateCreated;
-        
         /// User ID of who created this record.
         public DataColumn ColumnCreatedBy;
-        
         /// The date the record was modified.
         public DataColumn ColumnDateModified;
-        
         /// User ID of who last modified this record.
         public DataColumn ColumnModifiedBy;
-        
         /// This identifies the current version of the record.
         public DataColumn ColumnModificationId;
-        
+
+        private static short TableId = -1;
+
+        private static bool FInitInfoValues = InitInfoValues();
+        private static bool InitInfoValues()
+        {
+            TableInfo.Add(TableId, new TTypedTableInfo(TableId, "AApDocumentDetail", "a_ap_document_detail",
+                new TTypedColumnInfo[] {
+                    new TTypedColumnInfo(0, "LedgerNumber", "a_ledger_number_i", OdbcType.Int, -1, true),
+                    new TTypedColumnInfo(1, "ApNumber", "a_ap_number_i", OdbcType.Int, -1, true),
+                    new TTypedColumnInfo(2, "DetailNumber", "a_detail_number_i", OdbcType.Int, -1, true),
+                    new TTypedColumnInfo(3, "DetailApproved", "a_detail_approved_l", OdbcType.Bit, -1, true),
+                    new TTypedColumnInfo(4, "CostCentreCode", "a_cost_centre_code_c", OdbcType.VarChar, 24, false),
+                    new TTypedColumnInfo(5, "AccountCode", "a_account_code_c", OdbcType.VarChar, 16, false),
+                    new TTypedColumnInfo(6, "ItemRef", "a_item_ref_c", OdbcType.VarChar, 100, false),
+                    new TTypedColumnInfo(7, "Narrative", "a_narrative_c", OdbcType.VarChar, 200, false),
+                    new TTypedColumnInfo(8, "Amount", "a_amount_n", OdbcType.Decimal, 24, false),
+                    new TTypedColumnInfo(9, "ApprovalDate", "a_approval_date_d", OdbcType.Date, -1, false),
+                    new TTypedColumnInfo(10, "DateCreated", "s_date_created_d", OdbcType.Date, -1, false),
+                    new TTypedColumnInfo(11, "CreatedBy", "s_created_by_c", OdbcType.VarChar, 20, false),
+                    new TTypedColumnInfo(12, "DateModified", "s_date_modified_d", OdbcType.Date, -1, false),
+                    new TTypedColumnInfo(13, "ModifiedBy", "s_modified_by_c", OdbcType.VarChar, 20, false),
+                    new TTypedColumnInfo(14, "ModificationId", "s_modification_id_c", OdbcType.VarChar, 150, false)
+                },
+                new string[] {
+                    "a_ledger_number_i", "a_ap_number_i", "a_detail_number_i"
+                }));
+            return true;
+        }
+
         /// constructor
-        public AApDocumentDetailTable() : 
+        public AApDocumentDetailTable() :
                 base("AApDocumentDetail")
         {
         }
-        
+
         /// constructor
-        public AApDocumentDetailTable(string ATablename) : 
+        public AApDocumentDetailTable(string ATablename) :
                 base(ATablename)
         {
         }
-        
+
         /// constructor for serialization
-        public AApDocumentDetailTable(System.Runtime.Serialization.SerializationInfo info, System.Runtime.Serialization.StreamingContext context) : 
+        public AApDocumentDetailTable(System.Runtime.Serialization.SerializationInfo info, System.Runtime.Serialization.StreamingContext context) :
                 base(info, context)
         {
         }
-        
-        /// Access a typed row by index
-        public AApDocumentDetailRow this[int i]
-        {
-            get
-            {
-                return ((AApDocumentDetailRow)(this.Rows[i]));
-            }
-        }
-        
-        /// get the name of the field in the database for this column
-        public static string GetLedgerNumberDBName()
-        {
-            return "a_ledger_number_i";
-        }
-        
-        /// get help text for column
-        public static string GetLedgerNumberHelp()
-        {
-            return "Reference to the ledger";
-        }
-        
-        /// get label of column
-        public static string GetLedgerNumberLabel()
-        {
-            return "Ledger Number";
-        }
-        
-        /// get the name of the field in the database for this column
-        public static string GetApNumberDBName()
-        {
-            return "a_ap_number_i";
-        }
-        
-        /// get help text for column
-        public static string GetApNumberHelp()
-        {
-            return "Reference to the document";
-        }
-        
-        /// get label of column
-        public static string GetApNumberLabel()
-        {
-            return "AP Number";
-        }
-        
-        /// get the name of the field in the database for this column
-        public static string GetDetailNumberDBName()
-        {
-            return "a_detail_number_i";
-        }
-        
-        /// get help text for column
-        public static string GetDetailNumberHelp()
-        {
-            return "A unique number for this detail for its document.";
-        }
-        
-        /// get label of column
-        public static string GetDetailNumberLabel()
-        {
-            return "Detail Number";
-        }
-        
-        /// get the name of the field in the database for this column
-        public static string GetDetailApprovedDBName()
-        {
-            return "a_detail_approved_l";
-        }
-        
-        /// get help text for column
-        public static string GetDetailApprovedHelp()
-        {
-            return "Indicates if this detail has been approved or not.";
-        }
-        
-        /// get label of column
-        public static string GetDetailApprovedLabel()
-        {
-            return "Approved Flag";
-        }
-        
-        /// get display format for column
-        public static short GetDetailApprovedLength()
-        {
-            return 6;
-        }
-        
-        /// get the name of the field in the database for this column
-        public static string GetCostCentreCodeDBName()
-        {
-            return "a_cost_centre_code_c";
-        }
-        
-        /// get help text for column
-        public static string GetCostCentreCodeHelp()
-        {
-            return "Reference to the cost centre to use for this detail.";
-        }
-        
-        /// get label of column
-        public static string GetCostCentreCodeLabel()
-        {
-            return "Cost Centre";
-        }
-        
-        /// get character length for column
-        public static short GetCostCentreCodeLength()
-        {
-            return 12;
-        }
-        
-        /// get the name of the field in the database for this column
-        public static string GetAccountCodeDBName()
-        {
-            return "a_account_code_c";
-        }
-        
-        /// get help text for column
-        public static string GetAccountCodeHelp()
-        {
-            return "Reference to the account to use for this detail";
-        }
-        
-        /// get label of column
-        public static string GetAccountCodeLabel()
-        {
-            return "Account Code";
-        }
-        
-        /// get character length for column
-        public static short GetAccountCodeLength()
-        {
-            return 8;
-        }
-        
-        /// get the name of the field in the database for this column
-        public static string GetItemRefDBName()
-        {
-            return "a_item_ref_c";
-        }
-        
-        /// get help text for column
-        public static string GetItemRefHelp()
-        {
-            return "Some other reference to the item.";
-        }
-        
-        /// get label of column
-        public static string GetItemRefLabel()
-        {
-            return "Reference";
-        }
-        
-        /// get character length for column
-        public static short GetItemRefLength()
-        {
-            return 50;
-        }
-        
-        /// get the name of the field in the database for this column
-        public static string GetNarrativeDBName()
-        {
-            return "a_narrative_c";
-        }
-        
-        /// get help text for column
-        public static string GetNarrativeHelp()
-        {
-            return "A narrative about what this is.";
-        }
-        
-        /// get label of column
-        public static string GetNarrativeLabel()
-        {
-            return "Narrative";
-        }
-        
-        /// get character length for column
-        public static short GetNarrativeLength()
-        {
-            return 100;
-        }
-        
-        /// get the name of the field in the database for this column
-        public static string GetAmountDBName()
-        {
-            return "a_amount_n";
-        }
-        
-        /// get help text for column
-        public static string GetAmountHelp()
-        {
-            return "The amount of money this detail is worth.";
-        }
-        
-        /// get label of column
-        public static string GetAmountLabel()
-        {
-            return "Amount";
-        }
-        
-        /// get display format for column
-        public static short GetAmountLength()
-        {
-            return 19;
-        }
-        
-        /// get the name of the field in the database for this column
-        public static string GetApprovalDateDBName()
-        {
-            return "a_approval_date_d";
-        }
-        
-        /// get help text for column
-        public static string GetApprovalDateHelp()
-        {
-            return "The date when this detail was approved.";
-        }
-        
-        /// get label of column
-        public static string GetApprovalDateLabel()
-        {
-            return "Date Approved";
-        }
-        
-        /// get display format for column
-        public static short GetApprovalDateLength()
-        {
-            return 11;
-        }
-        
-        /// get the name of the field in the database for this column
-        public static string GetDateCreatedDBName()
-        {
-            return "s_date_created_d";
-        }
-        
-        /// get help text for column
-        public static string GetDateCreatedHelp()
-        {
-            return "The date the record was created.";
-        }
-        
-        /// get label of column
-        public static string GetDateCreatedLabel()
-        {
-            return "Created Date";
-        }
-        
-        /// get display format for column
-        public static short GetDateCreatedLength()
-        {
-            return 11;
-        }
-        
-        /// get the name of the field in the database for this column
-        public static string GetCreatedByDBName()
-        {
-            return "s_created_by_c";
-        }
-        
-        /// get help text for column
-        public static string GetCreatedByHelp()
-        {
-            return "User ID of who created this record.";
-        }
-        
-        /// get label of column
-        public static string GetCreatedByLabel()
-        {
-            return "Created By";
-        }
-        
-        /// get character length for column
-        public static short GetCreatedByLength()
-        {
-            return 10;
-        }
-        
-        /// get the name of the field in the database for this column
-        public static string GetDateModifiedDBName()
-        {
-            return "s_date_modified_d";
-        }
-        
-        /// get help text for column
-        public static string GetDateModifiedHelp()
-        {
-            return "The date the record was modified.";
-        }
-        
-        /// get label of column
-        public static string GetDateModifiedLabel()
-        {
-            return "Modified Date";
-        }
-        
-        /// get display format for column
-        public static short GetDateModifiedLength()
-        {
-            return 11;
-        }
-        
-        /// get the name of the field in the database for this column
-        public static string GetModifiedByDBName()
-        {
-            return "s_modified_by_c";
-        }
-        
-        /// get help text for column
-        public static string GetModifiedByHelp()
-        {
-            return "User ID of who last modified this record.";
-        }
-        
-        /// get label of column
-        public static string GetModifiedByLabel()
-        {
-            return "Modified By";
-        }
-        
-        /// get character length for column
-        public static short GetModifiedByLength()
-        {
-            return 10;
-        }
-        
-        /// get the name of the field in the database for this column
-        public static string GetModificationIdDBName()
-        {
-            return "s_modification_id_c";
-        }
-        
-        /// get help text for column
-        public static string GetModificationIdHelp()
-        {
-            return "This identifies the current version of the record.";
-        }
-        
-        /// get label of column
-        public static string GetModificationIdLabel()
-        {
-            return "";
-        }
-        
-        /// get character length for column
-        public static short GetModificationIdLength()
-        {
-            return 150;
-        }
-        
-        /// CamelCase version of the tablename
-        public static string GetTableName()
-        {
-            return "AApDocumentDetail";
-        }
-        
-        /// original name of table in the database
-        public static string GetTableDBName()
-        {
-            return "a_ap_document_detail";
-        }
-        
-        /// get table label for messages etc
-        public static string GetTableLabel()
-        {
-            return "a_ap_document_detail";
-        }
-        
-        /// get the index number of fields that are part of the primary key
-        public static Int32[] GetPrimKeyColumnOrdList()
-        {
-            return new int[] {
-                    0,
-                    1,
-                    2};
-        }
-        
-        /// get the names of the columns
-        public static String[] GetColumnStringList()
-        {
-            return new string[] {
-                    "a_ledger_number_i",
-                    "a_ap_number_i",
-                    "a_detail_number_i",
-                    "a_detail_approved_l",
-                    "a_cost_centre_code_c",
-                    "a_account_code_c",
-                    "a_item_ref_c",
-                    "a_narrative_c",
-                    "a_amount_n",
-                    "a_approval_date_d",
-                    "s_date_created_d",
-                    "s_created_by_c",
-                    "s_date_modified_d",
-                    "s_modified_by_c",
-                    "s_modification_id_c"};
-        }
-        
-        /// assign columns to properties, set primary key
-        public override void InitVars()
-        {
-            this.ColumnLedgerNumber = this.Columns["a_ledger_number_i"];
-            this.ColumnApNumber = this.Columns["a_ap_number_i"];
-            this.ColumnDetailNumber = this.Columns["a_detail_number_i"];
-            this.ColumnDetailApproved = this.Columns["a_detail_approved_l"];
-            this.ColumnCostCentreCode = this.Columns["a_cost_centre_code_c"];
-            this.ColumnAccountCode = this.Columns["a_account_code_c"];
-            this.ColumnItemRef = this.Columns["a_item_ref_c"];
-            this.ColumnNarrative = this.Columns["a_narrative_c"];
-            this.ColumnAmount = this.Columns["a_amount_n"];
-            this.ColumnApprovalDate = this.Columns["a_approval_date_d"];
-            this.ColumnDateCreated = this.Columns["s_date_created_d"];
-            this.ColumnCreatedBy = this.Columns["s_created_by_c"];
-            this.ColumnDateModified = this.Columns["s_date_modified_d"];
-            this.ColumnModifiedBy = this.Columns["s_modified_by_c"];
-            this.ColumnModificationId = this.Columns["s_modification_id_c"];
-            this.PrimaryKey = new System.Data.DataColumn[] {
-                    this.ColumnLedgerNumber,
-                    this.ColumnApNumber,
-                    this.ColumnDetailNumber};
-        }
-        
-        /// get typed set of changes
-        public AApDocumentDetailTable GetChangesTyped()
-        {
-            return ((AApDocumentDetailTable)(base.GetChangesTypedInternal()));
-        }
-        
-        /// create a new typed row
-        public AApDocumentDetailRow NewRowTyped(bool AWithDefaultValues)
-        {
-            AApDocumentDetailRow ret = ((AApDocumentDetailRow)(this.NewRow()));
-            if ((AWithDefaultValues == true))
-            {
-                ret.InitValues();
-            }
-            return ret;
-        }
-        
-        /// create a new typed row, always with default values
-        public AApDocumentDetailRow NewRowTyped()
-        {
-            return this.NewRowTyped(true);
-        }
-        
-        /// new typed row using DataRowBuilder
-        protected override System.Data.DataRow NewRowFromBuilder(System.Data.DataRowBuilder builder)
-        {
-            return new AApDocumentDetailRow(builder);
-        }
-        
+
         /// create the columns
         protected override void InitClass()
         {
@@ -4315,88 +3107,266 @@ namespace Ict.Petra.Shared.MFinance.AP.Data
             this.Columns.Add(new System.Data.DataColumn("s_modified_by_c", typeof(String)));
             this.Columns.Add(new System.Data.DataColumn("s_modification_id_c", typeof(String)));
         }
-        
-        /// prepare odbc parameters for given column
-        public override OdbcParameter CreateOdbcParameter(DataColumn ACol)
+
+        /// assign columns to properties, set primary key
+        public override void InitVars()
         {
-            if ((ACol == ColumnLedgerNumber))
-            {
-                return new System.Data.Odbc.OdbcParameter("", OdbcType.Int);
-            }
-            if ((ACol == ColumnApNumber))
-            {
-                return new System.Data.Odbc.OdbcParameter("", OdbcType.Int);
-            }
-            if ((ACol == ColumnDetailNumber))
-            {
-                return new System.Data.Odbc.OdbcParameter("", OdbcType.Int);
-            }
-            if ((ACol == ColumnDetailApproved))
-            {
-                return new System.Data.Odbc.OdbcParameter("", OdbcType.Bit);
-            }
-            if ((ACol == ColumnCostCentreCode))
-            {
-                return new System.Data.Odbc.OdbcParameter("", OdbcType.VarChar, 24);
-            }
-            if ((ACol == ColumnAccountCode))
-            {
-                return new System.Data.Odbc.OdbcParameter("", OdbcType.VarChar, 16);
-            }
-            if ((ACol == ColumnItemRef))
-            {
-                return new System.Data.Odbc.OdbcParameter("", OdbcType.VarChar, 100);
-            }
-            if ((ACol == ColumnNarrative))
-            {
-                return new System.Data.Odbc.OdbcParameter("", OdbcType.VarChar, 200);
-            }
-            if ((ACol == ColumnAmount))
-            {
-                return new System.Data.Odbc.OdbcParameter("", OdbcType.Decimal, 24);
-            }
-            if ((ACol == ColumnApprovalDate))
-            {
-                return new System.Data.Odbc.OdbcParameter("", OdbcType.Date);
-            }
-            if ((ACol == ColumnDateCreated))
-            {
-                return new System.Data.Odbc.OdbcParameter("", OdbcType.Date);
-            }
-            if ((ACol == ColumnCreatedBy))
-            {
-                return new System.Data.Odbc.OdbcParameter("", OdbcType.VarChar, 20);
-            }
-            if ((ACol == ColumnDateModified))
-            {
-                return new System.Data.Odbc.OdbcParameter("", OdbcType.Date);
-            }
-            if ((ACol == ColumnModifiedBy))
-            {
-                return new System.Data.Odbc.OdbcParameter("", OdbcType.VarChar, 20);
-            }
-            if ((ACol == ColumnModificationId))
-            {
-                return new System.Data.Odbc.OdbcParameter("", OdbcType.VarChar, 150);
-            }
-            return null;
+            this.ColumnLedgerNumber = this.Columns["a_ledger_number_i"];
+            this.ColumnApNumber = this.Columns["a_ap_number_i"];
+            this.ColumnDetailNumber = this.Columns["a_detail_number_i"];
+            this.ColumnDetailApproved = this.Columns["a_detail_approved_l"];
+            this.ColumnCostCentreCode = this.Columns["a_cost_centre_code_c"];
+            this.ColumnAccountCode = this.Columns["a_account_code_c"];
+            this.ColumnItemRef = this.Columns["a_item_ref_c"];
+            this.ColumnNarrative = this.Columns["a_narrative_c"];
+            this.ColumnAmount = this.Columns["a_amount_n"];
+            this.ColumnApprovalDate = this.Columns["a_approval_date_d"];
+            this.ColumnDateCreated = this.Columns["s_date_created_d"];
+            this.ColumnCreatedBy = this.Columns["s_created_by_c"];
+            this.ColumnDateModified = this.Columns["s_date_modified_d"];
+            this.ColumnModifiedBy = this.Columns["s_modified_by_c"];
+            this.ColumnModificationId = this.Columns["s_modification_id_c"];
         }
+
+        /// Access a typed row by index
+        public AApDocumentDetailRow this[int i]
+        {
+            get
+            {
+                return ((AApDocumentDetailRow)(this.Rows[i]));
+            }
+        }
+
+        /// create a new typed row
+        public AApDocumentDetailRow NewRowTyped(bool AWithDefaultValues)
+        {
+            AApDocumentDetailRow ret = ((AApDocumentDetailRow)(this.NewRow()));
+            if ((AWithDefaultValues == true))
+            {
+                ret.InitValues();
+            }
+            return ret;
+        }
+
+        /// create a new typed row, always with default values
+        public AApDocumentDetailRow NewRowTyped()
+        {
+            return this.NewRowTyped(true);
+        }
+
+        /// new typed row using DataRowBuilder
+        protected override System.Data.DataRow NewRowFromBuilder(System.Data.DataRowBuilder builder)
+        {
+            return new AApDocumentDetailRow(builder);
+        }
+
+        /// get typed set of changes
+        public AApDocumentDetailTable GetChangesTyped()
+        {
+            return ((AApDocumentDetailTable)(base.GetChangesTypedInternal()));
+        }
+
+        /// get an odbc parameter for the given column
+        public override OdbcParameter CreateOdbcParameter(Int32 AColumnNr)
+        {
+            return CreateOdbcParameter(TableId, AColumnNr);
+        }
+
+        /// get the name of the field in the database for this column
+        protected static string GetLedgerNumberDBName()
+        {
+            return "a_ledger_number_i";
+        }
+
+        /// get character length for column
+        public static short GetLedgerNumberLength()
+        {
+            return -1;
+        }
+
+        /// get the name of the field in the database for this column
+        protected static string GetApNumberDBName()
+        {
+            return "a_ap_number_i";
+        }
+
+        /// get character length for column
+        public static short GetApNumberLength()
+        {
+            return -1;
+        }
+
+        /// get the name of the field in the database for this column
+        protected static string GetDetailNumberDBName()
+        {
+            return "a_detail_number_i";
+        }
+
+        /// get character length for column
+        public static short GetDetailNumberLength()
+        {
+            return -1;
+        }
+
+        /// get the name of the field in the database for this column
+        protected static string GetDetailApprovedDBName()
+        {
+            return "a_detail_approved_l";
+        }
+
+        /// get character length for column
+        public static short GetDetailApprovedLength()
+        {
+            return -1;
+        }
+
+        /// get the name of the field in the database for this column
+        protected static string GetCostCentreCodeDBName()
+        {
+            return "a_cost_centre_code_c";
+        }
+
+        /// get character length for column
+        public static short GetCostCentreCodeLength()
+        {
+            return 24;
+        }
+
+        /// get the name of the field in the database for this column
+        protected static string GetAccountCodeDBName()
+        {
+            return "a_account_code_c";
+        }
+
+        /// get character length for column
+        public static short GetAccountCodeLength()
+        {
+            return 16;
+        }
+
+        /// get the name of the field in the database for this column
+        protected static string GetItemRefDBName()
+        {
+            return "a_item_ref_c";
+        }
+
+        /// get character length for column
+        public static short GetItemRefLength()
+        {
+            return 100;
+        }
+
+        /// get the name of the field in the database for this column
+        protected static string GetNarrativeDBName()
+        {
+            return "a_narrative_c";
+        }
+
+        /// get character length for column
+        public static short GetNarrativeLength()
+        {
+            return 200;
+        }
+
+        /// get the name of the field in the database for this column
+        protected static string GetAmountDBName()
+        {
+            return "a_amount_n";
+        }
+
+        /// get character length for column
+        public static short GetAmountLength()
+        {
+            return 24;
+        }
+
+        /// get the name of the field in the database for this column
+        protected static string GetApprovalDateDBName()
+        {
+            return "a_approval_date_d";
+        }
+
+        /// get character length for column
+        public static short GetApprovalDateLength()
+        {
+            return -1;
+        }
+
+        /// get the name of the field in the database for this column
+        protected static string GetDateCreatedDBName()
+        {
+            return "s_date_created_d";
+        }
+
+        /// get character length for column
+        public static short GetDateCreatedLength()
+        {
+            return -1;
+        }
+
+        /// get the name of the field in the database for this column
+        protected static string GetCreatedByDBName()
+        {
+            return "s_created_by_c";
+        }
+
+        /// get character length for column
+        public static short GetCreatedByLength()
+        {
+            return 20;
+        }
+
+        /// get the name of the field in the database for this column
+        protected static string GetDateModifiedDBName()
+        {
+            return "s_date_modified_d";
+        }
+
+        /// get character length for column
+        public static short GetDateModifiedLength()
+        {
+            return -1;
+        }
+
+        /// get the name of the field in the database for this column
+        protected static string GetModifiedByDBName()
+        {
+            return "s_modified_by_c";
+        }
+
+        /// get character length for column
+        public static short GetModifiedByLength()
+        {
+            return 20;
+        }
+
+        /// get the name of the field in the database for this column
+        protected static string GetModificationIdDBName()
+        {
+            return "s_modification_id_c";
+        }
+
+        /// get character length for column
+        public static short GetModificationIdLength()
+        {
+            return 150;
+        }
+
     }
-    
+
     /// An invoice or credit note consists out of several items, or details. This table contains all these details.
     [Serializable()]
     public class AApDocumentDetailRow : System.Data.DataRow
     {
-        
         private AApDocumentDetailTable myTable;
-        
+
         /// Constructor
-        public AApDocumentDetailRow(System.Data.DataRowBuilder rb) : 
+        public AApDocumentDetailRow(System.Data.DataRowBuilder rb) :
                 base(rb)
         {
             this.myTable = ((AApDocumentDetailTable)(this.Table));
         }
-        
+
         /// Reference to the ledger
         public Int32 LedgerNumber
         {
@@ -4415,14 +3385,14 @@ namespace Ict.Petra.Shared.MFinance.AP.Data
             }
             set
             {
-                if ((this.IsNull(this.myTable.ColumnLedgerNumber) 
+                if ((this.IsNull(this.myTable.ColumnLedgerNumber)
                             || (((Int32)(this[this.myTable.ColumnLedgerNumber])) != value)))
                 {
                     this[this.myTable.ColumnLedgerNumber] = value;
                 }
             }
         }
-        
+
         /// Reference to the document
         public Int32 ApNumber
         {
@@ -4441,14 +3411,14 @@ namespace Ict.Petra.Shared.MFinance.AP.Data
             }
             set
             {
-                if ((this.IsNull(this.myTable.ColumnApNumber) 
+                if ((this.IsNull(this.myTable.ColumnApNumber)
                             || (((Int32)(this[this.myTable.ColumnApNumber])) != value)))
                 {
                     this[this.myTable.ColumnApNumber] = value;
                 }
             }
         }
-        
+
         /// A unique number for this detail for its document.
         public Int32 DetailNumber
         {
@@ -4467,14 +3437,14 @@ namespace Ict.Petra.Shared.MFinance.AP.Data
             }
             set
             {
-                if ((this.IsNull(this.myTable.ColumnDetailNumber) 
+                if ((this.IsNull(this.myTable.ColumnDetailNumber)
                             || (((Int32)(this[this.myTable.ColumnDetailNumber])) != value)))
                 {
                     this[this.myTable.ColumnDetailNumber] = value;
                 }
             }
         }
-        
+
         /// Indicates if this detail has been approved or not.
         public Boolean DetailApproved
         {
@@ -4493,14 +3463,14 @@ namespace Ict.Petra.Shared.MFinance.AP.Data
             }
             set
             {
-                if ((this.IsNull(this.myTable.ColumnDetailApproved) 
+                if ((this.IsNull(this.myTable.ColumnDetailApproved)
                             || (((Boolean)(this[this.myTable.ColumnDetailApproved])) != value)))
                 {
                     this[this.myTable.ColumnDetailApproved] = value;
                 }
             }
         }
-        
+
         /// Reference to the cost centre to use for this detail.
         public String CostCentreCode
         {
@@ -4510,7 +3480,7 @@ namespace Ict.Petra.Shared.MFinance.AP.Data
                 ret = this[this.myTable.ColumnCostCentreCode.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    return String.Empty;
+                    throw new System.Data.StrongTypingException("Error: DB null", null);
                 }
                 else
                 {
@@ -4519,14 +3489,14 @@ namespace Ict.Petra.Shared.MFinance.AP.Data
             }
             set
             {
-                if ((this.IsNull(this.myTable.ColumnCostCentreCode) 
+                if ((this.IsNull(this.myTable.ColumnCostCentreCode)
                             || (((String)(this[this.myTable.ColumnCostCentreCode])) != value)))
                 {
                     this[this.myTable.ColumnCostCentreCode] = value;
                 }
             }
         }
-        
+
         /// Reference to the account to use for this detail
         public String AccountCode
         {
@@ -4536,7 +3506,7 @@ namespace Ict.Petra.Shared.MFinance.AP.Data
                 ret = this[this.myTable.ColumnAccountCode.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    return String.Empty;
+                    throw new System.Data.StrongTypingException("Error: DB null", null);
                 }
                 else
                 {
@@ -4545,14 +3515,14 @@ namespace Ict.Petra.Shared.MFinance.AP.Data
             }
             set
             {
-                if ((this.IsNull(this.myTable.ColumnAccountCode) 
+                if ((this.IsNull(this.myTable.ColumnAccountCode)
                             || (((String)(this[this.myTable.ColumnAccountCode])) != value)))
                 {
                     this[this.myTable.ColumnAccountCode] = value;
                 }
             }
         }
-        
+
         /// Some other reference to the item.
         public String ItemRef
         {
@@ -4562,7 +3532,7 @@ namespace Ict.Petra.Shared.MFinance.AP.Data
                 ret = this[this.myTable.ColumnItemRef.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    return String.Empty;
+                    throw new System.Data.StrongTypingException("Error: DB null", null);
                 }
                 else
                 {
@@ -4571,14 +3541,14 @@ namespace Ict.Petra.Shared.MFinance.AP.Data
             }
             set
             {
-                if ((this.IsNull(this.myTable.ColumnItemRef) 
+                if ((this.IsNull(this.myTable.ColumnItemRef)
                             || (((String)(this[this.myTable.ColumnItemRef])) != value)))
                 {
                     this[this.myTable.ColumnItemRef] = value;
                 }
             }
         }
-        
+
         /// A narrative about what this is.
         public String Narrative
         {
@@ -4588,7 +3558,7 @@ namespace Ict.Petra.Shared.MFinance.AP.Data
                 ret = this[this.myTable.ColumnNarrative.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    return String.Empty;
+                    throw new System.Data.StrongTypingException("Error: DB null", null);
                 }
                 else
                 {
@@ -4597,14 +3567,14 @@ namespace Ict.Petra.Shared.MFinance.AP.Data
             }
             set
             {
-                if ((this.IsNull(this.myTable.ColumnNarrative) 
+                if ((this.IsNull(this.myTable.ColumnNarrative)
                             || (((String)(this[this.myTable.ColumnNarrative])) != value)))
                 {
                     this[this.myTable.ColumnNarrative] = value;
                 }
             }
         }
-        
+
         /// The amount of money this detail is worth.
         public Double Amount
         {
@@ -4623,14 +3593,14 @@ namespace Ict.Petra.Shared.MFinance.AP.Data
             }
             set
             {
-                if ((this.IsNull(this.myTable.ColumnAmount) 
+                if ((this.IsNull(this.myTable.ColumnAmount)
                             || (((Double)(this[this.myTable.ColumnAmount])) != value)))
                 {
                     this[this.myTable.ColumnAmount] = value;
                 }
             }
         }
-        
+
         /// The date when this detail was approved.
         public System.DateTime ApprovalDate
         {
@@ -4649,32 +3619,14 @@ namespace Ict.Petra.Shared.MFinance.AP.Data
             }
             set
             {
-                if ((this.IsNull(this.myTable.ColumnApprovalDate) 
+                if ((this.IsNull(this.myTable.ColumnApprovalDate)
                             || (((System.DateTime)(this[this.myTable.ColumnApprovalDate])) != value)))
                 {
                     this[this.myTable.ColumnApprovalDate] = value;
                 }
             }
         }
-        
-        /// Returns the date value or the minimum date if the date is NULL
-        public System.DateTime ApprovalDateLowNull
-        {
-            get
-            {
-                return TSaveConvert.ObjectToDate(this[this.myTable.ColumnApprovalDate], TNullHandlingEnum.nhReturnLowestDate);
-            }
-        }
-        
-        /// Returns the date value or the maximum date if the date is NULL
-        public System.DateTime ApprovalDateHighNull
-        {
-            get
-            {
-                return TSaveConvert.ObjectToDate(this[this.myTable.ColumnApprovalDate.Ordinal], TNullHandlingEnum.nhReturnHighestDate);
-            }
-        }
-        
+
         /// The date the record was created.
         public System.DateTime DateCreated
         {
@@ -4693,32 +3645,14 @@ namespace Ict.Petra.Shared.MFinance.AP.Data
             }
             set
             {
-                if ((this.IsNull(this.myTable.ColumnDateCreated) 
+                if ((this.IsNull(this.myTable.ColumnDateCreated)
                             || (((System.DateTime)(this[this.myTable.ColumnDateCreated])) != value)))
                 {
                     this[this.myTable.ColumnDateCreated] = value;
                 }
             }
         }
-        
-        /// Returns the date value or the minimum date if the date is NULL
-        public System.DateTime DateCreatedLowNull
-        {
-            get
-            {
-                return TSaveConvert.ObjectToDate(this[this.myTable.ColumnDateCreated], TNullHandlingEnum.nhReturnLowestDate);
-            }
-        }
-        
-        /// Returns the date value or the maximum date if the date is NULL
-        public System.DateTime DateCreatedHighNull
-        {
-            get
-            {
-                return TSaveConvert.ObjectToDate(this[this.myTable.ColumnDateCreated.Ordinal], TNullHandlingEnum.nhReturnHighestDate);
-            }
-        }
-        
+
         /// User ID of who created this record.
         public String CreatedBy
         {
@@ -4728,7 +3662,7 @@ namespace Ict.Petra.Shared.MFinance.AP.Data
                 ret = this[this.myTable.ColumnCreatedBy.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    return String.Empty;
+                    throw new System.Data.StrongTypingException("Error: DB null", null);
                 }
                 else
                 {
@@ -4737,14 +3671,14 @@ namespace Ict.Petra.Shared.MFinance.AP.Data
             }
             set
             {
-                if ((this.IsNull(this.myTable.ColumnCreatedBy) 
+                if ((this.IsNull(this.myTable.ColumnCreatedBy)
                             || (((String)(this[this.myTable.ColumnCreatedBy])) != value)))
                 {
                     this[this.myTable.ColumnCreatedBy] = value;
                 }
             }
         }
-        
+
         /// The date the record was modified.
         public System.DateTime DateModified
         {
@@ -4763,32 +3697,14 @@ namespace Ict.Petra.Shared.MFinance.AP.Data
             }
             set
             {
-                if ((this.IsNull(this.myTable.ColumnDateModified) 
+                if ((this.IsNull(this.myTable.ColumnDateModified)
                             || (((System.DateTime)(this[this.myTable.ColumnDateModified])) != value)))
                 {
                     this[this.myTable.ColumnDateModified] = value;
                 }
             }
         }
-        
-        /// Returns the date value or the minimum date if the date is NULL
-        public System.DateTime DateModifiedLowNull
-        {
-            get
-            {
-                return TSaveConvert.ObjectToDate(this[this.myTable.ColumnDateModified], TNullHandlingEnum.nhReturnLowestDate);
-            }
-        }
-        
-        /// Returns the date value or the maximum date if the date is NULL
-        public System.DateTime DateModifiedHighNull
-        {
-            get
-            {
-                return TSaveConvert.ObjectToDate(this[this.myTable.ColumnDateModified.Ordinal], TNullHandlingEnum.nhReturnHighestDate);
-            }
-        }
-        
+
         /// User ID of who last modified this record.
         public String ModifiedBy
         {
@@ -4798,7 +3714,7 @@ namespace Ict.Petra.Shared.MFinance.AP.Data
                 ret = this[this.myTable.ColumnModifiedBy.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    return String.Empty;
+                    throw new System.Data.StrongTypingException("Error: DB null", null);
                 }
                 else
                 {
@@ -4807,14 +3723,14 @@ namespace Ict.Petra.Shared.MFinance.AP.Data
             }
             set
             {
-                if ((this.IsNull(this.myTable.ColumnModifiedBy) 
+                if ((this.IsNull(this.myTable.ColumnModifiedBy)
                             || (((String)(this[this.myTable.ColumnModifiedBy])) != value)))
                 {
                     this[this.myTable.ColumnModifiedBy] = value;
                 }
             }
         }
-        
+
         /// This identifies the current version of the record.
         public String ModificationId
         {
@@ -4824,7 +3740,7 @@ namespace Ict.Petra.Shared.MFinance.AP.Data
                 ret = this[this.myTable.ColumnModificationId.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    return String.Empty;
+                    throw new System.Data.StrongTypingException("Error: DB null", null);
                 }
                 else
                 {
@@ -4833,14 +3749,14 @@ namespace Ict.Petra.Shared.MFinance.AP.Data
             }
             set
             {
-                if ((this.IsNull(this.myTable.ColumnModificationId) 
+                if ((this.IsNull(this.myTable.ColumnModificationId)
                             || (((String)(this[this.myTable.ColumnModificationId])) != value)))
                 {
                     this[this.myTable.ColumnModificationId] = value;
                 }
             }
         }
-        
+
         /// set default values
         public virtual void InitValues()
         {
@@ -4860,647 +3776,267 @@ namespace Ict.Petra.Shared.MFinance.AP.Data
             this.SetNull(this.myTable.ColumnModifiedBy);
             this.SetNull(this.myTable.ColumnModificationId);
         }
-        
+
+        /// test for NULL value
+        public bool IsLedgerNumberNull()
+        {
+            return this.IsNull(this.myTable.ColumnLedgerNumber);
+        }
+
+        /// assign NULL value
+        public void SetLedgerNumberNull()
+        {
+            this.SetNull(this.myTable.ColumnLedgerNumber);
+        }
+
+        /// test for NULL value
+        public bool IsApNumberNull()
+        {
+            return this.IsNull(this.myTable.ColumnApNumber);
+        }
+
+        /// assign NULL value
+        public void SetApNumberNull()
+        {
+            this.SetNull(this.myTable.ColumnApNumber);
+        }
+
+        /// test for NULL value
+        public bool IsDetailNumberNull()
+        {
+            return this.IsNull(this.myTable.ColumnDetailNumber);
+        }
+
+        /// assign NULL value
+        public void SetDetailNumberNull()
+        {
+            this.SetNull(this.myTable.ColumnDetailNumber);
+        }
+
+        /// test for NULL value
+        public bool IsDetailApprovedNull()
+        {
+            return this.IsNull(this.myTable.ColumnDetailApproved);
+        }
+
+        /// assign NULL value
+        public void SetDetailApprovedNull()
+        {
+            this.SetNull(this.myTable.ColumnDetailApproved);
+        }
+
         /// test for NULL value
         public bool IsCostCentreCodeNull()
         {
             return this.IsNull(this.myTable.ColumnCostCentreCode);
         }
-        
+
         /// assign NULL value
         public void SetCostCentreCodeNull()
         {
             this.SetNull(this.myTable.ColumnCostCentreCode);
         }
-        
+
         /// test for NULL value
         public bool IsAccountCodeNull()
         {
             return this.IsNull(this.myTable.ColumnAccountCode);
         }
-        
+
         /// assign NULL value
         public void SetAccountCodeNull()
         {
             this.SetNull(this.myTable.ColumnAccountCode);
         }
-        
+
         /// test for NULL value
         public bool IsItemRefNull()
         {
             return this.IsNull(this.myTable.ColumnItemRef);
         }
-        
+
         /// assign NULL value
         public void SetItemRefNull()
         {
             this.SetNull(this.myTable.ColumnItemRef);
         }
-        
+
         /// test for NULL value
         public bool IsNarrativeNull()
         {
             return this.IsNull(this.myTable.ColumnNarrative);
         }
-        
+
         /// assign NULL value
         public void SetNarrativeNull()
         {
             this.SetNull(this.myTable.ColumnNarrative);
         }
-        
+
         /// test for NULL value
         public bool IsAmountNull()
         {
             return this.IsNull(this.myTable.ColumnAmount);
         }
-        
+
         /// assign NULL value
         public void SetAmountNull()
         {
             this.SetNull(this.myTable.ColumnAmount);
         }
-        
+
         /// test for NULL value
         public bool IsApprovalDateNull()
         {
             return this.IsNull(this.myTable.ColumnApprovalDate);
         }
-        
+
         /// assign NULL value
         public void SetApprovalDateNull()
         {
             this.SetNull(this.myTable.ColumnApprovalDate);
         }
-        
+
         /// test for NULL value
         public bool IsDateCreatedNull()
         {
             return this.IsNull(this.myTable.ColumnDateCreated);
         }
-        
+
         /// assign NULL value
         public void SetDateCreatedNull()
         {
             this.SetNull(this.myTable.ColumnDateCreated);
         }
-        
+
         /// test for NULL value
         public bool IsCreatedByNull()
         {
             return this.IsNull(this.myTable.ColumnCreatedBy);
         }
-        
+
         /// assign NULL value
         public void SetCreatedByNull()
         {
             this.SetNull(this.myTable.ColumnCreatedBy);
         }
-        
+
         /// test for NULL value
         public bool IsDateModifiedNull()
         {
             return this.IsNull(this.myTable.ColumnDateModified);
         }
-        
+
         /// assign NULL value
         public void SetDateModifiedNull()
         {
             this.SetNull(this.myTable.ColumnDateModified);
         }
-        
+
         /// test for NULL value
         public bool IsModifiedByNull()
         {
             return this.IsNull(this.myTable.ColumnModifiedBy);
         }
-        
+
         /// assign NULL value
         public void SetModifiedByNull()
         {
             this.SetNull(this.myTable.ColumnModifiedBy);
         }
-        
+
         /// test for NULL value
         public bool IsModificationIdNull()
         {
             return this.IsNull(this.myTable.ColumnModificationId);
         }
-        
+
         /// assign NULL value
         public void SetModificationIdNull()
         {
             this.SetNull(this.myTable.ColumnModificationId);
         }
     }
-    
+
     /// Records all payments that have been made against an accounts payable detail.
     [Serializable()]
     public class AApPaymentTable : TTypedDataTable
     {
-        
         /// This is used as a key field in most of the accounting system files
         public DataColumn ColumnLedgerNumber;
-        
         /// Unique number to identify each payment batch.
         public DataColumn ColumnPaymentNumber;
-        
         /// The amount of money that was paid
         public DataColumn ColumnAmount;
-        
         /// The exchange rate to the base currency at the time of payment.
         public DataColumn ColumnExchangeRateToBase;
-        
         /// Date that the payment for an accounts payable was made.
         public DataColumn ColumnPaymentDate;
-        
         /// This is the system user id of the person who made the payment.
         public DataColumn ColumnUserId;
-        
         /// Method that was used to make the payment - cheque, cash, ep, credit card, etc.
         public DataColumn ColumnMethodOfPayment;
-        
         /// The source or reference for the accounts payable payment.  This could be a cheque number.
         public DataColumn ColumnReference;
-        
         /// Bank account from which to make the payment
         public DataColumn ColumnBankAccount;
-        
         /// The date the record was created.
         public DataColumn ColumnDateCreated;
-        
         /// User ID of who created this record.
         public DataColumn ColumnCreatedBy;
-        
         /// The date the record was modified.
         public DataColumn ColumnDateModified;
-        
         /// User ID of who last modified this record.
         public DataColumn ColumnModifiedBy;
-        
         /// This identifies the current version of the record.
         public DataColumn ColumnModificationId;
-        
+
+        private static short TableId = -1;
+
+        private static bool FInitInfoValues = InitInfoValues();
+        private static bool InitInfoValues()
+        {
+            TableInfo.Add(TableId, new TTypedTableInfo(TableId, "AApPayment", "a_ap_payment",
+                new TTypedColumnInfo[] {
+                    new TTypedColumnInfo(0, "LedgerNumber", "a_ledger_number_i", OdbcType.Int, -1, true),
+                    new TTypedColumnInfo(1, "PaymentNumber", "a_payment_number_i", OdbcType.Int, -1, true),
+                    new TTypedColumnInfo(2, "Amount", "a_amount_n", OdbcType.Decimal, 24, false),
+                    new TTypedColumnInfo(3, "ExchangeRateToBase", "a_exchange_rate_to_base_n", OdbcType.Decimal, 24, false),
+                    new TTypedColumnInfo(4, "PaymentDate", "a_payment_date_d", OdbcType.Date, -1, false),
+                    new TTypedColumnInfo(5, "UserId", "s_user_id_c", OdbcType.VarChar, 20, false),
+                    new TTypedColumnInfo(6, "MethodOfPayment", "a_method_of_payment_c", OdbcType.VarChar, 20, false),
+                    new TTypedColumnInfo(7, "Reference", "a_reference_c", OdbcType.VarChar, 100, false),
+                    new TTypedColumnInfo(8, "BankAccount", "a_bank_account_c", OdbcType.VarChar, 16, true),
+                    new TTypedColumnInfo(9, "DateCreated", "s_date_created_d", OdbcType.Date, -1, false),
+                    new TTypedColumnInfo(10, "CreatedBy", "s_created_by_c", OdbcType.VarChar, 20, false),
+                    new TTypedColumnInfo(11, "DateModified", "s_date_modified_d", OdbcType.Date, -1, false),
+                    new TTypedColumnInfo(12, "ModifiedBy", "s_modified_by_c", OdbcType.VarChar, 20, false),
+                    new TTypedColumnInfo(13, "ModificationId", "s_modification_id_c", OdbcType.VarChar, 150, false)
+                },
+                new string[] {
+                    "a_ledger_number_i", "a_payment_number_i"
+                }));
+            return true;
+        }
+
         /// constructor
-        public AApPaymentTable() : 
+        public AApPaymentTable() :
                 base("AApPayment")
         {
         }
-        
+
         /// constructor
-        public AApPaymentTable(string ATablename) : 
+        public AApPaymentTable(string ATablename) :
                 base(ATablename)
         {
         }
-        
+
         /// constructor for serialization
-        public AApPaymentTable(System.Runtime.Serialization.SerializationInfo info, System.Runtime.Serialization.StreamingContext context) : 
+        public AApPaymentTable(System.Runtime.Serialization.SerializationInfo info, System.Runtime.Serialization.StreamingContext context) :
                 base(info, context)
         {
         }
-        
-        /// Access a typed row by index
-        public AApPaymentRow this[int i]
-        {
-            get
-            {
-                return ((AApPaymentRow)(this.Rows[i]));
-            }
-        }
-        
-        /// get the name of the field in the database for this column
-        public static string GetLedgerNumberDBName()
-        {
-            return "a_ledger_number_i";
-        }
-        
-        /// get help text for column
-        public static string GetLedgerNumberHelp()
-        {
-            return "Enter the ledger number";
-        }
-        
-        /// get label of column
-        public static string GetLedgerNumberLabel()
-        {
-            return "Ledger Number";
-        }
-        
-        /// get display format for column
-        public static short GetLedgerNumberLength()
-        {
-            return 4;
-        }
-        
-        /// get the name of the field in the database for this column
-        public static string GetPaymentNumberDBName()
-        {
-            return "a_payment_number_i";
-        }
-        
-        /// get help text for column
-        public static string GetPaymentNumberHelp()
-        {
-            return "Unique number to identify each payment batch.";
-        }
-        
-        /// get label of column
-        public static string GetPaymentNumberLabel()
-        {
-            return "Payment Number";
-        }
-        
-        /// get display format for column
-        public static short GetPaymentNumberLength()
-        {
-            return 6;
-        }
-        
-        /// get the name of the field in the database for this column
-        public static string GetAmountDBName()
-        {
-            return "a_amount_n";
-        }
-        
-        /// get help text for column
-        public static string GetAmountHelp()
-        {
-            return "The amount of money that was paid";
-        }
-        
-        /// get label of column
-        public static string GetAmountLabel()
-        {
-            return "Amount";
-        }
-        
-        /// get display format for column
-        public static short GetAmountLength()
-        {
-            return 19;
-        }
-        
-        /// get the name of the field in the database for this column
-        public static string GetExchangeRateToBaseDBName()
-        {
-            return "a_exchange_rate_to_base_n";
-        }
-        
-        /// get help text for column
-        public static string GetExchangeRateToBaseHelp()
-        {
-            return "The exchange rate to the base currency at the time of payment.";
-        }
-        
-        /// get label of column
-        public static string GetExchangeRateToBaseLabel()
-        {
-            return "Exchange Rate To Base";
-        }
-        
-        /// get display format for column
-        public static short GetExchangeRateToBaseLength()
-        {
-            return 18;
-        }
-        
-        /// get the name of the field in the database for this column
-        public static string GetPaymentDateDBName()
-        {
-            return "a_payment_date_d";
-        }
-        
-        /// get help text for column
-        public static string GetPaymentDateHelp()
-        {
-            return "Enter the date of payment";
-        }
-        
-        /// get label of column
-        public static string GetPaymentDateLabel()
-        {
-            return "Payment Date";
-        }
-        
-        /// get display format for column
-        public static short GetPaymentDateLength()
-        {
-            return 11;
-        }
-        
-        /// get the name of the field in the database for this column
-        public static string GetUserIdDBName()
-        {
-            return "s_user_id_c";
-        }
-        
-        /// get help text for column
-        public static string GetUserIdHelp()
-        {
-            return "This is the system user id of the person who made the payment.";
-        }
-        
-        /// get label of column
-        public static string GetUserIdLabel()
-        {
-            return "User ID";
-        }
-        
-        /// get character length for column
-        public static short GetUserIdLength()
-        {
-            return 10;
-        }
-        
-        /// get the name of the field in the database for this column
-        public static string GetMethodOfPaymentDBName()
-        {
-            return "a_method_of_payment_c";
-        }
-        
-        /// get help text for column
-        public static string GetMethodOfPaymentHelp()
-        {
-            return "Method that was used to make the payment - cheque, cash, ep, credit card, etc.";
-        }
-        
-        /// get label of column
-        public static string GetMethodOfPaymentLabel()
-        {
-            return "Method Of Payment";
-        }
-        
-        /// get character length for column
-        public static short GetMethodOfPaymentLength()
-        {
-            return 10;
-        }
-        
-        /// get the name of the field in the database for this column
-        public static string GetReferenceDBName()
-        {
-            return "a_reference_c";
-        }
-        
-        /// get help text for column
-        public static string GetReferenceHelp()
-        {
-            return "Enter the reference for this accounts payable payment";
-        }
-        
-        /// get label of column
-        public static string GetReferenceLabel()
-        {
-            return "Reference";
-        }
-        
-        /// get character length for column
-        public static short GetReferenceLength()
-        {
-            return 50;
-        }
-        
-        /// get the name of the field in the database for this column
-        public static string GetBankAccountDBName()
-        {
-            return "a_bank_account_c";
-        }
-        
-        /// get help text for column
-        public static string GetBankAccountHelp()
-        {
-            return "Choose the Bank account to make the payment from";
-        }
-        
-        /// get label of column
-        public static string GetBankAccountLabel()
-        {
-            return "Bank Account";
-        }
-        
-        /// get character length for column
-        public static short GetBankAccountLength()
-        {
-            return 8;
-        }
-        
-        /// get the name of the field in the database for this column
-        public static string GetDateCreatedDBName()
-        {
-            return "s_date_created_d";
-        }
-        
-        /// get help text for column
-        public static string GetDateCreatedHelp()
-        {
-            return "The date the record was created.";
-        }
-        
-        /// get label of column
-        public static string GetDateCreatedLabel()
-        {
-            return "Created Date";
-        }
-        
-        /// get display format for column
-        public static short GetDateCreatedLength()
-        {
-            return 11;
-        }
-        
-        /// get the name of the field in the database for this column
-        public static string GetCreatedByDBName()
-        {
-            return "s_created_by_c";
-        }
-        
-        /// get help text for column
-        public static string GetCreatedByHelp()
-        {
-            return "User ID of who created this record.";
-        }
-        
-        /// get label of column
-        public static string GetCreatedByLabel()
-        {
-            return "Created By";
-        }
-        
-        /// get character length for column
-        public static short GetCreatedByLength()
-        {
-            return 10;
-        }
-        
-        /// get the name of the field in the database for this column
-        public static string GetDateModifiedDBName()
-        {
-            return "s_date_modified_d";
-        }
-        
-        /// get help text for column
-        public static string GetDateModifiedHelp()
-        {
-            return "The date the record was modified.";
-        }
-        
-        /// get label of column
-        public static string GetDateModifiedLabel()
-        {
-            return "Modified Date";
-        }
-        
-        /// get display format for column
-        public static short GetDateModifiedLength()
-        {
-            return 11;
-        }
-        
-        /// get the name of the field in the database for this column
-        public static string GetModifiedByDBName()
-        {
-            return "s_modified_by_c";
-        }
-        
-        /// get help text for column
-        public static string GetModifiedByHelp()
-        {
-            return "User ID of who last modified this record.";
-        }
-        
-        /// get label of column
-        public static string GetModifiedByLabel()
-        {
-            return "Modified By";
-        }
-        
-        /// get character length for column
-        public static short GetModifiedByLength()
-        {
-            return 10;
-        }
-        
-        /// get the name of the field in the database for this column
-        public static string GetModificationIdDBName()
-        {
-            return "s_modification_id_c";
-        }
-        
-        /// get help text for column
-        public static string GetModificationIdHelp()
-        {
-            return "This identifies the current version of the record.";
-        }
-        
-        /// get label of column
-        public static string GetModificationIdLabel()
-        {
-            return "";
-        }
-        
-        /// get character length for column
-        public static short GetModificationIdLength()
-        {
-            return 150;
-        }
-        
-        /// CamelCase version of the tablename
-        public static string GetTableName()
-        {
-            return "AApPayment";
-        }
-        
-        /// original name of table in the database
-        public static string GetTableDBName()
-        {
-            return "a_ap_payment";
-        }
-        
-        /// get table label for messages etc
-        public static string GetTableLabel()
-        {
-            return "AP Payment";
-        }
-        
-        /// get the index number of fields that are part of the primary key
-        public static Int32[] GetPrimKeyColumnOrdList()
-        {
-            return new int[] {
-                    0,
-                    1};
-        }
-        
-        /// get the names of the columns
-        public static String[] GetColumnStringList()
-        {
-            return new string[] {
-                    "a_ledger_number_i",
-                    "a_payment_number_i",
-                    "a_amount_n",
-                    "a_exchange_rate_to_base_n",
-                    "a_payment_date_d",
-                    "s_user_id_c",
-                    "a_method_of_payment_c",
-                    "a_reference_c",
-                    "a_bank_account_c",
-                    "s_date_created_d",
-                    "s_created_by_c",
-                    "s_date_modified_d",
-                    "s_modified_by_c",
-                    "s_modification_id_c"};
-        }
-        
-        /// assign columns to properties, set primary key
-        public override void InitVars()
-        {
-            this.ColumnLedgerNumber = this.Columns["a_ledger_number_i"];
-            this.ColumnPaymentNumber = this.Columns["a_payment_number_i"];
-            this.ColumnAmount = this.Columns["a_amount_n"];
-            this.ColumnExchangeRateToBase = this.Columns["a_exchange_rate_to_base_n"];
-            this.ColumnPaymentDate = this.Columns["a_payment_date_d"];
-            this.ColumnUserId = this.Columns["s_user_id_c"];
-            this.ColumnMethodOfPayment = this.Columns["a_method_of_payment_c"];
-            this.ColumnReference = this.Columns["a_reference_c"];
-            this.ColumnBankAccount = this.Columns["a_bank_account_c"];
-            this.ColumnDateCreated = this.Columns["s_date_created_d"];
-            this.ColumnCreatedBy = this.Columns["s_created_by_c"];
-            this.ColumnDateModified = this.Columns["s_date_modified_d"];
-            this.ColumnModifiedBy = this.Columns["s_modified_by_c"];
-            this.ColumnModificationId = this.Columns["s_modification_id_c"];
-            this.PrimaryKey = new System.Data.DataColumn[] {
-                    this.ColumnLedgerNumber,
-                    this.ColumnPaymentNumber};
-        }
-        
-        /// get typed set of changes
-        public AApPaymentTable GetChangesTyped()
-        {
-            return ((AApPaymentTable)(base.GetChangesTypedInternal()));
-        }
-        
-        /// create a new typed row
-        public AApPaymentRow NewRowTyped(bool AWithDefaultValues)
-        {
-            AApPaymentRow ret = ((AApPaymentRow)(this.NewRow()));
-            if ((AWithDefaultValues == true))
-            {
-                ret.InitValues();
-            }
-            return ret;
-        }
-        
-        /// create a new typed row, always with default values
-        public AApPaymentRow NewRowTyped()
-        {
-            return this.NewRowTyped(true);
-        }
-        
-        /// new typed row using DataRowBuilder
-        protected override System.Data.DataRow NewRowFromBuilder(System.Data.DataRowBuilder builder)
-        {
-            return new AApPaymentRow(builder);
-        }
-        
+
         /// create the columns
         protected override void InitClass()
         {
@@ -5519,84 +4055,253 @@ namespace Ict.Petra.Shared.MFinance.AP.Data
             this.Columns.Add(new System.Data.DataColumn("s_modified_by_c", typeof(String)));
             this.Columns.Add(new System.Data.DataColumn("s_modification_id_c", typeof(String)));
         }
-        
-        /// prepare odbc parameters for given column
-        public override OdbcParameter CreateOdbcParameter(DataColumn ACol)
+
+        /// assign columns to properties, set primary key
+        public override void InitVars()
         {
-            if ((ACol == ColumnLedgerNumber))
-            {
-                return new System.Data.Odbc.OdbcParameter("", OdbcType.Int);
-            }
-            if ((ACol == ColumnPaymentNumber))
-            {
-                return new System.Data.Odbc.OdbcParameter("", OdbcType.Int);
-            }
-            if ((ACol == ColumnAmount))
-            {
-                return new System.Data.Odbc.OdbcParameter("", OdbcType.Decimal, 24);
-            }
-            if ((ACol == ColumnExchangeRateToBase))
-            {
-                return new System.Data.Odbc.OdbcParameter("", OdbcType.Decimal, 24);
-            }
-            if ((ACol == ColumnPaymentDate))
-            {
-                return new System.Data.Odbc.OdbcParameter("", OdbcType.Date);
-            }
-            if ((ACol == ColumnUserId))
-            {
-                return new System.Data.Odbc.OdbcParameter("", OdbcType.VarChar, 20);
-            }
-            if ((ACol == ColumnMethodOfPayment))
-            {
-                return new System.Data.Odbc.OdbcParameter("", OdbcType.VarChar, 20);
-            }
-            if ((ACol == ColumnReference))
-            {
-                return new System.Data.Odbc.OdbcParameter("", OdbcType.VarChar, 100);
-            }
-            if ((ACol == ColumnBankAccount))
-            {
-                return new System.Data.Odbc.OdbcParameter("", OdbcType.VarChar, 16);
-            }
-            if ((ACol == ColumnDateCreated))
-            {
-                return new System.Data.Odbc.OdbcParameter("", OdbcType.Date);
-            }
-            if ((ACol == ColumnCreatedBy))
-            {
-                return new System.Data.Odbc.OdbcParameter("", OdbcType.VarChar, 20);
-            }
-            if ((ACol == ColumnDateModified))
-            {
-                return new System.Data.Odbc.OdbcParameter("", OdbcType.Date);
-            }
-            if ((ACol == ColumnModifiedBy))
-            {
-                return new System.Data.Odbc.OdbcParameter("", OdbcType.VarChar, 20);
-            }
-            if ((ACol == ColumnModificationId))
-            {
-                return new System.Data.Odbc.OdbcParameter("", OdbcType.VarChar, 150);
-            }
-            return null;
+            this.ColumnLedgerNumber = this.Columns["a_ledger_number_i"];
+            this.ColumnPaymentNumber = this.Columns["a_payment_number_i"];
+            this.ColumnAmount = this.Columns["a_amount_n"];
+            this.ColumnExchangeRateToBase = this.Columns["a_exchange_rate_to_base_n"];
+            this.ColumnPaymentDate = this.Columns["a_payment_date_d"];
+            this.ColumnUserId = this.Columns["s_user_id_c"];
+            this.ColumnMethodOfPayment = this.Columns["a_method_of_payment_c"];
+            this.ColumnReference = this.Columns["a_reference_c"];
+            this.ColumnBankAccount = this.Columns["a_bank_account_c"];
+            this.ColumnDateCreated = this.Columns["s_date_created_d"];
+            this.ColumnCreatedBy = this.Columns["s_created_by_c"];
+            this.ColumnDateModified = this.Columns["s_date_modified_d"];
+            this.ColumnModifiedBy = this.Columns["s_modified_by_c"];
+            this.ColumnModificationId = this.Columns["s_modification_id_c"];
         }
+
+        /// Access a typed row by index
+        public AApPaymentRow this[int i]
+        {
+            get
+            {
+                return ((AApPaymentRow)(this.Rows[i]));
+            }
+        }
+
+        /// create a new typed row
+        public AApPaymentRow NewRowTyped(bool AWithDefaultValues)
+        {
+            AApPaymentRow ret = ((AApPaymentRow)(this.NewRow()));
+            if ((AWithDefaultValues == true))
+            {
+                ret.InitValues();
+            }
+            return ret;
+        }
+
+        /// create a new typed row, always with default values
+        public AApPaymentRow NewRowTyped()
+        {
+            return this.NewRowTyped(true);
+        }
+
+        /// new typed row using DataRowBuilder
+        protected override System.Data.DataRow NewRowFromBuilder(System.Data.DataRowBuilder builder)
+        {
+            return new AApPaymentRow(builder);
+        }
+
+        /// get typed set of changes
+        public AApPaymentTable GetChangesTyped()
+        {
+            return ((AApPaymentTable)(base.GetChangesTypedInternal()));
+        }
+
+        /// get an odbc parameter for the given column
+        public override OdbcParameter CreateOdbcParameter(Int32 AColumnNr)
+        {
+            return CreateOdbcParameter(TableId, AColumnNr);
+        }
+
+        /// get the name of the field in the database for this column
+        protected static string GetLedgerNumberDBName()
+        {
+            return "a_ledger_number_i";
+        }
+
+        /// get character length for column
+        public static short GetLedgerNumberLength()
+        {
+            return -1;
+        }
+
+        /// get the name of the field in the database for this column
+        protected static string GetPaymentNumberDBName()
+        {
+            return "a_payment_number_i";
+        }
+
+        /// get character length for column
+        public static short GetPaymentNumberLength()
+        {
+            return -1;
+        }
+
+        /// get the name of the field in the database for this column
+        protected static string GetAmountDBName()
+        {
+            return "a_amount_n";
+        }
+
+        /// get character length for column
+        public static short GetAmountLength()
+        {
+            return 24;
+        }
+
+        /// get the name of the field in the database for this column
+        protected static string GetExchangeRateToBaseDBName()
+        {
+            return "a_exchange_rate_to_base_n";
+        }
+
+        /// get character length for column
+        public static short GetExchangeRateToBaseLength()
+        {
+            return 24;
+        }
+
+        /// get the name of the field in the database for this column
+        protected static string GetPaymentDateDBName()
+        {
+            return "a_payment_date_d";
+        }
+
+        /// get character length for column
+        public static short GetPaymentDateLength()
+        {
+            return -1;
+        }
+
+        /// get the name of the field in the database for this column
+        protected static string GetUserIdDBName()
+        {
+            return "s_user_id_c";
+        }
+
+        /// get character length for column
+        public static short GetUserIdLength()
+        {
+            return 20;
+        }
+
+        /// get the name of the field in the database for this column
+        protected static string GetMethodOfPaymentDBName()
+        {
+            return "a_method_of_payment_c";
+        }
+
+        /// get character length for column
+        public static short GetMethodOfPaymentLength()
+        {
+            return 20;
+        }
+
+        /// get the name of the field in the database for this column
+        protected static string GetReferenceDBName()
+        {
+            return "a_reference_c";
+        }
+
+        /// get character length for column
+        public static short GetReferenceLength()
+        {
+            return 100;
+        }
+
+        /// get the name of the field in the database for this column
+        protected static string GetBankAccountDBName()
+        {
+            return "a_bank_account_c";
+        }
+
+        /// get character length for column
+        public static short GetBankAccountLength()
+        {
+            return 16;
+        }
+
+        /// get the name of the field in the database for this column
+        protected static string GetDateCreatedDBName()
+        {
+            return "s_date_created_d";
+        }
+
+        /// get character length for column
+        public static short GetDateCreatedLength()
+        {
+            return -1;
+        }
+
+        /// get the name of the field in the database for this column
+        protected static string GetCreatedByDBName()
+        {
+            return "s_created_by_c";
+        }
+
+        /// get character length for column
+        public static short GetCreatedByLength()
+        {
+            return 20;
+        }
+
+        /// get the name of the field in the database for this column
+        protected static string GetDateModifiedDBName()
+        {
+            return "s_date_modified_d";
+        }
+
+        /// get character length for column
+        public static short GetDateModifiedLength()
+        {
+            return -1;
+        }
+
+        /// get the name of the field in the database for this column
+        protected static string GetModifiedByDBName()
+        {
+            return "s_modified_by_c";
+        }
+
+        /// get character length for column
+        public static short GetModifiedByLength()
+        {
+            return 20;
+        }
+
+        /// get the name of the field in the database for this column
+        protected static string GetModificationIdDBName()
+        {
+            return "s_modification_id_c";
+        }
+
+        /// get character length for column
+        public static short GetModificationIdLength()
+        {
+            return 150;
+        }
+
     }
-    
+
     /// Records all payments that have been made against an accounts payable detail.
     [Serializable()]
     public class AApPaymentRow : System.Data.DataRow
     {
-        
         private AApPaymentTable myTable;
-        
+
         /// Constructor
-        public AApPaymentRow(System.Data.DataRowBuilder rb) : 
+        public AApPaymentRow(System.Data.DataRowBuilder rb) :
                 base(rb)
         {
             this.myTable = ((AApPaymentTable)(this.Table));
         }
-        
+
         /// This is used as a key field in most of the accounting system files
         public Int32 LedgerNumber
         {
@@ -5615,14 +4320,14 @@ namespace Ict.Petra.Shared.MFinance.AP.Data
             }
             set
             {
-                if ((this.IsNull(this.myTable.ColumnLedgerNumber) 
+                if ((this.IsNull(this.myTable.ColumnLedgerNumber)
                             || (((Int32)(this[this.myTable.ColumnLedgerNumber])) != value)))
                 {
                     this[this.myTable.ColumnLedgerNumber] = value;
                 }
             }
         }
-        
+
         /// Unique number to identify each payment batch.
         public Int32 PaymentNumber
         {
@@ -5641,14 +4346,14 @@ namespace Ict.Petra.Shared.MFinance.AP.Data
             }
             set
             {
-                if ((this.IsNull(this.myTable.ColumnPaymentNumber) 
+                if ((this.IsNull(this.myTable.ColumnPaymentNumber)
                             || (((Int32)(this[this.myTable.ColumnPaymentNumber])) != value)))
                 {
                     this[this.myTable.ColumnPaymentNumber] = value;
                 }
             }
         }
-        
+
         /// The amount of money that was paid
         public Double Amount
         {
@@ -5667,14 +4372,14 @@ namespace Ict.Petra.Shared.MFinance.AP.Data
             }
             set
             {
-                if ((this.IsNull(this.myTable.ColumnAmount) 
+                if ((this.IsNull(this.myTable.ColumnAmount)
                             || (((Double)(this[this.myTable.ColumnAmount])) != value)))
                 {
                     this[this.myTable.ColumnAmount] = value;
                 }
             }
         }
-        
+
         /// The exchange rate to the base currency at the time of payment.
         public Double ExchangeRateToBase
         {
@@ -5693,14 +4398,14 @@ namespace Ict.Petra.Shared.MFinance.AP.Data
             }
             set
             {
-                if ((this.IsNull(this.myTable.ColumnExchangeRateToBase) 
+                if ((this.IsNull(this.myTable.ColumnExchangeRateToBase)
                             || (((Double)(this[this.myTable.ColumnExchangeRateToBase])) != value)))
                 {
                     this[this.myTable.ColumnExchangeRateToBase] = value;
                 }
             }
         }
-        
+
         /// Date that the payment for an accounts payable was made.
         public System.DateTime PaymentDate
         {
@@ -5719,32 +4424,14 @@ namespace Ict.Petra.Shared.MFinance.AP.Data
             }
             set
             {
-                if ((this.IsNull(this.myTable.ColumnPaymentDate) 
+                if ((this.IsNull(this.myTable.ColumnPaymentDate)
                             || (((System.DateTime)(this[this.myTable.ColumnPaymentDate])) != value)))
                 {
                     this[this.myTable.ColumnPaymentDate] = value;
                 }
             }
         }
-        
-        /// Returns the date value or the minimum date if the date is NULL
-        public System.DateTime PaymentDateLowNull
-        {
-            get
-            {
-                return TSaveConvert.ObjectToDate(this[this.myTable.ColumnPaymentDate], TNullHandlingEnum.nhReturnLowestDate);
-            }
-        }
-        
-        /// Returns the date value or the maximum date if the date is NULL
-        public System.DateTime PaymentDateHighNull
-        {
-            get
-            {
-                return TSaveConvert.ObjectToDate(this[this.myTable.ColumnPaymentDate.Ordinal], TNullHandlingEnum.nhReturnHighestDate);
-            }
-        }
-        
+
         /// This is the system user id of the person who made the payment.
         public String UserId
         {
@@ -5754,7 +4441,7 @@ namespace Ict.Petra.Shared.MFinance.AP.Data
                 ret = this[this.myTable.ColumnUserId.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    return String.Empty;
+                    throw new System.Data.StrongTypingException("Error: DB null", null);
                 }
                 else
                 {
@@ -5763,14 +4450,14 @@ namespace Ict.Petra.Shared.MFinance.AP.Data
             }
             set
             {
-                if ((this.IsNull(this.myTable.ColumnUserId) 
+                if ((this.IsNull(this.myTable.ColumnUserId)
                             || (((String)(this[this.myTable.ColumnUserId])) != value)))
                 {
                     this[this.myTable.ColumnUserId] = value;
                 }
             }
         }
-        
+
         /// Method that was used to make the payment - cheque, cash, ep, credit card, etc.
         public String MethodOfPayment
         {
@@ -5780,7 +4467,7 @@ namespace Ict.Petra.Shared.MFinance.AP.Data
                 ret = this[this.myTable.ColumnMethodOfPayment.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    return String.Empty;
+                    throw new System.Data.StrongTypingException("Error: DB null", null);
                 }
                 else
                 {
@@ -5789,14 +4476,14 @@ namespace Ict.Petra.Shared.MFinance.AP.Data
             }
             set
             {
-                if ((this.IsNull(this.myTable.ColumnMethodOfPayment) 
+                if ((this.IsNull(this.myTable.ColumnMethodOfPayment)
                             || (((String)(this[this.myTable.ColumnMethodOfPayment])) != value)))
                 {
                     this[this.myTable.ColumnMethodOfPayment] = value;
                 }
             }
         }
-        
+
         /// The source or reference for the accounts payable payment.  This could be a cheque number.
         public String Reference
         {
@@ -5806,7 +4493,7 @@ namespace Ict.Petra.Shared.MFinance.AP.Data
                 ret = this[this.myTable.ColumnReference.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    return String.Empty;
+                    throw new System.Data.StrongTypingException("Error: DB null", null);
                 }
                 else
                 {
@@ -5815,14 +4502,14 @@ namespace Ict.Petra.Shared.MFinance.AP.Data
             }
             set
             {
-                if ((this.IsNull(this.myTable.ColumnReference) 
+                if ((this.IsNull(this.myTable.ColumnReference)
                             || (((String)(this[this.myTable.ColumnReference])) != value)))
                 {
                     this[this.myTable.ColumnReference] = value;
                 }
             }
         }
-        
+
         /// Bank account from which to make the payment
         public String BankAccount
         {
@@ -5832,7 +4519,7 @@ namespace Ict.Petra.Shared.MFinance.AP.Data
                 ret = this[this.myTable.ColumnBankAccount.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    return String.Empty;
+                    throw new System.Data.StrongTypingException("Error: DB null", null);
                 }
                 else
                 {
@@ -5841,14 +4528,14 @@ namespace Ict.Petra.Shared.MFinance.AP.Data
             }
             set
             {
-                if ((this.IsNull(this.myTable.ColumnBankAccount) 
+                if ((this.IsNull(this.myTable.ColumnBankAccount)
                             || (((String)(this[this.myTable.ColumnBankAccount])) != value)))
                 {
                     this[this.myTable.ColumnBankAccount] = value;
                 }
             }
         }
-        
+
         /// The date the record was created.
         public System.DateTime DateCreated
         {
@@ -5867,32 +4554,14 @@ namespace Ict.Petra.Shared.MFinance.AP.Data
             }
             set
             {
-                if ((this.IsNull(this.myTable.ColumnDateCreated) 
+                if ((this.IsNull(this.myTable.ColumnDateCreated)
                             || (((System.DateTime)(this[this.myTable.ColumnDateCreated])) != value)))
                 {
                     this[this.myTable.ColumnDateCreated] = value;
                 }
             }
         }
-        
-        /// Returns the date value or the minimum date if the date is NULL
-        public System.DateTime DateCreatedLowNull
-        {
-            get
-            {
-                return TSaveConvert.ObjectToDate(this[this.myTable.ColumnDateCreated], TNullHandlingEnum.nhReturnLowestDate);
-            }
-        }
-        
-        /// Returns the date value or the maximum date if the date is NULL
-        public System.DateTime DateCreatedHighNull
-        {
-            get
-            {
-                return TSaveConvert.ObjectToDate(this[this.myTable.ColumnDateCreated.Ordinal], TNullHandlingEnum.nhReturnHighestDate);
-            }
-        }
-        
+
         /// User ID of who created this record.
         public String CreatedBy
         {
@@ -5902,7 +4571,7 @@ namespace Ict.Petra.Shared.MFinance.AP.Data
                 ret = this[this.myTable.ColumnCreatedBy.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    return String.Empty;
+                    throw new System.Data.StrongTypingException("Error: DB null", null);
                 }
                 else
                 {
@@ -5911,14 +4580,14 @@ namespace Ict.Petra.Shared.MFinance.AP.Data
             }
             set
             {
-                if ((this.IsNull(this.myTable.ColumnCreatedBy) 
+                if ((this.IsNull(this.myTable.ColumnCreatedBy)
                             || (((String)(this[this.myTable.ColumnCreatedBy])) != value)))
                 {
                     this[this.myTable.ColumnCreatedBy] = value;
                 }
             }
         }
-        
+
         /// The date the record was modified.
         public System.DateTime DateModified
         {
@@ -5937,32 +4606,14 @@ namespace Ict.Petra.Shared.MFinance.AP.Data
             }
             set
             {
-                if ((this.IsNull(this.myTable.ColumnDateModified) 
+                if ((this.IsNull(this.myTable.ColumnDateModified)
                             || (((System.DateTime)(this[this.myTable.ColumnDateModified])) != value)))
                 {
                     this[this.myTable.ColumnDateModified] = value;
                 }
             }
         }
-        
-        /// Returns the date value or the minimum date if the date is NULL
-        public System.DateTime DateModifiedLowNull
-        {
-            get
-            {
-                return TSaveConvert.ObjectToDate(this[this.myTable.ColumnDateModified], TNullHandlingEnum.nhReturnLowestDate);
-            }
-        }
-        
-        /// Returns the date value or the maximum date if the date is NULL
-        public System.DateTime DateModifiedHighNull
-        {
-            get
-            {
-                return TSaveConvert.ObjectToDate(this[this.myTable.ColumnDateModified.Ordinal], TNullHandlingEnum.nhReturnHighestDate);
-            }
-        }
-        
+
         /// User ID of who last modified this record.
         public String ModifiedBy
         {
@@ -5972,7 +4623,7 @@ namespace Ict.Petra.Shared.MFinance.AP.Data
                 ret = this[this.myTable.ColumnModifiedBy.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    return String.Empty;
+                    throw new System.Data.StrongTypingException("Error: DB null", null);
                 }
                 else
                 {
@@ -5981,14 +4632,14 @@ namespace Ict.Petra.Shared.MFinance.AP.Data
             }
             set
             {
-                if ((this.IsNull(this.myTable.ColumnModifiedBy) 
+                if ((this.IsNull(this.myTable.ColumnModifiedBy)
                             || (((String)(this[this.myTable.ColumnModifiedBy])) != value)))
                 {
                     this[this.myTable.ColumnModifiedBy] = value;
                 }
             }
         }
-        
+
         /// This identifies the current version of the record.
         public String ModificationId
         {
@@ -5998,7 +4649,7 @@ namespace Ict.Petra.Shared.MFinance.AP.Data
                 ret = this[this.myTable.ColumnModificationId.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    return String.Empty;
+                    throw new System.Data.StrongTypingException("Error: DB null", null);
                 }
                 else
                 {
@@ -6007,14 +4658,14 @@ namespace Ict.Petra.Shared.MFinance.AP.Data
             }
             set
             {
-                if ((this.IsNull(this.myTable.ColumnModificationId) 
+                if ((this.IsNull(this.myTable.ColumnModificationId)
                             || (((String)(this[this.myTable.ColumnModificationId])) != value)))
                 {
                     this[this.myTable.ColumnModificationId] = value;
                 }
             }
         }
-        
+
         /// set default values
         public virtual void InitValues()
         {
@@ -6033,504 +4684,240 @@ namespace Ict.Petra.Shared.MFinance.AP.Data
             this.SetNull(this.myTable.ColumnModifiedBy);
             this.SetNull(this.myTable.ColumnModificationId);
         }
-        
+
+        /// test for NULL value
+        public bool IsLedgerNumberNull()
+        {
+            return this.IsNull(this.myTable.ColumnLedgerNumber);
+        }
+
+        /// assign NULL value
+        public void SetLedgerNumberNull()
+        {
+            this.SetNull(this.myTable.ColumnLedgerNumber);
+        }
+
+        /// test for NULL value
+        public bool IsPaymentNumberNull()
+        {
+            return this.IsNull(this.myTable.ColumnPaymentNumber);
+        }
+
+        /// assign NULL value
+        public void SetPaymentNumberNull()
+        {
+            this.SetNull(this.myTable.ColumnPaymentNumber);
+        }
+
         /// test for NULL value
         public bool IsAmountNull()
         {
             return this.IsNull(this.myTable.ColumnAmount);
         }
-        
+
         /// assign NULL value
         public void SetAmountNull()
         {
             this.SetNull(this.myTable.ColumnAmount);
         }
-        
+
         /// test for NULL value
         public bool IsExchangeRateToBaseNull()
         {
             return this.IsNull(this.myTable.ColumnExchangeRateToBase);
         }
-        
+
         /// assign NULL value
         public void SetExchangeRateToBaseNull()
         {
             this.SetNull(this.myTable.ColumnExchangeRateToBase);
         }
-        
+
         /// test for NULL value
         public bool IsPaymentDateNull()
         {
             return this.IsNull(this.myTable.ColumnPaymentDate);
         }
-        
+
         /// assign NULL value
         public void SetPaymentDateNull()
         {
             this.SetNull(this.myTable.ColumnPaymentDate);
         }
-        
+
         /// test for NULL value
         public bool IsUserIdNull()
         {
             return this.IsNull(this.myTable.ColumnUserId);
         }
-        
+
         /// assign NULL value
         public void SetUserIdNull()
         {
             this.SetNull(this.myTable.ColumnUserId);
         }
-        
+
         /// test for NULL value
         public bool IsMethodOfPaymentNull()
         {
             return this.IsNull(this.myTable.ColumnMethodOfPayment);
         }
-        
+
         /// assign NULL value
         public void SetMethodOfPaymentNull()
         {
             this.SetNull(this.myTable.ColumnMethodOfPayment);
         }
-        
+
         /// test for NULL value
         public bool IsReferenceNull()
         {
             return this.IsNull(this.myTable.ColumnReference);
         }
-        
+
         /// assign NULL value
         public void SetReferenceNull()
         {
             this.SetNull(this.myTable.ColumnReference);
         }
-        
+
+        /// test for NULL value
+        public bool IsBankAccountNull()
+        {
+            return this.IsNull(this.myTable.ColumnBankAccount);
+        }
+
+        /// assign NULL value
+        public void SetBankAccountNull()
+        {
+            this.SetNull(this.myTable.ColumnBankAccount);
+        }
+
         /// test for NULL value
         public bool IsDateCreatedNull()
         {
             return this.IsNull(this.myTable.ColumnDateCreated);
         }
-        
+
         /// assign NULL value
         public void SetDateCreatedNull()
         {
             this.SetNull(this.myTable.ColumnDateCreated);
         }
-        
+
         /// test for NULL value
         public bool IsCreatedByNull()
         {
             return this.IsNull(this.myTable.ColumnCreatedBy);
         }
-        
+
         /// assign NULL value
         public void SetCreatedByNull()
         {
             this.SetNull(this.myTable.ColumnCreatedBy);
         }
-        
+
         /// test for NULL value
         public bool IsDateModifiedNull()
         {
             return this.IsNull(this.myTable.ColumnDateModified);
         }
-        
+
         /// assign NULL value
         public void SetDateModifiedNull()
         {
             this.SetNull(this.myTable.ColumnDateModified);
         }
-        
+
         /// test for NULL value
         public bool IsModifiedByNull()
         {
             return this.IsNull(this.myTable.ColumnModifiedBy);
         }
-        
+
         /// assign NULL value
         public void SetModifiedByNull()
         {
             this.SetNull(this.myTable.ColumnModifiedBy);
         }
-        
+
         /// test for NULL value
         public bool IsModificationIdNull()
         {
             return this.IsNull(this.myTable.ColumnModificationId);
         }
-        
+
         /// assign NULL value
         public void SetModificationIdNull()
         {
             this.SetNull(this.myTable.ColumnModificationId);
         }
     }
-    
+
     /// This table links the different payments to actual invoices and credit notes.
     [Serializable()]
     public class AApDocumentPaymentTable : TTypedDataTable
     {
-        
         /// The ledger that the attribute value is associated with.
         public DataColumn ColumnLedgerNumber;
-        
         /// Accounts Payable Sequence Number
         public DataColumn ColumnApNumber;
-        
         /// Unique number to identify each payment batch.
         public DataColumn ColumnPaymentNumber;
-        
         /// The amount of money that was paid
         public DataColumn ColumnAmount;
-        
         /// The date the record was created.
         public DataColumn ColumnDateCreated;
-        
         /// User ID of who created this record.
         public DataColumn ColumnCreatedBy;
-        
         /// The date the record was modified.
         public DataColumn ColumnDateModified;
-        
         /// User ID of who last modified this record.
         public DataColumn ColumnModifiedBy;
-        
         /// This identifies the current version of the record.
         public DataColumn ColumnModificationId;
-        
+
+        private static short TableId = -1;
+
+        private static bool FInitInfoValues = InitInfoValues();
+        private static bool InitInfoValues()
+        {
+            TableInfo.Add(TableId, new TTypedTableInfo(TableId, "AApDocumentPayment", "a_ap_document_payment",
+                new TTypedColumnInfo[] {
+                    new TTypedColumnInfo(0, "LedgerNumber", "a_ledger_number_i", OdbcType.Int, -1, true),
+                    new TTypedColumnInfo(1, "ApNumber", "a_ap_number_i", OdbcType.Int, -1, true),
+                    new TTypedColumnInfo(2, "PaymentNumber", "a_payment_number_i", OdbcType.Int, -1, true),
+                    new TTypedColumnInfo(3, "Amount", "a_amount_n", OdbcType.Decimal, 24, false),
+                    new TTypedColumnInfo(4, "DateCreated", "s_date_created_d", OdbcType.Date, -1, false),
+                    new TTypedColumnInfo(5, "CreatedBy", "s_created_by_c", OdbcType.VarChar, 20, false),
+                    new TTypedColumnInfo(6, "DateModified", "s_date_modified_d", OdbcType.Date, -1, false),
+                    new TTypedColumnInfo(7, "ModifiedBy", "s_modified_by_c", OdbcType.VarChar, 20, false),
+                    new TTypedColumnInfo(8, "ModificationId", "s_modification_id_c", OdbcType.VarChar, 150, false)
+                },
+                new string[] {
+                    "a_ledger_number_i", "a_ap_number_i", "a_payment_number_i"
+                }));
+            return true;
+        }
+
         /// constructor
-        public AApDocumentPaymentTable() : 
+        public AApDocumentPaymentTable() :
                 base("AApDocumentPayment")
         {
         }
-        
+
         /// constructor
-        public AApDocumentPaymentTable(string ATablename) : 
+        public AApDocumentPaymentTable(string ATablename) :
                 base(ATablename)
         {
         }
-        
+
         /// constructor for serialization
-        public AApDocumentPaymentTable(System.Runtime.Serialization.SerializationInfo info, System.Runtime.Serialization.StreamingContext context) : 
+        public AApDocumentPaymentTable(System.Runtime.Serialization.SerializationInfo info, System.Runtime.Serialization.StreamingContext context) :
                 base(info, context)
         {
         }
-        
-        /// Access a typed row by index
-        public AApDocumentPaymentRow this[int i]
-        {
-            get
-            {
-                return ((AApDocumentPaymentRow)(this.Rows[i]));
-            }
-        }
-        
-        /// get the name of the field in the database for this column
-        public static string GetLedgerNumberDBName()
-        {
-            return "a_ledger_number_i";
-        }
-        
-        /// get help text for column
-        public static string GetLedgerNumberHelp()
-        {
-            return "Enter the ledger number";
-        }
-        
-        /// get label of column
-        public static string GetLedgerNumberLabel()
-        {
-            return "Ledger Number";
-        }
-        
-        /// get display format for column
-        public static short GetLedgerNumberLength()
-        {
-            return 4;
-        }
-        
-        /// get the name of the field in the database for this column
-        public static string GetApNumberDBName()
-        {
-            return "a_ap_number_i";
-        }
-        
-        /// get help text for column
-        public static string GetApNumberHelp()
-        {
-            return "Accounts Payable Sequence Number";
-        }
-        
-        /// get label of column
-        public static string GetApNumberLabel()
-        {
-            return "AP Number";
-        }
-        
-        /// get display format for column
-        public static short GetApNumberLength()
-        {
-            return 5;
-        }
-        
-        /// get the name of the field in the database for this column
-        public static string GetPaymentNumberDBName()
-        {
-            return "a_payment_number_i";
-        }
-        
-        /// get help text for column
-        public static string GetPaymentNumberHelp()
-        {
-            return "Unique number to identify each payment batch.";
-        }
-        
-        /// get label of column
-        public static string GetPaymentNumberLabel()
-        {
-            return "Payment Number";
-        }
-        
-        /// get display format for column
-        public static short GetPaymentNumberLength()
-        {
-            return 6;
-        }
-        
-        /// get the name of the field in the database for this column
-        public static string GetAmountDBName()
-        {
-            return "a_amount_n";
-        }
-        
-        /// get help text for column
-        public static string GetAmountHelp()
-        {
-            return "The amount of money that was paid";
-        }
-        
-        /// get label of column
-        public static string GetAmountLabel()
-        {
-            return "Amount";
-        }
-        
-        /// get display format for column
-        public static short GetAmountLength()
-        {
-            return 19;
-        }
-        
-        /// get the name of the field in the database for this column
-        public static string GetDateCreatedDBName()
-        {
-            return "s_date_created_d";
-        }
-        
-        /// get help text for column
-        public static string GetDateCreatedHelp()
-        {
-            return "The date the record was created.";
-        }
-        
-        /// get label of column
-        public static string GetDateCreatedLabel()
-        {
-            return "Created Date";
-        }
-        
-        /// get display format for column
-        public static short GetDateCreatedLength()
-        {
-            return 11;
-        }
-        
-        /// get the name of the field in the database for this column
-        public static string GetCreatedByDBName()
-        {
-            return "s_created_by_c";
-        }
-        
-        /// get help text for column
-        public static string GetCreatedByHelp()
-        {
-            return "User ID of who created this record.";
-        }
-        
-        /// get label of column
-        public static string GetCreatedByLabel()
-        {
-            return "Created By";
-        }
-        
-        /// get character length for column
-        public static short GetCreatedByLength()
-        {
-            return 10;
-        }
-        
-        /// get the name of the field in the database for this column
-        public static string GetDateModifiedDBName()
-        {
-            return "s_date_modified_d";
-        }
-        
-        /// get help text for column
-        public static string GetDateModifiedHelp()
-        {
-            return "The date the record was modified.";
-        }
-        
-        /// get label of column
-        public static string GetDateModifiedLabel()
-        {
-            return "Modified Date";
-        }
-        
-        /// get display format for column
-        public static short GetDateModifiedLength()
-        {
-            return 11;
-        }
-        
-        /// get the name of the field in the database for this column
-        public static string GetModifiedByDBName()
-        {
-            return "s_modified_by_c";
-        }
-        
-        /// get help text for column
-        public static string GetModifiedByHelp()
-        {
-            return "User ID of who last modified this record.";
-        }
-        
-        /// get label of column
-        public static string GetModifiedByLabel()
-        {
-            return "Modified By";
-        }
-        
-        /// get character length for column
-        public static short GetModifiedByLength()
-        {
-            return 10;
-        }
-        
-        /// get the name of the field in the database for this column
-        public static string GetModificationIdDBName()
-        {
-            return "s_modification_id_c";
-        }
-        
-        /// get help text for column
-        public static string GetModificationIdHelp()
-        {
-            return "This identifies the current version of the record.";
-        }
-        
-        /// get label of column
-        public static string GetModificationIdLabel()
-        {
-            return "";
-        }
-        
-        /// get character length for column
-        public static short GetModificationIdLength()
-        {
-            return 150;
-        }
-        
-        /// CamelCase version of the tablename
-        public static string GetTableName()
-        {
-            return "AApDocumentPayment";
-        }
-        
-        /// original name of table in the database
-        public static string GetTableDBName()
-        {
-            return "a_ap_document_payment";
-        }
-        
-        /// get table label for messages etc
-        public static string GetTableLabel()
-        {
-            return "AP Document Payment";
-        }
-        
-        /// get the index number of fields that are part of the primary key
-        public static Int32[] GetPrimKeyColumnOrdList()
-        {
-            return new int[] {
-                    0,
-                    1,
-                    2};
-        }
-        
-        /// get the names of the columns
-        public static String[] GetColumnStringList()
-        {
-            return new string[] {
-                    "a_ledger_number_i",
-                    "a_ap_number_i",
-                    "a_payment_number_i",
-                    "a_amount_n",
-                    "s_date_created_d",
-                    "s_created_by_c",
-                    "s_date_modified_d",
-                    "s_modified_by_c",
-                    "s_modification_id_c"};
-        }
-        
-        /// assign columns to properties, set primary key
-        public override void InitVars()
-        {
-            this.ColumnLedgerNumber = this.Columns["a_ledger_number_i"];
-            this.ColumnApNumber = this.Columns["a_ap_number_i"];
-            this.ColumnPaymentNumber = this.Columns["a_payment_number_i"];
-            this.ColumnAmount = this.Columns["a_amount_n"];
-            this.ColumnDateCreated = this.Columns["s_date_created_d"];
-            this.ColumnCreatedBy = this.Columns["s_created_by_c"];
-            this.ColumnDateModified = this.Columns["s_date_modified_d"];
-            this.ColumnModifiedBy = this.Columns["s_modified_by_c"];
-            this.ColumnModificationId = this.Columns["s_modification_id_c"];
-            this.PrimaryKey = new System.Data.DataColumn[] {
-                    this.ColumnLedgerNumber,
-                    this.ColumnApNumber,
-                    this.ColumnPaymentNumber};
-        }
-        
-        /// get typed set of changes
-        public AApDocumentPaymentTable GetChangesTyped()
-        {
-            return ((AApDocumentPaymentTable)(base.GetChangesTypedInternal()));
-        }
-        
-        /// create a new typed row
-        public AApDocumentPaymentRow NewRowTyped(bool AWithDefaultValues)
-        {
-            AApDocumentPaymentRow ret = ((AApDocumentPaymentRow)(this.NewRow()));
-            if ((AWithDefaultValues == true))
-            {
-                ret.InitValues();
-            }
-            return ret;
-        }
-        
-        /// create a new typed row, always with default values
-        public AApDocumentPaymentRow NewRowTyped()
-        {
-            return this.NewRowTyped(true);
-        }
-        
-        /// new typed row using DataRowBuilder
-        protected override System.Data.DataRow NewRowFromBuilder(System.Data.DataRowBuilder builder)
-        {
-            return new AApDocumentPaymentRow(builder);
-        }
-        
+
         /// create the columns
         protected override void InitClass()
         {
@@ -6544,64 +4931,188 @@ namespace Ict.Petra.Shared.MFinance.AP.Data
             this.Columns.Add(new System.Data.DataColumn("s_modified_by_c", typeof(String)));
             this.Columns.Add(new System.Data.DataColumn("s_modification_id_c", typeof(String)));
         }
-        
-        /// prepare odbc parameters for given column
-        public override OdbcParameter CreateOdbcParameter(DataColumn ACol)
+
+        /// assign columns to properties, set primary key
+        public override void InitVars()
         {
-            if ((ACol == ColumnLedgerNumber))
-            {
-                return new System.Data.Odbc.OdbcParameter("", OdbcType.Int);
-            }
-            if ((ACol == ColumnApNumber))
-            {
-                return new System.Data.Odbc.OdbcParameter("", OdbcType.Int);
-            }
-            if ((ACol == ColumnPaymentNumber))
-            {
-                return new System.Data.Odbc.OdbcParameter("", OdbcType.Int);
-            }
-            if ((ACol == ColumnAmount))
-            {
-                return new System.Data.Odbc.OdbcParameter("", OdbcType.Decimal, 24);
-            }
-            if ((ACol == ColumnDateCreated))
-            {
-                return new System.Data.Odbc.OdbcParameter("", OdbcType.Date);
-            }
-            if ((ACol == ColumnCreatedBy))
-            {
-                return new System.Data.Odbc.OdbcParameter("", OdbcType.VarChar, 20);
-            }
-            if ((ACol == ColumnDateModified))
-            {
-                return new System.Data.Odbc.OdbcParameter("", OdbcType.Date);
-            }
-            if ((ACol == ColumnModifiedBy))
-            {
-                return new System.Data.Odbc.OdbcParameter("", OdbcType.VarChar, 20);
-            }
-            if ((ACol == ColumnModificationId))
-            {
-                return new System.Data.Odbc.OdbcParameter("", OdbcType.VarChar, 150);
-            }
-            return null;
+            this.ColumnLedgerNumber = this.Columns["a_ledger_number_i"];
+            this.ColumnApNumber = this.Columns["a_ap_number_i"];
+            this.ColumnPaymentNumber = this.Columns["a_payment_number_i"];
+            this.ColumnAmount = this.Columns["a_amount_n"];
+            this.ColumnDateCreated = this.Columns["s_date_created_d"];
+            this.ColumnCreatedBy = this.Columns["s_created_by_c"];
+            this.ColumnDateModified = this.Columns["s_date_modified_d"];
+            this.ColumnModifiedBy = this.Columns["s_modified_by_c"];
+            this.ColumnModificationId = this.Columns["s_modification_id_c"];
         }
+
+        /// Access a typed row by index
+        public AApDocumentPaymentRow this[int i]
+        {
+            get
+            {
+                return ((AApDocumentPaymentRow)(this.Rows[i]));
+            }
+        }
+
+        /// create a new typed row
+        public AApDocumentPaymentRow NewRowTyped(bool AWithDefaultValues)
+        {
+            AApDocumentPaymentRow ret = ((AApDocumentPaymentRow)(this.NewRow()));
+            if ((AWithDefaultValues == true))
+            {
+                ret.InitValues();
+            }
+            return ret;
+        }
+
+        /// create a new typed row, always with default values
+        public AApDocumentPaymentRow NewRowTyped()
+        {
+            return this.NewRowTyped(true);
+        }
+
+        /// new typed row using DataRowBuilder
+        protected override System.Data.DataRow NewRowFromBuilder(System.Data.DataRowBuilder builder)
+        {
+            return new AApDocumentPaymentRow(builder);
+        }
+
+        /// get typed set of changes
+        public AApDocumentPaymentTable GetChangesTyped()
+        {
+            return ((AApDocumentPaymentTable)(base.GetChangesTypedInternal()));
+        }
+
+        /// get an odbc parameter for the given column
+        public override OdbcParameter CreateOdbcParameter(Int32 AColumnNr)
+        {
+            return CreateOdbcParameter(TableId, AColumnNr);
+        }
+
+        /// get the name of the field in the database for this column
+        protected static string GetLedgerNumberDBName()
+        {
+            return "a_ledger_number_i";
+        }
+
+        /// get character length for column
+        public static short GetLedgerNumberLength()
+        {
+            return -1;
+        }
+
+        /// get the name of the field in the database for this column
+        protected static string GetApNumberDBName()
+        {
+            return "a_ap_number_i";
+        }
+
+        /// get character length for column
+        public static short GetApNumberLength()
+        {
+            return -1;
+        }
+
+        /// get the name of the field in the database for this column
+        protected static string GetPaymentNumberDBName()
+        {
+            return "a_payment_number_i";
+        }
+
+        /// get character length for column
+        public static short GetPaymentNumberLength()
+        {
+            return -1;
+        }
+
+        /// get the name of the field in the database for this column
+        protected static string GetAmountDBName()
+        {
+            return "a_amount_n";
+        }
+
+        /// get character length for column
+        public static short GetAmountLength()
+        {
+            return 24;
+        }
+
+        /// get the name of the field in the database for this column
+        protected static string GetDateCreatedDBName()
+        {
+            return "s_date_created_d";
+        }
+
+        /// get character length for column
+        public static short GetDateCreatedLength()
+        {
+            return -1;
+        }
+
+        /// get the name of the field in the database for this column
+        protected static string GetCreatedByDBName()
+        {
+            return "s_created_by_c";
+        }
+
+        /// get character length for column
+        public static short GetCreatedByLength()
+        {
+            return 20;
+        }
+
+        /// get the name of the field in the database for this column
+        protected static string GetDateModifiedDBName()
+        {
+            return "s_date_modified_d";
+        }
+
+        /// get character length for column
+        public static short GetDateModifiedLength()
+        {
+            return -1;
+        }
+
+        /// get the name of the field in the database for this column
+        protected static string GetModifiedByDBName()
+        {
+            return "s_modified_by_c";
+        }
+
+        /// get character length for column
+        public static short GetModifiedByLength()
+        {
+            return 20;
+        }
+
+        /// get the name of the field in the database for this column
+        protected static string GetModificationIdDBName()
+        {
+            return "s_modification_id_c";
+        }
+
+        /// get character length for column
+        public static short GetModificationIdLength()
+        {
+            return 150;
+        }
+
     }
-    
+
     /// This table links the different payments to actual invoices and credit notes.
     [Serializable()]
     public class AApDocumentPaymentRow : System.Data.DataRow
     {
-        
         private AApDocumentPaymentTable myTable;
-        
+
         /// Constructor
-        public AApDocumentPaymentRow(System.Data.DataRowBuilder rb) : 
+        public AApDocumentPaymentRow(System.Data.DataRowBuilder rb) :
                 base(rb)
         {
             this.myTable = ((AApDocumentPaymentTable)(this.Table));
         }
-        
+
         /// The ledger that the attribute value is associated with.
         public Int32 LedgerNumber
         {
@@ -6620,14 +5131,14 @@ namespace Ict.Petra.Shared.MFinance.AP.Data
             }
             set
             {
-                if ((this.IsNull(this.myTable.ColumnLedgerNumber) 
+                if ((this.IsNull(this.myTable.ColumnLedgerNumber)
                             || (((Int32)(this[this.myTable.ColumnLedgerNumber])) != value)))
                 {
                     this[this.myTable.ColumnLedgerNumber] = value;
                 }
             }
         }
-        
+
         /// Accounts Payable Sequence Number
         public Int32 ApNumber
         {
@@ -6646,14 +5157,14 @@ namespace Ict.Petra.Shared.MFinance.AP.Data
             }
             set
             {
-                if ((this.IsNull(this.myTable.ColumnApNumber) 
+                if ((this.IsNull(this.myTable.ColumnApNumber)
                             || (((Int32)(this[this.myTable.ColumnApNumber])) != value)))
                 {
                     this[this.myTable.ColumnApNumber] = value;
                 }
             }
         }
-        
+
         /// Unique number to identify each payment batch.
         public Int32 PaymentNumber
         {
@@ -6672,14 +5183,14 @@ namespace Ict.Petra.Shared.MFinance.AP.Data
             }
             set
             {
-                if ((this.IsNull(this.myTable.ColumnPaymentNumber) 
+                if ((this.IsNull(this.myTable.ColumnPaymentNumber)
                             || (((Int32)(this[this.myTable.ColumnPaymentNumber])) != value)))
                 {
                     this[this.myTable.ColumnPaymentNumber] = value;
                 }
             }
         }
-        
+
         /// The amount of money that was paid
         public Double Amount
         {
@@ -6698,14 +5209,14 @@ namespace Ict.Petra.Shared.MFinance.AP.Data
             }
             set
             {
-                if ((this.IsNull(this.myTable.ColumnAmount) 
+                if ((this.IsNull(this.myTable.ColumnAmount)
                             || (((Double)(this[this.myTable.ColumnAmount])) != value)))
                 {
                     this[this.myTable.ColumnAmount] = value;
                 }
             }
         }
-        
+
         /// The date the record was created.
         public System.DateTime DateCreated
         {
@@ -6724,32 +5235,14 @@ namespace Ict.Petra.Shared.MFinance.AP.Data
             }
             set
             {
-                if ((this.IsNull(this.myTable.ColumnDateCreated) 
+                if ((this.IsNull(this.myTable.ColumnDateCreated)
                             || (((System.DateTime)(this[this.myTable.ColumnDateCreated])) != value)))
                 {
                     this[this.myTable.ColumnDateCreated] = value;
                 }
             }
         }
-        
-        /// Returns the date value or the minimum date if the date is NULL
-        public System.DateTime DateCreatedLowNull
-        {
-            get
-            {
-                return TSaveConvert.ObjectToDate(this[this.myTable.ColumnDateCreated], TNullHandlingEnum.nhReturnLowestDate);
-            }
-        }
-        
-        /// Returns the date value or the maximum date if the date is NULL
-        public System.DateTime DateCreatedHighNull
-        {
-            get
-            {
-                return TSaveConvert.ObjectToDate(this[this.myTable.ColumnDateCreated.Ordinal], TNullHandlingEnum.nhReturnHighestDate);
-            }
-        }
-        
+
         /// User ID of who created this record.
         public String CreatedBy
         {
@@ -6759,7 +5252,7 @@ namespace Ict.Petra.Shared.MFinance.AP.Data
                 ret = this[this.myTable.ColumnCreatedBy.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    return String.Empty;
+                    throw new System.Data.StrongTypingException("Error: DB null", null);
                 }
                 else
                 {
@@ -6768,14 +5261,14 @@ namespace Ict.Petra.Shared.MFinance.AP.Data
             }
             set
             {
-                if ((this.IsNull(this.myTable.ColumnCreatedBy) 
+                if ((this.IsNull(this.myTable.ColumnCreatedBy)
                             || (((String)(this[this.myTable.ColumnCreatedBy])) != value)))
                 {
                     this[this.myTable.ColumnCreatedBy] = value;
                 }
             }
         }
-        
+
         /// The date the record was modified.
         public System.DateTime DateModified
         {
@@ -6794,32 +5287,14 @@ namespace Ict.Petra.Shared.MFinance.AP.Data
             }
             set
             {
-                if ((this.IsNull(this.myTable.ColumnDateModified) 
+                if ((this.IsNull(this.myTable.ColumnDateModified)
                             || (((System.DateTime)(this[this.myTable.ColumnDateModified])) != value)))
                 {
                     this[this.myTable.ColumnDateModified] = value;
                 }
             }
         }
-        
-        /// Returns the date value or the minimum date if the date is NULL
-        public System.DateTime DateModifiedLowNull
-        {
-            get
-            {
-                return TSaveConvert.ObjectToDate(this[this.myTable.ColumnDateModified], TNullHandlingEnum.nhReturnLowestDate);
-            }
-        }
-        
-        /// Returns the date value or the maximum date if the date is NULL
-        public System.DateTime DateModifiedHighNull
-        {
-            get
-            {
-                return TSaveConvert.ObjectToDate(this[this.myTable.ColumnDateModified.Ordinal], TNullHandlingEnum.nhReturnHighestDate);
-            }
-        }
-        
+
         /// User ID of who last modified this record.
         public String ModifiedBy
         {
@@ -6829,7 +5304,7 @@ namespace Ict.Petra.Shared.MFinance.AP.Data
                 ret = this[this.myTable.ColumnModifiedBy.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    return String.Empty;
+                    throw new System.Data.StrongTypingException("Error: DB null", null);
                 }
                 else
                 {
@@ -6838,14 +5313,14 @@ namespace Ict.Petra.Shared.MFinance.AP.Data
             }
             set
             {
-                if ((this.IsNull(this.myTable.ColumnModifiedBy) 
+                if ((this.IsNull(this.myTable.ColumnModifiedBy)
                             || (((String)(this[this.myTable.ColumnModifiedBy])) != value)))
                 {
                     this[this.myTable.ColumnModifiedBy] = value;
                 }
             }
         }
-        
+
         /// This identifies the current version of the record.
         public String ModificationId
         {
@@ -6855,7 +5330,7 @@ namespace Ict.Petra.Shared.MFinance.AP.Data
                 ret = this[this.myTable.ColumnModificationId.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    return String.Empty;
+                    throw new System.Data.StrongTypingException("Error: DB null", null);
                 }
                 else
                 {
@@ -6864,14 +5339,14 @@ namespace Ict.Petra.Shared.MFinance.AP.Data
             }
             set
             {
-                if ((this.IsNull(this.myTable.ColumnModificationId) 
+                if ((this.IsNull(this.myTable.ColumnModificationId)
                             || (((String)(this[this.myTable.ColumnModificationId])) != value)))
                 {
                     this[this.myTable.ColumnModificationId] = value;
                 }
             }
         }
-        
+
         /// set default values
         public virtual void InitValues()
         {
@@ -6885,500 +5360,186 @@ namespace Ict.Petra.Shared.MFinance.AP.Data
             this.SetNull(this.myTable.ColumnModifiedBy);
             this.SetNull(this.myTable.ColumnModificationId);
         }
-        
+
+        /// test for NULL value
+        public bool IsLedgerNumberNull()
+        {
+            return this.IsNull(this.myTable.ColumnLedgerNumber);
+        }
+
+        /// assign NULL value
+        public void SetLedgerNumberNull()
+        {
+            this.SetNull(this.myTable.ColumnLedgerNumber);
+        }
+
+        /// test for NULL value
+        public bool IsApNumberNull()
+        {
+            return this.IsNull(this.myTable.ColumnApNumber);
+        }
+
+        /// assign NULL value
+        public void SetApNumberNull()
+        {
+            this.SetNull(this.myTable.ColumnApNumber);
+        }
+
+        /// test for NULL value
+        public bool IsPaymentNumberNull()
+        {
+            return this.IsNull(this.myTable.ColumnPaymentNumber);
+        }
+
+        /// assign NULL value
+        public void SetPaymentNumberNull()
+        {
+            this.SetNull(this.myTable.ColumnPaymentNumber);
+        }
+
         /// test for NULL value
         public bool IsAmountNull()
         {
             return this.IsNull(this.myTable.ColumnAmount);
         }
-        
+
         /// assign NULL value
         public void SetAmountNull()
         {
             this.SetNull(this.myTable.ColumnAmount);
         }
-        
+
         /// test for NULL value
         public bool IsDateCreatedNull()
         {
             return this.IsNull(this.myTable.ColumnDateCreated);
         }
-        
+
         /// assign NULL value
         public void SetDateCreatedNull()
         {
             this.SetNull(this.myTable.ColumnDateCreated);
         }
-        
+
         /// test for NULL value
         public bool IsCreatedByNull()
         {
             return this.IsNull(this.myTable.ColumnCreatedBy);
         }
-        
+
         /// assign NULL value
         public void SetCreatedByNull()
         {
             this.SetNull(this.myTable.ColumnCreatedBy);
         }
-        
+
         /// test for NULL value
         public bool IsDateModifiedNull()
         {
             return this.IsNull(this.myTable.ColumnDateModified);
         }
-        
+
         /// assign NULL value
         public void SetDateModifiedNull()
         {
             this.SetNull(this.myTable.ColumnDateModified);
         }
-        
+
         /// test for NULL value
         public bool IsModifiedByNull()
         {
             return this.IsNull(this.myTable.ColumnModifiedBy);
         }
-        
+
         /// assign NULL value
         public void SetModifiedByNull()
         {
             this.SetNull(this.myTable.ColumnModifiedBy);
         }
-        
+
         /// test for NULL value
         public bool IsModificationIdNull()
         {
             return this.IsNull(this.myTable.ColumnModificationId);
         }
-        
+
         /// assign NULL value
         public void SetModificationIdNull()
         {
             this.SetNull(this.myTable.ColumnModificationId);
         }
     }
-    
+
     /// This table acts as a queue for electronic payments. If an invoice is paid electronically, the payment is added to this table. A EP program will go through this table paying all entries to GL and moving them to the a_ap_payment table.
     [Serializable()]
     public class AEpPaymentTable : TTypedDataTable
     {
-        
         /// This is used as a key field in most of the accounting system files
         public DataColumn ColumnLedgerNumber;
-        
         /// Unique number to identify each payment batch.
         public DataColumn ColumnPaymentNumber;
-        
         /// The amount of money that was paid
         public DataColumn ColumnAmount;
-        
         /// This is the system user id of the person who made the payment.
         public DataColumn ColumnUserId;
-        
         /// The source or reference for the accounts payable payment.  This could be a cheque number.
         public DataColumn ColumnReference;
-        
         /// Bank account from which to make the payment
         public DataColumn ColumnBankAccount;
-        
         /// The date the record was created.
         public DataColumn ColumnDateCreated;
-        
         /// User ID of who created this record.
         public DataColumn ColumnCreatedBy;
-        
         /// The date the record was modified.
         public DataColumn ColumnDateModified;
-        
         /// User ID of who last modified this record.
         public DataColumn ColumnModifiedBy;
-        
         /// This identifies the current version of the record.
         public DataColumn ColumnModificationId;
-        
+
+        private static short TableId = -1;
+
+        private static bool FInitInfoValues = InitInfoValues();
+        private static bool InitInfoValues()
+        {
+            TableInfo.Add(TableId, new TTypedTableInfo(TableId, "AEpPayment", "a_ep_payment",
+                new TTypedColumnInfo[] {
+                    new TTypedColumnInfo(0, "LedgerNumber", "a_ledger_number_i", OdbcType.Int, -1, true),
+                    new TTypedColumnInfo(1, "PaymentNumber", "a_payment_number_i", OdbcType.Int, -1, true),
+                    new TTypedColumnInfo(2, "Amount", "a_amount_n", OdbcType.Decimal, 24, false),
+                    new TTypedColumnInfo(3, "UserId", "s_user_id_c", OdbcType.VarChar, 20, false),
+                    new TTypedColumnInfo(4, "Reference", "a_reference_c", OdbcType.VarChar, 100, false),
+                    new TTypedColumnInfo(5, "BankAccount", "a_bank_account_c", OdbcType.VarChar, 16, true),
+                    new TTypedColumnInfo(6, "DateCreated", "s_date_created_d", OdbcType.Date, -1, false),
+                    new TTypedColumnInfo(7, "CreatedBy", "s_created_by_c", OdbcType.VarChar, 20, false),
+                    new TTypedColumnInfo(8, "DateModified", "s_date_modified_d", OdbcType.Date, -1, false),
+                    new TTypedColumnInfo(9, "ModifiedBy", "s_modified_by_c", OdbcType.VarChar, 20, false),
+                    new TTypedColumnInfo(10, "ModificationId", "s_modification_id_c", OdbcType.VarChar, 150, false)
+                },
+                new string[] {
+                    "a_ledger_number_i", "a_payment_number_i"
+                }));
+            return true;
+        }
+
         /// constructor
-        public AEpPaymentTable() : 
+        public AEpPaymentTable() :
                 base("AEpPayment")
         {
         }
-        
+
         /// constructor
-        public AEpPaymentTable(string ATablename) : 
+        public AEpPaymentTable(string ATablename) :
                 base(ATablename)
         {
         }
-        
+
         /// constructor for serialization
-        public AEpPaymentTable(System.Runtime.Serialization.SerializationInfo info, System.Runtime.Serialization.StreamingContext context) : 
+        public AEpPaymentTable(System.Runtime.Serialization.SerializationInfo info, System.Runtime.Serialization.StreamingContext context) :
                 base(info, context)
         {
         }
-        
-        /// Access a typed row by index
-        public AEpPaymentRow this[int i]
-        {
-            get
-            {
-                return ((AEpPaymentRow)(this.Rows[i]));
-            }
-        }
-        
-        /// get the name of the field in the database for this column
-        public static string GetLedgerNumberDBName()
-        {
-            return "a_ledger_number_i";
-        }
-        
-        /// get help text for column
-        public static string GetLedgerNumberHelp()
-        {
-            return "Enter the ledger number";
-        }
-        
-        /// get label of column
-        public static string GetLedgerNumberLabel()
-        {
-            return "Ledger Number";
-        }
-        
-        /// get display format for column
-        public static short GetLedgerNumberLength()
-        {
-            return 4;
-        }
-        
-        /// get the name of the field in the database for this column
-        public static string GetPaymentNumberDBName()
-        {
-            return "a_payment_number_i";
-        }
-        
-        /// get help text for column
-        public static string GetPaymentNumberHelp()
-        {
-            return "Unique number to identify each payment batch.";
-        }
-        
-        /// get label of column
-        public static string GetPaymentNumberLabel()
-        {
-            return "Payment Number";
-        }
-        
-        /// get display format for column
-        public static short GetPaymentNumberLength()
-        {
-            return 6;
-        }
-        
-        /// get the name of the field in the database for this column
-        public static string GetAmountDBName()
-        {
-            return "a_amount_n";
-        }
-        
-        /// get help text for column
-        public static string GetAmountHelp()
-        {
-            return "The amount of money that was paid";
-        }
-        
-        /// get label of column
-        public static string GetAmountLabel()
-        {
-            return "Amount";
-        }
-        
-        /// get display format for column
-        public static short GetAmountLength()
-        {
-            return 19;
-        }
-        
-        /// get the name of the field in the database for this column
-        public static string GetUserIdDBName()
-        {
-            return "s_user_id_c";
-        }
-        
-        /// get help text for column
-        public static string GetUserIdHelp()
-        {
-            return "This is the system user id of the person who made the payment.";
-        }
-        
-        /// get label of column
-        public static string GetUserIdLabel()
-        {
-            return "User ID";
-        }
-        
-        /// get character length for column
-        public static short GetUserIdLength()
-        {
-            return 10;
-        }
-        
-        /// get the name of the field in the database for this column
-        public static string GetReferenceDBName()
-        {
-            return "a_reference_c";
-        }
-        
-        /// get help text for column
-        public static string GetReferenceHelp()
-        {
-            return "Enter the reference for this accounts payable payment";
-        }
-        
-        /// get label of column
-        public static string GetReferenceLabel()
-        {
-            return "Reference";
-        }
-        
-        /// get character length for column
-        public static short GetReferenceLength()
-        {
-            return 50;
-        }
-        
-        /// get the name of the field in the database for this column
-        public static string GetBankAccountDBName()
-        {
-            return "a_bank_account_c";
-        }
-        
-        /// get help text for column
-        public static string GetBankAccountHelp()
-        {
-            return "Choose the Bank account to make the payment from";
-        }
-        
-        /// get label of column
-        public static string GetBankAccountLabel()
-        {
-            return "Bank Account";
-        }
-        
-        /// get character length for column
-        public static short GetBankAccountLength()
-        {
-            return 8;
-        }
-        
-        /// get the name of the field in the database for this column
-        public static string GetDateCreatedDBName()
-        {
-            return "s_date_created_d";
-        }
-        
-        /// get help text for column
-        public static string GetDateCreatedHelp()
-        {
-            return "The date the record was created.";
-        }
-        
-        /// get label of column
-        public static string GetDateCreatedLabel()
-        {
-            return "Created Date";
-        }
-        
-        /// get display format for column
-        public static short GetDateCreatedLength()
-        {
-            return 11;
-        }
-        
-        /// get the name of the field in the database for this column
-        public static string GetCreatedByDBName()
-        {
-            return "s_created_by_c";
-        }
-        
-        /// get help text for column
-        public static string GetCreatedByHelp()
-        {
-            return "User ID of who created this record.";
-        }
-        
-        /// get label of column
-        public static string GetCreatedByLabel()
-        {
-            return "Created By";
-        }
-        
-        /// get character length for column
-        public static short GetCreatedByLength()
-        {
-            return 10;
-        }
-        
-        /// get the name of the field in the database for this column
-        public static string GetDateModifiedDBName()
-        {
-            return "s_date_modified_d";
-        }
-        
-        /// get help text for column
-        public static string GetDateModifiedHelp()
-        {
-            return "The date the record was modified.";
-        }
-        
-        /// get label of column
-        public static string GetDateModifiedLabel()
-        {
-            return "Modified Date";
-        }
-        
-        /// get display format for column
-        public static short GetDateModifiedLength()
-        {
-            return 11;
-        }
-        
-        /// get the name of the field in the database for this column
-        public static string GetModifiedByDBName()
-        {
-            return "s_modified_by_c";
-        }
-        
-        /// get help text for column
-        public static string GetModifiedByHelp()
-        {
-            return "User ID of who last modified this record.";
-        }
-        
-        /// get label of column
-        public static string GetModifiedByLabel()
-        {
-            return "Modified By";
-        }
-        
-        /// get character length for column
-        public static short GetModifiedByLength()
-        {
-            return 10;
-        }
-        
-        /// get the name of the field in the database for this column
-        public static string GetModificationIdDBName()
-        {
-            return "s_modification_id_c";
-        }
-        
-        /// get help text for column
-        public static string GetModificationIdHelp()
-        {
-            return "This identifies the current version of the record.";
-        }
-        
-        /// get label of column
-        public static string GetModificationIdLabel()
-        {
-            return "";
-        }
-        
-        /// get character length for column
-        public static short GetModificationIdLength()
-        {
-            return 150;
-        }
-        
-        /// CamelCase version of the tablename
-        public static string GetTableName()
-        {
-            return "AEpPayment";
-        }
-        
-        /// original name of table in the database
-        public static string GetTableDBName()
-        {
-            return "a_ep_payment";
-        }
-        
-        /// get table label for messages etc
-        public static string GetTableLabel()
-        {
-            return "Electronic Payment";
-        }
-        
-        /// get the index number of fields that are part of the primary key
-        public static Int32[] GetPrimKeyColumnOrdList()
-        {
-            return new int[] {
-                    0,
-                    1};
-        }
-        
-        /// get the names of the columns
-        public static String[] GetColumnStringList()
-        {
-            return new string[] {
-                    "a_ledger_number_i",
-                    "a_payment_number_i",
-                    "a_amount_n",
-                    "s_user_id_c",
-                    "a_reference_c",
-                    "a_bank_account_c",
-                    "s_date_created_d",
-                    "s_created_by_c",
-                    "s_date_modified_d",
-                    "s_modified_by_c",
-                    "s_modification_id_c"};
-        }
-        
-        /// assign columns to properties, set primary key
-        public override void InitVars()
-        {
-            this.ColumnLedgerNumber = this.Columns["a_ledger_number_i"];
-            this.ColumnPaymentNumber = this.Columns["a_payment_number_i"];
-            this.ColumnAmount = this.Columns["a_amount_n"];
-            this.ColumnUserId = this.Columns["s_user_id_c"];
-            this.ColumnReference = this.Columns["a_reference_c"];
-            this.ColumnBankAccount = this.Columns["a_bank_account_c"];
-            this.ColumnDateCreated = this.Columns["s_date_created_d"];
-            this.ColumnCreatedBy = this.Columns["s_created_by_c"];
-            this.ColumnDateModified = this.Columns["s_date_modified_d"];
-            this.ColumnModifiedBy = this.Columns["s_modified_by_c"];
-            this.ColumnModificationId = this.Columns["s_modification_id_c"];
-            this.PrimaryKey = new System.Data.DataColumn[] {
-                    this.ColumnLedgerNumber,
-                    this.ColumnPaymentNumber};
-        }
-        
-        /// get typed set of changes
-        public AEpPaymentTable GetChangesTyped()
-        {
-            return ((AEpPaymentTable)(base.GetChangesTypedInternal()));
-        }
-        
-        /// create a new typed row
-        public AEpPaymentRow NewRowTyped(bool AWithDefaultValues)
-        {
-            AEpPaymentRow ret = ((AEpPaymentRow)(this.NewRow()));
-            if ((AWithDefaultValues == true))
-            {
-                ret.InitValues();
-            }
-            return ret;
-        }
-        
-        /// create a new typed row, always with default values
-        public AEpPaymentRow NewRowTyped()
-        {
-            return this.NewRowTyped(true);
-        }
-        
-        /// new typed row using DataRowBuilder
-        protected override System.Data.DataRow NewRowFromBuilder(System.Data.DataRowBuilder builder)
-        {
-            return new AEpPaymentRow(builder);
-        }
-        
+
         /// create the columns
         protected override void InitClass()
         {
@@ -7394,72 +5555,214 @@ namespace Ict.Petra.Shared.MFinance.AP.Data
             this.Columns.Add(new System.Data.DataColumn("s_modified_by_c", typeof(String)));
             this.Columns.Add(new System.Data.DataColumn("s_modification_id_c", typeof(String)));
         }
-        
-        /// prepare odbc parameters for given column
-        public override OdbcParameter CreateOdbcParameter(DataColumn ACol)
+
+        /// assign columns to properties, set primary key
+        public override void InitVars()
         {
-            if ((ACol == ColumnLedgerNumber))
-            {
-                return new System.Data.Odbc.OdbcParameter("", OdbcType.Int);
-            }
-            if ((ACol == ColumnPaymentNumber))
-            {
-                return new System.Data.Odbc.OdbcParameter("", OdbcType.Int);
-            }
-            if ((ACol == ColumnAmount))
-            {
-                return new System.Data.Odbc.OdbcParameter("", OdbcType.Decimal, 24);
-            }
-            if ((ACol == ColumnUserId))
-            {
-                return new System.Data.Odbc.OdbcParameter("", OdbcType.VarChar, 20);
-            }
-            if ((ACol == ColumnReference))
-            {
-                return new System.Data.Odbc.OdbcParameter("", OdbcType.VarChar, 100);
-            }
-            if ((ACol == ColumnBankAccount))
-            {
-                return new System.Data.Odbc.OdbcParameter("", OdbcType.VarChar, 16);
-            }
-            if ((ACol == ColumnDateCreated))
-            {
-                return new System.Data.Odbc.OdbcParameter("", OdbcType.Date);
-            }
-            if ((ACol == ColumnCreatedBy))
-            {
-                return new System.Data.Odbc.OdbcParameter("", OdbcType.VarChar, 20);
-            }
-            if ((ACol == ColumnDateModified))
-            {
-                return new System.Data.Odbc.OdbcParameter("", OdbcType.Date);
-            }
-            if ((ACol == ColumnModifiedBy))
-            {
-                return new System.Data.Odbc.OdbcParameter("", OdbcType.VarChar, 20);
-            }
-            if ((ACol == ColumnModificationId))
-            {
-                return new System.Data.Odbc.OdbcParameter("", OdbcType.VarChar, 150);
-            }
-            return null;
+            this.ColumnLedgerNumber = this.Columns["a_ledger_number_i"];
+            this.ColumnPaymentNumber = this.Columns["a_payment_number_i"];
+            this.ColumnAmount = this.Columns["a_amount_n"];
+            this.ColumnUserId = this.Columns["s_user_id_c"];
+            this.ColumnReference = this.Columns["a_reference_c"];
+            this.ColumnBankAccount = this.Columns["a_bank_account_c"];
+            this.ColumnDateCreated = this.Columns["s_date_created_d"];
+            this.ColumnCreatedBy = this.Columns["s_created_by_c"];
+            this.ColumnDateModified = this.Columns["s_date_modified_d"];
+            this.ColumnModifiedBy = this.Columns["s_modified_by_c"];
+            this.ColumnModificationId = this.Columns["s_modification_id_c"];
         }
+
+        /// Access a typed row by index
+        public AEpPaymentRow this[int i]
+        {
+            get
+            {
+                return ((AEpPaymentRow)(this.Rows[i]));
+            }
+        }
+
+        /// create a new typed row
+        public AEpPaymentRow NewRowTyped(bool AWithDefaultValues)
+        {
+            AEpPaymentRow ret = ((AEpPaymentRow)(this.NewRow()));
+            if ((AWithDefaultValues == true))
+            {
+                ret.InitValues();
+            }
+            return ret;
+        }
+
+        /// create a new typed row, always with default values
+        public AEpPaymentRow NewRowTyped()
+        {
+            return this.NewRowTyped(true);
+        }
+
+        /// new typed row using DataRowBuilder
+        protected override System.Data.DataRow NewRowFromBuilder(System.Data.DataRowBuilder builder)
+        {
+            return new AEpPaymentRow(builder);
+        }
+
+        /// get typed set of changes
+        public AEpPaymentTable GetChangesTyped()
+        {
+            return ((AEpPaymentTable)(base.GetChangesTypedInternal()));
+        }
+
+        /// get an odbc parameter for the given column
+        public override OdbcParameter CreateOdbcParameter(Int32 AColumnNr)
+        {
+            return CreateOdbcParameter(TableId, AColumnNr);
+        }
+
+        /// get the name of the field in the database for this column
+        protected static string GetLedgerNumberDBName()
+        {
+            return "a_ledger_number_i";
+        }
+
+        /// get character length for column
+        public static short GetLedgerNumberLength()
+        {
+            return -1;
+        }
+
+        /// get the name of the field in the database for this column
+        protected static string GetPaymentNumberDBName()
+        {
+            return "a_payment_number_i";
+        }
+
+        /// get character length for column
+        public static short GetPaymentNumberLength()
+        {
+            return -1;
+        }
+
+        /// get the name of the field in the database for this column
+        protected static string GetAmountDBName()
+        {
+            return "a_amount_n";
+        }
+
+        /// get character length for column
+        public static short GetAmountLength()
+        {
+            return 24;
+        }
+
+        /// get the name of the field in the database for this column
+        protected static string GetUserIdDBName()
+        {
+            return "s_user_id_c";
+        }
+
+        /// get character length for column
+        public static short GetUserIdLength()
+        {
+            return 20;
+        }
+
+        /// get the name of the field in the database for this column
+        protected static string GetReferenceDBName()
+        {
+            return "a_reference_c";
+        }
+
+        /// get character length for column
+        public static short GetReferenceLength()
+        {
+            return 100;
+        }
+
+        /// get the name of the field in the database for this column
+        protected static string GetBankAccountDBName()
+        {
+            return "a_bank_account_c";
+        }
+
+        /// get character length for column
+        public static short GetBankAccountLength()
+        {
+            return 16;
+        }
+
+        /// get the name of the field in the database for this column
+        protected static string GetDateCreatedDBName()
+        {
+            return "s_date_created_d";
+        }
+
+        /// get character length for column
+        public static short GetDateCreatedLength()
+        {
+            return -1;
+        }
+
+        /// get the name of the field in the database for this column
+        protected static string GetCreatedByDBName()
+        {
+            return "s_created_by_c";
+        }
+
+        /// get character length for column
+        public static short GetCreatedByLength()
+        {
+            return 20;
+        }
+
+        /// get the name of the field in the database for this column
+        protected static string GetDateModifiedDBName()
+        {
+            return "s_date_modified_d";
+        }
+
+        /// get character length for column
+        public static short GetDateModifiedLength()
+        {
+            return -1;
+        }
+
+        /// get the name of the field in the database for this column
+        protected static string GetModifiedByDBName()
+        {
+            return "s_modified_by_c";
+        }
+
+        /// get character length for column
+        public static short GetModifiedByLength()
+        {
+            return 20;
+        }
+
+        /// get the name of the field in the database for this column
+        protected static string GetModificationIdDBName()
+        {
+            return "s_modification_id_c";
+        }
+
+        /// get character length for column
+        public static short GetModificationIdLength()
+        {
+            return 150;
+        }
+
     }
-    
+
     /// This table acts as a queue for electronic payments. If an invoice is paid electronically, the payment is added to this table. A EP program will go through this table paying all entries to GL and moving them to the a_ap_payment table.
     [Serializable()]
     public class AEpPaymentRow : System.Data.DataRow
     {
-        
         private AEpPaymentTable myTable;
-        
+
         /// Constructor
-        public AEpPaymentRow(System.Data.DataRowBuilder rb) : 
+        public AEpPaymentRow(System.Data.DataRowBuilder rb) :
                 base(rb)
         {
             this.myTable = ((AEpPaymentTable)(this.Table));
         }
-        
+
         /// This is used as a key field in most of the accounting system files
         public Int32 LedgerNumber
         {
@@ -7478,14 +5781,14 @@ namespace Ict.Petra.Shared.MFinance.AP.Data
             }
             set
             {
-                if ((this.IsNull(this.myTable.ColumnLedgerNumber) 
+                if ((this.IsNull(this.myTable.ColumnLedgerNumber)
                             || (((Int32)(this[this.myTable.ColumnLedgerNumber])) != value)))
                 {
                     this[this.myTable.ColumnLedgerNumber] = value;
                 }
             }
         }
-        
+
         /// Unique number to identify each payment batch.
         public Int32 PaymentNumber
         {
@@ -7504,14 +5807,14 @@ namespace Ict.Petra.Shared.MFinance.AP.Data
             }
             set
             {
-                if ((this.IsNull(this.myTable.ColumnPaymentNumber) 
+                if ((this.IsNull(this.myTable.ColumnPaymentNumber)
                             || (((Int32)(this[this.myTable.ColumnPaymentNumber])) != value)))
                 {
                     this[this.myTable.ColumnPaymentNumber] = value;
                 }
             }
         }
-        
+
         /// The amount of money that was paid
         public Double Amount
         {
@@ -7530,14 +5833,14 @@ namespace Ict.Petra.Shared.MFinance.AP.Data
             }
             set
             {
-                if ((this.IsNull(this.myTable.ColumnAmount) 
+                if ((this.IsNull(this.myTable.ColumnAmount)
                             || (((Double)(this[this.myTable.ColumnAmount])) != value)))
                 {
                     this[this.myTable.ColumnAmount] = value;
                 }
             }
         }
-        
+
         /// This is the system user id of the person who made the payment.
         public String UserId
         {
@@ -7547,7 +5850,7 @@ namespace Ict.Petra.Shared.MFinance.AP.Data
                 ret = this[this.myTable.ColumnUserId.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    return String.Empty;
+                    throw new System.Data.StrongTypingException("Error: DB null", null);
                 }
                 else
                 {
@@ -7556,14 +5859,14 @@ namespace Ict.Petra.Shared.MFinance.AP.Data
             }
             set
             {
-                if ((this.IsNull(this.myTable.ColumnUserId) 
+                if ((this.IsNull(this.myTable.ColumnUserId)
                             || (((String)(this[this.myTable.ColumnUserId])) != value)))
                 {
                     this[this.myTable.ColumnUserId] = value;
                 }
             }
         }
-        
+
         /// The source or reference for the accounts payable payment.  This could be a cheque number.
         public String Reference
         {
@@ -7573,7 +5876,7 @@ namespace Ict.Petra.Shared.MFinance.AP.Data
                 ret = this[this.myTable.ColumnReference.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    return String.Empty;
+                    throw new System.Data.StrongTypingException("Error: DB null", null);
                 }
                 else
                 {
@@ -7582,14 +5885,14 @@ namespace Ict.Petra.Shared.MFinance.AP.Data
             }
             set
             {
-                if ((this.IsNull(this.myTable.ColumnReference) 
+                if ((this.IsNull(this.myTable.ColumnReference)
                             || (((String)(this[this.myTable.ColumnReference])) != value)))
                 {
                     this[this.myTable.ColumnReference] = value;
                 }
             }
         }
-        
+
         /// Bank account from which to make the payment
         public String BankAccount
         {
@@ -7599,7 +5902,7 @@ namespace Ict.Petra.Shared.MFinance.AP.Data
                 ret = this[this.myTable.ColumnBankAccount.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    return String.Empty;
+                    throw new System.Data.StrongTypingException("Error: DB null", null);
                 }
                 else
                 {
@@ -7608,14 +5911,14 @@ namespace Ict.Petra.Shared.MFinance.AP.Data
             }
             set
             {
-                if ((this.IsNull(this.myTable.ColumnBankAccount) 
+                if ((this.IsNull(this.myTable.ColumnBankAccount)
                             || (((String)(this[this.myTable.ColumnBankAccount])) != value)))
                 {
                     this[this.myTable.ColumnBankAccount] = value;
                 }
             }
         }
-        
+
         /// The date the record was created.
         public System.DateTime DateCreated
         {
@@ -7634,32 +5937,14 @@ namespace Ict.Petra.Shared.MFinance.AP.Data
             }
             set
             {
-                if ((this.IsNull(this.myTable.ColumnDateCreated) 
+                if ((this.IsNull(this.myTable.ColumnDateCreated)
                             || (((System.DateTime)(this[this.myTable.ColumnDateCreated])) != value)))
                 {
                     this[this.myTable.ColumnDateCreated] = value;
                 }
             }
         }
-        
-        /// Returns the date value or the minimum date if the date is NULL
-        public System.DateTime DateCreatedLowNull
-        {
-            get
-            {
-                return TSaveConvert.ObjectToDate(this[this.myTable.ColumnDateCreated], TNullHandlingEnum.nhReturnLowestDate);
-            }
-        }
-        
-        /// Returns the date value or the maximum date if the date is NULL
-        public System.DateTime DateCreatedHighNull
-        {
-            get
-            {
-                return TSaveConvert.ObjectToDate(this[this.myTable.ColumnDateCreated.Ordinal], TNullHandlingEnum.nhReturnHighestDate);
-            }
-        }
-        
+
         /// User ID of who created this record.
         public String CreatedBy
         {
@@ -7669,7 +5954,7 @@ namespace Ict.Petra.Shared.MFinance.AP.Data
                 ret = this[this.myTable.ColumnCreatedBy.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    return String.Empty;
+                    throw new System.Data.StrongTypingException("Error: DB null", null);
                 }
                 else
                 {
@@ -7678,14 +5963,14 @@ namespace Ict.Petra.Shared.MFinance.AP.Data
             }
             set
             {
-                if ((this.IsNull(this.myTable.ColumnCreatedBy) 
+                if ((this.IsNull(this.myTable.ColumnCreatedBy)
                             || (((String)(this[this.myTable.ColumnCreatedBy])) != value)))
                 {
                     this[this.myTable.ColumnCreatedBy] = value;
                 }
             }
         }
-        
+
         /// The date the record was modified.
         public System.DateTime DateModified
         {
@@ -7704,32 +5989,14 @@ namespace Ict.Petra.Shared.MFinance.AP.Data
             }
             set
             {
-                if ((this.IsNull(this.myTable.ColumnDateModified) 
+                if ((this.IsNull(this.myTable.ColumnDateModified)
                             || (((System.DateTime)(this[this.myTable.ColumnDateModified])) != value)))
                 {
                     this[this.myTable.ColumnDateModified] = value;
                 }
             }
         }
-        
-        /// Returns the date value or the minimum date if the date is NULL
-        public System.DateTime DateModifiedLowNull
-        {
-            get
-            {
-                return TSaveConvert.ObjectToDate(this[this.myTable.ColumnDateModified], TNullHandlingEnum.nhReturnLowestDate);
-            }
-        }
-        
-        /// Returns the date value or the maximum date if the date is NULL
-        public System.DateTime DateModifiedHighNull
-        {
-            get
-            {
-                return TSaveConvert.ObjectToDate(this[this.myTable.ColumnDateModified.Ordinal], TNullHandlingEnum.nhReturnHighestDate);
-            }
-        }
-        
+
         /// User ID of who last modified this record.
         public String ModifiedBy
         {
@@ -7739,7 +6006,7 @@ namespace Ict.Petra.Shared.MFinance.AP.Data
                 ret = this[this.myTable.ColumnModifiedBy.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    return String.Empty;
+                    throw new System.Data.StrongTypingException("Error: DB null", null);
                 }
                 else
                 {
@@ -7748,14 +6015,14 @@ namespace Ict.Petra.Shared.MFinance.AP.Data
             }
             set
             {
-                if ((this.IsNull(this.myTable.ColumnModifiedBy) 
+                if ((this.IsNull(this.myTable.ColumnModifiedBy)
                             || (((String)(this[this.myTable.ColumnModifiedBy])) != value)))
                 {
                     this[this.myTable.ColumnModifiedBy] = value;
                 }
             }
         }
-        
+
         /// This identifies the current version of the record.
         public String ModificationId
         {
@@ -7765,7 +6032,7 @@ namespace Ict.Petra.Shared.MFinance.AP.Data
                 ret = this[this.myTable.ColumnModificationId.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    return String.Empty;
+                    throw new System.Data.StrongTypingException("Error: DB null", null);
                 }
                 else
                 {
@@ -7774,14 +6041,14 @@ namespace Ict.Petra.Shared.MFinance.AP.Data
             }
             set
             {
-                if ((this.IsNull(this.myTable.ColumnModificationId) 
+                if ((this.IsNull(this.myTable.ColumnModificationId)
                             || (((String)(this[this.myTable.ColumnModificationId])) != value)))
                 {
                     this[this.myTable.ColumnModificationId] = value;
                 }
             }
         }
-        
+
         /// set default values
         public virtual void InitValues()
         {
@@ -7797,468 +6064,204 @@ namespace Ict.Petra.Shared.MFinance.AP.Data
             this.SetNull(this.myTable.ColumnModifiedBy);
             this.SetNull(this.myTable.ColumnModificationId);
         }
-        
+
+        /// test for NULL value
+        public bool IsLedgerNumberNull()
+        {
+            return this.IsNull(this.myTable.ColumnLedgerNumber);
+        }
+
+        /// assign NULL value
+        public void SetLedgerNumberNull()
+        {
+            this.SetNull(this.myTable.ColumnLedgerNumber);
+        }
+
+        /// test for NULL value
+        public bool IsPaymentNumberNull()
+        {
+            return this.IsNull(this.myTable.ColumnPaymentNumber);
+        }
+
+        /// assign NULL value
+        public void SetPaymentNumberNull()
+        {
+            this.SetNull(this.myTable.ColumnPaymentNumber);
+        }
+
         /// test for NULL value
         public bool IsAmountNull()
         {
             return this.IsNull(this.myTable.ColumnAmount);
         }
-        
+
         /// assign NULL value
         public void SetAmountNull()
         {
             this.SetNull(this.myTable.ColumnAmount);
         }
-        
+
         /// test for NULL value
         public bool IsUserIdNull()
         {
             return this.IsNull(this.myTable.ColumnUserId);
         }
-        
+
         /// assign NULL value
         public void SetUserIdNull()
         {
             this.SetNull(this.myTable.ColumnUserId);
         }
-        
+
         /// test for NULL value
         public bool IsReferenceNull()
         {
             return this.IsNull(this.myTable.ColumnReference);
         }
-        
+
         /// assign NULL value
         public void SetReferenceNull()
         {
             this.SetNull(this.myTable.ColumnReference);
         }
-        
+
+        /// test for NULL value
+        public bool IsBankAccountNull()
+        {
+            return this.IsNull(this.myTable.ColumnBankAccount);
+        }
+
+        /// assign NULL value
+        public void SetBankAccountNull()
+        {
+            this.SetNull(this.myTable.ColumnBankAccount);
+        }
+
         /// test for NULL value
         public bool IsDateCreatedNull()
         {
             return this.IsNull(this.myTable.ColumnDateCreated);
         }
-        
+
         /// assign NULL value
         public void SetDateCreatedNull()
         {
             this.SetNull(this.myTable.ColumnDateCreated);
         }
-        
+
         /// test for NULL value
         public bool IsCreatedByNull()
         {
             return this.IsNull(this.myTable.ColumnCreatedBy);
         }
-        
+
         /// assign NULL value
         public void SetCreatedByNull()
         {
             this.SetNull(this.myTable.ColumnCreatedBy);
         }
-        
+
         /// test for NULL value
         public bool IsDateModifiedNull()
         {
             return this.IsNull(this.myTable.ColumnDateModified);
         }
-        
+
         /// assign NULL value
         public void SetDateModifiedNull()
         {
             this.SetNull(this.myTable.ColumnDateModified);
         }
-        
+
         /// test for NULL value
         public bool IsModifiedByNull()
         {
             return this.IsNull(this.myTable.ColumnModifiedBy);
         }
-        
+
         /// assign NULL value
         public void SetModifiedByNull()
         {
             this.SetNull(this.myTable.ColumnModifiedBy);
         }
-        
+
         /// test for NULL value
         public bool IsModificationIdNull()
         {
             return this.IsNull(this.myTable.ColumnModificationId);
         }
-        
+
         /// assign NULL value
         public void SetModificationIdNull()
         {
             this.SetNull(this.myTable.ColumnModificationId);
         }
     }
-    
+
     /// This table links the different EP payments to actual invoices and credit notes.
     [Serializable()]
     public class AEpDocumentPaymentTable : TTypedDataTable
     {
-        
         /// The ledger that the attribute value is associated with.
         public DataColumn ColumnLedgerNumber;
-        
         /// Accounts Payable Sequence Number
         public DataColumn ColumnApNumber;
-        
         /// Unique number to identify each payment batch.
         public DataColumn ColumnPaymentNumber;
-        
         /// The amount of money that was paid
         public DataColumn ColumnAmount;
-        
         /// The date the record was created.
         public DataColumn ColumnDateCreated;
-        
         /// User ID of who created this record.
         public DataColumn ColumnCreatedBy;
-        
         /// The date the record was modified.
         public DataColumn ColumnDateModified;
-        
         /// User ID of who last modified this record.
         public DataColumn ColumnModifiedBy;
-        
         /// This identifies the current version of the record.
         public DataColumn ColumnModificationId;
-        
+
+        private static short TableId = -1;
+
+        private static bool FInitInfoValues = InitInfoValues();
+        private static bool InitInfoValues()
+        {
+            TableInfo.Add(TableId, new TTypedTableInfo(TableId, "AEpDocumentPayment", "a_ep_document_payment",
+                new TTypedColumnInfo[] {
+                    new TTypedColumnInfo(0, "LedgerNumber", "a_ledger_number_i", OdbcType.Int, -1, true),
+                    new TTypedColumnInfo(1, "ApNumber", "a_ap_number_i", OdbcType.Int, -1, true),
+                    new TTypedColumnInfo(2, "PaymentNumber", "a_payment_number_i", OdbcType.Int, -1, true),
+                    new TTypedColumnInfo(3, "Amount", "a_amount_n", OdbcType.Decimal, 24, false),
+                    new TTypedColumnInfo(4, "DateCreated", "s_date_created_d", OdbcType.Date, -1, false),
+                    new TTypedColumnInfo(5, "CreatedBy", "s_created_by_c", OdbcType.VarChar, 20, false),
+                    new TTypedColumnInfo(6, "DateModified", "s_date_modified_d", OdbcType.Date, -1, false),
+                    new TTypedColumnInfo(7, "ModifiedBy", "s_modified_by_c", OdbcType.VarChar, 20, false),
+                    new TTypedColumnInfo(8, "ModificationId", "s_modification_id_c", OdbcType.VarChar, 150, false)
+                },
+                new string[] {
+                    "a_ledger_number_i", "a_ap_number_i", "a_payment_number_i"
+                }));
+            return true;
+        }
+
         /// constructor
-        public AEpDocumentPaymentTable() : 
+        public AEpDocumentPaymentTable() :
                 base("AEpDocumentPayment")
         {
         }
-        
+
         /// constructor
-        public AEpDocumentPaymentTable(string ATablename) : 
+        public AEpDocumentPaymentTable(string ATablename) :
                 base(ATablename)
         {
         }
-        
+
         /// constructor for serialization
-        public AEpDocumentPaymentTable(System.Runtime.Serialization.SerializationInfo info, System.Runtime.Serialization.StreamingContext context) : 
+        public AEpDocumentPaymentTable(System.Runtime.Serialization.SerializationInfo info, System.Runtime.Serialization.StreamingContext context) :
                 base(info, context)
         {
         }
-        
-        /// Access a typed row by index
-        public AEpDocumentPaymentRow this[int i]
-        {
-            get
-            {
-                return ((AEpDocumentPaymentRow)(this.Rows[i]));
-            }
-        }
-        
-        /// get the name of the field in the database for this column
-        public static string GetLedgerNumberDBName()
-        {
-            return "a_ledger_number_i";
-        }
-        
-        /// get help text for column
-        public static string GetLedgerNumberHelp()
-        {
-            return "Enter the ledger number";
-        }
-        
-        /// get label of column
-        public static string GetLedgerNumberLabel()
-        {
-            return "Ledger Number";
-        }
-        
-        /// get display format for column
-        public static short GetLedgerNumberLength()
-        {
-            return 4;
-        }
-        
-        /// get the name of the field in the database for this column
-        public static string GetApNumberDBName()
-        {
-            return "a_ap_number_i";
-        }
-        
-        /// get help text for column
-        public static string GetApNumberHelp()
-        {
-            return "Accounts Payable Sequence Number";
-        }
-        
-        /// get label of column
-        public static string GetApNumberLabel()
-        {
-            return "AP Number";
-        }
-        
-        /// get display format for column
-        public static short GetApNumberLength()
-        {
-            return 5;
-        }
-        
-        /// get the name of the field in the database for this column
-        public static string GetPaymentNumberDBName()
-        {
-            return "a_payment_number_i";
-        }
-        
-        /// get help text for column
-        public static string GetPaymentNumberHelp()
-        {
-            return "Unique number to identify each payment batch.";
-        }
-        
-        /// get label of column
-        public static string GetPaymentNumberLabel()
-        {
-            return "Payment Number";
-        }
-        
-        /// get display format for column
-        public static short GetPaymentNumberLength()
-        {
-            return 6;
-        }
-        
-        /// get the name of the field in the database for this column
-        public static string GetAmountDBName()
-        {
-            return "a_amount_n";
-        }
-        
-        /// get help text for column
-        public static string GetAmountHelp()
-        {
-            return "The amount of money that was paid";
-        }
-        
-        /// get label of column
-        public static string GetAmountLabel()
-        {
-            return "Amount";
-        }
-        
-        /// get display format for column
-        public static short GetAmountLength()
-        {
-            return 19;
-        }
-        
-        /// get the name of the field in the database for this column
-        public static string GetDateCreatedDBName()
-        {
-            return "s_date_created_d";
-        }
-        
-        /// get help text for column
-        public static string GetDateCreatedHelp()
-        {
-            return "The date the record was created.";
-        }
-        
-        /// get label of column
-        public static string GetDateCreatedLabel()
-        {
-            return "Created Date";
-        }
-        
-        /// get display format for column
-        public static short GetDateCreatedLength()
-        {
-            return 11;
-        }
-        
-        /// get the name of the field in the database for this column
-        public static string GetCreatedByDBName()
-        {
-            return "s_created_by_c";
-        }
-        
-        /// get help text for column
-        public static string GetCreatedByHelp()
-        {
-            return "User ID of who created this record.";
-        }
-        
-        /// get label of column
-        public static string GetCreatedByLabel()
-        {
-            return "Created By";
-        }
-        
-        /// get character length for column
-        public static short GetCreatedByLength()
-        {
-            return 10;
-        }
-        
-        /// get the name of the field in the database for this column
-        public static string GetDateModifiedDBName()
-        {
-            return "s_date_modified_d";
-        }
-        
-        /// get help text for column
-        public static string GetDateModifiedHelp()
-        {
-            return "The date the record was modified.";
-        }
-        
-        /// get label of column
-        public static string GetDateModifiedLabel()
-        {
-            return "Modified Date";
-        }
-        
-        /// get display format for column
-        public static short GetDateModifiedLength()
-        {
-            return 11;
-        }
-        
-        /// get the name of the field in the database for this column
-        public static string GetModifiedByDBName()
-        {
-            return "s_modified_by_c";
-        }
-        
-        /// get help text for column
-        public static string GetModifiedByHelp()
-        {
-            return "User ID of who last modified this record.";
-        }
-        
-        /// get label of column
-        public static string GetModifiedByLabel()
-        {
-            return "Modified By";
-        }
-        
-        /// get character length for column
-        public static short GetModifiedByLength()
-        {
-            return 10;
-        }
-        
-        /// get the name of the field in the database for this column
-        public static string GetModificationIdDBName()
-        {
-            return "s_modification_id_c";
-        }
-        
-        /// get help text for column
-        public static string GetModificationIdHelp()
-        {
-            return "This identifies the current version of the record.";
-        }
-        
-        /// get label of column
-        public static string GetModificationIdLabel()
-        {
-            return "";
-        }
-        
-        /// get character length for column
-        public static short GetModificationIdLength()
-        {
-            return 150;
-        }
-        
-        /// CamelCase version of the tablename
-        public static string GetTableName()
-        {
-            return "AEpDocumentPayment";
-        }
-        
-        /// original name of table in the database
-        public static string GetTableDBName()
-        {
-            return "a_ep_document_payment";
-        }
-        
-        /// get table label for messages etc
-        public static string GetTableLabel()
-        {
-            return "Electronic Document Payment";
-        }
-        
-        /// get the index number of fields that are part of the primary key
-        public static Int32[] GetPrimKeyColumnOrdList()
-        {
-            return new int[] {
-                    0,
-                    1,
-                    2};
-        }
-        
-        /// get the names of the columns
-        public static String[] GetColumnStringList()
-        {
-            return new string[] {
-                    "a_ledger_number_i",
-                    "a_ap_number_i",
-                    "a_payment_number_i",
-                    "a_amount_n",
-                    "s_date_created_d",
-                    "s_created_by_c",
-                    "s_date_modified_d",
-                    "s_modified_by_c",
-                    "s_modification_id_c"};
-        }
-        
-        /// assign columns to properties, set primary key
-        public override void InitVars()
-        {
-            this.ColumnLedgerNumber = this.Columns["a_ledger_number_i"];
-            this.ColumnApNumber = this.Columns["a_ap_number_i"];
-            this.ColumnPaymentNumber = this.Columns["a_payment_number_i"];
-            this.ColumnAmount = this.Columns["a_amount_n"];
-            this.ColumnDateCreated = this.Columns["s_date_created_d"];
-            this.ColumnCreatedBy = this.Columns["s_created_by_c"];
-            this.ColumnDateModified = this.Columns["s_date_modified_d"];
-            this.ColumnModifiedBy = this.Columns["s_modified_by_c"];
-            this.ColumnModificationId = this.Columns["s_modification_id_c"];
-            this.PrimaryKey = new System.Data.DataColumn[] {
-                    this.ColumnLedgerNumber,
-                    this.ColumnApNumber,
-                    this.ColumnPaymentNumber};
-        }
-        
-        /// get typed set of changes
-        public AEpDocumentPaymentTable GetChangesTyped()
-        {
-            return ((AEpDocumentPaymentTable)(base.GetChangesTypedInternal()));
-        }
-        
-        /// create a new typed row
-        public AEpDocumentPaymentRow NewRowTyped(bool AWithDefaultValues)
-        {
-            AEpDocumentPaymentRow ret = ((AEpDocumentPaymentRow)(this.NewRow()));
-            if ((AWithDefaultValues == true))
-            {
-                ret.InitValues();
-            }
-            return ret;
-        }
-        
-        /// create a new typed row, always with default values
-        public AEpDocumentPaymentRow NewRowTyped()
-        {
-            return this.NewRowTyped(true);
-        }
-        
-        /// new typed row using DataRowBuilder
-        protected override System.Data.DataRow NewRowFromBuilder(System.Data.DataRowBuilder builder)
-        {
-            return new AEpDocumentPaymentRow(builder);
-        }
-        
+
         /// create the columns
         protected override void InitClass()
         {
@@ -8272,64 +6275,188 @@ namespace Ict.Petra.Shared.MFinance.AP.Data
             this.Columns.Add(new System.Data.DataColumn("s_modified_by_c", typeof(String)));
             this.Columns.Add(new System.Data.DataColumn("s_modification_id_c", typeof(String)));
         }
-        
-        /// prepare odbc parameters for given column
-        public override OdbcParameter CreateOdbcParameter(DataColumn ACol)
+
+        /// assign columns to properties, set primary key
+        public override void InitVars()
         {
-            if ((ACol == ColumnLedgerNumber))
-            {
-                return new System.Data.Odbc.OdbcParameter("", OdbcType.Int);
-            }
-            if ((ACol == ColumnApNumber))
-            {
-                return new System.Data.Odbc.OdbcParameter("", OdbcType.Int);
-            }
-            if ((ACol == ColumnPaymentNumber))
-            {
-                return new System.Data.Odbc.OdbcParameter("", OdbcType.Int);
-            }
-            if ((ACol == ColumnAmount))
-            {
-                return new System.Data.Odbc.OdbcParameter("", OdbcType.Decimal, 24);
-            }
-            if ((ACol == ColumnDateCreated))
-            {
-                return new System.Data.Odbc.OdbcParameter("", OdbcType.Date);
-            }
-            if ((ACol == ColumnCreatedBy))
-            {
-                return new System.Data.Odbc.OdbcParameter("", OdbcType.VarChar, 20);
-            }
-            if ((ACol == ColumnDateModified))
-            {
-                return new System.Data.Odbc.OdbcParameter("", OdbcType.Date);
-            }
-            if ((ACol == ColumnModifiedBy))
-            {
-                return new System.Data.Odbc.OdbcParameter("", OdbcType.VarChar, 20);
-            }
-            if ((ACol == ColumnModificationId))
-            {
-                return new System.Data.Odbc.OdbcParameter("", OdbcType.VarChar, 150);
-            }
-            return null;
+            this.ColumnLedgerNumber = this.Columns["a_ledger_number_i"];
+            this.ColumnApNumber = this.Columns["a_ap_number_i"];
+            this.ColumnPaymentNumber = this.Columns["a_payment_number_i"];
+            this.ColumnAmount = this.Columns["a_amount_n"];
+            this.ColumnDateCreated = this.Columns["s_date_created_d"];
+            this.ColumnCreatedBy = this.Columns["s_created_by_c"];
+            this.ColumnDateModified = this.Columns["s_date_modified_d"];
+            this.ColumnModifiedBy = this.Columns["s_modified_by_c"];
+            this.ColumnModificationId = this.Columns["s_modification_id_c"];
         }
+
+        /// Access a typed row by index
+        public AEpDocumentPaymentRow this[int i]
+        {
+            get
+            {
+                return ((AEpDocumentPaymentRow)(this.Rows[i]));
+            }
+        }
+
+        /// create a new typed row
+        public AEpDocumentPaymentRow NewRowTyped(bool AWithDefaultValues)
+        {
+            AEpDocumentPaymentRow ret = ((AEpDocumentPaymentRow)(this.NewRow()));
+            if ((AWithDefaultValues == true))
+            {
+                ret.InitValues();
+            }
+            return ret;
+        }
+
+        /// create a new typed row, always with default values
+        public AEpDocumentPaymentRow NewRowTyped()
+        {
+            return this.NewRowTyped(true);
+        }
+
+        /// new typed row using DataRowBuilder
+        protected override System.Data.DataRow NewRowFromBuilder(System.Data.DataRowBuilder builder)
+        {
+            return new AEpDocumentPaymentRow(builder);
+        }
+
+        /// get typed set of changes
+        public AEpDocumentPaymentTable GetChangesTyped()
+        {
+            return ((AEpDocumentPaymentTable)(base.GetChangesTypedInternal()));
+        }
+
+        /// get an odbc parameter for the given column
+        public override OdbcParameter CreateOdbcParameter(Int32 AColumnNr)
+        {
+            return CreateOdbcParameter(TableId, AColumnNr);
+        }
+
+        /// get the name of the field in the database for this column
+        protected static string GetLedgerNumberDBName()
+        {
+            return "a_ledger_number_i";
+        }
+
+        /// get character length for column
+        public static short GetLedgerNumberLength()
+        {
+            return -1;
+        }
+
+        /// get the name of the field in the database for this column
+        protected static string GetApNumberDBName()
+        {
+            return "a_ap_number_i";
+        }
+
+        /// get character length for column
+        public static short GetApNumberLength()
+        {
+            return -1;
+        }
+
+        /// get the name of the field in the database for this column
+        protected static string GetPaymentNumberDBName()
+        {
+            return "a_payment_number_i";
+        }
+
+        /// get character length for column
+        public static short GetPaymentNumberLength()
+        {
+            return -1;
+        }
+
+        /// get the name of the field in the database for this column
+        protected static string GetAmountDBName()
+        {
+            return "a_amount_n";
+        }
+
+        /// get character length for column
+        public static short GetAmountLength()
+        {
+            return 24;
+        }
+
+        /// get the name of the field in the database for this column
+        protected static string GetDateCreatedDBName()
+        {
+            return "s_date_created_d";
+        }
+
+        /// get character length for column
+        public static short GetDateCreatedLength()
+        {
+            return -1;
+        }
+
+        /// get the name of the field in the database for this column
+        protected static string GetCreatedByDBName()
+        {
+            return "s_created_by_c";
+        }
+
+        /// get character length for column
+        public static short GetCreatedByLength()
+        {
+            return 20;
+        }
+
+        /// get the name of the field in the database for this column
+        protected static string GetDateModifiedDBName()
+        {
+            return "s_date_modified_d";
+        }
+
+        /// get character length for column
+        public static short GetDateModifiedLength()
+        {
+            return -1;
+        }
+
+        /// get the name of the field in the database for this column
+        protected static string GetModifiedByDBName()
+        {
+            return "s_modified_by_c";
+        }
+
+        /// get character length for column
+        public static short GetModifiedByLength()
+        {
+            return 20;
+        }
+
+        /// get the name of the field in the database for this column
+        protected static string GetModificationIdDBName()
+        {
+            return "s_modification_id_c";
+        }
+
+        /// get character length for column
+        public static short GetModificationIdLength()
+        {
+            return 150;
+        }
+
     }
-    
+
     /// This table links the different EP payments to actual invoices and credit notes.
     [Serializable()]
     public class AEpDocumentPaymentRow : System.Data.DataRow
     {
-        
         private AEpDocumentPaymentTable myTable;
-        
+
         /// Constructor
-        public AEpDocumentPaymentRow(System.Data.DataRowBuilder rb) : 
+        public AEpDocumentPaymentRow(System.Data.DataRowBuilder rb) :
                 base(rb)
         {
             this.myTable = ((AEpDocumentPaymentTable)(this.Table));
         }
-        
+
         /// The ledger that the attribute value is associated with.
         public Int32 LedgerNumber
         {
@@ -8348,14 +6475,14 @@ namespace Ict.Petra.Shared.MFinance.AP.Data
             }
             set
             {
-                if ((this.IsNull(this.myTable.ColumnLedgerNumber) 
+                if ((this.IsNull(this.myTable.ColumnLedgerNumber)
                             || (((Int32)(this[this.myTable.ColumnLedgerNumber])) != value)))
                 {
                     this[this.myTable.ColumnLedgerNumber] = value;
                 }
             }
         }
-        
+
         /// Accounts Payable Sequence Number
         public Int32 ApNumber
         {
@@ -8374,14 +6501,14 @@ namespace Ict.Petra.Shared.MFinance.AP.Data
             }
             set
             {
-                if ((this.IsNull(this.myTable.ColumnApNumber) 
+                if ((this.IsNull(this.myTable.ColumnApNumber)
                             || (((Int32)(this[this.myTable.ColumnApNumber])) != value)))
                 {
                     this[this.myTable.ColumnApNumber] = value;
                 }
             }
         }
-        
+
         /// Unique number to identify each payment batch.
         public Int32 PaymentNumber
         {
@@ -8400,14 +6527,14 @@ namespace Ict.Petra.Shared.MFinance.AP.Data
             }
             set
             {
-                if ((this.IsNull(this.myTable.ColumnPaymentNumber) 
+                if ((this.IsNull(this.myTable.ColumnPaymentNumber)
                             || (((Int32)(this[this.myTable.ColumnPaymentNumber])) != value)))
                 {
                     this[this.myTable.ColumnPaymentNumber] = value;
                 }
             }
         }
-        
+
         /// The amount of money that was paid
         public Double Amount
         {
@@ -8426,14 +6553,14 @@ namespace Ict.Petra.Shared.MFinance.AP.Data
             }
             set
             {
-                if ((this.IsNull(this.myTable.ColumnAmount) 
+                if ((this.IsNull(this.myTable.ColumnAmount)
                             || (((Double)(this[this.myTable.ColumnAmount])) != value)))
                 {
                     this[this.myTable.ColumnAmount] = value;
                 }
             }
         }
-        
+
         /// The date the record was created.
         public System.DateTime DateCreated
         {
@@ -8452,32 +6579,14 @@ namespace Ict.Petra.Shared.MFinance.AP.Data
             }
             set
             {
-                if ((this.IsNull(this.myTable.ColumnDateCreated) 
+                if ((this.IsNull(this.myTable.ColumnDateCreated)
                             || (((System.DateTime)(this[this.myTable.ColumnDateCreated])) != value)))
                 {
                     this[this.myTable.ColumnDateCreated] = value;
                 }
             }
         }
-        
-        /// Returns the date value or the minimum date if the date is NULL
-        public System.DateTime DateCreatedLowNull
-        {
-            get
-            {
-                return TSaveConvert.ObjectToDate(this[this.myTable.ColumnDateCreated], TNullHandlingEnum.nhReturnLowestDate);
-            }
-        }
-        
-        /// Returns the date value or the maximum date if the date is NULL
-        public System.DateTime DateCreatedHighNull
-        {
-            get
-            {
-                return TSaveConvert.ObjectToDate(this[this.myTable.ColumnDateCreated.Ordinal], TNullHandlingEnum.nhReturnHighestDate);
-            }
-        }
-        
+
         /// User ID of who created this record.
         public String CreatedBy
         {
@@ -8487,7 +6596,7 @@ namespace Ict.Petra.Shared.MFinance.AP.Data
                 ret = this[this.myTable.ColumnCreatedBy.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    return String.Empty;
+                    throw new System.Data.StrongTypingException("Error: DB null", null);
                 }
                 else
                 {
@@ -8496,14 +6605,14 @@ namespace Ict.Petra.Shared.MFinance.AP.Data
             }
             set
             {
-                if ((this.IsNull(this.myTable.ColumnCreatedBy) 
+                if ((this.IsNull(this.myTable.ColumnCreatedBy)
                             || (((String)(this[this.myTable.ColumnCreatedBy])) != value)))
                 {
                     this[this.myTable.ColumnCreatedBy] = value;
                 }
             }
         }
-        
+
         /// The date the record was modified.
         public System.DateTime DateModified
         {
@@ -8522,32 +6631,14 @@ namespace Ict.Petra.Shared.MFinance.AP.Data
             }
             set
             {
-                if ((this.IsNull(this.myTable.ColumnDateModified) 
+                if ((this.IsNull(this.myTable.ColumnDateModified)
                             || (((System.DateTime)(this[this.myTable.ColumnDateModified])) != value)))
                 {
                     this[this.myTable.ColumnDateModified] = value;
                 }
             }
         }
-        
-        /// Returns the date value or the minimum date if the date is NULL
-        public System.DateTime DateModifiedLowNull
-        {
-            get
-            {
-                return TSaveConvert.ObjectToDate(this[this.myTable.ColumnDateModified], TNullHandlingEnum.nhReturnLowestDate);
-            }
-        }
-        
-        /// Returns the date value or the maximum date if the date is NULL
-        public System.DateTime DateModifiedHighNull
-        {
-            get
-            {
-                return TSaveConvert.ObjectToDate(this[this.myTable.ColumnDateModified.Ordinal], TNullHandlingEnum.nhReturnHighestDate);
-            }
-        }
-        
+
         /// User ID of who last modified this record.
         public String ModifiedBy
         {
@@ -8557,7 +6648,7 @@ namespace Ict.Petra.Shared.MFinance.AP.Data
                 ret = this[this.myTable.ColumnModifiedBy.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    return String.Empty;
+                    throw new System.Data.StrongTypingException("Error: DB null", null);
                 }
                 else
                 {
@@ -8566,14 +6657,14 @@ namespace Ict.Petra.Shared.MFinance.AP.Data
             }
             set
             {
-                if ((this.IsNull(this.myTable.ColumnModifiedBy) 
+                if ((this.IsNull(this.myTable.ColumnModifiedBy)
                             || (((String)(this[this.myTable.ColumnModifiedBy])) != value)))
                 {
                     this[this.myTable.ColumnModifiedBy] = value;
                 }
             }
         }
-        
+
         /// This identifies the current version of the record.
         public String ModificationId
         {
@@ -8583,7 +6674,7 @@ namespace Ict.Petra.Shared.MFinance.AP.Data
                 ret = this[this.myTable.ColumnModificationId.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    return String.Empty;
+                    throw new System.Data.StrongTypingException("Error: DB null", null);
                 }
                 else
                 {
@@ -8592,14 +6683,14 @@ namespace Ict.Petra.Shared.MFinance.AP.Data
             }
             set
             {
-                if ((this.IsNull(this.myTable.ColumnModificationId) 
+                if ((this.IsNull(this.myTable.ColumnModificationId)
                             || (((String)(this[this.myTable.ColumnModificationId])) != value)))
                 {
                     this[this.myTable.ColumnModificationId] = value;
                 }
             }
         }
-        
+
         /// set default values
         public virtual void InitValues()
         {
@@ -8613,504 +6704,186 @@ namespace Ict.Petra.Shared.MFinance.AP.Data
             this.SetNull(this.myTable.ColumnModifiedBy);
             this.SetNull(this.myTable.ColumnModificationId);
         }
-        
+
+        /// test for NULL value
+        public bool IsLedgerNumberNull()
+        {
+            return this.IsNull(this.myTable.ColumnLedgerNumber);
+        }
+
+        /// assign NULL value
+        public void SetLedgerNumberNull()
+        {
+            this.SetNull(this.myTable.ColumnLedgerNumber);
+        }
+
+        /// test for NULL value
+        public bool IsApNumberNull()
+        {
+            return this.IsNull(this.myTable.ColumnApNumber);
+        }
+
+        /// assign NULL value
+        public void SetApNumberNull()
+        {
+            this.SetNull(this.myTable.ColumnApNumber);
+        }
+
+        /// test for NULL value
+        public bool IsPaymentNumberNull()
+        {
+            return this.IsNull(this.myTable.ColumnPaymentNumber);
+        }
+
+        /// assign NULL value
+        public void SetPaymentNumberNull()
+        {
+            this.SetNull(this.myTable.ColumnPaymentNumber);
+        }
+
         /// test for NULL value
         public bool IsAmountNull()
         {
             return this.IsNull(this.myTable.ColumnAmount);
         }
-        
+
         /// assign NULL value
         public void SetAmountNull()
         {
             this.SetNull(this.myTable.ColumnAmount);
         }
-        
+
         /// test for NULL value
         public bool IsDateCreatedNull()
         {
             return this.IsNull(this.myTable.ColumnDateCreated);
         }
-        
+
         /// assign NULL value
         public void SetDateCreatedNull()
         {
             this.SetNull(this.myTable.ColumnDateCreated);
         }
-        
+
         /// test for NULL value
         public bool IsCreatedByNull()
         {
             return this.IsNull(this.myTable.ColumnCreatedBy);
         }
-        
+
         /// assign NULL value
         public void SetCreatedByNull()
         {
             this.SetNull(this.myTable.ColumnCreatedBy);
         }
-        
+
         /// test for NULL value
         public bool IsDateModifiedNull()
         {
             return this.IsNull(this.myTable.ColumnDateModified);
         }
-        
+
         /// assign NULL value
         public void SetDateModifiedNull()
         {
             this.SetNull(this.myTable.ColumnDateModified);
         }
-        
+
         /// test for NULL value
         public bool IsModifiedByNull()
         {
             return this.IsNull(this.myTable.ColumnModifiedBy);
         }
-        
+
         /// assign NULL value
         public void SetModifiedByNull()
         {
             this.SetNull(this.myTable.ColumnModifiedBy);
         }
-        
+
         /// test for NULL value
         public bool IsModificationIdNull()
         {
             return this.IsNull(this.myTable.ColumnModificationId);
         }
-        
+
         /// assign NULL value
         public void SetModificationIdNull()
         {
             this.SetNull(this.myTable.ColumnModificationId);
         }
     }
-    
+
     /// Analysis Attributes applied to an AP for posting to the GL.
     [Serializable()]
     public class AApAnalAttribTable : TTypedDataTable
     {
-        
         /// The ledger that the attribute value is associated with.
         public DataColumn ColumnLedgerNumber;
-        
         /// Accounts Payable Sequence Number
         public DataColumn ColumnApNumber;
-        
         /// The detail number within the invoice/ accounts payable.
         public DataColumn ColumnDetailNumber;
-        
-        /// 
+        ///
         public DataColumn ColumnAnalysisTypeCode;
-        
         /// This identifies the account the financial transaction must be stored against
         public DataColumn ColumnAccountCode;
-        
-        /// 
+        ///
         public DataColumn ColumnAnalysisAttributeValue;
-        
         /// The date the record was created.
         public DataColumn ColumnDateCreated;
-        
         /// User ID of who created this record.
         public DataColumn ColumnCreatedBy;
-        
         /// The date the record was modified.
         public DataColumn ColumnDateModified;
-        
         /// User ID of who last modified this record.
         public DataColumn ColumnModifiedBy;
-        
         /// This identifies the current version of the record.
         public DataColumn ColumnModificationId;
-        
+
+        private static short TableId = -1;
+
+        private static bool FInitInfoValues = InitInfoValues();
+        private static bool InitInfoValues()
+        {
+            TableInfo.Add(TableId, new TTypedTableInfo(TableId, "AApAnalAttrib", "a_ap_anal_attrib",
+                new TTypedColumnInfo[] {
+                    new TTypedColumnInfo(0, "LedgerNumber", "a_ledger_number_i", OdbcType.Int, -1, true),
+                    new TTypedColumnInfo(1, "ApNumber", "a_ap_number_i", OdbcType.Int, -1, true),
+                    new TTypedColumnInfo(2, "DetailNumber", "a_detail_number_i", OdbcType.Int, -1, true),
+                    new TTypedColumnInfo(3, "AnalysisTypeCode", "a_analysis_type_code_c", OdbcType.VarChar, 16, true),
+                    new TTypedColumnInfo(4, "AccountCode", "a_account_code_c", OdbcType.VarChar, 16, true),
+                    new TTypedColumnInfo(5, "AnalysisAttributeValue", "a_analysis_attribute_value_c", OdbcType.VarChar, 80, false),
+                    new TTypedColumnInfo(6, "DateCreated", "s_date_created_d", OdbcType.Date, -1, false),
+                    new TTypedColumnInfo(7, "CreatedBy", "s_created_by_c", OdbcType.VarChar, 20, false),
+                    new TTypedColumnInfo(8, "DateModified", "s_date_modified_d", OdbcType.Date, -1, false),
+                    new TTypedColumnInfo(9, "ModifiedBy", "s_modified_by_c", OdbcType.VarChar, 20, false),
+                    new TTypedColumnInfo(10, "ModificationId", "s_modification_id_c", OdbcType.VarChar, 150, false)
+                },
+                new string[] {
+                    "a_ledger_number_i", "a_ap_number_i", "a_detail_number_i", "a_analysis_type_code_c"
+                }));
+            return true;
+        }
+
         /// constructor
-        public AApAnalAttribTable() : 
+        public AApAnalAttribTable() :
                 base("AApAnalAttrib")
         {
         }
-        
+
         /// constructor
-        public AApAnalAttribTable(string ATablename) : 
+        public AApAnalAttribTable(string ATablename) :
                 base(ATablename)
         {
         }
-        
+
         /// constructor for serialization
-        public AApAnalAttribTable(System.Runtime.Serialization.SerializationInfo info, System.Runtime.Serialization.StreamingContext context) : 
+        public AApAnalAttribTable(System.Runtime.Serialization.SerializationInfo info, System.Runtime.Serialization.StreamingContext context) :
                 base(info, context)
         {
         }
-        
-        /// Access a typed row by index
-        public AApAnalAttribRow this[int i]
-        {
-            get
-            {
-                return ((AApAnalAttribRow)(this.Rows[i]));
-            }
-        }
-        
-        /// get the name of the field in the database for this column
-        public static string GetLedgerNumberDBName()
-        {
-            return "a_ledger_number_i";
-        }
-        
-        /// get help text for column
-        public static string GetLedgerNumberHelp()
-        {
-            return "Enter the ledger number";
-        }
-        
-        /// get label of column
-        public static string GetLedgerNumberLabel()
-        {
-            return "Ledger Number";
-        }
-        
-        /// get display format for column
-        public static short GetLedgerNumberLength()
-        {
-            return 4;
-        }
-        
-        /// get the name of the field in the database for this column
-        public static string GetApNumberDBName()
-        {
-            return "a_ap_number_i";
-        }
-        
-        /// get help text for column
-        public static string GetApNumberHelp()
-        {
-            return "Accounts Payable Sequence Number";
-        }
-        
-        /// get label of column
-        public static string GetApNumberLabel()
-        {
-            return "AP Number";
-        }
-        
-        /// get display format for column
-        public static short GetApNumberLength()
-        {
-            return 5;
-        }
-        
-        /// get the name of the field in the database for this column
-        public static string GetDetailNumberDBName()
-        {
-            return "a_detail_number_i";
-        }
-        
-        /// get help text for column
-        public static string GetDetailNumberHelp()
-        {
-            return "The detail number within the invoice/ accounts payable.";
-        }
-        
-        /// get label of column
-        public static string GetDetailNumberLabel()
-        {
-            return "Detail Number";
-        }
-        
-        /// get display format for column
-        public static short GetDetailNumberLength()
-        {
-            return 5;
-        }
-        
-        /// get the name of the field in the database for this column
-        public static string GetAnalysisTypeCodeDBName()
-        {
-            return "a_analysis_type_code_c";
-        }
-        
-        /// get help text for column
-        public static string GetAnalysisTypeCodeHelp()
-        {
-            return "";
-        }
-        
-        /// get label of column
-        public static string GetAnalysisTypeCodeLabel()
-        {
-            return "Analysis Type Code";
-        }
-        
-        /// get character length for column
-        public static short GetAnalysisTypeCodeLength()
-        {
-            return 8;
-        }
-        
-        /// get the name of the field in the database for this column
-        public static string GetAccountCodeDBName()
-        {
-            return "a_account_code_c";
-        }
-        
-        /// get help text for column
-        public static string GetAccountCodeHelp()
-        {
-            return "Enter an account code";
-        }
-        
-        /// get label of column
-        public static string GetAccountCodeLabel()
-        {
-            return "Account Code";
-        }
-        
-        /// get character length for column
-        public static short GetAccountCodeLength()
-        {
-            return 8;
-        }
-        
-        /// get the name of the field in the database for this column
-        public static string GetAnalysisAttributeValueDBName()
-        {
-            return "a_analysis_attribute_value_c";
-        }
-        
-        /// get help text for column
-        public static string GetAnalysisAttributeValueHelp()
-        {
-            return "";
-        }
-        
-        /// get label of column
-        public static string GetAnalysisAttributeValueLabel()
-        {
-            return "Analysis Attribute Value";
-        }
-        
-        /// get character length for column
-        public static short GetAnalysisAttributeValueLength()
-        {
-            return 40;
-        }
-        
-        /// get the name of the field in the database for this column
-        public static string GetDateCreatedDBName()
-        {
-            return "s_date_created_d";
-        }
-        
-        /// get help text for column
-        public static string GetDateCreatedHelp()
-        {
-            return "The date the record was created.";
-        }
-        
-        /// get label of column
-        public static string GetDateCreatedLabel()
-        {
-            return "Created Date";
-        }
-        
-        /// get display format for column
-        public static short GetDateCreatedLength()
-        {
-            return 11;
-        }
-        
-        /// get the name of the field in the database for this column
-        public static string GetCreatedByDBName()
-        {
-            return "s_created_by_c";
-        }
-        
-        /// get help text for column
-        public static string GetCreatedByHelp()
-        {
-            return "User ID of who created this record.";
-        }
-        
-        /// get label of column
-        public static string GetCreatedByLabel()
-        {
-            return "Created By";
-        }
-        
-        /// get character length for column
-        public static short GetCreatedByLength()
-        {
-            return 10;
-        }
-        
-        /// get the name of the field in the database for this column
-        public static string GetDateModifiedDBName()
-        {
-            return "s_date_modified_d";
-        }
-        
-        /// get help text for column
-        public static string GetDateModifiedHelp()
-        {
-            return "The date the record was modified.";
-        }
-        
-        /// get label of column
-        public static string GetDateModifiedLabel()
-        {
-            return "Modified Date";
-        }
-        
-        /// get display format for column
-        public static short GetDateModifiedLength()
-        {
-            return 11;
-        }
-        
-        /// get the name of the field in the database for this column
-        public static string GetModifiedByDBName()
-        {
-            return "s_modified_by_c";
-        }
-        
-        /// get help text for column
-        public static string GetModifiedByHelp()
-        {
-            return "User ID of who last modified this record.";
-        }
-        
-        /// get label of column
-        public static string GetModifiedByLabel()
-        {
-            return "Modified By";
-        }
-        
-        /// get character length for column
-        public static short GetModifiedByLength()
-        {
-            return 10;
-        }
-        
-        /// get the name of the field in the database for this column
-        public static string GetModificationIdDBName()
-        {
-            return "s_modification_id_c";
-        }
-        
-        /// get help text for column
-        public static string GetModificationIdHelp()
-        {
-            return "This identifies the current version of the record.";
-        }
-        
-        /// get label of column
-        public static string GetModificationIdLabel()
-        {
-            return "";
-        }
-        
-        /// get character length for column
-        public static short GetModificationIdLength()
-        {
-            return 150;
-        }
-        
-        /// CamelCase version of the tablename
-        public static string GetTableName()
-        {
-            return "AApAnalAttrib";
-        }
-        
-        /// original name of table in the database
-        public static string GetTableDBName()
-        {
-            return "a_ap_anal_attrib";
-        }
-        
-        /// get table label for messages etc
-        public static string GetTableLabel()
-        {
-            return "AP Analysis Attributes";
-        }
-        
-        /// get the index number of fields that are part of the primary key
-        public static Int32[] GetPrimKeyColumnOrdList()
-        {
-            return new int[] {
-                    0,
-                    1,
-                    2,
-                    3};
-        }
-        
-        /// get the names of the columns
-        public static String[] GetColumnStringList()
-        {
-            return new string[] {
-                    "a_ledger_number_i",
-                    "a_ap_number_i",
-                    "a_detail_number_i",
-                    "a_analysis_type_code_c",
-                    "a_account_code_c",
-                    "a_analysis_attribute_value_c",
-                    "s_date_created_d",
-                    "s_created_by_c",
-                    "s_date_modified_d",
-                    "s_modified_by_c",
-                    "s_modification_id_c"};
-        }
-        
-        /// assign columns to properties, set primary key
-        public override void InitVars()
-        {
-            this.ColumnLedgerNumber = this.Columns["a_ledger_number_i"];
-            this.ColumnApNumber = this.Columns["a_ap_number_i"];
-            this.ColumnDetailNumber = this.Columns["a_detail_number_i"];
-            this.ColumnAnalysisTypeCode = this.Columns["a_analysis_type_code_c"];
-            this.ColumnAccountCode = this.Columns["a_account_code_c"];
-            this.ColumnAnalysisAttributeValue = this.Columns["a_analysis_attribute_value_c"];
-            this.ColumnDateCreated = this.Columns["s_date_created_d"];
-            this.ColumnCreatedBy = this.Columns["s_created_by_c"];
-            this.ColumnDateModified = this.Columns["s_date_modified_d"];
-            this.ColumnModifiedBy = this.Columns["s_modified_by_c"];
-            this.ColumnModificationId = this.Columns["s_modification_id_c"];
-            this.PrimaryKey = new System.Data.DataColumn[] {
-                    this.ColumnLedgerNumber,
-                    this.ColumnApNumber,
-                    this.ColumnDetailNumber,
-                    this.ColumnAnalysisTypeCode};
-        }
-        
-        /// get typed set of changes
-        public AApAnalAttribTable GetChangesTyped()
-        {
-            return ((AApAnalAttribTable)(base.GetChangesTypedInternal()));
-        }
-        
-        /// create a new typed row
-        public AApAnalAttribRow NewRowTyped(bool AWithDefaultValues)
-        {
-            AApAnalAttribRow ret = ((AApAnalAttribRow)(this.NewRow()));
-            if ((AWithDefaultValues == true))
-            {
-                ret.InitValues();
-            }
-            return ret;
-        }
-        
-        /// create a new typed row, always with default values
-        public AApAnalAttribRow NewRowTyped()
-        {
-            return this.NewRowTyped(true);
-        }
-        
-        /// new typed row using DataRowBuilder
-        protected override System.Data.DataRow NewRowFromBuilder(System.Data.DataRowBuilder builder)
-        {
-            return new AApAnalAttribRow(builder);
-        }
-        
+
         /// create the columns
         protected override void InitClass()
         {
@@ -9126,72 +6899,214 @@ namespace Ict.Petra.Shared.MFinance.AP.Data
             this.Columns.Add(new System.Data.DataColumn("s_modified_by_c", typeof(String)));
             this.Columns.Add(new System.Data.DataColumn("s_modification_id_c", typeof(String)));
         }
-        
-        /// prepare odbc parameters for given column
-        public override OdbcParameter CreateOdbcParameter(DataColumn ACol)
+
+        /// assign columns to properties, set primary key
+        public override void InitVars()
         {
-            if ((ACol == ColumnLedgerNumber))
-            {
-                return new System.Data.Odbc.OdbcParameter("", OdbcType.Int);
-            }
-            if ((ACol == ColumnApNumber))
-            {
-                return new System.Data.Odbc.OdbcParameter("", OdbcType.Int);
-            }
-            if ((ACol == ColumnDetailNumber))
-            {
-                return new System.Data.Odbc.OdbcParameter("", OdbcType.Int);
-            }
-            if ((ACol == ColumnAnalysisTypeCode))
-            {
-                return new System.Data.Odbc.OdbcParameter("", OdbcType.VarChar, 16);
-            }
-            if ((ACol == ColumnAccountCode))
-            {
-                return new System.Data.Odbc.OdbcParameter("", OdbcType.VarChar, 16);
-            }
-            if ((ACol == ColumnAnalysisAttributeValue))
-            {
-                return new System.Data.Odbc.OdbcParameter("", OdbcType.VarChar, 80);
-            }
-            if ((ACol == ColumnDateCreated))
-            {
-                return new System.Data.Odbc.OdbcParameter("", OdbcType.Date);
-            }
-            if ((ACol == ColumnCreatedBy))
-            {
-                return new System.Data.Odbc.OdbcParameter("", OdbcType.VarChar, 20);
-            }
-            if ((ACol == ColumnDateModified))
-            {
-                return new System.Data.Odbc.OdbcParameter("", OdbcType.Date);
-            }
-            if ((ACol == ColumnModifiedBy))
-            {
-                return new System.Data.Odbc.OdbcParameter("", OdbcType.VarChar, 20);
-            }
-            if ((ACol == ColumnModificationId))
-            {
-                return new System.Data.Odbc.OdbcParameter("", OdbcType.VarChar, 150);
-            }
-            return null;
+            this.ColumnLedgerNumber = this.Columns["a_ledger_number_i"];
+            this.ColumnApNumber = this.Columns["a_ap_number_i"];
+            this.ColumnDetailNumber = this.Columns["a_detail_number_i"];
+            this.ColumnAnalysisTypeCode = this.Columns["a_analysis_type_code_c"];
+            this.ColumnAccountCode = this.Columns["a_account_code_c"];
+            this.ColumnAnalysisAttributeValue = this.Columns["a_analysis_attribute_value_c"];
+            this.ColumnDateCreated = this.Columns["s_date_created_d"];
+            this.ColumnCreatedBy = this.Columns["s_created_by_c"];
+            this.ColumnDateModified = this.Columns["s_date_modified_d"];
+            this.ColumnModifiedBy = this.Columns["s_modified_by_c"];
+            this.ColumnModificationId = this.Columns["s_modification_id_c"];
         }
+
+        /// Access a typed row by index
+        public AApAnalAttribRow this[int i]
+        {
+            get
+            {
+                return ((AApAnalAttribRow)(this.Rows[i]));
+            }
+        }
+
+        /// create a new typed row
+        public AApAnalAttribRow NewRowTyped(bool AWithDefaultValues)
+        {
+            AApAnalAttribRow ret = ((AApAnalAttribRow)(this.NewRow()));
+            if ((AWithDefaultValues == true))
+            {
+                ret.InitValues();
+            }
+            return ret;
+        }
+
+        /// create a new typed row, always with default values
+        public AApAnalAttribRow NewRowTyped()
+        {
+            return this.NewRowTyped(true);
+        }
+
+        /// new typed row using DataRowBuilder
+        protected override System.Data.DataRow NewRowFromBuilder(System.Data.DataRowBuilder builder)
+        {
+            return new AApAnalAttribRow(builder);
+        }
+
+        /// get typed set of changes
+        public AApAnalAttribTable GetChangesTyped()
+        {
+            return ((AApAnalAttribTable)(base.GetChangesTypedInternal()));
+        }
+
+        /// get an odbc parameter for the given column
+        public override OdbcParameter CreateOdbcParameter(Int32 AColumnNr)
+        {
+            return CreateOdbcParameter(TableId, AColumnNr);
+        }
+
+        /// get the name of the field in the database for this column
+        protected static string GetLedgerNumberDBName()
+        {
+            return "a_ledger_number_i";
+        }
+
+        /// get character length for column
+        public static short GetLedgerNumberLength()
+        {
+            return -1;
+        }
+
+        /// get the name of the field in the database for this column
+        protected static string GetApNumberDBName()
+        {
+            return "a_ap_number_i";
+        }
+
+        /// get character length for column
+        public static short GetApNumberLength()
+        {
+            return -1;
+        }
+
+        /// get the name of the field in the database for this column
+        protected static string GetDetailNumberDBName()
+        {
+            return "a_detail_number_i";
+        }
+
+        /// get character length for column
+        public static short GetDetailNumberLength()
+        {
+            return -1;
+        }
+
+        /// get the name of the field in the database for this column
+        protected static string GetAnalysisTypeCodeDBName()
+        {
+            return "a_analysis_type_code_c";
+        }
+
+        /// get character length for column
+        public static short GetAnalysisTypeCodeLength()
+        {
+            return 16;
+        }
+
+        /// get the name of the field in the database for this column
+        protected static string GetAccountCodeDBName()
+        {
+            return "a_account_code_c";
+        }
+
+        /// get character length for column
+        public static short GetAccountCodeLength()
+        {
+            return 16;
+        }
+
+        /// get the name of the field in the database for this column
+        protected static string GetAnalysisAttributeValueDBName()
+        {
+            return "a_analysis_attribute_value_c";
+        }
+
+        /// get character length for column
+        public static short GetAnalysisAttributeValueLength()
+        {
+            return 80;
+        }
+
+        /// get the name of the field in the database for this column
+        protected static string GetDateCreatedDBName()
+        {
+            return "s_date_created_d";
+        }
+
+        /// get character length for column
+        public static short GetDateCreatedLength()
+        {
+            return -1;
+        }
+
+        /// get the name of the field in the database for this column
+        protected static string GetCreatedByDBName()
+        {
+            return "s_created_by_c";
+        }
+
+        /// get character length for column
+        public static short GetCreatedByLength()
+        {
+            return 20;
+        }
+
+        /// get the name of the field in the database for this column
+        protected static string GetDateModifiedDBName()
+        {
+            return "s_date_modified_d";
+        }
+
+        /// get character length for column
+        public static short GetDateModifiedLength()
+        {
+            return -1;
+        }
+
+        /// get the name of the field in the database for this column
+        protected static string GetModifiedByDBName()
+        {
+            return "s_modified_by_c";
+        }
+
+        /// get character length for column
+        public static short GetModifiedByLength()
+        {
+            return 20;
+        }
+
+        /// get the name of the field in the database for this column
+        protected static string GetModificationIdDBName()
+        {
+            return "s_modification_id_c";
+        }
+
+        /// get character length for column
+        public static short GetModificationIdLength()
+        {
+            return 150;
+        }
+
     }
-    
+
     /// Analysis Attributes applied to an AP for posting to the GL.
     [Serializable()]
     public class AApAnalAttribRow : System.Data.DataRow
     {
-        
         private AApAnalAttribTable myTable;
-        
+
         /// Constructor
-        public AApAnalAttribRow(System.Data.DataRowBuilder rb) : 
+        public AApAnalAttribRow(System.Data.DataRowBuilder rb) :
                 base(rb)
         {
             this.myTable = ((AApAnalAttribTable)(this.Table));
         }
-        
+
         /// The ledger that the attribute value is associated with.
         public Int32 LedgerNumber
         {
@@ -9210,14 +7125,14 @@ namespace Ict.Petra.Shared.MFinance.AP.Data
             }
             set
             {
-                if ((this.IsNull(this.myTable.ColumnLedgerNumber) 
+                if ((this.IsNull(this.myTable.ColumnLedgerNumber)
                             || (((Int32)(this[this.myTable.ColumnLedgerNumber])) != value)))
                 {
                     this[this.myTable.ColumnLedgerNumber] = value;
                 }
             }
         }
-        
+
         /// Accounts Payable Sequence Number
         public Int32 ApNumber
         {
@@ -9236,14 +7151,14 @@ namespace Ict.Petra.Shared.MFinance.AP.Data
             }
             set
             {
-                if ((this.IsNull(this.myTable.ColumnApNumber) 
+                if ((this.IsNull(this.myTable.ColumnApNumber)
                             || (((Int32)(this[this.myTable.ColumnApNumber])) != value)))
                 {
                     this[this.myTable.ColumnApNumber] = value;
                 }
             }
         }
-        
+
         /// The detail number within the invoice/ accounts payable.
         public Int32 DetailNumber
         {
@@ -9262,15 +7177,15 @@ namespace Ict.Petra.Shared.MFinance.AP.Data
             }
             set
             {
-                if ((this.IsNull(this.myTable.ColumnDetailNumber) 
+                if ((this.IsNull(this.myTable.ColumnDetailNumber)
                             || (((Int32)(this[this.myTable.ColumnDetailNumber])) != value)))
                 {
                     this[this.myTable.ColumnDetailNumber] = value;
                 }
             }
         }
-        
-        /// 
+
+        ///
         public String AnalysisTypeCode
         {
             get
@@ -9279,7 +7194,7 @@ namespace Ict.Petra.Shared.MFinance.AP.Data
                 ret = this[this.myTable.ColumnAnalysisTypeCode.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    return String.Empty;
+                    throw new System.Data.StrongTypingException("Error: DB null", null);
                 }
                 else
                 {
@@ -9288,14 +7203,14 @@ namespace Ict.Petra.Shared.MFinance.AP.Data
             }
             set
             {
-                if ((this.IsNull(this.myTable.ColumnAnalysisTypeCode) 
+                if ((this.IsNull(this.myTable.ColumnAnalysisTypeCode)
                             || (((String)(this[this.myTable.ColumnAnalysisTypeCode])) != value)))
                 {
                     this[this.myTable.ColumnAnalysisTypeCode] = value;
                 }
             }
         }
-        
+
         /// This identifies the account the financial transaction must be stored against
         public String AccountCode
         {
@@ -9305,7 +7220,7 @@ namespace Ict.Petra.Shared.MFinance.AP.Data
                 ret = this[this.myTable.ColumnAccountCode.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    return String.Empty;
+                    throw new System.Data.StrongTypingException("Error: DB null", null);
                 }
                 else
                 {
@@ -9314,15 +7229,15 @@ namespace Ict.Petra.Shared.MFinance.AP.Data
             }
             set
             {
-                if ((this.IsNull(this.myTable.ColumnAccountCode) 
+                if ((this.IsNull(this.myTable.ColumnAccountCode)
                             || (((String)(this[this.myTable.ColumnAccountCode])) != value)))
                 {
                     this[this.myTable.ColumnAccountCode] = value;
                 }
             }
         }
-        
-        /// 
+
+        ///
         public String AnalysisAttributeValue
         {
             get
@@ -9331,7 +7246,7 @@ namespace Ict.Petra.Shared.MFinance.AP.Data
                 ret = this[this.myTable.ColumnAnalysisAttributeValue.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    return String.Empty;
+                    throw new System.Data.StrongTypingException("Error: DB null", null);
                 }
                 else
                 {
@@ -9340,14 +7255,14 @@ namespace Ict.Petra.Shared.MFinance.AP.Data
             }
             set
             {
-                if ((this.IsNull(this.myTable.ColumnAnalysisAttributeValue) 
+                if ((this.IsNull(this.myTable.ColumnAnalysisAttributeValue)
                             || (((String)(this[this.myTable.ColumnAnalysisAttributeValue])) != value)))
                 {
                     this[this.myTable.ColumnAnalysisAttributeValue] = value;
                 }
             }
         }
-        
+
         /// The date the record was created.
         public System.DateTime DateCreated
         {
@@ -9366,32 +7281,14 @@ namespace Ict.Petra.Shared.MFinance.AP.Data
             }
             set
             {
-                if ((this.IsNull(this.myTable.ColumnDateCreated) 
+                if ((this.IsNull(this.myTable.ColumnDateCreated)
                             || (((System.DateTime)(this[this.myTable.ColumnDateCreated])) != value)))
                 {
                     this[this.myTable.ColumnDateCreated] = value;
                 }
             }
         }
-        
-        /// Returns the date value or the minimum date if the date is NULL
-        public System.DateTime DateCreatedLowNull
-        {
-            get
-            {
-                return TSaveConvert.ObjectToDate(this[this.myTable.ColumnDateCreated], TNullHandlingEnum.nhReturnLowestDate);
-            }
-        }
-        
-        /// Returns the date value or the maximum date if the date is NULL
-        public System.DateTime DateCreatedHighNull
-        {
-            get
-            {
-                return TSaveConvert.ObjectToDate(this[this.myTable.ColumnDateCreated.Ordinal], TNullHandlingEnum.nhReturnHighestDate);
-            }
-        }
-        
+
         /// User ID of who created this record.
         public String CreatedBy
         {
@@ -9401,7 +7298,7 @@ namespace Ict.Petra.Shared.MFinance.AP.Data
                 ret = this[this.myTable.ColumnCreatedBy.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    return String.Empty;
+                    throw new System.Data.StrongTypingException("Error: DB null", null);
                 }
                 else
                 {
@@ -9410,14 +7307,14 @@ namespace Ict.Petra.Shared.MFinance.AP.Data
             }
             set
             {
-                if ((this.IsNull(this.myTable.ColumnCreatedBy) 
+                if ((this.IsNull(this.myTable.ColumnCreatedBy)
                             || (((String)(this[this.myTable.ColumnCreatedBy])) != value)))
                 {
                     this[this.myTable.ColumnCreatedBy] = value;
                 }
             }
         }
-        
+
         /// The date the record was modified.
         public System.DateTime DateModified
         {
@@ -9436,32 +7333,14 @@ namespace Ict.Petra.Shared.MFinance.AP.Data
             }
             set
             {
-                if ((this.IsNull(this.myTable.ColumnDateModified) 
+                if ((this.IsNull(this.myTable.ColumnDateModified)
                             || (((System.DateTime)(this[this.myTable.ColumnDateModified])) != value)))
                 {
                     this[this.myTable.ColumnDateModified] = value;
                 }
             }
         }
-        
-        /// Returns the date value or the minimum date if the date is NULL
-        public System.DateTime DateModifiedLowNull
-        {
-            get
-            {
-                return TSaveConvert.ObjectToDate(this[this.myTable.ColumnDateModified], TNullHandlingEnum.nhReturnLowestDate);
-            }
-        }
-        
-        /// Returns the date value or the maximum date if the date is NULL
-        public System.DateTime DateModifiedHighNull
-        {
-            get
-            {
-                return TSaveConvert.ObjectToDate(this[this.myTable.ColumnDateModified.Ordinal], TNullHandlingEnum.nhReturnHighestDate);
-            }
-        }
-        
+
         /// User ID of who last modified this record.
         public String ModifiedBy
         {
@@ -9471,7 +7350,7 @@ namespace Ict.Petra.Shared.MFinance.AP.Data
                 ret = this[this.myTable.ColumnModifiedBy.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    return String.Empty;
+                    throw new System.Data.StrongTypingException("Error: DB null", null);
                 }
                 else
                 {
@@ -9480,14 +7359,14 @@ namespace Ict.Petra.Shared.MFinance.AP.Data
             }
             set
             {
-                if ((this.IsNull(this.myTable.ColumnModifiedBy) 
+                if ((this.IsNull(this.myTable.ColumnModifiedBy)
                             || (((String)(this[this.myTable.ColumnModifiedBy])) != value)))
                 {
                     this[this.myTable.ColumnModifiedBy] = value;
                 }
             }
         }
-        
+
         /// This identifies the current version of the record.
         public String ModificationId
         {
@@ -9497,7 +7376,7 @@ namespace Ict.Petra.Shared.MFinance.AP.Data
                 ret = this[this.myTable.ColumnModificationId.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    return String.Empty;
+                    throw new System.Data.StrongTypingException("Error: DB null", null);
                 }
                 else
                 {
@@ -9506,14 +7385,14 @@ namespace Ict.Petra.Shared.MFinance.AP.Data
             }
             set
             {
-                if ((this.IsNull(this.myTable.ColumnModificationId) 
+                if ((this.IsNull(this.myTable.ColumnModificationId)
                             || (((String)(this[this.myTable.ColumnModificationId])) != value)))
                 {
                     this[this.myTable.ColumnModificationId] = value;
                 }
             }
         }
-        
+
         /// set default values
         public virtual void InitValues()
         {
@@ -9529,73 +7408,133 @@ namespace Ict.Petra.Shared.MFinance.AP.Data
             this.SetNull(this.myTable.ColumnModifiedBy);
             this.SetNull(this.myTable.ColumnModificationId);
         }
-        
+
+        /// test for NULL value
+        public bool IsLedgerNumberNull()
+        {
+            return this.IsNull(this.myTable.ColumnLedgerNumber);
+        }
+
+        /// assign NULL value
+        public void SetLedgerNumberNull()
+        {
+            this.SetNull(this.myTable.ColumnLedgerNumber);
+        }
+
+        /// test for NULL value
+        public bool IsApNumberNull()
+        {
+            return this.IsNull(this.myTable.ColumnApNumber);
+        }
+
+        /// assign NULL value
+        public void SetApNumberNull()
+        {
+            this.SetNull(this.myTable.ColumnApNumber);
+        }
+
+        /// test for NULL value
+        public bool IsDetailNumberNull()
+        {
+            return this.IsNull(this.myTable.ColumnDetailNumber);
+        }
+
+        /// assign NULL value
+        public void SetDetailNumberNull()
+        {
+            this.SetNull(this.myTable.ColumnDetailNumber);
+        }
+
+        /// test for NULL value
+        public bool IsAnalysisTypeCodeNull()
+        {
+            return this.IsNull(this.myTable.ColumnAnalysisTypeCode);
+        }
+
+        /// assign NULL value
+        public void SetAnalysisTypeCodeNull()
+        {
+            this.SetNull(this.myTable.ColumnAnalysisTypeCode);
+        }
+
+        /// test for NULL value
+        public bool IsAccountCodeNull()
+        {
+            return this.IsNull(this.myTable.ColumnAccountCode);
+        }
+
+        /// assign NULL value
+        public void SetAccountCodeNull()
+        {
+            this.SetNull(this.myTable.ColumnAccountCode);
+        }
+
         /// test for NULL value
         public bool IsAnalysisAttributeValueNull()
         {
             return this.IsNull(this.myTable.ColumnAnalysisAttributeValue);
         }
-        
+
         /// assign NULL value
         public void SetAnalysisAttributeValueNull()
         {
             this.SetNull(this.myTable.ColumnAnalysisAttributeValue);
         }
-        
+
         /// test for NULL value
         public bool IsDateCreatedNull()
         {
             return this.IsNull(this.myTable.ColumnDateCreated);
         }
-        
+
         /// assign NULL value
         public void SetDateCreatedNull()
         {
             this.SetNull(this.myTable.ColumnDateCreated);
         }
-        
+
         /// test for NULL value
         public bool IsCreatedByNull()
         {
             return this.IsNull(this.myTable.ColumnCreatedBy);
         }
-        
+
         /// assign NULL value
         public void SetCreatedByNull()
         {
             this.SetNull(this.myTable.ColumnCreatedBy);
         }
-        
+
         /// test for NULL value
         public bool IsDateModifiedNull()
         {
             return this.IsNull(this.myTable.ColumnDateModified);
         }
-        
+
         /// assign NULL value
         public void SetDateModifiedNull()
         {
             this.SetNull(this.myTable.ColumnDateModified);
         }
-        
+
         /// test for NULL value
         public bool IsModifiedByNull()
         {
             return this.IsNull(this.myTable.ColumnModifiedBy);
         }
-        
+
         /// assign NULL value
         public void SetModifiedByNull()
         {
             this.SetNull(this.myTable.ColumnModifiedBy);
         }
-        
+
         /// test for NULL value
         public bool IsModificationIdNull()
         {
             return this.IsNull(this.myTable.ColumnModificationId);
         }
-        
+
         /// assign NULL value
         public void SetModificationIdNull()
         {

@@ -236,9 +236,13 @@ namespace Ict.Common.DB
         /// IDbDataAdapter was created with NewAdapter
         /// </summary>
         /// <param name="TheAdapter"></param>
+        /// <param name="AStartRecord"></param>
+        /// <param name="AMaxRecords"></param>
         /// <param name="AFillDataTable"></param>
         public void FillAdapter(IDbDataAdapter TheAdapter,
-            ref DataTable AFillDataTable)
+            ref DataTable AFillDataTable,
+            Int32 AStartRecord,
+            Int32 AMaxRecords)
         {
             ((OdbcDataAdapter)TheAdapter).Fill(AFillDataTable);
             ConvertToUnicode(AFillDataTable.Rows);

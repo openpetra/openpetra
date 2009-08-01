@@ -26,6 +26,7 @@
 using System;
 using System.Data;
 using System.Data.Odbc;
+using System.Collections.Generic;
 using System.Runtime.Serialization;
 
 namespace Ict.Common.Data
@@ -91,7 +92,7 @@ namespace Ict.Common.Data
         /// <summary>
         /// abstract method to be implemented by generated code
         /// </summary>
-        public abstract OdbcParameter CreateOdbcParameter(DataColumn ACol);
+        public abstract OdbcParameter CreateOdbcParameter(Int32 AColNumber);
 
         /// <summary>
         /// make sure that we use GetChangesType instead of GetChanges
@@ -141,6 +142,150 @@ namespace Ict.Common.Data
         public void RemoveColumnsNotInTableTemplate(DataTable ATableTemplate)
         {
             DataUtilities.RemoveColumnsNotInTableTemplate(this, ATableTemplate);
+        }
+
+        /// <summary>
+        /// stores information about typed tables
+        /// </summary>
+        protected static SortedList <short, TTypedTableInfo>TableInfo = new SortedList <short, TTypedTableInfo>();
+
+        /// will be filled by generated code
+        public class TTypedColumnInfo
+        {
+            /// identification of the column, by order
+            public short orderNumber;
+
+            /// nice name of column (CamelCase)
+            public string name;
+
+            /// name of the column as it is in the SQL database
+            public string dbname;
+
+            /// odbc type of the column
+            public System.Data.Odbc.OdbcType odbctype;
+
+            /// if this type has a length, here it is
+            public Int32 length;
+
+            /// can the column never be NULL
+            public bool bNotNull;
+
+            /// constructor
+            public TTypedColumnInfo(short AOrderNumber,
+                string AName,
+                string ADBName,
+                System.Data.Odbc.OdbcType AOdbcType,
+                Int32 ALength,
+                bool ANotNull)
+            {
+                orderNumber = AOrderNumber;
+                name = AName;
+                dbname = ADBName;
+                odbctype = AOdbcType;
+                length = ALength;
+                bNotNull = ANotNull;
+            }
+        }
+
+        /// will be filled by generated code
+        public class TTypedTableInfo
+        {
+            /// identification of the table, by order
+            public short id;
+
+            /// nice name of table (CamelCase)
+            public string name;
+
+            /// name of the table as it is in the SQL database
+            public string dbname;
+
+            /// the names of the columns that are part of the primary key
+            public string[] PrimaryKeyColumns;
+
+            /// the columns of this table
+            public TTypedColumnInfo[] columns;
+
+            /// constructor
+            public TTypedTableInfo(short AId, string AName, string ADBName, TTypedColumnInfo[] AColumns, string[] APrimaryKeyColumns)
+            {
+                id = AId;
+                name = AName;
+                dbname = ADBName;
+                columns = AColumns;
+                PrimaryKeyColumns = APrimaryKeyColumns;
+            }
+        }
+
+        /// the table name as it is in the SQL database
+        public static string GetTableNameSQL(short ATableNumber)
+        {
+            return TableInfo[ATableNumber].dbname;
+        }
+
+        /// the table name in CamelCase
+        public static string GetTableName(short ATableNumber)
+        {
+            return TableInfo[ATableNumber].name;
+        }
+
+        /// get the names of the columns that are part of the primary key
+        public static string[] GetPrimaryKeyColumnStringList(short ATableNumber)
+        {
+            return TableInfo[ATableNumber].PrimaryKeyColumns;
+        }
+
+        /// get the names of the columns in this table
+        public static string[] GetColumnStringList(short ATableNumber)
+        {
+            string[] ReturnValue = new string[TableInfo[ATableNumber].columns.Length];
+            short counter = 0;
+
+            foreach (TTypedColumnInfo col in TableInfo[ATableNumber].columns)
+            {
+                ReturnValue[counter++] = col.dbname;
+            }
+
+            return ReturnValue;
+        }
+
+        /// get the details of a column
+        private static TTypedColumnInfo GetColumn(short ATableNumber, string colname)
+        {
+            foreach (TTypedColumnInfo col in TableInfo[ATableNumber].columns)
+            {
+                if ((col.name == colname) || (col.dbname == colname))
+                {
+                    return col;
+                }
+            }
+
+            throw new Exception("TTypedDataTable::GetColumn cannot find column " + colname);
+        }
+
+        /// create an odbc parameter for the given column
+        public static OdbcParameter CreateOdbcParameter(short ATableNumber, TSearchCriteria ASearchCriteria)
+        {
+            TTypedColumnInfo columnInfo = GetColumn(ATableNumber, ASearchCriteria.fieldname);
+
+            if (columnInfo.odbctype == OdbcType.VarChar)
+            {
+                return new System.Data.Odbc.OdbcParameter("", columnInfo.odbctype, columnInfo.length);
+            }
+
+            return new System.Data.Odbc.OdbcParameter("", columnInfo.odbctype);
+        }
+
+        /// create an odbc parameter for the given column
+        public static OdbcParameter CreateOdbcParameter(short ATableNumber, Int32 AColumnNr)
+        {
+            TTypedColumnInfo columnInfo = TableInfo[ATableNumber].columns[AColumnNr];
+
+            if (columnInfo.odbctype == OdbcType.VarChar)
+            {
+                return new System.Data.Odbc.OdbcParameter("", columnInfo.odbctype, columnInfo.length);
+            }
+
+            return new System.Data.Odbc.OdbcParameter("", columnInfo.odbctype);
         }
     }
 }

@@ -18,14 +18,14 @@
     
     <DataSet name="CacheableTablesTDS">
         <CustomTable name="Contents">
-            <CustomField name="TableName" type="string"/>       <!-- Name of the Cached DataTable -->
-            <CustomField name="DataUpToDate" type="boolean"/>       <!-- Tells whether the data in the Cached DataTable is the same than the external source of the data -->
-            <CustomField name="DataChanged" type="boolean"/>        <!-- Tells whether data in the Cached DataTable was changed -->
-            <CustomField name="ChangesSavedExternally" type="boolean"/> <!-- Tells whether changed data in the CachedDataTable was saved externally -->
-            <CustomField name="CachedSince" type="datetime"/>       <!-- Date and Time when the DataTable was added to the Cache -->
-            <CustomField name="LastAccessed" type="datetime"/>      <!-- Date and Time when the DataTable was last handed out of the Cache -->
-            <CustomField name="HashCode" type="string"/>        <!-- HashCode of the Cached DataTable -->
-            <CustomField name="TableSize" type="int32"/>            <!-- Size of the contents of the Cached DataTable (in Bytes) -->
+            <CustomField name="TableName" type="string" comment="Name of the Cached DataTable" />
+            <CustomField name="DataUpToDate" type="bool" comment="Tells whether the data in the Cached DataTable is the same than the external source of the data" />
+            <CustomField name="DataChanged" type="bool" comment="Tells whether data in the Cached DataTable was changed" />
+            <CustomField name="ChangesSavedExternally" type="bool" comment="Tells whether changed data in the CachedDataTable was saved externally" />
+            <CustomField name="CachedSince" type="DateTime" comment="Date and Time when the DataTable was added to the Cache" />
+            <CustomField name="LastAccessed" type="DateTime" comment="Date and Time when the DataTable was last handed out of the Cache" />
+            <CustomField name="HashCode" type="string" comment="HashCode of the Cached DataTable" />
+            <CustomField name="TableSize" type="Int32" comment="Size of the contents of the Cached DataTable (in Bytes)" />
             
             <primarykey thisFields="TableName"/>
         </CustomTable>    

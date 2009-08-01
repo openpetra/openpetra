@@ -44,10 +44,10 @@ namespace Ict.Tools.CodeGeneration.DataStore
         public const Int32 CASCADING_DELETE_MAX_REFERENCES = 9;
 
         private static void PrepareCodeletsPrimaryKey(
-                TTable ACurrentTable,
-                out string csvListPrimaryKeyFields,
-                out string formalParametersPrimaryKey,
-                out string actualParametersPrimaryKey)
+            TTable ACurrentTable,
+            out string csvListPrimaryKeyFields,
+            out string formalParametersPrimaryKey,
+            out string actualParametersPrimaryKey)
         {
             csvListPrimaryKeyFields = "";
             formalParametersPrimaryKey = "";
@@ -58,7 +58,7 @@ namespace Ict.Tools.CodeGeneration.DataStore
             {
                 return;
             }
-            
+
             foreach (string field in ACurrentTable.GetPrimaryKey().strThisFields)
             {
                 if (counterPrimaryKeyField > 0)
@@ -67,13 +67,13 @@ namespace Ict.Tools.CodeGeneration.DataStore
                     formalParametersPrimaryKey += ", ";
                     actualParametersPrimaryKey += ", ";
                 }
-                
+
                 TTableField typedField = ACurrentTable.GetField(field);
-                
+
                 csvListPrimaryKeyFields += field;
                 formalParametersPrimaryKey += typedField.GetDotNetType() + " A" + TTable.NiceFieldName(field);
                 actualParametersPrimaryKey += "A" + TTable.NiceFieldName(field);
-                
+
                 counterPrimaryKeyField++;
             }
         }
@@ -86,10 +86,13 @@ namespace Ict.Tools.CodeGeneration.DataStore
         /// <param name="ATemplate"></param>
         /// <param name="ASnippet"></param>
         /// <returns>false if no cascading available</returns>
-        private static bool InsertMainProcedures(TDataDefinitionStore AStore, TTable ACurrentTable, ProcessTemplate ATemplate, ProcessTemplate ASnippet)
+        private static bool InsertMainProcedures(TDataDefinitionStore AStore,
+            TTable ACurrentTable,
+            ProcessTemplate ATemplate,
+            ProcessTemplate ASnippet)
         {
             // for the moment, don't implement it for too big tables, e.g. s_user)
-            if (!ACurrentTable.HasPrimaryKey() || ACurrentTable.FReferenced.Count > CASCADING_DELETE_MAX_REFERENCES)
+            if (!ACurrentTable.HasPrimaryKey() || (ACurrentTable.FReferenced.Count > CASCADING_DELETE_MAX_REFERENCES))
             {
                 return false;
             }
@@ -101,14 +104,14 @@ namespace Ict.Tools.CodeGeneration.DataStore
             string actualParametersPrimaryKey;
 
             PrepareCodeletsPrimaryKey(ACurrentTable,
-                    out csvListPrimaryKeyFields,
-                    out formalParametersPrimaryKey,
-                    out actualParametersPrimaryKey);
-            
+                out csvListPrimaryKeyFields,
+                out formalParametersPrimaryKey,
+                out actualParametersPrimaryKey);
+
             ASnippet.AddToCodelet("CSVLISTPRIMARYKEYFIELDS", csvListPrimaryKeyFields);
             ASnippet.AddToCodelet("FORMALPARAMETERSPRIMARYKEY", formalParametersPrimaryKey);
             ASnippet.AddToCodelet("ACTUALPARAMETERSPRIMARYKEY", actualParametersPrimaryKey);
-            
+
             foreach (TConstraint constraint in ACurrentTable.FReferenced)
             {
                 if (AStore.GetTable(constraint.strThisTable).HasPrimaryKey())
@@ -117,15 +120,15 @@ namespace Ict.Tools.CodeGeneration.DataStore
                     string notUsed;
                     TTable OtherTable = AStore.GetTable(constraint.strThisTable);
                     PrepareCodeletsPrimaryKey(OtherTable,
-                            out csvListOtherPrimaryKeyFields,
-                            out notUsed,
-                            out notUsed);
+                        out csvListOtherPrimaryKeyFields,
+                        out notUsed,
+                        out notUsed);
 
                     // check if other foreign key exists that references the same table, e.g.
                     // PBankAccess.LoadViaPPartnerPartnerKey
                     // PBankAccess.LoadViaPPartnerContactPartnerKey
                     string DifferentField = codeGenerationAccess.FindOtherConstraintSameOtherTable(
-                        OtherTable.grpConstraint.List, 
+                        OtherTable.grpConstraint.List,
                         constraint);
                     string LoadViaProcedureName = TTable.NiceTableName(ACurrentTable.strName);
                     string MyOtherTableName = "My" + TTable.NiceTableName(constraint.strThisTable);
@@ -135,42 +138,47 @@ namespace Ict.Tools.CodeGeneration.DataStore
                         LoadViaProcedureName += TTable.NiceFieldName(DifferentField);
                         MyOtherTableName += TTable.NiceFieldName(DifferentField);
                     }
-                    
+
                     ProcessTemplate snippetDelete = ASnippet.GetSnippet("DELETEBYPRIMARYKEYCASCADING");
                     snippetDelete.SetCodelet("OTHERTABLENAME", TTable.NiceTableName(constraint.strThisTable));
                     snippetDelete.SetCodelet("MYOTHERTABLENAME", MyOtherTableName);
                     snippetDelete.SetCodelet("VIAPROCEDURENAME", "Via" + LoadViaProcedureName);
                     snippetDelete.SetCodelet("CSVLISTOTHERPRIMARYKEYFIELDS", csvListOtherPrimaryKeyFields);
+
                     if (OtherTable.FReferenced.Count <= CASCADING_DELETE_MAX_REFERENCES)
                     {
                         snippetDelete.SetCodelet("OTHERTABLEALSOCASCADING", "true");
                     }
+
                     ASnippet.InsertSnippet("DELETEBYPRIMARYKEYCASCADING", snippetDelete);
-                    
+
                     snippetDelete = ASnippet.GetSnippet("DELETEBYTEMPLATECASCADING");
                     snippetDelete.SetCodelet("OTHERTABLENAME", TTable.NiceTableName(constraint.strThisTable));
                     snippetDelete.SetCodelet("MYOTHERTABLENAME", MyOtherTableName);
                     snippetDelete.SetCodelet("VIAPROCEDURENAME", "Via" + LoadViaProcedureName);
                     snippetDelete.SetCodelet("CSVLISTOTHERPRIMARYKEYFIELDS", csvListOtherPrimaryKeyFields);
+
                     if (OtherTable.FReferenced.Count <= CASCADING_DELETE_MAX_REFERENCES)
                     {
                         snippetDelete.SetCodelet("OTHERTABLEALSOCASCADING", "true");
                     }
+
                     ASnippet.InsertSnippet("DELETEBYTEMPLATECASCADING", snippetDelete);
                 }
             }
+
             return true;
         }
-        
+
         public static Boolean WriteTypedDataCascading(TDataDefinitionStore AStore, string AFilePath, string ANamespaceName, string AFileName)
         {
             Console.WriteLine("writing namespace " + ANamespaceName);
-            
+
             TAppSettingsManager opts = new TAppSettingsManager(false);
             string templateDir = opts.GetValue("TemplateDir", true);
             ProcessTemplate Template = new ProcessTemplate(templateDir + Path.DirectorySeparatorChar +
-                                                           "ORM" + Path.DirectorySeparatorChar + 
-                                                           "DataCascading.cs");
+                "ORM" + Path.DirectorySeparatorChar +
+                "DataCascading.cs");
 
             Template.AddToCodelet("NAMESPACE", ANamespaceName);
 
@@ -184,19 +192,19 @@ namespace Ict.Tools.CodeGeneration.DataStore
             foreach (TTable currentTable in AStore.GetTables())
             {
                 ProcessTemplate snippet = Template.GetSnippet("TABLECASCADING");
-                
+
                 if (InsertMainProcedures(AStore, currentTable, Template, snippet))
                 {
-                    Template.AddToCodelet("USINGNAMESPACES", 
-                                  codeGenerationAccess.GetNamespace(currentTable.strGroup), false);
-                    Template.AddToCodelet("USINGNAMESPACES", 
-                                  codeGenerationAccess.GetNamespace(currentTable.strGroup).Replace(
-                                              ".Data;", ".Data.Access;"), false);
-                
+                    Template.AddToCodelet("USINGNAMESPACES",
+                        codeGenerationAccess.GetNamespace(currentTable.strGroup), false);
+                    Template.AddToCodelet("USINGNAMESPACES",
+                        codeGenerationAccess.GetNamespace(currentTable.strGroup).Replace(
+                            ".Data;", ".Data.Access;"), false);
+
                     Template.InsertSnippet("TABLECASCADINGLOOP", snippet);
                 }
             }
-            
+
             Template.FinishWriting(AFilePath + AFileName + ".cs", ".cs", true);
 
             return true;

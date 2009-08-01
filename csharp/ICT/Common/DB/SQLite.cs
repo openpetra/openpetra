@@ -281,8 +281,12 @@ namespace Ict.Common.DB
         /// </summary>
         /// <param name="TheAdapter"></param>
         /// <param name="AFillDataTable"></param>
+        /// <param name="AStartRecord"></param>
+        /// <param name="AMaxRecords"></param>
         public void FillAdapter(IDbDataAdapter TheAdapter,
-            ref DataTable AFillDataTable)
+            ref DataTable AFillDataTable,
+            Int32 AStartRecord,
+            Int32 AMaxRecords)
         {
             ((SQLiteDataAdapter)TheAdapter).Fill(AFillDataTable);
         }

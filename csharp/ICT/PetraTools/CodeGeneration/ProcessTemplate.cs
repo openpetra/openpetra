@@ -59,28 +59,48 @@ namespace Ict.Tools.CodeGeneration
             StreamReader r;
             r = File.OpenText(AFullPath);
             FTemplateCode = r.ReadToEnd();
-            
+
             // split off snippets (identified by "{##")
             if (FTemplateCode.Contains("{##"))
             {
                 StringCollection snippets = StringHelper.StrSplit(FTemplateCode, "{##");
-                
+
                 // first part is the actual template code
                 FTemplateCode = snippets[0];
 
-                for (int counter = 1; counter < snippets.Count; counter ++)
+                for (int counter = 1; counter < snippets.Count; counter++)
                 {
                     string snippetName = snippets[counter].Substring(0, snippets[counter].IndexOf("}"));
+
                     // exclude first newline
                     string snippetText = snippets[counter].Substring(snippets[counter].IndexOf(Environment.NewLine) + Environment.NewLine.Length);
-                    
+
                     // remove all whitespaces from the end
-                    snippetText = snippetText.TrimEnd(new char[] {'\n', '\r', ' ', '\t'});
+                    snippetText = snippetText.TrimEnd(new char[] { '\n', '\r', ' ', '\t' });
                     FSnippets.Add(snippetName, snippetText);
                 }
             }
-            
+
             r.Close();
+        }
+
+        /// <summary>
+        /// add snippets from another template file
+        /// (eg. for writing datasets, we want to reuse the table template for custom tables)
+        /// </summary>
+        /// <param name="AFilePath"></param>
+        public void AddSnippetsFromOtherFile(string AFilePath)
+        {
+            ProcessTemplate temp = new ProcessTemplate(AFilePath);
+
+            foreach (string key in temp.FSnippets.Keys)
+            {
+                // don't overwrite own snippets with same name
+                if (!this.FSnippets.ContainsKey(key))
+                {
+                    this.FSnippets.Add(key, (string)temp.FSnippets[key]);
+                }
+            }
         }
 
         /// <summary>
@@ -91,15 +111,18 @@ namespace Ict.Tools.CodeGeneration
         public ProcessTemplate GetSnippet(string ASnippetName)
         {
             ProcessTemplate snippetTemplate = new ProcessTemplate();
+
             snippetTemplate.FTemplateCode = (string)FSnippets[ASnippetName];
+
             if (snippetTemplate.FTemplateCode == null)
             {
                 throw new Exception("cannot find snippet with name " + ASnippetName);
             }
+
             snippetTemplate.FSnippets = this.FSnippets;
             return snippetTemplate;
         }
-        
+
         /// <summary>
         /// insert the snippet into the current template, into the given codelet
         /// </summary>
@@ -108,13 +131,15 @@ namespace Ict.Tools.CodeGeneration
         public void InsertSnippet(string ACodeletName, ProcessTemplate ASnippet)
         {
             ASnippet.ReplaceCodelets();
+
             if (FCodelets.ContainsKey(ACodeletName))
             {
-                AddToCodelet(ACodeletName, Environment.NewLine);    
+                AddToCodelet(ACodeletName, Environment.NewLine);
             }
+
             AddToCodelet(ACodeletName, ASnippet.FTemplateCode);
         }
-        
+
         // check if all placeholders have been replaced in the template; ignore IFDEF
         public Boolean CheckTemplateCompletion(string s)
         {
@@ -167,7 +192,7 @@ namespace Ict.Tools.CodeGeneration
                 string after = s.Substring(s.IndexOf(Environment.NewLine, posPlaceholderAfter));
 
                 s = before + after;
-                    
+
                 posPlaceholder = s.IndexOf("{#IFDEF ");
             }
 
@@ -185,7 +210,7 @@ namespace Ict.Tools.CodeGeneration
                 if (posPlaceholderAfter == -1)
                 {
                     Console.WriteLine("problem in area: " + Environment.NewLine +
-                                      s.Substring(posPlaceholder - 200, 500));
+                        s.Substring(posPlaceholder - 200, 500));
                     throw new Exception("The template has a bug. " +
                         Environment.NewLine + "We are missing the ENDIFN for: " + APlaceHolderName);
                 }
@@ -194,13 +219,13 @@ namespace Ict.Tools.CodeGeneration
                 string after = s.Substring(s.IndexOf(Environment.NewLine, posPlaceholderAfter));
 
                 s = before + after;
-                    
+
                 posPlaceholder = s.IndexOf("{#IFNDEF " + APlaceHolderName + "}");
             }
 
             return s;
         }
-        
+
         public string ActivateDefinedIFDEF(string s, string APlaceholder)
         {
             s = s.Replace("{#IFDEF " + APlaceholder + "}" + Environment.NewLine, "");
@@ -217,7 +242,7 @@ namespace Ict.Tools.CodeGeneration
             while (posPlaceholder > -1)
             {
                 string name = s.Substring(posPlaceholder + 9, s.IndexOf("}", posPlaceholder) - posPlaceholder - 9);
-                
+
                 s = s.Replace("{#IFNDEF " + name + "}" + Environment.NewLine, "");
                 s = s.Replace("{#IFNDEF " + name + "}", "");
                 s = s.Replace("{#ENDIFN " + name + "}" + Environment.NewLine, "");
@@ -228,7 +253,7 @@ namespace Ict.Tools.CodeGeneration
 
             return s;
         }
-        
+
         private int GetNextParameterisedTemplate(string APlaceholder, int posPlaceholder, ref ArrayList result)
         {
             int posEndPlaceholder = FTemplateCode.IndexOf("}", posPlaceholder);
@@ -338,14 +363,16 @@ namespace Ict.Tools.CodeGeneration
             }
 
             int index = FCodelets.IndexOfKey(APlaceholder + FCodeletPostfix);
+
             if (!AAddDuplicates && FCodelets.GetByIndex(index).ToString().Contains(ACodelet))
             {
                 return FCodelets.GetByIndex(index).ToString();
             }
+
             FCodelets.SetByIndex(index, FCodelets.GetByIndex(index) + ACodelet);
             return FCodelets.GetByIndex(index).ToString();
         }
-        
+
         // create a new codelet, overwrites existing one
         public string SetCodelet(string APlaceholder, string ACodelet)
         {
@@ -357,6 +384,26 @@ namespace Ict.Tools.CodeGeneration
             int index = FCodelets.IndexOfKey(APlaceholder + FCodeletPostfix);
             FCodelets.SetByIndex(index, ACodelet);
             return FCodelets.GetByIndex(index).ToString();
+        }
+
+        /// special way of splitting a multiline comment into several lines with comment slashes
+        public void SetCodeletComment(string APlaceholder, string AMultiLineComment)
+        {
+            StringCollection descrLines = StringHelper.StrSplit(AMultiLineComment, Environment.NewLine);
+
+            SetCodelet(APlaceholder, "");
+            int countDescrLines = 0;
+
+            foreach (string line in descrLines)
+            {
+                AddToCodelet(APlaceholder, "/// " + line.Replace("&", "&amp;").Replace("<", "&lt;").Replace(">", "&gt;"));
+                countDescrLines++;
+
+                if (countDescrLines != descrLines.Count)
+                {
+                    AddToCodelet(APlaceholder, Environment.NewLine);
+                }
+            }
         }
 
         protected void ReplaceCodelets()
@@ -441,19 +488,25 @@ namespace Ict.Tools.CodeGeneration
                     return false; // place holder cannot be found, so no replacement necessary
                 }
 
-                string placeHolderLine = FTemplateCode.Substring(FTemplateCode.LastIndexOf(Environment.NewLine, posPlaceholder + 1) + Environment.NewLine.Length + 1);
-                placeHolderLine = placeHolderLine.Substring(0, placeHolderLine.IndexOf(Environment.NewLine));
+                string placeHolderLine = FTemplateCode.Substring(FTemplateCode.LastIndexOf(Environment.NewLine,
+                        posPlaceholder + 1) + Environment.NewLine.Length + 1);
+
+                if (placeHolderLine.IndexOf(Environment.NewLine) != -1)
+                {
+                    placeHolderLine = placeHolderLine.Substring(0, placeHolderLine.IndexOf(Environment.NewLine));
+                }
+
                 if (placeHolderLine.Trim() == "{#" + APlaceholder + "}")
                 {
                     // replace the whole line
                     int posNewline = FTemplateCode.Substring(0, posPlaceholder).LastIndexOf(Environment.NewLine);
                     string before = FTemplateCode.Substring(0, posNewline);
                     string after = FTemplateCode.Substring(FTemplateCode.IndexOf(Environment.NewLine, posPlaceholder + 1));
-    
+
                     // indent the value by the given whitespaces
                     string whitespaces = FTemplateCode.Substring(posNewline, posPlaceholder - posNewline);
-                    AValue = whitespaces + AValue.Replace(Environment.NewLine, whitespaces).TrimEnd(new char[] {'\n', '\r', ' ', '\t'});
-                    
+                    AValue = whitespaces + AValue.Replace(Environment.NewLine, whitespaces).TrimEnd(new char[] { '\n', '\r', ' ', '\t' });
+
                     // for debugging
 //                    if (false && APlaceholder == "ODBCPARAMETERSFOREIGNKEY")
 //                    {
@@ -461,7 +514,7 @@ namespace Ict.Tools.CodeGeneration
 //                        Console.WriteLine(FTemplateCode.Substring(before.Length - 20, AValue.Length + 60));
 //                        Environment.Exit(-2);
 //                    }
-                    
+
                     FTemplateCode = before + AValue + after;
                 }
                 else

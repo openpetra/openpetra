@@ -366,7 +366,7 @@ namespace Ict.Common.Data
         /// </summary>
         /// <returns>the Select Clause
         /// </returns>
-        public static String GenerateSelectClause(StringCollection AFieldList, string[] APrimaryKeyFields)
+        public static String GenerateSelectClause(StringCollection AFieldList, short ATableID)
         {
             String ReturnValue = "";
 
@@ -380,11 +380,13 @@ namespace Ict.Common.Data
             {
                 ReturnValue = ReturnValue + StringHelper.StrMerge(AFieldList, ",");
 
-                foreach (string primkeyField in APrimaryKeyFields)
+                string[] PrimKeyColumnStringList = TTypedDataTable.GetPrimaryKeyColumnStringList(ATableID);
+
+                foreach (string primKeyColumn in PrimKeyColumnStringList)
                 {
-                    if ((!AFieldList.Contains(primkeyField)))
+                    if ((!AFieldList.Contains(primKeyColumn)))
                     {
-                        ReturnValue = ReturnValue + ',' + primkeyField;
+                        ReturnValue = ReturnValue + ',' + primKeyColumn;
                     }
                 }
 
@@ -537,6 +539,49 @@ namespace Ict.Common.Data
         }
 
         /// <summary>
+        /// This function expects an empty table that contains all existing columns,
+        /// and search criteria.
+        /// It will return a Where clause, using the given values.
+        /// </summary>
+        /// <param name="AColumnNames">the column names</param>
+        /// <param name="ASearchCriteria"></param>
+        /// <param name="ATemplateOperators">Every template field can have an operator; the default version always used = or LIKE</param>
+        /// <returns>the Where Clause
+        /// </returns>
+        public static String GenerateWhereClause(string[] AColumnNames, TSearchCriteria[] ASearchCriteria, StringCollection ATemplateOperators)
+        {
+            String ReturnValue = "";
+
+            foreach (TSearchCriteria searchcriterium in ASearchCriteria)
+            {
+                if (ReturnValue.Length == 0)                     //first time around
+                {
+                    ReturnValue = " WHERE ";
+                }
+                else
+                {
+                    ReturnValue += " AND ";
+                }
+
+                ReturnValue += searchcriterium.fieldname + " " + searchcriterium.comparator + " ?";
+            }
+
+            return ReturnValue;
+        }
+
+        /// <summary>
+        /// This function expects an empty table that contains all existing columns,
+        /// and a datarow that has a string or an empty value for each column.
+        /// It will return a Where clause, using the given values.
+        /// </summary>
+        /// <returns>the Where Clause
+        /// </returns>
+        public static String GenerateWhereClause(string[] AColumnNames, TSearchCriteria[] ASearchCriteria)
+        {
+            return GenerateWhereClause(AColumnNames, ASearchCriteria, null);
+        }
+
+        /// <summary>
         /// This function expects a string list of all existing columns,
         /// and a datarow that has a value or an empty value for each column.
         /// It will return a Where clause, using the given values.
@@ -595,6 +640,31 @@ namespace Ict.Common.Data
                 }
 
                 Counter = Counter + 1;
+            }
+
+            return ReturnValue;
+        }
+
+        /// <summary>
+        /// This function expects a string list of all existing columns,
+        /// and a criteria list of values to search for.
+        /// It will return a Where clause, using the given values.
+        /// It does not contain the WHERE keyword.
+        /// It uses the long form, table.fieldname
+        ///
+        /// </summary>
+        /// <param name="ATableName">the table that the where clause is generated for</param>
+        /// <param name="ASearchCriteria"></param>
+        /// <param name="AColumnNames">list of all columns of that table</param>
+        /// <returns>the Where Clause
+        /// </returns>
+        public static String GenerateWhereClauseLong(String ATableName, string[] AColumnNames, TSearchCriteria[] ASearchCriteria)
+        {
+            String ReturnValue = "";
+
+            foreach (TSearchCriteria searchcriterium in ASearchCriteria)
+            {
+                ReturnValue += " AND " + ATableName + '.' + searchcriterium.fieldname + ' ' + searchcriterium.comparator + " ?";
             }
 
             return ReturnValue;
@@ -697,7 +767,7 @@ namespace Ict.Common.Data
                 // I should find the maximum number for this field specifically;
                 // multiplying by 2 is not safe with multibyte characters?
                 // Length := (obj as System.String).Length  2;
-                Length = ((TTypedDataTable)ATable).CreateOdbcParameter(ATable.Columns[AColumnNr]).Size;
+                Length = ((TTypedDataTable)ATable).CreateOdbcParameter(AColumnNr).Size;
 
                 if (Length == 0)
                 {
@@ -955,6 +1025,26 @@ namespace Ict.Common.Data
                     ReturnValue[Counter].Value = ADataRow[item, DataRowVersion.Original];
                     Counter = Counter + 1;
                 }
+            }
+
+            return ReturnValue;
+        }
+
+        /// <summary>
+        /// This function provides the actual parameters for the GenerateWhereClause
+        /// </summary>
+        /// <returns>an array of OdbcParameters
+        /// </returns>
+        public static OdbcParameter[] GetParametersForWhereClause(short ATableNumber, TSearchCriteria[] ASearchCriteria)
+        {
+            OdbcParameter[] ReturnValue = new OdbcParameter[ASearchCriteria.Length];
+            int Counter = 0;
+
+            foreach (TSearchCriteria searchcriterium in ASearchCriteria)
+            {
+                ReturnValue[Counter] = TTypedDataTable.CreateOdbcParameter(ATableNumber, searchcriterium);
+                ReturnValue[Counter].Value = searchcriterium.searchvalue;
+                Counter = Counter + 1;
             }
 
             return ReturnValue;
@@ -1360,6 +1450,75 @@ namespace Ict.Common.Data
             }
 
             return ReturnValue;
+        }
+
+        /// <summary>
+        /// loads all rows matching certain search criteria into a dataset
+        /// </summary>
+        /// <param name="ATableID">specify which typed table is used</param>
+        /// <param name="ADataSet">the result will be added to this dataset</param>
+        /// <param name="ASearchCriteria"></param>
+        /// <param name="AFieldList">fields to load from the database table</param>
+        /// <param name="ATransaction"></param>
+        /// <param name="AOrderBy"></param>
+        /// <param name="AStartRecord"></param>
+        /// <param name="AMaxRecords"></param>
+        public static void LoadUsingTemplate(short ATableID,
+            DataSet ADataSet,
+            TSearchCriteria[] ASearchCriteria,
+            StringCollection AFieldList,
+            TDBTransaction ATransaction,
+            StringCollection AOrderBy,
+            int AStartRecord,
+            int AMaxRecords)
+        {
+            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, GenerateSelectClause(AFieldList, ATableID) +
+                " FROM PUB_" + TTypedDataTable.GetTableNameSQL(ATableID) +
+                GenerateWhereClause(TTypedDataTable.GetColumnStringList(ATableID), ASearchCriteria) +
+                GenerateOrderByClause(AOrderBy), TTypedDataTable.GetTableName(ATableID), ATransaction,
+                GetParametersForWhereClause(ATableID, ASearchCriteria), AStartRecord, AMaxRecords);
+        }
+
+        /// <summary>
+        /// loads all rows matching certain search criteria into a typed data table
+        /// </summary>
+        /// <param name="ATypedTableToLoad">pre condition: has to have an object of the typed table</param>
+        /// <param name="ATableID">specify which typed table is used</param>
+        /// <param name="ASearchCriteria"></param>
+        /// <param name="AFieldList"></param>
+        /// <param name="ATransaction"></param>
+        /// <param name="AOrderBy"></param>
+        /// <param name="AStartRecord"></param>
+        /// <param name="AMaxRecords"></param>
+        public static void LoadUsingTemplate(ref TTypedDataTable ATypedTableToLoad,
+            short ATableID,
+            TSearchCriteria[] ASearchCriteria,
+            StringCollection AFieldList,
+            TDBTransaction ATransaction,
+            StringCollection AOrderBy,
+            int AStartRecord,
+            int AMaxRecords)
+        {
+            ATypedTableToLoad = (TTypedDataTable)
+                                DBAccess.GDBAccessObj.SelectDT(ATypedTableToLoad, GenerateSelectClause(AFieldList, ATableID) +
+                " FROM PUB_" + TTypedDataTable.GetTableNameSQL(ATableID) +
+                GenerateWhereClause(TTypedDataTable.GetColumnStringList(ATableID), ASearchCriteria) +
+                GenerateOrderByClause(AOrderBy), ATransaction,
+                GetParametersForWhereClause(ATableID, ASearchCriteria), AStartRecord, AMaxRecords);
+        }
+
+        /// <summary>
+        /// delete all rows matching the search criteria
+        /// </summary>
+        /// <param name="ATableID">specify which typed table is used</param>
+        /// <param name="ASearchCriteria"></param>
+        /// <param name="ATransaction"></param>
+        public static void DeleteUsingTemplate(short ATableID, TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        {
+            DBAccess.GDBAccessObj.ExecuteNonQuery(("DELETE FROM PUB_" +
+                                                   GenerateWhereClause(TTypedDataTable.GetColumnStringList(
+                                                           ATableID), ASearchCriteria)), ATransaction, false,
+                GetParametersForWhereClause(ATableID, ASearchCriteria));
         }
     }
 }

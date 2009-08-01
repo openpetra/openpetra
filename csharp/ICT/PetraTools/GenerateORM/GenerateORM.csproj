@@ -51,7 +51,6 @@
     <Compile Include="codeGenerationCascading.cs" />
     <Compile Include="codeGenerationDataset.cs" />
     <Compile Include="codeGenerationPetra.cs" />
-    <Compile Include="codeGenerationRow.cs" />
     <Compile Include="codeGenerationTable.cs" />
     <Compile Include="main.cs" />
   </ItemGroup>

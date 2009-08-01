@@ -163,8 +163,12 @@ namespace Ict.Common.DB
         /// </summary>
         /// <param name="TheAdapter"></param>
         /// <param name="AFillDataTable"></param>
+        /// <param name="AStartRecord"></param>
+        /// <param name="AMaxRecords"></param>
         void FillAdapter(IDbDataAdapter TheAdapter,
-            ref DataTable AFillDataTable);
+            ref DataTable AFillDataTable,
+            Int32 AStartRecord,
+            Int32 AMaxRecords);
 
         /// <summary>
         /// some databases have some problems with certain Isolation levels
@@ -1071,7 +1075,7 @@ namespace Ict.Common.DB
 
                 IDbDataAdapter TheAdapter = FDataBaseRDBMS.NewAdapter();
                 TheAdapter.SelectCommand = Command(ASqlStatement, AReadTransaction, AParametersArray);
-                FDataBaseRDBMS.FillAdapter(TheAdapter, ref ObjReturn);
+                FDataBaseRDBMS.FillAdapter(TheAdapter, ref ObjReturn, 0, 0);
 
 #if DEBUGMODE
                 if (FDebugLevel >= DBAccess.DB_DEBUGLEVEL_TRACE)
@@ -1093,6 +1097,40 @@ namespace Ict.Common.DB
             }
 #endif
             return ObjReturn;
+        }
+
+        /// <summary>
+        /// this loads the result into a typed datatable
+        /// </summary>
+        /// <param name="ATypedDataTable">this needs to be an object of the typed datatable</param>
+        /// <param name="ASqlStatement"></param>
+        /// <param name="AReadTransaction"></param>
+        /// <param name="AParametersArray"></param>
+        /// <param name="AStartRecord">does not have any effect yet</param>
+        /// <param name="AMaxRecords">not implemented yet</param>
+        /// <returns></returns>
+        public DataTable SelectDT(DataTable ATypedDataTable, String ASqlStatement,
+            TDBTransaction AReadTransaction,
+            DbParameter[] AParametersArray,
+            int AStartRecord, int AMaxRecords)
+        {
+            if (!HasAccess(ASqlStatement))
+            {
+                throw new Exception("Security Violation: Access Permission failed");
+            }
+
+            try
+            {
+                IDbDataAdapter TheAdapter = FDataBaseRDBMS.NewAdapter();
+                TheAdapter.SelectCommand = Command(ASqlStatement, AReadTransaction, AParametersArray);
+                FDataBaseRDBMS.FillAdapter(TheAdapter, ref ATypedDataTable, AStartRecord, AMaxRecords);
+            }
+            catch (Exception exp)
+            {
+                LogExceptionAndThrow(exp, ASqlStatement, "Error fetching records.");
+            }
+
+            return ATypedDataTable;
         }
 
         #endregion

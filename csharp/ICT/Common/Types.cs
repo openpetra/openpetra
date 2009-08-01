@@ -213,6 +213,37 @@ namespace Ict.Common
         scrInfoNeeded
     };
 
+    /// <summary>
+    /// search criteria for SQL queries
+    /// </summary>
+    public class TSearchCriteria
+    {
+        /// <summary>
+        /// how to compare; defaults to equals
+        /// </summary>
+        public string comparator = "=";
+
+        /// <summary>
+        /// field to compare
+        /// </summary>
+        public string fieldname;
+
+        /// <summary>
+        /// which value to search for
+        /// </summary>
+        public Object searchvalue;
+
+        /// <summary>
+        /// constructor
+        /// </summary>
+        /// <param name="AFieldName"></param>
+        /// <param name="ASearchValue"></param>
+        public TSearchCriteria(string AFieldName, Object ASearchValue)
+        {
+            fieldname = AFieldName;
+            searchvalue = ASearchValue;
+        }
+    }
 
     /// <summary>
     /// Surrogate Base Interface

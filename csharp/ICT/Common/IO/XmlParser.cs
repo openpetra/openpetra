@@ -125,7 +125,7 @@ namespace Ict.Common.IO
 
                 // TODO there seems to be problems finding the dtd file on Mono; so no validation there for the moment
                 // also see http://bytes.com/groups/net-xml/178914-exception-xmldocumet-load
-                if (withValidation && Ict.Common.Utilities.DetermineExecutingCLR() != TExecutingCLREnum.eclrMono)
+                if (withValidation && (Ict.Common.Utilities.DetermineExecutingCLR() != TExecutingCLREnum.eclrMono))
                 {
                     settings.ValidationType = ValidationType.DTD;
                 }

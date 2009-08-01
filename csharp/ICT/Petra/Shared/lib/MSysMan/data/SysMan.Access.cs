@@ -192,6 +192,50 @@ namespace Ict.Petra.Shared.MSysMan.Data.Access
         }
 
         /// this method is called by all overloads
+        public static void LoadUsingTemplate(DataSet ADataSet, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        {
+            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClause(AFieldList, new string[] {
+                            "s_user_id_c"}) + " FROM PUB_s_user")
+                            + GenerateWhereClause(SUserTable.GetColumnStringList(), ASearchCriteria))
+                            + GenerateOrderByClause(AOrderBy)), SUserTable.GetTableName(), ATransaction,
+                            GetParametersForWhereClause(new SUserTable(), ASearchCriteria), AStartRecord, AMaxRecords);
+        }
+
+        /// auto generated
+        public static void LoadUsingTemplate(DataSet AData, TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        {
+            LoadUsingTemplate(AData, ASearchCriteria, null, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static void LoadUsingTemplate(DataSet AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
+        {
+            LoadUsingTemplate(AData, ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static void LoadUsingTemplate(out SUserTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        {
+            DataSet FillDataSet = new DataSet();
+            AData = new SUserTable();
+            FillDataSet.Tables.Add(AData);
+            LoadUsingTemplate(FillDataSet, ASearchCriteria, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            FillDataSet.Tables.Remove(AData);
+        }
+
+        /// auto generated
+        public static void LoadUsingTemplate(out SUserTable AData, TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        {
+            LoadUsingTemplate(out AData, ASearchCriteria, null, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static void LoadUsingTemplate(out SUserTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
+        {
+            LoadUsingTemplate(out AData, ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
+        }
+
+        /// this method is called by all overloads
         public static int CountAll(TDBTransaction ATransaction)
         {
             return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar("SELECT COUNT(*) FROM PUB_s_user", ATransaction, false));
@@ -210,6 +254,13 @@ namespace Ict.Petra.Shared.MSysMan.Data.Access
         public static int CountUsingTemplate(SUserRow ATemplateRow, StringCollection ATemplateOperators, TDBTransaction ATransaction)
         {
             return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_s_user" + GenerateWhereClause(SUserTable.GetColumnStringList(), ATemplateRow, ATemplateOperators)), ATransaction, false, GetParametersForWhereClause(ATemplateRow)));
+        }
+
+        /// this method is called by all overloads
+        public static int CountUsingTemplate(TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        {
+            return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_s_user" + GenerateWhereClause(SUserTable.GetColumnStringList(), ASearchCriteria)), ATransaction, false,
+            GetParametersForWhereClause(new SUserTable(), ASearchCriteria)));
         }
 
         /// auto generated
@@ -308,6 +359,51 @@ namespace Ict.Petra.Shared.MSysMan.Data.Access
         }
 
         /// auto generated
+        public static void LoadViaPPartnerTemplate(DataSet ADataSet, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        {
+            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClauseLong("PUB_s_user", AFieldList, new string[] {
+                            "s_user_id_c"}) + " FROM PUB_s_user, PUB_p_partner WHERE " +
+                            "PUB_s_user.p_partner_key_n = PUB_p_partner.p_partner_key_n")
+                            + GenerateWhereClauseLong("PUB_p_partner", PPartnerTable.GetColumnStringList(), ASearchCriteria))
+                            + GenerateOrderByClause(AOrderBy)), SUserTable.GetTableName(), ATransaction,
+                            GetParametersForWhereClause(new SUserTable(), ASearchCriteria), AStartRecord, AMaxRecords);
+        }
+
+        /// auto generated
+        public static void LoadViaPPartnerTemplate(DataSet AData, TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        {
+            LoadViaPPartnerTemplate(AData, ASearchCriteria, null, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static void LoadViaPPartnerTemplate(DataSet AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
+        {
+            LoadViaPPartnerTemplate(AData, ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static void LoadViaPPartnerTemplate(out SUserTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        {
+            DataSet FillDataSet = new DataSet();
+            AData = new SUserTable();
+            FillDataSet.Tables.Add(AData);
+            LoadViaPPartnerTemplate(FillDataSet, ASearchCriteria, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            FillDataSet.Tables.Remove(AData);
+        }
+
+        /// auto generated
+        public static void LoadViaPPartnerTemplate(out SUserTable AData, TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        {
+            LoadViaPPartnerTemplate(out AData, ASearchCriteria, null, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static void LoadViaPPartnerTemplate(out SUserTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
+        {
+            LoadViaPPartnerTemplate(out AData, ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
         public static int CountViaPPartner(Int64 APartnerKey, TDBTransaction ATransaction)
         {
             OdbcParameter[] ParametersArray = new OdbcParameter[1];
@@ -321,6 +417,15 @@ namespace Ict.Petra.Shared.MSysMan.Data.Access
         {
             return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_s_user, PUB_p_partner WHERE " +
                 "PUB_s_user.p_partner_key_n = PUB_p_partner.p_partner_key_n" + GenerateWhereClauseLong("PUB_p_partner", PPartnerTable.GetColumnStringList(), ATemplateRow, ATemplateOperators)), ATransaction, false, GetParametersForWhereClause(ATemplateRow, PPartnerTable.GetPrimKeyColumnOrdList())));
+        }
+
+        /// auto generated
+        public static int CountViaPPartnerTemplate(TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        {
+            return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_s_user, PUB_p_partner WHERE " +
+                "PUB_s_user.p_partner_key_n = PUB_p_partner.p_partner_key_n" +
+                GenerateWhereClauseLong("PUB_p_partner", PPartnerTable.GetColumnStringList(), ASearchCriteria)), ATransaction, false,
+                GetParametersForWhereClause(new PPartnerTable(), ASearchCriteria)));
         }
 
         /// auto generated LoadViaLinkTable
@@ -421,6 +526,51 @@ namespace Ict.Petra.Shared.MSysMan.Data.Access
             LoadViaSGroupTemplate(out AData, ATemplateRow, ATemplateOperators, AFieldList, ATransaction, null, 0, 0);
         }
 
+        /// auto generated
+        public static void LoadViaSGroupTemplate(DataSet ADataSet, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        {
+            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClauseLong("PUB_s_user", AFieldList, new string[] {
+                            "s_user_id_c"}) + " FROM PUB_s_user, PUB_s_user_group, PUB_s_group WHERE " +
+                            "PUB_s_user_group.s_user_id_c = PUB_s_user.s_user_id_c AND PUB_s_user_group.s_group_id_c = PUB_s_group.s_group_id_c AND PUB_s_user_group.s_unit_key_n = PUB_s_group.s_unit_key_n")
+                            + GenerateWhereClauseLong("PUB_s_group", SGroupTable.GetColumnStringList(), ASearchCriteria))
+                            + GenerateOrderByClause(AOrderBy)), SUserTable.GetTableName(), ATransaction,
+                            GetParametersForWhereClause(new SUserTable(), ASearchCriteria), AStartRecord, AMaxRecords);
+        }
+
+        /// auto generated
+        public static void LoadViaSGroupTemplate(DataSet AData, TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        {
+            LoadViaSGroupTemplate(AData, ASearchCriteria, null, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static void LoadViaSGroupTemplate(DataSet AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
+        {
+            LoadViaSGroupTemplate(AData, ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static void LoadViaSGroupTemplate(out SUserTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        {
+            DataSet FillDataSet = new DataSet();
+            AData = new SUserTable();
+            FillDataSet.Tables.Add(AData);
+            LoadViaSGroupTemplate(FillDataSet, ASearchCriteria, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            FillDataSet.Tables.Remove(AData);
+        }
+
+        /// auto generated
+        public static void LoadViaSGroupTemplate(out SUserTable AData, TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        {
+            LoadViaSGroupTemplate(out AData, ASearchCriteria, null, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static void LoadViaSGroupTemplate(out SUserTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
+        {
+            LoadViaSGroupTemplate(out AData, ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
+        }
+
         /// auto generated CountViaLinkTable
         public static int CountViaSGroup(String AGroupId, Int64 AUnitKey, TDBTransaction ATransaction)
         {
@@ -440,6 +590,15 @@ namespace Ict.Petra.Shared.MSysMan.Data.Access
             return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_s_user, PUB_s_user_group, PUB_s_group WHERE " +
                         "PUB_s_user_group.s_user_id_c = PUB_s_user.s_user_id_c AND PUB_s_user_group.s_group_id_c = PUB_s_group.s_group_id_c AND PUB_s_user_group.s_unit_key_n = PUB_s_group.s_unit_key_n" +
                         GenerateWhereClauseLong("PUB_s_user_group", SUserTable.GetColumnStringList(), ATemplateRow, ATemplateOperators)), ATransaction, false, GetParametersForWhereClause(ATemplateRow, SGroupTable.GetPrimKeyColumnOrdList())));
+        }
+
+        /// auto generated
+        public static int CountViaSGroupTemplate(TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        {
+            return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_s_user, PUB_s_user_group, PUB_s_group WHERE " +
+                        "PUB_s_user_group.s_user_id_c = PUB_s_user.s_user_id_c AND PUB_s_user_group.s_group_id_c = PUB_s_group.s_group_id_c AND PUB_s_user_group.s_unit_key_n = PUB_s_group.s_unit_key_n" +
+                        GenerateWhereClauseLong("PUB_s_user_group", SUserTable.GetColumnStringList(), ASearchCriteria)), ATransaction, false,
+                        GetParametersForWhereClause(new SUserTable(), ASearchCriteria)));
         }
 
         /// auto generated LoadViaLinkTable
@@ -538,6 +697,51 @@ namespace Ict.Petra.Shared.MSysMan.Data.Access
             LoadViaSModuleTemplate(out AData, ATemplateRow, ATemplateOperators, AFieldList, ATransaction, null, 0, 0);
         }
 
+        /// auto generated
+        public static void LoadViaSModuleTemplate(DataSet ADataSet, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        {
+            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClauseLong("PUB_s_user", AFieldList, new string[] {
+                            "s_user_id_c"}) + " FROM PUB_s_user, PUB_s_user_module_access_permission, PUB_s_module WHERE " +
+                            "PUB_s_user_module_access_permission.s_user_id_c = PUB_s_user.s_user_id_c AND PUB_s_user_module_access_permission.s_module_id_c = PUB_s_module.s_module_id_c")
+                            + GenerateWhereClauseLong("PUB_s_module", SModuleTable.GetColumnStringList(), ASearchCriteria))
+                            + GenerateOrderByClause(AOrderBy)), SUserTable.GetTableName(), ATransaction,
+                            GetParametersForWhereClause(new SUserTable(), ASearchCriteria), AStartRecord, AMaxRecords);
+        }
+
+        /// auto generated
+        public static void LoadViaSModuleTemplate(DataSet AData, TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        {
+            LoadViaSModuleTemplate(AData, ASearchCriteria, null, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static void LoadViaSModuleTemplate(DataSet AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
+        {
+            LoadViaSModuleTemplate(AData, ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static void LoadViaSModuleTemplate(out SUserTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        {
+            DataSet FillDataSet = new DataSet();
+            AData = new SUserTable();
+            FillDataSet.Tables.Add(AData);
+            LoadViaSModuleTemplate(FillDataSet, ASearchCriteria, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            FillDataSet.Tables.Remove(AData);
+        }
+
+        /// auto generated
+        public static void LoadViaSModuleTemplate(out SUserTable AData, TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        {
+            LoadViaSModuleTemplate(out AData, ASearchCriteria, null, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static void LoadViaSModuleTemplate(out SUserTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
+        {
+            LoadViaSModuleTemplate(out AData, ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
+        }
+
         /// auto generated CountViaLinkTable
         public static int CountViaSModule(String AModuleId, TDBTransaction ATransaction)
         {
@@ -555,6 +759,15 @@ namespace Ict.Petra.Shared.MSysMan.Data.Access
             return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_s_user, PUB_s_user_module_access_permission, PUB_s_module WHERE " +
                         "PUB_s_user_module_access_permission.s_user_id_c = PUB_s_user.s_user_id_c AND PUB_s_user_module_access_permission.s_module_id_c = PUB_s_module.s_module_id_c" +
                         GenerateWhereClauseLong("PUB_s_user_module_access_permission", SUserTable.GetColumnStringList(), ATemplateRow, ATemplateOperators)), ATransaction, false, GetParametersForWhereClause(ATemplateRow, SModuleTable.GetPrimKeyColumnOrdList())));
+        }
+
+        /// auto generated
+        public static int CountViaSModuleTemplate(TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        {
+            return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_s_user, PUB_s_user_module_access_permission, PUB_s_module WHERE " +
+                        "PUB_s_user_module_access_permission.s_user_id_c = PUB_s_user.s_user_id_c AND PUB_s_user_module_access_permission.s_module_id_c = PUB_s_module.s_module_id_c" +
+                        GenerateWhereClauseLong("PUB_s_user_module_access_permission", SUserTable.GetColumnStringList(), ASearchCriteria)), ATransaction, false,
+                        GetParametersForWhereClause(new SUserTable(), ASearchCriteria)));
         }
 
         /// auto generated LoadViaLinkTable
@@ -653,6 +866,51 @@ namespace Ict.Petra.Shared.MSysMan.Data.Access
             LoadViaSFileTemplate(out AData, ATemplateRow, ATemplateOperators, AFieldList, ATransaction, null, 0, 0);
         }
 
+        /// auto generated
+        public static void LoadViaSFileTemplate(DataSet ADataSet, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        {
+            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClauseLong("PUB_s_user", AFieldList, new string[] {
+                            "s_user_id_c"}) + " FROM PUB_s_user, PUB_s_batch_job, PUB_s_file WHERE " +
+                            "PUB_s_batch_job.s_user_id_c = PUB_s_user.s_user_id_c AND PUB_s_batch_job.s_file_name_c = PUB_s_file.s_file_name_c")
+                            + GenerateWhereClauseLong("PUB_s_file", SFileTable.GetColumnStringList(), ASearchCriteria))
+                            + GenerateOrderByClause(AOrderBy)), SUserTable.GetTableName(), ATransaction,
+                            GetParametersForWhereClause(new SUserTable(), ASearchCriteria), AStartRecord, AMaxRecords);
+        }
+
+        /// auto generated
+        public static void LoadViaSFileTemplate(DataSet AData, TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        {
+            LoadViaSFileTemplate(AData, ASearchCriteria, null, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static void LoadViaSFileTemplate(DataSet AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
+        {
+            LoadViaSFileTemplate(AData, ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static void LoadViaSFileTemplate(out SUserTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        {
+            DataSet FillDataSet = new DataSet();
+            AData = new SUserTable();
+            FillDataSet.Tables.Add(AData);
+            LoadViaSFileTemplate(FillDataSet, ASearchCriteria, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            FillDataSet.Tables.Remove(AData);
+        }
+
+        /// auto generated
+        public static void LoadViaSFileTemplate(out SUserTable AData, TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        {
+            LoadViaSFileTemplate(out AData, ASearchCriteria, null, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static void LoadViaSFileTemplate(out SUserTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
+        {
+            LoadViaSFileTemplate(out AData, ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
+        }
+
         /// auto generated CountViaLinkTable
         public static int CountViaSFile(String AFileName, TDBTransaction ATransaction)
         {
@@ -670,6 +928,15 @@ namespace Ict.Petra.Shared.MSysMan.Data.Access
             return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_s_user, PUB_s_batch_job, PUB_s_file WHERE " +
                         "PUB_s_batch_job.s_user_id_c = PUB_s_user.s_user_id_c AND PUB_s_batch_job.s_file_name_c = PUB_s_file.s_file_name_c" +
                         GenerateWhereClauseLong("PUB_s_batch_job", SUserTable.GetColumnStringList(), ATemplateRow, ATemplateOperators)), ATransaction, false, GetParametersForWhereClause(ATemplateRow, SFileTable.GetPrimKeyColumnOrdList())));
+        }
+
+        /// auto generated
+        public static int CountViaSFileTemplate(TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        {
+            return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_s_user, PUB_s_batch_job, PUB_s_file WHERE " +
+                        "PUB_s_batch_job.s_user_id_c = PUB_s_user.s_user_id_c AND PUB_s_batch_job.s_file_name_c = PUB_s_file.s_file_name_c" +
+                        GenerateWhereClauseLong("PUB_s_batch_job", SUserTable.GetColumnStringList(), ASearchCriteria)), ATransaction, false,
+                        GetParametersForWhereClause(new SUserTable(), ASearchCriteria)));
         }
 
         /// auto generated LoadViaLinkTable
@@ -768,6 +1035,51 @@ namespace Ict.Petra.Shared.MSysMan.Data.Access
             LoadViaPPartnerPRecentPartnersTemplate(out AData, ATemplateRow, ATemplateOperators, AFieldList, ATransaction, null, 0, 0);
         }
 
+        /// auto generated
+        public static void LoadViaPPartnerPRecentPartnersTemplate(DataSet ADataSet, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        {
+            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClauseLong("PUB_s_user", AFieldList, new string[] {
+                            "s_user_id_c"}) + " FROM PUB_s_user, PUB_p_recent_partners, PUB_p_partner WHERE " +
+                            "PUB_p_recent_partners.s_user_id_c = PUB_s_user.s_user_id_c AND PUB_p_recent_partners.p_partner_key_n = PUB_p_partner.p_partner_key_n")
+                            + GenerateWhereClauseLong("PUB_p_partner", PPartnerTable.GetColumnStringList(), ASearchCriteria))
+                            + GenerateOrderByClause(AOrderBy)), SUserTable.GetTableName(), ATransaction,
+                            GetParametersForWhereClause(new SUserTable(), ASearchCriteria), AStartRecord, AMaxRecords);
+        }
+
+        /// auto generated
+        public static void LoadViaPPartnerPRecentPartnersTemplate(DataSet AData, TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        {
+            LoadViaPPartnerPRecentPartnersTemplate(AData, ASearchCriteria, null, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static void LoadViaPPartnerPRecentPartnersTemplate(DataSet AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
+        {
+            LoadViaPPartnerPRecentPartnersTemplate(AData, ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static void LoadViaPPartnerPRecentPartnersTemplate(out SUserTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        {
+            DataSet FillDataSet = new DataSet();
+            AData = new SUserTable();
+            FillDataSet.Tables.Add(AData);
+            LoadViaPPartnerPRecentPartnersTemplate(FillDataSet, ASearchCriteria, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            FillDataSet.Tables.Remove(AData);
+        }
+
+        /// auto generated
+        public static void LoadViaPPartnerPRecentPartnersTemplate(out SUserTable AData, TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        {
+            LoadViaPPartnerPRecentPartnersTemplate(out AData, ASearchCriteria, null, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static void LoadViaPPartnerPRecentPartnersTemplate(out SUserTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
+        {
+            LoadViaPPartnerPRecentPartnersTemplate(out AData, ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
+        }
+
         /// auto generated CountViaLinkTable
         public static int CountViaPPartnerPRecentPartners(Int64 APartnerKey, TDBTransaction ATransaction)
         {
@@ -785,6 +1097,15 @@ namespace Ict.Petra.Shared.MSysMan.Data.Access
             return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_s_user, PUB_p_recent_partners, PUB_p_partner WHERE " +
                         "PUB_p_recent_partners.s_user_id_c = PUB_s_user.s_user_id_c AND PUB_p_recent_partners.p_partner_key_n = PUB_p_partner.p_partner_key_n" +
                         GenerateWhereClauseLong("PUB_p_recent_partners", SUserTable.GetColumnStringList(), ATemplateRow, ATemplateOperators)), ATransaction, false, GetParametersForWhereClause(ATemplateRow, PPartnerTable.GetPrimKeyColumnOrdList())));
+        }
+
+        /// auto generated
+        public static int CountViaPPartnerPRecentPartnersTemplate(TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        {
+            return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_s_user, PUB_p_recent_partners, PUB_p_partner WHERE " +
+                        "PUB_p_recent_partners.s_user_id_c = PUB_s_user.s_user_id_c AND PUB_p_recent_partners.p_partner_key_n = PUB_p_partner.p_partner_key_n" +
+                        GenerateWhereClauseLong("PUB_p_recent_partners", SUserTable.GetColumnStringList(), ASearchCriteria)), ATransaction, false,
+                        GetParametersForWhereClause(new SUserTable(), ASearchCriteria)));
         }
 
         /// auto generated LoadViaLinkTable
@@ -883,6 +1204,51 @@ namespace Ict.Petra.Shared.MSysMan.Data.Access
             LoadViaPPartnerPCustomisedGreetingTemplate(out AData, ATemplateRow, ATemplateOperators, AFieldList, ATransaction, null, 0, 0);
         }
 
+        /// auto generated
+        public static void LoadViaPPartnerPCustomisedGreetingTemplate(DataSet ADataSet, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        {
+            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClauseLong("PUB_s_user", AFieldList, new string[] {
+                            "s_user_id_c"}) + " FROM PUB_s_user, PUB_p_customised_greeting, PUB_p_partner WHERE " +
+                            "PUB_p_customised_greeting.s_user_id_c = PUB_s_user.s_user_id_c AND PUB_p_customised_greeting.p_partner_key_n = PUB_p_partner.p_partner_key_n")
+                            + GenerateWhereClauseLong("PUB_p_partner", PPartnerTable.GetColumnStringList(), ASearchCriteria))
+                            + GenerateOrderByClause(AOrderBy)), SUserTable.GetTableName(), ATransaction,
+                            GetParametersForWhereClause(new SUserTable(), ASearchCriteria), AStartRecord, AMaxRecords);
+        }
+
+        /// auto generated
+        public static void LoadViaPPartnerPCustomisedGreetingTemplate(DataSet AData, TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        {
+            LoadViaPPartnerPCustomisedGreetingTemplate(AData, ASearchCriteria, null, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static void LoadViaPPartnerPCustomisedGreetingTemplate(DataSet AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
+        {
+            LoadViaPPartnerPCustomisedGreetingTemplate(AData, ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static void LoadViaPPartnerPCustomisedGreetingTemplate(out SUserTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        {
+            DataSet FillDataSet = new DataSet();
+            AData = new SUserTable();
+            FillDataSet.Tables.Add(AData);
+            LoadViaPPartnerPCustomisedGreetingTemplate(FillDataSet, ASearchCriteria, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            FillDataSet.Tables.Remove(AData);
+        }
+
+        /// auto generated
+        public static void LoadViaPPartnerPCustomisedGreetingTemplate(out SUserTable AData, TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        {
+            LoadViaPPartnerPCustomisedGreetingTemplate(out AData, ASearchCriteria, null, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static void LoadViaPPartnerPCustomisedGreetingTemplate(out SUserTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
+        {
+            LoadViaPPartnerPCustomisedGreetingTemplate(out AData, ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
+        }
+
         /// auto generated CountViaLinkTable
         public static int CountViaPPartnerPCustomisedGreeting(Int64 APartnerKey, TDBTransaction ATransaction)
         {
@@ -900,6 +1266,15 @@ namespace Ict.Petra.Shared.MSysMan.Data.Access
             return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_s_user, PUB_p_customised_greeting, PUB_p_partner WHERE " +
                         "PUB_p_customised_greeting.s_user_id_c = PUB_s_user.s_user_id_c AND PUB_p_customised_greeting.p_partner_key_n = PUB_p_partner.p_partner_key_n" +
                         GenerateWhereClauseLong("PUB_p_customised_greeting", SUserTable.GetColumnStringList(), ATemplateRow, ATemplateOperators)), ATransaction, false, GetParametersForWhereClause(ATemplateRow, PPartnerTable.GetPrimKeyColumnOrdList())));
+        }
+
+        /// auto generated
+        public static int CountViaPPartnerPCustomisedGreetingTemplate(TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        {
+            return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_s_user, PUB_p_customised_greeting, PUB_p_partner WHERE " +
+                        "PUB_p_customised_greeting.s_user_id_c = PUB_s_user.s_user_id_c AND PUB_p_customised_greeting.p_partner_key_n = PUB_p_partner.p_partner_key_n" +
+                        GenerateWhereClauseLong("PUB_p_customised_greeting", SUserTable.GetColumnStringList(), ASearchCriteria)), ATransaction, false,
+                        GetParametersForWhereClause(new SUserTable(), ASearchCriteria)));
         }
 
         /// auto generated LoadViaLinkTable
@@ -998,6 +1373,51 @@ namespace Ict.Petra.Shared.MSysMan.Data.Access
             LoadViaSWorkflowDefinitionTemplate(out AData, ATemplateRow, ATemplateOperators, AFieldList, ATransaction, null, 0, 0);
         }
 
+        /// auto generated
+        public static void LoadViaSWorkflowDefinitionTemplate(DataSet ADataSet, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        {
+            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClauseLong("PUB_s_user", AFieldList, new string[] {
+                            "s_user_id_c"}) + " FROM PUB_s_user, PUB_s_workflow_user, PUB_s_workflow_definition WHERE " +
+                            "PUB_s_workflow_user.s_user_id_c = PUB_s_user.s_user_id_c AND PUB_s_workflow_user.s_workflow_id_i = PUB_s_workflow_definition.s_workflow_id_i")
+                            + GenerateWhereClauseLong("PUB_s_workflow_definition", SWorkflowDefinitionTable.GetColumnStringList(), ASearchCriteria))
+                            + GenerateOrderByClause(AOrderBy)), SUserTable.GetTableName(), ATransaction,
+                            GetParametersForWhereClause(new SUserTable(), ASearchCriteria), AStartRecord, AMaxRecords);
+        }
+
+        /// auto generated
+        public static void LoadViaSWorkflowDefinitionTemplate(DataSet AData, TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        {
+            LoadViaSWorkflowDefinitionTemplate(AData, ASearchCriteria, null, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static void LoadViaSWorkflowDefinitionTemplate(DataSet AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
+        {
+            LoadViaSWorkflowDefinitionTemplate(AData, ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static void LoadViaSWorkflowDefinitionTemplate(out SUserTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        {
+            DataSet FillDataSet = new DataSet();
+            AData = new SUserTable();
+            FillDataSet.Tables.Add(AData);
+            LoadViaSWorkflowDefinitionTemplate(FillDataSet, ASearchCriteria, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            FillDataSet.Tables.Remove(AData);
+        }
+
+        /// auto generated
+        public static void LoadViaSWorkflowDefinitionTemplate(out SUserTable AData, TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        {
+            LoadViaSWorkflowDefinitionTemplate(out AData, ASearchCriteria, null, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static void LoadViaSWorkflowDefinitionTemplate(out SUserTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
+        {
+            LoadViaSWorkflowDefinitionTemplate(out AData, ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
+        }
+
         /// auto generated CountViaLinkTable
         public static int CountViaSWorkflowDefinition(Int32 AWorkflowId, TDBTransaction ATransaction)
         {
@@ -1018,6 +1438,15 @@ namespace Ict.Petra.Shared.MSysMan.Data.Access
         }
 
         /// auto generated
+        public static int CountViaSWorkflowDefinitionTemplate(TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        {
+            return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_s_user, PUB_s_workflow_user, PUB_s_workflow_definition WHERE " +
+                        "PUB_s_workflow_user.s_user_id_c = PUB_s_user.s_user_id_c AND PUB_s_workflow_user.s_workflow_id_i = PUB_s_workflow_definition.s_workflow_id_i" +
+                        GenerateWhereClauseLong("PUB_s_workflow_user", SUserTable.GetColumnStringList(), ASearchCriteria)), ATransaction, false,
+                        GetParametersForWhereClause(new SUserTable(), ASearchCriteria)));
+        }
+
+        /// auto generated
         public static void DeleteByPrimaryKey(String AUserId, TDBTransaction ATransaction)
         {
             OdbcParameter[] ParametersArray = new OdbcParameter[1];
@@ -1030,6 +1459,14 @@ namespace Ict.Petra.Shared.MSysMan.Data.Access
         public static void DeleteUsingTemplate(SUserRow ATemplateRow, StringCollection ATemplateOperators, TDBTransaction ATransaction)
         {
             DBAccess.GDBAccessObj.ExecuteNonQuery(("DELETE FROM PUB_s_user" + GenerateWhereClause(SUserTable.GetColumnStringList(), ATemplateRow, ATemplateOperators)), ATransaction, false, GetParametersForWhereClause(ATemplateRow));
+        }
+
+        /// auto generated
+        public static void DeleteUsingTemplate(TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        {
+            DBAccess.GDBAccessObj.ExecuteNonQuery(("DELETE FROM PUB_s_user" +
+                GenerateWhereClause(SUserTable.GetColumnStringList(), ASearchCriteria)), ATransaction, false,
+                GetParametersForWhereClause(new SUserTable(), ASearchCriteria));
         }
 
         /// auto generated
@@ -1218,6 +1655,50 @@ namespace Ict.Petra.Shared.MSysMan.Data.Access
         }
 
         /// this method is called by all overloads
+        public static void LoadUsingTemplate(DataSet ADataSet, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        {
+            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClause(AFieldList, new string[] {
+                            "s_form_name_c"}) + " FROM PUB_s_form")
+                            + GenerateWhereClause(SFormTable.GetColumnStringList(), ASearchCriteria))
+                            + GenerateOrderByClause(AOrderBy)), SFormTable.GetTableName(), ATransaction,
+                            GetParametersForWhereClause(new SFormTable(), ASearchCriteria), AStartRecord, AMaxRecords);
+        }
+
+        /// auto generated
+        public static void LoadUsingTemplate(DataSet AData, TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        {
+            LoadUsingTemplate(AData, ASearchCriteria, null, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static void LoadUsingTemplate(DataSet AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
+        {
+            LoadUsingTemplate(AData, ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static void LoadUsingTemplate(out SFormTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        {
+            DataSet FillDataSet = new DataSet();
+            AData = new SFormTable();
+            FillDataSet.Tables.Add(AData);
+            LoadUsingTemplate(FillDataSet, ASearchCriteria, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            FillDataSet.Tables.Remove(AData);
+        }
+
+        /// auto generated
+        public static void LoadUsingTemplate(out SFormTable AData, TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        {
+            LoadUsingTemplate(out AData, ASearchCriteria, null, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static void LoadUsingTemplate(out SFormTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
+        {
+            LoadUsingTemplate(out AData, ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
+        }
+
+        /// this method is called by all overloads
         public static int CountAll(TDBTransaction ATransaction)
         {
             return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar("SELECT COUNT(*) FROM PUB_s_form", ATransaction, false));
@@ -1236,6 +1717,13 @@ namespace Ict.Petra.Shared.MSysMan.Data.Access
         public static int CountUsingTemplate(SFormRow ATemplateRow, StringCollection ATemplateOperators, TDBTransaction ATransaction)
         {
             return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_s_form" + GenerateWhereClause(SFormTable.GetColumnStringList(), ATemplateRow, ATemplateOperators)), ATransaction, false, GetParametersForWhereClause(ATemplateRow)));
+        }
+
+        /// this method is called by all overloads
+        public static int CountUsingTemplate(TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        {
+            return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_s_form" + GenerateWhereClause(SFormTable.GetColumnStringList(), ASearchCriteria)), ATransaction, false,
+            GetParametersForWhereClause(new SFormTable(), ASearchCriteria)));
         }
 
         /// auto generated LoadViaLinkTable
@@ -1334,6 +1822,51 @@ namespace Ict.Petra.Shared.MSysMan.Data.Access
             LoadViaSModuleTemplate(out AData, ATemplateRow, ATemplateOperators, AFieldList, ATransaction, null, 0, 0);
         }
 
+        /// auto generated
+        public static void LoadViaSModuleTemplate(DataSet ADataSet, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        {
+            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClauseLong("PUB_s_form", AFieldList, new string[] {
+                            "s_form_name_c"}) + " FROM PUB_s_form, PUB_s_valid_output_form, PUB_s_module WHERE " +
+                            "PUB_s_valid_output_form.s_form_name_c = PUB_s_form.s_form_name_c AND PUB_s_valid_output_form.s_module_id_c = PUB_s_module.s_module_id_c")
+                            + GenerateWhereClauseLong("PUB_s_module", SModuleTable.GetColumnStringList(), ASearchCriteria))
+                            + GenerateOrderByClause(AOrderBy)), SFormTable.GetTableName(), ATransaction,
+                            GetParametersForWhereClause(new SFormTable(), ASearchCriteria), AStartRecord, AMaxRecords);
+        }
+
+        /// auto generated
+        public static void LoadViaSModuleTemplate(DataSet AData, TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        {
+            LoadViaSModuleTemplate(AData, ASearchCriteria, null, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static void LoadViaSModuleTemplate(DataSet AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
+        {
+            LoadViaSModuleTemplate(AData, ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static void LoadViaSModuleTemplate(out SFormTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        {
+            DataSet FillDataSet = new DataSet();
+            AData = new SFormTable();
+            FillDataSet.Tables.Add(AData);
+            LoadViaSModuleTemplate(FillDataSet, ASearchCriteria, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            FillDataSet.Tables.Remove(AData);
+        }
+
+        /// auto generated
+        public static void LoadViaSModuleTemplate(out SFormTable AData, TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        {
+            LoadViaSModuleTemplate(out AData, ASearchCriteria, null, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static void LoadViaSModuleTemplate(out SFormTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
+        {
+            LoadViaSModuleTemplate(out AData, ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
+        }
+
         /// auto generated CountViaLinkTable
         public static int CountViaSModule(String AModuleId, TDBTransaction ATransaction)
         {
@@ -1354,6 +1887,15 @@ namespace Ict.Petra.Shared.MSysMan.Data.Access
         }
 
         /// auto generated
+        public static int CountViaSModuleTemplate(TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        {
+            return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_s_form, PUB_s_valid_output_form, PUB_s_module WHERE " +
+                        "PUB_s_valid_output_form.s_form_name_c = PUB_s_form.s_form_name_c AND PUB_s_valid_output_form.s_module_id_c = PUB_s_module.s_module_id_c" +
+                        GenerateWhereClauseLong("PUB_s_valid_output_form", SFormTable.GetColumnStringList(), ASearchCriteria)), ATransaction, false,
+                        GetParametersForWhereClause(new SFormTable(), ASearchCriteria)));
+        }
+
+        /// auto generated
         public static void DeleteByPrimaryKey(String AFormName, TDBTransaction ATransaction)
         {
             OdbcParameter[] ParametersArray = new OdbcParameter[1];
@@ -1366,6 +1908,14 @@ namespace Ict.Petra.Shared.MSysMan.Data.Access
         public static void DeleteUsingTemplate(SFormRow ATemplateRow, StringCollection ATemplateOperators, TDBTransaction ATransaction)
         {
             DBAccess.GDBAccessObj.ExecuteNonQuery(("DELETE FROM PUB_s_form" + GenerateWhereClause(SFormTable.GetColumnStringList(), ATemplateRow, ATemplateOperators)), ATransaction, false, GetParametersForWhereClause(ATemplateRow));
+        }
+
+        /// auto generated
+        public static void DeleteUsingTemplate(TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        {
+            DBAccess.GDBAccessObj.ExecuteNonQuery(("DELETE FROM PUB_s_form" +
+                GenerateWhereClause(SFormTable.GetColumnStringList(), ASearchCriteria)), ATransaction, false,
+                GetParametersForWhereClause(new SFormTable(), ASearchCriteria));
         }
 
         /// auto generated
@@ -1554,6 +2104,50 @@ namespace Ict.Petra.Shared.MSysMan.Data.Access
         }
 
         /// this method is called by all overloads
+        public static void LoadUsingTemplate(DataSet ADataSet, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        {
+            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClause(AFieldList, new string[] {
+                            "s_file_name_c"}) + " FROM PUB_s_file")
+                            + GenerateWhereClause(SFileTable.GetColumnStringList(), ASearchCriteria))
+                            + GenerateOrderByClause(AOrderBy)), SFileTable.GetTableName(), ATransaction,
+                            GetParametersForWhereClause(new SFileTable(), ASearchCriteria), AStartRecord, AMaxRecords);
+        }
+
+        /// auto generated
+        public static void LoadUsingTemplate(DataSet AData, TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        {
+            LoadUsingTemplate(AData, ASearchCriteria, null, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static void LoadUsingTemplate(DataSet AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
+        {
+            LoadUsingTemplate(AData, ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static void LoadUsingTemplate(out SFileTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        {
+            DataSet FillDataSet = new DataSet();
+            AData = new SFileTable();
+            FillDataSet.Tables.Add(AData);
+            LoadUsingTemplate(FillDataSet, ASearchCriteria, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            FillDataSet.Tables.Remove(AData);
+        }
+
+        /// auto generated
+        public static void LoadUsingTemplate(out SFileTable AData, TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        {
+            LoadUsingTemplate(out AData, ASearchCriteria, null, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static void LoadUsingTemplate(out SFileTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
+        {
+            LoadUsingTemplate(out AData, ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
+        }
+
+        /// this method is called by all overloads
         public static int CountAll(TDBTransaction ATransaction)
         {
             return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar("SELECT COUNT(*) FROM PUB_s_file", ATransaction, false));
@@ -1572,6 +2166,13 @@ namespace Ict.Petra.Shared.MSysMan.Data.Access
         public static int CountUsingTemplate(SFileRow ATemplateRow, StringCollection ATemplateOperators, TDBTransaction ATransaction)
         {
             return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_s_file" + GenerateWhereClause(SFileTable.GetColumnStringList(), ATemplateRow, ATemplateOperators)), ATransaction, false, GetParametersForWhereClause(ATemplateRow)));
+        }
+
+        /// this method is called by all overloads
+        public static int CountUsingTemplate(TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        {
+            return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_s_file" + GenerateWhereClause(SFileTable.GetColumnStringList(), ASearchCriteria)), ATransaction, false,
+            GetParametersForWhereClause(new SFileTable(), ASearchCriteria)));
         }
 
         /// auto generated LoadViaLinkTable
@@ -1670,6 +2271,51 @@ namespace Ict.Petra.Shared.MSysMan.Data.Access
             LoadViaSUserTemplate(out AData, ATemplateRow, ATemplateOperators, AFieldList, ATransaction, null, 0, 0);
         }
 
+        /// auto generated
+        public static void LoadViaSUserTemplate(DataSet ADataSet, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        {
+            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClauseLong("PUB_s_file", AFieldList, new string[] {
+                            "s_file_name_c"}) + " FROM PUB_s_file, PUB_s_batch_job, PUB_s_user WHERE " +
+                            "PUB_s_batch_job.s_file_name_c = PUB_s_file.s_file_name_c AND PUB_s_batch_job.s_user_id_c = PUB_s_user.s_user_id_c")
+                            + GenerateWhereClauseLong("PUB_s_user", SUserTable.GetColumnStringList(), ASearchCriteria))
+                            + GenerateOrderByClause(AOrderBy)), SFileTable.GetTableName(), ATransaction,
+                            GetParametersForWhereClause(new SFileTable(), ASearchCriteria), AStartRecord, AMaxRecords);
+        }
+
+        /// auto generated
+        public static void LoadViaSUserTemplate(DataSet AData, TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        {
+            LoadViaSUserTemplate(AData, ASearchCriteria, null, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static void LoadViaSUserTemplate(DataSet AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
+        {
+            LoadViaSUserTemplate(AData, ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static void LoadViaSUserTemplate(out SFileTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        {
+            DataSet FillDataSet = new DataSet();
+            AData = new SFileTable();
+            FillDataSet.Tables.Add(AData);
+            LoadViaSUserTemplate(FillDataSet, ASearchCriteria, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            FillDataSet.Tables.Remove(AData);
+        }
+
+        /// auto generated
+        public static void LoadViaSUserTemplate(out SFileTable AData, TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        {
+            LoadViaSUserTemplate(out AData, ASearchCriteria, null, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static void LoadViaSUserTemplate(out SFileTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
+        {
+            LoadViaSUserTemplate(out AData, ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
+        }
+
         /// auto generated CountViaLinkTable
         public static int CountViaSUser(String AUserId, TDBTransaction ATransaction)
         {
@@ -1690,6 +2336,15 @@ namespace Ict.Petra.Shared.MSysMan.Data.Access
         }
 
         /// auto generated
+        public static int CountViaSUserTemplate(TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        {
+            return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_s_file, PUB_s_batch_job, PUB_s_user WHERE " +
+                        "PUB_s_batch_job.s_file_name_c = PUB_s_file.s_file_name_c AND PUB_s_batch_job.s_user_id_c = PUB_s_user.s_user_id_c" +
+                        GenerateWhereClauseLong("PUB_s_batch_job", SFileTable.GetColumnStringList(), ASearchCriteria)), ATransaction, false,
+                        GetParametersForWhereClause(new SFileTable(), ASearchCriteria)));
+        }
+
+        /// auto generated
         public static void DeleteByPrimaryKey(String AFileName, TDBTransaction ATransaction)
         {
             OdbcParameter[] ParametersArray = new OdbcParameter[1];
@@ -1702,6 +2357,14 @@ namespace Ict.Petra.Shared.MSysMan.Data.Access
         public static void DeleteUsingTemplate(SFileRow ATemplateRow, StringCollection ATemplateOperators, TDBTransaction ATransaction)
         {
             DBAccess.GDBAccessObj.ExecuteNonQuery(("DELETE FROM PUB_s_file" + GenerateWhereClause(SFileTable.GetColumnStringList(), ATemplateRow, ATemplateOperators)), ATransaction, false, GetParametersForWhereClause(ATemplateRow));
+        }
+
+        /// auto generated
+        public static void DeleteUsingTemplate(TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        {
+            DBAccess.GDBAccessObj.ExecuteNonQuery(("DELETE FROM PUB_s_file" +
+                GenerateWhereClause(SFileTable.GetColumnStringList(), ASearchCriteria)), ATransaction, false,
+                GetParametersForWhereClause(new SFileTable(), ASearchCriteria));
         }
 
         /// auto generated
@@ -1892,6 +2555,50 @@ namespace Ict.Petra.Shared.MSysMan.Data.Access
         }
 
         /// this method is called by all overloads
+        public static void LoadUsingTemplate(DataSet ADataSet, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        {
+            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClause(AFieldList, new string[] {
+                            "s_group_id_c", "s_unit_key_n"}) + " FROM PUB_s_group")
+                            + GenerateWhereClause(SGroupTable.GetColumnStringList(), ASearchCriteria))
+                            + GenerateOrderByClause(AOrderBy)), SGroupTable.GetTableName(), ATransaction,
+                            GetParametersForWhereClause(new SGroupTable(), ASearchCriteria), AStartRecord, AMaxRecords);
+        }
+
+        /// auto generated
+        public static void LoadUsingTemplate(DataSet AData, TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        {
+            LoadUsingTemplate(AData, ASearchCriteria, null, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static void LoadUsingTemplate(DataSet AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
+        {
+            LoadUsingTemplate(AData, ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static void LoadUsingTemplate(out SGroupTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        {
+            DataSet FillDataSet = new DataSet();
+            AData = new SGroupTable();
+            FillDataSet.Tables.Add(AData);
+            LoadUsingTemplate(FillDataSet, ASearchCriteria, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            FillDataSet.Tables.Remove(AData);
+        }
+
+        /// auto generated
+        public static void LoadUsingTemplate(out SGroupTable AData, TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        {
+            LoadUsingTemplate(out AData, ASearchCriteria, null, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static void LoadUsingTemplate(out SGroupTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
+        {
+            LoadUsingTemplate(out AData, ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
+        }
+
+        /// this method is called by all overloads
         public static int CountAll(TDBTransaction ATransaction)
         {
             return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar("SELECT COUNT(*) FROM PUB_s_group", ATransaction, false));
@@ -1912,6 +2619,13 @@ namespace Ict.Petra.Shared.MSysMan.Data.Access
         public static int CountUsingTemplate(SGroupRow ATemplateRow, StringCollection ATemplateOperators, TDBTransaction ATransaction)
         {
             return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_s_group" + GenerateWhereClause(SGroupTable.GetColumnStringList(), ATemplateRow, ATemplateOperators)), ATransaction, false, GetParametersForWhereClause(ATemplateRow)));
+        }
+
+        /// this method is called by all overloads
+        public static int CountUsingTemplate(TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        {
+            return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_s_group" + GenerateWhereClause(SGroupTable.GetColumnStringList(), ASearchCriteria)), ATransaction, false,
+            GetParametersForWhereClause(new SGroupTable(), ASearchCriteria)));
         }
 
         /// auto generated LoadViaLinkTable
@@ -2010,6 +2724,51 @@ namespace Ict.Petra.Shared.MSysMan.Data.Access
             LoadViaSUserTemplate(out AData, ATemplateRow, ATemplateOperators, AFieldList, ATransaction, null, 0, 0);
         }
 
+        /// auto generated
+        public static void LoadViaSUserTemplate(DataSet ADataSet, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        {
+            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClauseLong("PUB_s_group", AFieldList, new string[] {
+                            "s_group_id_c", "s_unit_key_n"}) + " FROM PUB_s_group, PUB_s_user_group, PUB_s_user WHERE " +
+                            "PUB_s_user_group.s_group_id_c = PUB_s_group.s_group_id_c AND PUB_s_user_group.s_unit_key_n = PUB_s_group.s_unit_key_n AND PUB_s_user_group.s_user_id_c = PUB_s_user.s_user_id_c")
+                            + GenerateWhereClauseLong("PUB_s_user", SUserTable.GetColumnStringList(), ASearchCriteria))
+                            + GenerateOrderByClause(AOrderBy)), SGroupTable.GetTableName(), ATransaction,
+                            GetParametersForWhereClause(new SGroupTable(), ASearchCriteria), AStartRecord, AMaxRecords);
+        }
+
+        /// auto generated
+        public static void LoadViaSUserTemplate(DataSet AData, TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        {
+            LoadViaSUserTemplate(AData, ASearchCriteria, null, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static void LoadViaSUserTemplate(DataSet AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
+        {
+            LoadViaSUserTemplate(AData, ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static void LoadViaSUserTemplate(out SGroupTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        {
+            DataSet FillDataSet = new DataSet();
+            AData = new SGroupTable();
+            FillDataSet.Tables.Add(AData);
+            LoadViaSUserTemplate(FillDataSet, ASearchCriteria, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            FillDataSet.Tables.Remove(AData);
+        }
+
+        /// auto generated
+        public static void LoadViaSUserTemplate(out SGroupTable AData, TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        {
+            LoadViaSUserTemplate(out AData, ASearchCriteria, null, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static void LoadViaSUserTemplate(out SGroupTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
+        {
+            LoadViaSUserTemplate(out AData, ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
+        }
+
         /// auto generated CountViaLinkTable
         public static int CountViaSUser(String AUserId, TDBTransaction ATransaction)
         {
@@ -2027,6 +2786,15 @@ namespace Ict.Petra.Shared.MSysMan.Data.Access
             return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_s_group, PUB_s_user_group, PUB_s_user WHERE " +
                         "PUB_s_user_group.s_group_id_c = PUB_s_group.s_group_id_c AND PUB_s_user_group.s_unit_key_n = PUB_s_group.s_unit_key_n AND PUB_s_user_group.s_user_id_c = PUB_s_user.s_user_id_c" +
                         GenerateWhereClauseLong("PUB_s_user_group", SGroupTable.GetColumnStringList(), ATemplateRow, ATemplateOperators)), ATransaction, false, GetParametersForWhereClause(ATemplateRow, SUserTable.GetPrimKeyColumnOrdList())));
+        }
+
+        /// auto generated
+        public static int CountViaSUserTemplate(TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        {
+            return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_s_group, PUB_s_user_group, PUB_s_user WHERE " +
+                        "PUB_s_user_group.s_group_id_c = PUB_s_group.s_group_id_c AND PUB_s_user_group.s_unit_key_n = PUB_s_group.s_unit_key_n AND PUB_s_user_group.s_user_id_c = PUB_s_user.s_user_id_c" +
+                        GenerateWhereClauseLong("PUB_s_user_group", SGroupTable.GetColumnStringList(), ASearchCriteria)), ATransaction, false,
+                        GetParametersForWhereClause(new SGroupTable(), ASearchCriteria)));
         }
 
         /// auto generated LoadViaLinkTable
@@ -2125,6 +2893,51 @@ namespace Ict.Petra.Shared.MSysMan.Data.Access
             LoadViaSModuleTemplate(out AData, ATemplateRow, ATemplateOperators, AFieldList, ATransaction, null, 0, 0);
         }
 
+        /// auto generated
+        public static void LoadViaSModuleTemplate(DataSet ADataSet, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        {
+            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClauseLong("PUB_s_group", AFieldList, new string[] {
+                            "s_group_id_c", "s_unit_key_n"}) + " FROM PUB_s_group, PUB_s_group_module_access_permission, PUB_s_module WHERE " +
+                            "PUB_s_group_module_access_permission.s_group_id_c = PUB_s_group.s_group_id_c AND PUB_s_group_module_access_permission.s_group_unit_key_n = PUB_s_group.s_unit_key_n AND PUB_s_group_module_access_permission.s_module_id_c = PUB_s_module.s_module_id_c")
+                            + GenerateWhereClauseLong("PUB_s_module", SModuleTable.GetColumnStringList(), ASearchCriteria))
+                            + GenerateOrderByClause(AOrderBy)), SGroupTable.GetTableName(), ATransaction,
+                            GetParametersForWhereClause(new SGroupTable(), ASearchCriteria), AStartRecord, AMaxRecords);
+        }
+
+        /// auto generated
+        public static void LoadViaSModuleTemplate(DataSet AData, TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        {
+            LoadViaSModuleTemplate(AData, ASearchCriteria, null, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static void LoadViaSModuleTemplate(DataSet AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
+        {
+            LoadViaSModuleTemplate(AData, ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static void LoadViaSModuleTemplate(out SGroupTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        {
+            DataSet FillDataSet = new DataSet();
+            AData = new SGroupTable();
+            FillDataSet.Tables.Add(AData);
+            LoadViaSModuleTemplate(FillDataSet, ASearchCriteria, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            FillDataSet.Tables.Remove(AData);
+        }
+
+        /// auto generated
+        public static void LoadViaSModuleTemplate(out SGroupTable AData, TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        {
+            LoadViaSModuleTemplate(out AData, ASearchCriteria, null, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static void LoadViaSModuleTemplate(out SGroupTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
+        {
+            LoadViaSModuleTemplate(out AData, ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
+        }
+
         /// auto generated CountViaLinkTable
         public static int CountViaSModule(String AModuleId, TDBTransaction ATransaction)
         {
@@ -2142,6 +2955,15 @@ namespace Ict.Petra.Shared.MSysMan.Data.Access
             return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_s_group, PUB_s_group_module_access_permission, PUB_s_module WHERE " +
                         "PUB_s_group_module_access_permission.s_group_id_c = PUB_s_group.s_group_id_c AND PUB_s_group_module_access_permission.s_group_unit_key_n = PUB_s_group.s_unit_key_n AND PUB_s_group_module_access_permission.s_module_id_c = PUB_s_module.s_module_id_c" +
                         GenerateWhereClauseLong("PUB_s_group_module_access_permission", SGroupTable.GetColumnStringList(), ATemplateRow, ATemplateOperators)), ATransaction, false, GetParametersForWhereClause(ATemplateRow, SModuleTable.GetPrimKeyColumnOrdList())));
+        }
+
+        /// auto generated
+        public static int CountViaSModuleTemplate(TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        {
+            return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_s_group, PUB_s_group_module_access_permission, PUB_s_module WHERE " +
+                        "PUB_s_group_module_access_permission.s_group_id_c = PUB_s_group.s_group_id_c AND PUB_s_group_module_access_permission.s_group_unit_key_n = PUB_s_group.s_unit_key_n AND PUB_s_group_module_access_permission.s_module_id_c = PUB_s_module.s_module_id_c" +
+                        GenerateWhereClauseLong("PUB_s_group_module_access_permission", SGroupTable.GetColumnStringList(), ASearchCriteria)), ATransaction, false,
+                        GetParametersForWhereClause(new SGroupTable(), ASearchCriteria)));
         }
 
         /// auto generated LoadViaLinkTable
@@ -2240,6 +3062,51 @@ namespace Ict.Petra.Shared.MSysMan.Data.Access
             LoadViaSFunctionTemplate(out AData, ATemplateRow, ATemplateOperators, AFieldList, ATransaction, null, 0, 0);
         }
 
+        /// auto generated
+        public static void LoadViaSFunctionTemplate(DataSet ADataSet, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        {
+            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClauseLong("PUB_s_group", AFieldList, new string[] {
+                            "s_group_id_c", "s_unit_key_n"}) + " FROM PUB_s_group, PUB_s_group_function, PUB_s_function WHERE " +
+                            "PUB_s_group_function.s_group_id_c = PUB_s_group.s_group_id_c AND PUB_s_group_function.s_unit_key_n = PUB_s_group.s_unit_key_n AND PUB_s_group_function.s_function_id_c = PUB_s_function.s_function_id_c")
+                            + GenerateWhereClauseLong("PUB_s_function", SFunctionTable.GetColumnStringList(), ASearchCriteria))
+                            + GenerateOrderByClause(AOrderBy)), SGroupTable.GetTableName(), ATransaction,
+                            GetParametersForWhereClause(new SGroupTable(), ASearchCriteria), AStartRecord, AMaxRecords);
+        }
+
+        /// auto generated
+        public static void LoadViaSFunctionTemplate(DataSet AData, TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        {
+            LoadViaSFunctionTemplate(AData, ASearchCriteria, null, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static void LoadViaSFunctionTemplate(DataSet AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
+        {
+            LoadViaSFunctionTemplate(AData, ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static void LoadViaSFunctionTemplate(out SGroupTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        {
+            DataSet FillDataSet = new DataSet();
+            AData = new SGroupTable();
+            FillDataSet.Tables.Add(AData);
+            LoadViaSFunctionTemplate(FillDataSet, ASearchCriteria, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            FillDataSet.Tables.Remove(AData);
+        }
+
+        /// auto generated
+        public static void LoadViaSFunctionTemplate(out SGroupTable AData, TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        {
+            LoadViaSFunctionTemplate(out AData, ASearchCriteria, null, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static void LoadViaSFunctionTemplate(out SGroupTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
+        {
+            LoadViaSFunctionTemplate(out AData, ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
+        }
+
         /// auto generated CountViaLinkTable
         public static int CountViaSFunction(String AFunctionId, TDBTransaction ATransaction)
         {
@@ -2257,6 +3124,15 @@ namespace Ict.Petra.Shared.MSysMan.Data.Access
             return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_s_group, PUB_s_group_function, PUB_s_function WHERE " +
                         "PUB_s_group_function.s_group_id_c = PUB_s_group.s_group_id_c AND PUB_s_group_function.s_unit_key_n = PUB_s_group.s_unit_key_n AND PUB_s_group_function.s_function_id_c = PUB_s_function.s_function_id_c" +
                         GenerateWhereClauseLong("PUB_s_group_function", SGroupTable.GetColumnStringList(), ATemplateRow, ATemplateOperators)), ATransaction, false, GetParametersForWhereClause(ATemplateRow, SFunctionTable.GetPrimKeyColumnOrdList())));
+        }
+
+        /// auto generated
+        public static int CountViaSFunctionTemplate(TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        {
+            return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_s_group, PUB_s_group_function, PUB_s_function WHERE " +
+                        "PUB_s_group_function.s_group_id_c = PUB_s_group.s_group_id_c AND PUB_s_group_function.s_unit_key_n = PUB_s_group.s_unit_key_n AND PUB_s_group_function.s_function_id_c = PUB_s_function.s_function_id_c" +
+                        GenerateWhereClauseLong("PUB_s_group_function", SGroupTable.GetColumnStringList(), ASearchCriteria)), ATransaction, false,
+                        GetParametersForWhereClause(new SGroupTable(), ASearchCriteria)));
         }
 
         /// auto generated LoadViaLinkTable
@@ -2361,6 +3237,51 @@ namespace Ict.Petra.Shared.MSysMan.Data.Access
             LoadViaUmJobTemplate(out AData, ATemplateRow, ATemplateOperators, AFieldList, ATransaction, null, 0, 0);
         }
 
+        /// auto generated
+        public static void LoadViaUmJobTemplate(DataSet ADataSet, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        {
+            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClauseLong("PUB_s_group", AFieldList, new string[] {
+                            "s_group_id_c", "s_unit_key_n"}) + " FROM PUB_s_group, PUB_s_job_group, PUB_um_job WHERE " +
+                            "PUB_s_job_group.s_group_id_c = PUB_s_group.s_group_id_c AND PUB_s_job_group.s_unit_key_n = PUB_s_group.s_unit_key_n AND PUB_s_job_group.s_unit_key_n = PUB_um_job.pm_unit_key_n AND PUB_s_job_group.pt_position_name_c = PUB_um_job.pt_position_name_c AND PUB_s_job_group.pt_position_scope_c = PUB_um_job.pt_position_scope_c AND PUB_s_job_group.um_job_key_i = PUB_um_job.um_job_key_i")
+                            + GenerateWhereClauseLong("PUB_um_job", UmJobTable.GetColumnStringList(), ASearchCriteria))
+                            + GenerateOrderByClause(AOrderBy)), SGroupTable.GetTableName(), ATransaction,
+                            GetParametersForWhereClause(new SGroupTable(), ASearchCriteria), AStartRecord, AMaxRecords);
+        }
+
+        /// auto generated
+        public static void LoadViaUmJobTemplate(DataSet AData, TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        {
+            LoadViaUmJobTemplate(AData, ASearchCriteria, null, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static void LoadViaUmJobTemplate(DataSet AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
+        {
+            LoadViaUmJobTemplate(AData, ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static void LoadViaUmJobTemplate(out SGroupTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        {
+            DataSet FillDataSet = new DataSet();
+            AData = new SGroupTable();
+            FillDataSet.Tables.Add(AData);
+            LoadViaUmJobTemplate(FillDataSet, ASearchCriteria, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            FillDataSet.Tables.Remove(AData);
+        }
+
+        /// auto generated
+        public static void LoadViaUmJobTemplate(out SGroupTable AData, TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        {
+            LoadViaUmJobTemplate(out AData, ASearchCriteria, null, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static void LoadViaUmJobTemplate(out SGroupTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
+        {
+            LoadViaUmJobTemplate(out AData, ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
+        }
+
         /// auto generated CountViaLinkTable
         public static int CountViaUmJob(Int64 AUnitKey, String APositionName, String APositionScope, Int32 AJobKey, TDBTransaction ATransaction)
         {
@@ -2384,6 +3305,15 @@ namespace Ict.Petra.Shared.MSysMan.Data.Access
             return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_s_group, PUB_s_job_group, PUB_um_job WHERE " +
                         "PUB_s_job_group.s_group_id_c = PUB_s_group.s_group_id_c AND PUB_s_job_group.s_unit_key_n = PUB_s_group.s_unit_key_n AND PUB_s_job_group.s_unit_key_n = PUB_um_job.pm_unit_key_n AND PUB_s_job_group.pt_position_name_c = PUB_um_job.pt_position_name_c AND PUB_s_job_group.pt_position_scope_c = PUB_um_job.pt_position_scope_c AND PUB_s_job_group.um_job_key_i = PUB_um_job.um_job_key_i" +
                         GenerateWhereClauseLong("PUB_s_job_group", SGroupTable.GetColumnStringList(), ATemplateRow, ATemplateOperators)), ATransaction, false, GetParametersForWhereClause(ATemplateRow, UmJobTable.GetPrimKeyColumnOrdList())));
+        }
+
+        /// auto generated
+        public static int CountViaUmJobTemplate(TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        {
+            return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_s_group, PUB_s_job_group, PUB_um_job WHERE " +
+                        "PUB_s_job_group.s_group_id_c = PUB_s_group.s_group_id_c AND PUB_s_job_group.s_unit_key_n = PUB_s_group.s_unit_key_n AND PUB_s_job_group.s_unit_key_n = PUB_um_job.pm_unit_key_n AND PUB_s_job_group.pt_position_name_c = PUB_um_job.pt_position_name_c AND PUB_s_job_group.pt_position_scope_c = PUB_um_job.pt_position_scope_c AND PUB_s_job_group.um_job_key_i = PUB_um_job.um_job_key_i" +
+                        GenerateWhereClauseLong("PUB_s_job_group", SGroupTable.GetColumnStringList(), ASearchCriteria)), ATransaction, false,
+                        GetParametersForWhereClause(new SGroupTable(), ASearchCriteria)));
         }
 
         /// auto generated LoadViaLinkTable
@@ -2484,6 +3414,51 @@ namespace Ict.Petra.Shared.MSysMan.Data.Access
             LoadViaPPartnerSetTemplate(out AData, ATemplateRow, ATemplateOperators, AFieldList, ATransaction, null, 0, 0);
         }
 
+        /// auto generated
+        public static void LoadViaPPartnerSetTemplate(DataSet ADataSet, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        {
+            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClauseLong("PUB_s_group", AFieldList, new string[] {
+                            "s_group_id_c", "s_unit_key_n"}) + " FROM PUB_s_group, PUB_s_group_partner_set, PUB_p_partner_set WHERE " +
+                            "PUB_s_group_partner_set.s_group_id_c = PUB_s_group.s_group_id_c AND PUB_s_group_partner_set.s_group_unit_key_n = PUB_s_group.s_unit_key_n AND PUB_s_group_partner_set.p_partner_set_id_c = PUB_p_partner_set.p_partner_set_id_c AND PUB_s_group_partner_set.p_partner_set_unit_key_n = PUB_p_partner_set.p_unit_key_n")
+                            + GenerateWhereClauseLong("PUB_p_partner_set", PPartnerSetTable.GetColumnStringList(), ASearchCriteria))
+                            + GenerateOrderByClause(AOrderBy)), SGroupTable.GetTableName(), ATransaction,
+                            GetParametersForWhereClause(new SGroupTable(), ASearchCriteria), AStartRecord, AMaxRecords);
+        }
+
+        /// auto generated
+        public static void LoadViaPPartnerSetTemplate(DataSet AData, TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        {
+            LoadViaPPartnerSetTemplate(AData, ASearchCriteria, null, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static void LoadViaPPartnerSetTemplate(DataSet AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
+        {
+            LoadViaPPartnerSetTemplate(AData, ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static void LoadViaPPartnerSetTemplate(out SGroupTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        {
+            DataSet FillDataSet = new DataSet();
+            AData = new SGroupTable();
+            FillDataSet.Tables.Add(AData);
+            LoadViaPPartnerSetTemplate(FillDataSet, ASearchCriteria, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            FillDataSet.Tables.Remove(AData);
+        }
+
+        /// auto generated
+        public static void LoadViaPPartnerSetTemplate(out SGroupTable AData, TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        {
+            LoadViaPPartnerSetTemplate(out AData, ASearchCriteria, null, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static void LoadViaPPartnerSetTemplate(out SGroupTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
+        {
+            LoadViaPPartnerSetTemplate(out AData, ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
+        }
+
         /// auto generated CountViaLinkTable
         public static int CountViaPPartnerSet(String APartnerSetId, Int64 AUnitKey, TDBTransaction ATransaction)
         {
@@ -2503,6 +3478,15 @@ namespace Ict.Petra.Shared.MSysMan.Data.Access
             return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_s_group, PUB_s_group_partner_set, PUB_p_partner_set WHERE " +
                         "PUB_s_group_partner_set.s_group_id_c = PUB_s_group.s_group_id_c AND PUB_s_group_partner_set.s_group_unit_key_n = PUB_s_group.s_unit_key_n AND PUB_s_group_partner_set.p_partner_set_id_c = PUB_p_partner_set.p_partner_set_id_c AND PUB_s_group_partner_set.p_partner_set_unit_key_n = PUB_p_partner_set.p_unit_key_n" +
                         GenerateWhereClauseLong("PUB_s_group_partner_set", SGroupTable.GetColumnStringList(), ATemplateRow, ATemplateOperators)), ATransaction, false, GetParametersForWhereClause(ATemplateRow, PPartnerSetTable.GetPrimKeyColumnOrdList())));
+        }
+
+        /// auto generated
+        public static int CountViaPPartnerSetTemplate(TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        {
+            return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_s_group, PUB_s_group_partner_set, PUB_p_partner_set WHERE " +
+                        "PUB_s_group_partner_set.s_group_id_c = PUB_s_group.s_group_id_c AND PUB_s_group_partner_set.s_group_unit_key_n = PUB_s_group.s_unit_key_n AND PUB_s_group_partner_set.p_partner_set_id_c = PUB_p_partner_set.p_partner_set_id_c AND PUB_s_group_partner_set.p_partner_set_unit_key_n = PUB_p_partner_set.p_unit_key_n" +
+                        GenerateWhereClauseLong("PUB_s_group_partner_set", SGroupTable.GetColumnStringList(), ASearchCriteria)), ATransaction, false,
+                        GetParametersForWhereClause(new SGroupTable(), ASearchCriteria)));
         }
 
         /// auto generated LoadViaLinkTable
@@ -2605,6 +3589,51 @@ namespace Ict.Petra.Shared.MSysMan.Data.Access
             LoadViaAGiftTemplate(out AData, ATemplateRow, ATemplateOperators, AFieldList, ATransaction, null, 0, 0);
         }
 
+        /// auto generated
+        public static void LoadViaAGiftTemplate(DataSet ADataSet, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        {
+            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClauseLong("PUB_s_group", AFieldList, new string[] {
+                            "s_group_id_c", "s_unit_key_n"}) + " FROM PUB_s_group, PUB_s_group_gift, PUB_a_gift WHERE " +
+                            "PUB_s_group_gift.s_group_id_c = PUB_s_group.s_group_id_c AND PUB_s_group_gift.s_group_unit_key_n = PUB_s_group.s_unit_key_n AND PUB_s_group_gift.a_ledger_number_i = PUB_a_gift.a_ledger_number_i AND PUB_s_group_gift.a_batch_number_i = PUB_a_gift.a_batch_number_i AND PUB_s_group_gift.a_gift_transaction_number_i = PUB_a_gift.a_gift_transaction_number_i")
+                            + GenerateWhereClauseLong("PUB_a_gift", AGiftTable.GetColumnStringList(), ASearchCriteria))
+                            + GenerateOrderByClause(AOrderBy)), SGroupTable.GetTableName(), ATransaction,
+                            GetParametersForWhereClause(new SGroupTable(), ASearchCriteria), AStartRecord, AMaxRecords);
+        }
+
+        /// auto generated
+        public static void LoadViaAGiftTemplate(DataSet AData, TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        {
+            LoadViaAGiftTemplate(AData, ASearchCriteria, null, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static void LoadViaAGiftTemplate(DataSet AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
+        {
+            LoadViaAGiftTemplate(AData, ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static void LoadViaAGiftTemplate(out SGroupTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        {
+            DataSet FillDataSet = new DataSet();
+            AData = new SGroupTable();
+            FillDataSet.Tables.Add(AData);
+            LoadViaAGiftTemplate(FillDataSet, ASearchCriteria, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            FillDataSet.Tables.Remove(AData);
+        }
+
+        /// auto generated
+        public static void LoadViaAGiftTemplate(out SGroupTable AData, TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        {
+            LoadViaAGiftTemplate(out AData, ASearchCriteria, null, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static void LoadViaAGiftTemplate(out SGroupTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
+        {
+            LoadViaAGiftTemplate(out AData, ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
+        }
+
         /// auto generated CountViaLinkTable
         public static int CountViaAGift(Int32 ALedgerNumber, Int32 ABatchNumber, Int32 AGiftTransactionNumber, TDBTransaction ATransaction)
         {
@@ -2626,6 +3655,15 @@ namespace Ict.Petra.Shared.MSysMan.Data.Access
             return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_s_group, PUB_s_group_gift, PUB_a_gift WHERE " +
                         "PUB_s_group_gift.s_group_id_c = PUB_s_group.s_group_id_c AND PUB_s_group_gift.s_group_unit_key_n = PUB_s_group.s_unit_key_n AND PUB_s_group_gift.a_ledger_number_i = PUB_a_gift.a_ledger_number_i AND PUB_s_group_gift.a_batch_number_i = PUB_a_gift.a_batch_number_i AND PUB_s_group_gift.a_gift_transaction_number_i = PUB_a_gift.a_gift_transaction_number_i" +
                         GenerateWhereClauseLong("PUB_s_group_gift", SGroupTable.GetColumnStringList(), ATemplateRow, ATemplateOperators)), ATransaction, false, GetParametersForWhereClause(ATemplateRow, AGiftTable.GetPrimKeyColumnOrdList())));
+        }
+
+        /// auto generated
+        public static int CountViaAGiftTemplate(TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        {
+            return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_s_group, PUB_s_group_gift, PUB_a_gift WHERE " +
+                        "PUB_s_group_gift.s_group_id_c = PUB_s_group.s_group_id_c AND PUB_s_group_gift.s_group_unit_key_n = PUB_s_group.s_unit_key_n AND PUB_s_group_gift.a_ledger_number_i = PUB_a_gift.a_ledger_number_i AND PUB_s_group_gift.a_batch_number_i = PUB_a_gift.a_batch_number_i AND PUB_s_group_gift.a_gift_transaction_number_i = PUB_a_gift.a_gift_transaction_number_i" +
+                        GenerateWhereClauseLong("PUB_s_group_gift", SGroupTable.GetColumnStringList(), ASearchCriteria)), ATransaction, false,
+                        GetParametersForWhereClause(new SGroupTable(), ASearchCriteria)));
         }
 
         /// auto generated LoadViaLinkTable
@@ -2728,6 +3766,51 @@ namespace Ict.Petra.Shared.MSysMan.Data.Access
             LoadViaAMotivationDetailTemplate(out AData, ATemplateRow, ATemplateOperators, AFieldList, ATransaction, null, 0, 0);
         }
 
+        /// auto generated
+        public static void LoadViaAMotivationDetailTemplate(DataSet ADataSet, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        {
+            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClauseLong("PUB_s_group", AFieldList, new string[] {
+                            "s_group_id_c", "s_unit_key_n"}) + " FROM PUB_s_group, PUB_s_group_motivation, PUB_a_motivation_detail WHERE " +
+                            "PUB_s_group_motivation.s_group_id_c = PUB_s_group.s_group_id_c AND PUB_s_group_motivation.s_group_unit_key_n = PUB_s_group.s_unit_key_n AND PUB_s_group_motivation.a_ledger_number_i = PUB_a_motivation_detail.a_ledger_number_i AND PUB_s_group_motivation.a_motivation_group_code_c = PUB_a_motivation_detail.a_motivation_group_code_c AND PUB_s_group_motivation.a_motivation_detail_code_c = PUB_a_motivation_detail.a_motivation_detail_code_c")
+                            + GenerateWhereClauseLong("PUB_a_motivation_detail", AMotivationDetailTable.GetColumnStringList(), ASearchCriteria))
+                            + GenerateOrderByClause(AOrderBy)), SGroupTable.GetTableName(), ATransaction,
+                            GetParametersForWhereClause(new SGroupTable(), ASearchCriteria), AStartRecord, AMaxRecords);
+        }
+
+        /// auto generated
+        public static void LoadViaAMotivationDetailTemplate(DataSet AData, TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        {
+            LoadViaAMotivationDetailTemplate(AData, ASearchCriteria, null, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static void LoadViaAMotivationDetailTemplate(DataSet AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
+        {
+            LoadViaAMotivationDetailTemplate(AData, ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static void LoadViaAMotivationDetailTemplate(out SGroupTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        {
+            DataSet FillDataSet = new DataSet();
+            AData = new SGroupTable();
+            FillDataSet.Tables.Add(AData);
+            LoadViaAMotivationDetailTemplate(FillDataSet, ASearchCriteria, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            FillDataSet.Tables.Remove(AData);
+        }
+
+        /// auto generated
+        public static void LoadViaAMotivationDetailTemplate(out SGroupTable AData, TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        {
+            LoadViaAMotivationDetailTemplate(out AData, ASearchCriteria, null, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static void LoadViaAMotivationDetailTemplate(out SGroupTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
+        {
+            LoadViaAMotivationDetailTemplate(out AData, ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
+        }
+
         /// auto generated CountViaLinkTable
         public static int CountViaAMotivationDetail(Int32 ALedgerNumber, String AMotivationGroupCode, String AMotivationDetailCode, TDBTransaction ATransaction)
         {
@@ -2749,6 +3832,15 @@ namespace Ict.Petra.Shared.MSysMan.Data.Access
             return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_s_group, PUB_s_group_motivation, PUB_a_motivation_detail WHERE " +
                         "PUB_s_group_motivation.s_group_id_c = PUB_s_group.s_group_id_c AND PUB_s_group_motivation.s_group_unit_key_n = PUB_s_group.s_unit_key_n AND PUB_s_group_motivation.a_ledger_number_i = PUB_a_motivation_detail.a_ledger_number_i AND PUB_s_group_motivation.a_motivation_group_code_c = PUB_a_motivation_detail.a_motivation_group_code_c AND PUB_s_group_motivation.a_motivation_detail_code_c = PUB_a_motivation_detail.a_motivation_detail_code_c" +
                         GenerateWhereClauseLong("PUB_s_group_motivation", SGroupTable.GetColumnStringList(), ATemplateRow, ATemplateOperators)), ATransaction, false, GetParametersForWhereClause(ATemplateRow, AMotivationDetailTable.GetPrimKeyColumnOrdList())));
+        }
+
+        /// auto generated
+        public static int CountViaAMotivationDetailTemplate(TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        {
+            return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_s_group, PUB_s_group_motivation, PUB_a_motivation_detail WHERE " +
+                        "PUB_s_group_motivation.s_group_id_c = PUB_s_group.s_group_id_c AND PUB_s_group_motivation.s_group_unit_key_n = PUB_s_group.s_unit_key_n AND PUB_s_group_motivation.a_ledger_number_i = PUB_a_motivation_detail.a_ledger_number_i AND PUB_s_group_motivation.a_motivation_group_code_c = PUB_a_motivation_detail.a_motivation_group_code_c AND PUB_s_group_motivation.a_motivation_detail_code_c = PUB_a_motivation_detail.a_motivation_detail_code_c" +
+                        GenerateWhereClauseLong("PUB_s_group_motivation", SGroupTable.GetColumnStringList(), ASearchCriteria)), ATransaction, false,
+                        GetParametersForWhereClause(new SGroupTable(), ASearchCriteria)));
         }
 
         /// auto generated LoadViaLinkTable
@@ -2847,6 +3939,51 @@ namespace Ict.Petra.Shared.MSysMan.Data.Access
             LoadViaPPartnerContactTemplate(out AData, ATemplateRow, ATemplateOperators, AFieldList, ATransaction, null, 0, 0);
         }
 
+        /// auto generated
+        public static void LoadViaPPartnerContactTemplate(DataSet ADataSet, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        {
+            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClauseLong("PUB_s_group", AFieldList, new string[] {
+                            "s_group_id_c", "s_unit_key_n"}) + " FROM PUB_s_group, PUB_s_group_partner_contact, PUB_p_partner_contact WHERE " +
+                            "PUB_s_group_partner_contact.s_group_id_c = PUB_s_group.s_group_id_c AND PUB_s_group_partner_contact.s_group_unit_key_n = PUB_s_group.s_unit_key_n AND PUB_s_group_partner_contact.p_contact_id_i = PUB_p_partner_contact.p_contact_id_i")
+                            + GenerateWhereClauseLong("PUB_p_partner_contact", PPartnerContactTable.GetColumnStringList(), ASearchCriteria))
+                            + GenerateOrderByClause(AOrderBy)), SGroupTable.GetTableName(), ATransaction,
+                            GetParametersForWhereClause(new SGroupTable(), ASearchCriteria), AStartRecord, AMaxRecords);
+        }
+
+        /// auto generated
+        public static void LoadViaPPartnerContactTemplate(DataSet AData, TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        {
+            LoadViaPPartnerContactTemplate(AData, ASearchCriteria, null, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static void LoadViaPPartnerContactTemplate(DataSet AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
+        {
+            LoadViaPPartnerContactTemplate(AData, ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static void LoadViaPPartnerContactTemplate(out SGroupTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        {
+            DataSet FillDataSet = new DataSet();
+            AData = new SGroupTable();
+            FillDataSet.Tables.Add(AData);
+            LoadViaPPartnerContactTemplate(FillDataSet, ASearchCriteria, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            FillDataSet.Tables.Remove(AData);
+        }
+
+        /// auto generated
+        public static void LoadViaPPartnerContactTemplate(out SGroupTable AData, TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        {
+            LoadViaPPartnerContactTemplate(out AData, ASearchCriteria, null, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static void LoadViaPPartnerContactTemplate(out SGroupTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
+        {
+            LoadViaPPartnerContactTemplate(out AData, ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
+        }
+
         /// auto generated CountViaLinkTable
         public static int CountViaPPartnerContact(Int32 AContactId, TDBTransaction ATransaction)
         {
@@ -2864,6 +4001,15 @@ namespace Ict.Petra.Shared.MSysMan.Data.Access
             return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_s_group, PUB_s_group_partner_contact, PUB_p_partner_contact WHERE " +
                         "PUB_s_group_partner_contact.s_group_id_c = PUB_s_group.s_group_id_c AND PUB_s_group_partner_contact.s_group_unit_key_n = PUB_s_group.s_unit_key_n AND PUB_s_group_partner_contact.p_contact_id_i = PUB_p_partner_contact.p_contact_id_i" +
                         GenerateWhereClauseLong("PUB_s_group_partner_contact", SGroupTable.GetColumnStringList(), ATemplateRow, ATemplateOperators)), ATransaction, false, GetParametersForWhereClause(ATemplateRow, PPartnerContactTable.GetPrimKeyColumnOrdList())));
+        }
+
+        /// auto generated
+        public static int CountViaPPartnerContactTemplate(TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        {
+            return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_s_group, PUB_s_group_partner_contact, PUB_p_partner_contact WHERE " +
+                        "PUB_s_group_partner_contact.s_group_id_c = PUB_s_group.s_group_id_c AND PUB_s_group_partner_contact.s_group_unit_key_n = PUB_s_group.s_unit_key_n AND PUB_s_group_partner_contact.p_contact_id_i = PUB_p_partner_contact.p_contact_id_i" +
+                        GenerateWhereClauseLong("PUB_s_group_partner_contact", SGroupTable.GetColumnStringList(), ASearchCriteria)), ATransaction, false,
+                        GetParametersForWhereClause(new SGroupTable(), ASearchCriteria)));
         }
 
         /// auto generated LoadViaLinkTable
@@ -2966,6 +4112,51 @@ namespace Ict.Petra.Shared.MSysMan.Data.Access
             LoadViaPPartnerReminderTemplate(out AData, ATemplateRow, ATemplateOperators, AFieldList, ATransaction, null, 0, 0);
         }
 
+        /// auto generated
+        public static void LoadViaPPartnerReminderTemplate(DataSet ADataSet, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        {
+            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClauseLong("PUB_s_group", AFieldList, new string[] {
+                            "s_group_id_c", "s_unit_key_n"}) + " FROM PUB_s_group, PUB_s_group_partner_reminder, PUB_p_partner_reminder WHERE " +
+                            "PUB_s_group_partner_reminder.s_group_id_c = PUB_s_group.s_group_id_c AND PUB_s_group_partner_reminder.s_group_unit_key_n = PUB_s_group.s_unit_key_n AND PUB_s_group_partner_reminder.p_partner_key_n = PUB_p_partner_reminder.p_partner_key_n AND PUB_s_group_partner_reminder.p_contact_id_i = PUB_p_partner_reminder.p_contact_id_i AND PUB_s_group_partner_reminder.p_reminder_id_i = PUB_p_partner_reminder.p_reminder_id_i")
+                            + GenerateWhereClauseLong("PUB_p_partner_reminder", PPartnerReminderTable.GetColumnStringList(), ASearchCriteria))
+                            + GenerateOrderByClause(AOrderBy)), SGroupTable.GetTableName(), ATransaction,
+                            GetParametersForWhereClause(new SGroupTable(), ASearchCriteria), AStartRecord, AMaxRecords);
+        }
+
+        /// auto generated
+        public static void LoadViaPPartnerReminderTemplate(DataSet AData, TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        {
+            LoadViaPPartnerReminderTemplate(AData, ASearchCriteria, null, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static void LoadViaPPartnerReminderTemplate(DataSet AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
+        {
+            LoadViaPPartnerReminderTemplate(AData, ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static void LoadViaPPartnerReminderTemplate(out SGroupTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        {
+            DataSet FillDataSet = new DataSet();
+            AData = new SGroupTable();
+            FillDataSet.Tables.Add(AData);
+            LoadViaPPartnerReminderTemplate(FillDataSet, ASearchCriteria, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            FillDataSet.Tables.Remove(AData);
+        }
+
+        /// auto generated
+        public static void LoadViaPPartnerReminderTemplate(out SGroupTable AData, TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        {
+            LoadViaPPartnerReminderTemplate(out AData, ASearchCriteria, null, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static void LoadViaPPartnerReminderTemplate(out SGroupTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
+        {
+            LoadViaPPartnerReminderTemplate(out AData, ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
+        }
+
         /// auto generated CountViaLinkTable
         public static int CountViaPPartnerReminder(Int64 APartnerKey, Int32 AContactId, Int32 AReminderId, TDBTransaction ATransaction)
         {
@@ -2987,6 +4178,15 @@ namespace Ict.Petra.Shared.MSysMan.Data.Access
             return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_s_group, PUB_s_group_partner_reminder, PUB_p_partner_reminder WHERE " +
                         "PUB_s_group_partner_reminder.s_group_id_c = PUB_s_group.s_group_id_c AND PUB_s_group_partner_reminder.s_group_unit_key_n = PUB_s_group.s_unit_key_n AND PUB_s_group_partner_reminder.p_partner_key_n = PUB_p_partner_reminder.p_partner_key_n AND PUB_s_group_partner_reminder.p_contact_id_i = PUB_p_partner_reminder.p_contact_id_i AND PUB_s_group_partner_reminder.p_reminder_id_i = PUB_p_partner_reminder.p_reminder_id_i" +
                         GenerateWhereClauseLong("PUB_s_group_partner_reminder", SGroupTable.GetColumnStringList(), ATemplateRow, ATemplateOperators)), ATransaction, false, GetParametersForWhereClause(ATemplateRow, PPartnerReminderTable.GetPrimKeyColumnOrdList())));
+        }
+
+        /// auto generated
+        public static int CountViaPPartnerReminderTemplate(TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        {
+            return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_s_group, PUB_s_group_partner_reminder, PUB_p_partner_reminder WHERE " +
+                        "PUB_s_group_partner_reminder.s_group_id_c = PUB_s_group.s_group_id_c AND PUB_s_group_partner_reminder.s_group_unit_key_n = PUB_s_group.s_unit_key_n AND PUB_s_group_partner_reminder.p_partner_key_n = PUB_p_partner_reminder.p_partner_key_n AND PUB_s_group_partner_reminder.p_contact_id_i = PUB_p_partner_reminder.p_contact_id_i AND PUB_s_group_partner_reminder.p_reminder_id_i = PUB_p_partner_reminder.p_reminder_id_i" +
+                        GenerateWhereClauseLong("PUB_s_group_partner_reminder", SGroupTable.GetColumnStringList(), ASearchCriteria)), ATransaction, false,
+                        GetParametersForWhereClause(new SGroupTable(), ASearchCriteria)));
         }
 
         /// auto generated LoadViaLinkTable
@@ -3087,6 +4287,51 @@ namespace Ict.Petra.Shared.MSysMan.Data.Access
             LoadViaPLocationTemplate(out AData, ATemplateRow, ATemplateOperators, AFieldList, ATransaction, null, 0, 0);
         }
 
+        /// auto generated
+        public static void LoadViaPLocationTemplate(DataSet ADataSet, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        {
+            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClauseLong("PUB_s_group", AFieldList, new string[] {
+                            "s_group_id_c", "s_unit_key_n"}) + " FROM PUB_s_group, PUB_s_group_location, PUB_p_location WHERE " +
+                            "PUB_s_group_location.s_group_id_c = PUB_s_group.s_group_id_c AND PUB_s_group_location.s_group_unit_key_n = PUB_s_group.s_unit_key_n AND PUB_s_group_location.p_site_key_n = PUB_p_location.p_site_key_n AND PUB_s_group_location.p_location_key_i = PUB_p_location.p_location_key_i")
+                            + GenerateWhereClauseLong("PUB_p_location", PLocationTable.GetColumnStringList(), ASearchCriteria))
+                            + GenerateOrderByClause(AOrderBy)), SGroupTable.GetTableName(), ATransaction,
+                            GetParametersForWhereClause(new SGroupTable(), ASearchCriteria), AStartRecord, AMaxRecords);
+        }
+
+        /// auto generated
+        public static void LoadViaPLocationTemplate(DataSet AData, TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        {
+            LoadViaPLocationTemplate(AData, ASearchCriteria, null, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static void LoadViaPLocationTemplate(DataSet AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
+        {
+            LoadViaPLocationTemplate(AData, ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static void LoadViaPLocationTemplate(out SGroupTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        {
+            DataSet FillDataSet = new DataSet();
+            AData = new SGroupTable();
+            FillDataSet.Tables.Add(AData);
+            LoadViaPLocationTemplate(FillDataSet, ASearchCriteria, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            FillDataSet.Tables.Remove(AData);
+        }
+
+        /// auto generated
+        public static void LoadViaPLocationTemplate(out SGroupTable AData, TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        {
+            LoadViaPLocationTemplate(out AData, ASearchCriteria, null, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static void LoadViaPLocationTemplate(out SGroupTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
+        {
+            LoadViaPLocationTemplate(out AData, ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
+        }
+
         /// auto generated CountViaLinkTable
         public static int CountViaPLocation(Int64 ASiteKey, Int32 ALocationKey, TDBTransaction ATransaction)
         {
@@ -3106,6 +4351,15 @@ namespace Ict.Petra.Shared.MSysMan.Data.Access
             return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_s_group, PUB_s_group_location, PUB_p_location WHERE " +
                         "PUB_s_group_location.s_group_id_c = PUB_s_group.s_group_id_c AND PUB_s_group_location.s_group_unit_key_n = PUB_s_group.s_unit_key_n AND PUB_s_group_location.p_site_key_n = PUB_p_location.p_site_key_n AND PUB_s_group_location.p_location_key_i = PUB_p_location.p_location_key_i" +
                         GenerateWhereClauseLong("PUB_s_group_location", SGroupTable.GetColumnStringList(), ATemplateRow, ATemplateOperators)), ATransaction, false, GetParametersForWhereClause(ATemplateRow, PLocationTable.GetPrimKeyColumnOrdList())));
+        }
+
+        /// auto generated
+        public static int CountViaPLocationTemplate(TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        {
+            return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_s_group, PUB_s_group_location, PUB_p_location WHERE " +
+                        "PUB_s_group_location.s_group_id_c = PUB_s_group.s_group_id_c AND PUB_s_group_location.s_group_unit_key_n = PUB_s_group.s_unit_key_n AND PUB_s_group_location.p_site_key_n = PUB_p_location.p_site_key_n AND PUB_s_group_location.p_location_key_i = PUB_p_location.p_location_key_i" +
+                        GenerateWhereClauseLong("PUB_s_group_location", SGroupTable.GetColumnStringList(), ASearchCriteria)), ATransaction, false,
+                        GetParametersForWhereClause(new SGroupTable(), ASearchCriteria)));
         }
 
         /// auto generated LoadViaLinkTable
@@ -3208,6 +4462,51 @@ namespace Ict.Petra.Shared.MSysMan.Data.Access
             LoadViaPPartnerLocationTemplate(out AData, ATemplateRow, ATemplateOperators, AFieldList, ATransaction, null, 0, 0);
         }
 
+        /// auto generated
+        public static void LoadViaPPartnerLocationTemplate(DataSet ADataSet, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        {
+            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClauseLong("PUB_s_group", AFieldList, new string[] {
+                            "s_group_id_c", "s_unit_key_n"}) + " FROM PUB_s_group, PUB_s_group_partner_location, PUB_p_partner_location WHERE " +
+                            "PUB_s_group_partner_location.s_group_id_c = PUB_s_group.s_group_id_c AND PUB_s_group_partner_location.s_group_unit_key_n = PUB_s_group.s_unit_key_n AND PUB_s_group_partner_location.p_partner_key_n = PUB_p_partner_location.p_partner_key_n AND PUB_s_group_partner_location.p_site_key_n = PUB_p_partner_location.p_site_key_n AND PUB_s_group_partner_location.p_location_key_i = PUB_p_partner_location.p_location_key_i")
+                            + GenerateWhereClauseLong("PUB_p_partner_location", PPartnerLocationTable.GetColumnStringList(), ASearchCriteria))
+                            + GenerateOrderByClause(AOrderBy)), SGroupTable.GetTableName(), ATransaction,
+                            GetParametersForWhereClause(new SGroupTable(), ASearchCriteria), AStartRecord, AMaxRecords);
+        }
+
+        /// auto generated
+        public static void LoadViaPPartnerLocationTemplate(DataSet AData, TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        {
+            LoadViaPPartnerLocationTemplate(AData, ASearchCriteria, null, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static void LoadViaPPartnerLocationTemplate(DataSet AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
+        {
+            LoadViaPPartnerLocationTemplate(AData, ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static void LoadViaPPartnerLocationTemplate(out SGroupTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        {
+            DataSet FillDataSet = new DataSet();
+            AData = new SGroupTable();
+            FillDataSet.Tables.Add(AData);
+            LoadViaPPartnerLocationTemplate(FillDataSet, ASearchCriteria, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            FillDataSet.Tables.Remove(AData);
+        }
+
+        /// auto generated
+        public static void LoadViaPPartnerLocationTemplate(out SGroupTable AData, TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        {
+            LoadViaPPartnerLocationTemplate(out AData, ASearchCriteria, null, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static void LoadViaPPartnerLocationTemplate(out SGroupTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
+        {
+            LoadViaPPartnerLocationTemplate(out AData, ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
+        }
+
         /// auto generated CountViaLinkTable
         public static int CountViaPPartnerLocation(Int64 APartnerKey, Int64 ASiteKey, Int32 ALocationKey, TDBTransaction ATransaction)
         {
@@ -3229,6 +4528,15 @@ namespace Ict.Petra.Shared.MSysMan.Data.Access
             return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_s_group, PUB_s_group_partner_location, PUB_p_partner_location WHERE " +
                         "PUB_s_group_partner_location.s_group_id_c = PUB_s_group.s_group_id_c AND PUB_s_group_partner_location.s_group_unit_key_n = PUB_s_group.s_unit_key_n AND PUB_s_group_partner_location.p_partner_key_n = PUB_p_partner_location.p_partner_key_n AND PUB_s_group_partner_location.p_site_key_n = PUB_p_partner_location.p_site_key_n AND PUB_s_group_partner_location.p_location_key_i = PUB_p_partner_location.p_location_key_i" +
                         GenerateWhereClauseLong("PUB_s_group_partner_location", SGroupTable.GetColumnStringList(), ATemplateRow, ATemplateOperators)), ATransaction, false, GetParametersForWhereClause(ATemplateRow, PPartnerLocationTable.GetPrimKeyColumnOrdList())));
+        }
+
+        /// auto generated
+        public static int CountViaPPartnerLocationTemplate(TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        {
+            return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_s_group, PUB_s_group_partner_location, PUB_p_partner_location WHERE " +
+                        "PUB_s_group_partner_location.s_group_id_c = PUB_s_group.s_group_id_c AND PUB_s_group_partner_location.s_group_unit_key_n = PUB_s_group.s_unit_key_n AND PUB_s_group_partner_location.p_partner_key_n = PUB_p_partner_location.p_partner_key_n AND PUB_s_group_partner_location.p_site_key_n = PUB_p_partner_location.p_site_key_n AND PUB_s_group_partner_location.p_location_key_i = PUB_p_partner_location.p_location_key_i" +
+                        GenerateWhereClauseLong("PUB_s_group_partner_location", SGroupTable.GetColumnStringList(), ASearchCriteria)), ATransaction, false,
+                        GetParametersForWhereClause(new SGroupTable(), ASearchCriteria)));
         }
 
         /// auto generated LoadViaLinkTable
@@ -3327,6 +4635,51 @@ namespace Ict.Petra.Shared.MSysMan.Data.Access
             LoadViaPDataLabelTemplate(out AData, ATemplateRow, ATemplateOperators, AFieldList, ATransaction, null, 0, 0);
         }
 
+        /// auto generated
+        public static void LoadViaPDataLabelTemplate(DataSet ADataSet, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        {
+            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClauseLong("PUB_s_group", AFieldList, new string[] {
+                            "s_group_id_c", "s_unit_key_n"}) + " FROM PUB_s_group, PUB_s_group_data_label, PUB_p_data_label WHERE " +
+                            "PUB_s_group_data_label.s_group_id_c = PUB_s_group.s_group_id_c AND PUB_s_group_data_label.s_group_unit_key_n = PUB_s_group.s_unit_key_n AND PUB_s_group_data_label.p_data_label_key_i = PUB_p_data_label.p_key_i")
+                            + GenerateWhereClauseLong("PUB_p_data_label", PDataLabelTable.GetColumnStringList(), ASearchCriteria))
+                            + GenerateOrderByClause(AOrderBy)), SGroupTable.GetTableName(), ATransaction,
+                            GetParametersForWhereClause(new SGroupTable(), ASearchCriteria), AStartRecord, AMaxRecords);
+        }
+
+        /// auto generated
+        public static void LoadViaPDataLabelTemplate(DataSet AData, TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        {
+            LoadViaPDataLabelTemplate(AData, ASearchCriteria, null, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static void LoadViaPDataLabelTemplate(DataSet AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
+        {
+            LoadViaPDataLabelTemplate(AData, ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static void LoadViaPDataLabelTemplate(out SGroupTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        {
+            DataSet FillDataSet = new DataSet();
+            AData = new SGroupTable();
+            FillDataSet.Tables.Add(AData);
+            LoadViaPDataLabelTemplate(FillDataSet, ASearchCriteria, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            FillDataSet.Tables.Remove(AData);
+        }
+
+        /// auto generated
+        public static void LoadViaPDataLabelTemplate(out SGroupTable AData, TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        {
+            LoadViaPDataLabelTemplate(out AData, ASearchCriteria, null, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static void LoadViaPDataLabelTemplate(out SGroupTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
+        {
+            LoadViaPDataLabelTemplate(out AData, ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
+        }
+
         /// auto generated CountViaLinkTable
         public static int CountViaPDataLabel(Int32 AKey, TDBTransaction ATransaction)
         {
@@ -3344,6 +4697,15 @@ namespace Ict.Petra.Shared.MSysMan.Data.Access
             return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_s_group, PUB_s_group_data_label, PUB_p_data_label WHERE " +
                         "PUB_s_group_data_label.s_group_id_c = PUB_s_group.s_group_id_c AND PUB_s_group_data_label.s_group_unit_key_n = PUB_s_group.s_unit_key_n AND PUB_s_group_data_label.p_data_label_key_i = PUB_p_data_label.p_key_i" +
                         GenerateWhereClauseLong("PUB_s_group_data_label", SGroupTable.GetColumnStringList(), ATemplateRow, ATemplateOperators)), ATransaction, false, GetParametersForWhereClause(ATemplateRow, PDataLabelTable.GetPrimKeyColumnOrdList())));
+        }
+
+        /// auto generated
+        public static int CountViaPDataLabelTemplate(TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        {
+            return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_s_group, PUB_s_group_data_label, PUB_p_data_label WHERE " +
+                        "PUB_s_group_data_label.s_group_id_c = PUB_s_group.s_group_id_c AND PUB_s_group_data_label.s_group_unit_key_n = PUB_s_group.s_unit_key_n AND PUB_s_group_data_label.p_data_label_key_i = PUB_p_data_label.p_key_i" +
+                        GenerateWhereClauseLong("PUB_s_group_data_label", SGroupTable.GetColumnStringList(), ASearchCriteria)), ATransaction, false,
+                        GetParametersForWhereClause(new SGroupTable(), ASearchCriteria)));
         }
 
         /// auto generated LoadViaLinkTable
@@ -3442,6 +4804,51 @@ namespace Ict.Petra.Shared.MSysMan.Data.Access
             LoadViaALedgerTemplate(out AData, ATemplateRow, ATemplateOperators, AFieldList, ATransaction, null, 0, 0);
         }
 
+        /// auto generated
+        public static void LoadViaALedgerTemplate(DataSet ADataSet, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        {
+            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClauseLong("PUB_s_group", AFieldList, new string[] {
+                            "s_group_id_c", "s_unit_key_n"}) + " FROM PUB_s_group, PUB_s_group_ledger, PUB_a_ledger WHERE " +
+                            "PUB_s_group_ledger.s_group_id_c = PUB_s_group.s_group_id_c AND PUB_s_group_ledger.s_group_unit_key_n = PUB_s_group.s_unit_key_n AND PUB_s_group_ledger.a_ledger_number_i = PUB_a_ledger.a_ledger_number_i")
+                            + GenerateWhereClauseLong("PUB_a_ledger", ALedgerTable.GetColumnStringList(), ASearchCriteria))
+                            + GenerateOrderByClause(AOrderBy)), SGroupTable.GetTableName(), ATransaction,
+                            GetParametersForWhereClause(new SGroupTable(), ASearchCriteria), AStartRecord, AMaxRecords);
+        }
+
+        /// auto generated
+        public static void LoadViaALedgerTemplate(DataSet AData, TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        {
+            LoadViaALedgerTemplate(AData, ASearchCriteria, null, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static void LoadViaALedgerTemplate(DataSet AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
+        {
+            LoadViaALedgerTemplate(AData, ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static void LoadViaALedgerTemplate(out SGroupTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        {
+            DataSet FillDataSet = new DataSet();
+            AData = new SGroupTable();
+            FillDataSet.Tables.Add(AData);
+            LoadViaALedgerTemplate(FillDataSet, ASearchCriteria, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            FillDataSet.Tables.Remove(AData);
+        }
+
+        /// auto generated
+        public static void LoadViaALedgerTemplate(out SGroupTable AData, TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        {
+            LoadViaALedgerTemplate(out AData, ASearchCriteria, null, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static void LoadViaALedgerTemplate(out SGroupTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
+        {
+            LoadViaALedgerTemplate(out AData, ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
+        }
+
         /// auto generated CountViaLinkTable
         public static int CountViaALedger(Int32 ALedgerNumber, TDBTransaction ATransaction)
         {
@@ -3459,6 +4866,15 @@ namespace Ict.Petra.Shared.MSysMan.Data.Access
             return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_s_group, PUB_s_group_ledger, PUB_a_ledger WHERE " +
                         "PUB_s_group_ledger.s_group_id_c = PUB_s_group.s_group_id_c AND PUB_s_group_ledger.s_group_unit_key_n = PUB_s_group.s_unit_key_n AND PUB_s_group_ledger.a_ledger_number_i = PUB_a_ledger.a_ledger_number_i" +
                         GenerateWhereClauseLong("PUB_s_group_ledger", SGroupTable.GetColumnStringList(), ATemplateRow, ATemplateOperators)), ATransaction, false, GetParametersForWhereClause(ATemplateRow, ALedgerTable.GetPrimKeyColumnOrdList())));
+        }
+
+        /// auto generated
+        public static int CountViaALedgerTemplate(TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        {
+            return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_s_group, PUB_s_group_ledger, PUB_a_ledger WHERE " +
+                        "PUB_s_group_ledger.s_group_id_c = PUB_s_group.s_group_id_c AND PUB_s_group_ledger.s_group_unit_key_n = PUB_s_group.s_unit_key_n AND PUB_s_group_ledger.a_ledger_number_i = PUB_a_ledger.a_ledger_number_i" +
+                        GenerateWhereClauseLong("PUB_s_group_ledger", SGroupTable.GetColumnStringList(), ASearchCriteria)), ATransaction, false,
+                        GetParametersForWhereClause(new SGroupTable(), ASearchCriteria)));
         }
 
         /// auto generated LoadViaLinkTable
@@ -3559,6 +4975,51 @@ namespace Ict.Petra.Shared.MSysMan.Data.Access
             LoadViaACostCentreTemplate(out AData, ATemplateRow, ATemplateOperators, AFieldList, ATransaction, null, 0, 0);
         }
 
+        /// auto generated
+        public static void LoadViaACostCentreTemplate(DataSet ADataSet, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        {
+            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClauseLong("PUB_s_group", AFieldList, new string[] {
+                            "s_group_id_c", "s_unit_key_n"}) + " FROM PUB_s_group, PUB_s_group_cost_centre, PUB_a_cost_centre WHERE " +
+                            "PUB_s_group_cost_centre.s_group_id_c = PUB_s_group.s_group_id_c AND PUB_s_group_cost_centre.s_group_unit_key_n = PUB_s_group.s_unit_key_n AND PUB_s_group_cost_centre.a_ledger_number_i = PUB_a_cost_centre.a_ledger_number_i AND PUB_s_group_cost_centre.a_cost_centre_code_c = PUB_a_cost_centre.a_cost_centre_code_c")
+                            + GenerateWhereClauseLong("PUB_a_cost_centre", ACostCentreTable.GetColumnStringList(), ASearchCriteria))
+                            + GenerateOrderByClause(AOrderBy)), SGroupTable.GetTableName(), ATransaction,
+                            GetParametersForWhereClause(new SGroupTable(), ASearchCriteria), AStartRecord, AMaxRecords);
+        }
+
+        /// auto generated
+        public static void LoadViaACostCentreTemplate(DataSet AData, TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        {
+            LoadViaACostCentreTemplate(AData, ASearchCriteria, null, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static void LoadViaACostCentreTemplate(DataSet AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
+        {
+            LoadViaACostCentreTemplate(AData, ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static void LoadViaACostCentreTemplate(out SGroupTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        {
+            DataSet FillDataSet = new DataSet();
+            AData = new SGroupTable();
+            FillDataSet.Tables.Add(AData);
+            LoadViaACostCentreTemplate(FillDataSet, ASearchCriteria, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            FillDataSet.Tables.Remove(AData);
+        }
+
+        /// auto generated
+        public static void LoadViaACostCentreTemplate(out SGroupTable AData, TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        {
+            LoadViaACostCentreTemplate(out AData, ASearchCriteria, null, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static void LoadViaACostCentreTemplate(out SGroupTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
+        {
+            LoadViaACostCentreTemplate(out AData, ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
+        }
+
         /// auto generated CountViaLinkTable
         public static int CountViaACostCentre(Int32 ALedgerNumber, String ACostCentreCode, TDBTransaction ATransaction)
         {
@@ -3578,6 +5039,15 @@ namespace Ict.Petra.Shared.MSysMan.Data.Access
             return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_s_group, PUB_s_group_cost_centre, PUB_a_cost_centre WHERE " +
                         "PUB_s_group_cost_centre.s_group_id_c = PUB_s_group.s_group_id_c AND PUB_s_group_cost_centre.s_group_unit_key_n = PUB_s_group.s_unit_key_n AND PUB_s_group_cost_centre.a_ledger_number_i = PUB_a_cost_centre.a_ledger_number_i AND PUB_s_group_cost_centre.a_cost_centre_code_c = PUB_a_cost_centre.a_cost_centre_code_c" +
                         GenerateWhereClauseLong("PUB_s_group_cost_centre", SGroupTable.GetColumnStringList(), ATemplateRow, ATemplateOperators)), ATransaction, false, GetParametersForWhereClause(ATemplateRow, ACostCentreTable.GetPrimKeyColumnOrdList())));
+        }
+
+        /// auto generated
+        public static int CountViaACostCentreTemplate(TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        {
+            return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_s_group, PUB_s_group_cost_centre, PUB_a_cost_centre WHERE " +
+                        "PUB_s_group_cost_centre.s_group_id_c = PUB_s_group.s_group_id_c AND PUB_s_group_cost_centre.s_group_unit_key_n = PUB_s_group.s_unit_key_n AND PUB_s_group_cost_centre.a_ledger_number_i = PUB_a_cost_centre.a_ledger_number_i AND PUB_s_group_cost_centre.a_cost_centre_code_c = PUB_a_cost_centre.a_cost_centre_code_c" +
+                        GenerateWhereClauseLong("PUB_s_group_cost_centre", SGroupTable.GetColumnStringList(), ASearchCriteria)), ATransaction, false,
+                        GetParametersForWhereClause(new SGroupTable(), ASearchCriteria)));
         }
 
         /// auto generated LoadViaLinkTable
@@ -3676,6 +5146,51 @@ namespace Ict.Petra.Shared.MSysMan.Data.Access
             LoadViaMExtractMasterTemplate(out AData, ATemplateRow, ATemplateOperators, AFieldList, ATransaction, null, 0, 0);
         }
 
+        /// auto generated
+        public static void LoadViaMExtractMasterTemplate(DataSet ADataSet, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        {
+            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClauseLong("PUB_s_group", AFieldList, new string[] {
+                            "s_group_id_c", "s_unit_key_n"}) + " FROM PUB_s_group, PUB_s_group_extract, PUB_m_extract_master WHERE " +
+                            "PUB_s_group_extract.s_group_id_c = PUB_s_group.s_group_id_c AND PUB_s_group_extract.s_group_unit_key_n = PUB_s_group.s_unit_key_n AND PUB_s_group_extract.m_extract_id_i = PUB_m_extract_master.m_extract_id_i")
+                            + GenerateWhereClauseLong("PUB_m_extract_master", MExtractMasterTable.GetColumnStringList(), ASearchCriteria))
+                            + GenerateOrderByClause(AOrderBy)), SGroupTable.GetTableName(), ATransaction,
+                            GetParametersForWhereClause(new SGroupTable(), ASearchCriteria), AStartRecord, AMaxRecords);
+        }
+
+        /// auto generated
+        public static void LoadViaMExtractMasterTemplate(DataSet AData, TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        {
+            LoadViaMExtractMasterTemplate(AData, ASearchCriteria, null, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static void LoadViaMExtractMasterTemplate(DataSet AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
+        {
+            LoadViaMExtractMasterTemplate(AData, ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static void LoadViaMExtractMasterTemplate(out SGroupTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        {
+            DataSet FillDataSet = new DataSet();
+            AData = new SGroupTable();
+            FillDataSet.Tables.Add(AData);
+            LoadViaMExtractMasterTemplate(FillDataSet, ASearchCriteria, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            FillDataSet.Tables.Remove(AData);
+        }
+
+        /// auto generated
+        public static void LoadViaMExtractMasterTemplate(out SGroupTable AData, TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        {
+            LoadViaMExtractMasterTemplate(out AData, ASearchCriteria, null, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static void LoadViaMExtractMasterTemplate(out SGroupTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
+        {
+            LoadViaMExtractMasterTemplate(out AData, ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
+        }
+
         /// auto generated CountViaLinkTable
         public static int CountViaMExtractMaster(Int32 AExtractId, TDBTransaction ATransaction)
         {
@@ -3693,6 +5208,15 @@ namespace Ict.Petra.Shared.MSysMan.Data.Access
             return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_s_group, PUB_s_group_extract, PUB_m_extract_master WHERE " +
                         "PUB_s_group_extract.s_group_id_c = PUB_s_group.s_group_id_c AND PUB_s_group_extract.s_group_unit_key_n = PUB_s_group.s_unit_key_n AND PUB_s_group_extract.m_extract_id_i = PUB_m_extract_master.m_extract_id_i" +
                         GenerateWhereClauseLong("PUB_s_group_extract", SGroupTable.GetColumnStringList(), ATemplateRow, ATemplateOperators)), ATransaction, false, GetParametersForWhereClause(ATemplateRow, MExtractMasterTable.GetPrimKeyColumnOrdList())));
+        }
+
+        /// auto generated
+        public static int CountViaMExtractMasterTemplate(TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        {
+            return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_s_group, PUB_s_group_extract, PUB_m_extract_master WHERE " +
+                        "PUB_s_group_extract.s_group_id_c = PUB_s_group.s_group_id_c AND PUB_s_group_extract.s_group_unit_key_n = PUB_s_group.s_unit_key_n AND PUB_s_group_extract.m_extract_id_i = PUB_m_extract_master.m_extract_id_i" +
+                        GenerateWhereClauseLong("PUB_s_group_extract", SGroupTable.GetColumnStringList(), ASearchCriteria)), ATransaction, false,
+                        GetParametersForWhereClause(new SGroupTable(), ASearchCriteria)));
         }
 
         /// auto generated LoadViaLinkTable
@@ -3791,6 +5315,51 @@ namespace Ict.Petra.Shared.MSysMan.Data.Access
             LoadViaSWorkflowDefinitionTemplate(out AData, ATemplateRow, ATemplateOperators, AFieldList, ATransaction, null, 0, 0);
         }
 
+        /// auto generated
+        public static void LoadViaSWorkflowDefinitionTemplate(DataSet ADataSet, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        {
+            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClauseLong("PUB_s_group", AFieldList, new string[] {
+                            "s_group_id_c", "s_unit_key_n"}) + " FROM PUB_s_group, PUB_s_workflow_group, PUB_s_workflow_definition WHERE " +
+                            "PUB_s_workflow_group.s_group_id_c = PUB_s_group.s_group_id_c AND PUB_s_workflow_group.s_group_unit_key_n = PUB_s_group.s_unit_key_n AND PUB_s_workflow_group.s_workflow_id_i = PUB_s_workflow_definition.s_workflow_id_i")
+                            + GenerateWhereClauseLong("PUB_s_workflow_definition", SWorkflowDefinitionTable.GetColumnStringList(), ASearchCriteria))
+                            + GenerateOrderByClause(AOrderBy)), SGroupTable.GetTableName(), ATransaction,
+                            GetParametersForWhereClause(new SGroupTable(), ASearchCriteria), AStartRecord, AMaxRecords);
+        }
+
+        /// auto generated
+        public static void LoadViaSWorkflowDefinitionTemplate(DataSet AData, TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        {
+            LoadViaSWorkflowDefinitionTemplate(AData, ASearchCriteria, null, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static void LoadViaSWorkflowDefinitionTemplate(DataSet AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
+        {
+            LoadViaSWorkflowDefinitionTemplate(AData, ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static void LoadViaSWorkflowDefinitionTemplate(out SGroupTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        {
+            DataSet FillDataSet = new DataSet();
+            AData = new SGroupTable();
+            FillDataSet.Tables.Add(AData);
+            LoadViaSWorkflowDefinitionTemplate(FillDataSet, ASearchCriteria, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            FillDataSet.Tables.Remove(AData);
+        }
+
+        /// auto generated
+        public static void LoadViaSWorkflowDefinitionTemplate(out SGroupTable AData, TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        {
+            LoadViaSWorkflowDefinitionTemplate(out AData, ASearchCriteria, null, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static void LoadViaSWorkflowDefinitionTemplate(out SGroupTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
+        {
+            LoadViaSWorkflowDefinitionTemplate(out AData, ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
+        }
+
         /// auto generated CountViaLinkTable
         public static int CountViaSWorkflowDefinition(Int32 AWorkflowId, TDBTransaction ATransaction)
         {
@@ -3808,6 +5377,15 @@ namespace Ict.Petra.Shared.MSysMan.Data.Access
             return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_s_group, PUB_s_workflow_group, PUB_s_workflow_definition WHERE " +
                         "PUB_s_workflow_group.s_group_id_c = PUB_s_group.s_group_id_c AND PUB_s_workflow_group.s_group_unit_key_n = PUB_s_group.s_unit_key_n AND PUB_s_workflow_group.s_workflow_id_i = PUB_s_workflow_definition.s_workflow_id_i" +
                         GenerateWhereClauseLong("PUB_s_workflow_group", SGroupTable.GetColumnStringList(), ATemplateRow, ATemplateOperators)), ATransaction, false, GetParametersForWhereClause(ATemplateRow, SWorkflowDefinitionTable.GetPrimKeyColumnOrdList())));
+        }
+
+        /// auto generated
+        public static int CountViaSWorkflowDefinitionTemplate(TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        {
+            return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_s_group, PUB_s_workflow_group, PUB_s_workflow_definition WHERE " +
+                        "PUB_s_workflow_group.s_group_id_c = PUB_s_group.s_group_id_c AND PUB_s_workflow_group.s_group_unit_key_n = PUB_s_group.s_unit_key_n AND PUB_s_workflow_group.s_workflow_id_i = PUB_s_workflow_definition.s_workflow_id_i" +
+                        GenerateWhereClauseLong("PUB_s_workflow_group", SGroupTable.GetColumnStringList(), ASearchCriteria)), ATransaction, false,
+                        GetParametersForWhereClause(new SGroupTable(), ASearchCriteria)));
         }
 
         /// auto generated LoadViaLinkTable
@@ -3906,6 +5484,51 @@ namespace Ict.Petra.Shared.MSysMan.Data.Access
             LoadViaPFileInfoTemplate(out AData, ATemplateRow, ATemplateOperators, AFieldList, ATransaction, null, 0, 0);
         }
 
+        /// auto generated
+        public static void LoadViaPFileInfoTemplate(DataSet ADataSet, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        {
+            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClauseLong("PUB_s_group", AFieldList, new string[] {
+                            "s_group_id_c", "s_unit_key_n"}) + " FROM PUB_s_group, PUB_s_group_file_info, PUB_p_file_info WHERE " +
+                            "PUB_s_group_file_info.s_group_id_c = PUB_s_group.s_group_id_c AND PUB_s_group_file_info.s_group_unit_key_n = PUB_s_group.s_unit_key_n AND PUB_s_group_file_info.p_file_info_key_n = PUB_p_file_info.p_key_n")
+                            + GenerateWhereClauseLong("PUB_p_file_info", PFileInfoTable.GetColumnStringList(), ASearchCriteria))
+                            + GenerateOrderByClause(AOrderBy)), SGroupTable.GetTableName(), ATransaction,
+                            GetParametersForWhereClause(new SGroupTable(), ASearchCriteria), AStartRecord, AMaxRecords);
+        }
+
+        /// auto generated
+        public static void LoadViaPFileInfoTemplate(DataSet AData, TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        {
+            LoadViaPFileInfoTemplate(AData, ASearchCriteria, null, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static void LoadViaPFileInfoTemplate(DataSet AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
+        {
+            LoadViaPFileInfoTemplate(AData, ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static void LoadViaPFileInfoTemplate(out SGroupTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        {
+            DataSet FillDataSet = new DataSet();
+            AData = new SGroupTable();
+            FillDataSet.Tables.Add(AData);
+            LoadViaPFileInfoTemplate(FillDataSet, ASearchCriteria, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            FillDataSet.Tables.Remove(AData);
+        }
+
+        /// auto generated
+        public static void LoadViaPFileInfoTemplate(out SGroupTable AData, TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        {
+            LoadViaPFileInfoTemplate(out AData, ASearchCriteria, null, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static void LoadViaPFileInfoTemplate(out SGroupTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
+        {
+            LoadViaPFileInfoTemplate(out AData, ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
+        }
+
         /// auto generated CountViaLinkTable
         public static int CountViaPFileInfo(Int64 AKey, TDBTransaction ATransaction)
         {
@@ -3926,6 +5549,15 @@ namespace Ict.Petra.Shared.MSysMan.Data.Access
         }
 
         /// auto generated
+        public static int CountViaPFileInfoTemplate(TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        {
+            return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_s_group, PUB_s_group_file_info, PUB_p_file_info WHERE " +
+                        "PUB_s_group_file_info.s_group_id_c = PUB_s_group.s_group_id_c AND PUB_s_group_file_info.s_group_unit_key_n = PUB_s_group.s_unit_key_n AND PUB_s_group_file_info.p_file_info_key_n = PUB_p_file_info.p_key_n" +
+                        GenerateWhereClauseLong("PUB_s_group_file_info", SGroupTable.GetColumnStringList(), ASearchCriteria)), ATransaction, false,
+                        GetParametersForWhereClause(new SGroupTable(), ASearchCriteria)));
+        }
+
+        /// auto generated
         public static void DeleteByPrimaryKey(String AGroupId, Int64 AUnitKey, TDBTransaction ATransaction)
         {
             OdbcParameter[] ParametersArray = new OdbcParameter[2];
@@ -3940,6 +5572,14 @@ namespace Ict.Petra.Shared.MSysMan.Data.Access
         public static void DeleteUsingTemplate(SGroupRow ATemplateRow, StringCollection ATemplateOperators, TDBTransaction ATransaction)
         {
             DBAccess.GDBAccessObj.ExecuteNonQuery(("DELETE FROM PUB_s_group" + GenerateWhereClause(SGroupTable.GetColumnStringList(), ATemplateRow, ATemplateOperators)), ATransaction, false, GetParametersForWhereClause(ATemplateRow));
+        }
+
+        /// auto generated
+        public static void DeleteUsingTemplate(TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        {
+            DBAccess.GDBAccessObj.ExecuteNonQuery(("DELETE FROM PUB_s_group" +
+                GenerateWhereClause(SGroupTable.GetColumnStringList(), ASearchCriteria)), ATransaction, false,
+                GetParametersForWhereClause(new SGroupTable(), ASearchCriteria));
         }
 
         /// auto generated
@@ -4132,6 +5772,50 @@ namespace Ict.Petra.Shared.MSysMan.Data.Access
         }
 
         /// this method is called by all overloads
+        public static void LoadUsingTemplate(DataSet ADataSet, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        {
+            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClause(AFieldList, new string[] {
+                            "s_user_id_c", "s_group_id_c", "s_unit_key_n"}) + " FROM PUB_s_user_group")
+                            + GenerateWhereClause(SUserGroupTable.GetColumnStringList(), ASearchCriteria))
+                            + GenerateOrderByClause(AOrderBy)), SUserGroupTable.GetTableName(), ATransaction,
+                            GetParametersForWhereClause(new SUserGroupTable(), ASearchCriteria), AStartRecord, AMaxRecords);
+        }
+
+        /// auto generated
+        public static void LoadUsingTemplate(DataSet AData, TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        {
+            LoadUsingTemplate(AData, ASearchCriteria, null, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static void LoadUsingTemplate(DataSet AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
+        {
+            LoadUsingTemplate(AData, ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static void LoadUsingTemplate(out SUserGroupTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        {
+            DataSet FillDataSet = new DataSet();
+            AData = new SUserGroupTable();
+            FillDataSet.Tables.Add(AData);
+            LoadUsingTemplate(FillDataSet, ASearchCriteria, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            FillDataSet.Tables.Remove(AData);
+        }
+
+        /// auto generated
+        public static void LoadUsingTemplate(out SUserGroupTable AData, TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        {
+            LoadUsingTemplate(out AData, ASearchCriteria, null, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static void LoadUsingTemplate(out SUserGroupTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
+        {
+            LoadUsingTemplate(out AData, ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
+        }
+
+        /// this method is called by all overloads
         public static int CountAll(TDBTransaction ATransaction)
         {
             return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar("SELECT COUNT(*) FROM PUB_s_user_group", ATransaction, false));
@@ -4154,6 +5838,13 @@ namespace Ict.Petra.Shared.MSysMan.Data.Access
         public static int CountUsingTemplate(SUserGroupRow ATemplateRow, StringCollection ATemplateOperators, TDBTransaction ATransaction)
         {
             return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_s_user_group" + GenerateWhereClause(SUserGroupTable.GetColumnStringList(), ATemplateRow, ATemplateOperators)), ATransaction, false, GetParametersForWhereClause(ATemplateRow)));
+        }
+
+        /// this method is called by all overloads
+        public static int CountUsingTemplate(TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        {
+            return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_s_user_group" + GenerateWhereClause(SUserGroupTable.GetColumnStringList(), ASearchCriteria)), ATransaction, false,
+            GetParametersForWhereClause(new SUserGroupTable(), ASearchCriteria)));
         }
 
         /// auto generated
@@ -4252,6 +5943,51 @@ namespace Ict.Petra.Shared.MSysMan.Data.Access
         }
 
         /// auto generated
+        public static void LoadViaSUserTemplate(DataSet ADataSet, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        {
+            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClauseLong("PUB_s_user_group", AFieldList, new string[] {
+                            "s_user_id_c", "s_group_id_c", "s_unit_key_n"}) + " FROM PUB_s_user_group, PUB_s_user WHERE " +
+                            "PUB_s_user_group.s_user_id_c = PUB_s_user.s_user_id_c")
+                            + GenerateWhereClauseLong("PUB_s_user", SUserTable.GetColumnStringList(), ASearchCriteria))
+                            + GenerateOrderByClause(AOrderBy)), SUserGroupTable.GetTableName(), ATransaction,
+                            GetParametersForWhereClause(new SUserGroupTable(), ASearchCriteria), AStartRecord, AMaxRecords);
+        }
+
+        /// auto generated
+        public static void LoadViaSUserTemplate(DataSet AData, TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        {
+            LoadViaSUserTemplate(AData, ASearchCriteria, null, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static void LoadViaSUserTemplate(DataSet AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
+        {
+            LoadViaSUserTemplate(AData, ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static void LoadViaSUserTemplate(out SUserGroupTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        {
+            DataSet FillDataSet = new DataSet();
+            AData = new SUserGroupTable();
+            FillDataSet.Tables.Add(AData);
+            LoadViaSUserTemplate(FillDataSet, ASearchCriteria, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            FillDataSet.Tables.Remove(AData);
+        }
+
+        /// auto generated
+        public static void LoadViaSUserTemplate(out SUserGroupTable AData, TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        {
+            LoadViaSUserTemplate(out AData, ASearchCriteria, null, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static void LoadViaSUserTemplate(out SUserGroupTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
+        {
+            LoadViaSUserTemplate(out AData, ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
         public static int CountViaSUser(String AUserId, TDBTransaction ATransaction)
         {
             OdbcParameter[] ParametersArray = new OdbcParameter[1];
@@ -4265,6 +6001,15 @@ namespace Ict.Petra.Shared.MSysMan.Data.Access
         {
             return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_s_user_group, PUB_s_user WHERE " +
                 "PUB_s_user_group.s_user_id_c = PUB_s_user.s_user_id_c" + GenerateWhereClauseLong("PUB_s_user", SUserTable.GetColumnStringList(), ATemplateRow, ATemplateOperators)), ATransaction, false, GetParametersForWhereClause(ATemplateRow, SUserTable.GetPrimKeyColumnOrdList())));
+        }
+
+        /// auto generated
+        public static int CountViaSUserTemplate(TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        {
+            return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_s_user_group, PUB_s_user WHERE " +
+                "PUB_s_user_group.s_user_id_c = PUB_s_user.s_user_id_c" +
+                GenerateWhereClauseLong("PUB_s_user", SUserTable.GetColumnStringList(), ASearchCriteria)), ATransaction, false,
+                GetParametersForWhereClause(new SUserTable(), ASearchCriteria)));
         }
 
         /// auto generated
@@ -4365,6 +6110,51 @@ namespace Ict.Petra.Shared.MSysMan.Data.Access
         }
 
         /// auto generated
+        public static void LoadViaSGroupTemplate(DataSet ADataSet, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        {
+            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClauseLong("PUB_s_user_group", AFieldList, new string[] {
+                            "s_user_id_c", "s_group_id_c", "s_unit_key_n"}) + " FROM PUB_s_user_group, PUB_s_group WHERE " +
+                            "PUB_s_user_group.s_group_id_c = PUB_s_group.s_group_id_c AND PUB_s_user_group.s_unit_key_n = PUB_s_group.s_unit_key_n")
+                            + GenerateWhereClauseLong("PUB_s_group", SGroupTable.GetColumnStringList(), ASearchCriteria))
+                            + GenerateOrderByClause(AOrderBy)), SUserGroupTable.GetTableName(), ATransaction,
+                            GetParametersForWhereClause(new SUserGroupTable(), ASearchCriteria), AStartRecord, AMaxRecords);
+        }
+
+        /// auto generated
+        public static void LoadViaSGroupTemplate(DataSet AData, TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        {
+            LoadViaSGroupTemplate(AData, ASearchCriteria, null, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static void LoadViaSGroupTemplate(DataSet AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
+        {
+            LoadViaSGroupTemplate(AData, ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static void LoadViaSGroupTemplate(out SUserGroupTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        {
+            DataSet FillDataSet = new DataSet();
+            AData = new SUserGroupTable();
+            FillDataSet.Tables.Add(AData);
+            LoadViaSGroupTemplate(FillDataSet, ASearchCriteria, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            FillDataSet.Tables.Remove(AData);
+        }
+
+        /// auto generated
+        public static void LoadViaSGroupTemplate(out SUserGroupTable AData, TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        {
+            LoadViaSGroupTemplate(out AData, ASearchCriteria, null, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static void LoadViaSGroupTemplate(out SUserGroupTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
+        {
+            LoadViaSGroupTemplate(out AData, ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
         public static int CountViaSGroup(String AGroupId, Int64 AUnitKey, TDBTransaction ATransaction)
         {
             OdbcParameter[] ParametersArray = new OdbcParameter[2];
@@ -4380,6 +6170,15 @@ namespace Ict.Petra.Shared.MSysMan.Data.Access
         {
             return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_s_user_group, PUB_s_group WHERE " +
                 "PUB_s_user_group.s_group_id_c = PUB_s_group.s_group_id_c AND PUB_s_user_group.s_unit_key_n = PUB_s_group.s_unit_key_n" + GenerateWhereClauseLong("PUB_s_group", SGroupTable.GetColumnStringList(), ATemplateRow, ATemplateOperators)), ATransaction, false, GetParametersForWhereClause(ATemplateRow, SGroupTable.GetPrimKeyColumnOrdList())));
+        }
+
+        /// auto generated
+        public static int CountViaSGroupTemplate(TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        {
+            return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_s_user_group, PUB_s_group WHERE " +
+                "PUB_s_user_group.s_group_id_c = PUB_s_group.s_group_id_c AND PUB_s_user_group.s_unit_key_n = PUB_s_group.s_unit_key_n" +
+                GenerateWhereClauseLong("PUB_s_group", SGroupTable.GetColumnStringList(), ASearchCriteria)), ATransaction, false,
+                GetParametersForWhereClause(new SGroupTable(), ASearchCriteria)));
         }
 
         /// auto generated
@@ -4399,6 +6198,14 @@ namespace Ict.Petra.Shared.MSysMan.Data.Access
         public static void DeleteUsingTemplate(SUserGroupRow ATemplateRow, StringCollection ATemplateOperators, TDBTransaction ATransaction)
         {
             DBAccess.GDBAccessObj.ExecuteNonQuery(("DELETE FROM PUB_s_user_group" + GenerateWhereClause(SUserGroupTable.GetColumnStringList(), ATemplateRow, ATemplateOperators)), ATransaction, false, GetParametersForWhereClause(ATemplateRow));
+        }
+
+        /// auto generated
+        public static void DeleteUsingTemplate(TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        {
+            DBAccess.GDBAccessObj.ExecuteNonQuery(("DELETE FROM PUB_s_user_group" +
+                GenerateWhereClause(SUserGroupTable.GetColumnStringList(), ASearchCriteria)), ATransaction, false,
+                GetParametersForWhereClause(new SUserGroupTable(), ASearchCriteria));
         }
 
         /// auto generated
@@ -4587,6 +6394,50 @@ namespace Ict.Petra.Shared.MSysMan.Data.Access
         }
 
         /// this method is called by all overloads
+        public static void LoadUsingTemplate(DataSet ADataSet, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        {
+            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClause(AFieldList, new string[] {
+                            "s_module_id_c"}) + " FROM PUB_s_module")
+                            + GenerateWhereClause(SModuleTable.GetColumnStringList(), ASearchCriteria))
+                            + GenerateOrderByClause(AOrderBy)), SModuleTable.GetTableName(), ATransaction,
+                            GetParametersForWhereClause(new SModuleTable(), ASearchCriteria), AStartRecord, AMaxRecords);
+        }
+
+        /// auto generated
+        public static void LoadUsingTemplate(DataSet AData, TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        {
+            LoadUsingTemplate(AData, ASearchCriteria, null, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static void LoadUsingTemplate(DataSet AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
+        {
+            LoadUsingTemplate(AData, ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static void LoadUsingTemplate(out SModuleTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        {
+            DataSet FillDataSet = new DataSet();
+            AData = new SModuleTable();
+            FillDataSet.Tables.Add(AData);
+            LoadUsingTemplate(FillDataSet, ASearchCriteria, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            FillDataSet.Tables.Remove(AData);
+        }
+
+        /// auto generated
+        public static void LoadUsingTemplate(out SModuleTable AData, TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        {
+            LoadUsingTemplate(out AData, ASearchCriteria, null, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static void LoadUsingTemplate(out SModuleTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
+        {
+            LoadUsingTemplate(out AData, ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
+        }
+
+        /// this method is called by all overloads
         public static int CountAll(TDBTransaction ATransaction)
         {
             return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar("SELECT COUNT(*) FROM PUB_s_module", ATransaction, false));
@@ -4605,6 +6456,13 @@ namespace Ict.Petra.Shared.MSysMan.Data.Access
         public static int CountUsingTemplate(SModuleRow ATemplateRow, StringCollection ATemplateOperators, TDBTransaction ATransaction)
         {
             return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_s_module" + GenerateWhereClause(SModuleTable.GetColumnStringList(), ATemplateRow, ATemplateOperators)), ATransaction, false, GetParametersForWhereClause(ATemplateRow)));
+        }
+
+        /// this method is called by all overloads
+        public static int CountUsingTemplate(TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        {
+            return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_s_module" + GenerateWhereClause(SModuleTable.GetColumnStringList(), ASearchCriteria)), ATransaction, false,
+            GetParametersForWhereClause(new SModuleTable(), ASearchCriteria)));
         }
 
         /// auto generated LoadViaLinkTable
@@ -4703,6 +6561,51 @@ namespace Ict.Petra.Shared.MSysMan.Data.Access
             LoadViaSFormTemplate(out AData, ATemplateRow, ATemplateOperators, AFieldList, ATransaction, null, 0, 0);
         }
 
+        /// auto generated
+        public static void LoadViaSFormTemplate(DataSet ADataSet, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        {
+            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClauseLong("PUB_s_module", AFieldList, new string[] {
+                            "s_module_id_c"}) + " FROM PUB_s_module, PUB_s_valid_output_form, PUB_s_form WHERE " +
+                            "PUB_s_valid_output_form.s_module_id_c = PUB_s_module.s_module_id_c AND PUB_s_valid_output_form.s_form_name_c = PUB_s_form.s_form_name_c")
+                            + GenerateWhereClauseLong("PUB_s_form", SFormTable.GetColumnStringList(), ASearchCriteria))
+                            + GenerateOrderByClause(AOrderBy)), SModuleTable.GetTableName(), ATransaction,
+                            GetParametersForWhereClause(new SModuleTable(), ASearchCriteria), AStartRecord, AMaxRecords);
+        }
+
+        /// auto generated
+        public static void LoadViaSFormTemplate(DataSet AData, TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        {
+            LoadViaSFormTemplate(AData, ASearchCriteria, null, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static void LoadViaSFormTemplate(DataSet AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
+        {
+            LoadViaSFormTemplate(AData, ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static void LoadViaSFormTemplate(out SModuleTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        {
+            DataSet FillDataSet = new DataSet();
+            AData = new SModuleTable();
+            FillDataSet.Tables.Add(AData);
+            LoadViaSFormTemplate(FillDataSet, ASearchCriteria, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            FillDataSet.Tables.Remove(AData);
+        }
+
+        /// auto generated
+        public static void LoadViaSFormTemplate(out SModuleTable AData, TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        {
+            LoadViaSFormTemplate(out AData, ASearchCriteria, null, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static void LoadViaSFormTemplate(out SModuleTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
+        {
+            LoadViaSFormTemplate(out AData, ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
+        }
+
         /// auto generated CountViaLinkTable
         public static int CountViaSForm(String AFormName, TDBTransaction ATransaction)
         {
@@ -4720,6 +6623,15 @@ namespace Ict.Petra.Shared.MSysMan.Data.Access
             return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_s_module, PUB_s_valid_output_form, PUB_s_form WHERE " +
                         "PUB_s_valid_output_form.s_module_id_c = PUB_s_module.s_module_id_c AND PUB_s_valid_output_form.s_form_name_c = PUB_s_form.s_form_name_c" +
                         GenerateWhereClauseLong("PUB_s_valid_output_form", SModuleTable.GetColumnStringList(), ATemplateRow, ATemplateOperators)), ATransaction, false, GetParametersForWhereClause(ATemplateRow, SFormTable.GetPrimKeyColumnOrdList())));
+        }
+
+        /// auto generated
+        public static int CountViaSFormTemplate(TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        {
+            return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_s_module, PUB_s_valid_output_form, PUB_s_form WHERE " +
+                        "PUB_s_valid_output_form.s_module_id_c = PUB_s_module.s_module_id_c AND PUB_s_valid_output_form.s_form_name_c = PUB_s_form.s_form_name_c" +
+                        GenerateWhereClauseLong("PUB_s_valid_output_form", SModuleTable.GetColumnStringList(), ASearchCriteria)), ATransaction, false,
+                        GetParametersForWhereClause(new SModuleTable(), ASearchCriteria)));
         }
 
         /// auto generated LoadViaLinkTable
@@ -4820,6 +6732,51 @@ namespace Ict.Petra.Shared.MSysMan.Data.Access
             LoadViaSGroupTemplate(out AData, ATemplateRow, ATemplateOperators, AFieldList, ATransaction, null, 0, 0);
         }
 
+        /// auto generated
+        public static void LoadViaSGroupTemplate(DataSet ADataSet, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        {
+            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClauseLong("PUB_s_module", AFieldList, new string[] {
+                            "s_module_id_c"}) + " FROM PUB_s_module, PUB_s_group_module_access_permission, PUB_s_group WHERE " +
+                            "PUB_s_group_module_access_permission.s_module_id_c = PUB_s_module.s_module_id_c AND PUB_s_group_module_access_permission.s_group_id_c = PUB_s_group.s_group_id_c AND PUB_s_group_module_access_permission.s_group_unit_key_n = PUB_s_group.s_unit_key_n")
+                            + GenerateWhereClauseLong("PUB_s_group", SGroupTable.GetColumnStringList(), ASearchCriteria))
+                            + GenerateOrderByClause(AOrderBy)), SModuleTable.GetTableName(), ATransaction,
+                            GetParametersForWhereClause(new SModuleTable(), ASearchCriteria), AStartRecord, AMaxRecords);
+        }
+
+        /// auto generated
+        public static void LoadViaSGroupTemplate(DataSet AData, TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        {
+            LoadViaSGroupTemplate(AData, ASearchCriteria, null, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static void LoadViaSGroupTemplate(DataSet AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
+        {
+            LoadViaSGroupTemplate(AData, ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static void LoadViaSGroupTemplate(out SModuleTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        {
+            DataSet FillDataSet = new DataSet();
+            AData = new SModuleTable();
+            FillDataSet.Tables.Add(AData);
+            LoadViaSGroupTemplate(FillDataSet, ASearchCriteria, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            FillDataSet.Tables.Remove(AData);
+        }
+
+        /// auto generated
+        public static void LoadViaSGroupTemplate(out SModuleTable AData, TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        {
+            LoadViaSGroupTemplate(out AData, ASearchCriteria, null, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static void LoadViaSGroupTemplate(out SModuleTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
+        {
+            LoadViaSGroupTemplate(out AData, ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
+        }
+
         /// auto generated CountViaLinkTable
         public static int CountViaSGroup(String AGroupId, Int64 AUnitKey, TDBTransaction ATransaction)
         {
@@ -4839,6 +6796,15 @@ namespace Ict.Petra.Shared.MSysMan.Data.Access
             return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_s_module, PUB_s_group_module_access_permission, PUB_s_group WHERE " +
                         "PUB_s_group_module_access_permission.s_module_id_c = PUB_s_module.s_module_id_c AND PUB_s_group_module_access_permission.s_group_id_c = PUB_s_group.s_group_id_c AND PUB_s_group_module_access_permission.s_group_unit_key_n = PUB_s_group.s_unit_key_n" +
                         GenerateWhereClauseLong("PUB_s_group_module_access_permission", SModuleTable.GetColumnStringList(), ATemplateRow, ATemplateOperators)), ATransaction, false, GetParametersForWhereClause(ATemplateRow, SGroupTable.GetPrimKeyColumnOrdList())));
+        }
+
+        /// auto generated
+        public static int CountViaSGroupTemplate(TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        {
+            return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_s_module, PUB_s_group_module_access_permission, PUB_s_group WHERE " +
+                        "PUB_s_group_module_access_permission.s_module_id_c = PUB_s_module.s_module_id_c AND PUB_s_group_module_access_permission.s_group_id_c = PUB_s_group.s_group_id_c AND PUB_s_group_module_access_permission.s_group_unit_key_n = PUB_s_group.s_unit_key_n" +
+                        GenerateWhereClauseLong("PUB_s_group_module_access_permission", SModuleTable.GetColumnStringList(), ASearchCriteria)), ATransaction, false,
+                        GetParametersForWhereClause(new SModuleTable(), ASearchCriteria)));
         }
 
         /// auto generated LoadViaLinkTable
@@ -4937,6 +6903,51 @@ namespace Ict.Petra.Shared.MSysMan.Data.Access
             LoadViaSUserTemplate(out AData, ATemplateRow, ATemplateOperators, AFieldList, ATransaction, null, 0, 0);
         }
 
+        /// auto generated
+        public static void LoadViaSUserTemplate(DataSet ADataSet, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        {
+            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClauseLong("PUB_s_module", AFieldList, new string[] {
+                            "s_module_id_c"}) + " FROM PUB_s_module, PUB_s_user_module_access_permission, PUB_s_user WHERE " +
+                            "PUB_s_user_module_access_permission.s_module_id_c = PUB_s_module.s_module_id_c AND PUB_s_user_module_access_permission.s_user_id_c = PUB_s_user.s_user_id_c")
+                            + GenerateWhereClauseLong("PUB_s_user", SUserTable.GetColumnStringList(), ASearchCriteria))
+                            + GenerateOrderByClause(AOrderBy)), SModuleTable.GetTableName(), ATransaction,
+                            GetParametersForWhereClause(new SModuleTable(), ASearchCriteria), AStartRecord, AMaxRecords);
+        }
+
+        /// auto generated
+        public static void LoadViaSUserTemplate(DataSet AData, TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        {
+            LoadViaSUserTemplate(AData, ASearchCriteria, null, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static void LoadViaSUserTemplate(DataSet AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
+        {
+            LoadViaSUserTemplate(AData, ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static void LoadViaSUserTemplate(out SModuleTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        {
+            DataSet FillDataSet = new DataSet();
+            AData = new SModuleTable();
+            FillDataSet.Tables.Add(AData);
+            LoadViaSUserTemplate(FillDataSet, ASearchCriteria, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            FillDataSet.Tables.Remove(AData);
+        }
+
+        /// auto generated
+        public static void LoadViaSUserTemplate(out SModuleTable AData, TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        {
+            LoadViaSUserTemplate(out AData, ASearchCriteria, null, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static void LoadViaSUserTemplate(out SModuleTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
+        {
+            LoadViaSUserTemplate(out AData, ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
+        }
+
         /// auto generated CountViaLinkTable
         public static int CountViaSUser(String AUserId, TDBTransaction ATransaction)
         {
@@ -4957,6 +6968,15 @@ namespace Ict.Petra.Shared.MSysMan.Data.Access
         }
 
         /// auto generated
+        public static int CountViaSUserTemplate(TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        {
+            return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_s_module, PUB_s_user_module_access_permission, PUB_s_user WHERE " +
+                        "PUB_s_user_module_access_permission.s_module_id_c = PUB_s_module.s_module_id_c AND PUB_s_user_module_access_permission.s_user_id_c = PUB_s_user.s_user_id_c" +
+                        GenerateWhereClauseLong("PUB_s_user_module_access_permission", SModuleTable.GetColumnStringList(), ASearchCriteria)), ATransaction, false,
+                        GetParametersForWhereClause(new SModuleTable(), ASearchCriteria)));
+        }
+
+        /// auto generated
         public static void DeleteByPrimaryKey(String AModuleId, TDBTransaction ATransaction)
         {
             OdbcParameter[] ParametersArray = new OdbcParameter[1];
@@ -4969,6 +6989,14 @@ namespace Ict.Petra.Shared.MSysMan.Data.Access
         public static void DeleteUsingTemplate(SModuleRow ATemplateRow, StringCollection ATemplateOperators, TDBTransaction ATransaction)
         {
             DBAccess.GDBAccessObj.ExecuteNonQuery(("DELETE FROM PUB_s_module" + GenerateWhereClause(SModuleTable.GetColumnStringList(), ATemplateRow, ATemplateOperators)), ATransaction, false, GetParametersForWhereClause(ATemplateRow));
+        }
+
+        /// auto generated
+        public static void DeleteUsingTemplate(TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        {
+            DBAccess.GDBAccessObj.ExecuteNonQuery(("DELETE FROM PUB_s_module" +
+                GenerateWhereClause(SModuleTable.GetColumnStringList(), ASearchCriteria)), ATransaction, false,
+                GetParametersForWhereClause(new SModuleTable(), ASearchCriteria));
         }
 
         /// auto generated
@@ -5159,6 +7187,50 @@ namespace Ict.Petra.Shared.MSysMan.Data.Access
         }
 
         /// this method is called by all overloads
+        public static void LoadUsingTemplate(DataSet ADataSet, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        {
+            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClause(AFieldList, new string[] {
+                            "s_module_id_c", "s_form_name_c"}) + " FROM PUB_s_valid_output_form")
+                            + GenerateWhereClause(SValidOutputFormTable.GetColumnStringList(), ASearchCriteria))
+                            + GenerateOrderByClause(AOrderBy)), SValidOutputFormTable.GetTableName(), ATransaction,
+                            GetParametersForWhereClause(new SValidOutputFormTable(), ASearchCriteria), AStartRecord, AMaxRecords);
+        }
+
+        /// auto generated
+        public static void LoadUsingTemplate(DataSet AData, TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        {
+            LoadUsingTemplate(AData, ASearchCriteria, null, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static void LoadUsingTemplate(DataSet AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
+        {
+            LoadUsingTemplate(AData, ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static void LoadUsingTemplate(out SValidOutputFormTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        {
+            DataSet FillDataSet = new DataSet();
+            AData = new SValidOutputFormTable();
+            FillDataSet.Tables.Add(AData);
+            LoadUsingTemplate(FillDataSet, ASearchCriteria, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            FillDataSet.Tables.Remove(AData);
+        }
+
+        /// auto generated
+        public static void LoadUsingTemplate(out SValidOutputFormTable AData, TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        {
+            LoadUsingTemplate(out AData, ASearchCriteria, null, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static void LoadUsingTemplate(out SValidOutputFormTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
+        {
+            LoadUsingTemplate(out AData, ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
+        }
+
+        /// this method is called by all overloads
         public static int CountAll(TDBTransaction ATransaction)
         {
             return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar("SELECT COUNT(*) FROM PUB_s_valid_output_form", ATransaction, false));
@@ -5179,6 +7251,13 @@ namespace Ict.Petra.Shared.MSysMan.Data.Access
         public static int CountUsingTemplate(SValidOutputFormRow ATemplateRow, StringCollection ATemplateOperators, TDBTransaction ATransaction)
         {
             return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_s_valid_output_form" + GenerateWhereClause(SValidOutputFormTable.GetColumnStringList(), ATemplateRow, ATemplateOperators)), ATransaction, false, GetParametersForWhereClause(ATemplateRow)));
+        }
+
+        /// this method is called by all overloads
+        public static int CountUsingTemplate(TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        {
+            return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_s_valid_output_form" + GenerateWhereClause(SValidOutputFormTable.GetColumnStringList(), ASearchCriteria)), ATransaction, false,
+            GetParametersForWhereClause(new SValidOutputFormTable(), ASearchCriteria)));
         }
 
         /// auto generated
@@ -5277,6 +7356,51 @@ namespace Ict.Petra.Shared.MSysMan.Data.Access
         }
 
         /// auto generated
+        public static void LoadViaSModuleTemplate(DataSet ADataSet, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        {
+            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClauseLong("PUB_s_valid_output_form", AFieldList, new string[] {
+                            "s_module_id_c", "s_form_name_c"}) + " FROM PUB_s_valid_output_form, PUB_s_module WHERE " +
+                            "PUB_s_valid_output_form.s_module_id_c = PUB_s_module.s_module_id_c")
+                            + GenerateWhereClauseLong("PUB_s_module", SModuleTable.GetColumnStringList(), ASearchCriteria))
+                            + GenerateOrderByClause(AOrderBy)), SValidOutputFormTable.GetTableName(), ATransaction,
+                            GetParametersForWhereClause(new SValidOutputFormTable(), ASearchCriteria), AStartRecord, AMaxRecords);
+        }
+
+        /// auto generated
+        public static void LoadViaSModuleTemplate(DataSet AData, TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        {
+            LoadViaSModuleTemplate(AData, ASearchCriteria, null, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static void LoadViaSModuleTemplate(DataSet AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
+        {
+            LoadViaSModuleTemplate(AData, ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static void LoadViaSModuleTemplate(out SValidOutputFormTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        {
+            DataSet FillDataSet = new DataSet();
+            AData = new SValidOutputFormTable();
+            FillDataSet.Tables.Add(AData);
+            LoadViaSModuleTemplate(FillDataSet, ASearchCriteria, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            FillDataSet.Tables.Remove(AData);
+        }
+
+        /// auto generated
+        public static void LoadViaSModuleTemplate(out SValidOutputFormTable AData, TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        {
+            LoadViaSModuleTemplate(out AData, ASearchCriteria, null, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static void LoadViaSModuleTemplate(out SValidOutputFormTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
+        {
+            LoadViaSModuleTemplate(out AData, ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
         public static int CountViaSModule(String AModuleId, TDBTransaction ATransaction)
         {
             OdbcParameter[] ParametersArray = new OdbcParameter[1];
@@ -5290,6 +7414,15 @@ namespace Ict.Petra.Shared.MSysMan.Data.Access
         {
             return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_s_valid_output_form, PUB_s_module WHERE " +
                 "PUB_s_valid_output_form.s_module_id_c = PUB_s_module.s_module_id_c" + GenerateWhereClauseLong("PUB_s_module", SModuleTable.GetColumnStringList(), ATemplateRow, ATemplateOperators)), ATransaction, false, GetParametersForWhereClause(ATemplateRow, SModuleTable.GetPrimKeyColumnOrdList())));
+        }
+
+        /// auto generated
+        public static int CountViaSModuleTemplate(TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        {
+            return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_s_valid_output_form, PUB_s_module WHERE " +
+                "PUB_s_valid_output_form.s_module_id_c = PUB_s_module.s_module_id_c" +
+                GenerateWhereClauseLong("PUB_s_module", SModuleTable.GetColumnStringList(), ASearchCriteria)), ATransaction, false,
+                GetParametersForWhereClause(new SModuleTable(), ASearchCriteria)));
         }
 
         /// auto generated
@@ -5388,6 +7521,51 @@ namespace Ict.Petra.Shared.MSysMan.Data.Access
         }
 
         /// auto generated
+        public static void LoadViaSFormTemplate(DataSet ADataSet, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        {
+            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClauseLong("PUB_s_valid_output_form", AFieldList, new string[] {
+                            "s_module_id_c", "s_form_name_c"}) + " FROM PUB_s_valid_output_form, PUB_s_form WHERE " +
+                            "PUB_s_valid_output_form.s_form_name_c = PUB_s_form.s_form_name_c")
+                            + GenerateWhereClauseLong("PUB_s_form", SFormTable.GetColumnStringList(), ASearchCriteria))
+                            + GenerateOrderByClause(AOrderBy)), SValidOutputFormTable.GetTableName(), ATransaction,
+                            GetParametersForWhereClause(new SValidOutputFormTable(), ASearchCriteria), AStartRecord, AMaxRecords);
+        }
+
+        /// auto generated
+        public static void LoadViaSFormTemplate(DataSet AData, TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        {
+            LoadViaSFormTemplate(AData, ASearchCriteria, null, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static void LoadViaSFormTemplate(DataSet AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
+        {
+            LoadViaSFormTemplate(AData, ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static void LoadViaSFormTemplate(out SValidOutputFormTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        {
+            DataSet FillDataSet = new DataSet();
+            AData = new SValidOutputFormTable();
+            FillDataSet.Tables.Add(AData);
+            LoadViaSFormTemplate(FillDataSet, ASearchCriteria, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            FillDataSet.Tables.Remove(AData);
+        }
+
+        /// auto generated
+        public static void LoadViaSFormTemplate(out SValidOutputFormTable AData, TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        {
+            LoadViaSFormTemplate(out AData, ASearchCriteria, null, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static void LoadViaSFormTemplate(out SValidOutputFormTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
+        {
+            LoadViaSFormTemplate(out AData, ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
         public static int CountViaSForm(String AFormName, TDBTransaction ATransaction)
         {
             OdbcParameter[] ParametersArray = new OdbcParameter[1];
@@ -5401,6 +7579,15 @@ namespace Ict.Petra.Shared.MSysMan.Data.Access
         {
             return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_s_valid_output_form, PUB_s_form WHERE " +
                 "PUB_s_valid_output_form.s_form_name_c = PUB_s_form.s_form_name_c" + GenerateWhereClauseLong("PUB_s_form", SFormTable.GetColumnStringList(), ATemplateRow, ATemplateOperators)), ATransaction, false, GetParametersForWhereClause(ATemplateRow, SFormTable.GetPrimKeyColumnOrdList())));
+        }
+
+        /// auto generated
+        public static int CountViaSFormTemplate(TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        {
+            return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_s_valid_output_form, PUB_s_form WHERE " +
+                "PUB_s_valid_output_form.s_form_name_c = PUB_s_form.s_form_name_c" +
+                GenerateWhereClauseLong("PUB_s_form", SFormTable.GetColumnStringList(), ASearchCriteria)), ATransaction, false,
+                GetParametersForWhereClause(new SFormTable(), ASearchCriteria)));
         }
 
         /// auto generated
@@ -5418,6 +7605,14 @@ namespace Ict.Petra.Shared.MSysMan.Data.Access
         public static void DeleteUsingTemplate(SValidOutputFormRow ATemplateRow, StringCollection ATemplateOperators, TDBTransaction ATransaction)
         {
             DBAccess.GDBAccessObj.ExecuteNonQuery(("DELETE FROM PUB_s_valid_output_form" + GenerateWhereClause(SValidOutputFormTable.GetColumnStringList(), ATemplateRow, ATemplateOperators)), ATransaction, false, GetParametersForWhereClause(ATemplateRow));
+        }
+
+        /// auto generated
+        public static void DeleteUsingTemplate(TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        {
+            DBAccess.GDBAccessObj.ExecuteNonQuery(("DELETE FROM PUB_s_valid_output_form" +
+                GenerateWhereClause(SValidOutputFormTable.GetColumnStringList(), ASearchCriteria)), ATransaction, false,
+                GetParametersForWhereClause(new SValidOutputFormTable(), ASearchCriteria));
         }
 
         /// auto generated
@@ -5608,6 +7803,50 @@ namespace Ict.Petra.Shared.MSysMan.Data.Access
         }
 
         /// this method is called by all overloads
+        public static void LoadUsingTemplate(DataSet ADataSet, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        {
+            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClause(AFieldList, new string[] {
+                            "s_module_id_c", "s_file_name_c"}) + " FROM PUB_s_module_file")
+                            + GenerateWhereClause(SModuleFileTable.GetColumnStringList(), ASearchCriteria))
+                            + GenerateOrderByClause(AOrderBy)), SModuleFileTable.GetTableName(), ATransaction,
+                            GetParametersForWhereClause(new SModuleFileTable(), ASearchCriteria), AStartRecord, AMaxRecords);
+        }
+
+        /// auto generated
+        public static void LoadUsingTemplate(DataSet AData, TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        {
+            LoadUsingTemplate(AData, ASearchCriteria, null, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static void LoadUsingTemplate(DataSet AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
+        {
+            LoadUsingTemplate(AData, ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static void LoadUsingTemplate(out SModuleFileTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        {
+            DataSet FillDataSet = new DataSet();
+            AData = new SModuleFileTable();
+            FillDataSet.Tables.Add(AData);
+            LoadUsingTemplate(FillDataSet, ASearchCriteria, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            FillDataSet.Tables.Remove(AData);
+        }
+
+        /// auto generated
+        public static void LoadUsingTemplate(out SModuleFileTable AData, TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        {
+            LoadUsingTemplate(out AData, ASearchCriteria, null, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static void LoadUsingTemplate(out SModuleFileTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
+        {
+            LoadUsingTemplate(out AData, ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
+        }
+
+        /// this method is called by all overloads
         public static int CountAll(TDBTransaction ATransaction)
         {
             return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar("SELECT COUNT(*) FROM PUB_s_module_file", ATransaction, false));
@@ -5630,6 +7869,13 @@ namespace Ict.Petra.Shared.MSysMan.Data.Access
             return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_s_module_file" + GenerateWhereClause(SModuleFileTable.GetColumnStringList(), ATemplateRow, ATemplateOperators)), ATransaction, false, GetParametersForWhereClause(ATemplateRow)));
         }
 
+        /// this method is called by all overloads
+        public static int CountUsingTemplate(TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        {
+            return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_s_module_file" + GenerateWhereClause(SModuleFileTable.GetColumnStringList(), ASearchCriteria)), ATransaction, false,
+            GetParametersForWhereClause(new SModuleFileTable(), ASearchCriteria)));
+        }
+
         /// auto generated
         public static void DeleteByPrimaryKey(String AModuleId, String AFileName, TDBTransaction ATransaction)
         {
@@ -5645,6 +7891,14 @@ namespace Ict.Petra.Shared.MSysMan.Data.Access
         public static void DeleteUsingTemplate(SModuleFileRow ATemplateRow, StringCollection ATemplateOperators, TDBTransaction ATransaction)
         {
             DBAccess.GDBAccessObj.ExecuteNonQuery(("DELETE FROM PUB_s_module_file" + GenerateWhereClause(SModuleFileTable.GetColumnStringList(), ATemplateRow, ATemplateOperators)), ATransaction, false, GetParametersForWhereClause(ATemplateRow));
+        }
+
+        /// auto generated
+        public static void DeleteUsingTemplate(TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        {
+            DBAccess.GDBAccessObj.ExecuteNonQuery(("DELETE FROM PUB_s_module_file" +
+                GenerateWhereClause(SModuleFileTable.GetColumnStringList(), ASearchCriteria)), ATransaction, false,
+                GetParametersForWhereClause(new SModuleFileTable(), ASearchCriteria));
         }
 
         /// auto generated
@@ -5837,6 +8091,50 @@ namespace Ict.Petra.Shared.MSysMan.Data.Access
         }
 
         /// this method is called by all overloads
+        public static void LoadUsingTemplate(DataSet ADataSet, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        {
+            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClause(AFieldList, new string[] {
+                            "s_group_id_c", "s_group_unit_key_n", "s_module_id_c"}) + " FROM PUB_s_group_module_access_permission")
+                            + GenerateWhereClause(SGroupModuleAccessPermissionTable.GetColumnStringList(), ASearchCriteria))
+                            + GenerateOrderByClause(AOrderBy)), SGroupModuleAccessPermissionTable.GetTableName(), ATransaction,
+                            GetParametersForWhereClause(new SGroupModuleAccessPermissionTable(), ASearchCriteria), AStartRecord, AMaxRecords);
+        }
+
+        /// auto generated
+        public static void LoadUsingTemplate(DataSet AData, TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        {
+            LoadUsingTemplate(AData, ASearchCriteria, null, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static void LoadUsingTemplate(DataSet AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
+        {
+            LoadUsingTemplate(AData, ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static void LoadUsingTemplate(out SGroupModuleAccessPermissionTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        {
+            DataSet FillDataSet = new DataSet();
+            AData = new SGroupModuleAccessPermissionTable();
+            FillDataSet.Tables.Add(AData);
+            LoadUsingTemplate(FillDataSet, ASearchCriteria, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            FillDataSet.Tables.Remove(AData);
+        }
+
+        /// auto generated
+        public static void LoadUsingTemplate(out SGroupModuleAccessPermissionTable AData, TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        {
+            LoadUsingTemplate(out AData, ASearchCriteria, null, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static void LoadUsingTemplate(out SGroupModuleAccessPermissionTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
+        {
+            LoadUsingTemplate(out AData, ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
+        }
+
+        /// this method is called by all overloads
         public static int CountAll(TDBTransaction ATransaction)
         {
             return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar("SELECT COUNT(*) FROM PUB_s_group_module_access_permission", ATransaction, false));
@@ -5859,6 +8157,13 @@ namespace Ict.Petra.Shared.MSysMan.Data.Access
         public static int CountUsingTemplate(SGroupModuleAccessPermissionRow ATemplateRow, StringCollection ATemplateOperators, TDBTransaction ATransaction)
         {
             return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_s_group_module_access_permission" + GenerateWhereClause(SGroupModuleAccessPermissionTable.GetColumnStringList(), ATemplateRow, ATemplateOperators)), ATransaction, false, GetParametersForWhereClause(ATemplateRow)));
+        }
+
+        /// this method is called by all overloads
+        public static int CountUsingTemplate(TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        {
+            return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_s_group_module_access_permission" + GenerateWhereClause(SGroupModuleAccessPermissionTable.GetColumnStringList(), ASearchCriteria)), ATransaction, false,
+            GetParametersForWhereClause(new SGroupModuleAccessPermissionTable(), ASearchCriteria)));
         }
 
         /// auto generated
@@ -5959,6 +8264,51 @@ namespace Ict.Petra.Shared.MSysMan.Data.Access
         }
 
         /// auto generated
+        public static void LoadViaSGroupTemplate(DataSet ADataSet, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        {
+            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClauseLong("PUB_s_group_module_access_permission", AFieldList, new string[] {
+                            "s_group_id_c", "s_group_unit_key_n", "s_module_id_c"}) + " FROM PUB_s_group_module_access_permission, PUB_s_group WHERE " +
+                            "PUB_s_group_module_access_permission.s_group_id_c = PUB_s_group.s_group_id_c AND PUB_s_group_module_access_permission.s_group_unit_key_n = PUB_s_group.s_unit_key_n")
+                            + GenerateWhereClauseLong("PUB_s_group", SGroupTable.GetColumnStringList(), ASearchCriteria))
+                            + GenerateOrderByClause(AOrderBy)), SGroupModuleAccessPermissionTable.GetTableName(), ATransaction,
+                            GetParametersForWhereClause(new SGroupModuleAccessPermissionTable(), ASearchCriteria), AStartRecord, AMaxRecords);
+        }
+
+        /// auto generated
+        public static void LoadViaSGroupTemplate(DataSet AData, TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        {
+            LoadViaSGroupTemplate(AData, ASearchCriteria, null, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static void LoadViaSGroupTemplate(DataSet AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
+        {
+            LoadViaSGroupTemplate(AData, ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static void LoadViaSGroupTemplate(out SGroupModuleAccessPermissionTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        {
+            DataSet FillDataSet = new DataSet();
+            AData = new SGroupModuleAccessPermissionTable();
+            FillDataSet.Tables.Add(AData);
+            LoadViaSGroupTemplate(FillDataSet, ASearchCriteria, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            FillDataSet.Tables.Remove(AData);
+        }
+
+        /// auto generated
+        public static void LoadViaSGroupTemplate(out SGroupModuleAccessPermissionTable AData, TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        {
+            LoadViaSGroupTemplate(out AData, ASearchCriteria, null, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static void LoadViaSGroupTemplate(out SGroupModuleAccessPermissionTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
+        {
+            LoadViaSGroupTemplate(out AData, ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
         public static int CountViaSGroup(String AGroupId, Int64 AUnitKey, TDBTransaction ATransaction)
         {
             OdbcParameter[] ParametersArray = new OdbcParameter[2];
@@ -5974,6 +8324,15 @@ namespace Ict.Petra.Shared.MSysMan.Data.Access
         {
             return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_s_group_module_access_permission, PUB_s_group WHERE " +
                 "PUB_s_group_module_access_permission.s_group_id_c = PUB_s_group.s_group_id_c AND PUB_s_group_module_access_permission.s_group_unit_key_n = PUB_s_group.s_unit_key_n" + GenerateWhereClauseLong("PUB_s_group", SGroupTable.GetColumnStringList(), ATemplateRow, ATemplateOperators)), ATransaction, false, GetParametersForWhereClause(ATemplateRow, SGroupTable.GetPrimKeyColumnOrdList())));
+        }
+
+        /// auto generated
+        public static int CountViaSGroupTemplate(TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        {
+            return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_s_group_module_access_permission, PUB_s_group WHERE " +
+                "PUB_s_group_module_access_permission.s_group_id_c = PUB_s_group.s_group_id_c AND PUB_s_group_module_access_permission.s_group_unit_key_n = PUB_s_group.s_unit_key_n" +
+                GenerateWhereClauseLong("PUB_s_group", SGroupTable.GetColumnStringList(), ASearchCriteria)), ATransaction, false,
+                GetParametersForWhereClause(new SGroupTable(), ASearchCriteria)));
         }
 
         /// auto generated
@@ -6072,6 +8431,51 @@ namespace Ict.Petra.Shared.MSysMan.Data.Access
         }
 
         /// auto generated
+        public static void LoadViaSModuleTemplate(DataSet ADataSet, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        {
+            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClauseLong("PUB_s_group_module_access_permission", AFieldList, new string[] {
+                            "s_group_id_c", "s_group_unit_key_n", "s_module_id_c"}) + " FROM PUB_s_group_module_access_permission, PUB_s_module WHERE " +
+                            "PUB_s_group_module_access_permission.s_module_id_c = PUB_s_module.s_module_id_c")
+                            + GenerateWhereClauseLong("PUB_s_module", SModuleTable.GetColumnStringList(), ASearchCriteria))
+                            + GenerateOrderByClause(AOrderBy)), SGroupModuleAccessPermissionTable.GetTableName(), ATransaction,
+                            GetParametersForWhereClause(new SGroupModuleAccessPermissionTable(), ASearchCriteria), AStartRecord, AMaxRecords);
+        }
+
+        /// auto generated
+        public static void LoadViaSModuleTemplate(DataSet AData, TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        {
+            LoadViaSModuleTemplate(AData, ASearchCriteria, null, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static void LoadViaSModuleTemplate(DataSet AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
+        {
+            LoadViaSModuleTemplate(AData, ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static void LoadViaSModuleTemplate(out SGroupModuleAccessPermissionTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        {
+            DataSet FillDataSet = new DataSet();
+            AData = new SGroupModuleAccessPermissionTable();
+            FillDataSet.Tables.Add(AData);
+            LoadViaSModuleTemplate(FillDataSet, ASearchCriteria, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            FillDataSet.Tables.Remove(AData);
+        }
+
+        /// auto generated
+        public static void LoadViaSModuleTemplate(out SGroupModuleAccessPermissionTable AData, TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        {
+            LoadViaSModuleTemplate(out AData, ASearchCriteria, null, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static void LoadViaSModuleTemplate(out SGroupModuleAccessPermissionTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
+        {
+            LoadViaSModuleTemplate(out AData, ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
         public static int CountViaSModule(String AModuleId, TDBTransaction ATransaction)
         {
             OdbcParameter[] ParametersArray = new OdbcParameter[1];
@@ -6085,6 +8489,15 @@ namespace Ict.Petra.Shared.MSysMan.Data.Access
         {
             return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_s_group_module_access_permission, PUB_s_module WHERE " +
                 "PUB_s_group_module_access_permission.s_module_id_c = PUB_s_module.s_module_id_c" + GenerateWhereClauseLong("PUB_s_module", SModuleTable.GetColumnStringList(), ATemplateRow, ATemplateOperators)), ATransaction, false, GetParametersForWhereClause(ATemplateRow, SModuleTable.GetPrimKeyColumnOrdList())));
+        }
+
+        /// auto generated
+        public static int CountViaSModuleTemplate(TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        {
+            return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_s_group_module_access_permission, PUB_s_module WHERE " +
+                "PUB_s_group_module_access_permission.s_module_id_c = PUB_s_module.s_module_id_c" +
+                GenerateWhereClauseLong("PUB_s_module", SModuleTable.GetColumnStringList(), ASearchCriteria)), ATransaction, false,
+                GetParametersForWhereClause(new SModuleTable(), ASearchCriteria)));
         }
 
         /// auto generated
@@ -6104,6 +8517,14 @@ namespace Ict.Petra.Shared.MSysMan.Data.Access
         public static void DeleteUsingTemplate(SGroupModuleAccessPermissionRow ATemplateRow, StringCollection ATemplateOperators, TDBTransaction ATransaction)
         {
             DBAccess.GDBAccessObj.ExecuteNonQuery(("DELETE FROM PUB_s_group_module_access_permission" + GenerateWhereClause(SGroupModuleAccessPermissionTable.GetColumnStringList(), ATemplateRow, ATemplateOperators)), ATransaction, false, GetParametersForWhereClause(ATemplateRow));
+        }
+
+        /// auto generated
+        public static void DeleteUsingTemplate(TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        {
+            DBAccess.GDBAccessObj.ExecuteNonQuery(("DELETE FROM PUB_s_group_module_access_permission" +
+                GenerateWhereClause(SGroupModuleAccessPermissionTable.GetColumnStringList(), ASearchCriteria)), ATransaction, false,
+                GetParametersForWhereClause(new SGroupModuleAccessPermissionTable(), ASearchCriteria));
         }
 
         /// auto generated
@@ -6296,6 +8717,50 @@ namespace Ict.Petra.Shared.MSysMan.Data.Access
         }
 
         /// this method is called by all overloads
+        public static void LoadUsingTemplate(DataSet ADataSet, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        {
+            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClause(AFieldList, new string[] {
+                            "s_group_id_c", "s_group_unit_key_n", "s_table_name_c"}) + " FROM PUB_s_group_table_access_permission")
+                            + GenerateWhereClause(SGroupTableAccessPermissionTable.GetColumnStringList(), ASearchCriteria))
+                            + GenerateOrderByClause(AOrderBy)), SGroupTableAccessPermissionTable.GetTableName(), ATransaction,
+                            GetParametersForWhereClause(new SGroupTableAccessPermissionTable(), ASearchCriteria), AStartRecord, AMaxRecords);
+        }
+
+        /// auto generated
+        public static void LoadUsingTemplate(DataSet AData, TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        {
+            LoadUsingTemplate(AData, ASearchCriteria, null, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static void LoadUsingTemplate(DataSet AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
+        {
+            LoadUsingTemplate(AData, ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static void LoadUsingTemplate(out SGroupTableAccessPermissionTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        {
+            DataSet FillDataSet = new DataSet();
+            AData = new SGroupTableAccessPermissionTable();
+            FillDataSet.Tables.Add(AData);
+            LoadUsingTemplate(FillDataSet, ASearchCriteria, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            FillDataSet.Tables.Remove(AData);
+        }
+
+        /// auto generated
+        public static void LoadUsingTemplate(out SGroupTableAccessPermissionTable AData, TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        {
+            LoadUsingTemplate(out AData, ASearchCriteria, null, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static void LoadUsingTemplate(out SGroupTableAccessPermissionTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
+        {
+            LoadUsingTemplate(out AData, ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
+        }
+
+        /// this method is called by all overloads
         public static int CountAll(TDBTransaction ATransaction)
         {
             return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar("SELECT COUNT(*) FROM PUB_s_group_table_access_permission", ATransaction, false));
@@ -6318,6 +8783,13 @@ namespace Ict.Petra.Shared.MSysMan.Data.Access
         public static int CountUsingTemplate(SGroupTableAccessPermissionRow ATemplateRow, StringCollection ATemplateOperators, TDBTransaction ATransaction)
         {
             return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_s_group_table_access_permission" + GenerateWhereClause(SGroupTableAccessPermissionTable.GetColumnStringList(), ATemplateRow, ATemplateOperators)), ATransaction, false, GetParametersForWhereClause(ATemplateRow)));
+        }
+
+        /// this method is called by all overloads
+        public static int CountUsingTemplate(TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        {
+            return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_s_group_table_access_permission" + GenerateWhereClause(SGroupTableAccessPermissionTable.GetColumnStringList(), ASearchCriteria)), ATransaction, false,
+            GetParametersForWhereClause(new SGroupTableAccessPermissionTable(), ASearchCriteria)));
         }
 
         /// auto generated
@@ -6418,6 +8890,51 @@ namespace Ict.Petra.Shared.MSysMan.Data.Access
         }
 
         /// auto generated
+        public static void LoadViaSGroupTemplate(DataSet ADataSet, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        {
+            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClauseLong("PUB_s_group_table_access_permission", AFieldList, new string[] {
+                            "s_group_id_c", "s_group_unit_key_n", "s_table_name_c"}) + " FROM PUB_s_group_table_access_permission, PUB_s_group WHERE " +
+                            "PUB_s_group_table_access_permission.s_group_id_c = PUB_s_group.s_group_id_c AND PUB_s_group_table_access_permission.s_group_unit_key_n = PUB_s_group.s_unit_key_n")
+                            + GenerateWhereClauseLong("PUB_s_group", SGroupTable.GetColumnStringList(), ASearchCriteria))
+                            + GenerateOrderByClause(AOrderBy)), SGroupTableAccessPermissionTable.GetTableName(), ATransaction,
+                            GetParametersForWhereClause(new SGroupTableAccessPermissionTable(), ASearchCriteria), AStartRecord, AMaxRecords);
+        }
+
+        /// auto generated
+        public static void LoadViaSGroupTemplate(DataSet AData, TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        {
+            LoadViaSGroupTemplate(AData, ASearchCriteria, null, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static void LoadViaSGroupTemplate(DataSet AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
+        {
+            LoadViaSGroupTemplate(AData, ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static void LoadViaSGroupTemplate(out SGroupTableAccessPermissionTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        {
+            DataSet FillDataSet = new DataSet();
+            AData = new SGroupTableAccessPermissionTable();
+            FillDataSet.Tables.Add(AData);
+            LoadViaSGroupTemplate(FillDataSet, ASearchCriteria, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            FillDataSet.Tables.Remove(AData);
+        }
+
+        /// auto generated
+        public static void LoadViaSGroupTemplate(out SGroupTableAccessPermissionTable AData, TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        {
+            LoadViaSGroupTemplate(out AData, ASearchCriteria, null, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static void LoadViaSGroupTemplate(out SGroupTableAccessPermissionTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
+        {
+            LoadViaSGroupTemplate(out AData, ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
         public static int CountViaSGroup(String AGroupId, Int64 AUnitKey, TDBTransaction ATransaction)
         {
             OdbcParameter[] ParametersArray = new OdbcParameter[2];
@@ -6433,6 +8950,15 @@ namespace Ict.Petra.Shared.MSysMan.Data.Access
         {
             return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_s_group_table_access_permission, PUB_s_group WHERE " +
                 "PUB_s_group_table_access_permission.s_group_id_c = PUB_s_group.s_group_id_c AND PUB_s_group_table_access_permission.s_group_unit_key_n = PUB_s_group.s_unit_key_n" + GenerateWhereClauseLong("PUB_s_group", SGroupTable.GetColumnStringList(), ATemplateRow, ATemplateOperators)), ATransaction, false, GetParametersForWhereClause(ATemplateRow, SGroupTable.GetPrimKeyColumnOrdList())));
+        }
+
+        /// auto generated
+        public static int CountViaSGroupTemplate(TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        {
+            return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_s_group_table_access_permission, PUB_s_group WHERE " +
+                "PUB_s_group_table_access_permission.s_group_id_c = PUB_s_group.s_group_id_c AND PUB_s_group_table_access_permission.s_group_unit_key_n = PUB_s_group.s_unit_key_n" +
+                GenerateWhereClauseLong("PUB_s_group", SGroupTable.GetColumnStringList(), ASearchCriteria)), ATransaction, false,
+                GetParametersForWhereClause(new SGroupTable(), ASearchCriteria)));
         }
 
         /// auto generated
@@ -6452,6 +8978,14 @@ namespace Ict.Petra.Shared.MSysMan.Data.Access
         public static void DeleteUsingTemplate(SGroupTableAccessPermissionRow ATemplateRow, StringCollection ATemplateOperators, TDBTransaction ATransaction)
         {
             DBAccess.GDBAccessObj.ExecuteNonQuery(("DELETE FROM PUB_s_group_table_access_permission" + GenerateWhereClause(SGroupTableAccessPermissionTable.GetColumnStringList(), ATemplateRow, ATemplateOperators)), ATransaction, false, GetParametersForWhereClause(ATemplateRow));
+        }
+
+        /// auto generated
+        public static void DeleteUsingTemplate(TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        {
+            DBAccess.GDBAccessObj.ExecuteNonQuery(("DELETE FROM PUB_s_group_table_access_permission" +
+                GenerateWhereClause(SGroupTableAccessPermissionTable.GetColumnStringList(), ASearchCriteria)), ATransaction, false,
+                GetParametersForWhereClause(new SGroupTableAccessPermissionTable(), ASearchCriteria));
         }
 
         /// auto generated
@@ -6642,6 +9176,50 @@ namespace Ict.Petra.Shared.MSysMan.Data.Access
         }
 
         /// this method is called by all overloads
+        public static void LoadUsingTemplate(DataSet ADataSet, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        {
+            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClause(AFieldList, new string[] {
+                            "s_user_id_c", "s_module_id_c"}) + " FROM PUB_s_user_module_access_permission")
+                            + GenerateWhereClause(SUserModuleAccessPermissionTable.GetColumnStringList(), ASearchCriteria))
+                            + GenerateOrderByClause(AOrderBy)), SUserModuleAccessPermissionTable.GetTableName(), ATransaction,
+                            GetParametersForWhereClause(new SUserModuleAccessPermissionTable(), ASearchCriteria), AStartRecord, AMaxRecords);
+        }
+
+        /// auto generated
+        public static void LoadUsingTemplate(DataSet AData, TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        {
+            LoadUsingTemplate(AData, ASearchCriteria, null, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static void LoadUsingTemplate(DataSet AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
+        {
+            LoadUsingTemplate(AData, ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static void LoadUsingTemplate(out SUserModuleAccessPermissionTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        {
+            DataSet FillDataSet = new DataSet();
+            AData = new SUserModuleAccessPermissionTable();
+            FillDataSet.Tables.Add(AData);
+            LoadUsingTemplate(FillDataSet, ASearchCriteria, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            FillDataSet.Tables.Remove(AData);
+        }
+
+        /// auto generated
+        public static void LoadUsingTemplate(out SUserModuleAccessPermissionTable AData, TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        {
+            LoadUsingTemplate(out AData, ASearchCriteria, null, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static void LoadUsingTemplate(out SUserModuleAccessPermissionTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
+        {
+            LoadUsingTemplate(out AData, ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
+        }
+
+        /// this method is called by all overloads
         public static int CountAll(TDBTransaction ATransaction)
         {
             return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar("SELECT COUNT(*) FROM PUB_s_user_module_access_permission", ATransaction, false));
@@ -6662,6 +9240,13 @@ namespace Ict.Petra.Shared.MSysMan.Data.Access
         public static int CountUsingTemplate(SUserModuleAccessPermissionRow ATemplateRow, StringCollection ATemplateOperators, TDBTransaction ATransaction)
         {
             return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_s_user_module_access_permission" + GenerateWhereClause(SUserModuleAccessPermissionTable.GetColumnStringList(), ATemplateRow, ATemplateOperators)), ATransaction, false, GetParametersForWhereClause(ATemplateRow)));
+        }
+
+        /// this method is called by all overloads
+        public static int CountUsingTemplate(TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        {
+            return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_s_user_module_access_permission" + GenerateWhereClause(SUserModuleAccessPermissionTable.GetColumnStringList(), ASearchCriteria)), ATransaction, false,
+            GetParametersForWhereClause(new SUserModuleAccessPermissionTable(), ASearchCriteria)));
         }
 
         /// auto generated
@@ -6760,6 +9345,51 @@ namespace Ict.Petra.Shared.MSysMan.Data.Access
         }
 
         /// auto generated
+        public static void LoadViaSUserTemplate(DataSet ADataSet, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        {
+            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClauseLong("PUB_s_user_module_access_permission", AFieldList, new string[] {
+                            "s_user_id_c", "s_module_id_c"}) + " FROM PUB_s_user_module_access_permission, PUB_s_user WHERE " +
+                            "PUB_s_user_module_access_permission.s_user_id_c = PUB_s_user.s_user_id_c")
+                            + GenerateWhereClauseLong("PUB_s_user", SUserTable.GetColumnStringList(), ASearchCriteria))
+                            + GenerateOrderByClause(AOrderBy)), SUserModuleAccessPermissionTable.GetTableName(), ATransaction,
+                            GetParametersForWhereClause(new SUserModuleAccessPermissionTable(), ASearchCriteria), AStartRecord, AMaxRecords);
+        }
+
+        /// auto generated
+        public static void LoadViaSUserTemplate(DataSet AData, TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        {
+            LoadViaSUserTemplate(AData, ASearchCriteria, null, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static void LoadViaSUserTemplate(DataSet AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
+        {
+            LoadViaSUserTemplate(AData, ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static void LoadViaSUserTemplate(out SUserModuleAccessPermissionTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        {
+            DataSet FillDataSet = new DataSet();
+            AData = new SUserModuleAccessPermissionTable();
+            FillDataSet.Tables.Add(AData);
+            LoadViaSUserTemplate(FillDataSet, ASearchCriteria, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            FillDataSet.Tables.Remove(AData);
+        }
+
+        /// auto generated
+        public static void LoadViaSUserTemplate(out SUserModuleAccessPermissionTable AData, TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        {
+            LoadViaSUserTemplate(out AData, ASearchCriteria, null, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static void LoadViaSUserTemplate(out SUserModuleAccessPermissionTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
+        {
+            LoadViaSUserTemplate(out AData, ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
         public static int CountViaSUser(String AUserId, TDBTransaction ATransaction)
         {
             OdbcParameter[] ParametersArray = new OdbcParameter[1];
@@ -6773,6 +9403,15 @@ namespace Ict.Petra.Shared.MSysMan.Data.Access
         {
             return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_s_user_module_access_permission, PUB_s_user WHERE " +
                 "PUB_s_user_module_access_permission.s_user_id_c = PUB_s_user.s_user_id_c" + GenerateWhereClauseLong("PUB_s_user", SUserTable.GetColumnStringList(), ATemplateRow, ATemplateOperators)), ATransaction, false, GetParametersForWhereClause(ATemplateRow, SUserTable.GetPrimKeyColumnOrdList())));
+        }
+
+        /// auto generated
+        public static int CountViaSUserTemplate(TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        {
+            return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_s_user_module_access_permission, PUB_s_user WHERE " +
+                "PUB_s_user_module_access_permission.s_user_id_c = PUB_s_user.s_user_id_c" +
+                GenerateWhereClauseLong("PUB_s_user", SUserTable.GetColumnStringList(), ASearchCriteria)), ATransaction, false,
+                GetParametersForWhereClause(new SUserTable(), ASearchCriteria)));
         }
 
         /// auto generated
@@ -6871,6 +9510,51 @@ namespace Ict.Petra.Shared.MSysMan.Data.Access
         }
 
         /// auto generated
+        public static void LoadViaSModuleTemplate(DataSet ADataSet, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        {
+            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClauseLong("PUB_s_user_module_access_permission", AFieldList, new string[] {
+                            "s_user_id_c", "s_module_id_c"}) + " FROM PUB_s_user_module_access_permission, PUB_s_module WHERE " +
+                            "PUB_s_user_module_access_permission.s_module_id_c = PUB_s_module.s_module_id_c")
+                            + GenerateWhereClauseLong("PUB_s_module", SModuleTable.GetColumnStringList(), ASearchCriteria))
+                            + GenerateOrderByClause(AOrderBy)), SUserModuleAccessPermissionTable.GetTableName(), ATransaction,
+                            GetParametersForWhereClause(new SUserModuleAccessPermissionTable(), ASearchCriteria), AStartRecord, AMaxRecords);
+        }
+
+        /// auto generated
+        public static void LoadViaSModuleTemplate(DataSet AData, TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        {
+            LoadViaSModuleTemplate(AData, ASearchCriteria, null, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static void LoadViaSModuleTemplate(DataSet AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
+        {
+            LoadViaSModuleTemplate(AData, ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static void LoadViaSModuleTemplate(out SUserModuleAccessPermissionTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        {
+            DataSet FillDataSet = new DataSet();
+            AData = new SUserModuleAccessPermissionTable();
+            FillDataSet.Tables.Add(AData);
+            LoadViaSModuleTemplate(FillDataSet, ASearchCriteria, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            FillDataSet.Tables.Remove(AData);
+        }
+
+        /// auto generated
+        public static void LoadViaSModuleTemplate(out SUserModuleAccessPermissionTable AData, TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        {
+            LoadViaSModuleTemplate(out AData, ASearchCriteria, null, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static void LoadViaSModuleTemplate(out SUserModuleAccessPermissionTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
+        {
+            LoadViaSModuleTemplate(out AData, ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
         public static int CountViaSModule(String AModuleId, TDBTransaction ATransaction)
         {
             OdbcParameter[] ParametersArray = new OdbcParameter[1];
@@ -6884,6 +9568,15 @@ namespace Ict.Petra.Shared.MSysMan.Data.Access
         {
             return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_s_user_module_access_permission, PUB_s_module WHERE " +
                 "PUB_s_user_module_access_permission.s_module_id_c = PUB_s_module.s_module_id_c" + GenerateWhereClauseLong("PUB_s_module", SModuleTable.GetColumnStringList(), ATemplateRow, ATemplateOperators)), ATransaction, false, GetParametersForWhereClause(ATemplateRow, SModuleTable.GetPrimKeyColumnOrdList())));
+        }
+
+        /// auto generated
+        public static int CountViaSModuleTemplate(TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        {
+            return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_s_user_module_access_permission, PUB_s_module WHERE " +
+                "PUB_s_user_module_access_permission.s_module_id_c = PUB_s_module.s_module_id_c" +
+                GenerateWhereClauseLong("PUB_s_module", SModuleTable.GetColumnStringList(), ASearchCriteria)), ATransaction, false,
+                GetParametersForWhereClause(new SModuleTable(), ASearchCriteria)));
         }
 
         /// auto generated
@@ -6901,6 +9594,14 @@ namespace Ict.Petra.Shared.MSysMan.Data.Access
         public static void DeleteUsingTemplate(SUserModuleAccessPermissionRow ATemplateRow, StringCollection ATemplateOperators, TDBTransaction ATransaction)
         {
             DBAccess.GDBAccessObj.ExecuteNonQuery(("DELETE FROM PUB_s_user_module_access_permission" + GenerateWhereClause(SUserModuleAccessPermissionTable.GetColumnStringList(), ATemplateRow, ATemplateOperators)), ATransaction, false, GetParametersForWhereClause(ATemplateRow));
+        }
+
+        /// auto generated
+        public static void DeleteUsingTemplate(TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        {
+            DBAccess.GDBAccessObj.ExecuteNonQuery(("DELETE FROM PUB_s_user_module_access_permission" +
+                GenerateWhereClause(SUserModuleAccessPermissionTable.GetColumnStringList(), ASearchCriteria)), ATransaction, false,
+                GetParametersForWhereClause(new SUserModuleAccessPermissionTable(), ASearchCriteria));
         }
 
         /// auto generated
@@ -7091,6 +9792,50 @@ namespace Ict.Petra.Shared.MSysMan.Data.Access
         }
 
         /// this method is called by all overloads
+        public static void LoadUsingTemplate(DataSet ADataSet, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        {
+            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClause(AFieldList, new string[] {
+                            "s_user_id_c", "s_table_name_c"}) + " FROM PUB_s_user_table_access_permission")
+                            + GenerateWhereClause(SUserTableAccessPermissionTable.GetColumnStringList(), ASearchCriteria))
+                            + GenerateOrderByClause(AOrderBy)), SUserTableAccessPermissionTable.GetTableName(), ATransaction,
+                            GetParametersForWhereClause(new SUserTableAccessPermissionTable(), ASearchCriteria), AStartRecord, AMaxRecords);
+        }
+
+        /// auto generated
+        public static void LoadUsingTemplate(DataSet AData, TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        {
+            LoadUsingTemplate(AData, ASearchCriteria, null, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static void LoadUsingTemplate(DataSet AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
+        {
+            LoadUsingTemplate(AData, ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static void LoadUsingTemplate(out SUserTableAccessPermissionTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        {
+            DataSet FillDataSet = new DataSet();
+            AData = new SUserTableAccessPermissionTable();
+            FillDataSet.Tables.Add(AData);
+            LoadUsingTemplate(FillDataSet, ASearchCriteria, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            FillDataSet.Tables.Remove(AData);
+        }
+
+        /// auto generated
+        public static void LoadUsingTemplate(out SUserTableAccessPermissionTable AData, TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        {
+            LoadUsingTemplate(out AData, ASearchCriteria, null, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static void LoadUsingTemplate(out SUserTableAccessPermissionTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
+        {
+            LoadUsingTemplate(out AData, ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
+        }
+
+        /// this method is called by all overloads
         public static int CountAll(TDBTransaction ATransaction)
         {
             return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar("SELECT COUNT(*) FROM PUB_s_user_table_access_permission", ATransaction, false));
@@ -7111,6 +9856,13 @@ namespace Ict.Petra.Shared.MSysMan.Data.Access
         public static int CountUsingTemplate(SUserTableAccessPermissionRow ATemplateRow, StringCollection ATemplateOperators, TDBTransaction ATransaction)
         {
             return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_s_user_table_access_permission" + GenerateWhereClause(SUserTableAccessPermissionTable.GetColumnStringList(), ATemplateRow, ATemplateOperators)), ATransaction, false, GetParametersForWhereClause(ATemplateRow)));
+        }
+
+        /// this method is called by all overloads
+        public static int CountUsingTemplate(TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        {
+            return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_s_user_table_access_permission" + GenerateWhereClause(SUserTableAccessPermissionTable.GetColumnStringList(), ASearchCriteria)), ATransaction, false,
+            GetParametersForWhereClause(new SUserTableAccessPermissionTable(), ASearchCriteria)));
         }
 
         /// auto generated
@@ -7209,6 +9961,51 @@ namespace Ict.Petra.Shared.MSysMan.Data.Access
         }
 
         /// auto generated
+        public static void LoadViaSUserTemplate(DataSet ADataSet, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        {
+            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClauseLong("PUB_s_user_table_access_permission", AFieldList, new string[] {
+                            "s_user_id_c", "s_table_name_c"}) + " FROM PUB_s_user_table_access_permission, PUB_s_user WHERE " +
+                            "PUB_s_user_table_access_permission.s_user_id_c = PUB_s_user.s_user_id_c")
+                            + GenerateWhereClauseLong("PUB_s_user", SUserTable.GetColumnStringList(), ASearchCriteria))
+                            + GenerateOrderByClause(AOrderBy)), SUserTableAccessPermissionTable.GetTableName(), ATransaction,
+                            GetParametersForWhereClause(new SUserTableAccessPermissionTable(), ASearchCriteria), AStartRecord, AMaxRecords);
+        }
+
+        /// auto generated
+        public static void LoadViaSUserTemplate(DataSet AData, TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        {
+            LoadViaSUserTemplate(AData, ASearchCriteria, null, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static void LoadViaSUserTemplate(DataSet AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
+        {
+            LoadViaSUserTemplate(AData, ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static void LoadViaSUserTemplate(out SUserTableAccessPermissionTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        {
+            DataSet FillDataSet = new DataSet();
+            AData = new SUserTableAccessPermissionTable();
+            FillDataSet.Tables.Add(AData);
+            LoadViaSUserTemplate(FillDataSet, ASearchCriteria, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            FillDataSet.Tables.Remove(AData);
+        }
+
+        /// auto generated
+        public static void LoadViaSUserTemplate(out SUserTableAccessPermissionTable AData, TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        {
+            LoadViaSUserTemplate(out AData, ASearchCriteria, null, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static void LoadViaSUserTemplate(out SUserTableAccessPermissionTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
+        {
+            LoadViaSUserTemplate(out AData, ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
         public static int CountViaSUser(String AUserId, TDBTransaction ATransaction)
         {
             OdbcParameter[] ParametersArray = new OdbcParameter[1];
@@ -7222,6 +10019,15 @@ namespace Ict.Petra.Shared.MSysMan.Data.Access
         {
             return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_s_user_table_access_permission, PUB_s_user WHERE " +
                 "PUB_s_user_table_access_permission.s_user_id_c = PUB_s_user.s_user_id_c" + GenerateWhereClauseLong("PUB_s_user", SUserTable.GetColumnStringList(), ATemplateRow, ATemplateOperators)), ATransaction, false, GetParametersForWhereClause(ATemplateRow, SUserTable.GetPrimKeyColumnOrdList())));
+        }
+
+        /// auto generated
+        public static int CountViaSUserTemplate(TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        {
+            return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_s_user_table_access_permission, PUB_s_user WHERE " +
+                "PUB_s_user_table_access_permission.s_user_id_c = PUB_s_user.s_user_id_c" +
+                GenerateWhereClauseLong("PUB_s_user", SUserTable.GetColumnStringList(), ASearchCriteria)), ATransaction, false,
+                GetParametersForWhereClause(new SUserTable(), ASearchCriteria)));
         }
 
         /// auto generated
@@ -7239,6 +10045,14 @@ namespace Ict.Petra.Shared.MSysMan.Data.Access
         public static void DeleteUsingTemplate(SUserTableAccessPermissionRow ATemplateRow, StringCollection ATemplateOperators, TDBTransaction ATransaction)
         {
             DBAccess.GDBAccessObj.ExecuteNonQuery(("DELETE FROM PUB_s_user_table_access_permission" + GenerateWhereClause(SUserTableAccessPermissionTable.GetColumnStringList(), ATemplateRow, ATemplateOperators)), ATransaction, false, GetParametersForWhereClause(ATemplateRow));
+        }
+
+        /// auto generated
+        public static void DeleteUsingTemplate(TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        {
+            DBAccess.GDBAccessObj.ExecuteNonQuery(("DELETE FROM PUB_s_user_table_access_permission" +
+                GenerateWhereClause(SUserTableAccessPermissionTable.GetColumnStringList(), ASearchCriteria)), ATransaction, false,
+                GetParametersForWhereClause(new SUserTableAccessPermissionTable(), ASearchCriteria));
         }
 
         /// auto generated
@@ -7427,6 +10241,50 @@ namespace Ict.Petra.Shared.MSysMan.Data.Access
         }
 
         /// this method is called by all overloads
+        public static void LoadUsingTemplate(DataSet ADataSet, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        {
+            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClause(AFieldList, new string[] {
+                            "s_language_code_c"}) + " FROM PUB_s_language_specific")
+                            + GenerateWhereClause(SLanguageSpecificTable.GetColumnStringList(), ASearchCriteria))
+                            + GenerateOrderByClause(AOrderBy)), SLanguageSpecificTable.GetTableName(), ATransaction,
+                            GetParametersForWhereClause(new SLanguageSpecificTable(), ASearchCriteria), AStartRecord, AMaxRecords);
+        }
+
+        /// auto generated
+        public static void LoadUsingTemplate(DataSet AData, TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        {
+            LoadUsingTemplate(AData, ASearchCriteria, null, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static void LoadUsingTemplate(DataSet AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
+        {
+            LoadUsingTemplate(AData, ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static void LoadUsingTemplate(out SLanguageSpecificTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        {
+            DataSet FillDataSet = new DataSet();
+            AData = new SLanguageSpecificTable();
+            FillDataSet.Tables.Add(AData);
+            LoadUsingTemplate(FillDataSet, ASearchCriteria, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            FillDataSet.Tables.Remove(AData);
+        }
+
+        /// auto generated
+        public static void LoadUsingTemplate(out SLanguageSpecificTable AData, TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        {
+            LoadUsingTemplate(out AData, ASearchCriteria, null, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static void LoadUsingTemplate(out SLanguageSpecificTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
+        {
+            LoadUsingTemplate(out AData, ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
+        }
+
+        /// this method is called by all overloads
         public static int CountAll(TDBTransaction ATransaction)
         {
             return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar("SELECT COUNT(*) FROM PUB_s_language_specific", ATransaction, false));
@@ -7445,6 +10303,13 @@ namespace Ict.Petra.Shared.MSysMan.Data.Access
         public static int CountUsingTemplate(SLanguageSpecificRow ATemplateRow, StringCollection ATemplateOperators, TDBTransaction ATransaction)
         {
             return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_s_language_specific" + GenerateWhereClause(SLanguageSpecificTable.GetColumnStringList(), ATemplateRow, ATemplateOperators)), ATransaction, false, GetParametersForWhereClause(ATemplateRow)));
+        }
+
+        /// this method is called by all overloads
+        public static int CountUsingTemplate(TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        {
+            return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_s_language_specific" + GenerateWhereClause(SLanguageSpecificTable.GetColumnStringList(), ASearchCriteria)), ATransaction, false,
+            GetParametersForWhereClause(new SLanguageSpecificTable(), ASearchCriteria)));
         }
 
         /// auto generated
@@ -7543,6 +10408,51 @@ namespace Ict.Petra.Shared.MSysMan.Data.Access
         }
 
         /// auto generated
+        public static void LoadViaPLanguageTemplate(DataSet ADataSet, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        {
+            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClauseLong("PUB_s_language_specific", AFieldList, new string[] {
+                            "s_language_code_c"}) + " FROM PUB_s_language_specific, PUB_p_language WHERE " +
+                            "PUB_s_language_specific.s_language_code_c = PUB_p_language.p_language_code_c")
+                            + GenerateWhereClauseLong("PUB_p_language", PLanguageTable.GetColumnStringList(), ASearchCriteria))
+                            + GenerateOrderByClause(AOrderBy)), SLanguageSpecificTable.GetTableName(), ATransaction,
+                            GetParametersForWhereClause(new SLanguageSpecificTable(), ASearchCriteria), AStartRecord, AMaxRecords);
+        }
+
+        /// auto generated
+        public static void LoadViaPLanguageTemplate(DataSet AData, TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        {
+            LoadViaPLanguageTemplate(AData, ASearchCriteria, null, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static void LoadViaPLanguageTemplate(DataSet AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
+        {
+            LoadViaPLanguageTemplate(AData, ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static void LoadViaPLanguageTemplate(out SLanguageSpecificTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        {
+            DataSet FillDataSet = new DataSet();
+            AData = new SLanguageSpecificTable();
+            FillDataSet.Tables.Add(AData);
+            LoadViaPLanguageTemplate(FillDataSet, ASearchCriteria, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            FillDataSet.Tables.Remove(AData);
+        }
+
+        /// auto generated
+        public static void LoadViaPLanguageTemplate(out SLanguageSpecificTable AData, TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        {
+            LoadViaPLanguageTemplate(out AData, ASearchCriteria, null, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static void LoadViaPLanguageTemplate(out SLanguageSpecificTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
+        {
+            LoadViaPLanguageTemplate(out AData, ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
         public static int CountViaPLanguage(String ALanguageCode, TDBTransaction ATransaction)
         {
             OdbcParameter[] ParametersArray = new OdbcParameter[1];
@@ -7559,6 +10469,15 @@ namespace Ict.Petra.Shared.MSysMan.Data.Access
         }
 
         /// auto generated
+        public static int CountViaPLanguageTemplate(TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        {
+            return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_s_language_specific, PUB_p_language WHERE " +
+                "PUB_s_language_specific.s_language_code_c = PUB_p_language.p_language_code_c" +
+                GenerateWhereClauseLong("PUB_p_language", PLanguageTable.GetColumnStringList(), ASearchCriteria)), ATransaction, false,
+                GetParametersForWhereClause(new PLanguageTable(), ASearchCriteria)));
+        }
+
+        /// auto generated
         public static void DeleteByPrimaryKey(String ALanguageCode, TDBTransaction ATransaction)
         {
             OdbcParameter[] ParametersArray = new OdbcParameter[1];
@@ -7571,6 +10490,14 @@ namespace Ict.Petra.Shared.MSysMan.Data.Access
         public static void DeleteUsingTemplate(SLanguageSpecificRow ATemplateRow, StringCollection ATemplateOperators, TDBTransaction ATransaction)
         {
             DBAccess.GDBAccessObj.ExecuteNonQuery(("DELETE FROM PUB_s_language_specific" + GenerateWhereClause(SLanguageSpecificTable.GetColumnStringList(), ATemplateRow, ATemplateOperators)), ATransaction, false, GetParametersForWhereClause(ATemplateRow));
+        }
+
+        /// auto generated
+        public static void DeleteUsingTemplate(TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        {
+            DBAccess.GDBAccessObj.ExecuteNonQuery(("DELETE FROM PUB_s_language_specific" +
+                GenerateWhereClause(SLanguageSpecificTable.GetColumnStringList(), ASearchCriteria)), ATransaction, false,
+                GetParametersForWhereClause(new SLanguageSpecificTable(), ASearchCriteria));
         }
 
         /// auto generated
@@ -7763,6 +10690,50 @@ namespace Ict.Petra.Shared.MSysMan.Data.Access
         }
 
         /// this method is called by all overloads
+        public static void LoadUsingTemplate(DataSet ADataSet, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        {
+            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClause(AFieldList, new string[] {
+                            "s_user_id_c", "s_login_date_d", "s_login_time_i"}) + " FROM PUB_s_login")
+                            + GenerateWhereClause(SLoginTable.GetColumnStringList(), ASearchCriteria))
+                            + GenerateOrderByClause(AOrderBy)), SLoginTable.GetTableName(), ATransaction,
+                            GetParametersForWhereClause(new SLoginTable(), ASearchCriteria), AStartRecord, AMaxRecords);
+        }
+
+        /// auto generated
+        public static void LoadUsingTemplate(DataSet AData, TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        {
+            LoadUsingTemplate(AData, ASearchCriteria, null, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static void LoadUsingTemplate(DataSet AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
+        {
+            LoadUsingTemplate(AData, ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static void LoadUsingTemplate(out SLoginTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        {
+            DataSet FillDataSet = new DataSet();
+            AData = new SLoginTable();
+            FillDataSet.Tables.Add(AData);
+            LoadUsingTemplate(FillDataSet, ASearchCriteria, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            FillDataSet.Tables.Remove(AData);
+        }
+
+        /// auto generated
+        public static void LoadUsingTemplate(out SLoginTable AData, TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        {
+            LoadUsingTemplate(out AData, ASearchCriteria, null, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static void LoadUsingTemplate(out SLoginTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
+        {
+            LoadUsingTemplate(out AData, ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
+        }
+
+        /// this method is called by all overloads
         public static int CountAll(TDBTransaction ATransaction)
         {
             return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar("SELECT COUNT(*) FROM PUB_s_login", ATransaction, false));
@@ -7787,6 +10758,13 @@ namespace Ict.Petra.Shared.MSysMan.Data.Access
             return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_s_login" + GenerateWhereClause(SLoginTable.GetColumnStringList(), ATemplateRow, ATemplateOperators)), ATransaction, false, GetParametersForWhereClause(ATemplateRow)));
         }
 
+        /// this method is called by all overloads
+        public static int CountUsingTemplate(TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        {
+            return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_s_login" + GenerateWhereClause(SLoginTable.GetColumnStringList(), ASearchCriteria)), ATransaction, false,
+            GetParametersForWhereClause(new SLoginTable(), ASearchCriteria)));
+        }
+
         /// auto generated
         public static void DeleteByPrimaryKey(String AUserId, System.DateTime ALoginDate, Int32 ALoginTime, TDBTransaction ATransaction)
         {
@@ -7804,6 +10782,14 @@ namespace Ict.Petra.Shared.MSysMan.Data.Access
         public static void DeleteUsingTemplate(SLoginRow ATemplateRow, StringCollection ATemplateOperators, TDBTransaction ATransaction)
         {
             DBAccess.GDBAccessObj.ExecuteNonQuery(("DELETE FROM PUB_s_login" + GenerateWhereClause(SLoginTable.GetColumnStringList(), ATemplateRow, ATemplateOperators)), ATransaction, false, GetParametersForWhereClause(ATemplateRow));
+        }
+
+        /// auto generated
+        public static void DeleteUsingTemplate(TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        {
+            DBAccess.GDBAccessObj.ExecuteNonQuery(("DELETE FROM PUB_s_login" +
+                GenerateWhereClause(SLoginTable.GetColumnStringList(), ASearchCriteria)), ATransaction, false,
+                GetParametersForWhereClause(new SLoginTable(), ASearchCriteria));
         }
 
         /// auto generated
@@ -7992,6 +10978,50 @@ namespace Ict.Petra.Shared.MSysMan.Data.Access
         }
 
         /// this method is called by all overloads
+        public static void LoadUsingTemplate(DataSet ADataSet, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        {
+            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClause(AFieldList, new string[] {
+                            "s_language_code_c"}) + " FROM PUB_s_logon_message")
+                            + GenerateWhereClause(SLogonMessageTable.GetColumnStringList(), ASearchCriteria))
+                            + GenerateOrderByClause(AOrderBy)), SLogonMessageTable.GetTableName(), ATransaction,
+                            GetParametersForWhereClause(new SLogonMessageTable(), ASearchCriteria), AStartRecord, AMaxRecords);
+        }
+
+        /// auto generated
+        public static void LoadUsingTemplate(DataSet AData, TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        {
+            LoadUsingTemplate(AData, ASearchCriteria, null, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static void LoadUsingTemplate(DataSet AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
+        {
+            LoadUsingTemplate(AData, ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static void LoadUsingTemplate(out SLogonMessageTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        {
+            DataSet FillDataSet = new DataSet();
+            AData = new SLogonMessageTable();
+            FillDataSet.Tables.Add(AData);
+            LoadUsingTemplate(FillDataSet, ASearchCriteria, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            FillDataSet.Tables.Remove(AData);
+        }
+
+        /// auto generated
+        public static void LoadUsingTemplate(out SLogonMessageTable AData, TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        {
+            LoadUsingTemplate(out AData, ASearchCriteria, null, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static void LoadUsingTemplate(out SLogonMessageTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
+        {
+            LoadUsingTemplate(out AData, ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
+        }
+
+        /// this method is called by all overloads
         public static int CountAll(TDBTransaction ATransaction)
         {
             return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar("SELECT COUNT(*) FROM PUB_s_logon_message", ATransaction, false));
@@ -8010,6 +11040,13 @@ namespace Ict.Petra.Shared.MSysMan.Data.Access
         public static int CountUsingTemplate(SLogonMessageRow ATemplateRow, StringCollection ATemplateOperators, TDBTransaction ATransaction)
         {
             return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_s_logon_message" + GenerateWhereClause(SLogonMessageTable.GetColumnStringList(), ATemplateRow, ATemplateOperators)), ATransaction, false, GetParametersForWhereClause(ATemplateRow)));
+        }
+
+        /// this method is called by all overloads
+        public static int CountUsingTemplate(TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        {
+            return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_s_logon_message" + GenerateWhereClause(SLogonMessageTable.GetColumnStringList(), ASearchCriteria)), ATransaction, false,
+            GetParametersForWhereClause(new SLogonMessageTable(), ASearchCriteria)));
         }
 
         /// auto generated
@@ -8108,6 +11145,51 @@ namespace Ict.Petra.Shared.MSysMan.Data.Access
         }
 
         /// auto generated
+        public static void LoadViaPLanguageTemplate(DataSet ADataSet, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        {
+            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClauseLong("PUB_s_logon_message", AFieldList, new string[] {
+                            "s_language_code_c"}) + " FROM PUB_s_logon_message, PUB_p_language WHERE " +
+                            "PUB_s_logon_message.s_language_code_c = PUB_p_language.p_language_code_c")
+                            + GenerateWhereClauseLong("PUB_p_language", PLanguageTable.GetColumnStringList(), ASearchCriteria))
+                            + GenerateOrderByClause(AOrderBy)), SLogonMessageTable.GetTableName(), ATransaction,
+                            GetParametersForWhereClause(new SLogonMessageTable(), ASearchCriteria), AStartRecord, AMaxRecords);
+        }
+
+        /// auto generated
+        public static void LoadViaPLanguageTemplate(DataSet AData, TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        {
+            LoadViaPLanguageTemplate(AData, ASearchCriteria, null, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static void LoadViaPLanguageTemplate(DataSet AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
+        {
+            LoadViaPLanguageTemplate(AData, ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static void LoadViaPLanguageTemplate(out SLogonMessageTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        {
+            DataSet FillDataSet = new DataSet();
+            AData = new SLogonMessageTable();
+            FillDataSet.Tables.Add(AData);
+            LoadViaPLanguageTemplate(FillDataSet, ASearchCriteria, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            FillDataSet.Tables.Remove(AData);
+        }
+
+        /// auto generated
+        public static void LoadViaPLanguageTemplate(out SLogonMessageTable AData, TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        {
+            LoadViaPLanguageTemplate(out AData, ASearchCriteria, null, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static void LoadViaPLanguageTemplate(out SLogonMessageTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
+        {
+            LoadViaPLanguageTemplate(out AData, ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
         public static int CountViaPLanguage(String ALanguageCode, TDBTransaction ATransaction)
         {
             OdbcParameter[] ParametersArray = new OdbcParameter[1];
@@ -8124,6 +11206,15 @@ namespace Ict.Petra.Shared.MSysMan.Data.Access
         }
 
         /// auto generated
+        public static int CountViaPLanguageTemplate(TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        {
+            return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_s_logon_message, PUB_p_language WHERE " +
+                "PUB_s_logon_message.s_language_code_c = PUB_p_language.p_language_code_c" +
+                GenerateWhereClauseLong("PUB_p_language", PLanguageTable.GetColumnStringList(), ASearchCriteria)), ATransaction, false,
+                GetParametersForWhereClause(new PLanguageTable(), ASearchCriteria)));
+        }
+
+        /// auto generated
         public static void DeleteByPrimaryKey(String ALanguageCode, TDBTransaction ATransaction)
         {
             OdbcParameter[] ParametersArray = new OdbcParameter[1];
@@ -8136,6 +11227,14 @@ namespace Ict.Petra.Shared.MSysMan.Data.Access
         public static void DeleteUsingTemplate(SLogonMessageRow ATemplateRow, StringCollection ATemplateOperators, TDBTransaction ATransaction)
         {
             DBAccess.GDBAccessObj.ExecuteNonQuery(("DELETE FROM PUB_s_logon_message" + GenerateWhereClause(SLogonMessageTable.GetColumnStringList(), ATemplateRow, ATemplateOperators)), ATransaction, false, GetParametersForWhereClause(ATemplateRow));
+        }
+
+        /// auto generated
+        public static void DeleteUsingTemplate(TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        {
+            DBAccess.GDBAccessObj.ExecuteNonQuery(("DELETE FROM PUB_s_logon_message" +
+                GenerateWhereClause(SLogonMessageTable.GetColumnStringList(), ASearchCriteria)), ATransaction, false,
+                GetParametersForWhereClause(new SLogonMessageTable(), ASearchCriteria));
         }
 
         /// auto generated
@@ -8324,6 +11423,50 @@ namespace Ict.Petra.Shared.MSysMan.Data.Access
         }
 
         /// this method is called by all overloads
+        public static void LoadUsingTemplate(DataSet ADataSet, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        {
+            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClause(AFieldList, new string[] {
+                            "s_patch_name_c"}) + " FROM PUB_s_patch_log")
+                            + GenerateWhereClause(SPatchLogTable.GetColumnStringList(), ASearchCriteria))
+                            + GenerateOrderByClause(AOrderBy)), SPatchLogTable.GetTableName(), ATransaction,
+                            GetParametersForWhereClause(new SPatchLogTable(), ASearchCriteria), AStartRecord, AMaxRecords);
+        }
+
+        /// auto generated
+        public static void LoadUsingTemplate(DataSet AData, TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        {
+            LoadUsingTemplate(AData, ASearchCriteria, null, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static void LoadUsingTemplate(DataSet AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
+        {
+            LoadUsingTemplate(AData, ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static void LoadUsingTemplate(out SPatchLogTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        {
+            DataSet FillDataSet = new DataSet();
+            AData = new SPatchLogTable();
+            FillDataSet.Tables.Add(AData);
+            LoadUsingTemplate(FillDataSet, ASearchCriteria, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            FillDataSet.Tables.Remove(AData);
+        }
+
+        /// auto generated
+        public static void LoadUsingTemplate(out SPatchLogTable AData, TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        {
+            LoadUsingTemplate(out AData, ASearchCriteria, null, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static void LoadUsingTemplate(out SPatchLogTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
+        {
+            LoadUsingTemplate(out AData, ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
+        }
+
+        /// this method is called by all overloads
         public static int CountAll(TDBTransaction ATransaction)
         {
             return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar("SELECT COUNT(*) FROM PUB_s_patch_log", ATransaction, false));
@@ -8342,6 +11485,13 @@ namespace Ict.Petra.Shared.MSysMan.Data.Access
         public static int CountUsingTemplate(SPatchLogRow ATemplateRow, StringCollection ATemplateOperators, TDBTransaction ATransaction)
         {
             return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_s_patch_log" + GenerateWhereClause(SPatchLogTable.GetColumnStringList(), ATemplateRow, ATemplateOperators)), ATransaction, false, GetParametersForWhereClause(ATemplateRow)));
+        }
+
+        /// this method is called by all overloads
+        public static int CountUsingTemplate(TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        {
+            return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_s_patch_log" + GenerateWhereClause(SPatchLogTable.GetColumnStringList(), ASearchCriteria)), ATransaction, false,
+            GetParametersForWhereClause(new SPatchLogTable(), ASearchCriteria)));
         }
 
         /// auto generated
@@ -8440,6 +11590,51 @@ namespace Ict.Petra.Shared.MSysMan.Data.Access
         }
 
         /// auto generated
+        public static void LoadViaSUserTemplate(DataSet ADataSet, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        {
+            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClauseLong("PUB_s_patch_log", AFieldList, new string[] {
+                            "s_patch_name_c"}) + " FROM PUB_s_patch_log, PUB_s_user WHERE " +
+                            "PUB_s_patch_log.s_user_id_c = PUB_s_user.s_user_id_c")
+                            + GenerateWhereClauseLong("PUB_s_user", SUserTable.GetColumnStringList(), ASearchCriteria))
+                            + GenerateOrderByClause(AOrderBy)), SPatchLogTable.GetTableName(), ATransaction,
+                            GetParametersForWhereClause(new SPatchLogTable(), ASearchCriteria), AStartRecord, AMaxRecords);
+        }
+
+        /// auto generated
+        public static void LoadViaSUserTemplate(DataSet AData, TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        {
+            LoadViaSUserTemplate(AData, ASearchCriteria, null, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static void LoadViaSUserTemplate(DataSet AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
+        {
+            LoadViaSUserTemplate(AData, ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static void LoadViaSUserTemplate(out SPatchLogTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        {
+            DataSet FillDataSet = new DataSet();
+            AData = new SPatchLogTable();
+            FillDataSet.Tables.Add(AData);
+            LoadViaSUserTemplate(FillDataSet, ASearchCriteria, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            FillDataSet.Tables.Remove(AData);
+        }
+
+        /// auto generated
+        public static void LoadViaSUserTemplate(out SPatchLogTable AData, TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        {
+            LoadViaSUserTemplate(out AData, ASearchCriteria, null, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static void LoadViaSUserTemplate(out SPatchLogTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
+        {
+            LoadViaSUserTemplate(out AData, ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
         public static int CountViaSUser(String AUserId, TDBTransaction ATransaction)
         {
             OdbcParameter[] ParametersArray = new OdbcParameter[1];
@@ -8456,6 +11651,15 @@ namespace Ict.Petra.Shared.MSysMan.Data.Access
         }
 
         /// auto generated
+        public static int CountViaSUserTemplate(TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        {
+            return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_s_patch_log, PUB_s_user WHERE " +
+                "PUB_s_patch_log.s_user_id_c = PUB_s_user.s_user_id_c" +
+                GenerateWhereClauseLong("PUB_s_user", SUserTable.GetColumnStringList(), ASearchCriteria)), ATransaction, false,
+                GetParametersForWhereClause(new SUserTable(), ASearchCriteria)));
+        }
+
+        /// auto generated
         public static void DeleteByPrimaryKey(String APatchName, TDBTransaction ATransaction)
         {
             OdbcParameter[] ParametersArray = new OdbcParameter[1];
@@ -8468,6 +11672,14 @@ namespace Ict.Petra.Shared.MSysMan.Data.Access
         public static void DeleteUsingTemplate(SPatchLogRow ATemplateRow, StringCollection ATemplateOperators, TDBTransaction ATransaction)
         {
             DBAccess.GDBAccessObj.ExecuteNonQuery(("DELETE FROM PUB_s_patch_log" + GenerateWhereClause(SPatchLogTable.GetColumnStringList(), ATemplateRow, ATemplateOperators)), ATransaction, false, GetParametersForWhereClause(ATemplateRow));
+        }
+
+        /// auto generated
+        public static void DeleteUsingTemplate(TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        {
+            DBAccess.GDBAccessObj.ExecuteNonQuery(("DELETE FROM PUB_s_patch_log" +
+                GenerateWhereClause(SPatchLogTable.GetColumnStringList(), ASearchCriteria)), ATransaction, false,
+                GetParametersForWhereClause(new SPatchLogTable(), ASearchCriteria));
         }
 
         /// auto generated
@@ -8656,6 +11868,50 @@ namespace Ict.Petra.Shared.MSysMan.Data.Access
         }
 
         /// this method is called by all overloads
+        public static void LoadUsingTemplate(DataSet ADataSet, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        {
+            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClause(AFieldList, new string[] {
+                            "s_report_title_c"}) + " FROM PUB_s_reports_to_archive")
+                            + GenerateWhereClause(SReportsToArchiveTable.GetColumnStringList(), ASearchCriteria))
+                            + GenerateOrderByClause(AOrderBy)), SReportsToArchiveTable.GetTableName(), ATransaction,
+                            GetParametersForWhereClause(new SReportsToArchiveTable(), ASearchCriteria), AStartRecord, AMaxRecords);
+        }
+
+        /// auto generated
+        public static void LoadUsingTemplate(DataSet AData, TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        {
+            LoadUsingTemplate(AData, ASearchCriteria, null, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static void LoadUsingTemplate(DataSet AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
+        {
+            LoadUsingTemplate(AData, ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static void LoadUsingTemplate(out SReportsToArchiveTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        {
+            DataSet FillDataSet = new DataSet();
+            AData = new SReportsToArchiveTable();
+            FillDataSet.Tables.Add(AData);
+            LoadUsingTemplate(FillDataSet, ASearchCriteria, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            FillDataSet.Tables.Remove(AData);
+        }
+
+        /// auto generated
+        public static void LoadUsingTemplate(out SReportsToArchiveTable AData, TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        {
+            LoadUsingTemplate(out AData, ASearchCriteria, null, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static void LoadUsingTemplate(out SReportsToArchiveTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
+        {
+            LoadUsingTemplate(out AData, ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
+        }
+
+        /// this method is called by all overloads
         public static int CountAll(TDBTransaction ATransaction)
         {
             return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar("SELECT COUNT(*) FROM PUB_s_reports_to_archive", ATransaction, false));
@@ -8676,6 +11932,13 @@ namespace Ict.Petra.Shared.MSysMan.Data.Access
             return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_s_reports_to_archive" + GenerateWhereClause(SReportsToArchiveTable.GetColumnStringList(), ATemplateRow, ATemplateOperators)), ATransaction, false, GetParametersForWhereClause(ATemplateRow)));
         }
 
+        /// this method is called by all overloads
+        public static int CountUsingTemplate(TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        {
+            return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_s_reports_to_archive" + GenerateWhereClause(SReportsToArchiveTable.GetColumnStringList(), ASearchCriteria)), ATransaction, false,
+            GetParametersForWhereClause(new SReportsToArchiveTable(), ASearchCriteria)));
+        }
+
         /// auto generated
         public static void DeleteByPrimaryKey(String AReportTitle, TDBTransaction ATransaction)
         {
@@ -8689,6 +11952,14 @@ namespace Ict.Petra.Shared.MSysMan.Data.Access
         public static void DeleteUsingTemplate(SReportsToArchiveRow ATemplateRow, StringCollection ATemplateOperators, TDBTransaction ATransaction)
         {
             DBAccess.GDBAccessObj.ExecuteNonQuery(("DELETE FROM PUB_s_reports_to_archive" + GenerateWhereClause(SReportsToArchiveTable.GetColumnStringList(), ATemplateRow, ATemplateOperators)), ATransaction, false, GetParametersForWhereClause(ATemplateRow));
+        }
+
+        /// auto generated
+        public static void DeleteUsingTemplate(TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        {
+            DBAccess.GDBAccessObj.ExecuteNonQuery(("DELETE FROM PUB_s_reports_to_archive" +
+                GenerateWhereClause(SReportsToArchiveTable.GetColumnStringList(), ASearchCriteria)), ATransaction, false,
+                GetParametersForWhereClause(new SReportsToArchiveTable(), ASearchCriteria));
         }
 
         /// auto generated
@@ -8877,6 +12148,50 @@ namespace Ict.Petra.Shared.MSysMan.Data.Access
         }
 
         /// this method is called by all overloads
+        public static void LoadUsingTemplate(DataSet ADataSet, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        {
+            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClause(AFieldList, new string[] {
+                            "s_report_file_name_c"}) + " FROM PUB_s_report_file")
+                            + GenerateWhereClause(SReportFileTable.GetColumnStringList(), ASearchCriteria))
+                            + GenerateOrderByClause(AOrderBy)), SReportFileTable.GetTableName(), ATransaction,
+                            GetParametersForWhereClause(new SReportFileTable(), ASearchCriteria), AStartRecord, AMaxRecords);
+        }
+
+        /// auto generated
+        public static void LoadUsingTemplate(DataSet AData, TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        {
+            LoadUsingTemplate(AData, ASearchCriteria, null, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static void LoadUsingTemplate(DataSet AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
+        {
+            LoadUsingTemplate(AData, ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static void LoadUsingTemplate(out SReportFileTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        {
+            DataSet FillDataSet = new DataSet();
+            AData = new SReportFileTable();
+            FillDataSet.Tables.Add(AData);
+            LoadUsingTemplate(FillDataSet, ASearchCriteria, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            FillDataSet.Tables.Remove(AData);
+        }
+
+        /// auto generated
+        public static void LoadUsingTemplate(out SReportFileTable AData, TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        {
+            LoadUsingTemplate(out AData, ASearchCriteria, null, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static void LoadUsingTemplate(out SReportFileTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
+        {
+            LoadUsingTemplate(out AData, ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
+        }
+
+        /// this method is called by all overloads
         public static int CountAll(TDBTransaction ATransaction)
         {
             return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar("SELECT COUNT(*) FROM PUB_s_report_file", ATransaction, false));
@@ -8895,6 +12210,13 @@ namespace Ict.Petra.Shared.MSysMan.Data.Access
         public static int CountUsingTemplate(SReportFileRow ATemplateRow, StringCollection ATemplateOperators, TDBTransaction ATransaction)
         {
             return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_s_report_file" + GenerateWhereClause(SReportFileTable.GetColumnStringList(), ATemplateRow, ATemplateOperators)), ATransaction, false, GetParametersForWhereClause(ATemplateRow)));
+        }
+
+        /// this method is called by all overloads
+        public static int CountUsingTemplate(TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        {
+            return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_s_report_file" + GenerateWhereClause(SReportFileTable.GetColumnStringList(), ASearchCriteria)), ATransaction, false,
+            GetParametersForWhereClause(new SReportFileTable(), ASearchCriteria)));
         }
 
         /// auto generated
@@ -8993,6 +12315,51 @@ namespace Ict.Petra.Shared.MSysMan.Data.Access
         }
 
         /// auto generated
+        public static void LoadViaSUserTemplate(DataSet ADataSet, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        {
+            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClauseLong("PUB_s_report_file", AFieldList, new string[] {
+                            "s_report_file_name_c"}) + " FROM PUB_s_report_file, PUB_s_user WHERE " +
+                            "PUB_s_report_file.s_user_id_c = PUB_s_user.s_user_id_c")
+                            + GenerateWhereClauseLong("PUB_s_user", SUserTable.GetColumnStringList(), ASearchCriteria))
+                            + GenerateOrderByClause(AOrderBy)), SReportFileTable.GetTableName(), ATransaction,
+                            GetParametersForWhereClause(new SReportFileTable(), ASearchCriteria), AStartRecord, AMaxRecords);
+        }
+
+        /// auto generated
+        public static void LoadViaSUserTemplate(DataSet AData, TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        {
+            LoadViaSUserTemplate(AData, ASearchCriteria, null, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static void LoadViaSUserTemplate(DataSet AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
+        {
+            LoadViaSUserTemplate(AData, ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static void LoadViaSUserTemplate(out SReportFileTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        {
+            DataSet FillDataSet = new DataSet();
+            AData = new SReportFileTable();
+            FillDataSet.Tables.Add(AData);
+            LoadViaSUserTemplate(FillDataSet, ASearchCriteria, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            FillDataSet.Tables.Remove(AData);
+        }
+
+        /// auto generated
+        public static void LoadViaSUserTemplate(out SReportFileTable AData, TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        {
+            LoadViaSUserTemplate(out AData, ASearchCriteria, null, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static void LoadViaSUserTemplate(out SReportFileTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
+        {
+            LoadViaSUserTemplate(out AData, ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
         public static int CountViaSUser(String AUserId, TDBTransaction ATransaction)
         {
             OdbcParameter[] ParametersArray = new OdbcParameter[1];
@@ -9006,6 +12373,15 @@ namespace Ict.Petra.Shared.MSysMan.Data.Access
         {
             return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_s_report_file, PUB_s_user WHERE " +
                 "PUB_s_report_file.s_user_id_c = PUB_s_user.s_user_id_c" + GenerateWhereClauseLong("PUB_s_user", SUserTable.GetColumnStringList(), ATemplateRow, ATemplateOperators)), ATransaction, false, GetParametersForWhereClause(ATemplateRow, SUserTable.GetPrimKeyColumnOrdList())));
+        }
+
+        /// auto generated
+        public static int CountViaSUserTemplate(TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        {
+            return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_s_report_file, PUB_s_user WHERE " +
+                "PUB_s_report_file.s_user_id_c = PUB_s_user.s_user_id_c" +
+                GenerateWhereClauseLong("PUB_s_user", SUserTable.GetColumnStringList(), ASearchCriteria)), ATransaction, false,
+                GetParametersForWhereClause(new SUserTable(), ASearchCriteria)));
         }
 
         /// auto generated
@@ -9104,6 +12480,51 @@ namespace Ict.Petra.Shared.MSysMan.Data.Access
         }
 
         /// auto generated
+        public static void LoadViaSFileTemplate(DataSet ADataSet, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        {
+            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClauseLong("PUB_s_report_file", AFieldList, new string[] {
+                            "s_report_file_name_c"}) + " FROM PUB_s_report_file, PUB_s_file WHERE " +
+                            "PUB_s_report_file.s_rpg_c = PUB_s_file.s_file_name_c")
+                            + GenerateWhereClauseLong("PUB_s_file", SFileTable.GetColumnStringList(), ASearchCriteria))
+                            + GenerateOrderByClause(AOrderBy)), SReportFileTable.GetTableName(), ATransaction,
+                            GetParametersForWhereClause(new SReportFileTable(), ASearchCriteria), AStartRecord, AMaxRecords);
+        }
+
+        /// auto generated
+        public static void LoadViaSFileTemplate(DataSet AData, TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        {
+            LoadViaSFileTemplate(AData, ASearchCriteria, null, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static void LoadViaSFileTemplate(DataSet AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
+        {
+            LoadViaSFileTemplate(AData, ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static void LoadViaSFileTemplate(out SReportFileTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        {
+            DataSet FillDataSet = new DataSet();
+            AData = new SReportFileTable();
+            FillDataSet.Tables.Add(AData);
+            LoadViaSFileTemplate(FillDataSet, ASearchCriteria, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            FillDataSet.Tables.Remove(AData);
+        }
+
+        /// auto generated
+        public static void LoadViaSFileTemplate(out SReportFileTable AData, TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        {
+            LoadViaSFileTemplate(out AData, ASearchCriteria, null, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static void LoadViaSFileTemplate(out SReportFileTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
+        {
+            LoadViaSFileTemplate(out AData, ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
         public static int CountViaSFile(String AFileName, TDBTransaction ATransaction)
         {
             OdbcParameter[] ParametersArray = new OdbcParameter[1];
@@ -9120,6 +12541,15 @@ namespace Ict.Petra.Shared.MSysMan.Data.Access
         }
 
         /// auto generated
+        public static int CountViaSFileTemplate(TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        {
+            return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_s_report_file, PUB_s_file WHERE " +
+                "PUB_s_report_file.s_rpg_c = PUB_s_file.s_file_name_c" +
+                GenerateWhereClauseLong("PUB_s_file", SFileTable.GetColumnStringList(), ASearchCriteria)), ATransaction, false,
+                GetParametersForWhereClause(new SFileTable(), ASearchCriteria)));
+        }
+
+        /// auto generated
         public static void DeleteByPrimaryKey(String AReportFileName, TDBTransaction ATransaction)
         {
             OdbcParameter[] ParametersArray = new OdbcParameter[1];
@@ -9132,6 +12562,14 @@ namespace Ict.Petra.Shared.MSysMan.Data.Access
         public static void DeleteUsingTemplate(SReportFileRow ATemplateRow, StringCollection ATemplateOperators, TDBTransaction ATransaction)
         {
             DBAccess.GDBAccessObj.ExecuteNonQuery(("DELETE FROM PUB_s_report_file" + GenerateWhereClause(SReportFileTable.GetColumnStringList(), ATemplateRow, ATemplateOperators)), ATransaction, false, GetParametersForWhereClause(ATemplateRow));
+        }
+
+        /// auto generated
+        public static void DeleteUsingTemplate(TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        {
+            DBAccess.GDBAccessObj.ExecuteNonQuery(("DELETE FROM PUB_s_report_file" +
+                GenerateWhereClause(SReportFileTable.GetColumnStringList(), ASearchCriteria)), ATransaction, false,
+                GetParametersForWhereClause(new SReportFileTable(), ASearchCriteria));
         }
 
         /// auto generated
@@ -9275,6 +12713,50 @@ namespace Ict.Petra.Shared.MSysMan.Data.Access
         }
 
         /// this method is called by all overloads
+        public static void LoadUsingTemplate(DataSet ADataSet, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        {
+            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClause(AFieldList, new string[] {
+                            }) + " FROM PUB_s_report_options")
+                            + GenerateWhereClause(SReportOptionsTable.GetColumnStringList(), ASearchCriteria))
+                            + GenerateOrderByClause(AOrderBy)), SReportOptionsTable.GetTableName(), ATransaction,
+                            GetParametersForWhereClause(new SReportOptionsTable(), ASearchCriteria), AStartRecord, AMaxRecords);
+        }
+
+        /// auto generated
+        public static void LoadUsingTemplate(DataSet AData, TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        {
+            LoadUsingTemplate(AData, ASearchCriteria, null, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static void LoadUsingTemplate(DataSet AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
+        {
+            LoadUsingTemplate(AData, ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static void LoadUsingTemplate(out SReportOptionsTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        {
+            DataSet FillDataSet = new DataSet();
+            AData = new SReportOptionsTable();
+            FillDataSet.Tables.Add(AData);
+            LoadUsingTemplate(FillDataSet, ASearchCriteria, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            FillDataSet.Tables.Remove(AData);
+        }
+
+        /// auto generated
+        public static void LoadUsingTemplate(out SReportOptionsTable AData, TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        {
+            LoadUsingTemplate(out AData, ASearchCriteria, null, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static void LoadUsingTemplate(out SReportOptionsTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
+        {
+            LoadUsingTemplate(out AData, ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
+        }
+
+        /// this method is called by all overloads
         public static int CountAll(TDBTransaction ATransaction)
         {
             return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar("SELECT COUNT(*) FROM PUB_s_report_options", ATransaction, false));
@@ -9284,6 +12766,13 @@ namespace Ict.Petra.Shared.MSysMan.Data.Access
         public static int CountUsingTemplate(SReportOptionsRow ATemplateRow, StringCollection ATemplateOperators, TDBTransaction ATransaction)
         {
             return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_s_report_options" + GenerateWhereClause(SReportOptionsTable.GetColumnStringList(), ATemplateRow, ATemplateOperators)), ATransaction, false, GetParametersForWhereClause(ATemplateRow)));
+        }
+
+        /// this method is called by all overloads
+        public static int CountUsingTemplate(TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        {
+            return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_s_report_options" + GenerateWhereClause(SReportOptionsTable.GetColumnStringList(), ASearchCriteria)), ATransaction, false,
+            GetParametersForWhereClause(new SReportOptionsTable(), ASearchCriteria)));
         }
 
         /// auto generated
@@ -9382,6 +12871,51 @@ namespace Ict.Petra.Shared.MSysMan.Data.Access
         }
 
         /// auto generated
+        public static void LoadViaSUserTemplate(DataSet ADataSet, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        {
+            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClauseLong("PUB_s_report_options", AFieldList, new string[] {
+                            }) + " FROM PUB_s_report_options, PUB_s_user WHERE " +
+                            "PUB_s_report_options.s_user_id_c = PUB_s_user.s_user_id_c")
+                            + GenerateWhereClauseLong("PUB_s_user", SUserTable.GetColumnStringList(), ASearchCriteria))
+                            + GenerateOrderByClause(AOrderBy)), SReportOptionsTable.GetTableName(), ATransaction,
+                            GetParametersForWhereClause(new SReportOptionsTable(), ASearchCriteria), AStartRecord, AMaxRecords);
+        }
+
+        /// auto generated
+        public static void LoadViaSUserTemplate(DataSet AData, TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        {
+            LoadViaSUserTemplate(AData, ASearchCriteria, null, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static void LoadViaSUserTemplate(DataSet AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
+        {
+            LoadViaSUserTemplate(AData, ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static void LoadViaSUserTemplate(out SReportOptionsTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        {
+            DataSet FillDataSet = new DataSet();
+            AData = new SReportOptionsTable();
+            FillDataSet.Tables.Add(AData);
+            LoadViaSUserTemplate(FillDataSet, ASearchCriteria, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            FillDataSet.Tables.Remove(AData);
+        }
+
+        /// auto generated
+        public static void LoadViaSUserTemplate(out SReportOptionsTable AData, TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        {
+            LoadViaSUserTemplate(out AData, ASearchCriteria, null, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static void LoadViaSUserTemplate(out SReportOptionsTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
+        {
+            LoadViaSUserTemplate(out AData, ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
         public static int CountViaSUser(String AUserId, TDBTransaction ATransaction)
         {
             OdbcParameter[] ParametersArray = new OdbcParameter[1];
@@ -9395,6 +12929,15 @@ namespace Ict.Petra.Shared.MSysMan.Data.Access
         {
             return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_s_report_options, PUB_s_user WHERE " +
                 "PUB_s_report_options.s_user_id_c = PUB_s_user.s_user_id_c" + GenerateWhereClauseLong("PUB_s_user", SUserTable.GetColumnStringList(), ATemplateRow, ATemplateOperators)), ATransaction, false, GetParametersForWhereClause(ATemplateRow, SUserTable.GetPrimKeyColumnOrdList())));
+        }
+
+        /// auto generated
+        public static int CountViaSUserTemplate(TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        {
+            return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_s_report_options, PUB_s_user WHERE " +
+                "PUB_s_report_options.s_user_id_c = PUB_s_user.s_user_id_c" +
+                GenerateWhereClauseLong("PUB_s_user", SUserTable.GetColumnStringList(), ASearchCriteria)), ATransaction, false,
+                GetParametersForWhereClause(new SUserTable(), ASearchCriteria)));
         }
 
         /// auto generated
@@ -9493,6 +13036,51 @@ namespace Ict.Petra.Shared.MSysMan.Data.Access
         }
 
         /// auto generated
+        public static void LoadViaSModuleTemplate(DataSet ADataSet, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        {
+            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClauseLong("PUB_s_report_options", AFieldList, new string[] {
+                            }) + " FROM PUB_s_report_options, PUB_s_module WHERE " +
+                            "PUB_s_report_options.s_module_id_c = PUB_s_module.s_module_id_c")
+                            + GenerateWhereClauseLong("PUB_s_module", SModuleTable.GetColumnStringList(), ASearchCriteria))
+                            + GenerateOrderByClause(AOrderBy)), SReportOptionsTable.GetTableName(), ATransaction,
+                            GetParametersForWhereClause(new SReportOptionsTable(), ASearchCriteria), AStartRecord, AMaxRecords);
+        }
+
+        /// auto generated
+        public static void LoadViaSModuleTemplate(DataSet AData, TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        {
+            LoadViaSModuleTemplate(AData, ASearchCriteria, null, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static void LoadViaSModuleTemplate(DataSet AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
+        {
+            LoadViaSModuleTemplate(AData, ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static void LoadViaSModuleTemplate(out SReportOptionsTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        {
+            DataSet FillDataSet = new DataSet();
+            AData = new SReportOptionsTable();
+            FillDataSet.Tables.Add(AData);
+            LoadViaSModuleTemplate(FillDataSet, ASearchCriteria, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            FillDataSet.Tables.Remove(AData);
+        }
+
+        /// auto generated
+        public static void LoadViaSModuleTemplate(out SReportOptionsTable AData, TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        {
+            LoadViaSModuleTemplate(out AData, ASearchCriteria, null, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static void LoadViaSModuleTemplate(out SReportOptionsTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
+        {
+            LoadViaSModuleTemplate(out AData, ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
         public static int CountViaSModule(String AModuleId, TDBTransaction ATransaction)
         {
             OdbcParameter[] ParametersArray = new OdbcParameter[1];
@@ -9506,6 +13094,15 @@ namespace Ict.Petra.Shared.MSysMan.Data.Access
         {
             return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_s_report_options, PUB_s_module WHERE " +
                 "PUB_s_report_options.s_module_id_c = PUB_s_module.s_module_id_c" + GenerateWhereClauseLong("PUB_s_module", SModuleTable.GetColumnStringList(), ATemplateRow, ATemplateOperators)), ATransaction, false, GetParametersForWhereClause(ATemplateRow, SModuleTable.GetPrimKeyColumnOrdList())));
+        }
+
+        /// auto generated
+        public static int CountViaSModuleTemplate(TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        {
+            return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_s_report_options, PUB_s_module WHERE " +
+                "PUB_s_report_options.s_module_id_c = PUB_s_module.s_module_id_c" +
+                GenerateWhereClauseLong("PUB_s_module", SModuleTable.GetColumnStringList(), ASearchCriteria)), ATransaction, false,
+                GetParametersForWhereClause(new SModuleTable(), ASearchCriteria)));
         }
 
         /// auto generated
@@ -9604,6 +13201,51 @@ namespace Ict.Petra.Shared.MSysMan.Data.Access
         }
 
         /// auto generated
+        public static void LoadViaSFileTemplate(DataSet ADataSet, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        {
+            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClauseLong("PUB_s_report_options", AFieldList, new string[] {
+                            }) + " FROM PUB_s_report_options, PUB_s_file WHERE " +
+                            "PUB_s_report_options.s_rpg_c = PUB_s_file.s_file_name_c")
+                            + GenerateWhereClauseLong("PUB_s_file", SFileTable.GetColumnStringList(), ASearchCriteria))
+                            + GenerateOrderByClause(AOrderBy)), SReportOptionsTable.GetTableName(), ATransaction,
+                            GetParametersForWhereClause(new SReportOptionsTable(), ASearchCriteria), AStartRecord, AMaxRecords);
+        }
+
+        /// auto generated
+        public static void LoadViaSFileTemplate(DataSet AData, TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        {
+            LoadViaSFileTemplate(AData, ASearchCriteria, null, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static void LoadViaSFileTemplate(DataSet AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
+        {
+            LoadViaSFileTemplate(AData, ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static void LoadViaSFileTemplate(out SReportOptionsTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        {
+            DataSet FillDataSet = new DataSet();
+            AData = new SReportOptionsTable();
+            FillDataSet.Tables.Add(AData);
+            LoadViaSFileTemplate(FillDataSet, ASearchCriteria, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            FillDataSet.Tables.Remove(AData);
+        }
+
+        /// auto generated
+        public static void LoadViaSFileTemplate(out SReportOptionsTable AData, TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        {
+            LoadViaSFileTemplate(out AData, ASearchCriteria, null, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static void LoadViaSFileTemplate(out SReportOptionsTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
+        {
+            LoadViaSFileTemplate(out AData, ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
         public static int CountViaSFile(String AFileName, TDBTransaction ATransaction)
         {
             OdbcParameter[] ParametersArray = new OdbcParameter[1];
@@ -9620,9 +13262,26 @@ namespace Ict.Petra.Shared.MSysMan.Data.Access
         }
 
         /// auto generated
+        public static int CountViaSFileTemplate(TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        {
+            return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_s_report_options, PUB_s_file WHERE " +
+                "PUB_s_report_options.s_rpg_c = PUB_s_file.s_file_name_c" +
+                GenerateWhereClauseLong("PUB_s_file", SFileTable.GetColumnStringList(), ASearchCriteria)), ATransaction, false,
+                GetParametersForWhereClause(new SFileTable(), ASearchCriteria)));
+        }
+
+        /// auto generated
         public static void DeleteUsingTemplate(SReportOptionsRow ATemplateRow, StringCollection ATemplateOperators, TDBTransaction ATransaction)
         {
             DBAccess.GDBAccessObj.ExecuteNonQuery(("DELETE FROM PUB_s_report_options" + GenerateWhereClause(SReportOptionsTable.GetColumnStringList(), ATemplateRow, ATemplateOperators)), ATransaction, false, GetParametersForWhereClause(ATemplateRow));
+        }
+
+        /// auto generated
+        public static void DeleteUsingTemplate(TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        {
+            DBAccess.GDBAccessObj.ExecuteNonQuery(("DELETE FROM PUB_s_report_options" +
+                GenerateWhereClause(SReportOptionsTable.GetColumnStringList(), ASearchCriteria)), ATransaction, false,
+                GetParametersForWhereClause(new SReportOptionsTable(), ASearchCriteria));
         }
 
         /// auto generated
@@ -9768,6 +13427,50 @@ namespace Ict.Petra.Shared.MSysMan.Data.Access
         }
 
         /// this method is called by all overloads
+        public static void LoadUsingTemplate(DataSet ADataSet, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        {
+            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClause(AFieldList, new string[] {
+                            }) + " FROM PUB_s_selected_output_destination")
+                            + GenerateWhereClause(SSelectedOutputDestinationTable.GetColumnStringList(), ASearchCriteria))
+                            + GenerateOrderByClause(AOrderBy)), SSelectedOutputDestinationTable.GetTableName(), ATransaction,
+                            GetParametersForWhereClause(new SSelectedOutputDestinationTable(), ASearchCriteria), AStartRecord, AMaxRecords);
+        }
+
+        /// auto generated
+        public static void LoadUsingTemplate(DataSet AData, TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        {
+            LoadUsingTemplate(AData, ASearchCriteria, null, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static void LoadUsingTemplate(DataSet AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
+        {
+            LoadUsingTemplate(AData, ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static void LoadUsingTemplate(out SSelectedOutputDestinationTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        {
+            DataSet FillDataSet = new DataSet();
+            AData = new SSelectedOutputDestinationTable();
+            FillDataSet.Tables.Add(AData);
+            LoadUsingTemplate(FillDataSet, ASearchCriteria, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            FillDataSet.Tables.Remove(AData);
+        }
+
+        /// auto generated
+        public static void LoadUsingTemplate(out SSelectedOutputDestinationTable AData, TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        {
+            LoadUsingTemplate(out AData, ASearchCriteria, null, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static void LoadUsingTemplate(out SSelectedOutputDestinationTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
+        {
+            LoadUsingTemplate(out AData, ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
+        }
+
+        /// this method is called by all overloads
         public static int CountAll(TDBTransaction ATransaction)
         {
             return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar("SELECT COUNT(*) FROM PUB_s_selected_output_destination", ATransaction, false));
@@ -9777,6 +13480,13 @@ namespace Ict.Petra.Shared.MSysMan.Data.Access
         public static int CountUsingTemplate(SSelectedOutputDestinationRow ATemplateRow, StringCollection ATemplateOperators, TDBTransaction ATransaction)
         {
             return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_s_selected_output_destination" + GenerateWhereClause(SSelectedOutputDestinationTable.GetColumnStringList(), ATemplateRow, ATemplateOperators)), ATransaction, false, GetParametersForWhereClause(ATemplateRow)));
+        }
+
+        /// this method is called by all overloads
+        public static int CountUsingTemplate(TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        {
+            return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_s_selected_output_destination" + GenerateWhereClause(SSelectedOutputDestinationTable.GetColumnStringList(), ASearchCriteria)), ATransaction, false,
+            GetParametersForWhereClause(new SSelectedOutputDestinationTable(), ASearchCriteria)));
         }
 
         /// auto generated
@@ -9875,6 +13585,51 @@ namespace Ict.Petra.Shared.MSysMan.Data.Access
         }
 
         /// auto generated
+        public static void LoadViaSUserTemplate(DataSet ADataSet, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        {
+            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClauseLong("PUB_s_selected_output_destination", AFieldList, new string[] {
+                            }) + " FROM PUB_s_selected_output_destination, PUB_s_user WHERE " +
+                            "PUB_s_selected_output_destination.s_user_id_c = PUB_s_user.s_user_id_c")
+                            + GenerateWhereClauseLong("PUB_s_user", SUserTable.GetColumnStringList(), ASearchCriteria))
+                            + GenerateOrderByClause(AOrderBy)), SSelectedOutputDestinationTable.GetTableName(), ATransaction,
+                            GetParametersForWhereClause(new SSelectedOutputDestinationTable(), ASearchCriteria), AStartRecord, AMaxRecords);
+        }
+
+        /// auto generated
+        public static void LoadViaSUserTemplate(DataSet AData, TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        {
+            LoadViaSUserTemplate(AData, ASearchCriteria, null, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static void LoadViaSUserTemplate(DataSet AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
+        {
+            LoadViaSUserTemplate(AData, ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static void LoadViaSUserTemplate(out SSelectedOutputDestinationTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        {
+            DataSet FillDataSet = new DataSet();
+            AData = new SSelectedOutputDestinationTable();
+            FillDataSet.Tables.Add(AData);
+            LoadViaSUserTemplate(FillDataSet, ASearchCriteria, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            FillDataSet.Tables.Remove(AData);
+        }
+
+        /// auto generated
+        public static void LoadViaSUserTemplate(out SSelectedOutputDestinationTable AData, TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        {
+            LoadViaSUserTemplate(out AData, ASearchCriteria, null, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static void LoadViaSUserTemplate(out SSelectedOutputDestinationTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
+        {
+            LoadViaSUserTemplate(out AData, ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
         public static int CountViaSUser(String AUserId, TDBTransaction ATransaction)
         {
             OdbcParameter[] ParametersArray = new OdbcParameter[1];
@@ -9888,6 +13643,15 @@ namespace Ict.Petra.Shared.MSysMan.Data.Access
         {
             return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_s_selected_output_destination, PUB_s_user WHERE " +
                 "PUB_s_selected_output_destination.s_user_id_c = PUB_s_user.s_user_id_c" + GenerateWhereClauseLong("PUB_s_user", SUserTable.GetColumnStringList(), ATemplateRow, ATemplateOperators)), ATransaction, false, GetParametersForWhereClause(ATemplateRow, SUserTable.GetPrimKeyColumnOrdList())));
+        }
+
+        /// auto generated
+        public static int CountViaSUserTemplate(TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        {
+            return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_s_selected_output_destination, PUB_s_user WHERE " +
+                "PUB_s_selected_output_destination.s_user_id_c = PUB_s_user.s_user_id_c" +
+                GenerateWhereClauseLong("PUB_s_user", SUserTable.GetColumnStringList(), ASearchCriteria)), ATransaction, false,
+                GetParametersForWhereClause(new SUserTable(), ASearchCriteria)));
         }
 
         /// auto generated
@@ -9986,6 +13750,51 @@ namespace Ict.Petra.Shared.MSysMan.Data.Access
         }
 
         /// auto generated
+        public static void LoadViaSModuleTemplate(DataSet ADataSet, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        {
+            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClauseLong("PUB_s_selected_output_destination", AFieldList, new string[] {
+                            }) + " FROM PUB_s_selected_output_destination, PUB_s_module WHERE " +
+                            "PUB_s_selected_output_destination.s_module_id_c = PUB_s_module.s_module_id_c")
+                            + GenerateWhereClauseLong("PUB_s_module", SModuleTable.GetColumnStringList(), ASearchCriteria))
+                            + GenerateOrderByClause(AOrderBy)), SSelectedOutputDestinationTable.GetTableName(), ATransaction,
+                            GetParametersForWhereClause(new SSelectedOutputDestinationTable(), ASearchCriteria), AStartRecord, AMaxRecords);
+        }
+
+        /// auto generated
+        public static void LoadViaSModuleTemplate(DataSet AData, TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        {
+            LoadViaSModuleTemplate(AData, ASearchCriteria, null, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static void LoadViaSModuleTemplate(DataSet AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
+        {
+            LoadViaSModuleTemplate(AData, ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static void LoadViaSModuleTemplate(out SSelectedOutputDestinationTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        {
+            DataSet FillDataSet = new DataSet();
+            AData = new SSelectedOutputDestinationTable();
+            FillDataSet.Tables.Add(AData);
+            LoadViaSModuleTemplate(FillDataSet, ASearchCriteria, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            FillDataSet.Tables.Remove(AData);
+        }
+
+        /// auto generated
+        public static void LoadViaSModuleTemplate(out SSelectedOutputDestinationTable AData, TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        {
+            LoadViaSModuleTemplate(out AData, ASearchCriteria, null, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static void LoadViaSModuleTemplate(out SSelectedOutputDestinationTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
+        {
+            LoadViaSModuleTemplate(out AData, ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
         public static int CountViaSModule(String AModuleId, TDBTransaction ATransaction)
         {
             OdbcParameter[] ParametersArray = new OdbcParameter[1];
@@ -10002,9 +13811,26 @@ namespace Ict.Petra.Shared.MSysMan.Data.Access
         }
 
         /// auto generated
+        public static int CountViaSModuleTemplate(TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        {
+            return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_s_selected_output_destination, PUB_s_module WHERE " +
+                "PUB_s_selected_output_destination.s_module_id_c = PUB_s_module.s_module_id_c" +
+                GenerateWhereClauseLong("PUB_s_module", SModuleTable.GetColumnStringList(), ASearchCriteria)), ATransaction, false,
+                GetParametersForWhereClause(new SModuleTable(), ASearchCriteria)));
+        }
+
+        /// auto generated
         public static void DeleteUsingTemplate(SSelectedOutputDestinationRow ATemplateRow, StringCollection ATemplateOperators, TDBTransaction ATransaction)
         {
             DBAccess.GDBAccessObj.ExecuteNonQuery(("DELETE FROM PUB_s_selected_output_destination" + GenerateWhereClause(SSelectedOutputDestinationTable.GetColumnStringList(), ATemplateRow, ATemplateOperators)), ATransaction, false, GetParametersForWhereClause(ATemplateRow));
+        }
+
+        /// auto generated
+        public static void DeleteUsingTemplate(TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        {
+            DBAccess.GDBAccessObj.ExecuteNonQuery(("DELETE FROM PUB_s_selected_output_destination" +
+                GenerateWhereClause(SSelectedOutputDestinationTable.GetColumnStringList(), ASearchCriteria)), ATransaction, false,
+                GetParametersForWhereClause(new SSelectedOutputDestinationTable(), ASearchCriteria));
         }
 
         /// auto generated
@@ -10195,6 +14021,50 @@ namespace Ict.Petra.Shared.MSysMan.Data.Access
         }
 
         /// this method is called by all overloads
+        public static void LoadUsingTemplate(DataSet ADataSet, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        {
+            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClause(AFieldList, new string[] {
+                            "s_user_id_c"}) + " FROM PUB_s_system_status")
+                            + GenerateWhereClause(SSystemStatusTable.GetColumnStringList(), ASearchCriteria))
+                            + GenerateOrderByClause(AOrderBy)), SSystemStatusTable.GetTableName(), ATransaction,
+                            GetParametersForWhereClause(new SSystemStatusTable(), ASearchCriteria), AStartRecord, AMaxRecords);
+        }
+
+        /// auto generated
+        public static void LoadUsingTemplate(DataSet AData, TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        {
+            LoadUsingTemplate(AData, ASearchCriteria, null, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static void LoadUsingTemplate(DataSet AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
+        {
+            LoadUsingTemplate(AData, ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static void LoadUsingTemplate(out SSystemStatusTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        {
+            DataSet FillDataSet = new DataSet();
+            AData = new SSystemStatusTable();
+            FillDataSet.Tables.Add(AData);
+            LoadUsingTemplate(FillDataSet, ASearchCriteria, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            FillDataSet.Tables.Remove(AData);
+        }
+
+        /// auto generated
+        public static void LoadUsingTemplate(out SSystemStatusTable AData, TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        {
+            LoadUsingTemplate(out AData, ASearchCriteria, null, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static void LoadUsingTemplate(out SSystemStatusTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
+        {
+            LoadUsingTemplate(out AData, ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
+        }
+
+        /// this method is called by all overloads
         public static int CountAll(TDBTransaction ATransaction)
         {
             return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar("SELECT COUNT(*) FROM PUB_s_system_status", ATransaction, false));
@@ -10213,6 +14083,13 @@ namespace Ict.Petra.Shared.MSysMan.Data.Access
         public static int CountUsingTemplate(SSystemStatusRow ATemplateRow, StringCollection ATemplateOperators, TDBTransaction ATransaction)
         {
             return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_s_system_status" + GenerateWhereClause(SSystemStatusTable.GetColumnStringList(), ATemplateRow, ATemplateOperators)), ATransaction, false, GetParametersForWhereClause(ATemplateRow)));
+        }
+
+        /// this method is called by all overloads
+        public static int CountUsingTemplate(TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        {
+            return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_s_system_status" + GenerateWhereClause(SSystemStatusTable.GetColumnStringList(), ASearchCriteria)), ATransaction, false,
+            GetParametersForWhereClause(new SSystemStatusTable(), ASearchCriteria)));
         }
 
         /// auto generated
@@ -10311,6 +14188,51 @@ namespace Ict.Petra.Shared.MSysMan.Data.Access
         }
 
         /// auto generated
+        public static void LoadViaSUserTemplate(DataSet ADataSet, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        {
+            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClauseLong("PUB_s_system_status", AFieldList, new string[] {
+                            "s_user_id_c"}) + " FROM PUB_s_system_status, PUB_s_user WHERE " +
+                            "PUB_s_system_status.s_user_id_c = PUB_s_user.s_user_id_c")
+                            + GenerateWhereClauseLong("PUB_s_user", SUserTable.GetColumnStringList(), ASearchCriteria))
+                            + GenerateOrderByClause(AOrderBy)), SSystemStatusTable.GetTableName(), ATransaction,
+                            GetParametersForWhereClause(new SSystemStatusTable(), ASearchCriteria), AStartRecord, AMaxRecords);
+        }
+
+        /// auto generated
+        public static void LoadViaSUserTemplate(DataSet AData, TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        {
+            LoadViaSUserTemplate(AData, ASearchCriteria, null, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static void LoadViaSUserTemplate(DataSet AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
+        {
+            LoadViaSUserTemplate(AData, ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static void LoadViaSUserTemplate(out SSystemStatusTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        {
+            DataSet FillDataSet = new DataSet();
+            AData = new SSystemStatusTable();
+            FillDataSet.Tables.Add(AData);
+            LoadViaSUserTemplate(FillDataSet, ASearchCriteria, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            FillDataSet.Tables.Remove(AData);
+        }
+
+        /// auto generated
+        public static void LoadViaSUserTemplate(out SSystemStatusTable AData, TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        {
+            LoadViaSUserTemplate(out AData, ASearchCriteria, null, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static void LoadViaSUserTemplate(out SSystemStatusTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
+        {
+            LoadViaSUserTemplate(out AData, ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
         public static int CountViaSUser(String AUserId, TDBTransaction ATransaction)
         {
             OdbcParameter[] ParametersArray = new OdbcParameter[1];
@@ -10327,6 +14249,15 @@ namespace Ict.Petra.Shared.MSysMan.Data.Access
         }
 
         /// auto generated
+        public static int CountViaSUserTemplate(TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        {
+            return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_s_system_status, PUB_s_user WHERE " +
+                "PUB_s_system_status.s_user_id_c = PUB_s_user.s_user_id_c" +
+                GenerateWhereClauseLong("PUB_s_user", SUserTable.GetColumnStringList(), ASearchCriteria)), ATransaction, false,
+                GetParametersForWhereClause(new SUserTable(), ASearchCriteria)));
+        }
+
+        /// auto generated
         public static void DeleteByPrimaryKey(String AUserId, TDBTransaction ATransaction)
         {
             OdbcParameter[] ParametersArray = new OdbcParameter[1];
@@ -10339,6 +14270,14 @@ namespace Ict.Petra.Shared.MSysMan.Data.Access
         public static void DeleteUsingTemplate(SSystemStatusRow ATemplateRow, StringCollection ATemplateOperators, TDBTransaction ATransaction)
         {
             DBAccess.GDBAccessObj.ExecuteNonQuery(("DELETE FROM PUB_s_system_status" + GenerateWhereClause(SSystemStatusTable.GetColumnStringList(), ATemplateRow, ATemplateOperators)), ATransaction, false, GetParametersForWhereClause(ATemplateRow));
+        }
+
+        /// auto generated
+        public static void DeleteUsingTemplate(TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        {
+            DBAccess.GDBAccessObj.ExecuteNonQuery(("DELETE FROM PUB_s_system_status" +
+                GenerateWhereClause(SSystemStatusTable.GetColumnStringList(), ASearchCriteria)), ATransaction, false,
+                GetParametersForWhereClause(new SSystemStatusTable(), ASearchCriteria));
         }
 
         /// auto generated
@@ -10482,6 +14421,50 @@ namespace Ict.Petra.Shared.MSysMan.Data.Access
         }
 
         /// this method is called by all overloads
+        public static void LoadUsingTemplate(DataSet ADataSet, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        {
+            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClause(AFieldList, new string[] {
+                            }) + " FROM PUB_s_system_status_log")
+                            + GenerateWhereClause(SSystemStatusLogTable.GetColumnStringList(), ASearchCriteria))
+                            + GenerateOrderByClause(AOrderBy)), SSystemStatusLogTable.GetTableName(), ATransaction,
+                            GetParametersForWhereClause(new SSystemStatusLogTable(), ASearchCriteria), AStartRecord, AMaxRecords);
+        }
+
+        /// auto generated
+        public static void LoadUsingTemplate(DataSet AData, TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        {
+            LoadUsingTemplate(AData, ASearchCriteria, null, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static void LoadUsingTemplate(DataSet AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
+        {
+            LoadUsingTemplate(AData, ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static void LoadUsingTemplate(out SSystemStatusLogTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        {
+            DataSet FillDataSet = new DataSet();
+            AData = new SSystemStatusLogTable();
+            FillDataSet.Tables.Add(AData);
+            LoadUsingTemplate(FillDataSet, ASearchCriteria, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            FillDataSet.Tables.Remove(AData);
+        }
+
+        /// auto generated
+        public static void LoadUsingTemplate(out SSystemStatusLogTable AData, TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        {
+            LoadUsingTemplate(out AData, ASearchCriteria, null, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static void LoadUsingTemplate(out SSystemStatusLogTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
+        {
+            LoadUsingTemplate(out AData, ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
+        }
+
+        /// this method is called by all overloads
         public static int CountAll(TDBTransaction ATransaction)
         {
             return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar("SELECT COUNT(*) FROM PUB_s_system_status_log", ATransaction, false));
@@ -10491,6 +14474,13 @@ namespace Ict.Petra.Shared.MSysMan.Data.Access
         public static int CountUsingTemplate(SSystemStatusLogRow ATemplateRow, StringCollection ATemplateOperators, TDBTransaction ATransaction)
         {
             return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_s_system_status_log" + GenerateWhereClause(SSystemStatusLogTable.GetColumnStringList(), ATemplateRow, ATemplateOperators)), ATransaction, false, GetParametersForWhereClause(ATemplateRow)));
+        }
+
+        /// this method is called by all overloads
+        public static int CountUsingTemplate(TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        {
+            return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_s_system_status_log" + GenerateWhereClause(SSystemStatusLogTable.GetColumnStringList(), ASearchCriteria)), ATransaction, false,
+            GetParametersForWhereClause(new SSystemStatusLogTable(), ASearchCriteria)));
         }
 
         /// auto generated
@@ -10589,6 +14579,51 @@ namespace Ict.Petra.Shared.MSysMan.Data.Access
         }
 
         /// auto generated
+        public static void LoadViaSUserTemplate(DataSet ADataSet, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        {
+            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClauseLong("PUB_s_system_status_log", AFieldList, new string[] {
+                            }) + " FROM PUB_s_system_status_log, PUB_s_user WHERE " +
+                            "PUB_s_system_status_log.s_user_id_c = PUB_s_user.s_user_id_c")
+                            + GenerateWhereClauseLong("PUB_s_user", SUserTable.GetColumnStringList(), ASearchCriteria))
+                            + GenerateOrderByClause(AOrderBy)), SSystemStatusLogTable.GetTableName(), ATransaction,
+                            GetParametersForWhereClause(new SSystemStatusLogTable(), ASearchCriteria), AStartRecord, AMaxRecords);
+        }
+
+        /// auto generated
+        public static void LoadViaSUserTemplate(DataSet AData, TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        {
+            LoadViaSUserTemplate(AData, ASearchCriteria, null, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static void LoadViaSUserTemplate(DataSet AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
+        {
+            LoadViaSUserTemplate(AData, ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static void LoadViaSUserTemplate(out SSystemStatusLogTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        {
+            DataSet FillDataSet = new DataSet();
+            AData = new SSystemStatusLogTable();
+            FillDataSet.Tables.Add(AData);
+            LoadViaSUserTemplate(FillDataSet, ASearchCriteria, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            FillDataSet.Tables.Remove(AData);
+        }
+
+        /// auto generated
+        public static void LoadViaSUserTemplate(out SSystemStatusLogTable AData, TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        {
+            LoadViaSUserTemplate(out AData, ASearchCriteria, null, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static void LoadViaSUserTemplate(out SSystemStatusLogTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
+        {
+            LoadViaSUserTemplate(out AData, ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
         public static int CountViaSUser(String AUserId, TDBTransaction ATransaction)
         {
             OdbcParameter[] ParametersArray = new OdbcParameter[1];
@@ -10605,9 +14640,26 @@ namespace Ict.Petra.Shared.MSysMan.Data.Access
         }
 
         /// auto generated
+        public static int CountViaSUserTemplate(TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        {
+            return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_s_system_status_log, PUB_s_user WHERE " +
+                "PUB_s_system_status_log.s_user_id_c = PUB_s_user.s_user_id_c" +
+                GenerateWhereClauseLong("PUB_s_user", SUserTable.GetColumnStringList(), ASearchCriteria)), ATransaction, false,
+                GetParametersForWhereClause(new SUserTable(), ASearchCriteria)));
+        }
+
+        /// auto generated
         public static void DeleteUsingTemplate(SSystemStatusLogRow ATemplateRow, StringCollection ATemplateOperators, TDBTransaction ATransaction)
         {
             DBAccess.GDBAccessObj.ExecuteNonQuery(("DELETE FROM PUB_s_system_status_log" + GenerateWhereClause(SSystemStatusLogTable.GetColumnStringList(), ATemplateRow, ATemplateOperators)), ATransaction, false, GetParametersForWhereClause(ATemplateRow));
+        }
+
+        /// auto generated
+        public static void DeleteUsingTemplate(TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        {
+            DBAccess.GDBAccessObj.ExecuteNonQuery(("DELETE FROM PUB_s_system_status_log" +
+                GenerateWhereClause(SSystemStatusLogTable.GetColumnStringList(), ASearchCriteria)), ATransaction, false,
+                GetParametersForWhereClause(new SSystemStatusLogTable(), ASearchCriteria));
         }
 
         /// auto generated
@@ -10800,6 +14852,50 @@ namespace Ict.Petra.Shared.MSysMan.Data.Access
         }
 
         /// this method is called by all overloads
+        public static void LoadUsingTemplate(DataSet ADataSet, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        {
+            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClause(AFieldList, new string[] {
+                            "s_user_id_c", "s_default_code_c"}) + " FROM PUB_s_user_defaults")
+                            + GenerateWhereClause(SUserDefaultsTable.GetColumnStringList(), ASearchCriteria))
+                            + GenerateOrderByClause(AOrderBy)), SUserDefaultsTable.GetTableName(), ATransaction,
+                            GetParametersForWhereClause(new SUserDefaultsTable(), ASearchCriteria), AStartRecord, AMaxRecords);
+        }
+
+        /// auto generated
+        public static void LoadUsingTemplate(DataSet AData, TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        {
+            LoadUsingTemplate(AData, ASearchCriteria, null, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static void LoadUsingTemplate(DataSet AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
+        {
+            LoadUsingTemplate(AData, ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static void LoadUsingTemplate(out SUserDefaultsTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        {
+            DataSet FillDataSet = new DataSet();
+            AData = new SUserDefaultsTable();
+            FillDataSet.Tables.Add(AData);
+            LoadUsingTemplate(FillDataSet, ASearchCriteria, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            FillDataSet.Tables.Remove(AData);
+        }
+
+        /// auto generated
+        public static void LoadUsingTemplate(out SUserDefaultsTable AData, TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        {
+            LoadUsingTemplate(out AData, ASearchCriteria, null, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static void LoadUsingTemplate(out SUserDefaultsTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
+        {
+            LoadUsingTemplate(out AData, ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
+        }
+
+        /// this method is called by all overloads
         public static int CountAll(TDBTransaction ATransaction)
         {
             return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar("SELECT COUNT(*) FROM PUB_s_user_defaults", ATransaction, false));
@@ -10820,6 +14916,13 @@ namespace Ict.Petra.Shared.MSysMan.Data.Access
         public static int CountUsingTemplate(SUserDefaultsRow ATemplateRow, StringCollection ATemplateOperators, TDBTransaction ATransaction)
         {
             return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_s_user_defaults" + GenerateWhereClause(SUserDefaultsTable.GetColumnStringList(), ATemplateRow, ATemplateOperators)), ATransaction, false, GetParametersForWhereClause(ATemplateRow)));
+        }
+
+        /// this method is called by all overloads
+        public static int CountUsingTemplate(TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        {
+            return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_s_user_defaults" + GenerateWhereClause(SUserDefaultsTable.GetColumnStringList(), ASearchCriteria)), ATransaction, false,
+            GetParametersForWhereClause(new SUserDefaultsTable(), ASearchCriteria)));
         }
 
         /// auto generated
@@ -10918,6 +15021,51 @@ namespace Ict.Petra.Shared.MSysMan.Data.Access
         }
 
         /// auto generated
+        public static void LoadViaSUserTemplate(DataSet ADataSet, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        {
+            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClauseLong("PUB_s_user_defaults", AFieldList, new string[] {
+                            "s_user_id_c", "s_default_code_c"}) + " FROM PUB_s_user_defaults, PUB_s_user WHERE " +
+                            "PUB_s_user_defaults.s_user_id_c = PUB_s_user.s_user_id_c")
+                            + GenerateWhereClauseLong("PUB_s_user", SUserTable.GetColumnStringList(), ASearchCriteria))
+                            + GenerateOrderByClause(AOrderBy)), SUserDefaultsTable.GetTableName(), ATransaction,
+                            GetParametersForWhereClause(new SUserDefaultsTable(), ASearchCriteria), AStartRecord, AMaxRecords);
+        }
+
+        /// auto generated
+        public static void LoadViaSUserTemplate(DataSet AData, TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        {
+            LoadViaSUserTemplate(AData, ASearchCriteria, null, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static void LoadViaSUserTemplate(DataSet AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
+        {
+            LoadViaSUserTemplate(AData, ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static void LoadViaSUserTemplate(out SUserDefaultsTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        {
+            DataSet FillDataSet = new DataSet();
+            AData = new SUserDefaultsTable();
+            FillDataSet.Tables.Add(AData);
+            LoadViaSUserTemplate(FillDataSet, ASearchCriteria, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            FillDataSet.Tables.Remove(AData);
+        }
+
+        /// auto generated
+        public static void LoadViaSUserTemplate(out SUserDefaultsTable AData, TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        {
+            LoadViaSUserTemplate(out AData, ASearchCriteria, null, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static void LoadViaSUserTemplate(out SUserDefaultsTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
+        {
+            LoadViaSUserTemplate(out AData, ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
         public static int CountViaSUser(String AUserId, TDBTransaction ATransaction)
         {
             OdbcParameter[] ParametersArray = new OdbcParameter[1];
@@ -10931,6 +15079,15 @@ namespace Ict.Petra.Shared.MSysMan.Data.Access
         {
             return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_s_user_defaults, PUB_s_user WHERE " +
                 "PUB_s_user_defaults.s_user_id_c = PUB_s_user.s_user_id_c" + GenerateWhereClauseLong("PUB_s_user", SUserTable.GetColumnStringList(), ATemplateRow, ATemplateOperators)), ATransaction, false, GetParametersForWhereClause(ATemplateRow, SUserTable.GetPrimKeyColumnOrdList())));
+        }
+
+        /// auto generated
+        public static int CountViaSUserTemplate(TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        {
+            return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_s_user_defaults, PUB_s_user WHERE " +
+                "PUB_s_user_defaults.s_user_id_c = PUB_s_user.s_user_id_c" +
+                GenerateWhereClauseLong("PUB_s_user", SUserTable.GetColumnStringList(), ASearchCriteria)), ATransaction, false,
+                GetParametersForWhereClause(new SUserTable(), ASearchCriteria)));
         }
 
         /// auto generated
@@ -10948,6 +15105,14 @@ namespace Ict.Petra.Shared.MSysMan.Data.Access
         public static void DeleteUsingTemplate(SUserDefaultsRow ATemplateRow, StringCollection ATemplateOperators, TDBTransaction ATransaction)
         {
             DBAccess.GDBAccessObj.ExecuteNonQuery(("DELETE FROM PUB_s_user_defaults" + GenerateWhereClause(SUserDefaultsTable.GetColumnStringList(), ATemplateRow, ATemplateOperators)), ATransaction, false, GetParametersForWhereClause(ATemplateRow));
+        }
+
+        /// auto generated
+        public static void DeleteUsingTemplate(TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        {
+            DBAccess.GDBAccessObj.ExecuteNonQuery(("DELETE FROM PUB_s_user_defaults" +
+                GenerateWhereClause(SUserDefaultsTable.GetColumnStringList(), ASearchCriteria)), ATransaction, false,
+                GetParametersForWhereClause(new SUserDefaultsTable(), ASearchCriteria));
         }
 
         /// auto generated
@@ -11136,6 +15301,50 @@ namespace Ict.Petra.Shared.MSysMan.Data.Access
         }
 
         /// this method is called by all overloads
+        public static void LoadUsingTemplate(DataSet ADataSet, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        {
+            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClause(AFieldList, new string[] {
+                            "s_default_code_c"}) + " FROM PUB_s_system_defaults")
+                            + GenerateWhereClause(SSystemDefaultsTable.GetColumnStringList(), ASearchCriteria))
+                            + GenerateOrderByClause(AOrderBy)), SSystemDefaultsTable.GetTableName(), ATransaction,
+                            GetParametersForWhereClause(new SSystemDefaultsTable(), ASearchCriteria), AStartRecord, AMaxRecords);
+        }
+
+        /// auto generated
+        public static void LoadUsingTemplate(DataSet AData, TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        {
+            LoadUsingTemplate(AData, ASearchCriteria, null, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static void LoadUsingTemplate(DataSet AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
+        {
+            LoadUsingTemplate(AData, ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static void LoadUsingTemplate(out SSystemDefaultsTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        {
+            DataSet FillDataSet = new DataSet();
+            AData = new SSystemDefaultsTable();
+            FillDataSet.Tables.Add(AData);
+            LoadUsingTemplate(FillDataSet, ASearchCriteria, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            FillDataSet.Tables.Remove(AData);
+        }
+
+        /// auto generated
+        public static void LoadUsingTemplate(out SSystemDefaultsTable AData, TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        {
+            LoadUsingTemplate(out AData, ASearchCriteria, null, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static void LoadUsingTemplate(out SSystemDefaultsTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
+        {
+            LoadUsingTemplate(out AData, ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
+        }
+
+        /// this method is called by all overloads
         public static int CountAll(TDBTransaction ATransaction)
         {
             return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar("SELECT COUNT(*) FROM PUB_s_system_defaults", ATransaction, false));
@@ -11156,6 +15365,13 @@ namespace Ict.Petra.Shared.MSysMan.Data.Access
             return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_s_system_defaults" + GenerateWhereClause(SSystemDefaultsTable.GetColumnStringList(), ATemplateRow, ATemplateOperators)), ATransaction, false, GetParametersForWhereClause(ATemplateRow)));
         }
 
+        /// this method is called by all overloads
+        public static int CountUsingTemplate(TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        {
+            return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_s_system_defaults" + GenerateWhereClause(SSystemDefaultsTable.GetColumnStringList(), ASearchCriteria)), ATransaction, false,
+            GetParametersForWhereClause(new SSystemDefaultsTable(), ASearchCriteria)));
+        }
+
         /// auto generated
         public static void DeleteByPrimaryKey(String ADefaultCode, TDBTransaction ATransaction)
         {
@@ -11169,6 +15385,14 @@ namespace Ict.Petra.Shared.MSysMan.Data.Access
         public static void DeleteUsingTemplate(SSystemDefaultsRow ATemplateRow, StringCollection ATemplateOperators, TDBTransaction ATransaction)
         {
             DBAccess.GDBAccessObj.ExecuteNonQuery(("DELETE FROM PUB_s_system_defaults" + GenerateWhereClause(SSystemDefaultsTable.GetColumnStringList(), ATemplateRow, ATemplateOperators)), ATransaction, false, GetParametersForWhereClause(ATemplateRow));
+        }
+
+        /// auto generated
+        public static void DeleteUsingTemplate(TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        {
+            DBAccess.GDBAccessObj.ExecuteNonQuery(("DELETE FROM PUB_s_system_defaults" +
+                GenerateWhereClause(SSystemDefaultsTable.GetColumnStringList(), ASearchCriteria)), ATransaction, false,
+                GetParametersForWhereClause(new SSystemDefaultsTable(), ASearchCriteria));
         }
 
         /// auto generated
@@ -11363,6 +15587,50 @@ namespace Ict.Petra.Shared.MSysMan.Data.Access
         }
 
         /// this method is called by all overloads
+        public static void LoadUsingTemplate(DataSet ADataSet, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        {
+            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClause(AFieldList, new string[] {
+                            "s_file_name_c", "s_user_id_c", "s_date_submitted_d", "s_time_submitted_i"}) + " FROM PUB_s_batch_job")
+                            + GenerateWhereClause(SBatchJobTable.GetColumnStringList(), ASearchCriteria))
+                            + GenerateOrderByClause(AOrderBy)), SBatchJobTable.GetTableName(), ATransaction,
+                            GetParametersForWhereClause(new SBatchJobTable(), ASearchCriteria), AStartRecord, AMaxRecords);
+        }
+
+        /// auto generated
+        public static void LoadUsingTemplate(DataSet AData, TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        {
+            LoadUsingTemplate(AData, ASearchCriteria, null, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static void LoadUsingTemplate(DataSet AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
+        {
+            LoadUsingTemplate(AData, ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static void LoadUsingTemplate(out SBatchJobTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        {
+            DataSet FillDataSet = new DataSet();
+            AData = new SBatchJobTable();
+            FillDataSet.Tables.Add(AData);
+            LoadUsingTemplate(FillDataSet, ASearchCriteria, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            FillDataSet.Tables.Remove(AData);
+        }
+
+        /// auto generated
+        public static void LoadUsingTemplate(out SBatchJobTable AData, TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        {
+            LoadUsingTemplate(out AData, ASearchCriteria, null, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static void LoadUsingTemplate(out SBatchJobTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
+        {
+            LoadUsingTemplate(out AData, ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
+        }
+
+        /// this method is called by all overloads
         public static int CountAll(TDBTransaction ATransaction)
         {
             return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar("SELECT COUNT(*) FROM PUB_s_batch_job", ATransaction, false));
@@ -11387,6 +15655,13 @@ namespace Ict.Petra.Shared.MSysMan.Data.Access
         public static int CountUsingTemplate(SBatchJobRow ATemplateRow, StringCollection ATemplateOperators, TDBTransaction ATransaction)
         {
             return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_s_batch_job" + GenerateWhereClause(SBatchJobTable.GetColumnStringList(), ATemplateRow, ATemplateOperators)), ATransaction, false, GetParametersForWhereClause(ATemplateRow)));
+        }
+
+        /// this method is called by all overloads
+        public static int CountUsingTemplate(TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        {
+            return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_s_batch_job" + GenerateWhereClause(SBatchJobTable.GetColumnStringList(), ASearchCriteria)), ATransaction, false,
+            GetParametersForWhereClause(new SBatchJobTable(), ASearchCriteria)));
         }
 
         /// auto generated
@@ -11485,6 +15760,51 @@ namespace Ict.Petra.Shared.MSysMan.Data.Access
         }
 
         /// auto generated
+        public static void LoadViaSFileTemplate(DataSet ADataSet, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        {
+            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClauseLong("PUB_s_batch_job", AFieldList, new string[] {
+                            "s_file_name_c", "s_user_id_c", "s_date_submitted_d", "s_time_submitted_i"}) + " FROM PUB_s_batch_job, PUB_s_file WHERE " +
+                            "PUB_s_batch_job.s_file_name_c = PUB_s_file.s_file_name_c")
+                            + GenerateWhereClauseLong("PUB_s_file", SFileTable.GetColumnStringList(), ASearchCriteria))
+                            + GenerateOrderByClause(AOrderBy)), SBatchJobTable.GetTableName(), ATransaction,
+                            GetParametersForWhereClause(new SBatchJobTable(), ASearchCriteria), AStartRecord, AMaxRecords);
+        }
+
+        /// auto generated
+        public static void LoadViaSFileTemplate(DataSet AData, TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        {
+            LoadViaSFileTemplate(AData, ASearchCriteria, null, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static void LoadViaSFileTemplate(DataSet AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
+        {
+            LoadViaSFileTemplate(AData, ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static void LoadViaSFileTemplate(out SBatchJobTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        {
+            DataSet FillDataSet = new DataSet();
+            AData = new SBatchJobTable();
+            FillDataSet.Tables.Add(AData);
+            LoadViaSFileTemplate(FillDataSet, ASearchCriteria, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            FillDataSet.Tables.Remove(AData);
+        }
+
+        /// auto generated
+        public static void LoadViaSFileTemplate(out SBatchJobTable AData, TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        {
+            LoadViaSFileTemplate(out AData, ASearchCriteria, null, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static void LoadViaSFileTemplate(out SBatchJobTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
+        {
+            LoadViaSFileTemplate(out AData, ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
         public static int CountViaSFile(String AFileName, TDBTransaction ATransaction)
         {
             OdbcParameter[] ParametersArray = new OdbcParameter[1];
@@ -11498,6 +15818,15 @@ namespace Ict.Petra.Shared.MSysMan.Data.Access
         {
             return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_s_batch_job, PUB_s_file WHERE " +
                 "PUB_s_batch_job.s_file_name_c = PUB_s_file.s_file_name_c" + GenerateWhereClauseLong("PUB_s_file", SFileTable.GetColumnStringList(), ATemplateRow, ATemplateOperators)), ATransaction, false, GetParametersForWhereClause(ATemplateRow, SFileTable.GetPrimKeyColumnOrdList())));
+        }
+
+        /// auto generated
+        public static int CountViaSFileTemplate(TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        {
+            return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_s_batch_job, PUB_s_file WHERE " +
+                "PUB_s_batch_job.s_file_name_c = PUB_s_file.s_file_name_c" +
+                GenerateWhereClauseLong("PUB_s_file", SFileTable.GetColumnStringList(), ASearchCriteria)), ATransaction, false,
+                GetParametersForWhereClause(new SFileTable(), ASearchCriteria)));
         }
 
         /// auto generated
@@ -11596,6 +15925,51 @@ namespace Ict.Petra.Shared.MSysMan.Data.Access
         }
 
         /// auto generated
+        public static void LoadViaSUserTemplate(DataSet ADataSet, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        {
+            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClauseLong("PUB_s_batch_job", AFieldList, new string[] {
+                            "s_file_name_c", "s_user_id_c", "s_date_submitted_d", "s_time_submitted_i"}) + " FROM PUB_s_batch_job, PUB_s_user WHERE " +
+                            "PUB_s_batch_job.s_user_id_c = PUB_s_user.s_user_id_c")
+                            + GenerateWhereClauseLong("PUB_s_user", SUserTable.GetColumnStringList(), ASearchCriteria))
+                            + GenerateOrderByClause(AOrderBy)), SBatchJobTable.GetTableName(), ATransaction,
+                            GetParametersForWhereClause(new SBatchJobTable(), ASearchCriteria), AStartRecord, AMaxRecords);
+        }
+
+        /// auto generated
+        public static void LoadViaSUserTemplate(DataSet AData, TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        {
+            LoadViaSUserTemplate(AData, ASearchCriteria, null, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static void LoadViaSUserTemplate(DataSet AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
+        {
+            LoadViaSUserTemplate(AData, ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static void LoadViaSUserTemplate(out SBatchJobTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        {
+            DataSet FillDataSet = new DataSet();
+            AData = new SBatchJobTable();
+            FillDataSet.Tables.Add(AData);
+            LoadViaSUserTemplate(FillDataSet, ASearchCriteria, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            FillDataSet.Tables.Remove(AData);
+        }
+
+        /// auto generated
+        public static void LoadViaSUserTemplate(out SBatchJobTable AData, TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        {
+            LoadViaSUserTemplate(out AData, ASearchCriteria, null, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static void LoadViaSUserTemplate(out SBatchJobTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
+        {
+            LoadViaSUserTemplate(out AData, ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
         public static int CountViaSUser(String AUserId, TDBTransaction ATransaction)
         {
             OdbcParameter[] ParametersArray = new OdbcParameter[1];
@@ -11609,6 +15983,15 @@ namespace Ict.Petra.Shared.MSysMan.Data.Access
         {
             return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_s_batch_job, PUB_s_user WHERE " +
                 "PUB_s_batch_job.s_user_id_c = PUB_s_user.s_user_id_c" + GenerateWhereClauseLong("PUB_s_user", SUserTable.GetColumnStringList(), ATemplateRow, ATemplateOperators)), ATransaction, false, GetParametersForWhereClause(ATemplateRow, SUserTable.GetPrimKeyColumnOrdList())));
+        }
+
+        /// auto generated
+        public static int CountViaSUserTemplate(TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        {
+            return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_s_batch_job, PUB_s_user WHERE " +
+                "PUB_s_batch_job.s_user_id_c = PUB_s_user.s_user_id_c" +
+                GenerateWhereClauseLong("PUB_s_user", SUserTable.GetColumnStringList(), ASearchCriteria)), ATransaction, false,
+                GetParametersForWhereClause(new SUserTable(), ASearchCriteria)));
         }
 
         /// auto generated
@@ -11630,6 +16013,14 @@ namespace Ict.Petra.Shared.MSysMan.Data.Access
         public static void DeleteUsingTemplate(SBatchJobRow ATemplateRow, StringCollection ATemplateOperators, TDBTransaction ATransaction)
         {
             DBAccess.GDBAccessObj.ExecuteNonQuery(("DELETE FROM PUB_s_batch_job" + GenerateWhereClause(SBatchJobTable.GetColumnStringList(), ATemplateRow, ATemplateOperators)), ATransaction, false, GetParametersForWhereClause(ATemplateRow));
+        }
+
+        /// auto generated
+        public static void DeleteUsingTemplate(TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        {
+            DBAccess.GDBAccessObj.ExecuteNonQuery(("DELETE FROM PUB_s_batch_job" +
+                GenerateWhereClause(SBatchJobTable.GetColumnStringList(), ASearchCriteria)), ATransaction, false,
+                GetParametersForWhereClause(new SBatchJobTable(), ASearchCriteria));
         }
 
         /// auto generated
@@ -11820,6 +16211,50 @@ namespace Ict.Petra.Shared.MSysMan.Data.Access
         }
 
         /// this method is called by all overloads
+        public static void LoadUsingTemplate(DataSet ADataSet, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        {
+            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClause(AFieldList, new string[] {
+                            "s_language_code_c", "s_error_code_c"}) + " FROM PUB_s_error_message")
+                            + GenerateWhereClause(SErrorMessageTable.GetColumnStringList(), ASearchCriteria))
+                            + GenerateOrderByClause(AOrderBy)), SErrorMessageTable.GetTableName(), ATransaction,
+                            GetParametersForWhereClause(new SErrorMessageTable(), ASearchCriteria), AStartRecord, AMaxRecords);
+        }
+
+        /// auto generated
+        public static void LoadUsingTemplate(DataSet AData, TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        {
+            LoadUsingTemplate(AData, ASearchCriteria, null, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static void LoadUsingTemplate(DataSet AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
+        {
+            LoadUsingTemplate(AData, ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static void LoadUsingTemplate(out SErrorMessageTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        {
+            DataSet FillDataSet = new DataSet();
+            AData = new SErrorMessageTable();
+            FillDataSet.Tables.Add(AData);
+            LoadUsingTemplate(FillDataSet, ASearchCriteria, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            FillDataSet.Tables.Remove(AData);
+        }
+
+        /// auto generated
+        public static void LoadUsingTemplate(out SErrorMessageTable AData, TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        {
+            LoadUsingTemplate(out AData, ASearchCriteria, null, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static void LoadUsingTemplate(out SErrorMessageTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
+        {
+            LoadUsingTemplate(out AData, ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
+        }
+
+        /// this method is called by all overloads
         public static int CountAll(TDBTransaction ATransaction)
         {
             return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar("SELECT COUNT(*) FROM PUB_s_error_message", ATransaction, false));
@@ -11840,6 +16275,13 @@ namespace Ict.Petra.Shared.MSysMan.Data.Access
         public static int CountUsingTemplate(SErrorMessageRow ATemplateRow, StringCollection ATemplateOperators, TDBTransaction ATransaction)
         {
             return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_s_error_message" + GenerateWhereClause(SErrorMessageTable.GetColumnStringList(), ATemplateRow, ATemplateOperators)), ATransaction, false, GetParametersForWhereClause(ATemplateRow)));
+        }
+
+        /// this method is called by all overloads
+        public static int CountUsingTemplate(TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        {
+            return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_s_error_message" + GenerateWhereClause(SErrorMessageTable.GetColumnStringList(), ASearchCriteria)), ATransaction, false,
+            GetParametersForWhereClause(new SErrorMessageTable(), ASearchCriteria)));
         }
 
         /// auto generated
@@ -11938,6 +16380,51 @@ namespace Ict.Petra.Shared.MSysMan.Data.Access
         }
 
         /// auto generated
+        public static void LoadViaPLanguageTemplate(DataSet ADataSet, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        {
+            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClauseLong("PUB_s_error_message", AFieldList, new string[] {
+                            "s_language_code_c", "s_error_code_c"}) + " FROM PUB_s_error_message, PUB_p_language WHERE " +
+                            "PUB_s_error_message.s_language_code_c = PUB_p_language.p_language_code_c")
+                            + GenerateWhereClauseLong("PUB_p_language", PLanguageTable.GetColumnStringList(), ASearchCriteria))
+                            + GenerateOrderByClause(AOrderBy)), SErrorMessageTable.GetTableName(), ATransaction,
+                            GetParametersForWhereClause(new SErrorMessageTable(), ASearchCriteria), AStartRecord, AMaxRecords);
+        }
+
+        /// auto generated
+        public static void LoadViaPLanguageTemplate(DataSet AData, TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        {
+            LoadViaPLanguageTemplate(AData, ASearchCriteria, null, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static void LoadViaPLanguageTemplate(DataSet AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
+        {
+            LoadViaPLanguageTemplate(AData, ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static void LoadViaPLanguageTemplate(out SErrorMessageTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        {
+            DataSet FillDataSet = new DataSet();
+            AData = new SErrorMessageTable();
+            FillDataSet.Tables.Add(AData);
+            LoadViaPLanguageTemplate(FillDataSet, ASearchCriteria, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            FillDataSet.Tables.Remove(AData);
+        }
+
+        /// auto generated
+        public static void LoadViaPLanguageTemplate(out SErrorMessageTable AData, TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        {
+            LoadViaPLanguageTemplate(out AData, ASearchCriteria, null, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static void LoadViaPLanguageTemplate(out SErrorMessageTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
+        {
+            LoadViaPLanguageTemplate(out AData, ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
         public static int CountViaPLanguage(String ALanguageCode, TDBTransaction ATransaction)
         {
             OdbcParameter[] ParametersArray = new OdbcParameter[1];
@@ -11951,6 +16438,15 @@ namespace Ict.Petra.Shared.MSysMan.Data.Access
         {
             return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_s_error_message, PUB_p_language WHERE " +
                 "PUB_s_error_message.s_language_code_c = PUB_p_language.p_language_code_c" + GenerateWhereClauseLong("PUB_p_language", PLanguageTable.GetColumnStringList(), ATemplateRow, ATemplateOperators)), ATransaction, false, GetParametersForWhereClause(ATemplateRow, PLanguageTable.GetPrimKeyColumnOrdList())));
+        }
+
+        /// auto generated
+        public static int CountViaPLanguageTemplate(TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        {
+            return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_s_error_message, PUB_p_language WHERE " +
+                "PUB_s_error_message.s_language_code_c = PUB_p_language.p_language_code_c" +
+                GenerateWhereClauseLong("PUB_p_language", PLanguageTable.GetColumnStringList(), ASearchCriteria)), ATransaction, false,
+                GetParametersForWhereClause(new PLanguageTable(), ASearchCriteria)));
         }
 
         /// auto generated
@@ -11968,6 +16464,14 @@ namespace Ict.Petra.Shared.MSysMan.Data.Access
         public static void DeleteUsingTemplate(SErrorMessageRow ATemplateRow, StringCollection ATemplateOperators, TDBTransaction ATransaction)
         {
             DBAccess.GDBAccessObj.ExecuteNonQuery(("DELETE FROM PUB_s_error_message" + GenerateWhereClause(SErrorMessageTable.GetColumnStringList(), ATemplateRow, ATemplateOperators)), ATransaction, false, GetParametersForWhereClause(ATemplateRow));
+        }
+
+        /// auto generated
+        public static void DeleteUsingTemplate(TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        {
+            DBAccess.GDBAccessObj.ExecuteNonQuery(("DELETE FROM PUB_s_error_message" +
+                GenerateWhereClause(SErrorMessageTable.GetColumnStringList(), ASearchCriteria)), ATransaction, false,
+                GetParametersForWhereClause(new SErrorMessageTable(), ASearchCriteria));
         }
 
         /// auto generated
@@ -12162,6 +16666,50 @@ namespace Ict.Petra.Shared.MSysMan.Data.Access
         }
 
         /// this method is called by all overloads
+        public static void LoadUsingTemplate(DataSet ADataSet, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        {
+            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClause(AFieldList, new string[] {
+                            "s_error_code_c", "s_user_id_c", "s_date_d", "s_time_i"}) + " FROM PUB_s_error_log")
+                            + GenerateWhereClause(SErrorLogTable.GetColumnStringList(), ASearchCriteria))
+                            + GenerateOrderByClause(AOrderBy)), SErrorLogTable.GetTableName(), ATransaction,
+                            GetParametersForWhereClause(new SErrorLogTable(), ASearchCriteria), AStartRecord, AMaxRecords);
+        }
+
+        /// auto generated
+        public static void LoadUsingTemplate(DataSet AData, TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        {
+            LoadUsingTemplate(AData, ASearchCriteria, null, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static void LoadUsingTemplate(DataSet AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
+        {
+            LoadUsingTemplate(AData, ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static void LoadUsingTemplate(out SErrorLogTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        {
+            DataSet FillDataSet = new DataSet();
+            AData = new SErrorLogTable();
+            FillDataSet.Tables.Add(AData);
+            LoadUsingTemplate(FillDataSet, ASearchCriteria, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            FillDataSet.Tables.Remove(AData);
+        }
+
+        /// auto generated
+        public static void LoadUsingTemplate(out SErrorLogTable AData, TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        {
+            LoadUsingTemplate(out AData, ASearchCriteria, null, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static void LoadUsingTemplate(out SErrorLogTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
+        {
+            LoadUsingTemplate(out AData, ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
+        }
+
+        /// this method is called by all overloads
         public static int CountAll(TDBTransaction ATransaction)
         {
             return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar("SELECT COUNT(*) FROM PUB_s_error_log", ATransaction, false));
@@ -12186,6 +16734,13 @@ namespace Ict.Petra.Shared.MSysMan.Data.Access
         public static int CountUsingTemplate(SErrorLogRow ATemplateRow, StringCollection ATemplateOperators, TDBTransaction ATransaction)
         {
             return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_s_error_log" + GenerateWhereClause(SErrorLogTable.GetColumnStringList(), ATemplateRow, ATemplateOperators)), ATransaction, false, GetParametersForWhereClause(ATemplateRow)));
+        }
+
+        /// this method is called by all overloads
+        public static int CountUsingTemplate(TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        {
+            return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_s_error_log" + GenerateWhereClause(SErrorLogTable.GetColumnStringList(), ASearchCriteria)), ATransaction, false,
+            GetParametersForWhereClause(new SErrorLogTable(), ASearchCriteria)));
         }
 
         /// auto generated
@@ -12284,6 +16839,51 @@ namespace Ict.Petra.Shared.MSysMan.Data.Access
         }
 
         /// auto generated
+        public static void LoadViaSUserTemplate(DataSet ADataSet, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        {
+            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClauseLong("PUB_s_error_log", AFieldList, new string[] {
+                            "s_error_code_c", "s_user_id_c", "s_date_d", "s_time_i"}) + " FROM PUB_s_error_log, PUB_s_user WHERE " +
+                            "PUB_s_error_log.s_user_id_c = PUB_s_user.s_user_id_c")
+                            + GenerateWhereClauseLong("PUB_s_user", SUserTable.GetColumnStringList(), ASearchCriteria))
+                            + GenerateOrderByClause(AOrderBy)), SErrorLogTable.GetTableName(), ATransaction,
+                            GetParametersForWhereClause(new SErrorLogTable(), ASearchCriteria), AStartRecord, AMaxRecords);
+        }
+
+        /// auto generated
+        public static void LoadViaSUserTemplate(DataSet AData, TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        {
+            LoadViaSUserTemplate(AData, ASearchCriteria, null, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static void LoadViaSUserTemplate(DataSet AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
+        {
+            LoadViaSUserTemplate(AData, ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static void LoadViaSUserTemplate(out SErrorLogTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        {
+            DataSet FillDataSet = new DataSet();
+            AData = new SErrorLogTable();
+            FillDataSet.Tables.Add(AData);
+            LoadViaSUserTemplate(FillDataSet, ASearchCriteria, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            FillDataSet.Tables.Remove(AData);
+        }
+
+        /// auto generated
+        public static void LoadViaSUserTemplate(out SErrorLogTable AData, TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        {
+            LoadViaSUserTemplate(out AData, ASearchCriteria, null, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static void LoadViaSUserTemplate(out SErrorLogTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
+        {
+            LoadViaSUserTemplate(out AData, ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
         public static int CountViaSUser(String AUserId, TDBTransaction ATransaction)
         {
             OdbcParameter[] ParametersArray = new OdbcParameter[1];
@@ -12297,6 +16897,15 @@ namespace Ict.Petra.Shared.MSysMan.Data.Access
         {
             return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_s_error_log, PUB_s_user WHERE " +
                 "PUB_s_error_log.s_user_id_c = PUB_s_user.s_user_id_c" + GenerateWhereClauseLong("PUB_s_user", SUserTable.GetColumnStringList(), ATemplateRow, ATemplateOperators)), ATransaction, false, GetParametersForWhereClause(ATemplateRow, SUserTable.GetPrimKeyColumnOrdList())));
+        }
+
+        /// auto generated
+        public static int CountViaSUserTemplate(TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        {
+            return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_s_error_log, PUB_s_user WHERE " +
+                "PUB_s_error_log.s_user_id_c = PUB_s_user.s_user_id_c" +
+                GenerateWhereClauseLong("PUB_s_user", SUserTable.GetColumnStringList(), ASearchCriteria)), ATransaction, false,
+                GetParametersForWhereClause(new SUserTable(), ASearchCriteria)));
         }
 
         /// auto generated
@@ -12318,6 +16927,14 @@ namespace Ict.Petra.Shared.MSysMan.Data.Access
         public static void DeleteUsingTemplate(SErrorLogRow ATemplateRow, StringCollection ATemplateOperators, TDBTransaction ATransaction)
         {
             DBAccess.GDBAccessObj.ExecuteNonQuery(("DELETE FROM PUB_s_error_log" + GenerateWhereClause(SErrorLogTable.GetColumnStringList(), ATemplateRow, ATemplateOperators)), ATransaction, false, GetParametersForWhereClause(ATemplateRow));
+        }
+
+        /// auto generated
+        public static void DeleteUsingTemplate(TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        {
+            DBAccess.GDBAccessObj.ExecuteNonQuery(("DELETE FROM PUB_s_error_log" +
+                GenerateWhereClause(SErrorLogTable.GetColumnStringList(), ASearchCriteria)), ATransaction, false,
+                GetParametersForWhereClause(new SErrorLogTable(), ASearchCriteria));
         }
 
         /// auto generated
@@ -12510,6 +17127,50 @@ namespace Ict.Petra.Shared.MSysMan.Data.Access
         }
 
         /// this method is called by all overloads
+        public static void LoadUsingTemplate(DataSet ADataSet, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        {
+            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClause(AFieldList, new string[] {
+                            "s_group_id_c", "s_unit_key_n", "s_function_id_c"}) + " FROM PUB_s_group_function")
+                            + GenerateWhereClause(SGroupFunctionTable.GetColumnStringList(), ASearchCriteria))
+                            + GenerateOrderByClause(AOrderBy)), SGroupFunctionTable.GetTableName(), ATransaction,
+                            GetParametersForWhereClause(new SGroupFunctionTable(), ASearchCriteria), AStartRecord, AMaxRecords);
+        }
+
+        /// auto generated
+        public static void LoadUsingTemplate(DataSet AData, TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        {
+            LoadUsingTemplate(AData, ASearchCriteria, null, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static void LoadUsingTemplate(DataSet AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
+        {
+            LoadUsingTemplate(AData, ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static void LoadUsingTemplate(out SGroupFunctionTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        {
+            DataSet FillDataSet = new DataSet();
+            AData = new SGroupFunctionTable();
+            FillDataSet.Tables.Add(AData);
+            LoadUsingTemplate(FillDataSet, ASearchCriteria, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            FillDataSet.Tables.Remove(AData);
+        }
+
+        /// auto generated
+        public static void LoadUsingTemplate(out SGroupFunctionTable AData, TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        {
+            LoadUsingTemplate(out AData, ASearchCriteria, null, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static void LoadUsingTemplate(out SGroupFunctionTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
+        {
+            LoadUsingTemplate(out AData, ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
+        }
+
+        /// this method is called by all overloads
         public static int CountAll(TDBTransaction ATransaction)
         {
             return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar("SELECT COUNT(*) FROM PUB_s_group_function", ATransaction, false));
@@ -12532,6 +17193,13 @@ namespace Ict.Petra.Shared.MSysMan.Data.Access
         public static int CountUsingTemplate(SGroupFunctionRow ATemplateRow, StringCollection ATemplateOperators, TDBTransaction ATransaction)
         {
             return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_s_group_function" + GenerateWhereClause(SGroupFunctionTable.GetColumnStringList(), ATemplateRow, ATemplateOperators)), ATransaction, false, GetParametersForWhereClause(ATemplateRow)));
+        }
+
+        /// this method is called by all overloads
+        public static int CountUsingTemplate(TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        {
+            return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_s_group_function" + GenerateWhereClause(SGroupFunctionTable.GetColumnStringList(), ASearchCriteria)), ATransaction, false,
+            GetParametersForWhereClause(new SGroupFunctionTable(), ASearchCriteria)));
         }
 
         /// auto generated
@@ -12632,6 +17300,51 @@ namespace Ict.Petra.Shared.MSysMan.Data.Access
         }
 
         /// auto generated
+        public static void LoadViaSGroupTemplate(DataSet ADataSet, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        {
+            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClauseLong("PUB_s_group_function", AFieldList, new string[] {
+                            "s_group_id_c", "s_unit_key_n", "s_function_id_c"}) + " FROM PUB_s_group_function, PUB_s_group WHERE " +
+                            "PUB_s_group_function.s_group_id_c = PUB_s_group.s_group_id_c AND PUB_s_group_function.s_unit_key_n = PUB_s_group.s_unit_key_n")
+                            + GenerateWhereClauseLong("PUB_s_group", SGroupTable.GetColumnStringList(), ASearchCriteria))
+                            + GenerateOrderByClause(AOrderBy)), SGroupFunctionTable.GetTableName(), ATransaction,
+                            GetParametersForWhereClause(new SGroupFunctionTable(), ASearchCriteria), AStartRecord, AMaxRecords);
+        }
+
+        /// auto generated
+        public static void LoadViaSGroupTemplate(DataSet AData, TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        {
+            LoadViaSGroupTemplate(AData, ASearchCriteria, null, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static void LoadViaSGroupTemplate(DataSet AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
+        {
+            LoadViaSGroupTemplate(AData, ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static void LoadViaSGroupTemplate(out SGroupFunctionTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        {
+            DataSet FillDataSet = new DataSet();
+            AData = new SGroupFunctionTable();
+            FillDataSet.Tables.Add(AData);
+            LoadViaSGroupTemplate(FillDataSet, ASearchCriteria, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            FillDataSet.Tables.Remove(AData);
+        }
+
+        /// auto generated
+        public static void LoadViaSGroupTemplate(out SGroupFunctionTable AData, TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        {
+            LoadViaSGroupTemplate(out AData, ASearchCriteria, null, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static void LoadViaSGroupTemplate(out SGroupFunctionTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
+        {
+            LoadViaSGroupTemplate(out AData, ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
         public static int CountViaSGroup(String AGroupId, Int64 AUnitKey, TDBTransaction ATransaction)
         {
             OdbcParameter[] ParametersArray = new OdbcParameter[2];
@@ -12647,6 +17360,15 @@ namespace Ict.Petra.Shared.MSysMan.Data.Access
         {
             return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_s_group_function, PUB_s_group WHERE " +
                 "PUB_s_group_function.s_group_id_c = PUB_s_group.s_group_id_c AND PUB_s_group_function.s_unit_key_n = PUB_s_group.s_unit_key_n" + GenerateWhereClauseLong("PUB_s_group", SGroupTable.GetColumnStringList(), ATemplateRow, ATemplateOperators)), ATransaction, false, GetParametersForWhereClause(ATemplateRow, SGroupTable.GetPrimKeyColumnOrdList())));
+        }
+
+        /// auto generated
+        public static int CountViaSGroupTemplate(TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        {
+            return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_s_group_function, PUB_s_group WHERE " +
+                "PUB_s_group_function.s_group_id_c = PUB_s_group.s_group_id_c AND PUB_s_group_function.s_unit_key_n = PUB_s_group.s_unit_key_n" +
+                GenerateWhereClauseLong("PUB_s_group", SGroupTable.GetColumnStringList(), ASearchCriteria)), ATransaction, false,
+                GetParametersForWhereClause(new SGroupTable(), ASearchCriteria)));
         }
 
         /// auto generated
@@ -12745,6 +17467,51 @@ namespace Ict.Petra.Shared.MSysMan.Data.Access
         }
 
         /// auto generated
+        public static void LoadViaSFunctionTemplate(DataSet ADataSet, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        {
+            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClauseLong("PUB_s_group_function", AFieldList, new string[] {
+                            "s_group_id_c", "s_unit_key_n", "s_function_id_c"}) + " FROM PUB_s_group_function, PUB_s_function WHERE " +
+                            "PUB_s_group_function.s_function_id_c = PUB_s_function.s_function_id_c")
+                            + GenerateWhereClauseLong("PUB_s_function", SFunctionTable.GetColumnStringList(), ASearchCriteria))
+                            + GenerateOrderByClause(AOrderBy)), SGroupFunctionTable.GetTableName(), ATransaction,
+                            GetParametersForWhereClause(new SGroupFunctionTable(), ASearchCriteria), AStartRecord, AMaxRecords);
+        }
+
+        /// auto generated
+        public static void LoadViaSFunctionTemplate(DataSet AData, TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        {
+            LoadViaSFunctionTemplate(AData, ASearchCriteria, null, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static void LoadViaSFunctionTemplate(DataSet AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
+        {
+            LoadViaSFunctionTemplate(AData, ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static void LoadViaSFunctionTemplate(out SGroupFunctionTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        {
+            DataSet FillDataSet = new DataSet();
+            AData = new SGroupFunctionTable();
+            FillDataSet.Tables.Add(AData);
+            LoadViaSFunctionTemplate(FillDataSet, ASearchCriteria, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            FillDataSet.Tables.Remove(AData);
+        }
+
+        /// auto generated
+        public static void LoadViaSFunctionTemplate(out SGroupFunctionTable AData, TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        {
+            LoadViaSFunctionTemplate(out AData, ASearchCriteria, null, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static void LoadViaSFunctionTemplate(out SGroupFunctionTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
+        {
+            LoadViaSFunctionTemplate(out AData, ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
         public static int CountViaSFunction(String AFunctionId, TDBTransaction ATransaction)
         {
             OdbcParameter[] ParametersArray = new OdbcParameter[1];
@@ -12758,6 +17525,15 @@ namespace Ict.Petra.Shared.MSysMan.Data.Access
         {
             return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_s_group_function, PUB_s_function WHERE " +
                 "PUB_s_group_function.s_function_id_c = PUB_s_function.s_function_id_c" + GenerateWhereClauseLong("PUB_s_function", SFunctionTable.GetColumnStringList(), ATemplateRow, ATemplateOperators)), ATransaction, false, GetParametersForWhereClause(ATemplateRow, SFunctionTable.GetPrimKeyColumnOrdList())));
+        }
+
+        /// auto generated
+        public static int CountViaSFunctionTemplate(TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        {
+            return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_s_group_function, PUB_s_function WHERE " +
+                "PUB_s_group_function.s_function_id_c = PUB_s_function.s_function_id_c" +
+                GenerateWhereClauseLong("PUB_s_function", SFunctionTable.GetColumnStringList(), ASearchCriteria)), ATransaction, false,
+                GetParametersForWhereClause(new SFunctionTable(), ASearchCriteria)));
         }
 
         /// auto generated
@@ -12777,6 +17553,14 @@ namespace Ict.Petra.Shared.MSysMan.Data.Access
         public static void DeleteUsingTemplate(SGroupFunctionRow ATemplateRow, StringCollection ATemplateOperators, TDBTransaction ATransaction)
         {
             DBAccess.GDBAccessObj.ExecuteNonQuery(("DELETE FROM PUB_s_group_function" + GenerateWhereClause(SGroupFunctionTable.GetColumnStringList(), ATemplateRow, ATemplateOperators)), ATransaction, false, GetParametersForWhereClause(ATemplateRow));
+        }
+
+        /// auto generated
+        public static void DeleteUsingTemplate(TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        {
+            DBAccess.GDBAccessObj.ExecuteNonQuery(("DELETE FROM PUB_s_group_function" +
+                GenerateWhereClause(SGroupFunctionTable.GetColumnStringList(), ASearchCriteria)), ATransaction, false,
+                GetParametersForWhereClause(new SGroupFunctionTable(), ASearchCriteria));
         }
 
         /// auto generated
@@ -12965,6 +17749,50 @@ namespace Ict.Petra.Shared.MSysMan.Data.Access
         }
 
         /// this method is called by all overloads
+        public static void LoadUsingTemplate(DataSet ADataSet, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        {
+            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClause(AFieldList, new string[] {
+                            "s_function_id_c"}) + " FROM PUB_s_function")
+                            + GenerateWhereClause(SFunctionTable.GetColumnStringList(), ASearchCriteria))
+                            + GenerateOrderByClause(AOrderBy)), SFunctionTable.GetTableName(), ATransaction,
+                            GetParametersForWhereClause(new SFunctionTable(), ASearchCriteria), AStartRecord, AMaxRecords);
+        }
+
+        /// auto generated
+        public static void LoadUsingTemplate(DataSet AData, TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        {
+            LoadUsingTemplate(AData, ASearchCriteria, null, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static void LoadUsingTemplate(DataSet AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
+        {
+            LoadUsingTemplate(AData, ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static void LoadUsingTemplate(out SFunctionTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        {
+            DataSet FillDataSet = new DataSet();
+            AData = new SFunctionTable();
+            FillDataSet.Tables.Add(AData);
+            LoadUsingTemplate(FillDataSet, ASearchCriteria, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            FillDataSet.Tables.Remove(AData);
+        }
+
+        /// auto generated
+        public static void LoadUsingTemplate(out SFunctionTable AData, TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        {
+            LoadUsingTemplate(out AData, ASearchCriteria, null, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static void LoadUsingTemplate(out SFunctionTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
+        {
+            LoadUsingTemplate(out AData, ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
+        }
+
+        /// this method is called by all overloads
         public static int CountAll(TDBTransaction ATransaction)
         {
             return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar("SELECT COUNT(*) FROM PUB_s_function", ATransaction, false));
@@ -12983,6 +17811,13 @@ namespace Ict.Petra.Shared.MSysMan.Data.Access
         public static int CountUsingTemplate(SFunctionRow ATemplateRow, StringCollection ATemplateOperators, TDBTransaction ATransaction)
         {
             return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_s_function" + GenerateWhereClause(SFunctionTable.GetColumnStringList(), ATemplateRow, ATemplateOperators)), ATransaction, false, GetParametersForWhereClause(ATemplateRow)));
+        }
+
+        /// this method is called by all overloads
+        public static int CountUsingTemplate(TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        {
+            return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_s_function" + GenerateWhereClause(SFunctionTable.GetColumnStringList(), ASearchCriteria)), ATransaction, false,
+            GetParametersForWhereClause(new SFunctionTable(), ASearchCriteria)));
         }
 
         /// auto generated LoadViaLinkTable
@@ -13083,6 +17918,51 @@ namespace Ict.Petra.Shared.MSysMan.Data.Access
             LoadViaSGroupTemplate(out AData, ATemplateRow, ATemplateOperators, AFieldList, ATransaction, null, 0, 0);
         }
 
+        /// auto generated
+        public static void LoadViaSGroupTemplate(DataSet ADataSet, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        {
+            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClauseLong("PUB_s_function", AFieldList, new string[] {
+                            "s_function_id_c"}) + " FROM PUB_s_function, PUB_s_group_function, PUB_s_group WHERE " +
+                            "PUB_s_group_function.s_function_id_c = PUB_s_function.s_function_id_c AND PUB_s_group_function.s_group_id_c = PUB_s_group.s_group_id_c AND PUB_s_group_function.s_unit_key_n = PUB_s_group.s_unit_key_n")
+                            + GenerateWhereClauseLong("PUB_s_group", SGroupTable.GetColumnStringList(), ASearchCriteria))
+                            + GenerateOrderByClause(AOrderBy)), SFunctionTable.GetTableName(), ATransaction,
+                            GetParametersForWhereClause(new SFunctionTable(), ASearchCriteria), AStartRecord, AMaxRecords);
+        }
+
+        /// auto generated
+        public static void LoadViaSGroupTemplate(DataSet AData, TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        {
+            LoadViaSGroupTemplate(AData, ASearchCriteria, null, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static void LoadViaSGroupTemplate(DataSet AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
+        {
+            LoadViaSGroupTemplate(AData, ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static void LoadViaSGroupTemplate(out SFunctionTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        {
+            DataSet FillDataSet = new DataSet();
+            AData = new SFunctionTable();
+            FillDataSet.Tables.Add(AData);
+            LoadViaSGroupTemplate(FillDataSet, ASearchCriteria, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            FillDataSet.Tables.Remove(AData);
+        }
+
+        /// auto generated
+        public static void LoadViaSGroupTemplate(out SFunctionTable AData, TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        {
+            LoadViaSGroupTemplate(out AData, ASearchCriteria, null, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static void LoadViaSGroupTemplate(out SFunctionTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
+        {
+            LoadViaSGroupTemplate(out AData, ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
+        }
+
         /// auto generated CountViaLinkTable
         public static int CountViaSGroup(String AGroupId, Int64 AUnitKey, TDBTransaction ATransaction)
         {
@@ -13105,6 +17985,15 @@ namespace Ict.Petra.Shared.MSysMan.Data.Access
         }
 
         /// auto generated
+        public static int CountViaSGroupTemplate(TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        {
+            return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_s_function, PUB_s_group_function, PUB_s_group WHERE " +
+                        "PUB_s_group_function.s_function_id_c = PUB_s_function.s_function_id_c AND PUB_s_group_function.s_group_id_c = PUB_s_group.s_group_id_c AND PUB_s_group_function.s_unit_key_n = PUB_s_group.s_unit_key_n" +
+                        GenerateWhereClauseLong("PUB_s_group_function", SFunctionTable.GetColumnStringList(), ASearchCriteria)), ATransaction, false,
+                        GetParametersForWhereClause(new SFunctionTable(), ASearchCriteria)));
+        }
+
+        /// auto generated
         public static void DeleteByPrimaryKey(String AFunctionId, TDBTransaction ATransaction)
         {
             OdbcParameter[] ParametersArray = new OdbcParameter[1];
@@ -13117,6 +18006,14 @@ namespace Ict.Petra.Shared.MSysMan.Data.Access
         public static void DeleteUsingTemplate(SFunctionRow ATemplateRow, StringCollection ATemplateOperators, TDBTransaction ATransaction)
         {
             DBAccess.GDBAccessObj.ExecuteNonQuery(("DELETE FROM PUB_s_function" + GenerateWhereClause(SFunctionTable.GetColumnStringList(), ATemplateRow, ATemplateOperators)), ATransaction, false, GetParametersForWhereClause(ATemplateRow));
+        }
+
+        /// auto generated
+        public static void DeleteUsingTemplate(TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        {
+            DBAccess.GDBAccessObj.ExecuteNonQuery(("DELETE FROM PUB_s_function" +
+                GenerateWhereClause(SFunctionTable.GetColumnStringList(), ASearchCriteria)), ATransaction, false,
+                GetParametersForWhereClause(new SFunctionTable(), ASearchCriteria));
         }
 
         /// auto generated
@@ -13313,6 +18210,50 @@ namespace Ict.Petra.Shared.MSysMan.Data.Access
         }
 
         /// this method is called by all overloads
+        public static void LoadUsingTemplate(DataSet ADataSet, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        {
+            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClause(AFieldList, new string[] {
+                            "pt_position_name_c", "pt_position_scope_c", "um_job_key_i", "s_group_id_c", "s_unit_key_n"}) + " FROM PUB_s_job_group")
+                            + GenerateWhereClause(SJobGroupTable.GetColumnStringList(), ASearchCriteria))
+                            + GenerateOrderByClause(AOrderBy)), SJobGroupTable.GetTableName(), ATransaction,
+                            GetParametersForWhereClause(new SJobGroupTable(), ASearchCriteria), AStartRecord, AMaxRecords);
+        }
+
+        /// auto generated
+        public static void LoadUsingTemplate(DataSet AData, TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        {
+            LoadUsingTemplate(AData, ASearchCriteria, null, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static void LoadUsingTemplate(DataSet AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
+        {
+            LoadUsingTemplate(AData, ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static void LoadUsingTemplate(out SJobGroupTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        {
+            DataSet FillDataSet = new DataSet();
+            AData = new SJobGroupTable();
+            FillDataSet.Tables.Add(AData);
+            LoadUsingTemplate(FillDataSet, ASearchCriteria, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            FillDataSet.Tables.Remove(AData);
+        }
+
+        /// auto generated
+        public static void LoadUsingTemplate(out SJobGroupTable AData, TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        {
+            LoadUsingTemplate(out AData, ASearchCriteria, null, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static void LoadUsingTemplate(out SJobGroupTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
+        {
+            LoadUsingTemplate(out AData, ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
+        }
+
+        /// this method is called by all overloads
         public static int CountAll(TDBTransaction ATransaction)
         {
             return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar("SELECT COUNT(*) FROM PUB_s_job_group", ATransaction, false));
@@ -13339,6 +18280,13 @@ namespace Ict.Petra.Shared.MSysMan.Data.Access
         public static int CountUsingTemplate(SJobGroupRow ATemplateRow, StringCollection ATemplateOperators, TDBTransaction ATransaction)
         {
             return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_s_job_group" + GenerateWhereClause(SJobGroupTable.GetColumnStringList(), ATemplateRow, ATemplateOperators)), ATransaction, false, GetParametersForWhereClause(ATemplateRow)));
+        }
+
+        /// this method is called by all overloads
+        public static int CountUsingTemplate(TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        {
+            return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_s_job_group" + GenerateWhereClause(SJobGroupTable.GetColumnStringList(), ASearchCriteria)), ATransaction, false,
+            GetParametersForWhereClause(new SJobGroupTable(), ASearchCriteria)));
         }
 
         /// auto generated
@@ -13443,6 +18391,51 @@ namespace Ict.Petra.Shared.MSysMan.Data.Access
         }
 
         /// auto generated
+        public static void LoadViaUmJobTemplate(DataSet ADataSet, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        {
+            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClauseLong("PUB_s_job_group", AFieldList, new string[] {
+                            "pt_position_name_c", "pt_position_scope_c", "um_job_key_i", "s_group_id_c", "s_unit_key_n"}) + " FROM PUB_s_job_group, PUB_um_job WHERE " +
+                            "PUB_s_job_group.s_unit_key_n = PUB_um_job.pm_unit_key_n AND PUB_s_job_group.pt_position_name_c = PUB_um_job.pt_position_name_c AND PUB_s_job_group.pt_position_scope_c = PUB_um_job.pt_position_scope_c AND PUB_s_job_group.um_job_key_i = PUB_um_job.um_job_key_i")
+                            + GenerateWhereClauseLong("PUB_um_job", UmJobTable.GetColumnStringList(), ASearchCriteria))
+                            + GenerateOrderByClause(AOrderBy)), SJobGroupTable.GetTableName(), ATransaction,
+                            GetParametersForWhereClause(new SJobGroupTable(), ASearchCriteria), AStartRecord, AMaxRecords);
+        }
+
+        /// auto generated
+        public static void LoadViaUmJobTemplate(DataSet AData, TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        {
+            LoadViaUmJobTemplate(AData, ASearchCriteria, null, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static void LoadViaUmJobTemplate(DataSet AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
+        {
+            LoadViaUmJobTemplate(AData, ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static void LoadViaUmJobTemplate(out SJobGroupTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        {
+            DataSet FillDataSet = new DataSet();
+            AData = new SJobGroupTable();
+            FillDataSet.Tables.Add(AData);
+            LoadViaUmJobTemplate(FillDataSet, ASearchCriteria, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            FillDataSet.Tables.Remove(AData);
+        }
+
+        /// auto generated
+        public static void LoadViaUmJobTemplate(out SJobGroupTable AData, TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        {
+            LoadViaUmJobTemplate(out AData, ASearchCriteria, null, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static void LoadViaUmJobTemplate(out SJobGroupTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
+        {
+            LoadViaUmJobTemplate(out AData, ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
         public static int CountViaUmJob(Int64 AUnitKey, String APositionName, String APositionScope, Int32 AJobKey, TDBTransaction ATransaction)
         {
             OdbcParameter[] ParametersArray = new OdbcParameter[4];
@@ -13462,6 +18455,180 @@ namespace Ict.Petra.Shared.MSysMan.Data.Access
         {
             return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_s_job_group, PUB_um_job WHERE " +
                 "PUB_s_job_group.s_unit_key_n = PUB_um_job.pm_unit_key_n AND PUB_s_job_group.pt_position_name_c = PUB_um_job.pt_position_name_c AND PUB_s_job_group.pt_position_scope_c = PUB_um_job.pt_position_scope_c AND PUB_s_job_group.um_job_key_i = PUB_um_job.um_job_key_i" + GenerateWhereClauseLong("PUB_um_job", UmJobTable.GetColumnStringList(), ATemplateRow, ATemplateOperators)), ATransaction, false, GetParametersForWhereClause(ATemplateRow, UmJobTable.GetPrimKeyColumnOrdList())));
+        }
+
+        /// auto generated
+        public static int CountViaUmJobTemplate(TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        {
+            return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_s_job_group, PUB_um_job WHERE " +
+                "PUB_s_job_group.s_unit_key_n = PUB_um_job.pm_unit_key_n AND PUB_s_job_group.pt_position_name_c = PUB_um_job.pt_position_name_c AND PUB_s_job_group.pt_position_scope_c = PUB_um_job.pt_position_scope_c AND PUB_s_job_group.um_job_key_i = PUB_um_job.um_job_key_i" +
+                GenerateWhereClauseLong("PUB_um_job", UmJobTable.GetColumnStringList(), ASearchCriteria)), ATransaction, false,
+                GetParametersForWhereClause(new UmJobTable(), ASearchCriteria)));
+        }
+
+        /// auto generated
+        public static void LoadViaPUnit(DataSet ADataSet, Int64 APartnerKey, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        {
+            OdbcParameter[] ParametersArray = new OdbcParameter[1];
+            ParametersArray[0] = new OdbcParameter("", OdbcType.Decimal, 10);
+            ParametersArray[0].Value = ((object)(APartnerKey));
+            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, ((GenerateSelectClause(AFieldList, new string[] {
+                            "pt_position_name_c", "pt_position_scope_c", "um_job_key_i", "s_group_id_c", "s_unit_key_n"}) + " FROM PUB_s_job_group WHERE s_unit_key_n = ?")
+                            + GenerateOrderByClause(AOrderBy)), SJobGroupTable.GetTableName(), ATransaction, ParametersArray, AStartRecord, AMaxRecords);
+        }
+
+        /// auto generated
+        public static void LoadViaPUnit(DataSet AData, Int64 APartnerKey, TDBTransaction ATransaction)
+        {
+            LoadViaPUnit(AData, APartnerKey, null, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static void LoadViaPUnit(DataSet AData, Int64 APartnerKey, StringCollection AFieldList, TDBTransaction ATransaction)
+        {
+            LoadViaPUnit(AData, APartnerKey, AFieldList, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static void LoadViaPUnit(out SJobGroupTable AData, Int64 APartnerKey, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        {
+            DataSet FillDataSet = new DataSet();
+            AData = new SJobGroupTable();
+            FillDataSet.Tables.Add(AData);
+            LoadViaPUnit(FillDataSet, APartnerKey, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            FillDataSet.Tables.Remove(AData);
+        }
+
+        /// auto generated
+        public static void LoadViaPUnit(out SJobGroupTable AData, Int64 APartnerKey, TDBTransaction ATransaction)
+        {
+            LoadViaPUnit(out AData, APartnerKey, null, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static void LoadViaPUnit(out SJobGroupTable AData, Int64 APartnerKey, StringCollection AFieldList, TDBTransaction ATransaction)
+        {
+            LoadViaPUnit(out AData, APartnerKey, AFieldList, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static void LoadViaPUnitTemplate(DataSet ADataSet, PUnitRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        {
+            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClauseLong("PUB_s_job_group", AFieldList, new string[] {
+                            "pt_position_name_c", "pt_position_scope_c", "um_job_key_i", "s_group_id_c", "s_unit_key_n"}) + " FROM PUB_s_job_group, PUB_p_unit WHERE " +
+                            "PUB_s_job_group.s_unit_key_n = PUB_p_unit.p_partner_key_n")
+                            + GenerateWhereClauseLong("PUB_p_unit", PUnitTable.GetColumnStringList(), ATemplateRow, ATemplateOperators))
+                            + GenerateOrderByClause(AOrderBy)), SJobGroupTable.GetTableName(), ATransaction, GetParametersForWhereClause(ATemplateRow), AStartRecord, AMaxRecords);
+        }
+
+        /// auto generated
+        public static void LoadViaPUnitTemplate(DataSet AData, PUnitRow ATemplateRow, TDBTransaction ATransaction)
+        {
+            LoadViaPUnitTemplate(AData, ATemplateRow, null, null, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static void LoadViaPUnitTemplate(DataSet AData, PUnitRow ATemplateRow, StringCollection AFieldList, TDBTransaction ATransaction)
+        {
+            LoadViaPUnitTemplate(AData, ATemplateRow, null, AFieldList, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static void LoadViaPUnitTemplate(out SJobGroupTable AData, PUnitRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        {
+            DataSet FillDataSet = new DataSet();
+            AData = new SJobGroupTable();
+            FillDataSet.Tables.Add(AData);
+            LoadViaPUnitTemplate(FillDataSet, ATemplateRow, ATemplateOperators, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            FillDataSet.Tables.Remove(AData);
+        }
+
+        /// auto generated
+        public static void LoadViaPUnitTemplate(out SJobGroupTable AData, PUnitRow ATemplateRow, TDBTransaction ATransaction)
+        {
+            LoadViaPUnitTemplate(out AData, ATemplateRow, null, null, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static void LoadViaPUnitTemplate(out SJobGroupTable AData, PUnitRow ATemplateRow, StringCollection AFieldList, TDBTransaction ATransaction)
+        {
+            LoadViaPUnitTemplate(out AData, ATemplateRow, null, AFieldList, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static void LoadViaPUnitTemplate(out SJobGroupTable AData, PUnitRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction)
+        {
+            LoadViaPUnitTemplate(out AData, ATemplateRow, ATemplateOperators, AFieldList, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static void LoadViaPUnitTemplate(DataSet ADataSet, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        {
+            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClauseLong("PUB_s_job_group", AFieldList, new string[] {
+                            "pt_position_name_c", "pt_position_scope_c", "um_job_key_i", "s_group_id_c", "s_unit_key_n"}) + " FROM PUB_s_job_group, PUB_p_unit WHERE " +
+                            "PUB_s_job_group.s_unit_key_n = PUB_p_unit.p_partner_key_n")
+                            + GenerateWhereClauseLong("PUB_p_unit", PUnitTable.GetColumnStringList(), ASearchCriteria))
+                            + GenerateOrderByClause(AOrderBy)), SJobGroupTable.GetTableName(), ATransaction,
+                            GetParametersForWhereClause(new SJobGroupTable(), ASearchCriteria), AStartRecord, AMaxRecords);
+        }
+
+        /// auto generated
+        public static void LoadViaPUnitTemplate(DataSet AData, TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        {
+            LoadViaPUnitTemplate(AData, ASearchCriteria, null, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static void LoadViaPUnitTemplate(DataSet AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
+        {
+            LoadViaPUnitTemplate(AData, ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static void LoadViaPUnitTemplate(out SJobGroupTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        {
+            DataSet FillDataSet = new DataSet();
+            AData = new SJobGroupTable();
+            FillDataSet.Tables.Add(AData);
+            LoadViaPUnitTemplate(FillDataSet, ASearchCriteria, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            FillDataSet.Tables.Remove(AData);
+        }
+
+        /// auto generated
+        public static void LoadViaPUnitTemplate(out SJobGroupTable AData, TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        {
+            LoadViaPUnitTemplate(out AData, ASearchCriteria, null, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static void LoadViaPUnitTemplate(out SJobGroupTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
+        {
+            LoadViaPUnitTemplate(out AData, ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static int CountViaPUnit(Int64 APartnerKey, TDBTransaction ATransaction)
+        {
+            OdbcParameter[] ParametersArray = new OdbcParameter[1];
+            ParametersArray[0] = new OdbcParameter("", OdbcType.Decimal, 10);
+            ParametersArray[0].Value = ((object)(APartnerKey));
+            return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar("SELECT COUNT(*) FROM PUB_s_job_group WHERE s_unit_key_n = ?", ATransaction, false, ParametersArray));
+        }
+
+        /// auto generated
+        public static int CountViaPUnitTemplate(PUnitRow ATemplateRow, StringCollection ATemplateOperators, TDBTransaction ATransaction)
+        {
+            return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_s_job_group, PUB_p_unit WHERE " +
+                "PUB_s_job_group.s_unit_key_n = PUB_p_unit.p_partner_key_n" + GenerateWhereClauseLong("PUB_p_unit", PUnitTable.GetColumnStringList(), ATemplateRow, ATemplateOperators)), ATransaction, false, GetParametersForWhereClause(ATemplateRow, PUnitTable.GetPrimKeyColumnOrdList())));
+        }
+
+        /// auto generated
+        public static int CountViaPUnitTemplate(TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        {
+            return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_s_job_group, PUB_p_unit WHERE " +
+                "PUB_s_job_group.s_unit_key_n = PUB_p_unit.p_partner_key_n" +
+                GenerateWhereClauseLong("PUB_p_unit", PUnitTable.GetColumnStringList(), ASearchCriteria)), ATransaction, false,
+                GetParametersForWhereClause(new PUnitTable(), ASearchCriteria)));
         }
 
         /// auto generated
@@ -13562,6 +18729,51 @@ namespace Ict.Petra.Shared.MSysMan.Data.Access
         }
 
         /// auto generated
+        public static void LoadViaSGroupTemplate(DataSet ADataSet, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        {
+            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClauseLong("PUB_s_job_group", AFieldList, new string[] {
+                            "pt_position_name_c", "pt_position_scope_c", "um_job_key_i", "s_group_id_c", "s_unit_key_n"}) + " FROM PUB_s_job_group, PUB_s_group WHERE " +
+                            "PUB_s_job_group.s_group_id_c = PUB_s_group.s_group_id_c AND PUB_s_job_group.s_unit_key_n = PUB_s_group.s_unit_key_n")
+                            + GenerateWhereClauseLong("PUB_s_group", SGroupTable.GetColumnStringList(), ASearchCriteria))
+                            + GenerateOrderByClause(AOrderBy)), SJobGroupTable.GetTableName(), ATransaction,
+                            GetParametersForWhereClause(new SJobGroupTable(), ASearchCriteria), AStartRecord, AMaxRecords);
+        }
+
+        /// auto generated
+        public static void LoadViaSGroupTemplate(DataSet AData, TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        {
+            LoadViaSGroupTemplate(AData, ASearchCriteria, null, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static void LoadViaSGroupTemplate(DataSet AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
+        {
+            LoadViaSGroupTemplate(AData, ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static void LoadViaSGroupTemplate(out SJobGroupTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        {
+            DataSet FillDataSet = new DataSet();
+            AData = new SJobGroupTable();
+            FillDataSet.Tables.Add(AData);
+            LoadViaSGroupTemplate(FillDataSet, ASearchCriteria, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            FillDataSet.Tables.Remove(AData);
+        }
+
+        /// auto generated
+        public static void LoadViaSGroupTemplate(out SJobGroupTable AData, TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        {
+            LoadViaSGroupTemplate(out AData, ASearchCriteria, null, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static void LoadViaSGroupTemplate(out SJobGroupTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
+        {
+            LoadViaSGroupTemplate(out AData, ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
         public static int CountViaSGroup(String AGroupId, Int64 AUnitKey, TDBTransaction ATransaction)
         {
             OdbcParameter[] ParametersArray = new OdbcParameter[2];
@@ -13577,6 +18789,15 @@ namespace Ict.Petra.Shared.MSysMan.Data.Access
         {
             return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_s_job_group, PUB_s_group WHERE " +
                 "PUB_s_job_group.s_group_id_c = PUB_s_group.s_group_id_c AND PUB_s_job_group.s_unit_key_n = PUB_s_group.s_unit_key_n" + GenerateWhereClauseLong("PUB_s_group", SGroupTable.GetColumnStringList(), ATemplateRow, ATemplateOperators)), ATransaction, false, GetParametersForWhereClause(ATemplateRow, SGroupTable.GetPrimKeyColumnOrdList())));
+        }
+
+        /// auto generated
+        public static int CountViaSGroupTemplate(TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        {
+            return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_s_job_group, PUB_s_group WHERE " +
+                "PUB_s_job_group.s_group_id_c = PUB_s_group.s_group_id_c AND PUB_s_job_group.s_unit_key_n = PUB_s_group.s_unit_key_n" +
+                GenerateWhereClauseLong("PUB_s_group", SGroupTable.GetColumnStringList(), ASearchCriteria)), ATransaction, false,
+                GetParametersForWhereClause(new SGroupTable(), ASearchCriteria)));
         }
 
         /// auto generated
@@ -13600,6 +18821,14 @@ namespace Ict.Petra.Shared.MSysMan.Data.Access
         public static void DeleteUsingTemplate(SJobGroupRow ATemplateRow, StringCollection ATemplateOperators, TDBTransaction ATransaction)
         {
             DBAccess.GDBAccessObj.ExecuteNonQuery(("DELETE FROM PUB_s_job_group" + GenerateWhereClause(SJobGroupTable.GetColumnStringList(), ATemplateRow, ATemplateOperators)), ATransaction, false, GetParametersForWhereClause(ATemplateRow));
+        }
+
+        /// auto generated
+        public static void DeleteUsingTemplate(TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        {
+            DBAccess.GDBAccessObj.ExecuteNonQuery(("DELETE FROM PUB_s_job_group" +
+                GenerateWhereClause(SJobGroupTable.GetColumnStringList(), ASearchCriteria)), ATransaction, false,
+                GetParametersForWhereClause(new SJobGroupTable(), ASearchCriteria));
         }
 
         /// auto generated
@@ -13794,6 +19023,50 @@ namespace Ict.Petra.Shared.MSysMan.Data.Access
         }
 
         /// this method is called by all overloads
+        public static void LoadUsingTemplate(DataSet ADataSet, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        {
+            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClause(AFieldList, new string[] {
+                            "s_group_id_c", "s_group_unit_key_n", "p_partner_set_id_c", "p_partner_set_unit_key_n"}) + " FROM PUB_s_group_partner_set")
+                            + GenerateWhereClause(SGroupPartnerSetTable.GetColumnStringList(), ASearchCriteria))
+                            + GenerateOrderByClause(AOrderBy)), SGroupPartnerSetTable.GetTableName(), ATransaction,
+                            GetParametersForWhereClause(new SGroupPartnerSetTable(), ASearchCriteria), AStartRecord, AMaxRecords);
+        }
+
+        /// auto generated
+        public static void LoadUsingTemplate(DataSet AData, TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        {
+            LoadUsingTemplate(AData, ASearchCriteria, null, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static void LoadUsingTemplate(DataSet AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
+        {
+            LoadUsingTemplate(AData, ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static void LoadUsingTemplate(out SGroupPartnerSetTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        {
+            DataSet FillDataSet = new DataSet();
+            AData = new SGroupPartnerSetTable();
+            FillDataSet.Tables.Add(AData);
+            LoadUsingTemplate(FillDataSet, ASearchCriteria, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            FillDataSet.Tables.Remove(AData);
+        }
+
+        /// auto generated
+        public static void LoadUsingTemplate(out SGroupPartnerSetTable AData, TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        {
+            LoadUsingTemplate(out AData, ASearchCriteria, null, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static void LoadUsingTemplate(out SGroupPartnerSetTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
+        {
+            LoadUsingTemplate(out AData, ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
+        }
+
+        /// this method is called by all overloads
         public static int CountAll(TDBTransaction ATransaction)
         {
             return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar("SELECT COUNT(*) FROM PUB_s_group_partner_set", ATransaction, false));
@@ -13818,6 +19091,13 @@ namespace Ict.Petra.Shared.MSysMan.Data.Access
         public static int CountUsingTemplate(SGroupPartnerSetRow ATemplateRow, StringCollection ATemplateOperators, TDBTransaction ATransaction)
         {
             return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_s_group_partner_set" + GenerateWhereClause(SGroupPartnerSetTable.GetColumnStringList(), ATemplateRow, ATemplateOperators)), ATransaction, false, GetParametersForWhereClause(ATemplateRow)));
+        }
+
+        /// this method is called by all overloads
+        public static int CountUsingTemplate(TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        {
+            return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_s_group_partner_set" + GenerateWhereClause(SGroupPartnerSetTable.GetColumnStringList(), ASearchCriteria)), ATransaction, false,
+            GetParametersForWhereClause(new SGroupPartnerSetTable(), ASearchCriteria)));
         }
 
         /// auto generated
@@ -13918,6 +19198,51 @@ namespace Ict.Petra.Shared.MSysMan.Data.Access
         }
 
         /// auto generated
+        public static void LoadViaSGroupTemplate(DataSet ADataSet, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        {
+            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClauseLong("PUB_s_group_partner_set", AFieldList, new string[] {
+                            "s_group_id_c", "s_group_unit_key_n", "p_partner_set_id_c", "p_partner_set_unit_key_n"}) + " FROM PUB_s_group_partner_set, PUB_s_group WHERE " +
+                            "PUB_s_group_partner_set.s_group_id_c = PUB_s_group.s_group_id_c AND PUB_s_group_partner_set.s_group_unit_key_n = PUB_s_group.s_unit_key_n")
+                            + GenerateWhereClauseLong("PUB_s_group", SGroupTable.GetColumnStringList(), ASearchCriteria))
+                            + GenerateOrderByClause(AOrderBy)), SGroupPartnerSetTable.GetTableName(), ATransaction,
+                            GetParametersForWhereClause(new SGroupPartnerSetTable(), ASearchCriteria), AStartRecord, AMaxRecords);
+        }
+
+        /// auto generated
+        public static void LoadViaSGroupTemplate(DataSet AData, TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        {
+            LoadViaSGroupTemplate(AData, ASearchCriteria, null, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static void LoadViaSGroupTemplate(DataSet AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
+        {
+            LoadViaSGroupTemplate(AData, ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static void LoadViaSGroupTemplate(out SGroupPartnerSetTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        {
+            DataSet FillDataSet = new DataSet();
+            AData = new SGroupPartnerSetTable();
+            FillDataSet.Tables.Add(AData);
+            LoadViaSGroupTemplate(FillDataSet, ASearchCriteria, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            FillDataSet.Tables.Remove(AData);
+        }
+
+        /// auto generated
+        public static void LoadViaSGroupTemplate(out SGroupPartnerSetTable AData, TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        {
+            LoadViaSGroupTemplate(out AData, ASearchCriteria, null, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static void LoadViaSGroupTemplate(out SGroupPartnerSetTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
+        {
+            LoadViaSGroupTemplate(out AData, ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
         public static int CountViaSGroup(String AGroupId, Int64 AUnitKey, TDBTransaction ATransaction)
         {
             OdbcParameter[] ParametersArray = new OdbcParameter[2];
@@ -13933,6 +19258,15 @@ namespace Ict.Petra.Shared.MSysMan.Data.Access
         {
             return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_s_group_partner_set, PUB_s_group WHERE " +
                 "PUB_s_group_partner_set.s_group_id_c = PUB_s_group.s_group_id_c AND PUB_s_group_partner_set.s_group_unit_key_n = PUB_s_group.s_unit_key_n" + GenerateWhereClauseLong("PUB_s_group", SGroupTable.GetColumnStringList(), ATemplateRow, ATemplateOperators)), ATransaction, false, GetParametersForWhereClause(ATemplateRow, SGroupTable.GetPrimKeyColumnOrdList())));
+        }
+
+        /// auto generated
+        public static int CountViaSGroupTemplate(TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        {
+            return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_s_group_partner_set, PUB_s_group WHERE " +
+                "PUB_s_group_partner_set.s_group_id_c = PUB_s_group.s_group_id_c AND PUB_s_group_partner_set.s_group_unit_key_n = PUB_s_group.s_unit_key_n" +
+                GenerateWhereClauseLong("PUB_s_group", SGroupTable.GetColumnStringList(), ASearchCriteria)), ATransaction, false,
+                GetParametersForWhereClause(new SGroupTable(), ASearchCriteria)));
         }
 
         /// auto generated
@@ -14033,6 +19367,51 @@ namespace Ict.Petra.Shared.MSysMan.Data.Access
         }
 
         /// auto generated
+        public static void LoadViaPPartnerSetTemplate(DataSet ADataSet, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        {
+            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClauseLong("PUB_s_group_partner_set", AFieldList, new string[] {
+                            "s_group_id_c", "s_group_unit_key_n", "p_partner_set_id_c", "p_partner_set_unit_key_n"}) + " FROM PUB_s_group_partner_set, PUB_p_partner_set WHERE " +
+                            "PUB_s_group_partner_set.p_partner_set_id_c = PUB_p_partner_set.p_partner_set_id_c AND PUB_s_group_partner_set.p_partner_set_unit_key_n = PUB_p_partner_set.p_unit_key_n")
+                            + GenerateWhereClauseLong("PUB_p_partner_set", PPartnerSetTable.GetColumnStringList(), ASearchCriteria))
+                            + GenerateOrderByClause(AOrderBy)), SGroupPartnerSetTable.GetTableName(), ATransaction,
+                            GetParametersForWhereClause(new SGroupPartnerSetTable(), ASearchCriteria), AStartRecord, AMaxRecords);
+        }
+
+        /// auto generated
+        public static void LoadViaPPartnerSetTemplate(DataSet AData, TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        {
+            LoadViaPPartnerSetTemplate(AData, ASearchCriteria, null, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static void LoadViaPPartnerSetTemplate(DataSet AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
+        {
+            LoadViaPPartnerSetTemplate(AData, ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static void LoadViaPPartnerSetTemplate(out SGroupPartnerSetTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        {
+            DataSet FillDataSet = new DataSet();
+            AData = new SGroupPartnerSetTable();
+            FillDataSet.Tables.Add(AData);
+            LoadViaPPartnerSetTemplate(FillDataSet, ASearchCriteria, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            FillDataSet.Tables.Remove(AData);
+        }
+
+        /// auto generated
+        public static void LoadViaPPartnerSetTemplate(out SGroupPartnerSetTable AData, TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        {
+            LoadViaPPartnerSetTemplate(out AData, ASearchCriteria, null, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static void LoadViaPPartnerSetTemplate(out SGroupPartnerSetTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
+        {
+            LoadViaPPartnerSetTemplate(out AData, ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
         public static int CountViaPPartnerSet(String APartnerSetId, Int64 AUnitKey, TDBTransaction ATransaction)
         {
             OdbcParameter[] ParametersArray = new OdbcParameter[2];
@@ -14048,6 +19427,180 @@ namespace Ict.Petra.Shared.MSysMan.Data.Access
         {
             return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_s_group_partner_set, PUB_p_partner_set WHERE " +
                 "PUB_s_group_partner_set.p_partner_set_id_c = PUB_p_partner_set.p_partner_set_id_c AND PUB_s_group_partner_set.p_partner_set_unit_key_n = PUB_p_partner_set.p_unit_key_n" + GenerateWhereClauseLong("PUB_p_partner_set", PPartnerSetTable.GetColumnStringList(), ATemplateRow, ATemplateOperators)), ATransaction, false, GetParametersForWhereClause(ATemplateRow, PPartnerSetTable.GetPrimKeyColumnOrdList())));
+        }
+
+        /// auto generated
+        public static int CountViaPPartnerSetTemplate(TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        {
+            return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_s_group_partner_set, PUB_p_partner_set WHERE " +
+                "PUB_s_group_partner_set.p_partner_set_id_c = PUB_p_partner_set.p_partner_set_id_c AND PUB_s_group_partner_set.p_partner_set_unit_key_n = PUB_p_partner_set.p_unit_key_n" +
+                GenerateWhereClauseLong("PUB_p_partner_set", PPartnerSetTable.GetColumnStringList(), ASearchCriteria)), ATransaction, false,
+                GetParametersForWhereClause(new PPartnerSetTable(), ASearchCriteria)));
+        }
+
+        /// auto generated
+        public static void LoadViaPUnit(DataSet ADataSet, Int64 APartnerKey, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        {
+            OdbcParameter[] ParametersArray = new OdbcParameter[1];
+            ParametersArray[0] = new OdbcParameter("", OdbcType.Decimal, 10);
+            ParametersArray[0].Value = ((object)(APartnerKey));
+            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, ((GenerateSelectClause(AFieldList, new string[] {
+                            "s_group_id_c", "s_group_unit_key_n", "p_partner_set_id_c", "p_partner_set_unit_key_n"}) + " FROM PUB_s_group_partner_set WHERE p_partner_set_unit_key_n = ?")
+                            + GenerateOrderByClause(AOrderBy)), SGroupPartnerSetTable.GetTableName(), ATransaction, ParametersArray, AStartRecord, AMaxRecords);
+        }
+
+        /// auto generated
+        public static void LoadViaPUnit(DataSet AData, Int64 APartnerKey, TDBTransaction ATransaction)
+        {
+            LoadViaPUnit(AData, APartnerKey, null, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static void LoadViaPUnit(DataSet AData, Int64 APartnerKey, StringCollection AFieldList, TDBTransaction ATransaction)
+        {
+            LoadViaPUnit(AData, APartnerKey, AFieldList, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static void LoadViaPUnit(out SGroupPartnerSetTable AData, Int64 APartnerKey, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        {
+            DataSet FillDataSet = new DataSet();
+            AData = new SGroupPartnerSetTable();
+            FillDataSet.Tables.Add(AData);
+            LoadViaPUnit(FillDataSet, APartnerKey, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            FillDataSet.Tables.Remove(AData);
+        }
+
+        /// auto generated
+        public static void LoadViaPUnit(out SGroupPartnerSetTable AData, Int64 APartnerKey, TDBTransaction ATransaction)
+        {
+            LoadViaPUnit(out AData, APartnerKey, null, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static void LoadViaPUnit(out SGroupPartnerSetTable AData, Int64 APartnerKey, StringCollection AFieldList, TDBTransaction ATransaction)
+        {
+            LoadViaPUnit(out AData, APartnerKey, AFieldList, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static void LoadViaPUnitTemplate(DataSet ADataSet, PUnitRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        {
+            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClauseLong("PUB_s_group_partner_set", AFieldList, new string[] {
+                            "s_group_id_c", "s_group_unit_key_n", "p_partner_set_id_c", "p_partner_set_unit_key_n"}) + " FROM PUB_s_group_partner_set, PUB_p_unit WHERE " +
+                            "PUB_s_group_partner_set.p_partner_set_unit_key_n = PUB_p_unit.p_partner_key_n")
+                            + GenerateWhereClauseLong("PUB_p_unit", PUnitTable.GetColumnStringList(), ATemplateRow, ATemplateOperators))
+                            + GenerateOrderByClause(AOrderBy)), SGroupPartnerSetTable.GetTableName(), ATransaction, GetParametersForWhereClause(ATemplateRow), AStartRecord, AMaxRecords);
+        }
+
+        /// auto generated
+        public static void LoadViaPUnitTemplate(DataSet AData, PUnitRow ATemplateRow, TDBTransaction ATransaction)
+        {
+            LoadViaPUnitTemplate(AData, ATemplateRow, null, null, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static void LoadViaPUnitTemplate(DataSet AData, PUnitRow ATemplateRow, StringCollection AFieldList, TDBTransaction ATransaction)
+        {
+            LoadViaPUnitTemplate(AData, ATemplateRow, null, AFieldList, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static void LoadViaPUnitTemplate(out SGroupPartnerSetTable AData, PUnitRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        {
+            DataSet FillDataSet = new DataSet();
+            AData = new SGroupPartnerSetTable();
+            FillDataSet.Tables.Add(AData);
+            LoadViaPUnitTemplate(FillDataSet, ATemplateRow, ATemplateOperators, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            FillDataSet.Tables.Remove(AData);
+        }
+
+        /// auto generated
+        public static void LoadViaPUnitTemplate(out SGroupPartnerSetTable AData, PUnitRow ATemplateRow, TDBTransaction ATransaction)
+        {
+            LoadViaPUnitTemplate(out AData, ATemplateRow, null, null, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static void LoadViaPUnitTemplate(out SGroupPartnerSetTable AData, PUnitRow ATemplateRow, StringCollection AFieldList, TDBTransaction ATransaction)
+        {
+            LoadViaPUnitTemplate(out AData, ATemplateRow, null, AFieldList, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static void LoadViaPUnitTemplate(out SGroupPartnerSetTable AData, PUnitRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction)
+        {
+            LoadViaPUnitTemplate(out AData, ATemplateRow, ATemplateOperators, AFieldList, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static void LoadViaPUnitTemplate(DataSet ADataSet, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        {
+            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClauseLong("PUB_s_group_partner_set", AFieldList, new string[] {
+                            "s_group_id_c", "s_group_unit_key_n", "p_partner_set_id_c", "p_partner_set_unit_key_n"}) + " FROM PUB_s_group_partner_set, PUB_p_unit WHERE " +
+                            "PUB_s_group_partner_set.p_partner_set_unit_key_n = PUB_p_unit.p_partner_key_n")
+                            + GenerateWhereClauseLong("PUB_p_unit", PUnitTable.GetColumnStringList(), ASearchCriteria))
+                            + GenerateOrderByClause(AOrderBy)), SGroupPartnerSetTable.GetTableName(), ATransaction,
+                            GetParametersForWhereClause(new SGroupPartnerSetTable(), ASearchCriteria), AStartRecord, AMaxRecords);
+        }
+
+        /// auto generated
+        public static void LoadViaPUnitTemplate(DataSet AData, TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        {
+            LoadViaPUnitTemplate(AData, ASearchCriteria, null, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static void LoadViaPUnitTemplate(DataSet AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
+        {
+            LoadViaPUnitTemplate(AData, ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static void LoadViaPUnitTemplate(out SGroupPartnerSetTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        {
+            DataSet FillDataSet = new DataSet();
+            AData = new SGroupPartnerSetTable();
+            FillDataSet.Tables.Add(AData);
+            LoadViaPUnitTemplate(FillDataSet, ASearchCriteria, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            FillDataSet.Tables.Remove(AData);
+        }
+
+        /// auto generated
+        public static void LoadViaPUnitTemplate(out SGroupPartnerSetTable AData, TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        {
+            LoadViaPUnitTemplate(out AData, ASearchCriteria, null, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static void LoadViaPUnitTemplate(out SGroupPartnerSetTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
+        {
+            LoadViaPUnitTemplate(out AData, ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static int CountViaPUnit(Int64 APartnerKey, TDBTransaction ATransaction)
+        {
+            OdbcParameter[] ParametersArray = new OdbcParameter[1];
+            ParametersArray[0] = new OdbcParameter("", OdbcType.Decimal, 10);
+            ParametersArray[0].Value = ((object)(APartnerKey));
+            return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar("SELECT COUNT(*) FROM PUB_s_group_partner_set WHERE p_partner_set_unit_key_n = ?", ATransaction, false, ParametersArray));
+        }
+
+        /// auto generated
+        public static int CountViaPUnitTemplate(PUnitRow ATemplateRow, StringCollection ATemplateOperators, TDBTransaction ATransaction)
+        {
+            return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_s_group_partner_set, PUB_p_unit WHERE " +
+                "PUB_s_group_partner_set.p_partner_set_unit_key_n = PUB_p_unit.p_partner_key_n" + GenerateWhereClauseLong("PUB_p_unit", PUnitTable.GetColumnStringList(), ATemplateRow, ATemplateOperators)), ATransaction, false, GetParametersForWhereClause(ATemplateRow, PUnitTable.GetPrimKeyColumnOrdList())));
+        }
+
+        /// auto generated
+        public static int CountViaPUnitTemplate(TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        {
+            return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_s_group_partner_set, PUB_p_unit WHERE " +
+                "PUB_s_group_partner_set.p_partner_set_unit_key_n = PUB_p_unit.p_partner_key_n" +
+                GenerateWhereClauseLong("PUB_p_unit", PUnitTable.GetColumnStringList(), ASearchCriteria)), ATransaction, false,
+                GetParametersForWhereClause(new PUnitTable(), ASearchCriteria)));
         }
 
         /// auto generated
@@ -14069,6 +19622,14 @@ namespace Ict.Petra.Shared.MSysMan.Data.Access
         public static void DeleteUsingTemplate(SGroupPartnerSetRow ATemplateRow, StringCollection ATemplateOperators, TDBTransaction ATransaction)
         {
             DBAccess.GDBAccessObj.ExecuteNonQuery(("DELETE FROM PUB_s_group_partner_set" + GenerateWhereClause(SGroupPartnerSetTable.GetColumnStringList(), ATemplateRow, ATemplateOperators)), ATransaction, false, GetParametersForWhereClause(ATemplateRow));
+        }
+
+        /// auto generated
+        public static void DeleteUsingTemplate(TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        {
+            DBAccess.GDBAccessObj.ExecuteNonQuery(("DELETE FROM PUB_s_group_partner_set" +
+                GenerateWhereClause(SGroupPartnerSetTable.GetColumnStringList(), ASearchCriteria)), ATransaction, false,
+                GetParametersForWhereClause(new SGroupPartnerSetTable(), ASearchCriteria));
         }
 
         /// auto generated
@@ -14265,6 +19826,50 @@ namespace Ict.Petra.Shared.MSysMan.Data.Access
         }
 
         /// this method is called by all overloads
+        public static void LoadUsingTemplate(DataSet ADataSet, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        {
+            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClause(AFieldList, new string[] {
+                            "s_group_id_c", "s_group_unit_key_n", "a_ledger_number_i", "a_batch_number_i", "a_gift_transaction_number_i"}) + " FROM PUB_s_group_gift")
+                            + GenerateWhereClause(SGroupGiftTable.GetColumnStringList(), ASearchCriteria))
+                            + GenerateOrderByClause(AOrderBy)), SGroupGiftTable.GetTableName(), ATransaction,
+                            GetParametersForWhereClause(new SGroupGiftTable(), ASearchCriteria), AStartRecord, AMaxRecords);
+        }
+
+        /// auto generated
+        public static void LoadUsingTemplate(DataSet AData, TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        {
+            LoadUsingTemplate(AData, ASearchCriteria, null, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static void LoadUsingTemplate(DataSet AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
+        {
+            LoadUsingTemplate(AData, ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static void LoadUsingTemplate(out SGroupGiftTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        {
+            DataSet FillDataSet = new DataSet();
+            AData = new SGroupGiftTable();
+            FillDataSet.Tables.Add(AData);
+            LoadUsingTemplate(FillDataSet, ASearchCriteria, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            FillDataSet.Tables.Remove(AData);
+        }
+
+        /// auto generated
+        public static void LoadUsingTemplate(out SGroupGiftTable AData, TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        {
+            LoadUsingTemplate(out AData, ASearchCriteria, null, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static void LoadUsingTemplate(out SGroupGiftTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
+        {
+            LoadUsingTemplate(out AData, ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
+        }
+
+        /// this method is called by all overloads
         public static int CountAll(TDBTransaction ATransaction)
         {
             return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar("SELECT COUNT(*) FROM PUB_s_group_gift", ATransaction, false));
@@ -14291,6 +19896,13 @@ namespace Ict.Petra.Shared.MSysMan.Data.Access
         public static int CountUsingTemplate(SGroupGiftRow ATemplateRow, StringCollection ATemplateOperators, TDBTransaction ATransaction)
         {
             return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_s_group_gift" + GenerateWhereClause(SGroupGiftTable.GetColumnStringList(), ATemplateRow, ATemplateOperators)), ATransaction, false, GetParametersForWhereClause(ATemplateRow)));
+        }
+
+        /// this method is called by all overloads
+        public static int CountUsingTemplate(TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        {
+            return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_s_group_gift" + GenerateWhereClause(SGroupGiftTable.GetColumnStringList(), ASearchCriteria)), ATransaction, false,
+            GetParametersForWhereClause(new SGroupGiftTable(), ASearchCriteria)));
         }
 
         /// auto generated
@@ -14391,6 +20003,51 @@ namespace Ict.Petra.Shared.MSysMan.Data.Access
         }
 
         /// auto generated
+        public static void LoadViaSGroupTemplate(DataSet ADataSet, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        {
+            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClauseLong("PUB_s_group_gift", AFieldList, new string[] {
+                            "s_group_id_c", "s_group_unit_key_n", "a_ledger_number_i", "a_batch_number_i", "a_gift_transaction_number_i"}) + " FROM PUB_s_group_gift, PUB_s_group WHERE " +
+                            "PUB_s_group_gift.s_group_id_c = PUB_s_group.s_group_id_c AND PUB_s_group_gift.s_group_unit_key_n = PUB_s_group.s_unit_key_n")
+                            + GenerateWhereClauseLong("PUB_s_group", SGroupTable.GetColumnStringList(), ASearchCriteria))
+                            + GenerateOrderByClause(AOrderBy)), SGroupGiftTable.GetTableName(), ATransaction,
+                            GetParametersForWhereClause(new SGroupGiftTable(), ASearchCriteria), AStartRecord, AMaxRecords);
+        }
+
+        /// auto generated
+        public static void LoadViaSGroupTemplate(DataSet AData, TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        {
+            LoadViaSGroupTemplate(AData, ASearchCriteria, null, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static void LoadViaSGroupTemplate(DataSet AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
+        {
+            LoadViaSGroupTemplate(AData, ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static void LoadViaSGroupTemplate(out SGroupGiftTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        {
+            DataSet FillDataSet = new DataSet();
+            AData = new SGroupGiftTable();
+            FillDataSet.Tables.Add(AData);
+            LoadViaSGroupTemplate(FillDataSet, ASearchCriteria, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            FillDataSet.Tables.Remove(AData);
+        }
+
+        /// auto generated
+        public static void LoadViaSGroupTemplate(out SGroupGiftTable AData, TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        {
+            LoadViaSGroupTemplate(out AData, ASearchCriteria, null, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static void LoadViaSGroupTemplate(out SGroupGiftTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
+        {
+            LoadViaSGroupTemplate(out AData, ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
         public static int CountViaSGroup(String AGroupId, Int64 AUnitKey, TDBTransaction ATransaction)
         {
             OdbcParameter[] ParametersArray = new OdbcParameter[2];
@@ -14406,6 +20063,15 @@ namespace Ict.Petra.Shared.MSysMan.Data.Access
         {
             return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_s_group_gift, PUB_s_group WHERE " +
                 "PUB_s_group_gift.s_group_id_c = PUB_s_group.s_group_id_c AND PUB_s_group_gift.s_group_unit_key_n = PUB_s_group.s_unit_key_n" + GenerateWhereClauseLong("PUB_s_group", SGroupTable.GetColumnStringList(), ATemplateRow, ATemplateOperators)), ATransaction, false, GetParametersForWhereClause(ATemplateRow, SGroupTable.GetPrimKeyColumnOrdList())));
+        }
+
+        /// auto generated
+        public static int CountViaSGroupTemplate(TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        {
+            return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_s_group_gift, PUB_s_group WHERE " +
+                "PUB_s_group_gift.s_group_id_c = PUB_s_group.s_group_id_c AND PUB_s_group_gift.s_group_unit_key_n = PUB_s_group.s_unit_key_n" +
+                GenerateWhereClauseLong("PUB_s_group", SGroupTable.GetColumnStringList(), ASearchCriteria)), ATransaction, false,
+                GetParametersForWhereClause(new SGroupTable(), ASearchCriteria)));
         }
 
         /// auto generated
@@ -14508,6 +20174,51 @@ namespace Ict.Petra.Shared.MSysMan.Data.Access
         }
 
         /// auto generated
+        public static void LoadViaAGiftTemplate(DataSet ADataSet, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        {
+            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClauseLong("PUB_s_group_gift", AFieldList, new string[] {
+                            "s_group_id_c", "s_group_unit_key_n", "a_ledger_number_i", "a_batch_number_i", "a_gift_transaction_number_i"}) + " FROM PUB_s_group_gift, PUB_a_gift WHERE " +
+                            "PUB_s_group_gift.a_ledger_number_i = PUB_a_gift.a_ledger_number_i AND PUB_s_group_gift.a_batch_number_i = PUB_a_gift.a_batch_number_i AND PUB_s_group_gift.a_gift_transaction_number_i = PUB_a_gift.a_gift_transaction_number_i")
+                            + GenerateWhereClauseLong("PUB_a_gift", AGiftTable.GetColumnStringList(), ASearchCriteria))
+                            + GenerateOrderByClause(AOrderBy)), SGroupGiftTable.GetTableName(), ATransaction,
+                            GetParametersForWhereClause(new SGroupGiftTable(), ASearchCriteria), AStartRecord, AMaxRecords);
+        }
+
+        /// auto generated
+        public static void LoadViaAGiftTemplate(DataSet AData, TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        {
+            LoadViaAGiftTemplate(AData, ASearchCriteria, null, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static void LoadViaAGiftTemplate(DataSet AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
+        {
+            LoadViaAGiftTemplate(AData, ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static void LoadViaAGiftTemplate(out SGroupGiftTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        {
+            DataSet FillDataSet = new DataSet();
+            AData = new SGroupGiftTable();
+            FillDataSet.Tables.Add(AData);
+            LoadViaAGiftTemplate(FillDataSet, ASearchCriteria, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            FillDataSet.Tables.Remove(AData);
+        }
+
+        /// auto generated
+        public static void LoadViaAGiftTemplate(out SGroupGiftTable AData, TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        {
+            LoadViaAGiftTemplate(out AData, ASearchCriteria, null, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static void LoadViaAGiftTemplate(out SGroupGiftTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
+        {
+            LoadViaAGiftTemplate(out AData, ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
         public static int CountViaAGift(Int32 ALedgerNumber, Int32 ABatchNumber, Int32 AGiftTransactionNumber, TDBTransaction ATransaction)
         {
             OdbcParameter[] ParametersArray = new OdbcParameter[3];
@@ -14525,6 +20236,15 @@ namespace Ict.Petra.Shared.MSysMan.Data.Access
         {
             return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_s_group_gift, PUB_a_gift WHERE " +
                 "PUB_s_group_gift.a_ledger_number_i = PUB_a_gift.a_ledger_number_i AND PUB_s_group_gift.a_batch_number_i = PUB_a_gift.a_batch_number_i AND PUB_s_group_gift.a_gift_transaction_number_i = PUB_a_gift.a_gift_transaction_number_i" + GenerateWhereClauseLong("PUB_a_gift", AGiftTable.GetColumnStringList(), ATemplateRow, ATemplateOperators)), ATransaction, false, GetParametersForWhereClause(ATemplateRow, AGiftTable.GetPrimKeyColumnOrdList())));
+        }
+
+        /// auto generated
+        public static int CountViaAGiftTemplate(TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        {
+            return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_s_group_gift, PUB_a_gift WHERE " +
+                "PUB_s_group_gift.a_ledger_number_i = PUB_a_gift.a_ledger_number_i AND PUB_s_group_gift.a_batch_number_i = PUB_a_gift.a_batch_number_i AND PUB_s_group_gift.a_gift_transaction_number_i = PUB_a_gift.a_gift_transaction_number_i" +
+                GenerateWhereClauseLong("PUB_a_gift", AGiftTable.GetColumnStringList(), ASearchCriteria)), ATransaction, false,
+                GetParametersForWhereClause(new AGiftTable(), ASearchCriteria)));
         }
 
         /// auto generated
@@ -14548,6 +20268,14 @@ namespace Ict.Petra.Shared.MSysMan.Data.Access
         public static void DeleteUsingTemplate(SGroupGiftRow ATemplateRow, StringCollection ATemplateOperators, TDBTransaction ATransaction)
         {
             DBAccess.GDBAccessObj.ExecuteNonQuery(("DELETE FROM PUB_s_group_gift" + GenerateWhereClause(SGroupGiftTable.GetColumnStringList(), ATemplateRow, ATemplateOperators)), ATransaction, false, GetParametersForWhereClause(ATemplateRow));
+        }
+
+        /// auto generated
+        public static void DeleteUsingTemplate(TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        {
+            DBAccess.GDBAccessObj.ExecuteNonQuery(("DELETE FROM PUB_s_group_gift" +
+                GenerateWhereClause(SGroupGiftTable.GetColumnStringList(), ASearchCriteria)), ATransaction, false,
+                GetParametersForWhereClause(new SGroupGiftTable(), ASearchCriteria));
         }
 
         /// auto generated
@@ -14744,6 +20472,50 @@ namespace Ict.Petra.Shared.MSysMan.Data.Access
         }
 
         /// this method is called by all overloads
+        public static void LoadUsingTemplate(DataSet ADataSet, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        {
+            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClause(AFieldList, new string[] {
+                            "s_group_id_c", "s_group_unit_key_n", "a_ledger_number_i", "a_motivation_group_code_c", "a_motivation_detail_code_c"}) + " FROM PUB_s_group_motivation")
+                            + GenerateWhereClause(SGroupMotivationTable.GetColumnStringList(), ASearchCriteria))
+                            + GenerateOrderByClause(AOrderBy)), SGroupMotivationTable.GetTableName(), ATransaction,
+                            GetParametersForWhereClause(new SGroupMotivationTable(), ASearchCriteria), AStartRecord, AMaxRecords);
+        }
+
+        /// auto generated
+        public static void LoadUsingTemplate(DataSet AData, TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        {
+            LoadUsingTemplate(AData, ASearchCriteria, null, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static void LoadUsingTemplate(DataSet AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
+        {
+            LoadUsingTemplate(AData, ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static void LoadUsingTemplate(out SGroupMotivationTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        {
+            DataSet FillDataSet = new DataSet();
+            AData = new SGroupMotivationTable();
+            FillDataSet.Tables.Add(AData);
+            LoadUsingTemplate(FillDataSet, ASearchCriteria, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            FillDataSet.Tables.Remove(AData);
+        }
+
+        /// auto generated
+        public static void LoadUsingTemplate(out SGroupMotivationTable AData, TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        {
+            LoadUsingTemplate(out AData, ASearchCriteria, null, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static void LoadUsingTemplate(out SGroupMotivationTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
+        {
+            LoadUsingTemplate(out AData, ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
+        }
+
+        /// this method is called by all overloads
         public static int CountAll(TDBTransaction ATransaction)
         {
             return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar("SELECT COUNT(*) FROM PUB_s_group_motivation", ATransaction, false));
@@ -14770,6 +20542,13 @@ namespace Ict.Petra.Shared.MSysMan.Data.Access
         public static int CountUsingTemplate(SGroupMotivationRow ATemplateRow, StringCollection ATemplateOperators, TDBTransaction ATransaction)
         {
             return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_s_group_motivation" + GenerateWhereClause(SGroupMotivationTable.GetColumnStringList(), ATemplateRow, ATemplateOperators)), ATransaction, false, GetParametersForWhereClause(ATemplateRow)));
+        }
+
+        /// this method is called by all overloads
+        public static int CountUsingTemplate(TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        {
+            return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_s_group_motivation" + GenerateWhereClause(SGroupMotivationTable.GetColumnStringList(), ASearchCriteria)), ATransaction, false,
+            GetParametersForWhereClause(new SGroupMotivationTable(), ASearchCriteria)));
         }
 
         /// auto generated
@@ -14870,6 +20649,51 @@ namespace Ict.Petra.Shared.MSysMan.Data.Access
         }
 
         /// auto generated
+        public static void LoadViaSGroupTemplate(DataSet ADataSet, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        {
+            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClauseLong("PUB_s_group_motivation", AFieldList, new string[] {
+                            "s_group_id_c", "s_group_unit_key_n", "a_ledger_number_i", "a_motivation_group_code_c", "a_motivation_detail_code_c"}) + " FROM PUB_s_group_motivation, PUB_s_group WHERE " +
+                            "PUB_s_group_motivation.s_group_id_c = PUB_s_group.s_group_id_c AND PUB_s_group_motivation.s_group_unit_key_n = PUB_s_group.s_unit_key_n")
+                            + GenerateWhereClauseLong("PUB_s_group", SGroupTable.GetColumnStringList(), ASearchCriteria))
+                            + GenerateOrderByClause(AOrderBy)), SGroupMotivationTable.GetTableName(), ATransaction,
+                            GetParametersForWhereClause(new SGroupMotivationTable(), ASearchCriteria), AStartRecord, AMaxRecords);
+        }
+
+        /// auto generated
+        public static void LoadViaSGroupTemplate(DataSet AData, TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        {
+            LoadViaSGroupTemplate(AData, ASearchCriteria, null, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static void LoadViaSGroupTemplate(DataSet AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
+        {
+            LoadViaSGroupTemplate(AData, ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static void LoadViaSGroupTemplate(out SGroupMotivationTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        {
+            DataSet FillDataSet = new DataSet();
+            AData = new SGroupMotivationTable();
+            FillDataSet.Tables.Add(AData);
+            LoadViaSGroupTemplate(FillDataSet, ASearchCriteria, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            FillDataSet.Tables.Remove(AData);
+        }
+
+        /// auto generated
+        public static void LoadViaSGroupTemplate(out SGroupMotivationTable AData, TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        {
+            LoadViaSGroupTemplate(out AData, ASearchCriteria, null, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static void LoadViaSGroupTemplate(out SGroupMotivationTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
+        {
+            LoadViaSGroupTemplate(out AData, ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
         public static int CountViaSGroup(String AGroupId, Int64 AUnitKey, TDBTransaction ATransaction)
         {
             OdbcParameter[] ParametersArray = new OdbcParameter[2];
@@ -14885,6 +20709,15 @@ namespace Ict.Petra.Shared.MSysMan.Data.Access
         {
             return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_s_group_motivation, PUB_s_group WHERE " +
                 "PUB_s_group_motivation.s_group_id_c = PUB_s_group.s_group_id_c AND PUB_s_group_motivation.s_group_unit_key_n = PUB_s_group.s_unit_key_n" + GenerateWhereClauseLong("PUB_s_group", SGroupTable.GetColumnStringList(), ATemplateRow, ATemplateOperators)), ATransaction, false, GetParametersForWhereClause(ATemplateRow, SGroupTable.GetPrimKeyColumnOrdList())));
+        }
+
+        /// auto generated
+        public static int CountViaSGroupTemplate(TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        {
+            return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_s_group_motivation, PUB_s_group WHERE " +
+                "PUB_s_group_motivation.s_group_id_c = PUB_s_group.s_group_id_c AND PUB_s_group_motivation.s_group_unit_key_n = PUB_s_group.s_unit_key_n" +
+                GenerateWhereClauseLong("PUB_s_group", SGroupTable.GetColumnStringList(), ASearchCriteria)), ATransaction, false,
+                GetParametersForWhereClause(new SGroupTable(), ASearchCriteria)));
         }
 
         /// auto generated
@@ -14987,6 +20820,51 @@ namespace Ict.Petra.Shared.MSysMan.Data.Access
         }
 
         /// auto generated
+        public static void LoadViaAMotivationDetailTemplate(DataSet ADataSet, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        {
+            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClauseLong("PUB_s_group_motivation", AFieldList, new string[] {
+                            "s_group_id_c", "s_group_unit_key_n", "a_ledger_number_i", "a_motivation_group_code_c", "a_motivation_detail_code_c"}) + " FROM PUB_s_group_motivation, PUB_a_motivation_detail WHERE " +
+                            "PUB_s_group_motivation.a_ledger_number_i = PUB_a_motivation_detail.a_ledger_number_i AND PUB_s_group_motivation.a_motivation_group_code_c = PUB_a_motivation_detail.a_motivation_group_code_c AND PUB_s_group_motivation.a_motivation_detail_code_c = PUB_a_motivation_detail.a_motivation_detail_code_c")
+                            + GenerateWhereClauseLong("PUB_a_motivation_detail", AMotivationDetailTable.GetColumnStringList(), ASearchCriteria))
+                            + GenerateOrderByClause(AOrderBy)), SGroupMotivationTable.GetTableName(), ATransaction,
+                            GetParametersForWhereClause(new SGroupMotivationTable(), ASearchCriteria), AStartRecord, AMaxRecords);
+        }
+
+        /// auto generated
+        public static void LoadViaAMotivationDetailTemplate(DataSet AData, TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        {
+            LoadViaAMotivationDetailTemplate(AData, ASearchCriteria, null, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static void LoadViaAMotivationDetailTemplate(DataSet AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
+        {
+            LoadViaAMotivationDetailTemplate(AData, ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static void LoadViaAMotivationDetailTemplate(out SGroupMotivationTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        {
+            DataSet FillDataSet = new DataSet();
+            AData = new SGroupMotivationTable();
+            FillDataSet.Tables.Add(AData);
+            LoadViaAMotivationDetailTemplate(FillDataSet, ASearchCriteria, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            FillDataSet.Tables.Remove(AData);
+        }
+
+        /// auto generated
+        public static void LoadViaAMotivationDetailTemplate(out SGroupMotivationTable AData, TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        {
+            LoadViaAMotivationDetailTemplate(out AData, ASearchCriteria, null, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static void LoadViaAMotivationDetailTemplate(out SGroupMotivationTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
+        {
+            LoadViaAMotivationDetailTemplate(out AData, ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
         public static int CountViaAMotivationDetail(Int32 ALedgerNumber, String AMotivationGroupCode, String AMotivationDetailCode, TDBTransaction ATransaction)
         {
             OdbcParameter[] ParametersArray = new OdbcParameter[3];
@@ -15004,6 +20882,15 @@ namespace Ict.Petra.Shared.MSysMan.Data.Access
         {
             return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_s_group_motivation, PUB_a_motivation_detail WHERE " +
                 "PUB_s_group_motivation.a_ledger_number_i = PUB_a_motivation_detail.a_ledger_number_i AND PUB_s_group_motivation.a_motivation_group_code_c = PUB_a_motivation_detail.a_motivation_group_code_c AND PUB_s_group_motivation.a_motivation_detail_code_c = PUB_a_motivation_detail.a_motivation_detail_code_c" + GenerateWhereClauseLong("PUB_a_motivation_detail", AMotivationDetailTable.GetColumnStringList(), ATemplateRow, ATemplateOperators)), ATransaction, false, GetParametersForWhereClause(ATemplateRow, AMotivationDetailTable.GetPrimKeyColumnOrdList())));
+        }
+
+        /// auto generated
+        public static int CountViaAMotivationDetailTemplate(TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        {
+            return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_s_group_motivation, PUB_a_motivation_detail WHERE " +
+                "PUB_s_group_motivation.a_ledger_number_i = PUB_a_motivation_detail.a_ledger_number_i AND PUB_s_group_motivation.a_motivation_group_code_c = PUB_a_motivation_detail.a_motivation_group_code_c AND PUB_s_group_motivation.a_motivation_detail_code_c = PUB_a_motivation_detail.a_motivation_detail_code_c" +
+                GenerateWhereClauseLong("PUB_a_motivation_detail", AMotivationDetailTable.GetColumnStringList(), ASearchCriteria)), ATransaction, false,
+                GetParametersForWhereClause(new AMotivationDetailTable(), ASearchCriteria)));
         }
 
         /// auto generated
@@ -15027,6 +20914,14 @@ namespace Ict.Petra.Shared.MSysMan.Data.Access
         public static void DeleteUsingTemplate(SGroupMotivationRow ATemplateRow, StringCollection ATemplateOperators, TDBTransaction ATransaction)
         {
             DBAccess.GDBAccessObj.ExecuteNonQuery(("DELETE FROM PUB_s_group_motivation" + GenerateWhereClause(SGroupMotivationTable.GetColumnStringList(), ATemplateRow, ATemplateOperators)), ATransaction, false, GetParametersForWhereClause(ATemplateRow));
+        }
+
+        /// auto generated
+        public static void DeleteUsingTemplate(TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        {
+            DBAccess.GDBAccessObj.ExecuteNonQuery(("DELETE FROM PUB_s_group_motivation" +
+                GenerateWhereClause(SGroupMotivationTable.GetColumnStringList(), ASearchCriteria)), ATransaction, false,
+                GetParametersForWhereClause(new SGroupMotivationTable(), ASearchCriteria));
         }
 
         /// auto generated
@@ -15219,6 +21114,50 @@ namespace Ict.Petra.Shared.MSysMan.Data.Access
         }
 
         /// this method is called by all overloads
+        public static void LoadUsingTemplate(DataSet ADataSet, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        {
+            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClause(AFieldList, new string[] {
+                            "s_group_id_c", "s_group_unit_key_n", "p_contact_id_i"}) + " FROM PUB_s_group_partner_contact")
+                            + GenerateWhereClause(SGroupPartnerContactTable.GetColumnStringList(), ASearchCriteria))
+                            + GenerateOrderByClause(AOrderBy)), SGroupPartnerContactTable.GetTableName(), ATransaction,
+                            GetParametersForWhereClause(new SGroupPartnerContactTable(), ASearchCriteria), AStartRecord, AMaxRecords);
+        }
+
+        /// auto generated
+        public static void LoadUsingTemplate(DataSet AData, TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        {
+            LoadUsingTemplate(AData, ASearchCriteria, null, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static void LoadUsingTemplate(DataSet AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
+        {
+            LoadUsingTemplate(AData, ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static void LoadUsingTemplate(out SGroupPartnerContactTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        {
+            DataSet FillDataSet = new DataSet();
+            AData = new SGroupPartnerContactTable();
+            FillDataSet.Tables.Add(AData);
+            LoadUsingTemplate(FillDataSet, ASearchCriteria, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            FillDataSet.Tables.Remove(AData);
+        }
+
+        /// auto generated
+        public static void LoadUsingTemplate(out SGroupPartnerContactTable AData, TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        {
+            LoadUsingTemplate(out AData, ASearchCriteria, null, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static void LoadUsingTemplate(out SGroupPartnerContactTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
+        {
+            LoadUsingTemplate(out AData, ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
+        }
+
+        /// this method is called by all overloads
         public static int CountAll(TDBTransaction ATransaction)
         {
             return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar("SELECT COUNT(*) FROM PUB_s_group_partner_contact", ATransaction, false));
@@ -15241,6 +21180,13 @@ namespace Ict.Petra.Shared.MSysMan.Data.Access
         public static int CountUsingTemplate(SGroupPartnerContactRow ATemplateRow, StringCollection ATemplateOperators, TDBTransaction ATransaction)
         {
             return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_s_group_partner_contact" + GenerateWhereClause(SGroupPartnerContactTable.GetColumnStringList(), ATemplateRow, ATemplateOperators)), ATransaction, false, GetParametersForWhereClause(ATemplateRow)));
+        }
+
+        /// this method is called by all overloads
+        public static int CountUsingTemplate(TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        {
+            return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_s_group_partner_contact" + GenerateWhereClause(SGroupPartnerContactTable.GetColumnStringList(), ASearchCriteria)), ATransaction, false,
+            GetParametersForWhereClause(new SGroupPartnerContactTable(), ASearchCriteria)));
         }
 
         /// auto generated
@@ -15341,6 +21287,51 @@ namespace Ict.Petra.Shared.MSysMan.Data.Access
         }
 
         /// auto generated
+        public static void LoadViaSGroupTemplate(DataSet ADataSet, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        {
+            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClauseLong("PUB_s_group_partner_contact", AFieldList, new string[] {
+                            "s_group_id_c", "s_group_unit_key_n", "p_contact_id_i"}) + " FROM PUB_s_group_partner_contact, PUB_s_group WHERE " +
+                            "PUB_s_group_partner_contact.s_group_id_c = PUB_s_group.s_group_id_c AND PUB_s_group_partner_contact.s_group_unit_key_n = PUB_s_group.s_unit_key_n")
+                            + GenerateWhereClauseLong("PUB_s_group", SGroupTable.GetColumnStringList(), ASearchCriteria))
+                            + GenerateOrderByClause(AOrderBy)), SGroupPartnerContactTable.GetTableName(), ATransaction,
+                            GetParametersForWhereClause(new SGroupPartnerContactTable(), ASearchCriteria), AStartRecord, AMaxRecords);
+        }
+
+        /// auto generated
+        public static void LoadViaSGroupTemplate(DataSet AData, TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        {
+            LoadViaSGroupTemplate(AData, ASearchCriteria, null, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static void LoadViaSGroupTemplate(DataSet AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
+        {
+            LoadViaSGroupTemplate(AData, ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static void LoadViaSGroupTemplate(out SGroupPartnerContactTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        {
+            DataSet FillDataSet = new DataSet();
+            AData = new SGroupPartnerContactTable();
+            FillDataSet.Tables.Add(AData);
+            LoadViaSGroupTemplate(FillDataSet, ASearchCriteria, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            FillDataSet.Tables.Remove(AData);
+        }
+
+        /// auto generated
+        public static void LoadViaSGroupTemplate(out SGroupPartnerContactTable AData, TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        {
+            LoadViaSGroupTemplate(out AData, ASearchCriteria, null, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static void LoadViaSGroupTemplate(out SGroupPartnerContactTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
+        {
+            LoadViaSGroupTemplate(out AData, ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
         public static int CountViaSGroup(String AGroupId, Int64 AUnitKey, TDBTransaction ATransaction)
         {
             OdbcParameter[] ParametersArray = new OdbcParameter[2];
@@ -15356,6 +21347,15 @@ namespace Ict.Petra.Shared.MSysMan.Data.Access
         {
             return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_s_group_partner_contact, PUB_s_group WHERE " +
                 "PUB_s_group_partner_contact.s_group_id_c = PUB_s_group.s_group_id_c AND PUB_s_group_partner_contact.s_group_unit_key_n = PUB_s_group.s_unit_key_n" + GenerateWhereClauseLong("PUB_s_group", SGroupTable.GetColumnStringList(), ATemplateRow, ATemplateOperators)), ATransaction, false, GetParametersForWhereClause(ATemplateRow, SGroupTable.GetPrimKeyColumnOrdList())));
+        }
+
+        /// auto generated
+        public static int CountViaSGroupTemplate(TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        {
+            return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_s_group_partner_contact, PUB_s_group WHERE " +
+                "PUB_s_group_partner_contact.s_group_id_c = PUB_s_group.s_group_id_c AND PUB_s_group_partner_contact.s_group_unit_key_n = PUB_s_group.s_unit_key_n" +
+                GenerateWhereClauseLong("PUB_s_group", SGroupTable.GetColumnStringList(), ASearchCriteria)), ATransaction, false,
+                GetParametersForWhereClause(new SGroupTable(), ASearchCriteria)));
         }
 
         /// auto generated
@@ -15454,6 +21454,51 @@ namespace Ict.Petra.Shared.MSysMan.Data.Access
         }
 
         /// auto generated
+        public static void LoadViaPPartnerContactTemplate(DataSet ADataSet, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        {
+            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClauseLong("PUB_s_group_partner_contact", AFieldList, new string[] {
+                            "s_group_id_c", "s_group_unit_key_n", "p_contact_id_i"}) + " FROM PUB_s_group_partner_contact, PUB_p_partner_contact WHERE " +
+                            "PUB_s_group_partner_contact.p_contact_id_i = PUB_p_partner_contact.p_contact_id_i")
+                            + GenerateWhereClauseLong("PUB_p_partner_contact", PPartnerContactTable.GetColumnStringList(), ASearchCriteria))
+                            + GenerateOrderByClause(AOrderBy)), SGroupPartnerContactTable.GetTableName(), ATransaction,
+                            GetParametersForWhereClause(new SGroupPartnerContactTable(), ASearchCriteria), AStartRecord, AMaxRecords);
+        }
+
+        /// auto generated
+        public static void LoadViaPPartnerContactTemplate(DataSet AData, TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        {
+            LoadViaPPartnerContactTemplate(AData, ASearchCriteria, null, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static void LoadViaPPartnerContactTemplate(DataSet AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
+        {
+            LoadViaPPartnerContactTemplate(AData, ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static void LoadViaPPartnerContactTemplate(out SGroupPartnerContactTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        {
+            DataSet FillDataSet = new DataSet();
+            AData = new SGroupPartnerContactTable();
+            FillDataSet.Tables.Add(AData);
+            LoadViaPPartnerContactTemplate(FillDataSet, ASearchCriteria, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            FillDataSet.Tables.Remove(AData);
+        }
+
+        /// auto generated
+        public static void LoadViaPPartnerContactTemplate(out SGroupPartnerContactTable AData, TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        {
+            LoadViaPPartnerContactTemplate(out AData, ASearchCriteria, null, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static void LoadViaPPartnerContactTemplate(out SGroupPartnerContactTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
+        {
+            LoadViaPPartnerContactTemplate(out AData, ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
         public static int CountViaPPartnerContact(Int32 AContactId, TDBTransaction ATransaction)
         {
             OdbcParameter[] ParametersArray = new OdbcParameter[1];
@@ -15467,6 +21512,15 @@ namespace Ict.Petra.Shared.MSysMan.Data.Access
         {
             return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_s_group_partner_contact, PUB_p_partner_contact WHERE " +
                 "PUB_s_group_partner_contact.p_contact_id_i = PUB_p_partner_contact.p_contact_id_i" + GenerateWhereClauseLong("PUB_p_partner_contact", PPartnerContactTable.GetColumnStringList(), ATemplateRow, ATemplateOperators)), ATransaction, false, GetParametersForWhereClause(ATemplateRow, PPartnerContactTable.GetPrimKeyColumnOrdList())));
+        }
+
+        /// auto generated
+        public static int CountViaPPartnerContactTemplate(TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        {
+            return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_s_group_partner_contact, PUB_p_partner_contact WHERE " +
+                "PUB_s_group_partner_contact.p_contact_id_i = PUB_p_partner_contact.p_contact_id_i" +
+                GenerateWhereClauseLong("PUB_p_partner_contact", PPartnerContactTable.GetColumnStringList(), ASearchCriteria)), ATransaction, false,
+                GetParametersForWhereClause(new PPartnerContactTable(), ASearchCriteria)));
         }
 
         /// auto generated
@@ -15486,6 +21540,14 @@ namespace Ict.Petra.Shared.MSysMan.Data.Access
         public static void DeleteUsingTemplate(SGroupPartnerContactRow ATemplateRow, StringCollection ATemplateOperators, TDBTransaction ATransaction)
         {
             DBAccess.GDBAccessObj.ExecuteNonQuery(("DELETE FROM PUB_s_group_partner_contact" + GenerateWhereClause(SGroupPartnerContactTable.GetColumnStringList(), ATemplateRow, ATemplateOperators)), ATransaction, false, GetParametersForWhereClause(ATemplateRow));
+        }
+
+        /// auto generated
+        public static void DeleteUsingTemplate(TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        {
+            DBAccess.GDBAccessObj.ExecuteNonQuery(("DELETE FROM PUB_s_group_partner_contact" +
+                GenerateWhereClause(SGroupPartnerContactTable.GetColumnStringList(), ASearchCriteria)), ATransaction, false,
+                GetParametersForWhereClause(new SGroupPartnerContactTable(), ASearchCriteria));
         }
 
         /// auto generated
@@ -15682,6 +21744,50 @@ namespace Ict.Petra.Shared.MSysMan.Data.Access
         }
 
         /// this method is called by all overloads
+        public static void LoadUsingTemplate(DataSet ADataSet, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        {
+            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClause(AFieldList, new string[] {
+                            "s_group_id_c", "s_group_unit_key_n", "p_partner_key_n", "p_contact_id_i", "p_reminder_id_i"}) + " FROM PUB_s_group_partner_reminder")
+                            + GenerateWhereClause(SGroupPartnerReminderTable.GetColumnStringList(), ASearchCriteria))
+                            + GenerateOrderByClause(AOrderBy)), SGroupPartnerReminderTable.GetTableName(), ATransaction,
+                            GetParametersForWhereClause(new SGroupPartnerReminderTable(), ASearchCriteria), AStartRecord, AMaxRecords);
+        }
+
+        /// auto generated
+        public static void LoadUsingTemplate(DataSet AData, TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        {
+            LoadUsingTemplate(AData, ASearchCriteria, null, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static void LoadUsingTemplate(DataSet AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
+        {
+            LoadUsingTemplate(AData, ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static void LoadUsingTemplate(out SGroupPartnerReminderTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        {
+            DataSet FillDataSet = new DataSet();
+            AData = new SGroupPartnerReminderTable();
+            FillDataSet.Tables.Add(AData);
+            LoadUsingTemplate(FillDataSet, ASearchCriteria, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            FillDataSet.Tables.Remove(AData);
+        }
+
+        /// auto generated
+        public static void LoadUsingTemplate(out SGroupPartnerReminderTable AData, TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        {
+            LoadUsingTemplate(out AData, ASearchCriteria, null, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static void LoadUsingTemplate(out SGroupPartnerReminderTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
+        {
+            LoadUsingTemplate(out AData, ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
+        }
+
+        /// this method is called by all overloads
         public static int CountAll(TDBTransaction ATransaction)
         {
             return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar("SELECT COUNT(*) FROM PUB_s_group_partner_reminder", ATransaction, false));
@@ -15708,6 +21814,13 @@ namespace Ict.Petra.Shared.MSysMan.Data.Access
         public static int CountUsingTemplate(SGroupPartnerReminderRow ATemplateRow, StringCollection ATemplateOperators, TDBTransaction ATransaction)
         {
             return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_s_group_partner_reminder" + GenerateWhereClause(SGroupPartnerReminderTable.GetColumnStringList(), ATemplateRow, ATemplateOperators)), ATransaction, false, GetParametersForWhereClause(ATemplateRow)));
+        }
+
+        /// this method is called by all overloads
+        public static int CountUsingTemplate(TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        {
+            return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_s_group_partner_reminder" + GenerateWhereClause(SGroupPartnerReminderTable.GetColumnStringList(), ASearchCriteria)), ATransaction, false,
+            GetParametersForWhereClause(new SGroupPartnerReminderTable(), ASearchCriteria)));
         }
 
         /// auto generated
@@ -15808,6 +21921,51 @@ namespace Ict.Petra.Shared.MSysMan.Data.Access
         }
 
         /// auto generated
+        public static void LoadViaSGroupTemplate(DataSet ADataSet, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        {
+            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClauseLong("PUB_s_group_partner_reminder", AFieldList, new string[] {
+                            "s_group_id_c", "s_group_unit_key_n", "p_partner_key_n", "p_contact_id_i", "p_reminder_id_i"}) + " FROM PUB_s_group_partner_reminder, PUB_s_group WHERE " +
+                            "PUB_s_group_partner_reminder.s_group_id_c = PUB_s_group.s_group_id_c AND PUB_s_group_partner_reminder.s_group_unit_key_n = PUB_s_group.s_unit_key_n")
+                            + GenerateWhereClauseLong("PUB_s_group", SGroupTable.GetColumnStringList(), ASearchCriteria))
+                            + GenerateOrderByClause(AOrderBy)), SGroupPartnerReminderTable.GetTableName(), ATransaction,
+                            GetParametersForWhereClause(new SGroupPartnerReminderTable(), ASearchCriteria), AStartRecord, AMaxRecords);
+        }
+
+        /// auto generated
+        public static void LoadViaSGroupTemplate(DataSet AData, TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        {
+            LoadViaSGroupTemplate(AData, ASearchCriteria, null, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static void LoadViaSGroupTemplate(DataSet AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
+        {
+            LoadViaSGroupTemplate(AData, ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static void LoadViaSGroupTemplate(out SGroupPartnerReminderTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        {
+            DataSet FillDataSet = new DataSet();
+            AData = new SGroupPartnerReminderTable();
+            FillDataSet.Tables.Add(AData);
+            LoadViaSGroupTemplate(FillDataSet, ASearchCriteria, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            FillDataSet.Tables.Remove(AData);
+        }
+
+        /// auto generated
+        public static void LoadViaSGroupTemplate(out SGroupPartnerReminderTable AData, TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        {
+            LoadViaSGroupTemplate(out AData, ASearchCriteria, null, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static void LoadViaSGroupTemplate(out SGroupPartnerReminderTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
+        {
+            LoadViaSGroupTemplate(out AData, ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
         public static int CountViaSGroup(String AGroupId, Int64 AUnitKey, TDBTransaction ATransaction)
         {
             OdbcParameter[] ParametersArray = new OdbcParameter[2];
@@ -15823,6 +21981,15 @@ namespace Ict.Petra.Shared.MSysMan.Data.Access
         {
             return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_s_group_partner_reminder, PUB_s_group WHERE " +
                 "PUB_s_group_partner_reminder.s_group_id_c = PUB_s_group.s_group_id_c AND PUB_s_group_partner_reminder.s_group_unit_key_n = PUB_s_group.s_unit_key_n" + GenerateWhereClauseLong("PUB_s_group", SGroupTable.GetColumnStringList(), ATemplateRow, ATemplateOperators)), ATransaction, false, GetParametersForWhereClause(ATemplateRow, SGroupTable.GetPrimKeyColumnOrdList())));
+        }
+
+        /// auto generated
+        public static int CountViaSGroupTemplate(TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        {
+            return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_s_group_partner_reminder, PUB_s_group WHERE " +
+                "PUB_s_group_partner_reminder.s_group_id_c = PUB_s_group.s_group_id_c AND PUB_s_group_partner_reminder.s_group_unit_key_n = PUB_s_group.s_unit_key_n" +
+                GenerateWhereClauseLong("PUB_s_group", SGroupTable.GetColumnStringList(), ASearchCriteria)), ATransaction, false,
+                GetParametersForWhereClause(new SGroupTable(), ASearchCriteria)));
         }
 
         /// auto generated
@@ -15925,6 +22092,51 @@ namespace Ict.Petra.Shared.MSysMan.Data.Access
         }
 
         /// auto generated
+        public static void LoadViaPPartnerReminderTemplate(DataSet ADataSet, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        {
+            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClauseLong("PUB_s_group_partner_reminder", AFieldList, new string[] {
+                            "s_group_id_c", "s_group_unit_key_n", "p_partner_key_n", "p_contact_id_i", "p_reminder_id_i"}) + " FROM PUB_s_group_partner_reminder, PUB_p_partner_reminder WHERE " +
+                            "PUB_s_group_partner_reminder.p_partner_key_n = PUB_p_partner_reminder.p_partner_key_n AND PUB_s_group_partner_reminder.p_contact_id_i = PUB_p_partner_reminder.p_contact_id_i AND PUB_s_group_partner_reminder.p_reminder_id_i = PUB_p_partner_reminder.p_reminder_id_i")
+                            + GenerateWhereClauseLong("PUB_p_partner_reminder", PPartnerReminderTable.GetColumnStringList(), ASearchCriteria))
+                            + GenerateOrderByClause(AOrderBy)), SGroupPartnerReminderTable.GetTableName(), ATransaction,
+                            GetParametersForWhereClause(new SGroupPartnerReminderTable(), ASearchCriteria), AStartRecord, AMaxRecords);
+        }
+
+        /// auto generated
+        public static void LoadViaPPartnerReminderTemplate(DataSet AData, TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        {
+            LoadViaPPartnerReminderTemplate(AData, ASearchCriteria, null, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static void LoadViaPPartnerReminderTemplate(DataSet AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
+        {
+            LoadViaPPartnerReminderTemplate(AData, ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static void LoadViaPPartnerReminderTemplate(out SGroupPartnerReminderTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        {
+            DataSet FillDataSet = new DataSet();
+            AData = new SGroupPartnerReminderTable();
+            FillDataSet.Tables.Add(AData);
+            LoadViaPPartnerReminderTemplate(FillDataSet, ASearchCriteria, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            FillDataSet.Tables.Remove(AData);
+        }
+
+        /// auto generated
+        public static void LoadViaPPartnerReminderTemplate(out SGroupPartnerReminderTable AData, TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        {
+            LoadViaPPartnerReminderTemplate(out AData, ASearchCriteria, null, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static void LoadViaPPartnerReminderTemplate(out SGroupPartnerReminderTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
+        {
+            LoadViaPPartnerReminderTemplate(out AData, ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
         public static int CountViaPPartnerReminder(Int64 APartnerKey, Int32 AContactId, Int32 AReminderId, TDBTransaction ATransaction)
         {
             OdbcParameter[] ParametersArray = new OdbcParameter[3];
@@ -15942,6 +22154,345 @@ namespace Ict.Petra.Shared.MSysMan.Data.Access
         {
             return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_s_group_partner_reminder, PUB_p_partner_reminder WHERE " +
                 "PUB_s_group_partner_reminder.p_partner_key_n = PUB_p_partner_reminder.p_partner_key_n AND PUB_s_group_partner_reminder.p_contact_id_i = PUB_p_partner_reminder.p_contact_id_i AND PUB_s_group_partner_reminder.p_reminder_id_i = PUB_p_partner_reminder.p_reminder_id_i" + GenerateWhereClauseLong("PUB_p_partner_reminder", PPartnerReminderTable.GetColumnStringList(), ATemplateRow, ATemplateOperators)), ATransaction, false, GetParametersForWhereClause(ATemplateRow, PPartnerReminderTable.GetPrimKeyColumnOrdList())));
+        }
+
+        /// auto generated
+        public static int CountViaPPartnerReminderTemplate(TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        {
+            return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_s_group_partner_reminder, PUB_p_partner_reminder WHERE " +
+                "PUB_s_group_partner_reminder.p_partner_key_n = PUB_p_partner_reminder.p_partner_key_n AND PUB_s_group_partner_reminder.p_contact_id_i = PUB_p_partner_reminder.p_contact_id_i AND PUB_s_group_partner_reminder.p_reminder_id_i = PUB_p_partner_reminder.p_reminder_id_i" +
+                GenerateWhereClauseLong("PUB_p_partner_reminder", PPartnerReminderTable.GetColumnStringList(), ASearchCriteria)), ATransaction, false,
+                GetParametersForWhereClause(new PPartnerReminderTable(), ASearchCriteria)));
+        }
+
+        /// auto generated
+        public static void LoadViaPPartner(DataSet ADataSet, Int64 APartnerKey, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        {
+            OdbcParameter[] ParametersArray = new OdbcParameter[1];
+            ParametersArray[0] = new OdbcParameter("", OdbcType.Decimal, 10);
+            ParametersArray[0].Value = ((object)(APartnerKey));
+            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, ((GenerateSelectClause(AFieldList, new string[] {
+                            "s_group_id_c", "s_group_unit_key_n", "p_partner_key_n", "p_contact_id_i", "p_reminder_id_i"}) + " FROM PUB_s_group_partner_reminder WHERE p_partner_key_n = ?")
+                            + GenerateOrderByClause(AOrderBy)), SGroupPartnerReminderTable.GetTableName(), ATransaction, ParametersArray, AStartRecord, AMaxRecords);
+        }
+
+        /// auto generated
+        public static void LoadViaPPartner(DataSet AData, Int64 APartnerKey, TDBTransaction ATransaction)
+        {
+            LoadViaPPartner(AData, APartnerKey, null, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static void LoadViaPPartner(DataSet AData, Int64 APartnerKey, StringCollection AFieldList, TDBTransaction ATransaction)
+        {
+            LoadViaPPartner(AData, APartnerKey, AFieldList, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static void LoadViaPPartner(out SGroupPartnerReminderTable AData, Int64 APartnerKey, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        {
+            DataSet FillDataSet = new DataSet();
+            AData = new SGroupPartnerReminderTable();
+            FillDataSet.Tables.Add(AData);
+            LoadViaPPartner(FillDataSet, APartnerKey, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            FillDataSet.Tables.Remove(AData);
+        }
+
+        /// auto generated
+        public static void LoadViaPPartner(out SGroupPartnerReminderTable AData, Int64 APartnerKey, TDBTransaction ATransaction)
+        {
+            LoadViaPPartner(out AData, APartnerKey, null, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static void LoadViaPPartner(out SGroupPartnerReminderTable AData, Int64 APartnerKey, StringCollection AFieldList, TDBTransaction ATransaction)
+        {
+            LoadViaPPartner(out AData, APartnerKey, AFieldList, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static void LoadViaPPartnerTemplate(DataSet ADataSet, PPartnerRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        {
+            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClauseLong("PUB_s_group_partner_reminder", AFieldList, new string[] {
+                            "s_group_id_c", "s_group_unit_key_n", "p_partner_key_n", "p_contact_id_i", "p_reminder_id_i"}) + " FROM PUB_s_group_partner_reminder, PUB_p_partner WHERE " +
+                            "PUB_s_group_partner_reminder.p_partner_key_n = PUB_p_partner.p_partner_key_n")
+                            + GenerateWhereClauseLong("PUB_p_partner", PPartnerTable.GetColumnStringList(), ATemplateRow, ATemplateOperators))
+                            + GenerateOrderByClause(AOrderBy)), SGroupPartnerReminderTable.GetTableName(), ATransaction, GetParametersForWhereClause(ATemplateRow), AStartRecord, AMaxRecords);
+        }
+
+        /// auto generated
+        public static void LoadViaPPartnerTemplate(DataSet AData, PPartnerRow ATemplateRow, TDBTransaction ATransaction)
+        {
+            LoadViaPPartnerTemplate(AData, ATemplateRow, null, null, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static void LoadViaPPartnerTemplate(DataSet AData, PPartnerRow ATemplateRow, StringCollection AFieldList, TDBTransaction ATransaction)
+        {
+            LoadViaPPartnerTemplate(AData, ATemplateRow, null, AFieldList, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static void LoadViaPPartnerTemplate(out SGroupPartnerReminderTable AData, PPartnerRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        {
+            DataSet FillDataSet = new DataSet();
+            AData = new SGroupPartnerReminderTable();
+            FillDataSet.Tables.Add(AData);
+            LoadViaPPartnerTemplate(FillDataSet, ATemplateRow, ATemplateOperators, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            FillDataSet.Tables.Remove(AData);
+        }
+
+        /// auto generated
+        public static void LoadViaPPartnerTemplate(out SGroupPartnerReminderTable AData, PPartnerRow ATemplateRow, TDBTransaction ATransaction)
+        {
+            LoadViaPPartnerTemplate(out AData, ATemplateRow, null, null, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static void LoadViaPPartnerTemplate(out SGroupPartnerReminderTable AData, PPartnerRow ATemplateRow, StringCollection AFieldList, TDBTransaction ATransaction)
+        {
+            LoadViaPPartnerTemplate(out AData, ATemplateRow, null, AFieldList, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static void LoadViaPPartnerTemplate(out SGroupPartnerReminderTable AData, PPartnerRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction)
+        {
+            LoadViaPPartnerTemplate(out AData, ATemplateRow, ATemplateOperators, AFieldList, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static void LoadViaPPartnerTemplate(DataSet ADataSet, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        {
+            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClauseLong("PUB_s_group_partner_reminder", AFieldList, new string[] {
+                            "s_group_id_c", "s_group_unit_key_n", "p_partner_key_n", "p_contact_id_i", "p_reminder_id_i"}) + " FROM PUB_s_group_partner_reminder, PUB_p_partner WHERE " +
+                            "PUB_s_group_partner_reminder.p_partner_key_n = PUB_p_partner.p_partner_key_n")
+                            + GenerateWhereClauseLong("PUB_p_partner", PPartnerTable.GetColumnStringList(), ASearchCriteria))
+                            + GenerateOrderByClause(AOrderBy)), SGroupPartnerReminderTable.GetTableName(), ATransaction,
+                            GetParametersForWhereClause(new SGroupPartnerReminderTable(), ASearchCriteria), AStartRecord, AMaxRecords);
+        }
+
+        /// auto generated
+        public static void LoadViaPPartnerTemplate(DataSet AData, TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        {
+            LoadViaPPartnerTemplate(AData, ASearchCriteria, null, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static void LoadViaPPartnerTemplate(DataSet AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
+        {
+            LoadViaPPartnerTemplate(AData, ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static void LoadViaPPartnerTemplate(out SGroupPartnerReminderTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        {
+            DataSet FillDataSet = new DataSet();
+            AData = new SGroupPartnerReminderTable();
+            FillDataSet.Tables.Add(AData);
+            LoadViaPPartnerTemplate(FillDataSet, ASearchCriteria, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            FillDataSet.Tables.Remove(AData);
+        }
+
+        /// auto generated
+        public static void LoadViaPPartnerTemplate(out SGroupPartnerReminderTable AData, TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        {
+            LoadViaPPartnerTemplate(out AData, ASearchCriteria, null, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static void LoadViaPPartnerTemplate(out SGroupPartnerReminderTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
+        {
+            LoadViaPPartnerTemplate(out AData, ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static int CountViaPPartner(Int64 APartnerKey, TDBTransaction ATransaction)
+        {
+            OdbcParameter[] ParametersArray = new OdbcParameter[1];
+            ParametersArray[0] = new OdbcParameter("", OdbcType.Decimal, 10);
+            ParametersArray[0].Value = ((object)(APartnerKey));
+            return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar("SELECT COUNT(*) FROM PUB_s_group_partner_reminder WHERE p_partner_key_n = ?", ATransaction, false, ParametersArray));
+        }
+
+        /// auto generated
+        public static int CountViaPPartnerTemplate(PPartnerRow ATemplateRow, StringCollection ATemplateOperators, TDBTransaction ATransaction)
+        {
+            return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_s_group_partner_reminder, PUB_p_partner WHERE " +
+                "PUB_s_group_partner_reminder.p_partner_key_n = PUB_p_partner.p_partner_key_n" + GenerateWhereClauseLong("PUB_p_partner", PPartnerTable.GetColumnStringList(), ATemplateRow, ATemplateOperators)), ATransaction, false, GetParametersForWhereClause(ATemplateRow, PPartnerTable.GetPrimKeyColumnOrdList())));
+        }
+
+        /// auto generated
+        public static int CountViaPPartnerTemplate(TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        {
+            return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_s_group_partner_reminder, PUB_p_partner WHERE " +
+                "PUB_s_group_partner_reminder.p_partner_key_n = PUB_p_partner.p_partner_key_n" +
+                GenerateWhereClauseLong("PUB_p_partner", PPartnerTable.GetColumnStringList(), ASearchCriteria)), ATransaction, false,
+                GetParametersForWhereClause(new PPartnerTable(), ASearchCriteria)));
+        }
+
+        /// auto generated
+        public static void LoadViaPPartnerContact(DataSet ADataSet, Int32 AContactId, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        {
+            OdbcParameter[] ParametersArray = new OdbcParameter[1];
+            ParametersArray[0] = new OdbcParameter("", OdbcType.Int);
+            ParametersArray[0].Value = ((object)(AContactId));
+            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, ((GenerateSelectClause(AFieldList, new string[] {
+                            "s_group_id_c", "s_group_unit_key_n", "p_partner_key_n", "p_contact_id_i", "p_reminder_id_i"}) + " FROM PUB_s_group_partner_reminder WHERE p_contact_id_i = ?")
+                            + GenerateOrderByClause(AOrderBy)), SGroupPartnerReminderTable.GetTableName(), ATransaction, ParametersArray, AStartRecord, AMaxRecords);
+        }
+
+        /// auto generated
+        public static void LoadViaPPartnerContact(DataSet AData, Int32 AContactId, TDBTransaction ATransaction)
+        {
+            LoadViaPPartnerContact(AData, AContactId, null, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static void LoadViaPPartnerContact(DataSet AData, Int32 AContactId, StringCollection AFieldList, TDBTransaction ATransaction)
+        {
+            LoadViaPPartnerContact(AData, AContactId, AFieldList, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static void LoadViaPPartnerContact(out SGroupPartnerReminderTable AData, Int32 AContactId, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        {
+            DataSet FillDataSet = new DataSet();
+            AData = new SGroupPartnerReminderTable();
+            FillDataSet.Tables.Add(AData);
+            LoadViaPPartnerContact(FillDataSet, AContactId, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            FillDataSet.Tables.Remove(AData);
+        }
+
+        /// auto generated
+        public static void LoadViaPPartnerContact(out SGroupPartnerReminderTable AData, Int32 AContactId, TDBTransaction ATransaction)
+        {
+            LoadViaPPartnerContact(out AData, AContactId, null, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static void LoadViaPPartnerContact(out SGroupPartnerReminderTable AData, Int32 AContactId, StringCollection AFieldList, TDBTransaction ATransaction)
+        {
+            LoadViaPPartnerContact(out AData, AContactId, AFieldList, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static void LoadViaPPartnerContactTemplate(DataSet ADataSet, PPartnerContactRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        {
+            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClauseLong("PUB_s_group_partner_reminder", AFieldList, new string[] {
+                            "s_group_id_c", "s_group_unit_key_n", "p_partner_key_n", "p_contact_id_i", "p_reminder_id_i"}) + " FROM PUB_s_group_partner_reminder, PUB_p_partner_contact WHERE " +
+                            "PUB_s_group_partner_reminder.p_contact_id_i = PUB_p_partner_contact.p_contact_id_i")
+                            + GenerateWhereClauseLong("PUB_p_partner_contact", PPartnerContactTable.GetColumnStringList(), ATemplateRow, ATemplateOperators))
+                            + GenerateOrderByClause(AOrderBy)), SGroupPartnerReminderTable.GetTableName(), ATransaction, GetParametersForWhereClause(ATemplateRow), AStartRecord, AMaxRecords);
+        }
+
+        /// auto generated
+        public static void LoadViaPPartnerContactTemplate(DataSet AData, PPartnerContactRow ATemplateRow, TDBTransaction ATransaction)
+        {
+            LoadViaPPartnerContactTemplate(AData, ATemplateRow, null, null, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static void LoadViaPPartnerContactTemplate(DataSet AData, PPartnerContactRow ATemplateRow, StringCollection AFieldList, TDBTransaction ATransaction)
+        {
+            LoadViaPPartnerContactTemplate(AData, ATemplateRow, null, AFieldList, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static void LoadViaPPartnerContactTemplate(out SGroupPartnerReminderTable AData, PPartnerContactRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        {
+            DataSet FillDataSet = new DataSet();
+            AData = new SGroupPartnerReminderTable();
+            FillDataSet.Tables.Add(AData);
+            LoadViaPPartnerContactTemplate(FillDataSet, ATemplateRow, ATemplateOperators, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            FillDataSet.Tables.Remove(AData);
+        }
+
+        /// auto generated
+        public static void LoadViaPPartnerContactTemplate(out SGroupPartnerReminderTable AData, PPartnerContactRow ATemplateRow, TDBTransaction ATransaction)
+        {
+            LoadViaPPartnerContactTemplate(out AData, ATemplateRow, null, null, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static void LoadViaPPartnerContactTemplate(out SGroupPartnerReminderTable AData, PPartnerContactRow ATemplateRow, StringCollection AFieldList, TDBTransaction ATransaction)
+        {
+            LoadViaPPartnerContactTemplate(out AData, ATemplateRow, null, AFieldList, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static void LoadViaPPartnerContactTemplate(out SGroupPartnerReminderTable AData, PPartnerContactRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction)
+        {
+            LoadViaPPartnerContactTemplate(out AData, ATemplateRow, ATemplateOperators, AFieldList, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static void LoadViaPPartnerContactTemplate(DataSet ADataSet, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        {
+            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClauseLong("PUB_s_group_partner_reminder", AFieldList, new string[] {
+                            "s_group_id_c", "s_group_unit_key_n", "p_partner_key_n", "p_contact_id_i", "p_reminder_id_i"}) + " FROM PUB_s_group_partner_reminder, PUB_p_partner_contact WHERE " +
+                            "PUB_s_group_partner_reminder.p_contact_id_i = PUB_p_partner_contact.p_contact_id_i")
+                            + GenerateWhereClauseLong("PUB_p_partner_contact", PPartnerContactTable.GetColumnStringList(), ASearchCriteria))
+                            + GenerateOrderByClause(AOrderBy)), SGroupPartnerReminderTable.GetTableName(), ATransaction,
+                            GetParametersForWhereClause(new SGroupPartnerReminderTable(), ASearchCriteria), AStartRecord, AMaxRecords);
+        }
+
+        /// auto generated
+        public static void LoadViaPPartnerContactTemplate(DataSet AData, TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        {
+            LoadViaPPartnerContactTemplate(AData, ASearchCriteria, null, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static void LoadViaPPartnerContactTemplate(DataSet AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
+        {
+            LoadViaPPartnerContactTemplate(AData, ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static void LoadViaPPartnerContactTemplate(out SGroupPartnerReminderTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        {
+            DataSet FillDataSet = new DataSet();
+            AData = new SGroupPartnerReminderTable();
+            FillDataSet.Tables.Add(AData);
+            LoadViaPPartnerContactTemplate(FillDataSet, ASearchCriteria, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            FillDataSet.Tables.Remove(AData);
+        }
+
+        /// auto generated
+        public static void LoadViaPPartnerContactTemplate(out SGroupPartnerReminderTable AData, TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        {
+            LoadViaPPartnerContactTemplate(out AData, ASearchCriteria, null, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static void LoadViaPPartnerContactTemplate(out SGroupPartnerReminderTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
+        {
+            LoadViaPPartnerContactTemplate(out AData, ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static int CountViaPPartnerContact(Int32 AContactId, TDBTransaction ATransaction)
+        {
+            OdbcParameter[] ParametersArray = new OdbcParameter[1];
+            ParametersArray[0] = new OdbcParameter("", OdbcType.Int);
+            ParametersArray[0].Value = ((object)(AContactId));
+            return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar("SELECT COUNT(*) FROM PUB_s_group_partner_reminder WHERE p_contact_id_i = ?", ATransaction, false, ParametersArray));
+        }
+
+        /// auto generated
+        public static int CountViaPPartnerContactTemplate(PPartnerContactRow ATemplateRow, StringCollection ATemplateOperators, TDBTransaction ATransaction)
+        {
+            return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_s_group_partner_reminder, PUB_p_partner_contact WHERE " +
+                "PUB_s_group_partner_reminder.p_contact_id_i = PUB_p_partner_contact.p_contact_id_i" + GenerateWhereClauseLong("PUB_p_partner_contact", PPartnerContactTable.GetColumnStringList(), ATemplateRow, ATemplateOperators)), ATransaction, false, GetParametersForWhereClause(ATemplateRow, PPartnerContactTable.GetPrimKeyColumnOrdList())));
+        }
+
+        /// auto generated
+        public static int CountViaPPartnerContactTemplate(TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        {
+            return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_s_group_partner_reminder, PUB_p_partner_contact WHERE " +
+                "PUB_s_group_partner_reminder.p_contact_id_i = PUB_p_partner_contact.p_contact_id_i" +
+                GenerateWhereClauseLong("PUB_p_partner_contact", PPartnerContactTable.GetColumnStringList(), ASearchCriteria)), ATransaction, false,
+                GetParametersForWhereClause(new PPartnerContactTable(), ASearchCriteria)));
         }
 
         /// auto generated
@@ -15965,6 +22516,14 @@ namespace Ict.Petra.Shared.MSysMan.Data.Access
         public static void DeleteUsingTemplate(SGroupPartnerReminderRow ATemplateRow, StringCollection ATemplateOperators, TDBTransaction ATransaction)
         {
             DBAccess.GDBAccessObj.ExecuteNonQuery(("DELETE FROM PUB_s_group_partner_reminder" + GenerateWhereClause(SGroupPartnerReminderTable.GetColumnStringList(), ATemplateRow, ATemplateOperators)), ATransaction, false, GetParametersForWhereClause(ATemplateRow));
+        }
+
+        /// auto generated
+        public static void DeleteUsingTemplate(TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        {
+            DBAccess.GDBAccessObj.ExecuteNonQuery(("DELETE FROM PUB_s_group_partner_reminder" +
+                GenerateWhereClause(SGroupPartnerReminderTable.GetColumnStringList(), ASearchCriteria)), ATransaction, false,
+                GetParametersForWhereClause(new SGroupPartnerReminderTable(), ASearchCriteria));
         }
 
         /// auto generated
@@ -16159,6 +22718,50 @@ namespace Ict.Petra.Shared.MSysMan.Data.Access
         }
 
         /// this method is called by all overloads
+        public static void LoadUsingTemplate(DataSet ADataSet, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        {
+            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClause(AFieldList, new string[] {
+                            "s_group_id_c", "s_group_unit_key_n", "p_site_key_n", "p_location_key_i"}) + " FROM PUB_s_group_location")
+                            + GenerateWhereClause(SGroupLocationTable.GetColumnStringList(), ASearchCriteria))
+                            + GenerateOrderByClause(AOrderBy)), SGroupLocationTable.GetTableName(), ATransaction,
+                            GetParametersForWhereClause(new SGroupLocationTable(), ASearchCriteria), AStartRecord, AMaxRecords);
+        }
+
+        /// auto generated
+        public static void LoadUsingTemplate(DataSet AData, TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        {
+            LoadUsingTemplate(AData, ASearchCriteria, null, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static void LoadUsingTemplate(DataSet AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
+        {
+            LoadUsingTemplate(AData, ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static void LoadUsingTemplate(out SGroupLocationTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        {
+            DataSet FillDataSet = new DataSet();
+            AData = new SGroupLocationTable();
+            FillDataSet.Tables.Add(AData);
+            LoadUsingTemplate(FillDataSet, ASearchCriteria, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            FillDataSet.Tables.Remove(AData);
+        }
+
+        /// auto generated
+        public static void LoadUsingTemplate(out SGroupLocationTable AData, TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        {
+            LoadUsingTemplate(out AData, ASearchCriteria, null, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static void LoadUsingTemplate(out SGroupLocationTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
+        {
+            LoadUsingTemplate(out AData, ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
+        }
+
+        /// this method is called by all overloads
         public static int CountAll(TDBTransaction ATransaction)
         {
             return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar("SELECT COUNT(*) FROM PUB_s_group_location", ATransaction, false));
@@ -16183,6 +22786,13 @@ namespace Ict.Petra.Shared.MSysMan.Data.Access
         public static int CountUsingTemplate(SGroupLocationRow ATemplateRow, StringCollection ATemplateOperators, TDBTransaction ATransaction)
         {
             return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_s_group_location" + GenerateWhereClause(SGroupLocationTable.GetColumnStringList(), ATemplateRow, ATemplateOperators)), ATransaction, false, GetParametersForWhereClause(ATemplateRow)));
+        }
+
+        /// this method is called by all overloads
+        public static int CountUsingTemplate(TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        {
+            return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_s_group_location" + GenerateWhereClause(SGroupLocationTable.GetColumnStringList(), ASearchCriteria)), ATransaction, false,
+            GetParametersForWhereClause(new SGroupLocationTable(), ASearchCriteria)));
         }
 
         /// auto generated
@@ -16283,6 +22893,51 @@ namespace Ict.Petra.Shared.MSysMan.Data.Access
         }
 
         /// auto generated
+        public static void LoadViaSGroupTemplate(DataSet ADataSet, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        {
+            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClauseLong("PUB_s_group_location", AFieldList, new string[] {
+                            "s_group_id_c", "s_group_unit_key_n", "p_site_key_n", "p_location_key_i"}) + " FROM PUB_s_group_location, PUB_s_group WHERE " +
+                            "PUB_s_group_location.s_group_id_c = PUB_s_group.s_group_id_c AND PUB_s_group_location.s_group_unit_key_n = PUB_s_group.s_unit_key_n")
+                            + GenerateWhereClauseLong("PUB_s_group", SGroupTable.GetColumnStringList(), ASearchCriteria))
+                            + GenerateOrderByClause(AOrderBy)), SGroupLocationTable.GetTableName(), ATransaction,
+                            GetParametersForWhereClause(new SGroupLocationTable(), ASearchCriteria), AStartRecord, AMaxRecords);
+        }
+
+        /// auto generated
+        public static void LoadViaSGroupTemplate(DataSet AData, TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        {
+            LoadViaSGroupTemplate(AData, ASearchCriteria, null, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static void LoadViaSGroupTemplate(DataSet AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
+        {
+            LoadViaSGroupTemplate(AData, ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static void LoadViaSGroupTemplate(out SGroupLocationTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        {
+            DataSet FillDataSet = new DataSet();
+            AData = new SGroupLocationTable();
+            FillDataSet.Tables.Add(AData);
+            LoadViaSGroupTemplate(FillDataSet, ASearchCriteria, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            FillDataSet.Tables.Remove(AData);
+        }
+
+        /// auto generated
+        public static void LoadViaSGroupTemplate(out SGroupLocationTable AData, TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        {
+            LoadViaSGroupTemplate(out AData, ASearchCriteria, null, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static void LoadViaSGroupTemplate(out SGroupLocationTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
+        {
+            LoadViaSGroupTemplate(out AData, ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
         public static int CountViaSGroup(String AGroupId, Int64 AUnitKey, TDBTransaction ATransaction)
         {
             OdbcParameter[] ParametersArray = new OdbcParameter[2];
@@ -16298,6 +22953,15 @@ namespace Ict.Petra.Shared.MSysMan.Data.Access
         {
             return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_s_group_location, PUB_s_group WHERE " +
                 "PUB_s_group_location.s_group_id_c = PUB_s_group.s_group_id_c AND PUB_s_group_location.s_group_unit_key_n = PUB_s_group.s_unit_key_n" + GenerateWhereClauseLong("PUB_s_group", SGroupTable.GetColumnStringList(), ATemplateRow, ATemplateOperators)), ATransaction, false, GetParametersForWhereClause(ATemplateRow, SGroupTable.GetPrimKeyColumnOrdList())));
+        }
+
+        /// auto generated
+        public static int CountViaSGroupTemplate(TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        {
+            return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_s_group_location, PUB_s_group WHERE " +
+                "PUB_s_group_location.s_group_id_c = PUB_s_group.s_group_id_c AND PUB_s_group_location.s_group_unit_key_n = PUB_s_group.s_unit_key_n" +
+                GenerateWhereClauseLong("PUB_s_group", SGroupTable.GetColumnStringList(), ASearchCriteria)), ATransaction, false,
+                GetParametersForWhereClause(new SGroupTable(), ASearchCriteria)));
         }
 
         /// auto generated
@@ -16398,6 +23062,51 @@ namespace Ict.Petra.Shared.MSysMan.Data.Access
         }
 
         /// auto generated
+        public static void LoadViaPLocationTemplate(DataSet ADataSet, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        {
+            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClauseLong("PUB_s_group_location", AFieldList, new string[] {
+                            "s_group_id_c", "s_group_unit_key_n", "p_site_key_n", "p_location_key_i"}) + " FROM PUB_s_group_location, PUB_p_location WHERE " +
+                            "PUB_s_group_location.p_site_key_n = PUB_p_location.p_site_key_n AND PUB_s_group_location.p_location_key_i = PUB_p_location.p_location_key_i")
+                            + GenerateWhereClauseLong("PUB_p_location", PLocationTable.GetColumnStringList(), ASearchCriteria))
+                            + GenerateOrderByClause(AOrderBy)), SGroupLocationTable.GetTableName(), ATransaction,
+                            GetParametersForWhereClause(new SGroupLocationTable(), ASearchCriteria), AStartRecord, AMaxRecords);
+        }
+
+        /// auto generated
+        public static void LoadViaPLocationTemplate(DataSet AData, TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        {
+            LoadViaPLocationTemplate(AData, ASearchCriteria, null, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static void LoadViaPLocationTemplate(DataSet AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
+        {
+            LoadViaPLocationTemplate(AData, ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static void LoadViaPLocationTemplate(out SGroupLocationTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        {
+            DataSet FillDataSet = new DataSet();
+            AData = new SGroupLocationTable();
+            FillDataSet.Tables.Add(AData);
+            LoadViaPLocationTemplate(FillDataSet, ASearchCriteria, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            FillDataSet.Tables.Remove(AData);
+        }
+
+        /// auto generated
+        public static void LoadViaPLocationTemplate(out SGroupLocationTable AData, TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        {
+            LoadViaPLocationTemplate(out AData, ASearchCriteria, null, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static void LoadViaPLocationTemplate(out SGroupLocationTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
+        {
+            LoadViaPLocationTemplate(out AData, ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
         public static int CountViaPLocation(Int64 ASiteKey, Int32 ALocationKey, TDBTransaction ATransaction)
         {
             OdbcParameter[] ParametersArray = new OdbcParameter[2];
@@ -16413,6 +23122,15 @@ namespace Ict.Petra.Shared.MSysMan.Data.Access
         {
             return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_s_group_location, PUB_p_location WHERE " +
                 "PUB_s_group_location.p_site_key_n = PUB_p_location.p_site_key_n AND PUB_s_group_location.p_location_key_i = PUB_p_location.p_location_key_i" + GenerateWhereClauseLong("PUB_p_location", PLocationTable.GetColumnStringList(), ATemplateRow, ATemplateOperators)), ATransaction, false, GetParametersForWhereClause(ATemplateRow, PLocationTable.GetPrimKeyColumnOrdList())));
+        }
+
+        /// auto generated
+        public static int CountViaPLocationTemplate(TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        {
+            return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_s_group_location, PUB_p_location WHERE " +
+                "PUB_s_group_location.p_site_key_n = PUB_p_location.p_site_key_n AND PUB_s_group_location.p_location_key_i = PUB_p_location.p_location_key_i" +
+                GenerateWhereClauseLong("PUB_p_location", PLocationTable.GetColumnStringList(), ASearchCriteria)), ATransaction, false,
+                GetParametersForWhereClause(new PLocationTable(), ASearchCriteria)));
         }
 
         /// auto generated
@@ -16434,6 +23152,14 @@ namespace Ict.Petra.Shared.MSysMan.Data.Access
         public static void DeleteUsingTemplate(SGroupLocationRow ATemplateRow, StringCollection ATemplateOperators, TDBTransaction ATransaction)
         {
             DBAccess.GDBAccessObj.ExecuteNonQuery(("DELETE FROM PUB_s_group_location" + GenerateWhereClause(SGroupLocationTable.GetColumnStringList(), ATemplateRow, ATemplateOperators)), ATransaction, false, GetParametersForWhereClause(ATemplateRow));
+        }
+
+        /// auto generated
+        public static void DeleteUsingTemplate(TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        {
+            DBAccess.GDBAccessObj.ExecuteNonQuery(("DELETE FROM PUB_s_group_location" +
+                GenerateWhereClause(SGroupLocationTable.GetColumnStringList(), ASearchCriteria)), ATransaction, false,
+                GetParametersForWhereClause(new SGroupLocationTable(), ASearchCriteria));
         }
 
         /// auto generated
@@ -16630,6 +23356,50 @@ namespace Ict.Petra.Shared.MSysMan.Data.Access
         }
 
         /// this method is called by all overloads
+        public static void LoadUsingTemplate(DataSet ADataSet, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        {
+            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClause(AFieldList, new string[] {
+                            "s_group_id_c", "s_group_unit_key_n", "p_partner_key_n", "p_site_key_n", "p_location_key_i"}) + " FROM PUB_s_group_partner_location")
+                            + GenerateWhereClause(SGroupPartnerLocationTable.GetColumnStringList(), ASearchCriteria))
+                            + GenerateOrderByClause(AOrderBy)), SGroupPartnerLocationTable.GetTableName(), ATransaction,
+                            GetParametersForWhereClause(new SGroupPartnerLocationTable(), ASearchCriteria), AStartRecord, AMaxRecords);
+        }
+
+        /// auto generated
+        public static void LoadUsingTemplate(DataSet AData, TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        {
+            LoadUsingTemplate(AData, ASearchCriteria, null, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static void LoadUsingTemplate(DataSet AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
+        {
+            LoadUsingTemplate(AData, ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static void LoadUsingTemplate(out SGroupPartnerLocationTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        {
+            DataSet FillDataSet = new DataSet();
+            AData = new SGroupPartnerLocationTable();
+            FillDataSet.Tables.Add(AData);
+            LoadUsingTemplate(FillDataSet, ASearchCriteria, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            FillDataSet.Tables.Remove(AData);
+        }
+
+        /// auto generated
+        public static void LoadUsingTemplate(out SGroupPartnerLocationTable AData, TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        {
+            LoadUsingTemplate(out AData, ASearchCriteria, null, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static void LoadUsingTemplate(out SGroupPartnerLocationTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
+        {
+            LoadUsingTemplate(out AData, ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
+        }
+
+        /// this method is called by all overloads
         public static int CountAll(TDBTransaction ATransaction)
         {
             return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar("SELECT COUNT(*) FROM PUB_s_group_partner_location", ATransaction, false));
@@ -16656,6 +23426,13 @@ namespace Ict.Petra.Shared.MSysMan.Data.Access
         public static int CountUsingTemplate(SGroupPartnerLocationRow ATemplateRow, StringCollection ATemplateOperators, TDBTransaction ATransaction)
         {
             return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_s_group_partner_location" + GenerateWhereClause(SGroupPartnerLocationTable.GetColumnStringList(), ATemplateRow, ATemplateOperators)), ATransaction, false, GetParametersForWhereClause(ATemplateRow)));
+        }
+
+        /// this method is called by all overloads
+        public static int CountUsingTemplate(TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        {
+            return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_s_group_partner_location" + GenerateWhereClause(SGroupPartnerLocationTable.GetColumnStringList(), ASearchCriteria)), ATransaction, false,
+            GetParametersForWhereClause(new SGroupPartnerLocationTable(), ASearchCriteria)));
         }
 
         /// auto generated
@@ -16756,6 +23533,51 @@ namespace Ict.Petra.Shared.MSysMan.Data.Access
         }
 
         /// auto generated
+        public static void LoadViaSGroupTemplate(DataSet ADataSet, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        {
+            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClauseLong("PUB_s_group_partner_location", AFieldList, new string[] {
+                            "s_group_id_c", "s_group_unit_key_n", "p_partner_key_n", "p_site_key_n", "p_location_key_i"}) + " FROM PUB_s_group_partner_location, PUB_s_group WHERE " +
+                            "PUB_s_group_partner_location.s_group_id_c = PUB_s_group.s_group_id_c AND PUB_s_group_partner_location.s_group_unit_key_n = PUB_s_group.s_unit_key_n")
+                            + GenerateWhereClauseLong("PUB_s_group", SGroupTable.GetColumnStringList(), ASearchCriteria))
+                            + GenerateOrderByClause(AOrderBy)), SGroupPartnerLocationTable.GetTableName(), ATransaction,
+                            GetParametersForWhereClause(new SGroupPartnerLocationTable(), ASearchCriteria), AStartRecord, AMaxRecords);
+        }
+
+        /// auto generated
+        public static void LoadViaSGroupTemplate(DataSet AData, TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        {
+            LoadViaSGroupTemplate(AData, ASearchCriteria, null, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static void LoadViaSGroupTemplate(DataSet AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
+        {
+            LoadViaSGroupTemplate(AData, ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static void LoadViaSGroupTemplate(out SGroupPartnerLocationTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        {
+            DataSet FillDataSet = new DataSet();
+            AData = new SGroupPartnerLocationTable();
+            FillDataSet.Tables.Add(AData);
+            LoadViaSGroupTemplate(FillDataSet, ASearchCriteria, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            FillDataSet.Tables.Remove(AData);
+        }
+
+        /// auto generated
+        public static void LoadViaSGroupTemplate(out SGroupPartnerLocationTable AData, TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        {
+            LoadViaSGroupTemplate(out AData, ASearchCriteria, null, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static void LoadViaSGroupTemplate(out SGroupPartnerLocationTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
+        {
+            LoadViaSGroupTemplate(out AData, ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
         public static int CountViaSGroup(String AGroupId, Int64 AUnitKey, TDBTransaction ATransaction)
         {
             OdbcParameter[] ParametersArray = new OdbcParameter[2];
@@ -16771,6 +23593,15 @@ namespace Ict.Petra.Shared.MSysMan.Data.Access
         {
             return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_s_group_partner_location, PUB_s_group WHERE " +
                 "PUB_s_group_partner_location.s_group_id_c = PUB_s_group.s_group_id_c AND PUB_s_group_partner_location.s_group_unit_key_n = PUB_s_group.s_unit_key_n" + GenerateWhereClauseLong("PUB_s_group", SGroupTable.GetColumnStringList(), ATemplateRow, ATemplateOperators)), ATransaction, false, GetParametersForWhereClause(ATemplateRow, SGroupTable.GetPrimKeyColumnOrdList())));
+        }
+
+        /// auto generated
+        public static int CountViaSGroupTemplate(TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        {
+            return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_s_group_partner_location, PUB_s_group WHERE " +
+                "PUB_s_group_partner_location.s_group_id_c = PUB_s_group.s_group_id_c AND PUB_s_group_partner_location.s_group_unit_key_n = PUB_s_group.s_unit_key_n" +
+                GenerateWhereClauseLong("PUB_s_group", SGroupTable.GetColumnStringList(), ASearchCriteria)), ATransaction, false,
+                GetParametersForWhereClause(new SGroupTable(), ASearchCriteria)));
         }
 
         /// auto generated
@@ -16873,6 +23704,51 @@ namespace Ict.Petra.Shared.MSysMan.Data.Access
         }
 
         /// auto generated
+        public static void LoadViaPPartnerLocationTemplate(DataSet ADataSet, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        {
+            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClauseLong("PUB_s_group_partner_location", AFieldList, new string[] {
+                            "s_group_id_c", "s_group_unit_key_n", "p_partner_key_n", "p_site_key_n", "p_location_key_i"}) + " FROM PUB_s_group_partner_location, PUB_p_partner_location WHERE " +
+                            "PUB_s_group_partner_location.p_partner_key_n = PUB_p_partner_location.p_partner_key_n AND PUB_s_group_partner_location.p_site_key_n = PUB_p_partner_location.p_site_key_n AND PUB_s_group_partner_location.p_location_key_i = PUB_p_partner_location.p_location_key_i")
+                            + GenerateWhereClauseLong("PUB_p_partner_location", PPartnerLocationTable.GetColumnStringList(), ASearchCriteria))
+                            + GenerateOrderByClause(AOrderBy)), SGroupPartnerLocationTable.GetTableName(), ATransaction,
+                            GetParametersForWhereClause(new SGroupPartnerLocationTable(), ASearchCriteria), AStartRecord, AMaxRecords);
+        }
+
+        /// auto generated
+        public static void LoadViaPPartnerLocationTemplate(DataSet AData, TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        {
+            LoadViaPPartnerLocationTemplate(AData, ASearchCriteria, null, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static void LoadViaPPartnerLocationTemplate(DataSet AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
+        {
+            LoadViaPPartnerLocationTemplate(AData, ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static void LoadViaPPartnerLocationTemplate(out SGroupPartnerLocationTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        {
+            DataSet FillDataSet = new DataSet();
+            AData = new SGroupPartnerLocationTable();
+            FillDataSet.Tables.Add(AData);
+            LoadViaPPartnerLocationTemplate(FillDataSet, ASearchCriteria, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            FillDataSet.Tables.Remove(AData);
+        }
+
+        /// auto generated
+        public static void LoadViaPPartnerLocationTemplate(out SGroupPartnerLocationTable AData, TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        {
+            LoadViaPPartnerLocationTemplate(out AData, ASearchCriteria, null, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static void LoadViaPPartnerLocationTemplate(out SGroupPartnerLocationTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
+        {
+            LoadViaPPartnerLocationTemplate(out AData, ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
         public static int CountViaPPartnerLocation(Int64 APartnerKey, Int64 ASiteKey, Int32 ALocationKey, TDBTransaction ATransaction)
         {
             OdbcParameter[] ParametersArray = new OdbcParameter[3];
@@ -16890,6 +23766,180 @@ namespace Ict.Petra.Shared.MSysMan.Data.Access
         {
             return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_s_group_partner_location, PUB_p_partner_location WHERE " +
                 "PUB_s_group_partner_location.p_partner_key_n = PUB_p_partner_location.p_partner_key_n AND PUB_s_group_partner_location.p_site_key_n = PUB_p_partner_location.p_site_key_n AND PUB_s_group_partner_location.p_location_key_i = PUB_p_partner_location.p_location_key_i" + GenerateWhereClauseLong("PUB_p_partner_location", PPartnerLocationTable.GetColumnStringList(), ATemplateRow, ATemplateOperators)), ATransaction, false, GetParametersForWhereClause(ATemplateRow, PPartnerLocationTable.GetPrimKeyColumnOrdList())));
+        }
+
+        /// auto generated
+        public static int CountViaPPartnerLocationTemplate(TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        {
+            return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_s_group_partner_location, PUB_p_partner_location WHERE " +
+                "PUB_s_group_partner_location.p_partner_key_n = PUB_p_partner_location.p_partner_key_n AND PUB_s_group_partner_location.p_site_key_n = PUB_p_partner_location.p_site_key_n AND PUB_s_group_partner_location.p_location_key_i = PUB_p_partner_location.p_location_key_i" +
+                GenerateWhereClauseLong("PUB_p_partner_location", PPartnerLocationTable.GetColumnStringList(), ASearchCriteria)), ATransaction, false,
+                GetParametersForWhereClause(new PPartnerLocationTable(), ASearchCriteria)));
+        }
+
+        /// auto generated
+        public static void LoadViaPPartner(DataSet ADataSet, Int64 APartnerKey, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        {
+            OdbcParameter[] ParametersArray = new OdbcParameter[1];
+            ParametersArray[0] = new OdbcParameter("", OdbcType.Decimal, 10);
+            ParametersArray[0].Value = ((object)(APartnerKey));
+            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, ((GenerateSelectClause(AFieldList, new string[] {
+                            "s_group_id_c", "s_group_unit_key_n", "p_partner_key_n", "p_site_key_n", "p_location_key_i"}) + " FROM PUB_s_group_partner_location WHERE p_partner_key_n = ?")
+                            + GenerateOrderByClause(AOrderBy)), SGroupPartnerLocationTable.GetTableName(), ATransaction, ParametersArray, AStartRecord, AMaxRecords);
+        }
+
+        /// auto generated
+        public static void LoadViaPPartner(DataSet AData, Int64 APartnerKey, TDBTransaction ATransaction)
+        {
+            LoadViaPPartner(AData, APartnerKey, null, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static void LoadViaPPartner(DataSet AData, Int64 APartnerKey, StringCollection AFieldList, TDBTransaction ATransaction)
+        {
+            LoadViaPPartner(AData, APartnerKey, AFieldList, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static void LoadViaPPartner(out SGroupPartnerLocationTable AData, Int64 APartnerKey, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        {
+            DataSet FillDataSet = new DataSet();
+            AData = new SGroupPartnerLocationTable();
+            FillDataSet.Tables.Add(AData);
+            LoadViaPPartner(FillDataSet, APartnerKey, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            FillDataSet.Tables.Remove(AData);
+        }
+
+        /// auto generated
+        public static void LoadViaPPartner(out SGroupPartnerLocationTable AData, Int64 APartnerKey, TDBTransaction ATransaction)
+        {
+            LoadViaPPartner(out AData, APartnerKey, null, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static void LoadViaPPartner(out SGroupPartnerLocationTable AData, Int64 APartnerKey, StringCollection AFieldList, TDBTransaction ATransaction)
+        {
+            LoadViaPPartner(out AData, APartnerKey, AFieldList, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static void LoadViaPPartnerTemplate(DataSet ADataSet, PPartnerRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        {
+            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClauseLong("PUB_s_group_partner_location", AFieldList, new string[] {
+                            "s_group_id_c", "s_group_unit_key_n", "p_partner_key_n", "p_site_key_n", "p_location_key_i"}) + " FROM PUB_s_group_partner_location, PUB_p_partner WHERE " +
+                            "PUB_s_group_partner_location.p_partner_key_n = PUB_p_partner.p_partner_key_n")
+                            + GenerateWhereClauseLong("PUB_p_partner", PPartnerTable.GetColumnStringList(), ATemplateRow, ATemplateOperators))
+                            + GenerateOrderByClause(AOrderBy)), SGroupPartnerLocationTable.GetTableName(), ATransaction, GetParametersForWhereClause(ATemplateRow), AStartRecord, AMaxRecords);
+        }
+
+        /// auto generated
+        public static void LoadViaPPartnerTemplate(DataSet AData, PPartnerRow ATemplateRow, TDBTransaction ATransaction)
+        {
+            LoadViaPPartnerTemplate(AData, ATemplateRow, null, null, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static void LoadViaPPartnerTemplate(DataSet AData, PPartnerRow ATemplateRow, StringCollection AFieldList, TDBTransaction ATransaction)
+        {
+            LoadViaPPartnerTemplate(AData, ATemplateRow, null, AFieldList, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static void LoadViaPPartnerTemplate(out SGroupPartnerLocationTable AData, PPartnerRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        {
+            DataSet FillDataSet = new DataSet();
+            AData = new SGroupPartnerLocationTable();
+            FillDataSet.Tables.Add(AData);
+            LoadViaPPartnerTemplate(FillDataSet, ATemplateRow, ATemplateOperators, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            FillDataSet.Tables.Remove(AData);
+        }
+
+        /// auto generated
+        public static void LoadViaPPartnerTemplate(out SGroupPartnerLocationTable AData, PPartnerRow ATemplateRow, TDBTransaction ATransaction)
+        {
+            LoadViaPPartnerTemplate(out AData, ATemplateRow, null, null, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static void LoadViaPPartnerTemplate(out SGroupPartnerLocationTable AData, PPartnerRow ATemplateRow, StringCollection AFieldList, TDBTransaction ATransaction)
+        {
+            LoadViaPPartnerTemplate(out AData, ATemplateRow, null, AFieldList, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static void LoadViaPPartnerTemplate(out SGroupPartnerLocationTable AData, PPartnerRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction)
+        {
+            LoadViaPPartnerTemplate(out AData, ATemplateRow, ATemplateOperators, AFieldList, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static void LoadViaPPartnerTemplate(DataSet ADataSet, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        {
+            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClauseLong("PUB_s_group_partner_location", AFieldList, new string[] {
+                            "s_group_id_c", "s_group_unit_key_n", "p_partner_key_n", "p_site_key_n", "p_location_key_i"}) + " FROM PUB_s_group_partner_location, PUB_p_partner WHERE " +
+                            "PUB_s_group_partner_location.p_partner_key_n = PUB_p_partner.p_partner_key_n")
+                            + GenerateWhereClauseLong("PUB_p_partner", PPartnerTable.GetColumnStringList(), ASearchCriteria))
+                            + GenerateOrderByClause(AOrderBy)), SGroupPartnerLocationTable.GetTableName(), ATransaction,
+                            GetParametersForWhereClause(new SGroupPartnerLocationTable(), ASearchCriteria), AStartRecord, AMaxRecords);
+        }
+
+        /// auto generated
+        public static void LoadViaPPartnerTemplate(DataSet AData, TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        {
+            LoadViaPPartnerTemplate(AData, ASearchCriteria, null, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static void LoadViaPPartnerTemplate(DataSet AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
+        {
+            LoadViaPPartnerTemplate(AData, ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static void LoadViaPPartnerTemplate(out SGroupPartnerLocationTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        {
+            DataSet FillDataSet = new DataSet();
+            AData = new SGroupPartnerLocationTable();
+            FillDataSet.Tables.Add(AData);
+            LoadViaPPartnerTemplate(FillDataSet, ASearchCriteria, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            FillDataSet.Tables.Remove(AData);
+        }
+
+        /// auto generated
+        public static void LoadViaPPartnerTemplate(out SGroupPartnerLocationTable AData, TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        {
+            LoadViaPPartnerTemplate(out AData, ASearchCriteria, null, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static void LoadViaPPartnerTemplate(out SGroupPartnerLocationTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
+        {
+            LoadViaPPartnerTemplate(out AData, ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static int CountViaPPartner(Int64 APartnerKey, TDBTransaction ATransaction)
+        {
+            OdbcParameter[] ParametersArray = new OdbcParameter[1];
+            ParametersArray[0] = new OdbcParameter("", OdbcType.Decimal, 10);
+            ParametersArray[0].Value = ((object)(APartnerKey));
+            return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar("SELECT COUNT(*) FROM PUB_s_group_partner_location WHERE p_partner_key_n = ?", ATransaction, false, ParametersArray));
+        }
+
+        /// auto generated
+        public static int CountViaPPartnerTemplate(PPartnerRow ATemplateRow, StringCollection ATemplateOperators, TDBTransaction ATransaction)
+        {
+            return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_s_group_partner_location, PUB_p_partner WHERE " +
+                "PUB_s_group_partner_location.p_partner_key_n = PUB_p_partner.p_partner_key_n" + GenerateWhereClauseLong("PUB_p_partner", PPartnerTable.GetColumnStringList(), ATemplateRow, ATemplateOperators)), ATransaction, false, GetParametersForWhereClause(ATemplateRow, PPartnerTable.GetPrimKeyColumnOrdList())));
+        }
+
+        /// auto generated
+        public static int CountViaPPartnerTemplate(TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        {
+            return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_s_group_partner_location, PUB_p_partner WHERE " +
+                "PUB_s_group_partner_location.p_partner_key_n = PUB_p_partner.p_partner_key_n" +
+                GenerateWhereClauseLong("PUB_p_partner", PPartnerTable.GetColumnStringList(), ASearchCriteria)), ATransaction, false,
+                GetParametersForWhereClause(new PPartnerTable(), ASearchCriteria)));
         }
 
         /// auto generated
@@ -16913,6 +23963,14 @@ namespace Ict.Petra.Shared.MSysMan.Data.Access
         public static void DeleteUsingTemplate(SGroupPartnerLocationRow ATemplateRow, StringCollection ATemplateOperators, TDBTransaction ATransaction)
         {
             DBAccess.GDBAccessObj.ExecuteNonQuery(("DELETE FROM PUB_s_group_partner_location" + GenerateWhereClause(SGroupPartnerLocationTable.GetColumnStringList(), ATemplateRow, ATemplateOperators)), ATransaction, false, GetParametersForWhereClause(ATemplateRow));
+        }
+
+        /// auto generated
+        public static void DeleteUsingTemplate(TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        {
+            DBAccess.GDBAccessObj.ExecuteNonQuery(("DELETE FROM PUB_s_group_partner_location" +
+                GenerateWhereClause(SGroupPartnerLocationTable.GetColumnStringList(), ASearchCriteria)), ATransaction, false,
+                GetParametersForWhereClause(new SGroupPartnerLocationTable(), ASearchCriteria));
         }
 
         /// auto generated
@@ -17105,6 +24163,50 @@ namespace Ict.Petra.Shared.MSysMan.Data.Access
         }
 
         /// this method is called by all overloads
+        public static void LoadUsingTemplate(DataSet ADataSet, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        {
+            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClause(AFieldList, new string[] {
+                            "s_group_id_c", "s_group_unit_key_n", "p_data_label_key_i"}) + " FROM PUB_s_group_data_label")
+                            + GenerateWhereClause(SGroupDataLabelTable.GetColumnStringList(), ASearchCriteria))
+                            + GenerateOrderByClause(AOrderBy)), SGroupDataLabelTable.GetTableName(), ATransaction,
+                            GetParametersForWhereClause(new SGroupDataLabelTable(), ASearchCriteria), AStartRecord, AMaxRecords);
+        }
+
+        /// auto generated
+        public static void LoadUsingTemplate(DataSet AData, TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        {
+            LoadUsingTemplate(AData, ASearchCriteria, null, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static void LoadUsingTemplate(DataSet AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
+        {
+            LoadUsingTemplate(AData, ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static void LoadUsingTemplate(out SGroupDataLabelTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        {
+            DataSet FillDataSet = new DataSet();
+            AData = new SGroupDataLabelTable();
+            FillDataSet.Tables.Add(AData);
+            LoadUsingTemplate(FillDataSet, ASearchCriteria, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            FillDataSet.Tables.Remove(AData);
+        }
+
+        /// auto generated
+        public static void LoadUsingTemplate(out SGroupDataLabelTable AData, TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        {
+            LoadUsingTemplate(out AData, ASearchCriteria, null, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static void LoadUsingTemplate(out SGroupDataLabelTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
+        {
+            LoadUsingTemplate(out AData, ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
+        }
+
+        /// this method is called by all overloads
         public static int CountAll(TDBTransaction ATransaction)
         {
             return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar("SELECT COUNT(*) FROM PUB_s_group_data_label", ATransaction, false));
@@ -17127,6 +24229,13 @@ namespace Ict.Petra.Shared.MSysMan.Data.Access
         public static int CountUsingTemplate(SGroupDataLabelRow ATemplateRow, StringCollection ATemplateOperators, TDBTransaction ATransaction)
         {
             return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_s_group_data_label" + GenerateWhereClause(SGroupDataLabelTable.GetColumnStringList(), ATemplateRow, ATemplateOperators)), ATransaction, false, GetParametersForWhereClause(ATemplateRow)));
+        }
+
+        /// this method is called by all overloads
+        public static int CountUsingTemplate(TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        {
+            return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_s_group_data_label" + GenerateWhereClause(SGroupDataLabelTable.GetColumnStringList(), ASearchCriteria)), ATransaction, false,
+            GetParametersForWhereClause(new SGroupDataLabelTable(), ASearchCriteria)));
         }
 
         /// auto generated
@@ -17227,6 +24336,51 @@ namespace Ict.Petra.Shared.MSysMan.Data.Access
         }
 
         /// auto generated
+        public static void LoadViaSGroupTemplate(DataSet ADataSet, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        {
+            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClauseLong("PUB_s_group_data_label", AFieldList, new string[] {
+                            "s_group_id_c", "s_group_unit_key_n", "p_data_label_key_i"}) + " FROM PUB_s_group_data_label, PUB_s_group WHERE " +
+                            "PUB_s_group_data_label.s_group_id_c = PUB_s_group.s_group_id_c AND PUB_s_group_data_label.s_group_unit_key_n = PUB_s_group.s_unit_key_n")
+                            + GenerateWhereClauseLong("PUB_s_group", SGroupTable.GetColumnStringList(), ASearchCriteria))
+                            + GenerateOrderByClause(AOrderBy)), SGroupDataLabelTable.GetTableName(), ATransaction,
+                            GetParametersForWhereClause(new SGroupDataLabelTable(), ASearchCriteria), AStartRecord, AMaxRecords);
+        }
+
+        /// auto generated
+        public static void LoadViaSGroupTemplate(DataSet AData, TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        {
+            LoadViaSGroupTemplate(AData, ASearchCriteria, null, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static void LoadViaSGroupTemplate(DataSet AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
+        {
+            LoadViaSGroupTemplate(AData, ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static void LoadViaSGroupTemplate(out SGroupDataLabelTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        {
+            DataSet FillDataSet = new DataSet();
+            AData = new SGroupDataLabelTable();
+            FillDataSet.Tables.Add(AData);
+            LoadViaSGroupTemplate(FillDataSet, ASearchCriteria, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            FillDataSet.Tables.Remove(AData);
+        }
+
+        /// auto generated
+        public static void LoadViaSGroupTemplate(out SGroupDataLabelTable AData, TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        {
+            LoadViaSGroupTemplate(out AData, ASearchCriteria, null, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static void LoadViaSGroupTemplate(out SGroupDataLabelTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
+        {
+            LoadViaSGroupTemplate(out AData, ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
         public static int CountViaSGroup(String AGroupId, Int64 AUnitKey, TDBTransaction ATransaction)
         {
             OdbcParameter[] ParametersArray = new OdbcParameter[2];
@@ -17242,6 +24396,15 @@ namespace Ict.Petra.Shared.MSysMan.Data.Access
         {
             return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_s_group_data_label, PUB_s_group WHERE " +
                 "PUB_s_group_data_label.s_group_id_c = PUB_s_group.s_group_id_c AND PUB_s_group_data_label.s_group_unit_key_n = PUB_s_group.s_unit_key_n" + GenerateWhereClauseLong("PUB_s_group", SGroupTable.GetColumnStringList(), ATemplateRow, ATemplateOperators)), ATransaction, false, GetParametersForWhereClause(ATemplateRow, SGroupTable.GetPrimKeyColumnOrdList())));
+        }
+
+        /// auto generated
+        public static int CountViaSGroupTemplate(TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        {
+            return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_s_group_data_label, PUB_s_group WHERE " +
+                "PUB_s_group_data_label.s_group_id_c = PUB_s_group.s_group_id_c AND PUB_s_group_data_label.s_group_unit_key_n = PUB_s_group.s_unit_key_n" +
+                GenerateWhereClauseLong("PUB_s_group", SGroupTable.GetColumnStringList(), ASearchCriteria)), ATransaction, false,
+                GetParametersForWhereClause(new SGroupTable(), ASearchCriteria)));
         }
 
         /// auto generated
@@ -17340,6 +24503,51 @@ namespace Ict.Petra.Shared.MSysMan.Data.Access
         }
 
         /// auto generated
+        public static void LoadViaPDataLabelTemplate(DataSet ADataSet, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        {
+            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClauseLong("PUB_s_group_data_label", AFieldList, new string[] {
+                            "s_group_id_c", "s_group_unit_key_n", "p_data_label_key_i"}) + " FROM PUB_s_group_data_label, PUB_p_data_label WHERE " +
+                            "PUB_s_group_data_label.p_data_label_key_i = PUB_p_data_label.p_key_i")
+                            + GenerateWhereClauseLong("PUB_p_data_label", PDataLabelTable.GetColumnStringList(), ASearchCriteria))
+                            + GenerateOrderByClause(AOrderBy)), SGroupDataLabelTable.GetTableName(), ATransaction,
+                            GetParametersForWhereClause(new SGroupDataLabelTable(), ASearchCriteria), AStartRecord, AMaxRecords);
+        }
+
+        /// auto generated
+        public static void LoadViaPDataLabelTemplate(DataSet AData, TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        {
+            LoadViaPDataLabelTemplate(AData, ASearchCriteria, null, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static void LoadViaPDataLabelTemplate(DataSet AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
+        {
+            LoadViaPDataLabelTemplate(AData, ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static void LoadViaPDataLabelTemplate(out SGroupDataLabelTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        {
+            DataSet FillDataSet = new DataSet();
+            AData = new SGroupDataLabelTable();
+            FillDataSet.Tables.Add(AData);
+            LoadViaPDataLabelTemplate(FillDataSet, ASearchCriteria, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            FillDataSet.Tables.Remove(AData);
+        }
+
+        /// auto generated
+        public static void LoadViaPDataLabelTemplate(out SGroupDataLabelTable AData, TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        {
+            LoadViaPDataLabelTemplate(out AData, ASearchCriteria, null, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static void LoadViaPDataLabelTemplate(out SGroupDataLabelTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
+        {
+            LoadViaPDataLabelTemplate(out AData, ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
         public static int CountViaPDataLabel(Int32 AKey, TDBTransaction ATransaction)
         {
             OdbcParameter[] ParametersArray = new OdbcParameter[1];
@@ -17353,6 +24561,15 @@ namespace Ict.Petra.Shared.MSysMan.Data.Access
         {
             return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_s_group_data_label, PUB_p_data_label WHERE " +
                 "PUB_s_group_data_label.p_data_label_key_i = PUB_p_data_label.p_key_i" + GenerateWhereClauseLong("PUB_p_data_label", PDataLabelTable.GetColumnStringList(), ATemplateRow, ATemplateOperators)), ATransaction, false, GetParametersForWhereClause(ATemplateRow, PDataLabelTable.GetPrimKeyColumnOrdList())));
+        }
+
+        /// auto generated
+        public static int CountViaPDataLabelTemplate(TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        {
+            return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_s_group_data_label, PUB_p_data_label WHERE " +
+                "PUB_s_group_data_label.p_data_label_key_i = PUB_p_data_label.p_key_i" +
+                GenerateWhereClauseLong("PUB_p_data_label", PDataLabelTable.GetColumnStringList(), ASearchCriteria)), ATransaction, false,
+                GetParametersForWhereClause(new PDataLabelTable(), ASearchCriteria)));
         }
 
         /// auto generated
@@ -17372,6 +24589,14 @@ namespace Ict.Petra.Shared.MSysMan.Data.Access
         public static void DeleteUsingTemplate(SGroupDataLabelRow ATemplateRow, StringCollection ATemplateOperators, TDBTransaction ATransaction)
         {
             DBAccess.GDBAccessObj.ExecuteNonQuery(("DELETE FROM PUB_s_group_data_label" + GenerateWhereClause(SGroupDataLabelTable.GetColumnStringList(), ATemplateRow, ATemplateOperators)), ATransaction, false, GetParametersForWhereClause(ATemplateRow));
+        }
+
+        /// auto generated
+        public static void DeleteUsingTemplate(TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        {
+            DBAccess.GDBAccessObj.ExecuteNonQuery(("DELETE FROM PUB_s_group_data_label" +
+                GenerateWhereClause(SGroupDataLabelTable.GetColumnStringList(), ASearchCriteria)), ATransaction, false,
+                GetParametersForWhereClause(new SGroupDataLabelTable(), ASearchCriteria));
         }
 
         /// auto generated
@@ -17564,6 +24789,50 @@ namespace Ict.Petra.Shared.MSysMan.Data.Access
         }
 
         /// this method is called by all overloads
+        public static void LoadUsingTemplate(DataSet ADataSet, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        {
+            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClause(AFieldList, new string[] {
+                            "s_group_id_c", "s_group_unit_key_n", "a_ledger_number_i"}) + " FROM PUB_s_group_ledger")
+                            + GenerateWhereClause(SGroupLedgerTable.GetColumnStringList(), ASearchCriteria))
+                            + GenerateOrderByClause(AOrderBy)), SGroupLedgerTable.GetTableName(), ATransaction,
+                            GetParametersForWhereClause(new SGroupLedgerTable(), ASearchCriteria), AStartRecord, AMaxRecords);
+        }
+
+        /// auto generated
+        public static void LoadUsingTemplate(DataSet AData, TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        {
+            LoadUsingTemplate(AData, ASearchCriteria, null, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static void LoadUsingTemplate(DataSet AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
+        {
+            LoadUsingTemplate(AData, ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static void LoadUsingTemplate(out SGroupLedgerTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        {
+            DataSet FillDataSet = new DataSet();
+            AData = new SGroupLedgerTable();
+            FillDataSet.Tables.Add(AData);
+            LoadUsingTemplate(FillDataSet, ASearchCriteria, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            FillDataSet.Tables.Remove(AData);
+        }
+
+        /// auto generated
+        public static void LoadUsingTemplate(out SGroupLedgerTable AData, TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        {
+            LoadUsingTemplate(out AData, ASearchCriteria, null, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static void LoadUsingTemplate(out SGroupLedgerTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
+        {
+            LoadUsingTemplate(out AData, ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
+        }
+
+        /// this method is called by all overloads
         public static int CountAll(TDBTransaction ATransaction)
         {
             return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar("SELECT COUNT(*) FROM PUB_s_group_ledger", ATransaction, false));
@@ -17586,6 +24855,13 @@ namespace Ict.Petra.Shared.MSysMan.Data.Access
         public static int CountUsingTemplate(SGroupLedgerRow ATemplateRow, StringCollection ATemplateOperators, TDBTransaction ATransaction)
         {
             return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_s_group_ledger" + GenerateWhereClause(SGroupLedgerTable.GetColumnStringList(), ATemplateRow, ATemplateOperators)), ATransaction, false, GetParametersForWhereClause(ATemplateRow)));
+        }
+
+        /// this method is called by all overloads
+        public static int CountUsingTemplate(TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        {
+            return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_s_group_ledger" + GenerateWhereClause(SGroupLedgerTable.GetColumnStringList(), ASearchCriteria)), ATransaction, false,
+            GetParametersForWhereClause(new SGroupLedgerTable(), ASearchCriteria)));
         }
 
         /// auto generated
@@ -17686,6 +24962,51 @@ namespace Ict.Petra.Shared.MSysMan.Data.Access
         }
 
         /// auto generated
+        public static void LoadViaSGroupTemplate(DataSet ADataSet, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        {
+            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClauseLong("PUB_s_group_ledger", AFieldList, new string[] {
+                            "s_group_id_c", "s_group_unit_key_n", "a_ledger_number_i"}) + " FROM PUB_s_group_ledger, PUB_s_group WHERE " +
+                            "PUB_s_group_ledger.s_group_id_c = PUB_s_group.s_group_id_c AND PUB_s_group_ledger.s_group_unit_key_n = PUB_s_group.s_unit_key_n")
+                            + GenerateWhereClauseLong("PUB_s_group", SGroupTable.GetColumnStringList(), ASearchCriteria))
+                            + GenerateOrderByClause(AOrderBy)), SGroupLedgerTable.GetTableName(), ATransaction,
+                            GetParametersForWhereClause(new SGroupLedgerTable(), ASearchCriteria), AStartRecord, AMaxRecords);
+        }
+
+        /// auto generated
+        public static void LoadViaSGroupTemplate(DataSet AData, TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        {
+            LoadViaSGroupTemplate(AData, ASearchCriteria, null, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static void LoadViaSGroupTemplate(DataSet AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
+        {
+            LoadViaSGroupTemplate(AData, ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static void LoadViaSGroupTemplate(out SGroupLedgerTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        {
+            DataSet FillDataSet = new DataSet();
+            AData = new SGroupLedgerTable();
+            FillDataSet.Tables.Add(AData);
+            LoadViaSGroupTemplate(FillDataSet, ASearchCriteria, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            FillDataSet.Tables.Remove(AData);
+        }
+
+        /// auto generated
+        public static void LoadViaSGroupTemplate(out SGroupLedgerTable AData, TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        {
+            LoadViaSGroupTemplate(out AData, ASearchCriteria, null, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static void LoadViaSGroupTemplate(out SGroupLedgerTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
+        {
+            LoadViaSGroupTemplate(out AData, ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
         public static int CountViaSGroup(String AGroupId, Int64 AUnitKey, TDBTransaction ATransaction)
         {
             OdbcParameter[] ParametersArray = new OdbcParameter[2];
@@ -17701,6 +25022,15 @@ namespace Ict.Petra.Shared.MSysMan.Data.Access
         {
             return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_s_group_ledger, PUB_s_group WHERE " +
                 "PUB_s_group_ledger.s_group_id_c = PUB_s_group.s_group_id_c AND PUB_s_group_ledger.s_group_unit_key_n = PUB_s_group.s_unit_key_n" + GenerateWhereClauseLong("PUB_s_group", SGroupTable.GetColumnStringList(), ATemplateRow, ATemplateOperators)), ATransaction, false, GetParametersForWhereClause(ATemplateRow, SGroupTable.GetPrimKeyColumnOrdList())));
+        }
+
+        /// auto generated
+        public static int CountViaSGroupTemplate(TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        {
+            return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_s_group_ledger, PUB_s_group WHERE " +
+                "PUB_s_group_ledger.s_group_id_c = PUB_s_group.s_group_id_c AND PUB_s_group_ledger.s_group_unit_key_n = PUB_s_group.s_unit_key_n" +
+                GenerateWhereClauseLong("PUB_s_group", SGroupTable.GetColumnStringList(), ASearchCriteria)), ATransaction, false,
+                GetParametersForWhereClause(new SGroupTable(), ASearchCriteria)));
         }
 
         /// auto generated
@@ -17799,6 +25129,51 @@ namespace Ict.Petra.Shared.MSysMan.Data.Access
         }
 
         /// auto generated
+        public static void LoadViaALedgerTemplate(DataSet ADataSet, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        {
+            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClauseLong("PUB_s_group_ledger", AFieldList, new string[] {
+                            "s_group_id_c", "s_group_unit_key_n", "a_ledger_number_i"}) + " FROM PUB_s_group_ledger, PUB_a_ledger WHERE " +
+                            "PUB_s_group_ledger.a_ledger_number_i = PUB_a_ledger.a_ledger_number_i")
+                            + GenerateWhereClauseLong("PUB_a_ledger", ALedgerTable.GetColumnStringList(), ASearchCriteria))
+                            + GenerateOrderByClause(AOrderBy)), SGroupLedgerTable.GetTableName(), ATransaction,
+                            GetParametersForWhereClause(new SGroupLedgerTable(), ASearchCriteria), AStartRecord, AMaxRecords);
+        }
+
+        /// auto generated
+        public static void LoadViaALedgerTemplate(DataSet AData, TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        {
+            LoadViaALedgerTemplate(AData, ASearchCriteria, null, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static void LoadViaALedgerTemplate(DataSet AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
+        {
+            LoadViaALedgerTemplate(AData, ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static void LoadViaALedgerTemplate(out SGroupLedgerTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        {
+            DataSet FillDataSet = new DataSet();
+            AData = new SGroupLedgerTable();
+            FillDataSet.Tables.Add(AData);
+            LoadViaALedgerTemplate(FillDataSet, ASearchCriteria, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            FillDataSet.Tables.Remove(AData);
+        }
+
+        /// auto generated
+        public static void LoadViaALedgerTemplate(out SGroupLedgerTable AData, TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        {
+            LoadViaALedgerTemplate(out AData, ASearchCriteria, null, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static void LoadViaALedgerTemplate(out SGroupLedgerTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
+        {
+            LoadViaALedgerTemplate(out AData, ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
         public static int CountViaALedger(Int32 ALedgerNumber, TDBTransaction ATransaction)
         {
             OdbcParameter[] ParametersArray = new OdbcParameter[1];
@@ -17812,6 +25187,15 @@ namespace Ict.Petra.Shared.MSysMan.Data.Access
         {
             return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_s_group_ledger, PUB_a_ledger WHERE " +
                 "PUB_s_group_ledger.a_ledger_number_i = PUB_a_ledger.a_ledger_number_i" + GenerateWhereClauseLong("PUB_a_ledger", ALedgerTable.GetColumnStringList(), ATemplateRow, ATemplateOperators)), ATransaction, false, GetParametersForWhereClause(ATemplateRow, ALedgerTable.GetPrimKeyColumnOrdList())));
+        }
+
+        /// auto generated
+        public static int CountViaALedgerTemplate(TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        {
+            return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_s_group_ledger, PUB_a_ledger WHERE " +
+                "PUB_s_group_ledger.a_ledger_number_i = PUB_a_ledger.a_ledger_number_i" +
+                GenerateWhereClauseLong("PUB_a_ledger", ALedgerTable.GetColumnStringList(), ASearchCriteria)), ATransaction, false,
+                GetParametersForWhereClause(new ALedgerTable(), ASearchCriteria)));
         }
 
         /// auto generated
@@ -17831,6 +25215,14 @@ namespace Ict.Petra.Shared.MSysMan.Data.Access
         public static void DeleteUsingTemplate(SGroupLedgerRow ATemplateRow, StringCollection ATemplateOperators, TDBTransaction ATransaction)
         {
             DBAccess.GDBAccessObj.ExecuteNonQuery(("DELETE FROM PUB_s_group_ledger" + GenerateWhereClause(SGroupLedgerTable.GetColumnStringList(), ATemplateRow, ATemplateOperators)), ATransaction, false, GetParametersForWhereClause(ATemplateRow));
+        }
+
+        /// auto generated
+        public static void DeleteUsingTemplate(TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        {
+            DBAccess.GDBAccessObj.ExecuteNonQuery(("DELETE FROM PUB_s_group_ledger" +
+                GenerateWhereClause(SGroupLedgerTable.GetColumnStringList(), ASearchCriteria)), ATransaction, false,
+                GetParametersForWhereClause(new SGroupLedgerTable(), ASearchCriteria));
         }
 
         /// auto generated
@@ -18025,6 +25417,50 @@ namespace Ict.Petra.Shared.MSysMan.Data.Access
         }
 
         /// this method is called by all overloads
+        public static void LoadUsingTemplate(DataSet ADataSet, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        {
+            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClause(AFieldList, new string[] {
+                            "s_group_id_c", "s_group_unit_key_n", "a_ledger_number_i", "a_cost_centre_code_c"}) + " FROM PUB_s_group_cost_centre")
+                            + GenerateWhereClause(SGroupCostCentreTable.GetColumnStringList(), ASearchCriteria))
+                            + GenerateOrderByClause(AOrderBy)), SGroupCostCentreTable.GetTableName(), ATransaction,
+                            GetParametersForWhereClause(new SGroupCostCentreTable(), ASearchCriteria), AStartRecord, AMaxRecords);
+        }
+
+        /// auto generated
+        public static void LoadUsingTemplate(DataSet AData, TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        {
+            LoadUsingTemplate(AData, ASearchCriteria, null, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static void LoadUsingTemplate(DataSet AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
+        {
+            LoadUsingTemplate(AData, ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static void LoadUsingTemplate(out SGroupCostCentreTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        {
+            DataSet FillDataSet = new DataSet();
+            AData = new SGroupCostCentreTable();
+            FillDataSet.Tables.Add(AData);
+            LoadUsingTemplate(FillDataSet, ASearchCriteria, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            FillDataSet.Tables.Remove(AData);
+        }
+
+        /// auto generated
+        public static void LoadUsingTemplate(out SGroupCostCentreTable AData, TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        {
+            LoadUsingTemplate(out AData, ASearchCriteria, null, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static void LoadUsingTemplate(out SGroupCostCentreTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
+        {
+            LoadUsingTemplate(out AData, ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
+        }
+
+        /// this method is called by all overloads
         public static int CountAll(TDBTransaction ATransaction)
         {
             return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar("SELECT COUNT(*) FROM PUB_s_group_cost_centre", ATransaction, false));
@@ -18049,6 +25485,13 @@ namespace Ict.Petra.Shared.MSysMan.Data.Access
         public static int CountUsingTemplate(SGroupCostCentreRow ATemplateRow, StringCollection ATemplateOperators, TDBTransaction ATransaction)
         {
             return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_s_group_cost_centre" + GenerateWhereClause(SGroupCostCentreTable.GetColumnStringList(), ATemplateRow, ATemplateOperators)), ATransaction, false, GetParametersForWhereClause(ATemplateRow)));
+        }
+
+        /// this method is called by all overloads
+        public static int CountUsingTemplate(TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        {
+            return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_s_group_cost_centre" + GenerateWhereClause(SGroupCostCentreTable.GetColumnStringList(), ASearchCriteria)), ATransaction, false,
+            GetParametersForWhereClause(new SGroupCostCentreTable(), ASearchCriteria)));
         }
 
         /// auto generated
@@ -18149,6 +25592,51 @@ namespace Ict.Petra.Shared.MSysMan.Data.Access
         }
 
         /// auto generated
+        public static void LoadViaSGroupTemplate(DataSet ADataSet, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        {
+            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClauseLong("PUB_s_group_cost_centre", AFieldList, new string[] {
+                            "s_group_id_c", "s_group_unit_key_n", "a_ledger_number_i", "a_cost_centre_code_c"}) + " FROM PUB_s_group_cost_centre, PUB_s_group WHERE " +
+                            "PUB_s_group_cost_centre.s_group_id_c = PUB_s_group.s_group_id_c AND PUB_s_group_cost_centre.s_group_unit_key_n = PUB_s_group.s_unit_key_n")
+                            + GenerateWhereClauseLong("PUB_s_group", SGroupTable.GetColumnStringList(), ASearchCriteria))
+                            + GenerateOrderByClause(AOrderBy)), SGroupCostCentreTable.GetTableName(), ATransaction,
+                            GetParametersForWhereClause(new SGroupCostCentreTable(), ASearchCriteria), AStartRecord, AMaxRecords);
+        }
+
+        /// auto generated
+        public static void LoadViaSGroupTemplate(DataSet AData, TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        {
+            LoadViaSGroupTemplate(AData, ASearchCriteria, null, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static void LoadViaSGroupTemplate(DataSet AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
+        {
+            LoadViaSGroupTemplate(AData, ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static void LoadViaSGroupTemplate(out SGroupCostCentreTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        {
+            DataSet FillDataSet = new DataSet();
+            AData = new SGroupCostCentreTable();
+            FillDataSet.Tables.Add(AData);
+            LoadViaSGroupTemplate(FillDataSet, ASearchCriteria, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            FillDataSet.Tables.Remove(AData);
+        }
+
+        /// auto generated
+        public static void LoadViaSGroupTemplate(out SGroupCostCentreTable AData, TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        {
+            LoadViaSGroupTemplate(out AData, ASearchCriteria, null, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static void LoadViaSGroupTemplate(out SGroupCostCentreTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
+        {
+            LoadViaSGroupTemplate(out AData, ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
         public static int CountViaSGroup(String AGroupId, Int64 AUnitKey, TDBTransaction ATransaction)
         {
             OdbcParameter[] ParametersArray = new OdbcParameter[2];
@@ -18164,6 +25652,15 @@ namespace Ict.Petra.Shared.MSysMan.Data.Access
         {
             return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_s_group_cost_centre, PUB_s_group WHERE " +
                 "PUB_s_group_cost_centre.s_group_id_c = PUB_s_group.s_group_id_c AND PUB_s_group_cost_centre.s_group_unit_key_n = PUB_s_group.s_unit_key_n" + GenerateWhereClauseLong("PUB_s_group", SGroupTable.GetColumnStringList(), ATemplateRow, ATemplateOperators)), ATransaction, false, GetParametersForWhereClause(ATemplateRow, SGroupTable.GetPrimKeyColumnOrdList())));
+        }
+
+        /// auto generated
+        public static int CountViaSGroupTemplate(TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        {
+            return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_s_group_cost_centre, PUB_s_group WHERE " +
+                "PUB_s_group_cost_centre.s_group_id_c = PUB_s_group.s_group_id_c AND PUB_s_group_cost_centre.s_group_unit_key_n = PUB_s_group.s_unit_key_n" +
+                GenerateWhereClauseLong("PUB_s_group", SGroupTable.GetColumnStringList(), ASearchCriteria)), ATransaction, false,
+                GetParametersForWhereClause(new SGroupTable(), ASearchCriteria)));
         }
 
         /// auto generated
@@ -18264,6 +25761,51 @@ namespace Ict.Petra.Shared.MSysMan.Data.Access
         }
 
         /// auto generated
+        public static void LoadViaACostCentreTemplate(DataSet ADataSet, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        {
+            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClauseLong("PUB_s_group_cost_centre", AFieldList, new string[] {
+                            "s_group_id_c", "s_group_unit_key_n", "a_ledger_number_i", "a_cost_centre_code_c"}) + " FROM PUB_s_group_cost_centre, PUB_a_cost_centre WHERE " +
+                            "PUB_s_group_cost_centre.a_ledger_number_i = PUB_a_cost_centre.a_ledger_number_i AND PUB_s_group_cost_centre.a_cost_centre_code_c = PUB_a_cost_centre.a_cost_centre_code_c")
+                            + GenerateWhereClauseLong("PUB_a_cost_centre", ACostCentreTable.GetColumnStringList(), ASearchCriteria))
+                            + GenerateOrderByClause(AOrderBy)), SGroupCostCentreTable.GetTableName(), ATransaction,
+                            GetParametersForWhereClause(new SGroupCostCentreTable(), ASearchCriteria), AStartRecord, AMaxRecords);
+        }
+
+        /// auto generated
+        public static void LoadViaACostCentreTemplate(DataSet AData, TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        {
+            LoadViaACostCentreTemplate(AData, ASearchCriteria, null, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static void LoadViaACostCentreTemplate(DataSet AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
+        {
+            LoadViaACostCentreTemplate(AData, ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static void LoadViaACostCentreTemplate(out SGroupCostCentreTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        {
+            DataSet FillDataSet = new DataSet();
+            AData = new SGroupCostCentreTable();
+            FillDataSet.Tables.Add(AData);
+            LoadViaACostCentreTemplate(FillDataSet, ASearchCriteria, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            FillDataSet.Tables.Remove(AData);
+        }
+
+        /// auto generated
+        public static void LoadViaACostCentreTemplate(out SGroupCostCentreTable AData, TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        {
+            LoadViaACostCentreTemplate(out AData, ASearchCriteria, null, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static void LoadViaACostCentreTemplate(out SGroupCostCentreTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
+        {
+            LoadViaACostCentreTemplate(out AData, ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
         public static int CountViaACostCentre(Int32 ALedgerNumber, String ACostCentreCode, TDBTransaction ATransaction)
         {
             OdbcParameter[] ParametersArray = new OdbcParameter[2];
@@ -18279,6 +25821,180 @@ namespace Ict.Petra.Shared.MSysMan.Data.Access
         {
             return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_s_group_cost_centre, PUB_a_cost_centre WHERE " +
                 "PUB_s_group_cost_centre.a_ledger_number_i = PUB_a_cost_centre.a_ledger_number_i AND PUB_s_group_cost_centre.a_cost_centre_code_c = PUB_a_cost_centre.a_cost_centre_code_c" + GenerateWhereClauseLong("PUB_a_cost_centre", ACostCentreTable.GetColumnStringList(), ATemplateRow, ATemplateOperators)), ATransaction, false, GetParametersForWhereClause(ATemplateRow, ACostCentreTable.GetPrimKeyColumnOrdList())));
+        }
+
+        /// auto generated
+        public static int CountViaACostCentreTemplate(TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        {
+            return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_s_group_cost_centre, PUB_a_cost_centre WHERE " +
+                "PUB_s_group_cost_centre.a_ledger_number_i = PUB_a_cost_centre.a_ledger_number_i AND PUB_s_group_cost_centre.a_cost_centre_code_c = PUB_a_cost_centre.a_cost_centre_code_c" +
+                GenerateWhereClauseLong("PUB_a_cost_centre", ACostCentreTable.GetColumnStringList(), ASearchCriteria)), ATransaction, false,
+                GetParametersForWhereClause(new ACostCentreTable(), ASearchCriteria)));
+        }
+
+        /// auto generated
+        public static void LoadViaALedger(DataSet ADataSet, Int32 ALedgerNumber, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        {
+            OdbcParameter[] ParametersArray = new OdbcParameter[1];
+            ParametersArray[0] = new OdbcParameter("", OdbcType.Int);
+            ParametersArray[0].Value = ((object)(ALedgerNumber));
+            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, ((GenerateSelectClause(AFieldList, new string[] {
+                            "s_group_id_c", "s_group_unit_key_n", "a_ledger_number_i", "a_cost_centre_code_c"}) + " FROM PUB_s_group_cost_centre WHERE a_ledger_number_i = ?")
+                            + GenerateOrderByClause(AOrderBy)), SGroupCostCentreTable.GetTableName(), ATransaction, ParametersArray, AStartRecord, AMaxRecords);
+        }
+
+        /// auto generated
+        public static void LoadViaALedger(DataSet AData, Int32 ALedgerNumber, TDBTransaction ATransaction)
+        {
+            LoadViaALedger(AData, ALedgerNumber, null, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static void LoadViaALedger(DataSet AData, Int32 ALedgerNumber, StringCollection AFieldList, TDBTransaction ATransaction)
+        {
+            LoadViaALedger(AData, ALedgerNumber, AFieldList, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static void LoadViaALedger(out SGroupCostCentreTable AData, Int32 ALedgerNumber, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        {
+            DataSet FillDataSet = new DataSet();
+            AData = new SGroupCostCentreTable();
+            FillDataSet.Tables.Add(AData);
+            LoadViaALedger(FillDataSet, ALedgerNumber, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            FillDataSet.Tables.Remove(AData);
+        }
+
+        /// auto generated
+        public static void LoadViaALedger(out SGroupCostCentreTable AData, Int32 ALedgerNumber, TDBTransaction ATransaction)
+        {
+            LoadViaALedger(out AData, ALedgerNumber, null, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static void LoadViaALedger(out SGroupCostCentreTable AData, Int32 ALedgerNumber, StringCollection AFieldList, TDBTransaction ATransaction)
+        {
+            LoadViaALedger(out AData, ALedgerNumber, AFieldList, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static void LoadViaALedgerTemplate(DataSet ADataSet, ALedgerRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        {
+            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClauseLong("PUB_s_group_cost_centre", AFieldList, new string[] {
+                            "s_group_id_c", "s_group_unit_key_n", "a_ledger_number_i", "a_cost_centre_code_c"}) + " FROM PUB_s_group_cost_centre, PUB_a_ledger WHERE " +
+                            "PUB_s_group_cost_centre.a_ledger_number_i = PUB_a_ledger.a_ledger_number_i")
+                            + GenerateWhereClauseLong("PUB_a_ledger", ALedgerTable.GetColumnStringList(), ATemplateRow, ATemplateOperators))
+                            + GenerateOrderByClause(AOrderBy)), SGroupCostCentreTable.GetTableName(), ATransaction, GetParametersForWhereClause(ATemplateRow), AStartRecord, AMaxRecords);
+        }
+
+        /// auto generated
+        public static void LoadViaALedgerTemplate(DataSet AData, ALedgerRow ATemplateRow, TDBTransaction ATransaction)
+        {
+            LoadViaALedgerTemplate(AData, ATemplateRow, null, null, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static void LoadViaALedgerTemplate(DataSet AData, ALedgerRow ATemplateRow, StringCollection AFieldList, TDBTransaction ATransaction)
+        {
+            LoadViaALedgerTemplate(AData, ATemplateRow, null, AFieldList, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static void LoadViaALedgerTemplate(out SGroupCostCentreTable AData, ALedgerRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        {
+            DataSet FillDataSet = new DataSet();
+            AData = new SGroupCostCentreTable();
+            FillDataSet.Tables.Add(AData);
+            LoadViaALedgerTemplate(FillDataSet, ATemplateRow, ATemplateOperators, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            FillDataSet.Tables.Remove(AData);
+        }
+
+        /// auto generated
+        public static void LoadViaALedgerTemplate(out SGroupCostCentreTable AData, ALedgerRow ATemplateRow, TDBTransaction ATransaction)
+        {
+            LoadViaALedgerTemplate(out AData, ATemplateRow, null, null, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static void LoadViaALedgerTemplate(out SGroupCostCentreTable AData, ALedgerRow ATemplateRow, StringCollection AFieldList, TDBTransaction ATransaction)
+        {
+            LoadViaALedgerTemplate(out AData, ATemplateRow, null, AFieldList, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static void LoadViaALedgerTemplate(out SGroupCostCentreTable AData, ALedgerRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction)
+        {
+            LoadViaALedgerTemplate(out AData, ATemplateRow, ATemplateOperators, AFieldList, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static void LoadViaALedgerTemplate(DataSet ADataSet, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        {
+            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClauseLong("PUB_s_group_cost_centre", AFieldList, new string[] {
+                            "s_group_id_c", "s_group_unit_key_n", "a_ledger_number_i", "a_cost_centre_code_c"}) + " FROM PUB_s_group_cost_centre, PUB_a_ledger WHERE " +
+                            "PUB_s_group_cost_centre.a_ledger_number_i = PUB_a_ledger.a_ledger_number_i")
+                            + GenerateWhereClauseLong("PUB_a_ledger", ALedgerTable.GetColumnStringList(), ASearchCriteria))
+                            + GenerateOrderByClause(AOrderBy)), SGroupCostCentreTable.GetTableName(), ATransaction,
+                            GetParametersForWhereClause(new SGroupCostCentreTable(), ASearchCriteria), AStartRecord, AMaxRecords);
+        }
+
+        /// auto generated
+        public static void LoadViaALedgerTemplate(DataSet AData, TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        {
+            LoadViaALedgerTemplate(AData, ASearchCriteria, null, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static void LoadViaALedgerTemplate(DataSet AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
+        {
+            LoadViaALedgerTemplate(AData, ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static void LoadViaALedgerTemplate(out SGroupCostCentreTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        {
+            DataSet FillDataSet = new DataSet();
+            AData = new SGroupCostCentreTable();
+            FillDataSet.Tables.Add(AData);
+            LoadViaALedgerTemplate(FillDataSet, ASearchCriteria, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            FillDataSet.Tables.Remove(AData);
+        }
+
+        /// auto generated
+        public static void LoadViaALedgerTemplate(out SGroupCostCentreTable AData, TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        {
+            LoadViaALedgerTemplate(out AData, ASearchCriteria, null, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static void LoadViaALedgerTemplate(out SGroupCostCentreTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
+        {
+            LoadViaALedgerTemplate(out AData, ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static int CountViaALedger(Int32 ALedgerNumber, TDBTransaction ATransaction)
+        {
+            OdbcParameter[] ParametersArray = new OdbcParameter[1];
+            ParametersArray[0] = new OdbcParameter("", OdbcType.Int);
+            ParametersArray[0].Value = ((object)(ALedgerNumber));
+            return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar("SELECT COUNT(*) FROM PUB_s_group_cost_centre WHERE a_ledger_number_i = ?", ATransaction, false, ParametersArray));
+        }
+
+        /// auto generated
+        public static int CountViaALedgerTemplate(ALedgerRow ATemplateRow, StringCollection ATemplateOperators, TDBTransaction ATransaction)
+        {
+            return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_s_group_cost_centre, PUB_a_ledger WHERE " +
+                "PUB_s_group_cost_centre.a_ledger_number_i = PUB_a_ledger.a_ledger_number_i" + GenerateWhereClauseLong("PUB_a_ledger", ALedgerTable.GetColumnStringList(), ATemplateRow, ATemplateOperators)), ATransaction, false, GetParametersForWhereClause(ATemplateRow, ALedgerTable.GetPrimKeyColumnOrdList())));
+        }
+
+        /// auto generated
+        public static int CountViaALedgerTemplate(TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        {
+            return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_s_group_cost_centre, PUB_a_ledger WHERE " +
+                "PUB_s_group_cost_centre.a_ledger_number_i = PUB_a_ledger.a_ledger_number_i" +
+                GenerateWhereClauseLong("PUB_a_ledger", ALedgerTable.GetColumnStringList(), ASearchCriteria)), ATransaction, false,
+                GetParametersForWhereClause(new ALedgerTable(), ASearchCriteria)));
         }
 
         /// auto generated
@@ -18300,6 +26016,14 @@ namespace Ict.Petra.Shared.MSysMan.Data.Access
         public static void DeleteUsingTemplate(SGroupCostCentreRow ATemplateRow, StringCollection ATemplateOperators, TDBTransaction ATransaction)
         {
             DBAccess.GDBAccessObj.ExecuteNonQuery(("DELETE FROM PUB_s_group_cost_centre" + GenerateWhereClause(SGroupCostCentreTable.GetColumnStringList(), ATemplateRow, ATemplateOperators)), ATransaction, false, GetParametersForWhereClause(ATemplateRow));
+        }
+
+        /// auto generated
+        public static void DeleteUsingTemplate(TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        {
+            DBAccess.GDBAccessObj.ExecuteNonQuery(("DELETE FROM PUB_s_group_cost_centre" +
+                GenerateWhereClause(SGroupCostCentreTable.GetColumnStringList(), ASearchCriteria)), ATransaction, false,
+                GetParametersForWhereClause(new SGroupCostCentreTable(), ASearchCriteria));
         }
 
         /// auto generated
@@ -18492,6 +26216,50 @@ namespace Ict.Petra.Shared.MSysMan.Data.Access
         }
 
         /// this method is called by all overloads
+        public static void LoadUsingTemplate(DataSet ADataSet, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        {
+            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClause(AFieldList, new string[] {
+                            "s_group_id_c", "s_group_unit_key_n", "m_extract_id_i"}) + " FROM PUB_s_group_extract")
+                            + GenerateWhereClause(SGroupExtractTable.GetColumnStringList(), ASearchCriteria))
+                            + GenerateOrderByClause(AOrderBy)), SGroupExtractTable.GetTableName(), ATransaction,
+                            GetParametersForWhereClause(new SGroupExtractTable(), ASearchCriteria), AStartRecord, AMaxRecords);
+        }
+
+        /// auto generated
+        public static void LoadUsingTemplate(DataSet AData, TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        {
+            LoadUsingTemplate(AData, ASearchCriteria, null, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static void LoadUsingTemplate(DataSet AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
+        {
+            LoadUsingTemplate(AData, ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static void LoadUsingTemplate(out SGroupExtractTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        {
+            DataSet FillDataSet = new DataSet();
+            AData = new SGroupExtractTable();
+            FillDataSet.Tables.Add(AData);
+            LoadUsingTemplate(FillDataSet, ASearchCriteria, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            FillDataSet.Tables.Remove(AData);
+        }
+
+        /// auto generated
+        public static void LoadUsingTemplate(out SGroupExtractTable AData, TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        {
+            LoadUsingTemplate(out AData, ASearchCriteria, null, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static void LoadUsingTemplate(out SGroupExtractTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
+        {
+            LoadUsingTemplate(out AData, ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
+        }
+
+        /// this method is called by all overloads
         public static int CountAll(TDBTransaction ATransaction)
         {
             return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar("SELECT COUNT(*) FROM PUB_s_group_extract", ATransaction, false));
@@ -18514,6 +26282,13 @@ namespace Ict.Petra.Shared.MSysMan.Data.Access
         public static int CountUsingTemplate(SGroupExtractRow ATemplateRow, StringCollection ATemplateOperators, TDBTransaction ATransaction)
         {
             return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_s_group_extract" + GenerateWhereClause(SGroupExtractTable.GetColumnStringList(), ATemplateRow, ATemplateOperators)), ATransaction, false, GetParametersForWhereClause(ATemplateRow)));
+        }
+
+        /// this method is called by all overloads
+        public static int CountUsingTemplate(TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        {
+            return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_s_group_extract" + GenerateWhereClause(SGroupExtractTable.GetColumnStringList(), ASearchCriteria)), ATransaction, false,
+            GetParametersForWhereClause(new SGroupExtractTable(), ASearchCriteria)));
         }
 
         /// auto generated
@@ -18614,6 +26389,51 @@ namespace Ict.Petra.Shared.MSysMan.Data.Access
         }
 
         /// auto generated
+        public static void LoadViaSGroupTemplate(DataSet ADataSet, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        {
+            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClauseLong("PUB_s_group_extract", AFieldList, new string[] {
+                            "s_group_id_c", "s_group_unit_key_n", "m_extract_id_i"}) + " FROM PUB_s_group_extract, PUB_s_group WHERE " +
+                            "PUB_s_group_extract.s_group_id_c = PUB_s_group.s_group_id_c AND PUB_s_group_extract.s_group_unit_key_n = PUB_s_group.s_unit_key_n")
+                            + GenerateWhereClauseLong("PUB_s_group", SGroupTable.GetColumnStringList(), ASearchCriteria))
+                            + GenerateOrderByClause(AOrderBy)), SGroupExtractTable.GetTableName(), ATransaction,
+                            GetParametersForWhereClause(new SGroupExtractTable(), ASearchCriteria), AStartRecord, AMaxRecords);
+        }
+
+        /// auto generated
+        public static void LoadViaSGroupTemplate(DataSet AData, TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        {
+            LoadViaSGroupTemplate(AData, ASearchCriteria, null, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static void LoadViaSGroupTemplate(DataSet AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
+        {
+            LoadViaSGroupTemplate(AData, ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static void LoadViaSGroupTemplate(out SGroupExtractTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        {
+            DataSet FillDataSet = new DataSet();
+            AData = new SGroupExtractTable();
+            FillDataSet.Tables.Add(AData);
+            LoadViaSGroupTemplate(FillDataSet, ASearchCriteria, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            FillDataSet.Tables.Remove(AData);
+        }
+
+        /// auto generated
+        public static void LoadViaSGroupTemplate(out SGroupExtractTable AData, TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        {
+            LoadViaSGroupTemplate(out AData, ASearchCriteria, null, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static void LoadViaSGroupTemplate(out SGroupExtractTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
+        {
+            LoadViaSGroupTemplate(out AData, ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
         public static int CountViaSGroup(String AGroupId, Int64 AUnitKey, TDBTransaction ATransaction)
         {
             OdbcParameter[] ParametersArray = new OdbcParameter[2];
@@ -18629,6 +26449,15 @@ namespace Ict.Petra.Shared.MSysMan.Data.Access
         {
             return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_s_group_extract, PUB_s_group WHERE " +
                 "PUB_s_group_extract.s_group_id_c = PUB_s_group.s_group_id_c AND PUB_s_group_extract.s_group_unit_key_n = PUB_s_group.s_unit_key_n" + GenerateWhereClauseLong("PUB_s_group", SGroupTable.GetColumnStringList(), ATemplateRow, ATemplateOperators)), ATransaction, false, GetParametersForWhereClause(ATemplateRow, SGroupTable.GetPrimKeyColumnOrdList())));
+        }
+
+        /// auto generated
+        public static int CountViaSGroupTemplate(TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        {
+            return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_s_group_extract, PUB_s_group WHERE " +
+                "PUB_s_group_extract.s_group_id_c = PUB_s_group.s_group_id_c AND PUB_s_group_extract.s_group_unit_key_n = PUB_s_group.s_unit_key_n" +
+                GenerateWhereClauseLong("PUB_s_group", SGroupTable.GetColumnStringList(), ASearchCriteria)), ATransaction, false,
+                GetParametersForWhereClause(new SGroupTable(), ASearchCriteria)));
         }
 
         /// auto generated
@@ -18727,6 +26556,51 @@ namespace Ict.Petra.Shared.MSysMan.Data.Access
         }
 
         /// auto generated
+        public static void LoadViaMExtractMasterTemplate(DataSet ADataSet, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        {
+            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClauseLong("PUB_s_group_extract", AFieldList, new string[] {
+                            "s_group_id_c", "s_group_unit_key_n", "m_extract_id_i"}) + " FROM PUB_s_group_extract, PUB_m_extract_master WHERE " +
+                            "PUB_s_group_extract.m_extract_id_i = PUB_m_extract_master.m_extract_id_i")
+                            + GenerateWhereClauseLong("PUB_m_extract_master", MExtractMasterTable.GetColumnStringList(), ASearchCriteria))
+                            + GenerateOrderByClause(AOrderBy)), SGroupExtractTable.GetTableName(), ATransaction,
+                            GetParametersForWhereClause(new SGroupExtractTable(), ASearchCriteria), AStartRecord, AMaxRecords);
+        }
+
+        /// auto generated
+        public static void LoadViaMExtractMasterTemplate(DataSet AData, TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        {
+            LoadViaMExtractMasterTemplate(AData, ASearchCriteria, null, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static void LoadViaMExtractMasterTemplate(DataSet AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
+        {
+            LoadViaMExtractMasterTemplate(AData, ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static void LoadViaMExtractMasterTemplate(out SGroupExtractTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        {
+            DataSet FillDataSet = new DataSet();
+            AData = new SGroupExtractTable();
+            FillDataSet.Tables.Add(AData);
+            LoadViaMExtractMasterTemplate(FillDataSet, ASearchCriteria, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            FillDataSet.Tables.Remove(AData);
+        }
+
+        /// auto generated
+        public static void LoadViaMExtractMasterTemplate(out SGroupExtractTable AData, TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        {
+            LoadViaMExtractMasterTemplate(out AData, ASearchCriteria, null, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static void LoadViaMExtractMasterTemplate(out SGroupExtractTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
+        {
+            LoadViaMExtractMasterTemplate(out AData, ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
         public static int CountViaMExtractMaster(Int32 AExtractId, TDBTransaction ATransaction)
         {
             OdbcParameter[] ParametersArray = new OdbcParameter[1];
@@ -18740,6 +26614,15 @@ namespace Ict.Petra.Shared.MSysMan.Data.Access
         {
             return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_s_group_extract, PUB_m_extract_master WHERE " +
                 "PUB_s_group_extract.m_extract_id_i = PUB_m_extract_master.m_extract_id_i" + GenerateWhereClauseLong("PUB_m_extract_master", MExtractMasterTable.GetColumnStringList(), ATemplateRow, ATemplateOperators)), ATransaction, false, GetParametersForWhereClause(ATemplateRow, MExtractMasterTable.GetPrimKeyColumnOrdList())));
+        }
+
+        /// auto generated
+        public static int CountViaMExtractMasterTemplate(TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        {
+            return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_s_group_extract, PUB_m_extract_master WHERE " +
+                "PUB_s_group_extract.m_extract_id_i = PUB_m_extract_master.m_extract_id_i" +
+                GenerateWhereClauseLong("PUB_m_extract_master", MExtractMasterTable.GetColumnStringList(), ASearchCriteria)), ATransaction, false,
+                GetParametersForWhereClause(new MExtractMasterTable(), ASearchCriteria)));
         }
 
         /// auto generated
@@ -18759,6 +26642,14 @@ namespace Ict.Petra.Shared.MSysMan.Data.Access
         public static void DeleteUsingTemplate(SGroupExtractRow ATemplateRow, StringCollection ATemplateOperators, TDBTransaction ATransaction)
         {
             DBAccess.GDBAccessObj.ExecuteNonQuery(("DELETE FROM PUB_s_group_extract" + GenerateWhereClause(SGroupExtractTable.GetColumnStringList(), ATemplateRow, ATemplateOperators)), ATransaction, false, GetParametersForWhereClause(ATemplateRow));
+        }
+
+        /// auto generated
+        public static void DeleteUsingTemplate(TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        {
+            DBAccess.GDBAccessObj.ExecuteNonQuery(("DELETE FROM PUB_s_group_extract" +
+                GenerateWhereClause(SGroupExtractTable.GetColumnStringList(), ASearchCriteria)), ATransaction, false,
+                GetParametersForWhereClause(new SGroupExtractTable(), ASearchCriteria));
         }
 
         /// auto generated
@@ -18949,6 +26840,50 @@ namespace Ict.Petra.Shared.MSysMan.Data.Access
         }
 
         /// this method is called by all overloads
+        public static void LoadUsingTemplate(DataSet ADataSet, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        {
+            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClause(AFieldList, new string[] {
+                            "s_table_name_c", "s_rowid_c"}) + " FROM PUB_s_change_event")
+                            + GenerateWhereClause(SChangeEventTable.GetColumnStringList(), ASearchCriteria))
+                            + GenerateOrderByClause(AOrderBy)), SChangeEventTable.GetTableName(), ATransaction,
+                            GetParametersForWhereClause(new SChangeEventTable(), ASearchCriteria), AStartRecord, AMaxRecords);
+        }
+
+        /// auto generated
+        public static void LoadUsingTemplate(DataSet AData, TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        {
+            LoadUsingTemplate(AData, ASearchCriteria, null, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static void LoadUsingTemplate(DataSet AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
+        {
+            LoadUsingTemplate(AData, ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static void LoadUsingTemplate(out SChangeEventTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        {
+            DataSet FillDataSet = new DataSet();
+            AData = new SChangeEventTable();
+            FillDataSet.Tables.Add(AData);
+            LoadUsingTemplate(FillDataSet, ASearchCriteria, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            FillDataSet.Tables.Remove(AData);
+        }
+
+        /// auto generated
+        public static void LoadUsingTemplate(out SChangeEventTable AData, TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        {
+            LoadUsingTemplate(out AData, ASearchCriteria, null, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static void LoadUsingTemplate(out SChangeEventTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
+        {
+            LoadUsingTemplate(out AData, ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
+        }
+
+        /// this method is called by all overloads
         public static int CountAll(TDBTransaction ATransaction)
         {
             return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar("SELECT COUNT(*) FROM PUB_s_change_event", ATransaction, false));
@@ -18971,6 +26906,13 @@ namespace Ict.Petra.Shared.MSysMan.Data.Access
             return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_s_change_event" + GenerateWhereClause(SChangeEventTable.GetColumnStringList(), ATemplateRow, ATemplateOperators)), ATransaction, false, GetParametersForWhereClause(ATemplateRow)));
         }
 
+        /// this method is called by all overloads
+        public static int CountUsingTemplate(TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        {
+            return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_s_change_event" + GenerateWhereClause(SChangeEventTable.GetColumnStringList(), ASearchCriteria)), ATransaction, false,
+            GetParametersForWhereClause(new SChangeEventTable(), ASearchCriteria)));
+        }
+
         /// auto generated
         public static void DeleteByPrimaryKey(String ATableName, String ARowid, TDBTransaction ATransaction)
         {
@@ -18986,6 +26928,14 @@ namespace Ict.Petra.Shared.MSysMan.Data.Access
         public static void DeleteUsingTemplate(SChangeEventRow ATemplateRow, StringCollection ATemplateOperators, TDBTransaction ATransaction)
         {
             DBAccess.GDBAccessObj.ExecuteNonQuery(("DELETE FROM PUB_s_change_event" + GenerateWhereClause(SChangeEventTable.GetColumnStringList(), ATemplateRow, ATemplateOperators)), ATransaction, false, GetParametersForWhereClause(ATemplateRow));
+        }
+
+        /// auto generated
+        public static void DeleteUsingTemplate(TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        {
+            DBAccess.GDBAccessObj.ExecuteNonQuery(("DELETE FROM PUB_s_change_event" +
+                GenerateWhereClause(SChangeEventTable.GetColumnStringList(), ASearchCriteria)), ATransaction, false,
+                GetParametersForWhereClause(new SChangeEventTable(), ASearchCriteria));
         }
 
         /// auto generated
@@ -19174,6 +27124,50 @@ namespace Ict.Petra.Shared.MSysMan.Data.Access
         }
 
         /// this method is called by all overloads
+        public static void LoadUsingTemplate(DataSet ADataSet, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        {
+            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClause(AFieldList, new string[] {
+                            "p_label_name_c"}) + " FROM PUB_s_label")
+                            + GenerateWhereClause(SLabelTable.GetColumnStringList(), ASearchCriteria))
+                            + GenerateOrderByClause(AOrderBy)), SLabelTable.GetTableName(), ATransaction,
+                            GetParametersForWhereClause(new SLabelTable(), ASearchCriteria), AStartRecord, AMaxRecords);
+        }
+
+        /// auto generated
+        public static void LoadUsingTemplate(DataSet AData, TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        {
+            LoadUsingTemplate(AData, ASearchCriteria, null, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static void LoadUsingTemplate(DataSet AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
+        {
+            LoadUsingTemplate(AData, ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static void LoadUsingTemplate(out SLabelTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        {
+            DataSet FillDataSet = new DataSet();
+            AData = new SLabelTable();
+            FillDataSet.Tables.Add(AData);
+            LoadUsingTemplate(FillDataSet, ASearchCriteria, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            FillDataSet.Tables.Remove(AData);
+        }
+
+        /// auto generated
+        public static void LoadUsingTemplate(out SLabelTable AData, TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        {
+            LoadUsingTemplate(out AData, ASearchCriteria, null, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static void LoadUsingTemplate(out SLabelTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
+        {
+            LoadUsingTemplate(out AData, ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
+        }
+
+        /// this method is called by all overloads
         public static int CountAll(TDBTransaction ATransaction)
         {
             return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar("SELECT COUNT(*) FROM PUB_s_label", ATransaction, false));
@@ -19192,6 +27186,13 @@ namespace Ict.Petra.Shared.MSysMan.Data.Access
         public static int CountUsingTemplate(SLabelRow ATemplateRow, StringCollection ATemplateOperators, TDBTransaction ATransaction)
         {
             return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_s_label" + GenerateWhereClause(SLabelTable.GetColumnStringList(), ATemplateRow, ATemplateOperators)), ATransaction, false, GetParametersForWhereClause(ATemplateRow)));
+        }
+
+        /// this method is called by all overloads
+        public static int CountUsingTemplate(TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        {
+            return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_s_label" + GenerateWhereClause(SLabelTable.GetColumnStringList(), ASearchCriteria)), ATransaction, false,
+            GetParametersForWhereClause(new SLabelTable(), ASearchCriteria)));
         }
 
         /// auto generated
@@ -19290,6 +27291,51 @@ namespace Ict.Petra.Shared.MSysMan.Data.Access
         }
 
         /// auto generated
+        public static void LoadViaSFormTemplate(DataSet ADataSet, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        {
+            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClauseLong("PUB_s_label", AFieldList, new string[] {
+                            "p_label_name_c"}) + " FROM PUB_s_label, PUB_s_form WHERE " +
+                            "PUB_s_label.s_form_name_c = PUB_s_form.s_form_name_c")
+                            + GenerateWhereClauseLong("PUB_s_form", SFormTable.GetColumnStringList(), ASearchCriteria))
+                            + GenerateOrderByClause(AOrderBy)), SLabelTable.GetTableName(), ATransaction,
+                            GetParametersForWhereClause(new SLabelTable(), ASearchCriteria), AStartRecord, AMaxRecords);
+        }
+
+        /// auto generated
+        public static void LoadViaSFormTemplate(DataSet AData, TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        {
+            LoadViaSFormTemplate(AData, ASearchCriteria, null, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static void LoadViaSFormTemplate(DataSet AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
+        {
+            LoadViaSFormTemplate(AData, ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static void LoadViaSFormTemplate(out SLabelTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        {
+            DataSet FillDataSet = new DataSet();
+            AData = new SLabelTable();
+            FillDataSet.Tables.Add(AData);
+            LoadViaSFormTemplate(FillDataSet, ASearchCriteria, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            FillDataSet.Tables.Remove(AData);
+        }
+
+        /// auto generated
+        public static void LoadViaSFormTemplate(out SLabelTable AData, TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        {
+            LoadViaSFormTemplate(out AData, ASearchCriteria, null, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static void LoadViaSFormTemplate(out SLabelTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
+        {
+            LoadViaSFormTemplate(out AData, ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
         public static int CountViaSForm(String AFormName, TDBTransaction ATransaction)
         {
             OdbcParameter[] ParametersArray = new OdbcParameter[1];
@@ -19306,6 +27352,15 @@ namespace Ict.Petra.Shared.MSysMan.Data.Access
         }
 
         /// auto generated
+        public static int CountViaSFormTemplate(TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        {
+            return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_s_label, PUB_s_form WHERE " +
+                "PUB_s_label.s_form_name_c = PUB_s_form.s_form_name_c" +
+                GenerateWhereClauseLong("PUB_s_form", SFormTable.GetColumnStringList(), ASearchCriteria)), ATransaction, false,
+                GetParametersForWhereClause(new SFormTable(), ASearchCriteria)));
+        }
+
+        /// auto generated
         public static void DeleteByPrimaryKey(String ALabelName, TDBTransaction ATransaction)
         {
             OdbcParameter[] ParametersArray = new OdbcParameter[1];
@@ -19318,6 +27373,14 @@ namespace Ict.Petra.Shared.MSysMan.Data.Access
         public static void DeleteUsingTemplate(SLabelRow ATemplateRow, StringCollection ATemplateOperators, TDBTransaction ATransaction)
         {
             DBAccess.GDBAccessObj.ExecuteNonQuery(("DELETE FROM PUB_s_label" + GenerateWhereClause(SLabelTable.GetColumnStringList(), ATemplateRow, ATemplateOperators)), ATransaction, false, GetParametersForWhereClause(ATemplateRow));
+        }
+
+        /// auto generated
+        public static void DeleteUsingTemplate(TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        {
+            DBAccess.GDBAccessObj.ExecuteNonQuery(("DELETE FROM PUB_s_label" +
+                GenerateWhereClause(SLabelTable.GetColumnStringList(), ASearchCriteria)), ATransaction, false,
+                GetParametersForWhereClause(new SLabelTable(), ASearchCriteria));
         }
 
         /// auto generated
@@ -19506,6 +27569,50 @@ namespace Ict.Petra.Shared.MSysMan.Data.Access
         }
 
         /// this method is called by all overloads
+        public static void LoadUsingTemplate(DataSet ADataSet, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        {
+            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClause(AFieldList, new string[] {
+                            "s_workflow_id_i"}) + " FROM PUB_s_workflow_definition")
+                            + GenerateWhereClause(SWorkflowDefinitionTable.GetColumnStringList(), ASearchCriteria))
+                            + GenerateOrderByClause(AOrderBy)), SWorkflowDefinitionTable.GetTableName(), ATransaction,
+                            GetParametersForWhereClause(new SWorkflowDefinitionTable(), ASearchCriteria), AStartRecord, AMaxRecords);
+        }
+
+        /// auto generated
+        public static void LoadUsingTemplate(DataSet AData, TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        {
+            LoadUsingTemplate(AData, ASearchCriteria, null, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static void LoadUsingTemplate(DataSet AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
+        {
+            LoadUsingTemplate(AData, ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static void LoadUsingTemplate(out SWorkflowDefinitionTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        {
+            DataSet FillDataSet = new DataSet();
+            AData = new SWorkflowDefinitionTable();
+            FillDataSet.Tables.Add(AData);
+            LoadUsingTemplate(FillDataSet, ASearchCriteria, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            FillDataSet.Tables.Remove(AData);
+        }
+
+        /// auto generated
+        public static void LoadUsingTemplate(out SWorkflowDefinitionTable AData, TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        {
+            LoadUsingTemplate(out AData, ASearchCriteria, null, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static void LoadUsingTemplate(out SWorkflowDefinitionTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
+        {
+            LoadUsingTemplate(out AData, ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
+        }
+
+        /// this method is called by all overloads
         public static int CountAll(TDBTransaction ATransaction)
         {
             return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar("SELECT COUNT(*) FROM PUB_s_workflow_definition", ATransaction, false));
@@ -19524,6 +27631,13 @@ namespace Ict.Petra.Shared.MSysMan.Data.Access
         public static int CountUsingTemplate(SWorkflowDefinitionRow ATemplateRow, StringCollection ATemplateOperators, TDBTransaction ATransaction)
         {
             return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_s_workflow_definition" + GenerateWhereClause(SWorkflowDefinitionTable.GetColumnStringList(), ATemplateRow, ATemplateOperators)), ATransaction, false, GetParametersForWhereClause(ATemplateRow)));
+        }
+
+        /// this method is called by all overloads
+        public static int CountUsingTemplate(TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        {
+            return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_s_workflow_definition" + GenerateWhereClause(SWorkflowDefinitionTable.GetColumnStringList(), ASearchCriteria)), ATransaction, false,
+            GetParametersForWhereClause(new SWorkflowDefinitionTable(), ASearchCriteria)));
         }
 
         /// auto generated LoadViaLinkTable
@@ -19622,6 +27736,51 @@ namespace Ict.Petra.Shared.MSysMan.Data.Access
             LoadViaSUserTemplate(out AData, ATemplateRow, ATemplateOperators, AFieldList, ATransaction, null, 0, 0);
         }
 
+        /// auto generated
+        public static void LoadViaSUserTemplate(DataSet ADataSet, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        {
+            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClauseLong("PUB_s_workflow_definition", AFieldList, new string[] {
+                            "s_workflow_id_i"}) + " FROM PUB_s_workflow_definition, PUB_s_workflow_user, PUB_s_user WHERE " +
+                            "PUB_s_workflow_user.s_workflow_id_i = PUB_s_workflow_definition.s_workflow_id_i AND PUB_s_workflow_user.s_user_id_c = PUB_s_user.s_user_id_c")
+                            + GenerateWhereClauseLong("PUB_s_user", SUserTable.GetColumnStringList(), ASearchCriteria))
+                            + GenerateOrderByClause(AOrderBy)), SWorkflowDefinitionTable.GetTableName(), ATransaction,
+                            GetParametersForWhereClause(new SWorkflowDefinitionTable(), ASearchCriteria), AStartRecord, AMaxRecords);
+        }
+
+        /// auto generated
+        public static void LoadViaSUserTemplate(DataSet AData, TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        {
+            LoadViaSUserTemplate(AData, ASearchCriteria, null, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static void LoadViaSUserTemplate(DataSet AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
+        {
+            LoadViaSUserTemplate(AData, ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static void LoadViaSUserTemplate(out SWorkflowDefinitionTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        {
+            DataSet FillDataSet = new DataSet();
+            AData = new SWorkflowDefinitionTable();
+            FillDataSet.Tables.Add(AData);
+            LoadViaSUserTemplate(FillDataSet, ASearchCriteria, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            FillDataSet.Tables.Remove(AData);
+        }
+
+        /// auto generated
+        public static void LoadViaSUserTemplate(out SWorkflowDefinitionTable AData, TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        {
+            LoadViaSUserTemplate(out AData, ASearchCriteria, null, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static void LoadViaSUserTemplate(out SWorkflowDefinitionTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
+        {
+            LoadViaSUserTemplate(out AData, ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
+        }
+
         /// auto generated CountViaLinkTable
         public static int CountViaSUser(String AUserId, TDBTransaction ATransaction)
         {
@@ -19639,6 +27798,15 @@ namespace Ict.Petra.Shared.MSysMan.Data.Access
             return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_s_workflow_definition, PUB_s_workflow_user, PUB_s_user WHERE " +
                         "PUB_s_workflow_user.s_workflow_id_i = PUB_s_workflow_definition.s_workflow_id_i AND PUB_s_workflow_user.s_user_id_c = PUB_s_user.s_user_id_c" +
                         GenerateWhereClauseLong("PUB_s_workflow_user", SWorkflowDefinitionTable.GetColumnStringList(), ATemplateRow, ATemplateOperators)), ATransaction, false, GetParametersForWhereClause(ATemplateRow, SUserTable.GetPrimKeyColumnOrdList())));
+        }
+
+        /// auto generated
+        public static int CountViaSUserTemplate(TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        {
+            return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_s_workflow_definition, PUB_s_workflow_user, PUB_s_user WHERE " +
+                        "PUB_s_workflow_user.s_workflow_id_i = PUB_s_workflow_definition.s_workflow_id_i AND PUB_s_workflow_user.s_user_id_c = PUB_s_user.s_user_id_c" +
+                        GenerateWhereClauseLong("PUB_s_workflow_user", SWorkflowDefinitionTable.GetColumnStringList(), ASearchCriteria)), ATransaction, false,
+                        GetParametersForWhereClause(new SWorkflowDefinitionTable(), ASearchCriteria)));
         }
 
         /// auto generated LoadViaLinkTable
@@ -19739,6 +27907,51 @@ namespace Ict.Petra.Shared.MSysMan.Data.Access
             LoadViaSGroupTemplate(out AData, ATemplateRow, ATemplateOperators, AFieldList, ATransaction, null, 0, 0);
         }
 
+        /// auto generated
+        public static void LoadViaSGroupTemplate(DataSet ADataSet, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        {
+            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClauseLong("PUB_s_workflow_definition", AFieldList, new string[] {
+                            "s_workflow_id_i"}) + " FROM PUB_s_workflow_definition, PUB_s_workflow_group, PUB_s_group WHERE " +
+                            "PUB_s_workflow_group.s_workflow_id_i = PUB_s_workflow_definition.s_workflow_id_i AND PUB_s_workflow_group.s_group_id_c = PUB_s_group.s_group_id_c AND PUB_s_workflow_group.s_group_unit_key_n = PUB_s_group.s_unit_key_n")
+                            + GenerateWhereClauseLong("PUB_s_group", SGroupTable.GetColumnStringList(), ASearchCriteria))
+                            + GenerateOrderByClause(AOrderBy)), SWorkflowDefinitionTable.GetTableName(), ATransaction,
+                            GetParametersForWhereClause(new SWorkflowDefinitionTable(), ASearchCriteria), AStartRecord, AMaxRecords);
+        }
+
+        /// auto generated
+        public static void LoadViaSGroupTemplate(DataSet AData, TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        {
+            LoadViaSGroupTemplate(AData, ASearchCriteria, null, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static void LoadViaSGroupTemplate(DataSet AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
+        {
+            LoadViaSGroupTemplate(AData, ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static void LoadViaSGroupTemplate(out SWorkflowDefinitionTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        {
+            DataSet FillDataSet = new DataSet();
+            AData = new SWorkflowDefinitionTable();
+            FillDataSet.Tables.Add(AData);
+            LoadViaSGroupTemplate(FillDataSet, ASearchCriteria, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            FillDataSet.Tables.Remove(AData);
+        }
+
+        /// auto generated
+        public static void LoadViaSGroupTemplate(out SWorkflowDefinitionTable AData, TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        {
+            LoadViaSGroupTemplate(out AData, ASearchCriteria, null, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static void LoadViaSGroupTemplate(out SWorkflowDefinitionTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
+        {
+            LoadViaSGroupTemplate(out AData, ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
+        }
+
         /// auto generated CountViaLinkTable
         public static int CountViaSGroup(String AGroupId, Int64 AUnitKey, TDBTransaction ATransaction)
         {
@@ -19761,6 +27974,15 @@ namespace Ict.Petra.Shared.MSysMan.Data.Access
         }
 
         /// auto generated
+        public static int CountViaSGroupTemplate(TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        {
+            return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_s_workflow_definition, PUB_s_workflow_group, PUB_s_group WHERE " +
+                        "PUB_s_workflow_group.s_workflow_id_i = PUB_s_workflow_definition.s_workflow_id_i AND PUB_s_workflow_group.s_group_id_c = PUB_s_group.s_group_id_c AND PUB_s_workflow_group.s_group_unit_key_n = PUB_s_group.s_unit_key_n" +
+                        GenerateWhereClauseLong("PUB_s_workflow_group", SWorkflowDefinitionTable.GetColumnStringList(), ASearchCriteria)), ATransaction, false,
+                        GetParametersForWhereClause(new SWorkflowDefinitionTable(), ASearchCriteria)));
+        }
+
+        /// auto generated
         public static void DeleteByPrimaryKey(Int32 AWorkflowId, TDBTransaction ATransaction)
         {
             OdbcParameter[] ParametersArray = new OdbcParameter[1];
@@ -19773,6 +27995,14 @@ namespace Ict.Petra.Shared.MSysMan.Data.Access
         public static void DeleteUsingTemplate(SWorkflowDefinitionRow ATemplateRow, StringCollection ATemplateOperators, TDBTransaction ATransaction)
         {
             DBAccess.GDBAccessObj.ExecuteNonQuery(("DELETE FROM PUB_s_workflow_definition" + GenerateWhereClause(SWorkflowDefinitionTable.GetColumnStringList(), ATemplateRow, ATemplateOperators)), ATransaction, false, GetParametersForWhereClause(ATemplateRow));
+        }
+
+        /// auto generated
+        public static void DeleteUsingTemplate(TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        {
+            DBAccess.GDBAccessObj.ExecuteNonQuery(("DELETE FROM PUB_s_workflow_definition" +
+                GenerateWhereClause(SWorkflowDefinitionTable.GetColumnStringList(), ASearchCriteria)), ATransaction, false,
+                GetParametersForWhereClause(new SWorkflowDefinitionTable(), ASearchCriteria));
         }
 
         /// auto generated
@@ -19964,6 +28194,50 @@ namespace Ict.Petra.Shared.MSysMan.Data.Access
         }
 
         /// this method is called by all overloads
+        public static void LoadUsingTemplate(DataSet ADataSet, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        {
+            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClause(AFieldList, new string[] {
+                            "s_workflow_id_i", "s_user_id_c"}) + " FROM PUB_s_workflow_user")
+                            + GenerateWhereClause(SWorkflowUserTable.GetColumnStringList(), ASearchCriteria))
+                            + GenerateOrderByClause(AOrderBy)), SWorkflowUserTable.GetTableName(), ATransaction,
+                            GetParametersForWhereClause(new SWorkflowUserTable(), ASearchCriteria), AStartRecord, AMaxRecords);
+        }
+
+        /// auto generated
+        public static void LoadUsingTemplate(DataSet AData, TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        {
+            LoadUsingTemplate(AData, ASearchCriteria, null, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static void LoadUsingTemplate(DataSet AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
+        {
+            LoadUsingTemplate(AData, ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static void LoadUsingTemplate(out SWorkflowUserTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        {
+            DataSet FillDataSet = new DataSet();
+            AData = new SWorkflowUserTable();
+            FillDataSet.Tables.Add(AData);
+            LoadUsingTemplate(FillDataSet, ASearchCriteria, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            FillDataSet.Tables.Remove(AData);
+        }
+
+        /// auto generated
+        public static void LoadUsingTemplate(out SWorkflowUserTable AData, TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        {
+            LoadUsingTemplate(out AData, ASearchCriteria, null, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static void LoadUsingTemplate(out SWorkflowUserTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
+        {
+            LoadUsingTemplate(out AData, ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
+        }
+
+        /// this method is called by all overloads
         public static int CountAll(TDBTransaction ATransaction)
         {
             return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar("SELECT COUNT(*) FROM PUB_s_workflow_user", ATransaction, false));
@@ -19984,6 +28258,13 @@ namespace Ict.Petra.Shared.MSysMan.Data.Access
         public static int CountUsingTemplate(SWorkflowUserRow ATemplateRow, StringCollection ATemplateOperators, TDBTransaction ATransaction)
         {
             return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_s_workflow_user" + GenerateWhereClause(SWorkflowUserTable.GetColumnStringList(), ATemplateRow, ATemplateOperators)), ATransaction, false, GetParametersForWhereClause(ATemplateRow)));
+        }
+
+        /// this method is called by all overloads
+        public static int CountUsingTemplate(TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        {
+            return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_s_workflow_user" + GenerateWhereClause(SWorkflowUserTable.GetColumnStringList(), ASearchCriteria)), ATransaction, false,
+            GetParametersForWhereClause(new SWorkflowUserTable(), ASearchCriteria)));
         }
 
         /// auto generated
@@ -20082,6 +28363,51 @@ namespace Ict.Petra.Shared.MSysMan.Data.Access
         }
 
         /// auto generated
+        public static void LoadViaSWorkflowDefinitionTemplate(DataSet ADataSet, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        {
+            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClauseLong("PUB_s_workflow_user", AFieldList, new string[] {
+                            "s_workflow_id_i", "s_user_id_c"}) + " FROM PUB_s_workflow_user, PUB_s_workflow_definition WHERE " +
+                            "PUB_s_workflow_user.s_workflow_id_i = PUB_s_workflow_definition.s_workflow_id_i")
+                            + GenerateWhereClauseLong("PUB_s_workflow_definition", SWorkflowDefinitionTable.GetColumnStringList(), ASearchCriteria))
+                            + GenerateOrderByClause(AOrderBy)), SWorkflowUserTable.GetTableName(), ATransaction,
+                            GetParametersForWhereClause(new SWorkflowUserTable(), ASearchCriteria), AStartRecord, AMaxRecords);
+        }
+
+        /// auto generated
+        public static void LoadViaSWorkflowDefinitionTemplate(DataSet AData, TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        {
+            LoadViaSWorkflowDefinitionTemplate(AData, ASearchCriteria, null, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static void LoadViaSWorkflowDefinitionTemplate(DataSet AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
+        {
+            LoadViaSWorkflowDefinitionTemplate(AData, ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static void LoadViaSWorkflowDefinitionTemplate(out SWorkflowUserTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        {
+            DataSet FillDataSet = new DataSet();
+            AData = new SWorkflowUserTable();
+            FillDataSet.Tables.Add(AData);
+            LoadViaSWorkflowDefinitionTemplate(FillDataSet, ASearchCriteria, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            FillDataSet.Tables.Remove(AData);
+        }
+
+        /// auto generated
+        public static void LoadViaSWorkflowDefinitionTemplate(out SWorkflowUserTable AData, TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        {
+            LoadViaSWorkflowDefinitionTemplate(out AData, ASearchCriteria, null, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static void LoadViaSWorkflowDefinitionTemplate(out SWorkflowUserTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
+        {
+            LoadViaSWorkflowDefinitionTemplate(out AData, ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
         public static int CountViaSWorkflowDefinition(Int32 AWorkflowId, TDBTransaction ATransaction)
         {
             OdbcParameter[] ParametersArray = new OdbcParameter[1];
@@ -20095,6 +28421,15 @@ namespace Ict.Petra.Shared.MSysMan.Data.Access
         {
             return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_s_workflow_user, PUB_s_workflow_definition WHERE " +
                 "PUB_s_workflow_user.s_workflow_id_i = PUB_s_workflow_definition.s_workflow_id_i" + GenerateWhereClauseLong("PUB_s_workflow_definition", SWorkflowDefinitionTable.GetColumnStringList(), ATemplateRow, ATemplateOperators)), ATransaction, false, GetParametersForWhereClause(ATemplateRow, SWorkflowDefinitionTable.GetPrimKeyColumnOrdList())));
+        }
+
+        /// auto generated
+        public static int CountViaSWorkflowDefinitionTemplate(TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        {
+            return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_s_workflow_user, PUB_s_workflow_definition WHERE " +
+                "PUB_s_workflow_user.s_workflow_id_i = PUB_s_workflow_definition.s_workflow_id_i" +
+                GenerateWhereClauseLong("PUB_s_workflow_definition", SWorkflowDefinitionTable.GetColumnStringList(), ASearchCriteria)), ATransaction, false,
+                GetParametersForWhereClause(new SWorkflowDefinitionTable(), ASearchCriteria)));
         }
 
         /// auto generated
@@ -20193,6 +28528,51 @@ namespace Ict.Petra.Shared.MSysMan.Data.Access
         }
 
         /// auto generated
+        public static void LoadViaSUserTemplate(DataSet ADataSet, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        {
+            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClauseLong("PUB_s_workflow_user", AFieldList, new string[] {
+                            "s_workflow_id_i", "s_user_id_c"}) + " FROM PUB_s_workflow_user, PUB_s_user WHERE " +
+                            "PUB_s_workflow_user.s_user_id_c = PUB_s_user.s_user_id_c")
+                            + GenerateWhereClauseLong("PUB_s_user", SUserTable.GetColumnStringList(), ASearchCriteria))
+                            + GenerateOrderByClause(AOrderBy)), SWorkflowUserTable.GetTableName(), ATransaction,
+                            GetParametersForWhereClause(new SWorkflowUserTable(), ASearchCriteria), AStartRecord, AMaxRecords);
+        }
+
+        /// auto generated
+        public static void LoadViaSUserTemplate(DataSet AData, TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        {
+            LoadViaSUserTemplate(AData, ASearchCriteria, null, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static void LoadViaSUserTemplate(DataSet AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
+        {
+            LoadViaSUserTemplate(AData, ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static void LoadViaSUserTemplate(out SWorkflowUserTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        {
+            DataSet FillDataSet = new DataSet();
+            AData = new SWorkflowUserTable();
+            FillDataSet.Tables.Add(AData);
+            LoadViaSUserTemplate(FillDataSet, ASearchCriteria, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            FillDataSet.Tables.Remove(AData);
+        }
+
+        /// auto generated
+        public static void LoadViaSUserTemplate(out SWorkflowUserTable AData, TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        {
+            LoadViaSUserTemplate(out AData, ASearchCriteria, null, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static void LoadViaSUserTemplate(out SWorkflowUserTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
+        {
+            LoadViaSUserTemplate(out AData, ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
         public static int CountViaSUser(String AUserId, TDBTransaction ATransaction)
         {
             OdbcParameter[] ParametersArray = new OdbcParameter[1];
@@ -20206,6 +28586,15 @@ namespace Ict.Petra.Shared.MSysMan.Data.Access
         {
             return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_s_workflow_user, PUB_s_user WHERE " +
                 "PUB_s_workflow_user.s_user_id_c = PUB_s_user.s_user_id_c" + GenerateWhereClauseLong("PUB_s_user", SUserTable.GetColumnStringList(), ATemplateRow, ATemplateOperators)), ATransaction, false, GetParametersForWhereClause(ATemplateRow, SUserTable.GetPrimKeyColumnOrdList())));
+        }
+
+        /// auto generated
+        public static int CountViaSUserTemplate(TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        {
+            return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_s_workflow_user, PUB_s_user WHERE " +
+                "PUB_s_workflow_user.s_user_id_c = PUB_s_user.s_user_id_c" +
+                GenerateWhereClauseLong("PUB_s_user", SUserTable.GetColumnStringList(), ASearchCriteria)), ATransaction, false,
+                GetParametersForWhereClause(new SUserTable(), ASearchCriteria)));
         }
 
         /// auto generated
@@ -20223,6 +28612,14 @@ namespace Ict.Petra.Shared.MSysMan.Data.Access
         public static void DeleteUsingTemplate(SWorkflowUserRow ATemplateRow, StringCollection ATemplateOperators, TDBTransaction ATransaction)
         {
             DBAccess.GDBAccessObj.ExecuteNonQuery(("DELETE FROM PUB_s_workflow_user" + GenerateWhereClause(SWorkflowUserTable.GetColumnStringList(), ATemplateRow, ATemplateOperators)), ATransaction, false, GetParametersForWhereClause(ATemplateRow));
+        }
+
+        /// auto generated
+        public static void DeleteUsingTemplate(TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        {
+            DBAccess.GDBAccessObj.ExecuteNonQuery(("DELETE FROM PUB_s_workflow_user" +
+                GenerateWhereClause(SWorkflowUserTable.GetColumnStringList(), ASearchCriteria)), ATransaction, false,
+                GetParametersForWhereClause(new SWorkflowUserTable(), ASearchCriteria));
         }
 
         /// auto generated
@@ -20415,6 +28812,50 @@ namespace Ict.Petra.Shared.MSysMan.Data.Access
         }
 
         /// this method is called by all overloads
+        public static void LoadUsingTemplate(DataSet ADataSet, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        {
+            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClause(AFieldList, new string[] {
+                            "s_workflow_id_i", "s_group_id_c", "s_group_unit_key_n"}) + " FROM PUB_s_workflow_group")
+                            + GenerateWhereClause(SWorkflowGroupTable.GetColumnStringList(), ASearchCriteria))
+                            + GenerateOrderByClause(AOrderBy)), SWorkflowGroupTable.GetTableName(), ATransaction,
+                            GetParametersForWhereClause(new SWorkflowGroupTable(), ASearchCriteria), AStartRecord, AMaxRecords);
+        }
+
+        /// auto generated
+        public static void LoadUsingTemplate(DataSet AData, TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        {
+            LoadUsingTemplate(AData, ASearchCriteria, null, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static void LoadUsingTemplate(DataSet AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
+        {
+            LoadUsingTemplate(AData, ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static void LoadUsingTemplate(out SWorkflowGroupTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        {
+            DataSet FillDataSet = new DataSet();
+            AData = new SWorkflowGroupTable();
+            FillDataSet.Tables.Add(AData);
+            LoadUsingTemplate(FillDataSet, ASearchCriteria, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            FillDataSet.Tables.Remove(AData);
+        }
+
+        /// auto generated
+        public static void LoadUsingTemplate(out SWorkflowGroupTable AData, TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        {
+            LoadUsingTemplate(out AData, ASearchCriteria, null, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static void LoadUsingTemplate(out SWorkflowGroupTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
+        {
+            LoadUsingTemplate(out AData, ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
+        }
+
+        /// this method is called by all overloads
         public static int CountAll(TDBTransaction ATransaction)
         {
             return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar("SELECT COUNT(*) FROM PUB_s_workflow_group", ATransaction, false));
@@ -20437,6 +28878,13 @@ namespace Ict.Petra.Shared.MSysMan.Data.Access
         public static int CountUsingTemplate(SWorkflowGroupRow ATemplateRow, StringCollection ATemplateOperators, TDBTransaction ATransaction)
         {
             return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_s_workflow_group" + GenerateWhereClause(SWorkflowGroupTable.GetColumnStringList(), ATemplateRow, ATemplateOperators)), ATransaction, false, GetParametersForWhereClause(ATemplateRow)));
+        }
+
+        /// this method is called by all overloads
+        public static int CountUsingTemplate(TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        {
+            return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_s_workflow_group" + GenerateWhereClause(SWorkflowGroupTable.GetColumnStringList(), ASearchCriteria)), ATransaction, false,
+            GetParametersForWhereClause(new SWorkflowGroupTable(), ASearchCriteria)));
         }
 
         /// auto generated
@@ -20535,6 +28983,51 @@ namespace Ict.Petra.Shared.MSysMan.Data.Access
         }
 
         /// auto generated
+        public static void LoadViaSWorkflowDefinitionTemplate(DataSet ADataSet, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        {
+            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClauseLong("PUB_s_workflow_group", AFieldList, new string[] {
+                            "s_workflow_id_i", "s_group_id_c", "s_group_unit_key_n"}) + " FROM PUB_s_workflow_group, PUB_s_workflow_definition WHERE " +
+                            "PUB_s_workflow_group.s_workflow_id_i = PUB_s_workflow_definition.s_workflow_id_i")
+                            + GenerateWhereClauseLong("PUB_s_workflow_definition", SWorkflowDefinitionTable.GetColumnStringList(), ASearchCriteria))
+                            + GenerateOrderByClause(AOrderBy)), SWorkflowGroupTable.GetTableName(), ATransaction,
+                            GetParametersForWhereClause(new SWorkflowGroupTable(), ASearchCriteria), AStartRecord, AMaxRecords);
+        }
+
+        /// auto generated
+        public static void LoadViaSWorkflowDefinitionTemplate(DataSet AData, TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        {
+            LoadViaSWorkflowDefinitionTemplate(AData, ASearchCriteria, null, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static void LoadViaSWorkflowDefinitionTemplate(DataSet AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
+        {
+            LoadViaSWorkflowDefinitionTemplate(AData, ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static void LoadViaSWorkflowDefinitionTemplate(out SWorkflowGroupTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        {
+            DataSet FillDataSet = new DataSet();
+            AData = new SWorkflowGroupTable();
+            FillDataSet.Tables.Add(AData);
+            LoadViaSWorkflowDefinitionTemplate(FillDataSet, ASearchCriteria, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            FillDataSet.Tables.Remove(AData);
+        }
+
+        /// auto generated
+        public static void LoadViaSWorkflowDefinitionTemplate(out SWorkflowGroupTable AData, TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        {
+            LoadViaSWorkflowDefinitionTemplate(out AData, ASearchCriteria, null, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static void LoadViaSWorkflowDefinitionTemplate(out SWorkflowGroupTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
+        {
+            LoadViaSWorkflowDefinitionTemplate(out AData, ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
         public static int CountViaSWorkflowDefinition(Int32 AWorkflowId, TDBTransaction ATransaction)
         {
             OdbcParameter[] ParametersArray = new OdbcParameter[1];
@@ -20548,6 +29041,15 @@ namespace Ict.Petra.Shared.MSysMan.Data.Access
         {
             return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_s_workflow_group, PUB_s_workflow_definition WHERE " +
                 "PUB_s_workflow_group.s_workflow_id_i = PUB_s_workflow_definition.s_workflow_id_i" + GenerateWhereClauseLong("PUB_s_workflow_definition", SWorkflowDefinitionTable.GetColumnStringList(), ATemplateRow, ATemplateOperators)), ATransaction, false, GetParametersForWhereClause(ATemplateRow, SWorkflowDefinitionTable.GetPrimKeyColumnOrdList())));
+        }
+
+        /// auto generated
+        public static int CountViaSWorkflowDefinitionTemplate(TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        {
+            return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_s_workflow_group, PUB_s_workflow_definition WHERE " +
+                "PUB_s_workflow_group.s_workflow_id_i = PUB_s_workflow_definition.s_workflow_id_i" +
+                GenerateWhereClauseLong("PUB_s_workflow_definition", SWorkflowDefinitionTable.GetColumnStringList(), ASearchCriteria)), ATransaction, false,
+                GetParametersForWhereClause(new SWorkflowDefinitionTable(), ASearchCriteria)));
         }
 
         /// auto generated
@@ -20648,6 +29150,51 @@ namespace Ict.Petra.Shared.MSysMan.Data.Access
         }
 
         /// auto generated
+        public static void LoadViaSGroupTemplate(DataSet ADataSet, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        {
+            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClauseLong("PUB_s_workflow_group", AFieldList, new string[] {
+                            "s_workflow_id_i", "s_group_id_c", "s_group_unit_key_n"}) + " FROM PUB_s_workflow_group, PUB_s_group WHERE " +
+                            "PUB_s_workflow_group.s_group_id_c = PUB_s_group.s_group_id_c AND PUB_s_workflow_group.s_group_unit_key_n = PUB_s_group.s_unit_key_n")
+                            + GenerateWhereClauseLong("PUB_s_group", SGroupTable.GetColumnStringList(), ASearchCriteria))
+                            + GenerateOrderByClause(AOrderBy)), SWorkflowGroupTable.GetTableName(), ATransaction,
+                            GetParametersForWhereClause(new SWorkflowGroupTable(), ASearchCriteria), AStartRecord, AMaxRecords);
+        }
+
+        /// auto generated
+        public static void LoadViaSGroupTemplate(DataSet AData, TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        {
+            LoadViaSGroupTemplate(AData, ASearchCriteria, null, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static void LoadViaSGroupTemplate(DataSet AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
+        {
+            LoadViaSGroupTemplate(AData, ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static void LoadViaSGroupTemplate(out SWorkflowGroupTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        {
+            DataSet FillDataSet = new DataSet();
+            AData = new SWorkflowGroupTable();
+            FillDataSet.Tables.Add(AData);
+            LoadViaSGroupTemplate(FillDataSet, ASearchCriteria, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            FillDataSet.Tables.Remove(AData);
+        }
+
+        /// auto generated
+        public static void LoadViaSGroupTemplate(out SWorkflowGroupTable AData, TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        {
+            LoadViaSGroupTemplate(out AData, ASearchCriteria, null, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static void LoadViaSGroupTemplate(out SWorkflowGroupTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
+        {
+            LoadViaSGroupTemplate(out AData, ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
         public static int CountViaSGroup(String AGroupId, Int64 AUnitKey, TDBTransaction ATransaction)
         {
             OdbcParameter[] ParametersArray = new OdbcParameter[2];
@@ -20663,6 +29210,15 @@ namespace Ict.Petra.Shared.MSysMan.Data.Access
         {
             return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_s_workflow_group, PUB_s_group WHERE " +
                 "PUB_s_workflow_group.s_group_id_c = PUB_s_group.s_group_id_c AND PUB_s_workflow_group.s_group_unit_key_n = PUB_s_group.s_unit_key_n" + GenerateWhereClauseLong("PUB_s_group", SGroupTable.GetColumnStringList(), ATemplateRow, ATemplateOperators)), ATransaction, false, GetParametersForWhereClause(ATemplateRow, SGroupTable.GetPrimKeyColumnOrdList())));
+        }
+
+        /// auto generated
+        public static int CountViaSGroupTemplate(TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        {
+            return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_s_workflow_group, PUB_s_group WHERE " +
+                "PUB_s_workflow_group.s_group_id_c = PUB_s_group.s_group_id_c AND PUB_s_workflow_group.s_group_unit_key_n = PUB_s_group.s_unit_key_n" +
+                GenerateWhereClauseLong("PUB_s_group", SGroupTable.GetColumnStringList(), ASearchCriteria)), ATransaction, false,
+                GetParametersForWhereClause(new SGroupTable(), ASearchCriteria)));
         }
 
         /// auto generated
@@ -20682,6 +29238,14 @@ namespace Ict.Petra.Shared.MSysMan.Data.Access
         public static void DeleteUsingTemplate(SWorkflowGroupRow ATemplateRow, StringCollection ATemplateOperators, TDBTransaction ATransaction)
         {
             DBAccess.GDBAccessObj.ExecuteNonQuery(("DELETE FROM PUB_s_workflow_group" + GenerateWhereClause(SWorkflowGroupTable.GetColumnStringList(), ATemplateRow, ATemplateOperators)), ATransaction, false, GetParametersForWhereClause(ATemplateRow));
+        }
+
+        /// auto generated
+        public static void DeleteUsingTemplate(TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        {
+            DBAccess.GDBAccessObj.ExecuteNonQuery(("DELETE FROM PUB_s_workflow_group" +
+                GenerateWhereClause(SWorkflowGroupTable.GetColumnStringList(), ASearchCriteria)), ATransaction, false,
+                GetParametersForWhereClause(new SWorkflowGroupTable(), ASearchCriteria));
         }
 
         /// auto generated
@@ -20872,6 +29436,50 @@ namespace Ict.Petra.Shared.MSysMan.Data.Access
         }
 
         /// this method is called by all overloads
+        public static void LoadUsingTemplate(DataSet ADataSet, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        {
+            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClause(AFieldList, new string[] {
+                            "s_workflow_id_i", "s_step_number_i"}) + " FROM PUB_s_workflow_step")
+                            + GenerateWhereClause(SWorkflowStepTable.GetColumnStringList(), ASearchCriteria))
+                            + GenerateOrderByClause(AOrderBy)), SWorkflowStepTable.GetTableName(), ATransaction,
+                            GetParametersForWhereClause(new SWorkflowStepTable(), ASearchCriteria), AStartRecord, AMaxRecords);
+        }
+
+        /// auto generated
+        public static void LoadUsingTemplate(DataSet AData, TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        {
+            LoadUsingTemplate(AData, ASearchCriteria, null, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static void LoadUsingTemplate(DataSet AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
+        {
+            LoadUsingTemplate(AData, ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static void LoadUsingTemplate(out SWorkflowStepTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        {
+            DataSet FillDataSet = new DataSet();
+            AData = new SWorkflowStepTable();
+            FillDataSet.Tables.Add(AData);
+            LoadUsingTemplate(FillDataSet, ASearchCriteria, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            FillDataSet.Tables.Remove(AData);
+        }
+
+        /// auto generated
+        public static void LoadUsingTemplate(out SWorkflowStepTable AData, TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        {
+            LoadUsingTemplate(out AData, ASearchCriteria, null, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static void LoadUsingTemplate(out SWorkflowStepTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
+        {
+            LoadUsingTemplate(out AData, ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
+        }
+
+        /// this method is called by all overloads
         public static int CountAll(TDBTransaction ATransaction)
         {
             return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar("SELECT COUNT(*) FROM PUB_s_workflow_step", ATransaction, false));
@@ -20892,6 +29500,13 @@ namespace Ict.Petra.Shared.MSysMan.Data.Access
         public static int CountUsingTemplate(SWorkflowStepRow ATemplateRow, StringCollection ATemplateOperators, TDBTransaction ATransaction)
         {
             return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_s_workflow_step" + GenerateWhereClause(SWorkflowStepTable.GetColumnStringList(), ATemplateRow, ATemplateOperators)), ATransaction, false, GetParametersForWhereClause(ATemplateRow)));
+        }
+
+        /// this method is called by all overloads
+        public static int CountUsingTemplate(TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        {
+            return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_s_workflow_step" + GenerateWhereClause(SWorkflowStepTable.GetColumnStringList(), ASearchCriteria)), ATransaction, false,
+            GetParametersForWhereClause(new SWorkflowStepTable(), ASearchCriteria)));
         }
 
         /// auto generated
@@ -20990,6 +29605,51 @@ namespace Ict.Petra.Shared.MSysMan.Data.Access
         }
 
         /// auto generated
+        public static void LoadViaSWorkflowDefinitionTemplate(DataSet ADataSet, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        {
+            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClauseLong("PUB_s_workflow_step", AFieldList, new string[] {
+                            "s_workflow_id_i", "s_step_number_i"}) + " FROM PUB_s_workflow_step, PUB_s_workflow_definition WHERE " +
+                            "PUB_s_workflow_step.s_workflow_id_i = PUB_s_workflow_definition.s_workflow_id_i")
+                            + GenerateWhereClauseLong("PUB_s_workflow_definition", SWorkflowDefinitionTable.GetColumnStringList(), ASearchCriteria))
+                            + GenerateOrderByClause(AOrderBy)), SWorkflowStepTable.GetTableName(), ATransaction,
+                            GetParametersForWhereClause(new SWorkflowStepTable(), ASearchCriteria), AStartRecord, AMaxRecords);
+        }
+
+        /// auto generated
+        public static void LoadViaSWorkflowDefinitionTemplate(DataSet AData, TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        {
+            LoadViaSWorkflowDefinitionTemplate(AData, ASearchCriteria, null, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static void LoadViaSWorkflowDefinitionTemplate(DataSet AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
+        {
+            LoadViaSWorkflowDefinitionTemplate(AData, ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static void LoadViaSWorkflowDefinitionTemplate(out SWorkflowStepTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        {
+            DataSet FillDataSet = new DataSet();
+            AData = new SWorkflowStepTable();
+            FillDataSet.Tables.Add(AData);
+            LoadViaSWorkflowDefinitionTemplate(FillDataSet, ASearchCriteria, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            FillDataSet.Tables.Remove(AData);
+        }
+
+        /// auto generated
+        public static void LoadViaSWorkflowDefinitionTemplate(out SWorkflowStepTable AData, TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        {
+            LoadViaSWorkflowDefinitionTemplate(out AData, ASearchCriteria, null, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static void LoadViaSWorkflowDefinitionTemplate(out SWorkflowStepTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
+        {
+            LoadViaSWorkflowDefinitionTemplate(out AData, ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
         public static int CountViaSWorkflowDefinition(Int32 AWorkflowId, TDBTransaction ATransaction)
         {
             OdbcParameter[] ParametersArray = new OdbcParameter[1];
@@ -21003,6 +29663,15 @@ namespace Ict.Petra.Shared.MSysMan.Data.Access
         {
             return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_s_workflow_step, PUB_s_workflow_definition WHERE " +
                 "PUB_s_workflow_step.s_workflow_id_i = PUB_s_workflow_definition.s_workflow_id_i" + GenerateWhereClauseLong("PUB_s_workflow_definition", SWorkflowDefinitionTable.GetColumnStringList(), ATemplateRow, ATemplateOperators)), ATransaction, false, GetParametersForWhereClause(ATemplateRow, SWorkflowDefinitionTable.GetPrimKeyColumnOrdList())));
+        }
+
+        /// auto generated
+        public static int CountViaSWorkflowDefinitionTemplate(TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        {
+            return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_s_workflow_step, PUB_s_workflow_definition WHERE " +
+                "PUB_s_workflow_step.s_workflow_id_i = PUB_s_workflow_definition.s_workflow_id_i" +
+                GenerateWhereClauseLong("PUB_s_workflow_definition", SWorkflowDefinitionTable.GetColumnStringList(), ASearchCriteria)), ATransaction, false,
+                GetParametersForWhereClause(new SWorkflowDefinitionTable(), ASearchCriteria)));
         }
 
         /// auto generated
@@ -21101,6 +29770,51 @@ namespace Ict.Petra.Shared.MSysMan.Data.Access
         }
 
         /// auto generated
+        public static void LoadViaSFunctionTemplate(DataSet ADataSet, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        {
+            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClauseLong("PUB_s_workflow_step", AFieldList, new string[] {
+                            "s_workflow_id_i", "s_step_number_i"}) + " FROM PUB_s_workflow_step, PUB_s_function WHERE " +
+                            "PUB_s_workflow_step.s_function_id_c = PUB_s_function.s_function_id_c")
+                            + GenerateWhereClauseLong("PUB_s_function", SFunctionTable.GetColumnStringList(), ASearchCriteria))
+                            + GenerateOrderByClause(AOrderBy)), SWorkflowStepTable.GetTableName(), ATransaction,
+                            GetParametersForWhereClause(new SWorkflowStepTable(), ASearchCriteria), AStartRecord, AMaxRecords);
+        }
+
+        /// auto generated
+        public static void LoadViaSFunctionTemplate(DataSet AData, TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        {
+            LoadViaSFunctionTemplate(AData, ASearchCriteria, null, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static void LoadViaSFunctionTemplate(DataSet AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
+        {
+            LoadViaSFunctionTemplate(AData, ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static void LoadViaSFunctionTemplate(out SWorkflowStepTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        {
+            DataSet FillDataSet = new DataSet();
+            AData = new SWorkflowStepTable();
+            FillDataSet.Tables.Add(AData);
+            LoadViaSFunctionTemplate(FillDataSet, ASearchCriteria, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            FillDataSet.Tables.Remove(AData);
+        }
+
+        /// auto generated
+        public static void LoadViaSFunctionTemplate(out SWorkflowStepTable AData, TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        {
+            LoadViaSFunctionTemplate(out AData, ASearchCriteria, null, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static void LoadViaSFunctionTemplate(out SWorkflowStepTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
+        {
+            LoadViaSFunctionTemplate(out AData, ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
         public static int CountViaSFunction(String AFunctionId, TDBTransaction ATransaction)
         {
             OdbcParameter[] ParametersArray = new OdbcParameter[1];
@@ -21114,6 +29828,15 @@ namespace Ict.Petra.Shared.MSysMan.Data.Access
         {
             return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_s_workflow_step, PUB_s_function WHERE " +
                 "PUB_s_workflow_step.s_function_id_c = PUB_s_function.s_function_id_c" + GenerateWhereClauseLong("PUB_s_function", SFunctionTable.GetColumnStringList(), ATemplateRow, ATemplateOperators)), ATransaction, false, GetParametersForWhereClause(ATemplateRow, SFunctionTable.GetPrimKeyColumnOrdList())));
+        }
+
+        /// auto generated
+        public static int CountViaSFunctionTemplate(TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        {
+            return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_s_workflow_step, PUB_s_function WHERE " +
+                "PUB_s_workflow_step.s_function_id_c = PUB_s_function.s_function_id_c" +
+                GenerateWhereClauseLong("PUB_s_function", SFunctionTable.GetColumnStringList(), ASearchCriteria)), ATransaction, false,
+                GetParametersForWhereClause(new SFunctionTable(), ASearchCriteria)));
         }
 
         /// auto generated
@@ -21131,6 +29854,14 @@ namespace Ict.Petra.Shared.MSysMan.Data.Access
         public static void DeleteUsingTemplate(SWorkflowStepRow ATemplateRow, StringCollection ATemplateOperators, TDBTransaction ATransaction)
         {
             DBAccess.GDBAccessObj.ExecuteNonQuery(("DELETE FROM PUB_s_workflow_step" + GenerateWhereClause(SWorkflowStepTable.GetColumnStringList(), ATemplateRow, ATemplateOperators)), ATransaction, false, GetParametersForWhereClause(ATemplateRow));
+        }
+
+        /// auto generated
+        public static void DeleteUsingTemplate(TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        {
+            DBAccess.GDBAccessObj.ExecuteNonQuery(("DELETE FROM PUB_s_workflow_step" +
+                GenerateWhereClause(SWorkflowStepTable.GetColumnStringList(), ASearchCriteria)), ATransaction, false,
+                GetParametersForWhereClause(new SWorkflowStepTable(), ASearchCriteria));
         }
 
         /// auto generated
@@ -21321,6 +30052,50 @@ namespace Ict.Petra.Shared.MSysMan.Data.Access
         }
 
         /// this method is called by all overloads
+        public static void LoadUsingTemplate(DataSet ADataSet, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        {
+            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClause(AFieldList, new string[] {
+                            "s_function_1_c", "s_function_2_c"}) + " FROM PUB_s_function_relationship")
+                            + GenerateWhereClause(SFunctionRelationshipTable.GetColumnStringList(), ASearchCriteria))
+                            + GenerateOrderByClause(AOrderBy)), SFunctionRelationshipTable.GetTableName(), ATransaction,
+                            GetParametersForWhereClause(new SFunctionRelationshipTable(), ASearchCriteria), AStartRecord, AMaxRecords);
+        }
+
+        /// auto generated
+        public static void LoadUsingTemplate(DataSet AData, TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        {
+            LoadUsingTemplate(AData, ASearchCriteria, null, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static void LoadUsingTemplate(DataSet AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
+        {
+            LoadUsingTemplate(AData, ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static void LoadUsingTemplate(out SFunctionRelationshipTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        {
+            DataSet FillDataSet = new DataSet();
+            AData = new SFunctionRelationshipTable();
+            FillDataSet.Tables.Add(AData);
+            LoadUsingTemplate(FillDataSet, ASearchCriteria, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            FillDataSet.Tables.Remove(AData);
+        }
+
+        /// auto generated
+        public static void LoadUsingTemplate(out SFunctionRelationshipTable AData, TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        {
+            LoadUsingTemplate(out AData, ASearchCriteria, null, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static void LoadUsingTemplate(out SFunctionRelationshipTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
+        {
+            LoadUsingTemplate(out AData, ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
+        }
+
+        /// this method is called by all overloads
         public static int CountAll(TDBTransaction ATransaction)
         {
             return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar("SELECT COUNT(*) FROM PUB_s_function_relationship", ATransaction, false));
@@ -21341,6 +30116,13 @@ namespace Ict.Petra.Shared.MSysMan.Data.Access
         public static int CountUsingTemplate(SFunctionRelationshipRow ATemplateRow, StringCollection ATemplateOperators, TDBTransaction ATransaction)
         {
             return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_s_function_relationship" + GenerateWhereClause(SFunctionRelationshipTable.GetColumnStringList(), ATemplateRow, ATemplateOperators)), ATransaction, false, GetParametersForWhereClause(ATemplateRow)));
+        }
+
+        /// this method is called by all overloads
+        public static int CountUsingTemplate(TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        {
+            return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_s_function_relationship" + GenerateWhereClause(SFunctionRelationshipTable.GetColumnStringList(), ASearchCriteria)), ATransaction, false,
+            GetParametersForWhereClause(new SFunctionRelationshipTable(), ASearchCriteria)));
         }
 
         /// auto generated
@@ -21439,6 +30221,51 @@ namespace Ict.Petra.Shared.MSysMan.Data.Access
         }
 
         /// auto generated
+        public static void LoadViaSFunctionFunction1Template(DataSet ADataSet, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        {
+            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClauseLong("PUB_s_function_relationship", AFieldList, new string[] {
+                            "s_function_1_c", "s_function_2_c"}) + " FROM PUB_s_function_relationship, PUB_s_function WHERE " +
+                            "PUB_s_function_relationship.s_function_1_c = PUB_s_function.s_function_id_c")
+                            + GenerateWhereClauseLong("PUB_s_function", SFunctionTable.GetColumnStringList(), ASearchCriteria))
+                            + GenerateOrderByClause(AOrderBy)), SFunctionRelationshipTable.GetTableName(), ATransaction,
+                            GetParametersForWhereClause(new SFunctionRelationshipTable(), ASearchCriteria), AStartRecord, AMaxRecords);
+        }
+
+        /// auto generated
+        public static void LoadViaSFunctionFunction1Template(DataSet AData, TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        {
+            LoadViaSFunctionFunction1Template(AData, ASearchCriteria, null, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static void LoadViaSFunctionFunction1Template(DataSet AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
+        {
+            LoadViaSFunctionFunction1Template(AData, ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static void LoadViaSFunctionFunction1Template(out SFunctionRelationshipTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        {
+            DataSet FillDataSet = new DataSet();
+            AData = new SFunctionRelationshipTable();
+            FillDataSet.Tables.Add(AData);
+            LoadViaSFunctionFunction1Template(FillDataSet, ASearchCriteria, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            FillDataSet.Tables.Remove(AData);
+        }
+
+        /// auto generated
+        public static void LoadViaSFunctionFunction1Template(out SFunctionRelationshipTable AData, TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        {
+            LoadViaSFunctionFunction1Template(out AData, ASearchCriteria, null, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static void LoadViaSFunctionFunction1Template(out SFunctionRelationshipTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
+        {
+            LoadViaSFunctionFunction1Template(out AData, ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
         public static int CountViaSFunctionFunction1(String AFunctionId, TDBTransaction ATransaction)
         {
             OdbcParameter[] ParametersArray = new OdbcParameter[1];
@@ -21455,114 +30282,12 @@ namespace Ict.Petra.Shared.MSysMan.Data.Access
         }
 
         /// auto generated
-        public static void LoadViaSFunctionFunction2(DataSet ADataSet, String AFunctionId, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
-        {
-            OdbcParameter[] ParametersArray = new OdbcParameter[1];
-            ParametersArray[0] = new OdbcParameter("", OdbcType.VarChar, 30);
-            ParametersArray[0].Value = ((object)(AFunctionId));
-            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, ((GenerateSelectClause(AFieldList, new string[] {
-                            "s_function_1_c", "s_function_2_c"}) + " FROM PUB_s_function_relationship WHERE s_function_2_c = ?")
-                            + GenerateOrderByClause(AOrderBy)), SFunctionRelationshipTable.GetTableName(), ATransaction, ParametersArray, AStartRecord, AMaxRecords);
-        }
-
-        /// auto generated
-        public static void LoadViaSFunctionFunction2(DataSet AData, String AFunctionId, TDBTransaction ATransaction)
-        {
-            LoadViaSFunctionFunction2(AData, AFunctionId, null, ATransaction, null, 0, 0);
-        }
-
-        /// auto generated
-        public static void LoadViaSFunctionFunction2(DataSet AData, String AFunctionId, StringCollection AFieldList, TDBTransaction ATransaction)
-        {
-            LoadViaSFunctionFunction2(AData, AFunctionId, AFieldList, ATransaction, null, 0, 0);
-        }
-
-        /// auto generated
-        public static void LoadViaSFunctionFunction2(out SFunctionRelationshipTable AData, String AFunctionId, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
-        {
-            DataSet FillDataSet = new DataSet();
-            AData = new SFunctionRelationshipTable();
-            FillDataSet.Tables.Add(AData);
-            LoadViaSFunctionFunction2(FillDataSet, AFunctionId, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
-            FillDataSet.Tables.Remove(AData);
-        }
-
-        /// auto generated
-        public static void LoadViaSFunctionFunction2(out SFunctionRelationshipTable AData, String AFunctionId, TDBTransaction ATransaction)
-        {
-            LoadViaSFunctionFunction2(out AData, AFunctionId, null, ATransaction, null, 0, 0);
-        }
-
-        /// auto generated
-        public static void LoadViaSFunctionFunction2(out SFunctionRelationshipTable AData, String AFunctionId, StringCollection AFieldList, TDBTransaction ATransaction)
-        {
-            LoadViaSFunctionFunction2(out AData, AFunctionId, AFieldList, ATransaction, null, 0, 0);
-        }
-
-        /// auto generated
-        public static void LoadViaSFunctionFunction2Template(DataSet ADataSet, SFunctionRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
-        {
-            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClauseLong("PUB_s_function_relationship", AFieldList, new string[] {
-                            "s_function_1_c", "s_function_2_c"}) + " FROM PUB_s_function_relationship, PUB_s_function WHERE " +
-                            "PUB_s_function_relationship.s_function_2_c = PUB_s_function.s_function_id_c")
-                            + GenerateWhereClauseLong("PUB_s_function", SFunctionTable.GetColumnStringList(), ATemplateRow, ATemplateOperators))
-                            + GenerateOrderByClause(AOrderBy)), SFunctionRelationshipTable.GetTableName(), ATransaction, GetParametersForWhereClause(ATemplateRow), AStartRecord, AMaxRecords);
-        }
-
-        /// auto generated
-        public static void LoadViaSFunctionFunction2Template(DataSet AData, SFunctionRow ATemplateRow, TDBTransaction ATransaction)
-        {
-            LoadViaSFunctionFunction2Template(AData, ATemplateRow, null, null, ATransaction, null, 0, 0);
-        }
-
-        /// auto generated
-        public static void LoadViaSFunctionFunction2Template(DataSet AData, SFunctionRow ATemplateRow, StringCollection AFieldList, TDBTransaction ATransaction)
-        {
-            LoadViaSFunctionFunction2Template(AData, ATemplateRow, null, AFieldList, ATransaction, null, 0, 0);
-        }
-
-        /// auto generated
-        public static void LoadViaSFunctionFunction2Template(out SFunctionRelationshipTable AData, SFunctionRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
-        {
-            DataSet FillDataSet = new DataSet();
-            AData = new SFunctionRelationshipTable();
-            FillDataSet.Tables.Add(AData);
-            LoadViaSFunctionFunction2Template(FillDataSet, ATemplateRow, ATemplateOperators, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
-            FillDataSet.Tables.Remove(AData);
-        }
-
-        /// auto generated
-        public static void LoadViaSFunctionFunction2Template(out SFunctionRelationshipTable AData, SFunctionRow ATemplateRow, TDBTransaction ATransaction)
-        {
-            LoadViaSFunctionFunction2Template(out AData, ATemplateRow, null, null, ATransaction, null, 0, 0);
-        }
-
-        /// auto generated
-        public static void LoadViaSFunctionFunction2Template(out SFunctionRelationshipTable AData, SFunctionRow ATemplateRow, StringCollection AFieldList, TDBTransaction ATransaction)
-        {
-            LoadViaSFunctionFunction2Template(out AData, ATemplateRow, null, AFieldList, ATransaction, null, 0, 0);
-        }
-
-        /// auto generated
-        public static void LoadViaSFunctionFunction2Template(out SFunctionRelationshipTable AData, SFunctionRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction)
-        {
-            LoadViaSFunctionFunction2Template(out AData, ATemplateRow, ATemplateOperators, AFieldList, ATransaction, null, 0, 0);
-        }
-
-        /// auto generated
-        public static int CountViaSFunctionFunction2(String AFunctionId, TDBTransaction ATransaction)
-        {
-            OdbcParameter[] ParametersArray = new OdbcParameter[1];
-            ParametersArray[0] = new OdbcParameter("", OdbcType.VarChar, 30);
-            ParametersArray[0].Value = ((object)(AFunctionId));
-            return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar("SELECT COUNT(*) FROM PUB_s_function_relationship WHERE s_function_2_c = ?", ATransaction, false, ParametersArray));
-        }
-
-        /// auto generated
-        public static int CountViaSFunctionFunction2Template(SFunctionRow ATemplateRow, StringCollection ATemplateOperators, TDBTransaction ATransaction)
+        public static int CountViaSFunctionFunction1Template(TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
         {
             return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_s_function_relationship, PUB_s_function WHERE " +
-                "PUB_s_function_relationship.s_function_2_c = PUB_s_function.s_function_id_c" + GenerateWhereClauseLong("PUB_s_function", SFunctionTable.GetColumnStringList(), ATemplateRow, ATemplateOperators)), ATransaction, false, GetParametersForWhereClause(ATemplateRow, SFunctionTable.GetPrimKeyColumnOrdList())));
+                "PUB_s_function_relationship.s_function_1_c = PUB_s_function.s_function_id_c" +
+                GenerateWhereClauseLong("PUB_s_function", SFunctionTable.GetColumnStringList(), ASearchCriteria)), ATransaction, false,
+                GetParametersForWhereClause(new SFunctionTable(), ASearchCriteria)));
         }
 
         /// auto generated
@@ -21580,6 +30305,14 @@ namespace Ict.Petra.Shared.MSysMan.Data.Access
         public static void DeleteUsingTemplate(SFunctionRelationshipRow ATemplateRow, StringCollection ATemplateOperators, TDBTransaction ATransaction)
         {
             DBAccess.GDBAccessObj.ExecuteNonQuery(("DELETE FROM PUB_s_function_relationship" + GenerateWhereClause(SFunctionRelationshipTable.GetColumnStringList(), ATemplateRow, ATemplateOperators)), ATransaction, false, GetParametersForWhereClause(ATemplateRow));
+        }
+
+        /// auto generated
+        public static void DeleteUsingTemplate(TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        {
+            DBAccess.GDBAccessObj.ExecuteNonQuery(("DELETE FROM PUB_s_function_relationship" +
+                GenerateWhereClause(SFunctionRelationshipTable.GetColumnStringList(), ASearchCriteria)), ATransaction, false,
+                GetParametersForWhereClause(new SFunctionRelationshipTable(), ASearchCriteria));
         }
 
         /// auto generated
@@ -21768,6 +30501,50 @@ namespace Ict.Petra.Shared.MSysMan.Data.Access
         }
 
         /// this method is called by all overloads
+        public static void LoadUsingTemplate(DataSet ADataSet, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        {
+            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClause(AFieldList, new string[] {
+                            "s_workflow_instance_id_i"}) + " FROM PUB_s_workflow_instance")
+                            + GenerateWhereClause(SWorkflowInstanceTable.GetColumnStringList(), ASearchCriteria))
+                            + GenerateOrderByClause(AOrderBy)), SWorkflowInstanceTable.GetTableName(), ATransaction,
+                            GetParametersForWhereClause(new SWorkflowInstanceTable(), ASearchCriteria), AStartRecord, AMaxRecords);
+        }
+
+        /// auto generated
+        public static void LoadUsingTemplate(DataSet AData, TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        {
+            LoadUsingTemplate(AData, ASearchCriteria, null, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static void LoadUsingTemplate(DataSet AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
+        {
+            LoadUsingTemplate(AData, ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static void LoadUsingTemplate(out SWorkflowInstanceTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        {
+            DataSet FillDataSet = new DataSet();
+            AData = new SWorkflowInstanceTable();
+            FillDataSet.Tables.Add(AData);
+            LoadUsingTemplate(FillDataSet, ASearchCriteria, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            FillDataSet.Tables.Remove(AData);
+        }
+
+        /// auto generated
+        public static void LoadUsingTemplate(out SWorkflowInstanceTable AData, TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        {
+            LoadUsingTemplate(out AData, ASearchCriteria, null, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static void LoadUsingTemplate(out SWorkflowInstanceTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
+        {
+            LoadUsingTemplate(out AData, ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
+        }
+
+        /// this method is called by all overloads
         public static int CountAll(TDBTransaction ATransaction)
         {
             return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar("SELECT COUNT(*) FROM PUB_s_workflow_instance", ATransaction, false));
@@ -21786,6 +30563,13 @@ namespace Ict.Petra.Shared.MSysMan.Data.Access
         public static int CountUsingTemplate(SWorkflowInstanceRow ATemplateRow, StringCollection ATemplateOperators, TDBTransaction ATransaction)
         {
             return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_s_workflow_instance" + GenerateWhereClause(SWorkflowInstanceTable.GetColumnStringList(), ATemplateRow, ATemplateOperators)), ATransaction, false, GetParametersForWhereClause(ATemplateRow)));
+        }
+
+        /// this method is called by all overloads
+        public static int CountUsingTemplate(TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        {
+            return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_s_workflow_instance" + GenerateWhereClause(SWorkflowInstanceTable.GetColumnStringList(), ASearchCriteria)), ATransaction, false,
+            GetParametersForWhereClause(new SWorkflowInstanceTable(), ASearchCriteria)));
         }
 
         /// auto generated
@@ -21884,6 +30668,51 @@ namespace Ict.Petra.Shared.MSysMan.Data.Access
         }
 
         /// auto generated
+        public static void LoadViaSWorkflowDefinitionTemplate(DataSet ADataSet, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        {
+            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClauseLong("PUB_s_workflow_instance", AFieldList, new string[] {
+                            "s_workflow_instance_id_i"}) + " FROM PUB_s_workflow_instance, PUB_s_workflow_definition WHERE " +
+                            "PUB_s_workflow_instance.s_workflow_id_i = PUB_s_workflow_definition.s_workflow_id_i")
+                            + GenerateWhereClauseLong("PUB_s_workflow_definition", SWorkflowDefinitionTable.GetColumnStringList(), ASearchCriteria))
+                            + GenerateOrderByClause(AOrderBy)), SWorkflowInstanceTable.GetTableName(), ATransaction,
+                            GetParametersForWhereClause(new SWorkflowInstanceTable(), ASearchCriteria), AStartRecord, AMaxRecords);
+        }
+
+        /// auto generated
+        public static void LoadViaSWorkflowDefinitionTemplate(DataSet AData, TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        {
+            LoadViaSWorkflowDefinitionTemplate(AData, ASearchCriteria, null, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static void LoadViaSWorkflowDefinitionTemplate(DataSet AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
+        {
+            LoadViaSWorkflowDefinitionTemplate(AData, ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static void LoadViaSWorkflowDefinitionTemplate(out SWorkflowInstanceTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        {
+            DataSet FillDataSet = new DataSet();
+            AData = new SWorkflowInstanceTable();
+            FillDataSet.Tables.Add(AData);
+            LoadViaSWorkflowDefinitionTemplate(FillDataSet, ASearchCriteria, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            FillDataSet.Tables.Remove(AData);
+        }
+
+        /// auto generated
+        public static void LoadViaSWorkflowDefinitionTemplate(out SWorkflowInstanceTable AData, TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        {
+            LoadViaSWorkflowDefinitionTemplate(out AData, ASearchCriteria, null, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static void LoadViaSWorkflowDefinitionTemplate(out SWorkflowInstanceTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
+        {
+            LoadViaSWorkflowDefinitionTemplate(out AData, ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
         public static int CountViaSWorkflowDefinition(Int32 AWorkflowId, TDBTransaction ATransaction)
         {
             OdbcParameter[] ParametersArray = new OdbcParameter[1];
@@ -21900,6 +30729,15 @@ namespace Ict.Petra.Shared.MSysMan.Data.Access
         }
 
         /// auto generated
+        public static int CountViaSWorkflowDefinitionTemplate(TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        {
+            return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_s_workflow_instance, PUB_s_workflow_definition WHERE " +
+                "PUB_s_workflow_instance.s_workflow_id_i = PUB_s_workflow_definition.s_workflow_id_i" +
+                GenerateWhereClauseLong("PUB_s_workflow_definition", SWorkflowDefinitionTable.GetColumnStringList(), ASearchCriteria)), ATransaction, false,
+                GetParametersForWhereClause(new SWorkflowDefinitionTable(), ASearchCriteria)));
+        }
+
+        /// auto generated
         public static void DeleteByPrimaryKey(Int32 AWorkflowInstanceId, TDBTransaction ATransaction)
         {
             OdbcParameter[] ParametersArray = new OdbcParameter[1];
@@ -21912,6 +30750,14 @@ namespace Ict.Petra.Shared.MSysMan.Data.Access
         public static void DeleteUsingTemplate(SWorkflowInstanceRow ATemplateRow, StringCollection ATemplateOperators, TDBTransaction ATransaction)
         {
             DBAccess.GDBAccessObj.ExecuteNonQuery(("DELETE FROM PUB_s_workflow_instance" + GenerateWhereClause(SWorkflowInstanceTable.GetColumnStringList(), ATemplateRow, ATemplateOperators)), ATransaction, false, GetParametersForWhereClause(ATemplateRow));
+        }
+
+        /// auto generated
+        public static void DeleteUsingTemplate(TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        {
+            DBAccess.GDBAccessObj.ExecuteNonQuery(("DELETE FROM PUB_s_workflow_instance" +
+                GenerateWhereClause(SWorkflowInstanceTable.GetColumnStringList(), ASearchCriteria)), ATransaction, false,
+                GetParametersForWhereClause(new SWorkflowInstanceTable(), ASearchCriteria));
         }
 
         /// auto generated
@@ -22102,6 +30948,50 @@ namespace Ict.Petra.Shared.MSysMan.Data.Access
         }
 
         /// this method is called by all overloads
+        public static void LoadUsingTemplate(DataSet ADataSet, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        {
+            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClause(AFieldList, new string[] {
+                            "s_workflow_instance_id_i", "s_step_number_i"}) + " FROM PUB_s_workflow_instance_step")
+                            + GenerateWhereClause(SWorkflowInstanceStepTable.GetColumnStringList(), ASearchCriteria))
+                            + GenerateOrderByClause(AOrderBy)), SWorkflowInstanceStepTable.GetTableName(), ATransaction,
+                            GetParametersForWhereClause(new SWorkflowInstanceStepTable(), ASearchCriteria), AStartRecord, AMaxRecords);
+        }
+
+        /// auto generated
+        public static void LoadUsingTemplate(DataSet AData, TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        {
+            LoadUsingTemplate(AData, ASearchCriteria, null, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static void LoadUsingTemplate(DataSet AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
+        {
+            LoadUsingTemplate(AData, ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static void LoadUsingTemplate(out SWorkflowInstanceStepTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        {
+            DataSet FillDataSet = new DataSet();
+            AData = new SWorkflowInstanceStepTable();
+            FillDataSet.Tables.Add(AData);
+            LoadUsingTemplate(FillDataSet, ASearchCriteria, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            FillDataSet.Tables.Remove(AData);
+        }
+
+        /// auto generated
+        public static void LoadUsingTemplate(out SWorkflowInstanceStepTable AData, TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        {
+            LoadUsingTemplate(out AData, ASearchCriteria, null, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static void LoadUsingTemplate(out SWorkflowInstanceStepTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
+        {
+            LoadUsingTemplate(out AData, ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
+        }
+
+        /// this method is called by all overloads
         public static int CountAll(TDBTransaction ATransaction)
         {
             return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar("SELECT COUNT(*) FROM PUB_s_workflow_instance_step", ATransaction, false));
@@ -22122,6 +31012,13 @@ namespace Ict.Petra.Shared.MSysMan.Data.Access
         public static int CountUsingTemplate(SWorkflowInstanceStepRow ATemplateRow, StringCollection ATemplateOperators, TDBTransaction ATransaction)
         {
             return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_s_workflow_instance_step" + GenerateWhereClause(SWorkflowInstanceStepTable.GetColumnStringList(), ATemplateRow, ATemplateOperators)), ATransaction, false, GetParametersForWhereClause(ATemplateRow)));
+        }
+
+        /// this method is called by all overloads
+        public static int CountUsingTemplate(TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        {
+            return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_s_workflow_instance_step" + GenerateWhereClause(SWorkflowInstanceStepTable.GetColumnStringList(), ASearchCriteria)), ATransaction, false,
+            GetParametersForWhereClause(new SWorkflowInstanceStepTable(), ASearchCriteria)));
         }
 
         /// auto generated
@@ -22220,6 +31117,51 @@ namespace Ict.Petra.Shared.MSysMan.Data.Access
         }
 
         /// auto generated
+        public static void LoadViaSWorkflowInstanceTemplate(DataSet ADataSet, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        {
+            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClauseLong("PUB_s_workflow_instance_step", AFieldList, new string[] {
+                            "s_workflow_instance_id_i", "s_step_number_i"}) + " FROM PUB_s_workflow_instance_step, PUB_s_workflow_instance WHERE " +
+                            "PUB_s_workflow_instance_step.s_workflow_instance_id_i = PUB_s_workflow_instance.s_workflow_instance_id_i")
+                            + GenerateWhereClauseLong("PUB_s_workflow_instance", SWorkflowInstanceTable.GetColumnStringList(), ASearchCriteria))
+                            + GenerateOrderByClause(AOrderBy)), SWorkflowInstanceStepTable.GetTableName(), ATransaction,
+                            GetParametersForWhereClause(new SWorkflowInstanceStepTable(), ASearchCriteria), AStartRecord, AMaxRecords);
+        }
+
+        /// auto generated
+        public static void LoadViaSWorkflowInstanceTemplate(DataSet AData, TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        {
+            LoadViaSWorkflowInstanceTemplate(AData, ASearchCriteria, null, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static void LoadViaSWorkflowInstanceTemplate(DataSet AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
+        {
+            LoadViaSWorkflowInstanceTemplate(AData, ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static void LoadViaSWorkflowInstanceTemplate(out SWorkflowInstanceStepTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        {
+            DataSet FillDataSet = new DataSet();
+            AData = new SWorkflowInstanceStepTable();
+            FillDataSet.Tables.Add(AData);
+            LoadViaSWorkflowInstanceTemplate(FillDataSet, ASearchCriteria, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            FillDataSet.Tables.Remove(AData);
+        }
+
+        /// auto generated
+        public static void LoadViaSWorkflowInstanceTemplate(out SWorkflowInstanceStepTable AData, TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        {
+            LoadViaSWorkflowInstanceTemplate(out AData, ASearchCriteria, null, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static void LoadViaSWorkflowInstanceTemplate(out SWorkflowInstanceStepTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
+        {
+            LoadViaSWorkflowInstanceTemplate(out AData, ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
         public static int CountViaSWorkflowInstance(Int32 AWorkflowInstanceId, TDBTransaction ATransaction)
         {
             OdbcParameter[] ParametersArray = new OdbcParameter[1];
@@ -22233,6 +31175,15 @@ namespace Ict.Petra.Shared.MSysMan.Data.Access
         {
             return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_s_workflow_instance_step, PUB_s_workflow_instance WHERE " +
                 "PUB_s_workflow_instance_step.s_workflow_instance_id_i = PUB_s_workflow_instance.s_workflow_instance_id_i" + GenerateWhereClauseLong("PUB_s_workflow_instance", SWorkflowInstanceTable.GetColumnStringList(), ATemplateRow, ATemplateOperators)), ATransaction, false, GetParametersForWhereClause(ATemplateRow, SWorkflowInstanceTable.GetPrimKeyColumnOrdList())));
+        }
+
+        /// auto generated
+        public static int CountViaSWorkflowInstanceTemplate(TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        {
+            return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_s_workflow_instance_step, PUB_s_workflow_instance WHERE " +
+                "PUB_s_workflow_instance_step.s_workflow_instance_id_i = PUB_s_workflow_instance.s_workflow_instance_id_i" +
+                GenerateWhereClauseLong("PUB_s_workflow_instance", SWorkflowInstanceTable.GetColumnStringList(), ASearchCriteria)), ATransaction, false,
+                GetParametersForWhereClause(new SWorkflowInstanceTable(), ASearchCriteria)));
         }
 
         /// auto generated
@@ -22331,6 +31282,51 @@ namespace Ict.Petra.Shared.MSysMan.Data.Access
         }
 
         /// auto generated
+        public static void LoadViaSUserTemplate(DataSet ADataSet, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        {
+            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClauseLong("PUB_s_workflow_instance_step", AFieldList, new string[] {
+                            "s_workflow_instance_id_i", "s_step_number_i"}) + " FROM PUB_s_workflow_instance_step, PUB_s_user WHERE " +
+                            "PUB_s_workflow_instance_step.s_user_id_c = PUB_s_user.s_user_id_c")
+                            + GenerateWhereClauseLong("PUB_s_user", SUserTable.GetColumnStringList(), ASearchCriteria))
+                            + GenerateOrderByClause(AOrderBy)), SWorkflowInstanceStepTable.GetTableName(), ATransaction,
+                            GetParametersForWhereClause(new SWorkflowInstanceStepTable(), ASearchCriteria), AStartRecord, AMaxRecords);
+        }
+
+        /// auto generated
+        public static void LoadViaSUserTemplate(DataSet AData, TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        {
+            LoadViaSUserTemplate(AData, ASearchCriteria, null, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static void LoadViaSUserTemplate(DataSet AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
+        {
+            LoadViaSUserTemplate(AData, ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static void LoadViaSUserTemplate(out SWorkflowInstanceStepTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        {
+            DataSet FillDataSet = new DataSet();
+            AData = new SWorkflowInstanceStepTable();
+            FillDataSet.Tables.Add(AData);
+            LoadViaSUserTemplate(FillDataSet, ASearchCriteria, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            FillDataSet.Tables.Remove(AData);
+        }
+
+        /// auto generated
+        public static void LoadViaSUserTemplate(out SWorkflowInstanceStepTable AData, TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        {
+            LoadViaSUserTemplate(out AData, ASearchCriteria, null, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static void LoadViaSUserTemplate(out SWorkflowInstanceStepTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
+        {
+            LoadViaSUserTemplate(out AData, ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
         public static int CountViaSUser(String AUserId, TDBTransaction ATransaction)
         {
             OdbcParameter[] ParametersArray = new OdbcParameter[1];
@@ -22344,6 +31340,15 @@ namespace Ict.Petra.Shared.MSysMan.Data.Access
         {
             return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_s_workflow_instance_step, PUB_s_user WHERE " +
                 "PUB_s_workflow_instance_step.s_user_id_c = PUB_s_user.s_user_id_c" + GenerateWhereClauseLong("PUB_s_user", SUserTable.GetColumnStringList(), ATemplateRow, ATemplateOperators)), ATransaction, false, GetParametersForWhereClause(ATemplateRow, SUserTable.GetPrimKeyColumnOrdList())));
+        }
+
+        /// auto generated
+        public static int CountViaSUserTemplate(TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        {
+            return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_s_workflow_instance_step, PUB_s_user WHERE " +
+                "PUB_s_workflow_instance_step.s_user_id_c = PUB_s_user.s_user_id_c" +
+                GenerateWhereClauseLong("PUB_s_user", SUserTable.GetColumnStringList(), ASearchCriteria)), ATransaction, false,
+                GetParametersForWhereClause(new SUserTable(), ASearchCriteria)));
         }
 
         /// auto generated
@@ -22361,6 +31366,14 @@ namespace Ict.Petra.Shared.MSysMan.Data.Access
         public static void DeleteUsingTemplate(SWorkflowInstanceStepRow ATemplateRow, StringCollection ATemplateOperators, TDBTransaction ATransaction)
         {
             DBAccess.GDBAccessObj.ExecuteNonQuery(("DELETE FROM PUB_s_workflow_instance_step" + GenerateWhereClause(SWorkflowInstanceStepTable.GetColumnStringList(), ATemplateRow, ATemplateOperators)), ATransaction, false, GetParametersForWhereClause(ATemplateRow));
+        }
+
+        /// auto generated
+        public static void DeleteUsingTemplate(TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        {
+            DBAccess.GDBAccessObj.ExecuteNonQuery(("DELETE FROM PUB_s_workflow_instance_step" +
+                GenerateWhereClause(SWorkflowInstanceStepTable.GetColumnStringList(), ASearchCriteria)), ATransaction, false,
+                GetParametersForWhereClause(new SWorkflowInstanceStepTable(), ASearchCriteria));
         }
 
         /// auto generated
@@ -22549,6 +31562,50 @@ namespace Ict.Petra.Shared.MSysMan.Data.Access
         }
 
         /// this method is called by all overloads
+        public static void LoadUsingTemplate(DataSet ADataSet, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        {
+            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClause(AFieldList, new string[] {
+                            "s_name_c"}) + " FROM PUB_s_volume")
+                            + GenerateWhereClause(SVolumeTable.GetColumnStringList(), ASearchCriteria))
+                            + GenerateOrderByClause(AOrderBy)), SVolumeTable.GetTableName(), ATransaction,
+                            GetParametersForWhereClause(new SVolumeTable(), ASearchCriteria), AStartRecord, AMaxRecords);
+        }
+
+        /// auto generated
+        public static void LoadUsingTemplate(DataSet AData, TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        {
+            LoadUsingTemplate(AData, ASearchCriteria, null, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static void LoadUsingTemplate(DataSet AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
+        {
+            LoadUsingTemplate(AData, ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static void LoadUsingTemplate(out SVolumeTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        {
+            DataSet FillDataSet = new DataSet();
+            AData = new SVolumeTable();
+            FillDataSet.Tables.Add(AData);
+            LoadUsingTemplate(FillDataSet, ASearchCriteria, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            FillDataSet.Tables.Remove(AData);
+        }
+
+        /// auto generated
+        public static void LoadUsingTemplate(out SVolumeTable AData, TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        {
+            LoadUsingTemplate(out AData, ASearchCriteria, null, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static void LoadUsingTemplate(out SVolumeTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
+        {
+            LoadUsingTemplate(out AData, ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
+        }
+
+        /// this method is called by all overloads
         public static int CountAll(TDBTransaction ATransaction)
         {
             return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar("SELECT COUNT(*) FROM PUB_s_volume", ATransaction, false));
@@ -22567,6 +31624,13 @@ namespace Ict.Petra.Shared.MSysMan.Data.Access
         public static int CountUsingTemplate(SVolumeRow ATemplateRow, StringCollection ATemplateOperators, TDBTransaction ATransaction)
         {
             return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_s_volume" + GenerateWhereClause(SVolumeTable.GetColumnStringList(), ATemplateRow, ATemplateOperators)), ATransaction, false, GetParametersForWhereClause(ATemplateRow)));
+        }
+
+        /// this method is called by all overloads
+        public static int CountUsingTemplate(TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        {
+            return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_s_volume" + GenerateWhereClause(SVolumeTable.GetColumnStringList(), ASearchCriteria)), ATransaction, false,
+            GetParametersForWhereClause(new SVolumeTable(), ASearchCriteria)));
         }
 
         /// auto generated
@@ -22665,6 +31729,51 @@ namespace Ict.Petra.Shared.MSysMan.Data.Access
         }
 
         /// auto generated
+        public static void LoadViaSVolumeTemplate(DataSet ADataSet, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        {
+            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClauseLong("PUB_s_volume", AFieldList, new string[] {
+                            "s_name_c"}) + " FROM PUB_s_volume, PUB_s_volume WHERE " +
+                            "PUB_s_volume.s_parent_volume_name_c = PUB_s_volume.s_name_c")
+                            + GenerateWhereClauseLong("PUB_s_volume", SVolumeTable.GetColumnStringList(), ASearchCriteria))
+                            + GenerateOrderByClause(AOrderBy)), SVolumeTable.GetTableName(), ATransaction,
+                            GetParametersForWhereClause(new SVolumeTable(), ASearchCriteria), AStartRecord, AMaxRecords);
+        }
+
+        /// auto generated
+        public static void LoadViaSVolumeTemplate(DataSet AData, TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        {
+            LoadViaSVolumeTemplate(AData, ASearchCriteria, null, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static void LoadViaSVolumeTemplate(DataSet AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
+        {
+            LoadViaSVolumeTemplate(AData, ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static void LoadViaSVolumeTemplate(out SVolumeTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        {
+            DataSet FillDataSet = new DataSet();
+            AData = new SVolumeTable();
+            FillDataSet.Tables.Add(AData);
+            LoadViaSVolumeTemplate(FillDataSet, ASearchCriteria, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            FillDataSet.Tables.Remove(AData);
+        }
+
+        /// auto generated
+        public static void LoadViaSVolumeTemplate(out SVolumeTable AData, TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        {
+            LoadViaSVolumeTemplate(out AData, ASearchCriteria, null, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static void LoadViaSVolumeTemplate(out SVolumeTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
+        {
+            LoadViaSVolumeTemplate(out AData, ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
         public static int CountViaSVolume(String AName, TDBTransaction ATransaction)
         {
             OdbcParameter[] ParametersArray = new OdbcParameter[1];
@@ -22681,6 +31790,15 @@ namespace Ict.Petra.Shared.MSysMan.Data.Access
         }
 
         /// auto generated
+        public static int CountViaSVolumeTemplate(TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        {
+            return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_s_volume, PUB_s_volume WHERE " +
+                "PUB_s_volume.s_parent_volume_name_c = PUB_s_volume.s_name_c" +
+                GenerateWhereClauseLong("PUB_s_volume", SVolumeTable.GetColumnStringList(), ASearchCriteria)), ATransaction, false,
+                GetParametersForWhereClause(new SVolumeTable(), ASearchCriteria)));
+        }
+
+        /// auto generated
         public static void DeleteByPrimaryKey(String AName, TDBTransaction ATransaction)
         {
             OdbcParameter[] ParametersArray = new OdbcParameter[1];
@@ -22693,6 +31811,14 @@ namespace Ict.Petra.Shared.MSysMan.Data.Access
         public static void DeleteUsingTemplate(SVolumeRow ATemplateRow, StringCollection ATemplateOperators, TDBTransaction ATransaction)
         {
             DBAccess.GDBAccessObj.ExecuteNonQuery(("DELETE FROM PUB_s_volume" + GenerateWhereClause(SVolumeTable.GetColumnStringList(), ATemplateRow, ATemplateOperators)), ATransaction, false, GetParametersForWhereClause(ATemplateRow));
+        }
+
+        /// auto generated
+        public static void DeleteUsingTemplate(TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        {
+            DBAccess.GDBAccessObj.ExecuteNonQuery(("DELETE FROM PUB_s_volume" +
+                GenerateWhereClause(SVolumeTable.GetColumnStringList(), ASearchCriteria)), ATransaction, false,
+                GetParametersForWhereClause(new SVolumeTable(), ASearchCriteria));
         }
 
         /// auto generated
@@ -22883,6 +32009,50 @@ namespace Ict.Petra.Shared.MSysMan.Data.Access
         }
 
         /// this method is called by all overloads
+        public static void LoadUsingTemplate(DataSet ADataSet, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        {
+            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClause(AFieldList, new string[] {
+                            "s_group_name_c", "s_area_c"}) + " FROM PUB_s_default_file_volume")
+                            + GenerateWhereClause(SDefaultFileVolumeTable.GetColumnStringList(), ASearchCriteria))
+                            + GenerateOrderByClause(AOrderBy)), SDefaultFileVolumeTable.GetTableName(), ATransaction,
+                            GetParametersForWhereClause(new SDefaultFileVolumeTable(), ASearchCriteria), AStartRecord, AMaxRecords);
+        }
+
+        /// auto generated
+        public static void LoadUsingTemplate(DataSet AData, TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        {
+            LoadUsingTemplate(AData, ASearchCriteria, null, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static void LoadUsingTemplate(DataSet AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
+        {
+            LoadUsingTemplate(AData, ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static void LoadUsingTemplate(out SDefaultFileVolumeTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        {
+            DataSet FillDataSet = new DataSet();
+            AData = new SDefaultFileVolumeTable();
+            FillDataSet.Tables.Add(AData);
+            LoadUsingTemplate(FillDataSet, ASearchCriteria, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            FillDataSet.Tables.Remove(AData);
+        }
+
+        /// auto generated
+        public static void LoadUsingTemplate(out SDefaultFileVolumeTable AData, TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        {
+            LoadUsingTemplate(out AData, ASearchCriteria, null, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static void LoadUsingTemplate(out SDefaultFileVolumeTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
+        {
+            LoadUsingTemplate(out AData, ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
+        }
+
+        /// this method is called by all overloads
         public static int CountAll(TDBTransaction ATransaction)
         {
             return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar("SELECT COUNT(*) FROM PUB_s_default_file_volume", ATransaction, false));
@@ -22903,6 +32073,13 @@ namespace Ict.Petra.Shared.MSysMan.Data.Access
         public static int CountUsingTemplate(SDefaultFileVolumeRow ATemplateRow, StringCollection ATemplateOperators, TDBTransaction ATransaction)
         {
             return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_s_default_file_volume" + GenerateWhereClause(SDefaultFileVolumeTable.GetColumnStringList(), ATemplateRow, ATemplateOperators)), ATransaction, false, GetParametersForWhereClause(ATemplateRow)));
+        }
+
+        /// this method is called by all overloads
+        public static int CountUsingTemplate(TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        {
+            return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_s_default_file_volume" + GenerateWhereClause(SDefaultFileVolumeTable.GetColumnStringList(), ASearchCriteria)), ATransaction, false,
+            GetParametersForWhereClause(new SDefaultFileVolumeTable(), ASearchCriteria)));
         }
 
         /// auto generated
@@ -23001,6 +32178,51 @@ namespace Ict.Petra.Shared.MSysMan.Data.Access
         }
 
         /// auto generated
+        public static void LoadViaSVolumePartnerGroupTemplate(DataSet ADataSet, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        {
+            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClauseLong("PUB_s_default_file_volume", AFieldList, new string[] {
+                            "s_group_name_c", "s_area_c"}) + " FROM PUB_s_default_file_volume, PUB_s_volume_partner_group WHERE " +
+                            "PUB_s_default_file_volume.s_group_name_c = PUB_s_volume_partner_group.s_name_c")
+                            + GenerateWhereClauseLong("PUB_s_volume_partner_group", SVolumePartnerGroupTable.GetColumnStringList(), ASearchCriteria))
+                            + GenerateOrderByClause(AOrderBy)), SDefaultFileVolumeTable.GetTableName(), ATransaction,
+                            GetParametersForWhereClause(new SDefaultFileVolumeTable(), ASearchCriteria), AStartRecord, AMaxRecords);
+        }
+
+        /// auto generated
+        public static void LoadViaSVolumePartnerGroupTemplate(DataSet AData, TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        {
+            LoadViaSVolumePartnerGroupTemplate(AData, ASearchCriteria, null, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static void LoadViaSVolumePartnerGroupTemplate(DataSet AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
+        {
+            LoadViaSVolumePartnerGroupTemplate(AData, ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static void LoadViaSVolumePartnerGroupTemplate(out SDefaultFileVolumeTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        {
+            DataSet FillDataSet = new DataSet();
+            AData = new SDefaultFileVolumeTable();
+            FillDataSet.Tables.Add(AData);
+            LoadViaSVolumePartnerGroupTemplate(FillDataSet, ASearchCriteria, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            FillDataSet.Tables.Remove(AData);
+        }
+
+        /// auto generated
+        public static void LoadViaSVolumePartnerGroupTemplate(out SDefaultFileVolumeTable AData, TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        {
+            LoadViaSVolumePartnerGroupTemplate(out AData, ASearchCriteria, null, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static void LoadViaSVolumePartnerGroupTemplate(out SDefaultFileVolumeTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
+        {
+            LoadViaSVolumePartnerGroupTemplate(out AData, ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
         public static int CountViaSVolumePartnerGroup(String AName, TDBTransaction ATransaction)
         {
             OdbcParameter[] ParametersArray = new OdbcParameter[1];
@@ -23014,6 +32236,15 @@ namespace Ict.Petra.Shared.MSysMan.Data.Access
         {
             return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_s_default_file_volume, PUB_s_volume_partner_group WHERE " +
                 "PUB_s_default_file_volume.s_group_name_c = PUB_s_volume_partner_group.s_name_c" + GenerateWhereClauseLong("PUB_s_volume_partner_group", SVolumePartnerGroupTable.GetColumnStringList(), ATemplateRow, ATemplateOperators)), ATransaction, false, GetParametersForWhereClause(ATemplateRow, SVolumePartnerGroupTable.GetPrimKeyColumnOrdList())));
+        }
+
+        /// auto generated
+        public static int CountViaSVolumePartnerGroupTemplate(TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        {
+            return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_s_default_file_volume, PUB_s_volume_partner_group WHERE " +
+                "PUB_s_default_file_volume.s_group_name_c = PUB_s_volume_partner_group.s_name_c" +
+                GenerateWhereClauseLong("PUB_s_volume_partner_group", SVolumePartnerGroupTable.GetColumnStringList(), ASearchCriteria)), ATransaction, false,
+                GetParametersForWhereClause(new SVolumePartnerGroupTable(), ASearchCriteria)));
         }
 
         /// auto generated
@@ -23112,6 +32343,51 @@ namespace Ict.Petra.Shared.MSysMan.Data.Access
         }
 
         /// auto generated
+        public static void LoadViaSVolumeTemplate(DataSet ADataSet, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        {
+            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClauseLong("PUB_s_default_file_volume", AFieldList, new string[] {
+                            "s_group_name_c", "s_area_c"}) + " FROM PUB_s_default_file_volume, PUB_s_volume WHERE " +
+                            "PUB_s_default_file_volume.s_volume_name_c = PUB_s_volume.s_name_c")
+                            + GenerateWhereClauseLong("PUB_s_volume", SVolumeTable.GetColumnStringList(), ASearchCriteria))
+                            + GenerateOrderByClause(AOrderBy)), SDefaultFileVolumeTable.GetTableName(), ATransaction,
+                            GetParametersForWhereClause(new SDefaultFileVolumeTable(), ASearchCriteria), AStartRecord, AMaxRecords);
+        }
+
+        /// auto generated
+        public static void LoadViaSVolumeTemplate(DataSet AData, TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        {
+            LoadViaSVolumeTemplate(AData, ASearchCriteria, null, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static void LoadViaSVolumeTemplate(DataSet AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
+        {
+            LoadViaSVolumeTemplate(AData, ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static void LoadViaSVolumeTemplate(out SDefaultFileVolumeTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        {
+            DataSet FillDataSet = new DataSet();
+            AData = new SDefaultFileVolumeTable();
+            FillDataSet.Tables.Add(AData);
+            LoadViaSVolumeTemplate(FillDataSet, ASearchCriteria, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            FillDataSet.Tables.Remove(AData);
+        }
+
+        /// auto generated
+        public static void LoadViaSVolumeTemplate(out SDefaultFileVolumeTable AData, TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        {
+            LoadViaSVolumeTemplate(out AData, ASearchCriteria, null, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static void LoadViaSVolumeTemplate(out SDefaultFileVolumeTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
+        {
+            LoadViaSVolumeTemplate(out AData, ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
         public static int CountViaSVolume(String AName, TDBTransaction ATransaction)
         {
             OdbcParameter[] ParametersArray = new OdbcParameter[1];
@@ -23125,6 +32401,15 @@ namespace Ict.Petra.Shared.MSysMan.Data.Access
         {
             return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_s_default_file_volume, PUB_s_volume WHERE " +
                 "PUB_s_default_file_volume.s_volume_name_c = PUB_s_volume.s_name_c" + GenerateWhereClauseLong("PUB_s_volume", SVolumeTable.GetColumnStringList(), ATemplateRow, ATemplateOperators)), ATransaction, false, GetParametersForWhereClause(ATemplateRow, SVolumeTable.GetPrimKeyColumnOrdList())));
+        }
+
+        /// auto generated
+        public static int CountViaSVolumeTemplate(TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        {
+            return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_s_default_file_volume, PUB_s_volume WHERE " +
+                "PUB_s_default_file_volume.s_volume_name_c = PUB_s_volume.s_name_c" +
+                GenerateWhereClauseLong("PUB_s_volume", SVolumeTable.GetColumnStringList(), ASearchCriteria)), ATransaction, false,
+                GetParametersForWhereClause(new SVolumeTable(), ASearchCriteria)));
         }
 
         /// auto generated
@@ -23142,6 +32427,14 @@ namespace Ict.Petra.Shared.MSysMan.Data.Access
         public static void DeleteUsingTemplate(SDefaultFileVolumeRow ATemplateRow, StringCollection ATemplateOperators, TDBTransaction ATransaction)
         {
             DBAccess.GDBAccessObj.ExecuteNonQuery(("DELETE FROM PUB_s_default_file_volume" + GenerateWhereClause(SDefaultFileVolumeTable.GetColumnStringList(), ATemplateRow, ATemplateOperators)), ATransaction, false, GetParametersForWhereClause(ATemplateRow));
+        }
+
+        /// auto generated
+        public static void DeleteUsingTemplate(TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        {
+            DBAccess.GDBAccessObj.ExecuteNonQuery(("DELETE FROM PUB_s_default_file_volume" +
+                GenerateWhereClause(SDefaultFileVolumeTable.GetColumnStringList(), ASearchCriteria)), ATransaction, false,
+                GetParametersForWhereClause(new SDefaultFileVolumeTable(), ASearchCriteria));
         }
 
         /// auto generated
@@ -23330,6 +32623,50 @@ namespace Ict.Petra.Shared.MSysMan.Data.Access
         }
 
         /// this method is called by all overloads
+        public static void LoadUsingTemplate(DataSet ADataSet, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        {
+            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClause(AFieldList, new string[] {
+                            "s_name_c"}) + " FROM PUB_s_volume_partner_group")
+                            + GenerateWhereClause(SVolumePartnerGroupTable.GetColumnStringList(), ASearchCriteria))
+                            + GenerateOrderByClause(AOrderBy)), SVolumePartnerGroupTable.GetTableName(), ATransaction,
+                            GetParametersForWhereClause(new SVolumePartnerGroupTable(), ASearchCriteria), AStartRecord, AMaxRecords);
+        }
+
+        /// auto generated
+        public static void LoadUsingTemplate(DataSet AData, TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        {
+            LoadUsingTemplate(AData, ASearchCriteria, null, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static void LoadUsingTemplate(DataSet AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
+        {
+            LoadUsingTemplate(AData, ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static void LoadUsingTemplate(out SVolumePartnerGroupTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        {
+            DataSet FillDataSet = new DataSet();
+            AData = new SVolumePartnerGroupTable();
+            FillDataSet.Tables.Add(AData);
+            LoadUsingTemplate(FillDataSet, ASearchCriteria, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            FillDataSet.Tables.Remove(AData);
+        }
+
+        /// auto generated
+        public static void LoadUsingTemplate(out SVolumePartnerGroupTable AData, TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        {
+            LoadUsingTemplate(out AData, ASearchCriteria, null, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static void LoadUsingTemplate(out SVolumePartnerGroupTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
+        {
+            LoadUsingTemplate(out AData, ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
+        }
+
+        /// this method is called by all overloads
         public static int CountAll(TDBTransaction ATransaction)
         {
             return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar("SELECT COUNT(*) FROM PUB_s_volume_partner_group", ATransaction, false));
@@ -23348,6 +32685,13 @@ namespace Ict.Petra.Shared.MSysMan.Data.Access
         public static int CountUsingTemplate(SVolumePartnerGroupRow ATemplateRow, StringCollection ATemplateOperators, TDBTransaction ATransaction)
         {
             return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_s_volume_partner_group" + GenerateWhereClause(SVolumePartnerGroupTable.GetColumnStringList(), ATemplateRow, ATemplateOperators)), ATransaction, false, GetParametersForWhereClause(ATemplateRow)));
+        }
+
+        /// this method is called by all overloads
+        public static int CountUsingTemplate(TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        {
+            return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_s_volume_partner_group" + GenerateWhereClause(SVolumePartnerGroupTable.GetColumnStringList(), ASearchCriteria)), ATransaction, false,
+            GetParametersForWhereClause(new SVolumePartnerGroupTable(), ASearchCriteria)));
         }
 
         /// auto generated LoadViaLinkTable
@@ -23446,6 +32790,51 @@ namespace Ict.Petra.Shared.MSysMan.Data.Access
             LoadViaPPartnerTemplate(out AData, ATemplateRow, ATemplateOperators, AFieldList, ATransaction, null, 0, 0);
         }
 
+        /// auto generated
+        public static void LoadViaPPartnerTemplate(DataSet ADataSet, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        {
+            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClauseLong("PUB_s_volume_partner_group", AFieldList, new string[] {
+                            "s_name_c"}) + " FROM PUB_s_volume_partner_group, PUB_s_volume_partner_group_partner, PUB_p_partner WHERE " +
+                            "PUB_s_volume_partner_group_partner.s_group_name_c = PUB_s_volume_partner_group.s_name_c AND PUB_s_volume_partner_group_partner.p_partner_key_n = PUB_p_partner.p_partner_key_n")
+                            + GenerateWhereClauseLong("PUB_p_partner", PPartnerTable.GetColumnStringList(), ASearchCriteria))
+                            + GenerateOrderByClause(AOrderBy)), SVolumePartnerGroupTable.GetTableName(), ATransaction,
+                            GetParametersForWhereClause(new SVolumePartnerGroupTable(), ASearchCriteria), AStartRecord, AMaxRecords);
+        }
+
+        /// auto generated
+        public static void LoadViaPPartnerTemplate(DataSet AData, TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        {
+            LoadViaPPartnerTemplate(AData, ASearchCriteria, null, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static void LoadViaPPartnerTemplate(DataSet AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
+        {
+            LoadViaPPartnerTemplate(AData, ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static void LoadViaPPartnerTemplate(out SVolumePartnerGroupTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        {
+            DataSet FillDataSet = new DataSet();
+            AData = new SVolumePartnerGroupTable();
+            FillDataSet.Tables.Add(AData);
+            LoadViaPPartnerTemplate(FillDataSet, ASearchCriteria, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            FillDataSet.Tables.Remove(AData);
+        }
+
+        /// auto generated
+        public static void LoadViaPPartnerTemplate(out SVolumePartnerGroupTable AData, TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        {
+            LoadViaPPartnerTemplate(out AData, ASearchCriteria, null, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static void LoadViaPPartnerTemplate(out SVolumePartnerGroupTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
+        {
+            LoadViaPPartnerTemplate(out AData, ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
+        }
+
         /// auto generated CountViaLinkTable
         public static int CountViaPPartner(Int64 APartnerKey, TDBTransaction ATransaction)
         {
@@ -23466,6 +32855,15 @@ namespace Ict.Petra.Shared.MSysMan.Data.Access
         }
 
         /// auto generated
+        public static int CountViaPPartnerTemplate(TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        {
+            return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_s_volume_partner_group, PUB_s_volume_partner_group_partner, PUB_p_partner WHERE " +
+                        "PUB_s_volume_partner_group_partner.s_group_name_c = PUB_s_volume_partner_group.s_name_c AND PUB_s_volume_partner_group_partner.p_partner_key_n = PUB_p_partner.p_partner_key_n" +
+                        GenerateWhereClauseLong("PUB_s_volume_partner_group_partner", SVolumePartnerGroupTable.GetColumnStringList(), ASearchCriteria)), ATransaction, false,
+                        GetParametersForWhereClause(new SVolumePartnerGroupTable(), ASearchCriteria)));
+        }
+
+        /// auto generated
         public static void DeleteByPrimaryKey(String AName, TDBTransaction ATransaction)
         {
             OdbcParameter[] ParametersArray = new OdbcParameter[1];
@@ -23478,6 +32876,14 @@ namespace Ict.Petra.Shared.MSysMan.Data.Access
         public static void DeleteUsingTemplate(SVolumePartnerGroupRow ATemplateRow, StringCollection ATemplateOperators, TDBTransaction ATransaction)
         {
             DBAccess.GDBAccessObj.ExecuteNonQuery(("DELETE FROM PUB_s_volume_partner_group" + GenerateWhereClause(SVolumePartnerGroupTable.GetColumnStringList(), ATemplateRow, ATemplateOperators)), ATransaction, false, GetParametersForWhereClause(ATemplateRow));
+        }
+
+        /// auto generated
+        public static void DeleteUsingTemplate(TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        {
+            DBAccess.GDBAccessObj.ExecuteNonQuery(("DELETE FROM PUB_s_volume_partner_group" +
+                GenerateWhereClause(SVolumePartnerGroupTable.GetColumnStringList(), ASearchCriteria)), ATransaction, false,
+                GetParametersForWhereClause(new SVolumePartnerGroupTable(), ASearchCriteria));
         }
 
         /// auto generated
@@ -23668,6 +33074,50 @@ namespace Ict.Petra.Shared.MSysMan.Data.Access
         }
 
         /// this method is called by all overloads
+        public static void LoadUsingTemplate(DataSet ADataSet, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        {
+            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClause(AFieldList, new string[] {
+                            "s_group_name_c", "p_partner_key_n"}) + " FROM PUB_s_volume_partner_group_partner")
+                            + GenerateWhereClause(SVolumePartnerGroupPartnerTable.GetColumnStringList(), ASearchCriteria))
+                            + GenerateOrderByClause(AOrderBy)), SVolumePartnerGroupPartnerTable.GetTableName(), ATransaction,
+                            GetParametersForWhereClause(new SVolumePartnerGroupPartnerTable(), ASearchCriteria), AStartRecord, AMaxRecords);
+        }
+
+        /// auto generated
+        public static void LoadUsingTemplate(DataSet AData, TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        {
+            LoadUsingTemplate(AData, ASearchCriteria, null, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static void LoadUsingTemplate(DataSet AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
+        {
+            LoadUsingTemplate(AData, ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static void LoadUsingTemplate(out SVolumePartnerGroupPartnerTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        {
+            DataSet FillDataSet = new DataSet();
+            AData = new SVolumePartnerGroupPartnerTable();
+            FillDataSet.Tables.Add(AData);
+            LoadUsingTemplate(FillDataSet, ASearchCriteria, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            FillDataSet.Tables.Remove(AData);
+        }
+
+        /// auto generated
+        public static void LoadUsingTemplate(out SVolumePartnerGroupPartnerTable AData, TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        {
+            LoadUsingTemplate(out AData, ASearchCriteria, null, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static void LoadUsingTemplate(out SVolumePartnerGroupPartnerTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
+        {
+            LoadUsingTemplate(out AData, ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
+        }
+
+        /// this method is called by all overloads
         public static int CountAll(TDBTransaction ATransaction)
         {
             return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar("SELECT COUNT(*) FROM PUB_s_volume_partner_group_partner", ATransaction, false));
@@ -23688,6 +33138,13 @@ namespace Ict.Petra.Shared.MSysMan.Data.Access
         public static int CountUsingTemplate(SVolumePartnerGroupPartnerRow ATemplateRow, StringCollection ATemplateOperators, TDBTransaction ATransaction)
         {
             return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_s_volume_partner_group_partner" + GenerateWhereClause(SVolumePartnerGroupPartnerTable.GetColumnStringList(), ATemplateRow, ATemplateOperators)), ATransaction, false, GetParametersForWhereClause(ATemplateRow)));
+        }
+
+        /// this method is called by all overloads
+        public static int CountUsingTemplate(TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        {
+            return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_s_volume_partner_group_partner" + GenerateWhereClause(SVolumePartnerGroupPartnerTable.GetColumnStringList(), ASearchCriteria)), ATransaction, false,
+            GetParametersForWhereClause(new SVolumePartnerGroupPartnerTable(), ASearchCriteria)));
         }
 
         /// auto generated
@@ -23786,6 +33243,51 @@ namespace Ict.Petra.Shared.MSysMan.Data.Access
         }
 
         /// auto generated
+        public static void LoadViaSVolumePartnerGroupTemplate(DataSet ADataSet, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        {
+            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClauseLong("PUB_s_volume_partner_group_partner", AFieldList, new string[] {
+                            "s_group_name_c", "p_partner_key_n"}) + " FROM PUB_s_volume_partner_group_partner, PUB_s_volume_partner_group WHERE " +
+                            "PUB_s_volume_partner_group_partner.s_group_name_c = PUB_s_volume_partner_group.s_name_c")
+                            + GenerateWhereClauseLong("PUB_s_volume_partner_group", SVolumePartnerGroupTable.GetColumnStringList(), ASearchCriteria))
+                            + GenerateOrderByClause(AOrderBy)), SVolumePartnerGroupPartnerTable.GetTableName(), ATransaction,
+                            GetParametersForWhereClause(new SVolumePartnerGroupPartnerTable(), ASearchCriteria), AStartRecord, AMaxRecords);
+        }
+
+        /// auto generated
+        public static void LoadViaSVolumePartnerGroupTemplate(DataSet AData, TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        {
+            LoadViaSVolumePartnerGroupTemplate(AData, ASearchCriteria, null, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static void LoadViaSVolumePartnerGroupTemplate(DataSet AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
+        {
+            LoadViaSVolumePartnerGroupTemplate(AData, ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static void LoadViaSVolumePartnerGroupTemplate(out SVolumePartnerGroupPartnerTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        {
+            DataSet FillDataSet = new DataSet();
+            AData = new SVolumePartnerGroupPartnerTable();
+            FillDataSet.Tables.Add(AData);
+            LoadViaSVolumePartnerGroupTemplate(FillDataSet, ASearchCriteria, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            FillDataSet.Tables.Remove(AData);
+        }
+
+        /// auto generated
+        public static void LoadViaSVolumePartnerGroupTemplate(out SVolumePartnerGroupPartnerTable AData, TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        {
+            LoadViaSVolumePartnerGroupTemplate(out AData, ASearchCriteria, null, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static void LoadViaSVolumePartnerGroupTemplate(out SVolumePartnerGroupPartnerTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
+        {
+            LoadViaSVolumePartnerGroupTemplate(out AData, ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
         public static int CountViaSVolumePartnerGroup(String AName, TDBTransaction ATransaction)
         {
             OdbcParameter[] ParametersArray = new OdbcParameter[1];
@@ -23799,6 +33301,15 @@ namespace Ict.Petra.Shared.MSysMan.Data.Access
         {
             return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_s_volume_partner_group_partner, PUB_s_volume_partner_group WHERE " +
                 "PUB_s_volume_partner_group_partner.s_group_name_c = PUB_s_volume_partner_group.s_name_c" + GenerateWhereClauseLong("PUB_s_volume_partner_group", SVolumePartnerGroupTable.GetColumnStringList(), ATemplateRow, ATemplateOperators)), ATransaction, false, GetParametersForWhereClause(ATemplateRow, SVolumePartnerGroupTable.GetPrimKeyColumnOrdList())));
+        }
+
+        /// auto generated
+        public static int CountViaSVolumePartnerGroupTemplate(TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        {
+            return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_s_volume_partner_group_partner, PUB_s_volume_partner_group WHERE " +
+                "PUB_s_volume_partner_group_partner.s_group_name_c = PUB_s_volume_partner_group.s_name_c" +
+                GenerateWhereClauseLong("PUB_s_volume_partner_group", SVolumePartnerGroupTable.GetColumnStringList(), ASearchCriteria)), ATransaction, false,
+                GetParametersForWhereClause(new SVolumePartnerGroupTable(), ASearchCriteria)));
         }
 
         /// auto generated
@@ -23897,6 +33408,51 @@ namespace Ict.Petra.Shared.MSysMan.Data.Access
         }
 
         /// auto generated
+        public static void LoadViaPPartnerTemplate(DataSet ADataSet, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        {
+            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClauseLong("PUB_s_volume_partner_group_partner", AFieldList, new string[] {
+                            "s_group_name_c", "p_partner_key_n"}) + " FROM PUB_s_volume_partner_group_partner, PUB_p_partner WHERE " +
+                            "PUB_s_volume_partner_group_partner.p_partner_key_n = PUB_p_partner.p_partner_key_n")
+                            + GenerateWhereClauseLong("PUB_p_partner", PPartnerTable.GetColumnStringList(), ASearchCriteria))
+                            + GenerateOrderByClause(AOrderBy)), SVolumePartnerGroupPartnerTable.GetTableName(), ATransaction,
+                            GetParametersForWhereClause(new SVolumePartnerGroupPartnerTable(), ASearchCriteria), AStartRecord, AMaxRecords);
+        }
+
+        /// auto generated
+        public static void LoadViaPPartnerTemplate(DataSet AData, TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        {
+            LoadViaPPartnerTemplate(AData, ASearchCriteria, null, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static void LoadViaPPartnerTemplate(DataSet AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
+        {
+            LoadViaPPartnerTemplate(AData, ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static void LoadViaPPartnerTemplate(out SVolumePartnerGroupPartnerTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        {
+            DataSet FillDataSet = new DataSet();
+            AData = new SVolumePartnerGroupPartnerTable();
+            FillDataSet.Tables.Add(AData);
+            LoadViaPPartnerTemplate(FillDataSet, ASearchCriteria, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            FillDataSet.Tables.Remove(AData);
+        }
+
+        /// auto generated
+        public static void LoadViaPPartnerTemplate(out SVolumePartnerGroupPartnerTable AData, TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        {
+            LoadViaPPartnerTemplate(out AData, ASearchCriteria, null, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static void LoadViaPPartnerTemplate(out SVolumePartnerGroupPartnerTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
+        {
+            LoadViaPPartnerTemplate(out AData, ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
         public static int CountViaPPartner(Int64 APartnerKey, TDBTransaction ATransaction)
         {
             OdbcParameter[] ParametersArray = new OdbcParameter[1];
@@ -23910,6 +33466,15 @@ namespace Ict.Petra.Shared.MSysMan.Data.Access
         {
             return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_s_volume_partner_group_partner, PUB_p_partner WHERE " +
                 "PUB_s_volume_partner_group_partner.p_partner_key_n = PUB_p_partner.p_partner_key_n" + GenerateWhereClauseLong("PUB_p_partner", PPartnerTable.GetColumnStringList(), ATemplateRow, ATemplateOperators)), ATransaction, false, GetParametersForWhereClause(ATemplateRow, PPartnerTable.GetPrimKeyColumnOrdList())));
+        }
+
+        /// auto generated
+        public static int CountViaPPartnerTemplate(TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        {
+            return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_s_volume_partner_group_partner, PUB_p_partner WHERE " +
+                "PUB_s_volume_partner_group_partner.p_partner_key_n = PUB_p_partner.p_partner_key_n" +
+                GenerateWhereClauseLong("PUB_p_partner", PPartnerTable.GetColumnStringList(), ASearchCriteria)), ATransaction, false,
+                GetParametersForWhereClause(new PPartnerTable(), ASearchCriteria)));
         }
 
         /// auto generated
@@ -23927,6 +33492,14 @@ namespace Ict.Petra.Shared.MSysMan.Data.Access
         public static void DeleteUsingTemplate(SVolumePartnerGroupPartnerRow ATemplateRow, StringCollection ATemplateOperators, TDBTransaction ATransaction)
         {
             DBAccess.GDBAccessObj.ExecuteNonQuery(("DELETE FROM PUB_s_volume_partner_group_partner" + GenerateWhereClause(SVolumePartnerGroupPartnerTable.GetColumnStringList(), ATemplateRow, ATemplateOperators)), ATransaction, false, GetParametersForWhereClause(ATemplateRow));
+        }
+
+        /// auto generated
+        public static void DeleteUsingTemplate(TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        {
+            DBAccess.GDBAccessObj.ExecuteNonQuery(("DELETE FROM PUB_s_volume_partner_group_partner" +
+                GenerateWhereClause(SVolumePartnerGroupPartnerTable.GetColumnStringList(), ASearchCriteria)), ATransaction, false,
+                GetParametersForWhereClause(new SVolumePartnerGroupPartnerTable(), ASearchCriteria));
         }
 
         /// auto generated
@@ -24119,6 +33692,50 @@ namespace Ict.Petra.Shared.MSysMan.Data.Access
         }
 
         /// this method is called by all overloads
+        public static void LoadUsingTemplate(DataSet ADataSet, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        {
+            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClause(AFieldList, new string[] {
+                            "s_group_id_c", "s_group_unit_key_n", "p_file_info_key_n"}) + " FROM PUB_s_group_file_info")
+                            + GenerateWhereClause(SGroupFileInfoTable.GetColumnStringList(), ASearchCriteria))
+                            + GenerateOrderByClause(AOrderBy)), SGroupFileInfoTable.GetTableName(), ATransaction,
+                            GetParametersForWhereClause(new SGroupFileInfoTable(), ASearchCriteria), AStartRecord, AMaxRecords);
+        }
+
+        /// auto generated
+        public static void LoadUsingTemplate(DataSet AData, TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        {
+            LoadUsingTemplate(AData, ASearchCriteria, null, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static void LoadUsingTemplate(DataSet AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
+        {
+            LoadUsingTemplate(AData, ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static void LoadUsingTemplate(out SGroupFileInfoTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        {
+            DataSet FillDataSet = new DataSet();
+            AData = new SGroupFileInfoTable();
+            FillDataSet.Tables.Add(AData);
+            LoadUsingTemplate(FillDataSet, ASearchCriteria, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            FillDataSet.Tables.Remove(AData);
+        }
+
+        /// auto generated
+        public static void LoadUsingTemplate(out SGroupFileInfoTable AData, TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        {
+            LoadUsingTemplate(out AData, ASearchCriteria, null, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static void LoadUsingTemplate(out SGroupFileInfoTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
+        {
+            LoadUsingTemplate(out AData, ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
+        }
+
+        /// this method is called by all overloads
         public static int CountAll(TDBTransaction ATransaction)
         {
             return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar("SELECT COUNT(*) FROM PUB_s_group_file_info", ATransaction, false));
@@ -24141,6 +33758,13 @@ namespace Ict.Petra.Shared.MSysMan.Data.Access
         public static int CountUsingTemplate(SGroupFileInfoRow ATemplateRow, StringCollection ATemplateOperators, TDBTransaction ATransaction)
         {
             return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_s_group_file_info" + GenerateWhereClause(SGroupFileInfoTable.GetColumnStringList(), ATemplateRow, ATemplateOperators)), ATransaction, false, GetParametersForWhereClause(ATemplateRow)));
+        }
+
+        /// this method is called by all overloads
+        public static int CountUsingTemplate(TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        {
+            return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_s_group_file_info" + GenerateWhereClause(SGroupFileInfoTable.GetColumnStringList(), ASearchCriteria)), ATransaction, false,
+            GetParametersForWhereClause(new SGroupFileInfoTable(), ASearchCriteria)));
         }
 
         /// auto generated
@@ -24241,6 +33865,51 @@ namespace Ict.Petra.Shared.MSysMan.Data.Access
         }
 
         /// auto generated
+        public static void LoadViaSGroupTemplate(DataSet ADataSet, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        {
+            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClauseLong("PUB_s_group_file_info", AFieldList, new string[] {
+                            "s_group_id_c", "s_group_unit_key_n", "p_file_info_key_n"}) + " FROM PUB_s_group_file_info, PUB_s_group WHERE " +
+                            "PUB_s_group_file_info.s_group_id_c = PUB_s_group.s_group_id_c AND PUB_s_group_file_info.s_group_unit_key_n = PUB_s_group.s_unit_key_n")
+                            + GenerateWhereClauseLong("PUB_s_group", SGroupTable.GetColumnStringList(), ASearchCriteria))
+                            + GenerateOrderByClause(AOrderBy)), SGroupFileInfoTable.GetTableName(), ATransaction,
+                            GetParametersForWhereClause(new SGroupFileInfoTable(), ASearchCriteria), AStartRecord, AMaxRecords);
+        }
+
+        /// auto generated
+        public static void LoadViaSGroupTemplate(DataSet AData, TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        {
+            LoadViaSGroupTemplate(AData, ASearchCriteria, null, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static void LoadViaSGroupTemplate(DataSet AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
+        {
+            LoadViaSGroupTemplate(AData, ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static void LoadViaSGroupTemplate(out SGroupFileInfoTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        {
+            DataSet FillDataSet = new DataSet();
+            AData = new SGroupFileInfoTable();
+            FillDataSet.Tables.Add(AData);
+            LoadViaSGroupTemplate(FillDataSet, ASearchCriteria, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            FillDataSet.Tables.Remove(AData);
+        }
+
+        /// auto generated
+        public static void LoadViaSGroupTemplate(out SGroupFileInfoTable AData, TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        {
+            LoadViaSGroupTemplate(out AData, ASearchCriteria, null, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static void LoadViaSGroupTemplate(out SGroupFileInfoTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
+        {
+            LoadViaSGroupTemplate(out AData, ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
         public static int CountViaSGroup(String AGroupId, Int64 AUnitKey, TDBTransaction ATransaction)
         {
             OdbcParameter[] ParametersArray = new OdbcParameter[2];
@@ -24256,6 +33925,15 @@ namespace Ict.Petra.Shared.MSysMan.Data.Access
         {
             return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_s_group_file_info, PUB_s_group WHERE " +
                 "PUB_s_group_file_info.s_group_id_c = PUB_s_group.s_group_id_c AND PUB_s_group_file_info.s_group_unit_key_n = PUB_s_group.s_unit_key_n" + GenerateWhereClauseLong("PUB_s_group", SGroupTable.GetColumnStringList(), ATemplateRow, ATemplateOperators)), ATransaction, false, GetParametersForWhereClause(ATemplateRow, SGroupTable.GetPrimKeyColumnOrdList())));
+        }
+
+        /// auto generated
+        public static int CountViaSGroupTemplate(TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        {
+            return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_s_group_file_info, PUB_s_group WHERE " +
+                "PUB_s_group_file_info.s_group_id_c = PUB_s_group.s_group_id_c AND PUB_s_group_file_info.s_group_unit_key_n = PUB_s_group.s_unit_key_n" +
+                GenerateWhereClauseLong("PUB_s_group", SGroupTable.GetColumnStringList(), ASearchCriteria)), ATransaction, false,
+                GetParametersForWhereClause(new SGroupTable(), ASearchCriteria)));
         }
 
         /// auto generated
@@ -24354,6 +34032,51 @@ namespace Ict.Petra.Shared.MSysMan.Data.Access
         }
 
         /// auto generated
+        public static void LoadViaPFileInfoTemplate(DataSet ADataSet, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        {
+            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClauseLong("PUB_s_group_file_info", AFieldList, new string[] {
+                            "s_group_id_c", "s_group_unit_key_n", "p_file_info_key_n"}) + " FROM PUB_s_group_file_info, PUB_p_file_info WHERE " +
+                            "PUB_s_group_file_info.p_file_info_key_n = PUB_p_file_info.p_key_n")
+                            + GenerateWhereClauseLong("PUB_p_file_info", PFileInfoTable.GetColumnStringList(), ASearchCriteria))
+                            + GenerateOrderByClause(AOrderBy)), SGroupFileInfoTable.GetTableName(), ATransaction,
+                            GetParametersForWhereClause(new SGroupFileInfoTable(), ASearchCriteria), AStartRecord, AMaxRecords);
+        }
+
+        /// auto generated
+        public static void LoadViaPFileInfoTemplate(DataSet AData, TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        {
+            LoadViaPFileInfoTemplate(AData, ASearchCriteria, null, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static void LoadViaPFileInfoTemplate(DataSet AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
+        {
+            LoadViaPFileInfoTemplate(AData, ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static void LoadViaPFileInfoTemplate(out SGroupFileInfoTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        {
+            DataSet FillDataSet = new DataSet();
+            AData = new SGroupFileInfoTable();
+            FillDataSet.Tables.Add(AData);
+            LoadViaPFileInfoTemplate(FillDataSet, ASearchCriteria, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            FillDataSet.Tables.Remove(AData);
+        }
+
+        /// auto generated
+        public static void LoadViaPFileInfoTemplate(out SGroupFileInfoTable AData, TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        {
+            LoadViaPFileInfoTemplate(out AData, ASearchCriteria, null, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static void LoadViaPFileInfoTemplate(out SGroupFileInfoTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
+        {
+            LoadViaPFileInfoTemplate(out AData, ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
         public static int CountViaPFileInfo(Int64 AKey, TDBTransaction ATransaction)
         {
             OdbcParameter[] ParametersArray = new OdbcParameter[1];
@@ -24367,6 +34090,15 @@ namespace Ict.Petra.Shared.MSysMan.Data.Access
         {
             return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_s_group_file_info, PUB_p_file_info WHERE " +
                 "PUB_s_group_file_info.p_file_info_key_n = PUB_p_file_info.p_key_n" + GenerateWhereClauseLong("PUB_p_file_info", PFileInfoTable.GetColumnStringList(), ATemplateRow, ATemplateOperators)), ATransaction, false, GetParametersForWhereClause(ATemplateRow, PFileInfoTable.GetPrimKeyColumnOrdList())));
+        }
+
+        /// auto generated
+        public static int CountViaPFileInfoTemplate(TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        {
+            return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_s_group_file_info, PUB_p_file_info WHERE " +
+                "PUB_s_group_file_info.p_file_info_key_n = PUB_p_file_info.p_key_n" +
+                GenerateWhereClauseLong("PUB_p_file_info", PFileInfoTable.GetColumnStringList(), ASearchCriteria)), ATransaction, false,
+                GetParametersForWhereClause(new PFileInfoTable(), ASearchCriteria)));
         }
 
         /// auto generated
@@ -24386,6 +34118,14 @@ namespace Ict.Petra.Shared.MSysMan.Data.Access
         public static void DeleteUsingTemplate(SGroupFileInfoRow ATemplateRow, StringCollection ATemplateOperators, TDBTransaction ATransaction)
         {
             DBAccess.GDBAccessObj.ExecuteNonQuery(("DELETE FROM PUB_s_group_file_info" + GenerateWhereClause(SGroupFileInfoTable.GetColumnStringList(), ATemplateRow, ATemplateOperators)), ATransaction, false, GetParametersForWhereClause(ATemplateRow));
+        }
+
+        /// auto generated
+        public static void DeleteUsingTemplate(TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        {
+            DBAccess.GDBAccessObj.ExecuteNonQuery(("DELETE FROM PUB_s_group_file_info" +
+                GenerateWhereClause(SGroupFileInfoTable.GetColumnStringList(), ASearchCriteria)), ATransaction, false,
+                GetParametersForWhereClause(new SGroupFileInfoTable(), ASearchCriteria));
         }
 
         /// auto generated

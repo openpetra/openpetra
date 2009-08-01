@@ -167,6 +167,50 @@ public class {#TABLENAME}Access : TTypedDataAccess
     }
 
     /// this method is called by all overloads
+    public static void LoadUsingTemplate(DataSet ADataSet, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+    {
+        ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClause(AFieldList, new string[] {
+                        {#CSVLISTPRIMARYKEYFIELDS}}) + " FROM PUB_{#SQLTABLENAME}") 
+                        + GenerateWhereClause({#TABLENAME}Table.GetColumnStringList(), ASearchCriteria)) 
+                        + GenerateOrderByClause(AOrderBy)), {#TABLENAME}Table.GetTableName(), ATransaction, 
+                        GetParametersForWhereClause(new {#TABLENAME}Table(), ASearchCriteria), AStartRecord, AMaxRecords);
+    }
+    
+    /// auto generated
+    public static void LoadUsingTemplate(DataSet AData, TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+    {
+        LoadUsingTemplate(AData, ASearchCriteria, null, ATransaction, null, 0, 0);
+    }
+    
+    /// auto generated
+    public static void LoadUsingTemplate(DataSet AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
+    {
+        LoadUsingTemplate(AData, ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
+    }
+    
+    /// auto generated
+    public static void LoadUsingTemplate(out {#TABLENAME}Table AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+    {
+        DataSet FillDataSet = new DataSet();
+        AData = new {#TABLENAME}Table();
+        FillDataSet.Tables.Add(AData);
+        LoadUsingTemplate(FillDataSet, ASearchCriteria, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+        FillDataSet.Tables.Remove(AData);
+    }
+    
+    /// auto generated
+    public static void LoadUsingTemplate(out {#TABLENAME}Table AData, TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+    {
+        LoadUsingTemplate(out AData, ASearchCriteria, null, ATransaction, null, 0, 0);
+    }
+
+    /// auto generated
+    public static void LoadUsingTemplate(out {#TABLENAME}Table AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
+    {
+        LoadUsingTemplate(out AData, ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
+    }
+
+    /// this method is called by all overloads
     public static int CountAll(TDBTransaction ATransaction)
     {
         return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar("SELECT COUNT(*) FROM PUB_{#SQLTABLENAME}", ATransaction, false));
@@ -180,11 +224,18 @@ public class {#TABLENAME}Access : TTypedDataAccess
         return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar("SELECT COUNT(*) FROM PUB_{#SQLTABLENAME} WHERE {#WHERECLAUSEPRIMARYKEY}", ATransaction, false, ParametersArray));
     }
 {#ENDIF FORMALPARAMETERSPRIMARYKEY}
-    
+
     /// this method is called by all overloads
     public static int CountUsingTemplate({#TABLENAME}Row ATemplateRow, StringCollection ATemplateOperators, TDBTransaction ATransaction)
     {
         return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_{#SQLTABLENAME}" + GenerateWhereClause({#TABLENAME}Table.GetColumnStringList(), ATemplateRow, ATemplateOperators)), ATransaction, false, GetParametersForWhereClause(ATemplateRow)));
+    }
+
+    /// this method is called by all overloads
+    public static int CountUsingTemplate(TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+    {
+        return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_{#SQLTABLENAME}" + GenerateWhereClause({#TABLENAME}Table.GetColumnStringList(), ASearchCriteria)), ATransaction, false, 
+        GetParametersForWhereClause(new {#TABLENAME}Table(), ASearchCriteria)));
     }
     {#VIAOTHERTABLE}
     {#VIALINKTABLE}
@@ -203,6 +254,14 @@ public class {#TABLENAME}Access : TTypedDataAccess
     public static void DeleteUsingTemplate({#TABLENAME}Row ATemplateRow, StringCollection ATemplateOperators, TDBTransaction ATransaction)
     {
         DBAccess.GDBAccessObj.ExecuteNonQuery(("DELETE FROM PUB_{#SQLTABLENAME}" + GenerateWhereClause({#TABLENAME}Table.GetColumnStringList(), ATemplateRow, ATemplateOperators)), ATransaction, false, GetParametersForWhereClause(ATemplateRow));
+    }
+
+    /// auto generated
+    public static void DeleteUsingTemplate(TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+    {
+        DBAccess.GDBAccessObj.ExecuteNonQuery(("DELETE FROM PUB_{#SQLTABLENAME}" + 
+            GenerateWhereClause({#TABLENAME}Table.GetColumnStringList(), ASearchCriteria)), ATransaction, false, 
+            GetParametersForWhereClause(new {#TABLENAME}Table(), ASearchCriteria));
     }
     
     /// auto generated
@@ -355,6 +414,51 @@ public static void Load{#VIAPROCEDURENAME}Template(out {#TABLENAME}Table AData, 
 }
 
 /// auto generated
+public static void Load{#VIAPROCEDURENAME}Template(DataSet ADataSet, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+{
+    ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClauseLong("PUB_{#SQLTABLENAME}", AFieldList, new string[] {
+                    {#CSVLISTPRIMARYKEYFIELDS}}) + " FROM PUB_{#SQLTABLENAME}, PUB_{#SQLOTHERTABLENAME} WHERE " +
+                    "{#WHERECLAUSEVIAOTHERTABLE}") 
+                    + GenerateWhereClauseLong("PUB_{#SQLOTHERTABLENAME}", {#OTHERTABLENAME}Table.GetColumnStringList(), ASearchCriteria)) 
+                    + GenerateOrderByClause(AOrderBy)), {#TABLENAME}Table.GetTableName(), ATransaction, 
+                    GetParametersForWhereClause(new {#TABLENAME}Table(), ASearchCriteria), AStartRecord, AMaxRecords);
+}
+
+/// auto generated
+public static void Load{#VIAPROCEDURENAME}Template(DataSet AData, TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+{
+    Load{#VIAPROCEDURENAME}Template(AData, ASearchCriteria, null, ATransaction, null, 0, 0);
+}
+
+/// auto generated
+public static void Load{#VIAPROCEDURENAME}Template(DataSet AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
+{
+    Load{#VIAPROCEDURENAME}Template(AData, ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
+}
+
+/// auto generated
+public static void Load{#VIAPROCEDURENAME}Template(out {#TABLENAME}Table AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+{
+    DataSet FillDataSet = new DataSet();
+    AData = new {#TABLENAME}Table();
+    FillDataSet.Tables.Add(AData);
+    Load{#VIAPROCEDURENAME}Template(FillDataSet, ASearchCriteria, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+    FillDataSet.Tables.Remove(AData);
+}
+
+/// auto generated
+public static void Load{#VIAPROCEDURENAME}Template(out {#TABLENAME}Table AData, TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+{
+    Load{#VIAPROCEDURENAME}Template(out AData, ASearchCriteria, null, ATransaction, null, 0, 0);
+}
+
+/// auto generated
+public static void Load{#VIAPROCEDURENAME}Template(out {#TABLENAME}Table AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
+{
+    Load{#VIAPROCEDURENAME}Template(out AData, ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
+}
+
+/// auto generated
 public static int Count{#VIAPROCEDURENAME}({#FORMALPARAMETERSOTHERPRIMARYKEY}, TDBTransaction ATransaction)
 {
     {#ODBCPARAMETERSFOREIGNKEY}
@@ -366,6 +470,15 @@ public static int Count{#VIAPROCEDURENAME}Template({#OTHERTABLENAME}Row ATemplat
 {
     return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_{#SQLTABLENAME}, PUB_{#SQLOTHERTABLENAME} WHERE " +
         "{#WHERECLAUSEVIAOTHERTABLE}" + GenerateWhereClauseLong("PUB_{#SQLOTHERTABLENAME}", {#OTHERTABLENAME}Table.GetColumnStringList(), ATemplateRow, ATemplateOperators)), ATransaction, false, GetParametersForWhereClause(ATemplateRow, {#OTHERTABLENAME}Table.GetPrimKeyColumnOrdList())));
+}
+
+/// auto generated
+public static int Count{#VIAPROCEDURENAME}Template(TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+{
+    return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_{#SQLTABLENAME}, PUB_{#SQLOTHERTABLENAME} WHERE " +
+        "{#WHERECLAUSEVIAOTHERTABLE}" + 
+        GenerateWhereClauseLong("PUB_{#SQLOTHERTABLENAME}", {#OTHERTABLENAME}Table.GetColumnStringList(), ASearchCriteria)), ATransaction, false, 
+        GetParametersForWhereClause(new {#OTHERTABLENAME}Table(), ASearchCriteria)));
 }
 
 {##VIALINKTABLE}
@@ -464,6 +577,51 @@ public static void Load{#VIAPROCEDURENAME}Template(out {#TABLENAME}Table AData, 
     Load{#VIAPROCEDURENAME}Template(out AData, ATemplateRow, ATemplateOperators, AFieldList, ATransaction, null, 0, 0);
 }
 
+/// auto generated
+public static void Load{#VIAPROCEDURENAME}Template(DataSet ADataSet, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+{
+    ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClauseLong("PUB_{#SQLTABLENAME}", AFieldList, new string[] {
+                    {#CSVLISTPRIMARYKEYFIELDS}}) + " FROM PUB_{#SQLTABLENAME}, PUB_{#SQLLINKTABLENAME}, PUB_{#SQLOTHERTABLENAME} WHERE " +
+                    "{#WHERECLAUSEALLVIATABLES}") 
+                    + GenerateWhereClauseLong("PUB_{#SQLOTHERTABLENAME}", {#OTHERTABLENAME}Table.GetColumnStringList(), ASearchCriteria)) 
+                    + GenerateOrderByClause(AOrderBy)), {#TABLENAME}Table.GetTableName(), ATransaction, 
+                    GetParametersForWhereClause(new {#TABLENAME}Table(), ASearchCriteria), AStartRecord, AMaxRecords);
+}
+
+/// auto generated
+public static void Load{#VIAPROCEDURENAME}Template(DataSet AData, TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+{
+    Load{#VIAPROCEDURENAME}Template(AData, ASearchCriteria, null, ATransaction, null, 0, 0);
+}
+
+/// auto generated
+public static void Load{#VIAPROCEDURENAME}Template(DataSet AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
+{
+    Load{#VIAPROCEDURENAME}Template(AData, ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
+}
+
+/// auto generated
+public static void Load{#VIAPROCEDURENAME}Template(out {#TABLENAME}Table AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+{
+    DataSet FillDataSet = new DataSet();
+    AData = new {#TABLENAME}Table();
+    FillDataSet.Tables.Add(AData);
+    Load{#VIAPROCEDURENAME}Template(FillDataSet, ASearchCriteria, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+    FillDataSet.Tables.Remove(AData);
+}
+
+/// auto generated
+public static void Load{#VIAPROCEDURENAME}Template(out {#TABLENAME}Table AData, TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+{
+    Load{#VIAPROCEDURENAME}Template(out AData, ASearchCriteria, null, ATransaction, null, 0, 0);
+}
+
+/// auto generated
+public static void Load{#VIAPROCEDURENAME}Template(out {#TABLENAME}Table AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
+{
+    Load{#VIAPROCEDURENAME}Template(out AData, ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
+}
+
 /// auto generated CountViaLinkTable
 public static int Count{#VIAPROCEDURENAME}({#FORMALPARAMETERSOTHERPRIMARYKEY}, TDBTransaction ATransaction)
 {
@@ -479,4 +637,13 @@ public static int Count{#VIAPROCEDURENAME}Template({#OTHERTABLENAME}Row ATemplat
     return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_{#SQLTABLENAME}, PUB_{#SQLLINKTABLENAME}, PUB_{#SQLOTHERTABLENAME} WHERE " +
                 "{#WHERECLAUSEALLVIATABLES}" +
                 GenerateWhereClauseLong("PUB_{#SQLLINKTABLENAME}", {#TABLENAME}Table.GetColumnStringList(), ATemplateRow, ATemplateOperators)), ATransaction, false, GetParametersForWhereClause(ATemplateRow, {#OTHERTABLENAME}Table.GetPrimKeyColumnOrdList())));
+}
+
+/// auto generated
+public static int Count{#VIAPROCEDURENAME}Template(TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+{
+    return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_{#SQLTABLENAME}, PUB_{#SQLLINKTABLENAME}, PUB_{#SQLOTHERTABLENAME} WHERE " +
+                "{#WHERECLAUSEALLVIATABLES}" +
+                GenerateWhereClauseLong("PUB_{#SQLLINKTABLENAME}", {#TABLENAME}Table.GetColumnStringList(), ASearchCriteria)), ATransaction, false, 
+                GetParametersForWhereClause(new {#TABLENAME}Table(), ASearchCriteria)));
 }
