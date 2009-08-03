@@ -59,7 +59,8 @@ namespace Ict.Petra.Shared.MHospitality.Data
         /// This identifies the current version of the record.
         public DataColumn ColumnModificationId;
 
-        private static short TableId = -1;
+        /// TableId for Ict.Common.Data generic functions
+        public static short TableId = 278;
 
         private static bool FInitInfoValues = InitInfoValues();
         private static bool InitInfoValues()
@@ -75,8 +76,8 @@ namespace Ict.Petra.Shared.MHospitality.Data
                     new TTypedColumnInfo(6, "ModifiedBy", "s_modified_by_c", OdbcType.VarChar, 20, false),
                     new TTypedColumnInfo(7, "ModificationId", "s_modification_id_c", OdbcType.VarChar, 150, false)
                 },
-                new string[] {
-                    "p_venue_key_n", "pc_building_code_c"
+                new int[] {
+                    0, 1
                 }));
             return true;
         }
@@ -170,7 +171,7 @@ namespace Ict.Petra.Shared.MHospitality.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetVenueKeyDBName()
+        public static string GetVenueKeyDBName()
         {
             return "p_venue_key_n";
         }
@@ -182,7 +183,7 @@ namespace Ict.Petra.Shared.MHospitality.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetBuildingCodeDBName()
+        public static string GetBuildingCodeDBName()
         {
             return "pc_building_code_c";
         }
@@ -194,7 +195,7 @@ namespace Ict.Petra.Shared.MHospitality.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetBuildingDescDBName()
+        public static string GetBuildingDescDBName()
         {
             return "pc_building_desc_c";
         }
@@ -206,7 +207,7 @@ namespace Ict.Petra.Shared.MHospitality.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetDateCreatedDBName()
+        public static string GetDateCreatedDBName()
         {
             return "s_date_created_d";
         }
@@ -218,7 +219,7 @@ namespace Ict.Petra.Shared.MHospitality.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetCreatedByDBName()
+        public static string GetCreatedByDBName()
         {
             return "s_created_by_c";
         }
@@ -230,7 +231,7 @@ namespace Ict.Petra.Shared.MHospitality.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetDateModifiedDBName()
+        public static string GetDateModifiedDBName()
         {
             return "s_date_modified_d";
         }
@@ -242,7 +243,7 @@ namespace Ict.Petra.Shared.MHospitality.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetModifiedByDBName()
+        public static string GetModifiedByDBName()
         {
             return "s_modified_by_c";
         }
@@ -254,7 +255,7 @@ namespace Ict.Petra.Shared.MHospitality.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetModificationIdDBName()
+        public static string GetModificationIdDBName()
         {
             return "s_modification_id_c";
         }
@@ -641,7 +642,8 @@ namespace Ict.Petra.Shared.MHospitality.Data
         /// This identifies the current version of the record.
         public DataColumn ColumnModificationId;
 
-        private static short TableId = -1;
+        /// TableId for Ict.Common.Data generic functions
+        public static short TableId = 279;
 
         private static bool FInitInfoValues = InitInfoValues();
         private static bool InitInfoValues()
@@ -668,8 +670,8 @@ namespace Ict.Petra.Shared.MHospitality.Data
                     new TTypedColumnInfo(17, "ModifiedBy", "s_modified_by_c", OdbcType.VarChar, 20, false),
                     new TTypedColumnInfo(18, "ModificationId", "s_modification_id_c", OdbcType.VarChar, 150, false)
                 },
-                new string[] {
-                    "p_venue_key_n", "pc_building_code_c", "pc_room_number_c"
+                new int[] {
+                    0, 1, 2
                 }));
             return true;
         }
@@ -785,7 +787,7 @@ namespace Ict.Petra.Shared.MHospitality.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetVenueKeyDBName()
+        public static string GetVenueKeyDBName()
         {
             return "p_venue_key_n";
         }
@@ -797,7 +799,7 @@ namespace Ict.Petra.Shared.MHospitality.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetBuildingCodeDBName()
+        public static string GetBuildingCodeDBName()
         {
             return "pc_building_code_c";
         }
@@ -809,7 +811,7 @@ namespace Ict.Petra.Shared.MHospitality.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetRoomNumberDBName()
+        public static string GetRoomNumberDBName()
         {
             return "pc_room_number_c";
         }
@@ -821,7 +823,7 @@ namespace Ict.Petra.Shared.MHospitality.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetRoomNameDBName()
+        public static string GetRoomNameDBName()
         {
             return "pc_room_name_c";
         }
@@ -833,7 +835,7 @@ namespace Ict.Petra.Shared.MHospitality.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetBedsDBName()
+        public static string GetBedsDBName()
         {
             return "pc_beds_i";
         }
@@ -845,7 +847,7 @@ namespace Ict.Petra.Shared.MHospitality.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetMaxOccupancyDBName()
+        public static string GetMaxOccupancyDBName()
         {
             return "pc_max_occupancy_i";
         }
@@ -857,7 +859,7 @@ namespace Ict.Petra.Shared.MHospitality.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetBedChargeDBName()
+        public static string GetBedChargeDBName()
         {
             return "pc_bed_charge_n";
         }
@@ -869,7 +871,7 @@ namespace Ict.Petra.Shared.MHospitality.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetBedCostDBName()
+        public static string GetBedCostDBName()
         {
             return "pc_bed_cost_n";
         }
@@ -881,7 +883,7 @@ namespace Ict.Petra.Shared.MHospitality.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetUsageDBName()
+        public static string GetUsageDBName()
         {
             return "pc_usage_c";
         }
@@ -893,7 +895,7 @@ namespace Ict.Petra.Shared.MHospitality.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetGenderPreferenceDBName()
+        public static string GetGenderPreferenceDBName()
         {
             return "pc_gender_preference_c";
         }
@@ -905,7 +907,7 @@ namespace Ict.Petra.Shared.MHospitality.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetLayoutXposDBName()
+        public static string GetLayoutXposDBName()
         {
             return "pc_layout_xpos_i";
         }
@@ -917,7 +919,7 @@ namespace Ict.Petra.Shared.MHospitality.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetLayoutYposDBName()
+        public static string GetLayoutYposDBName()
         {
             return "pc_layout_ypos_i";
         }
@@ -929,7 +931,7 @@ namespace Ict.Petra.Shared.MHospitality.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetLayoutWidthDBName()
+        public static string GetLayoutWidthDBName()
         {
             return "pc_layout_width_i";
         }
@@ -941,7 +943,7 @@ namespace Ict.Petra.Shared.MHospitality.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetLayoutHeightDBName()
+        public static string GetLayoutHeightDBName()
         {
             return "pc_layout_height_i";
         }
@@ -953,7 +955,7 @@ namespace Ict.Petra.Shared.MHospitality.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetDateCreatedDBName()
+        public static string GetDateCreatedDBName()
         {
             return "s_date_created_d";
         }
@@ -965,7 +967,7 @@ namespace Ict.Petra.Shared.MHospitality.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetCreatedByDBName()
+        public static string GetCreatedByDBName()
         {
             return "s_created_by_c";
         }
@@ -977,7 +979,7 @@ namespace Ict.Petra.Shared.MHospitality.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetDateModifiedDBName()
+        public static string GetDateModifiedDBName()
         {
             return "s_date_modified_d";
         }
@@ -989,7 +991,7 @@ namespace Ict.Petra.Shared.MHospitality.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetModifiedByDBName()
+        public static string GetModifiedByDBName()
         {
             return "s_modified_by_c";
         }
@@ -1001,7 +1003,7 @@ namespace Ict.Petra.Shared.MHospitality.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetModificationIdDBName()
+        public static string GetModificationIdDBName()
         {
             return "s_modification_id_c";
         }
@@ -1813,7 +1815,8 @@ namespace Ict.Petra.Shared.MHospitality.Data
         /// This identifies the current version of the record.
         public DataColumn ColumnModificationId;
 
-        private static short TableId = -1;
+        /// TableId for Ict.Common.Data generic functions
+        public static short TableId = 280;
 
         private static bool FInitInfoValues = InitInfoValues();
         private static bool InitInfoValues()
@@ -1838,8 +1841,8 @@ namespace Ict.Petra.Shared.MHospitality.Data
                     new TTypedColumnInfo(15, "ModifiedBy", "s_modified_by_c", OdbcType.VarChar, 20, false),
                     new TTypedColumnInfo(16, "ModificationId", "s_modification_id_c", OdbcType.VarChar, 150, false)
                 },
-                new string[] {
-                    "pc_key_i"
+                new int[] {
+                    0
                 }));
             return true;
         }
@@ -1951,7 +1954,7 @@ namespace Ict.Petra.Shared.MHospitality.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetKeyDBName()
+        public static string GetKeyDBName()
         {
             return "pc_key_i";
         }
@@ -1963,7 +1966,7 @@ namespace Ict.Petra.Shared.MHospitality.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetVenueKeyDBName()
+        public static string GetVenueKeyDBName()
         {
             return "p_venue_key_n";
         }
@@ -1975,7 +1978,7 @@ namespace Ict.Petra.Shared.MHospitality.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetBuildingCodeDBName()
+        public static string GetBuildingCodeDBName()
         {
             return "pc_building_code_c";
         }
@@ -1987,7 +1990,7 @@ namespace Ict.Petra.Shared.MHospitality.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetRoomNumberDBName()
+        public static string GetRoomNumberDBName()
         {
             return "pc_room_number_c";
         }
@@ -1999,7 +2002,7 @@ namespace Ict.Petra.Shared.MHospitality.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetConferenceKeyDBName()
+        public static string GetConferenceKeyDBName()
         {
             return "pc_conference_key_n";
         }
@@ -2011,7 +2014,7 @@ namespace Ict.Petra.Shared.MHospitality.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetPartnerKeyDBName()
+        public static string GetPartnerKeyDBName()
         {
             return "p_partner_key_n";
         }
@@ -2023,7 +2026,7 @@ namespace Ict.Petra.Shared.MHospitality.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetBookWholeRoomDBName()
+        public static string GetBookWholeRoomDBName()
         {
             return "ph_book_whole_room_l";
         }
@@ -2035,7 +2038,7 @@ namespace Ict.Petra.Shared.MHospitality.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetNumberOfBedsDBName()
+        public static string GetNumberOfBedsDBName()
         {
             return "ph_number_of_beds_i";
         }
@@ -2047,7 +2050,7 @@ namespace Ict.Petra.Shared.MHospitality.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetNumberOfOverflowBedsDBName()
+        public static string GetNumberOfOverflowBedsDBName()
         {
             return "ph_number_of_overflow_beds_i";
         }
@@ -2059,7 +2062,7 @@ namespace Ict.Petra.Shared.MHospitality.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetGenderDBName()
+        public static string GetGenderDBName()
         {
             return "ph_gender_c";
         }
@@ -2071,7 +2074,7 @@ namespace Ict.Petra.Shared.MHospitality.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetInDBName()
+        public static string GetInDBName()
         {
             return "pc_in_d";
         }
@@ -2083,7 +2086,7 @@ namespace Ict.Petra.Shared.MHospitality.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetOutDBName()
+        public static string GetOutDBName()
         {
             return "pc_out_d";
         }
@@ -2095,7 +2098,7 @@ namespace Ict.Petra.Shared.MHospitality.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetDateCreatedDBName()
+        public static string GetDateCreatedDBName()
         {
             return "s_date_created_d";
         }
@@ -2107,7 +2110,7 @@ namespace Ict.Petra.Shared.MHospitality.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetCreatedByDBName()
+        public static string GetCreatedByDBName()
         {
             return "s_created_by_c";
         }
@@ -2119,7 +2122,7 @@ namespace Ict.Petra.Shared.MHospitality.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetDateModifiedDBName()
+        public static string GetDateModifiedDBName()
         {
             return "s_date_modified_d";
         }
@@ -2131,7 +2134,7 @@ namespace Ict.Petra.Shared.MHospitality.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetModifiedByDBName()
+        public static string GetModifiedByDBName()
         {
             return "s_modified_by_c";
         }
@@ -2143,7 +2146,7 @@ namespace Ict.Petra.Shared.MHospitality.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetModificationIdDBName()
+        public static string GetModificationIdDBName()
         {
             return "s_modification_id_c";
         }
@@ -2861,7 +2864,8 @@ namespace Ict.Petra.Shared.MHospitality.Data
         /// This identifies the current version of the record.
         public DataColumn ColumnModificationId;
 
-        private static short TableId = -1;
+        /// TableId for Ict.Common.Data generic functions
+        public static short TableId = 281;
 
         private static bool FInitInfoValues = InitInfoValues();
         private static bool InitInfoValues()
@@ -2878,8 +2882,8 @@ namespace Ict.Petra.Shared.MHospitality.Data
                     new TTypedColumnInfo(7, "ModifiedBy", "s_modified_by_c", OdbcType.VarChar, 20, false),
                     new TTypedColumnInfo(8, "ModificationId", "s_modification_id_c", OdbcType.VarChar, 150, false)
                 },
-                new string[] {
-                    "pc_code_c"
+                new int[] {
+                    0
                 }));
             return true;
         }
@@ -2975,7 +2979,7 @@ namespace Ict.Petra.Shared.MHospitality.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetCodeDBName()
+        public static string GetCodeDBName()
         {
             return "pc_code_c";
         }
@@ -2987,7 +2991,7 @@ namespace Ict.Petra.Shared.MHospitality.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetDescDBName()
+        public static string GetDescDBName()
         {
             return "pc_desc_c";
         }
@@ -2999,7 +3003,7 @@ namespace Ict.Petra.Shared.MHospitality.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetValidDBName()
+        public static string GetValidDBName()
         {
             return "pc_valid_l";
         }
@@ -3011,7 +3015,7 @@ namespace Ict.Petra.Shared.MHospitality.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetDeletableDBName()
+        public static string GetDeletableDBName()
         {
             return "pc_deletable_l";
         }
@@ -3023,7 +3027,7 @@ namespace Ict.Petra.Shared.MHospitality.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetDateCreatedDBName()
+        public static string GetDateCreatedDBName()
         {
             return "s_date_created_d";
         }
@@ -3035,7 +3039,7 @@ namespace Ict.Petra.Shared.MHospitality.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetCreatedByDBName()
+        public static string GetCreatedByDBName()
         {
             return "s_created_by_c";
         }
@@ -3047,7 +3051,7 @@ namespace Ict.Petra.Shared.MHospitality.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetDateModifiedDBName()
+        public static string GetDateModifiedDBName()
         {
             return "s_date_modified_d";
         }
@@ -3059,7 +3063,7 @@ namespace Ict.Petra.Shared.MHospitality.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetModifiedByDBName()
+        public static string GetModifiedByDBName()
         {
             return "s_modified_by_c";
         }
@@ -3071,7 +3075,7 @@ namespace Ict.Petra.Shared.MHospitality.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetModificationIdDBName()
+        public static string GetModificationIdDBName()
         {
             return "s_modification_id_c";
         }
@@ -3477,7 +3481,8 @@ namespace Ict.Petra.Shared.MHospitality.Data
         /// This identifies the current version of the record.
         public DataColumn ColumnModificationId;
 
-        private static short TableId = -1;
+        /// TableId for Ict.Common.Data generic functions
+        public static short TableId = 282;
 
         private static bool FInitInfoValues = InitInfoValues();
         private static bool InitInfoValues()
@@ -3494,8 +3499,8 @@ namespace Ict.Petra.Shared.MHospitality.Data
                     new TTypedColumnInfo(7, "ModifiedBy", "s_modified_by_c", OdbcType.VarChar, 20, false),
                     new TTypedColumnInfo(8, "ModificationId", "s_modification_id_c", OdbcType.VarChar, 150, false)
                 },
-                new string[] {
-                    "p_venue_key_n", "pc_building_code_c", "pc_room_number_c", "pc_room_attr_type_code_c"
+                new int[] {
+                    0, 1, 2, 3
                 }));
             return true;
         }
@@ -3591,7 +3596,7 @@ namespace Ict.Petra.Shared.MHospitality.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetVenueKeyDBName()
+        public static string GetVenueKeyDBName()
         {
             return "p_venue_key_n";
         }
@@ -3603,7 +3608,7 @@ namespace Ict.Petra.Shared.MHospitality.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetBuildingCodeDBName()
+        public static string GetBuildingCodeDBName()
         {
             return "pc_building_code_c";
         }
@@ -3615,7 +3620,7 @@ namespace Ict.Petra.Shared.MHospitality.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetRoomNumberDBName()
+        public static string GetRoomNumberDBName()
         {
             return "pc_room_number_c";
         }
@@ -3627,7 +3632,7 @@ namespace Ict.Petra.Shared.MHospitality.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetRoomAttrTypeCodeDBName()
+        public static string GetRoomAttrTypeCodeDBName()
         {
             return "pc_room_attr_type_code_c";
         }
@@ -3639,7 +3644,7 @@ namespace Ict.Petra.Shared.MHospitality.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetDateCreatedDBName()
+        public static string GetDateCreatedDBName()
         {
             return "s_date_created_d";
         }
@@ -3651,7 +3656,7 @@ namespace Ict.Petra.Shared.MHospitality.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetCreatedByDBName()
+        public static string GetCreatedByDBName()
         {
             return "s_created_by_c";
         }
@@ -3663,7 +3668,7 @@ namespace Ict.Petra.Shared.MHospitality.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetDateModifiedDBName()
+        public static string GetDateModifiedDBName()
         {
             return "s_date_modified_d";
         }
@@ -3675,7 +3680,7 @@ namespace Ict.Petra.Shared.MHospitality.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetModifiedByDBName()
+        public static string GetModifiedByDBName()
         {
             return "s_modified_by_c";
         }
@@ -3687,7 +3692,7 @@ namespace Ict.Petra.Shared.MHospitality.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetModificationIdDBName()
+        public static string GetModificationIdDBName()
         {
             return "s_modification_id_c";
         }
@@ -4089,7 +4094,8 @@ namespace Ict.Petra.Shared.MHospitality.Data
         /// This identifies the current version of the record.
         public DataColumn ColumnModificationId;
 
-        private static short TableId = -1;
+        /// TableId for Ict.Common.Data generic functions
+        public static short TableId = 284;
 
         private static bool FInitInfoValues = InitInfoValues();
         private static bool InitInfoValues()
@@ -4104,8 +4110,8 @@ namespace Ict.Petra.Shared.MHospitality.Data
                     new TTypedColumnInfo(5, "ModifiedBy", "s_modified_by_c", OdbcType.VarChar, 20, false),
                     new TTypedColumnInfo(6, "ModificationId", "s_modification_id_c", OdbcType.VarChar, 150, false)
                 },
-                new string[] {
-                    "ph_booking_key_i", "ph_room_alloc_key_i"
+                new int[] {
+                    0, 1
                 }));
             return true;
         }
@@ -4197,7 +4203,7 @@ namespace Ict.Petra.Shared.MHospitality.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetBookingKeyDBName()
+        public static string GetBookingKeyDBName()
         {
             return "ph_booking_key_i";
         }
@@ -4209,7 +4215,7 @@ namespace Ict.Petra.Shared.MHospitality.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetRoomAllocKeyDBName()
+        public static string GetRoomAllocKeyDBName()
         {
             return "ph_room_alloc_key_i";
         }
@@ -4221,7 +4227,7 @@ namespace Ict.Petra.Shared.MHospitality.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetDateCreatedDBName()
+        public static string GetDateCreatedDBName()
         {
             return "s_date_created_d";
         }
@@ -4233,7 +4239,7 @@ namespace Ict.Petra.Shared.MHospitality.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetCreatedByDBName()
+        public static string GetCreatedByDBName()
         {
             return "s_created_by_c";
         }
@@ -4245,7 +4251,7 @@ namespace Ict.Petra.Shared.MHospitality.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetDateModifiedDBName()
+        public static string GetDateModifiedDBName()
         {
             return "s_date_modified_d";
         }
@@ -4257,7 +4263,7 @@ namespace Ict.Petra.Shared.MHospitality.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetModifiedByDBName()
+        public static string GetModifiedByDBName()
         {
             return "s_modified_by_c";
         }
@@ -4269,7 +4275,7 @@ namespace Ict.Petra.Shared.MHospitality.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetModificationIdDBName()
+        public static string GetModificationIdDBName()
         {
             return "s_modification_id_c";
         }
@@ -4621,7 +4627,8 @@ namespace Ict.Petra.Shared.MHospitality.Data
         /// This identifies the current version of the record.
         public DataColumn ColumnModificationId;
 
-        private static short TableId = -1;
+        /// TableId for Ict.Common.Data generic functions
+        public static short TableId = 285;
 
         private static bool FInitInfoValues = InitInfoValues();
         private static bool InitInfoValues()
@@ -4650,8 +4657,8 @@ namespace Ict.Petra.Shared.MHospitality.Data
                     new TTypedColumnInfo(19, "ModifiedBy", "s_modified_by_c", OdbcType.VarChar, 20, false),
                     new TTypedColumnInfo(20, "ModificationId", "s_modification_id_c", OdbcType.VarChar, 150, false)
                 },
-                new string[] {
-                    "ph_key_i"
+                new int[] {
+                    0
                 }));
             return true;
         }
@@ -4771,7 +4778,7 @@ namespace Ict.Petra.Shared.MHospitality.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetKeyDBName()
+        public static string GetKeyDBName()
         {
             return "ph_key_i";
         }
@@ -4783,7 +4790,7 @@ namespace Ict.Petra.Shared.MHospitality.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetContactKeyDBName()
+        public static string GetContactKeyDBName()
         {
             return "p_contact_key_n";
         }
@@ -4795,7 +4802,7 @@ namespace Ict.Petra.Shared.MHospitality.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetLedgerNumberForInvoiceDBName()
+        public static string GetLedgerNumberForInvoiceDBName()
         {
             return "a_ledger_number_for_invoice_i";
         }
@@ -4807,7 +4814,7 @@ namespace Ict.Petra.Shared.MHospitality.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetArInvoiceKeyDBName()
+        public static string GetArInvoiceKeyDBName()
         {
             return "a_ar_invoice_key_i";
         }
@@ -4819,7 +4826,7 @@ namespace Ict.Petra.Shared.MHospitality.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetNumberOfAdultsDBName()
+        public static string GetNumberOfAdultsDBName()
         {
             return "ph_number_of_adults_i";
         }
@@ -4831,7 +4838,7 @@ namespace Ict.Petra.Shared.MHospitality.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetNumberOfChildrenDBName()
+        public static string GetNumberOfChildrenDBName()
         {
             return "ph_number_of_children_i";
         }
@@ -4843,7 +4850,7 @@ namespace Ict.Petra.Shared.MHospitality.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetNumberOfBreakfastDBName()
+        public static string GetNumberOfBreakfastDBName()
         {
             return "ph_number_of_breakfast_i";
         }
@@ -4855,7 +4862,7 @@ namespace Ict.Petra.Shared.MHospitality.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetNumberOfLunchDBName()
+        public static string GetNumberOfLunchDBName()
         {
             return "ph_number_of_lunch_i";
         }
@@ -4867,7 +4874,7 @@ namespace Ict.Petra.Shared.MHospitality.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetNumberOfSupperDBName()
+        public static string GetNumberOfSupperDBName()
         {
             return "ph_number_of_supper_i";
         }
@@ -4879,7 +4886,7 @@ namespace Ict.Petra.Shared.MHospitality.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetNumberOfLinenNeededDBName()
+        public static string GetNumberOfLinenNeededDBName()
         {
             return "ph_number_of_linen_needed_i";
         }
@@ -4891,7 +4898,7 @@ namespace Ict.Petra.Shared.MHospitality.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetConfirmedDBName()
+        public static string GetConfirmedDBName()
         {
             return "ph_confirmed_d";
         }
@@ -4903,7 +4910,7 @@ namespace Ict.Petra.Shared.MHospitality.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetInDBName()
+        public static string GetInDBName()
         {
             return "ph_in_d";
         }
@@ -4915,7 +4922,7 @@ namespace Ict.Petra.Shared.MHospitality.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetOutDBName()
+        public static string GetOutDBName()
         {
             return "ph_out_d";
         }
@@ -4927,7 +4934,7 @@ namespace Ict.Petra.Shared.MHospitality.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetTimeArrivalDBName()
+        public static string GetTimeArrivalDBName()
         {
             return "ph_time_arrival_i";
         }
@@ -4939,7 +4946,7 @@ namespace Ict.Petra.Shared.MHospitality.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetTimeDepartureDBName()
+        public static string GetTimeDepartureDBName()
         {
             return "ph_time_departure_i";
         }
@@ -4951,7 +4958,7 @@ namespace Ict.Petra.Shared.MHospitality.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetNotesDBName()
+        public static string GetNotesDBName()
         {
             return "ph_notes_c";
         }
@@ -4963,7 +4970,7 @@ namespace Ict.Petra.Shared.MHospitality.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetDateCreatedDBName()
+        public static string GetDateCreatedDBName()
         {
             return "s_date_created_d";
         }
@@ -4975,7 +4982,7 @@ namespace Ict.Petra.Shared.MHospitality.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetCreatedByDBName()
+        public static string GetCreatedByDBName()
         {
             return "s_created_by_c";
         }
@@ -4987,7 +4994,7 @@ namespace Ict.Petra.Shared.MHospitality.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetDateModifiedDBName()
+        public static string GetDateModifiedDBName()
         {
             return "s_date_modified_d";
         }
@@ -4999,7 +5006,7 @@ namespace Ict.Petra.Shared.MHospitality.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetModifiedByDBName()
+        public static string GetModifiedByDBName()
         {
             return "s_modified_by_c";
         }
@@ -5011,7 +5018,7 @@ namespace Ict.Petra.Shared.MHospitality.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetModificationIdDBName()
+        public static string GetModificationIdDBName()
         {
             return "s_modification_id_c";
         }

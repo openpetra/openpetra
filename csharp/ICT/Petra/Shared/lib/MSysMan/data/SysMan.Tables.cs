@@ -89,7 +89,8 @@ namespace Ict.Petra.Shared.MSysMan.Data
         /// This identifies the current version of the record.
         public DataColumn ColumnModificationId;
 
-        private static short TableId = -1;
+        /// TableId for Ict.Common.Data generic functions
+        public static short TableId = 5;
 
         private static bool FInitInfoValues = InitInfoValues();
         private static bool InitInfoValues()
@@ -120,8 +121,8 @@ namespace Ict.Petra.Shared.MSysMan.Data
                     new TTypedColumnInfo(21, "ModifiedBy", "s_modified_by_c", OdbcType.VarChar, 20, false),
                     new TTypedColumnInfo(22, "ModificationId", "s_modification_id_c", OdbcType.VarChar, 150, false)
                 },
-                new string[] {
-                    "s_user_id_c"
+                new int[] {
+                    0
                 }));
             return true;
         }
@@ -245,7 +246,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetUserIdDBName()
+        public static string GetUserIdDBName()
         {
             return "s_user_id_c";
         }
@@ -257,7 +258,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetFirstNameDBName()
+        public static string GetFirstNameDBName()
         {
             return "s_first_name_c";
         }
@@ -269,7 +270,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetLastNameDBName()
+        public static string GetLastNameDBName()
         {
             return "s_last_name_c";
         }
@@ -281,7 +282,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetPasswordHashDBName()
+        public static string GetPasswordHashDBName()
         {
             return "s_password_hash_c";
         }
@@ -293,7 +294,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetPasswordSaltDBName()
+        public static string GetPasswordSaltDBName()
         {
             return "s_password_salt_c";
         }
@@ -305,7 +306,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetPasswordNeedsChangeDBName()
+        public static string GetPasswordNeedsChangeDBName()
         {
             return "s_password_needs_change_l";
         }
@@ -317,7 +318,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetFailedLoginsDBName()
+        public static string GetFailedLoginsDBName()
         {
             return "s_failed_logins_i";
         }
@@ -329,7 +330,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetRetiredDBName()
+        public static string GetRetiredDBName()
         {
             return "s_retired_l";
         }
@@ -341,7 +342,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetLastLoginTimeDBName()
+        public static string GetLastLoginTimeDBName()
         {
             return "s_last_login_time_i";
         }
@@ -353,7 +354,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetLastLoginDateDBName()
+        public static string GetLastLoginDateDBName()
         {
             return "s_last_login_date_d";
         }
@@ -365,7 +366,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetLanguageCodeDBName()
+        public static string GetLanguageCodeDBName()
         {
             return "s_language_code_c";
         }
@@ -377,7 +378,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetCanModifyDBName()
+        public static string GetCanModifyDBName()
         {
             return "s_can_modify_l";
         }
@@ -389,7 +390,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetRecordDeleteDBName()
+        public static string GetRecordDeleteDBName()
         {
             return "s_record_delete_l";
         }
@@ -401,7 +402,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetAcquisitionCodeDBName()
+        public static string GetAcquisitionCodeDBName()
         {
             return "s_acquisition_code_c";
         }
@@ -413,7 +414,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetDefaultLedgerNumberDBName()
+        public static string GetDefaultLedgerNumberDBName()
         {
             return "a_default_ledger_number_i";
         }
@@ -425,7 +426,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetFailedLoginTimeDBName()
+        public static string GetFailedLoginTimeDBName()
         {
             return "s_failed_login_time_i";
         }
@@ -437,7 +438,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetFailedLoginDateDBName()
+        public static string GetFailedLoginDateDBName()
         {
             return "s_failed_login_date_d";
         }
@@ -449,7 +450,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetPartnerKeyDBName()
+        public static string GetPartnerKeyDBName()
         {
             return "p_partner_key_n";
         }
@@ -461,7 +462,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetDateCreatedDBName()
+        public static string GetDateCreatedDBName()
         {
             return "s_date_created_d";
         }
@@ -473,7 +474,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetCreatedByDBName()
+        public static string GetCreatedByDBName()
         {
             return "s_created_by_c";
         }
@@ -485,7 +486,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetDateModifiedDBName()
+        public static string GetDateModifiedDBName()
         {
             return "s_date_modified_d";
         }
@@ -497,7 +498,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetModifiedByDBName()
+        public static string GetModifiedByDBName()
         {
             return "s_modified_by_c";
         }
@@ -509,7 +510,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetModificationIdDBName()
+        public static string GetModificationIdDBName()
         {
             return "s_modification_id_c";
         }
@@ -1481,7 +1482,8 @@ namespace Ict.Petra.Shared.MSysMan.Data
         /// This identifies the current version of the record.
         public DataColumn ColumnModificationId;
 
-        private static short TableId = -1;
+        /// TableId for Ict.Common.Data generic functions
+        public static short TableId = 6;
 
         private static bool FInitInfoValues = InitInfoValues();
         private static bool InitInfoValues()
@@ -1508,8 +1510,8 @@ namespace Ict.Petra.Shared.MSysMan.Data
                     new TTypedColumnInfo(17, "ModifiedBy", "s_modified_by_c", OdbcType.VarChar, 20, false),
                     new TTypedColumnInfo(18, "ModificationId", "s_modification_id_c", OdbcType.VarChar, 150, false)
                 },
-                new string[] {
-                    "s_form_name_c"
+                new int[] {
+                    0
                 }));
             return true;
         }
@@ -1625,7 +1627,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetFormNameDBName()
+        public static string GetFormNameDBName()
         {
             return "s_form_name_c";
         }
@@ -1637,7 +1639,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetFormDescriptionDBName()
+        public static string GetFormDescriptionDBName()
         {
             return "s_form_description_c";
         }
@@ -1649,7 +1651,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetDefaultFontDBName()
+        public static string GetDefaultFontDBName()
         {
             return "s_default_font_c";
         }
@@ -1661,7 +1663,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetDefaultFontSizeDBName()
+        public static string GetDefaultFontSizeDBName()
         {
             return "s_default_font_size_i";
         }
@@ -1673,7 +1675,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetDefaultLpiDBName()
+        public static string GetDefaultLpiDBName()
         {
             return "s_default_lpi_i";
         }
@@ -1685,7 +1687,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetDefaultCpiDBName()
+        public static string GetDefaultCpiDBName()
         {
             return "s_default_cpi_i";
         }
@@ -1697,7 +1699,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetFormLengthDBName()
+        public static string GetFormLengthDBName()
         {
             return "s_form_length_n";
         }
@@ -1709,7 +1711,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetFormWidthDBName()
+        public static string GetFormWidthDBName()
         {
             return "s_form_width_n";
         }
@@ -1721,7 +1723,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetFormOrientationDBName()
+        public static string GetFormOrientationDBName()
         {
             return "s_form_orientation_c";
         }
@@ -1733,7 +1735,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetUnitOfMeasureDBName()
+        public static string GetUnitOfMeasureDBName()
         {
             return "s_unit_of_measure_l";
         }
@@ -1745,7 +1747,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetTopMarginDBName()
+        public static string GetTopMarginDBName()
         {
             return "s_top_margin_n";
         }
@@ -1757,7 +1759,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetBottomMarginDBName()
+        public static string GetBottomMarginDBName()
         {
             return "s_bottom_margin_n";
         }
@@ -1769,7 +1771,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetLeftMarginDBName()
+        public static string GetLeftMarginDBName()
         {
             return "s_left_margin_n";
         }
@@ -1781,7 +1783,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetRightMarginDBName()
+        public static string GetRightMarginDBName()
         {
             return "s_right_margin_n";
         }
@@ -1793,7 +1795,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetDateCreatedDBName()
+        public static string GetDateCreatedDBName()
         {
             return "s_date_created_d";
         }
@@ -1805,7 +1807,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetCreatedByDBName()
+        public static string GetCreatedByDBName()
         {
             return "s_created_by_c";
         }
@@ -1817,7 +1819,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetDateModifiedDBName()
+        public static string GetDateModifiedDBName()
         {
             return "s_date_modified_d";
         }
@@ -1829,7 +1831,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetModifiedByDBName()
+        public static string GetModifiedByDBName()
         {
             return "s_modified_by_c";
         }
@@ -1841,7 +1843,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetModificationIdDBName()
+        public static string GetModificationIdDBName()
         {
             return "s_modification_id_c";
         }
@@ -2633,7 +2635,8 @@ namespace Ict.Petra.Shared.MSysMan.Data
         /// This identifies the current version of the record.
         public DataColumn ColumnModificationId;
 
-        private static short TableId = -1;
+        /// TableId for Ict.Common.Data generic functions
+        public static short TableId = 7;
 
         private static bool FInitInfoValues = InitInfoValues();
         private static bool InitInfoValues()
@@ -2648,8 +2651,8 @@ namespace Ict.Petra.Shared.MSysMan.Data
                     new TTypedColumnInfo(5, "ModifiedBy", "s_modified_by_c", OdbcType.VarChar, 20, false),
                     new TTypedColumnInfo(6, "ModificationId", "s_modification_id_c", OdbcType.VarChar, 150, false)
                 },
-                new string[] {
-                    "s_file_name_c"
+                new int[] {
+                    0
                 }));
             return true;
         }
@@ -2741,7 +2744,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetFileNameDBName()
+        public static string GetFileNameDBName()
         {
             return "s_file_name_c";
         }
@@ -2753,7 +2756,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetFileDescriptionDBName()
+        public static string GetFileDescriptionDBName()
         {
             return "s_file_description_c";
         }
@@ -2765,7 +2768,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetDateCreatedDBName()
+        public static string GetDateCreatedDBName()
         {
             return "s_date_created_d";
         }
@@ -2777,7 +2780,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetCreatedByDBName()
+        public static string GetCreatedByDBName()
         {
             return "s_created_by_c";
         }
@@ -2789,7 +2792,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetDateModifiedDBName()
+        public static string GetDateModifiedDBName()
         {
             return "s_date_modified_d";
         }
@@ -2801,7 +2804,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetModifiedByDBName()
+        public static string GetModifiedByDBName()
         {
             return "s_modified_by_c";
         }
@@ -2813,7 +2816,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetModificationIdDBName()
+        public static string GetModificationIdDBName()
         {
             return "s_modification_id_c";
         }
@@ -3141,7 +3144,8 @@ namespace Ict.Petra.Shared.MSysMan.Data
         /// This identifies the current version of the record.
         public DataColumn ColumnModificationId;
 
-        private static short TableId = -1;
+        /// TableId for Ict.Common.Data generic functions
+        public static short TableId = 8;
 
         private static bool FInitInfoValues = InitInfoValues();
         private static bool InitInfoValues()
@@ -3158,8 +3162,8 @@ namespace Ict.Petra.Shared.MSysMan.Data
                     new TTypedColumnInfo(7, "ModifiedBy", "s_modified_by_c", OdbcType.VarChar, 20, false),
                     new TTypedColumnInfo(8, "ModificationId", "s_modification_id_c", OdbcType.VarChar, 150, false)
                 },
-                new string[] {
-                    "s_group_id_c", "s_unit_key_n"
+                new int[] {
+                    0, 1
                 }));
             return true;
         }
@@ -3255,7 +3259,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetGroupIdDBName()
+        public static string GetGroupIdDBName()
         {
             return "s_group_id_c";
         }
@@ -3267,7 +3271,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetUnitKeyDBName()
+        public static string GetUnitKeyDBName()
         {
             return "s_unit_key_n";
         }
@@ -3279,7 +3283,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetGroupNameDBName()
+        public static string GetGroupNameDBName()
         {
             return "s_group_name_c";
         }
@@ -3291,7 +3295,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetCanModifyDBName()
+        public static string GetCanModifyDBName()
         {
             return "s_can_modify_l";
         }
@@ -3303,7 +3307,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetDateCreatedDBName()
+        public static string GetDateCreatedDBName()
         {
             return "s_date_created_d";
         }
@@ -3315,7 +3319,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetCreatedByDBName()
+        public static string GetCreatedByDBName()
         {
             return "s_created_by_c";
         }
@@ -3327,7 +3331,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetDateModifiedDBName()
+        public static string GetDateModifiedDBName()
         {
             return "s_date_modified_d";
         }
@@ -3339,7 +3343,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetModifiedByDBName()
+        public static string GetModifiedByDBName()
         {
             return "s_modified_by_c";
         }
@@ -3351,7 +3355,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetModificationIdDBName()
+        public static string GetModificationIdDBName()
         {
             return "s_modification_id_c";
         }
@@ -3755,7 +3759,8 @@ namespace Ict.Petra.Shared.MSysMan.Data
         /// This identifies the current version of the record.
         public DataColumn ColumnModificationId;
 
-        private static short TableId = -1;
+        /// TableId for Ict.Common.Data generic functions
+        public static short TableId = 9;
 
         private static bool FInitInfoValues = InitInfoValues();
         private static bool InitInfoValues()
@@ -3771,8 +3776,8 @@ namespace Ict.Petra.Shared.MSysMan.Data
                     new TTypedColumnInfo(6, "ModifiedBy", "s_modified_by_c", OdbcType.VarChar, 20, false),
                     new TTypedColumnInfo(7, "ModificationId", "s_modification_id_c", OdbcType.VarChar, 150, false)
                 },
-                new string[] {
-                    "s_user_id_c", "s_group_id_c", "s_unit_key_n"
+                new int[] {
+                    0, 1, 2
                 }));
             return true;
         }
@@ -3866,7 +3871,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetUserIdDBName()
+        public static string GetUserIdDBName()
         {
             return "s_user_id_c";
         }
@@ -3878,7 +3883,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetGroupIdDBName()
+        public static string GetGroupIdDBName()
         {
             return "s_group_id_c";
         }
@@ -3890,7 +3895,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetUnitKeyDBName()
+        public static string GetUnitKeyDBName()
         {
             return "s_unit_key_n";
         }
@@ -3902,7 +3907,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetDateCreatedDBName()
+        public static string GetDateCreatedDBName()
         {
             return "s_date_created_d";
         }
@@ -3914,7 +3919,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetCreatedByDBName()
+        public static string GetCreatedByDBName()
         {
             return "s_created_by_c";
         }
@@ -3926,7 +3931,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetDateModifiedDBName()
+        public static string GetDateModifiedDBName()
         {
             return "s_date_modified_d";
         }
@@ -3938,7 +3943,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetModifiedByDBName()
+        public static string GetModifiedByDBName()
         {
             return "s_modified_by_c";
         }
@@ -3950,7 +3955,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetModificationIdDBName()
+        public static string GetModificationIdDBName()
         {
             return "s_modification_id_c";
         }
@@ -4313,7 +4318,8 @@ namespace Ict.Petra.Shared.MSysMan.Data
         /// This identifies the current version of the record.
         public DataColumn ColumnModificationId;
 
-        private static short TableId = -1;
+        /// TableId for Ict.Common.Data generic functions
+        public static short TableId = 10;
 
         private static bool FInitInfoValues = InitInfoValues();
         private static bool InitInfoValues()
@@ -4328,8 +4334,8 @@ namespace Ict.Petra.Shared.MSysMan.Data
                     new TTypedColumnInfo(5, "ModifiedBy", "s_modified_by_c", OdbcType.VarChar, 20, false),
                     new TTypedColumnInfo(6, "ModificationId", "s_modification_id_c", OdbcType.VarChar, 150, false)
                 },
-                new string[] {
-                    "s_module_id_c"
+                new int[] {
+                    0
                 }));
             return true;
         }
@@ -4421,7 +4427,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetModuleIdDBName()
+        public static string GetModuleIdDBName()
         {
             return "s_module_id_c";
         }
@@ -4433,7 +4439,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetModuleNameDBName()
+        public static string GetModuleNameDBName()
         {
             return "s_module_name_c";
         }
@@ -4445,7 +4451,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetDateCreatedDBName()
+        public static string GetDateCreatedDBName()
         {
             return "s_date_created_d";
         }
@@ -4457,7 +4463,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetCreatedByDBName()
+        public static string GetCreatedByDBName()
         {
             return "s_created_by_c";
         }
@@ -4469,7 +4475,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetDateModifiedDBName()
+        public static string GetDateModifiedDBName()
         {
             return "s_date_modified_d";
         }
@@ -4481,7 +4487,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetModifiedByDBName()
+        public static string GetModifiedByDBName()
         {
             return "s_modified_by_c";
         }
@@ -4493,7 +4499,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetModificationIdDBName()
+        public static string GetModificationIdDBName()
         {
             return "s_modification_id_c";
         }
@@ -4817,7 +4823,8 @@ namespace Ict.Petra.Shared.MSysMan.Data
         /// This identifies the current version of the record.
         public DataColumn ColumnModificationId;
 
-        private static short TableId = -1;
+        /// TableId for Ict.Common.Data generic functions
+        public static short TableId = 11;
 
         private static bool FInitInfoValues = InitInfoValues();
         private static bool InitInfoValues()
@@ -4832,8 +4839,8 @@ namespace Ict.Petra.Shared.MSysMan.Data
                     new TTypedColumnInfo(5, "ModifiedBy", "s_modified_by_c", OdbcType.VarChar, 20, false),
                     new TTypedColumnInfo(6, "ModificationId", "s_modification_id_c", OdbcType.VarChar, 150, false)
                 },
-                new string[] {
-                    "s_module_id_c", "s_form_name_c"
+                new int[] {
+                    0, 1
                 }));
             return true;
         }
@@ -4925,7 +4932,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetModuleIdDBName()
+        public static string GetModuleIdDBName()
         {
             return "s_module_id_c";
         }
@@ -4937,7 +4944,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetFormNameDBName()
+        public static string GetFormNameDBName()
         {
             return "s_form_name_c";
         }
@@ -4949,7 +4956,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetDateCreatedDBName()
+        public static string GetDateCreatedDBName()
         {
             return "s_date_created_d";
         }
@@ -4961,7 +4968,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetCreatedByDBName()
+        public static string GetCreatedByDBName()
         {
             return "s_created_by_c";
         }
@@ -4973,7 +4980,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetDateModifiedDBName()
+        public static string GetDateModifiedDBName()
         {
             return "s_date_modified_d";
         }
@@ -4985,7 +4992,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetModifiedByDBName()
+        public static string GetModifiedByDBName()
         {
             return "s_modified_by_c";
         }
@@ -4997,7 +5004,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetModificationIdDBName()
+        public static string GetModificationIdDBName()
         {
             return "s_modification_id_c";
         }
@@ -5321,7 +5328,8 @@ namespace Ict.Petra.Shared.MSysMan.Data
         /// This identifies the current version of the record.
         public DataColumn ColumnModificationId;
 
-        private static short TableId = -1;
+        /// TableId for Ict.Common.Data generic functions
+        public static short TableId = 12;
 
         private static bool FInitInfoValues = InitInfoValues();
         private static bool InitInfoValues()
@@ -5336,8 +5344,8 @@ namespace Ict.Petra.Shared.MSysMan.Data
                     new TTypedColumnInfo(5, "ModifiedBy", "s_modified_by_c", OdbcType.VarChar, 20, false),
                     new TTypedColumnInfo(6, "ModificationId", "s_modification_id_c", OdbcType.VarChar, 150, false)
                 },
-                new string[] {
-                    "s_module_id_c", "s_file_name_c"
+                new int[] {
+                    0, 1
                 }));
             return true;
         }
@@ -5429,7 +5437,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetModuleIdDBName()
+        public static string GetModuleIdDBName()
         {
             return "s_module_id_c";
         }
@@ -5441,7 +5449,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetFileNameDBName()
+        public static string GetFileNameDBName()
         {
             return "s_file_name_c";
         }
@@ -5453,7 +5461,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetDateCreatedDBName()
+        public static string GetDateCreatedDBName()
         {
             return "s_date_created_d";
         }
@@ -5465,7 +5473,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetCreatedByDBName()
+        public static string GetCreatedByDBName()
         {
             return "s_created_by_c";
         }
@@ -5477,7 +5485,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetDateModifiedDBName()
+        public static string GetDateModifiedDBName()
         {
             return "s_date_modified_d";
         }
@@ -5489,7 +5497,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetModifiedByDBName()
+        public static string GetModifiedByDBName()
         {
             return "s_modified_by_c";
         }
@@ -5501,7 +5509,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetModificationIdDBName()
+        public static string GetModificationIdDBName()
         {
             return "s_modification_id_c";
         }
@@ -5829,7 +5837,8 @@ namespace Ict.Petra.Shared.MSysMan.Data
         /// This identifies the current version of the record.
         public DataColumn ColumnModificationId;
 
-        private static short TableId = -1;
+        /// TableId for Ict.Common.Data generic functions
+        public static short TableId = 13;
 
         private static bool FInitInfoValues = InitInfoValues();
         private static bool InitInfoValues()
@@ -5846,8 +5855,8 @@ namespace Ict.Petra.Shared.MSysMan.Data
                     new TTypedColumnInfo(7, "ModifiedBy", "s_modified_by_c", OdbcType.VarChar, 20, false),
                     new TTypedColumnInfo(8, "ModificationId", "s_modification_id_c", OdbcType.VarChar, 150, false)
                 },
-                new string[] {
-                    "s_group_id_c", "s_group_unit_key_n", "s_module_id_c"
+                new int[] {
+                    0, 1, 2
                 }));
             return true;
         }
@@ -5943,7 +5952,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetGroupIdDBName()
+        public static string GetGroupIdDBName()
         {
             return "s_group_id_c";
         }
@@ -5955,7 +5964,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetGroupUnitKeyDBName()
+        public static string GetGroupUnitKeyDBName()
         {
             return "s_group_unit_key_n";
         }
@@ -5967,7 +5976,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetModuleIdDBName()
+        public static string GetModuleIdDBName()
         {
             return "s_module_id_c";
         }
@@ -5979,7 +5988,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetCanAccessDBName()
+        public static string GetCanAccessDBName()
         {
             return "s_can_access_l";
         }
@@ -5991,7 +6000,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetDateCreatedDBName()
+        public static string GetDateCreatedDBName()
         {
             return "s_date_created_d";
         }
@@ -6003,7 +6012,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetCreatedByDBName()
+        public static string GetCreatedByDBName()
         {
             return "s_created_by_c";
         }
@@ -6015,7 +6024,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetDateModifiedDBName()
+        public static string GetDateModifiedDBName()
         {
             return "s_date_modified_d";
         }
@@ -6027,7 +6036,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetModifiedByDBName()
+        public static string GetModifiedByDBName()
         {
             return "s_modified_by_c";
         }
@@ -6039,7 +6048,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetModificationIdDBName()
+        public static string GetModificationIdDBName()
         {
             return "s_modification_id_c";
         }
@@ -6451,7 +6460,8 @@ namespace Ict.Petra.Shared.MSysMan.Data
         /// This identifies the current version of the record.
         public DataColumn ColumnModificationId;
 
-        private static short TableId = -1;
+        /// TableId for Ict.Common.Data generic functions
+        public static short TableId = 14;
 
         private static bool FInitInfoValues = InitInfoValues();
         private static bool InitInfoValues()
@@ -6471,8 +6481,8 @@ namespace Ict.Petra.Shared.MSysMan.Data
                     new TTypedColumnInfo(10, "ModifiedBy", "s_modified_by_c", OdbcType.VarChar, 20, false),
                     new TTypedColumnInfo(11, "ModificationId", "s_modification_id_c", OdbcType.VarChar, 150, false)
                 },
-                new string[] {
-                    "s_group_id_c", "s_group_unit_key_n", "s_table_name_c"
+                new int[] {
+                    0, 1, 2
                 }));
             return true;
         }
@@ -6574,7 +6584,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetGroupIdDBName()
+        public static string GetGroupIdDBName()
         {
             return "s_group_id_c";
         }
@@ -6586,7 +6596,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetGroupUnitKeyDBName()
+        public static string GetGroupUnitKeyDBName()
         {
             return "s_group_unit_key_n";
         }
@@ -6598,7 +6608,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetTableNameDBName()
+        public static string GetTableNameDBName()
         {
             return "s_table_name_c";
         }
@@ -6610,7 +6620,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetCanCreateDBName()
+        public static string GetCanCreateDBName()
         {
             return "s_can_create_l";
         }
@@ -6622,7 +6632,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetCanModifyDBName()
+        public static string GetCanModifyDBName()
         {
             return "s_can_modify_l";
         }
@@ -6634,7 +6644,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetCanDeleteDBName()
+        public static string GetCanDeleteDBName()
         {
             return "s_can_delete_l";
         }
@@ -6646,7 +6656,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetCanInquireDBName()
+        public static string GetCanInquireDBName()
         {
             return "s_can_inquire_l";
         }
@@ -6658,7 +6668,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetDateCreatedDBName()
+        public static string GetDateCreatedDBName()
         {
             return "s_date_created_d";
         }
@@ -6670,7 +6680,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetCreatedByDBName()
+        public static string GetCreatedByDBName()
         {
             return "s_created_by_c";
         }
@@ -6682,7 +6692,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetDateModifiedDBName()
+        public static string GetDateModifiedDBName()
         {
             return "s_date_modified_d";
         }
@@ -6694,7 +6704,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetModifiedByDBName()
+        public static string GetModifiedByDBName()
         {
             return "s_modified_by_c";
         }
@@ -6706,7 +6716,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetModificationIdDBName()
+        public static string GetModificationIdDBName()
         {
             return "s_modification_id_c";
         }
@@ -7227,7 +7237,8 @@ namespace Ict.Petra.Shared.MSysMan.Data
         /// This identifies the current version of the record.
         public DataColumn ColumnModificationId;
 
-        private static short TableId = -1;
+        /// TableId for Ict.Common.Data generic functions
+        public static short TableId = 15;
 
         private static bool FInitInfoValues = InitInfoValues();
         private static bool InitInfoValues()
@@ -7243,8 +7254,8 @@ namespace Ict.Petra.Shared.MSysMan.Data
                     new TTypedColumnInfo(6, "ModifiedBy", "s_modified_by_c", OdbcType.VarChar, 20, false),
                     new TTypedColumnInfo(7, "ModificationId", "s_modification_id_c", OdbcType.VarChar, 150, false)
                 },
-                new string[] {
-                    "s_user_id_c", "s_module_id_c"
+                new int[] {
+                    0, 1
                 }));
             return true;
         }
@@ -7338,7 +7349,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetUserIdDBName()
+        public static string GetUserIdDBName()
         {
             return "s_user_id_c";
         }
@@ -7350,7 +7361,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetModuleIdDBName()
+        public static string GetModuleIdDBName()
         {
             return "s_module_id_c";
         }
@@ -7362,7 +7373,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetCanAccessDBName()
+        public static string GetCanAccessDBName()
         {
             return "s_can_access_l";
         }
@@ -7374,7 +7385,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetDateCreatedDBName()
+        public static string GetDateCreatedDBName()
         {
             return "s_date_created_d";
         }
@@ -7386,7 +7397,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetCreatedByDBName()
+        public static string GetCreatedByDBName()
         {
             return "s_created_by_c";
         }
@@ -7398,7 +7409,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetDateModifiedDBName()
+        public static string GetDateModifiedDBName()
         {
             return "s_date_modified_d";
         }
@@ -7410,7 +7421,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetModifiedByDBName()
+        public static string GetModifiedByDBName()
         {
             return "s_modified_by_c";
         }
@@ -7422,7 +7433,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetModificationIdDBName()
+        public static string GetModificationIdDBName()
         {
             return "s_modification_id_c";
         }
@@ -7793,7 +7804,8 @@ namespace Ict.Petra.Shared.MSysMan.Data
         /// This identifies the current version of the record.
         public DataColumn ColumnModificationId;
 
-        private static short TableId = -1;
+        /// TableId for Ict.Common.Data generic functions
+        public static short TableId = 16;
 
         private static bool FInitInfoValues = InitInfoValues();
         private static bool InitInfoValues()
@@ -7812,8 +7824,8 @@ namespace Ict.Petra.Shared.MSysMan.Data
                     new TTypedColumnInfo(9, "ModifiedBy", "s_modified_by_c", OdbcType.VarChar, 20, false),
                     new TTypedColumnInfo(10, "ModificationId", "s_modification_id_c", OdbcType.VarChar, 150, false)
                 },
-                new string[] {
-                    "s_user_id_c", "s_table_name_c"
+                new int[] {
+                    0, 1
                 }));
             return true;
         }
@@ -7913,7 +7925,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetUserIdDBName()
+        public static string GetUserIdDBName()
         {
             return "s_user_id_c";
         }
@@ -7925,7 +7937,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetTableNameDBName()
+        public static string GetTableNameDBName()
         {
             return "s_table_name_c";
         }
@@ -7937,7 +7949,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetCanCreateDBName()
+        public static string GetCanCreateDBName()
         {
             return "s_can_create_l";
         }
@@ -7949,7 +7961,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetCanModifyDBName()
+        public static string GetCanModifyDBName()
         {
             return "s_can_modify_l";
         }
@@ -7961,7 +7973,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetCanDeleteDBName()
+        public static string GetCanDeleteDBName()
         {
             return "s_can_delete_l";
         }
@@ -7973,7 +7985,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetCanInquireDBName()
+        public static string GetCanInquireDBName()
         {
             return "s_can_inquire_l";
         }
@@ -7985,7 +7997,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetDateCreatedDBName()
+        public static string GetDateCreatedDBName()
         {
             return "s_date_created_d";
         }
@@ -7997,7 +8009,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetCreatedByDBName()
+        public static string GetCreatedByDBName()
         {
             return "s_created_by_c";
         }
@@ -8009,7 +8021,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetDateModifiedDBName()
+        public static string GetDateModifiedDBName()
         {
             return "s_date_modified_d";
         }
@@ -8021,7 +8033,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetModifiedByDBName()
+        public static string GetModifiedByDBName()
         {
             return "s_modified_by_c";
         }
@@ -8033,7 +8045,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetModificationIdDBName()
+        public static string GetModificationIdDBName()
         {
             return "s_modification_id_c";
         }
@@ -8559,7 +8571,8 @@ namespace Ict.Petra.Shared.MSysMan.Data
         /// This identifies the current version of the record.
         public DataColumn ColumnModificationId;
 
-        private static short TableId = -1;
+        /// TableId for Ict.Common.Data generic functions
+        public static short TableId = 17;
 
         private static bool FInitInfoValues = InitInfoValues();
         private static bool InitInfoValues()
@@ -8597,8 +8610,8 @@ namespace Ict.Petra.Shared.MSysMan.Data
                     new TTypedColumnInfo(28, "ModifiedBy", "s_modified_by_c", OdbcType.VarChar, 20, false),
                     new TTypedColumnInfo(29, "ModificationId", "s_modification_id_c", OdbcType.VarChar, 150, false)
                 },
-                new string[] {
-                    "s_language_code_c"
+                new int[] {
+                    0
                 }));
             return true;
         }
@@ -8736,7 +8749,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetLanguageCodeDBName()
+        public static string GetLanguageCodeDBName()
         {
             return "s_language_code_c";
         }
@@ -8748,7 +8761,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetMonthName1DBName()
+        public static string GetMonthName1DBName()
         {
             return "s_month_name_c_1";
         }
@@ -8760,7 +8773,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetMonthName2DBName()
+        public static string GetMonthName2DBName()
         {
             return "s_month_name_c_2";
         }
@@ -8772,7 +8785,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetMonthName3DBName()
+        public static string GetMonthName3DBName()
         {
             return "s_month_name_c_3";
         }
@@ -8784,7 +8797,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetMonthName4DBName()
+        public static string GetMonthName4DBName()
         {
             return "s_month_name_c_4";
         }
@@ -8796,7 +8809,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetMonthName5DBName()
+        public static string GetMonthName5DBName()
         {
             return "s_month_name_c_5";
         }
@@ -8808,7 +8821,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetMonthName6DBName()
+        public static string GetMonthName6DBName()
         {
             return "s_month_name_c_6";
         }
@@ -8820,7 +8833,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetMonthName7DBName()
+        public static string GetMonthName7DBName()
         {
             return "s_month_name_c_7";
         }
@@ -8832,7 +8845,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetMonthName8DBName()
+        public static string GetMonthName8DBName()
         {
             return "s_month_name_c_8";
         }
@@ -8844,7 +8857,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetMonthName9DBName()
+        public static string GetMonthName9DBName()
         {
             return "s_month_name_c_9";
         }
@@ -8856,7 +8869,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetMonthName10DBName()
+        public static string GetMonthName10DBName()
         {
             return "s_month_name_c_10";
         }
@@ -8868,7 +8881,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetMonthName11DBName()
+        public static string GetMonthName11DBName()
         {
             return "s_month_name_c_11";
         }
@@ -8880,7 +8893,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetMonthName12DBName()
+        public static string GetMonthName12DBName()
         {
             return "s_month_name_c_12";
         }
@@ -8892,7 +8905,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetMonthNameShort1DBName()
+        public static string GetMonthNameShort1DBName()
         {
             return "s_month_name_short_c_1";
         }
@@ -8904,7 +8917,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetMonthNameShort2DBName()
+        public static string GetMonthNameShort2DBName()
         {
             return "s_month_name_short_c_2";
         }
@@ -8916,7 +8929,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetMonthNameShort3DBName()
+        public static string GetMonthNameShort3DBName()
         {
             return "s_month_name_short_c_3";
         }
@@ -8928,7 +8941,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetMonthNameShort4DBName()
+        public static string GetMonthNameShort4DBName()
         {
             return "s_month_name_short_c_4";
         }
@@ -8940,7 +8953,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetMonthNameShort5DBName()
+        public static string GetMonthNameShort5DBName()
         {
             return "s_month_name_short_c_5";
         }
@@ -8952,7 +8965,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetMonthNameShort6DBName()
+        public static string GetMonthNameShort6DBName()
         {
             return "s_month_name_short_c_6";
         }
@@ -8964,7 +8977,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetMonthNameShort7DBName()
+        public static string GetMonthNameShort7DBName()
         {
             return "s_month_name_short_c_7";
         }
@@ -8976,7 +8989,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetMonthNameShort8DBName()
+        public static string GetMonthNameShort8DBName()
         {
             return "s_month_name_short_c_8";
         }
@@ -8988,7 +9001,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetMonthNameShort9DBName()
+        public static string GetMonthNameShort9DBName()
         {
             return "s_month_name_short_c_9";
         }
@@ -9000,7 +9013,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetMonthNameShort10DBName()
+        public static string GetMonthNameShort10DBName()
         {
             return "s_month_name_short_c_10";
         }
@@ -9012,7 +9025,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetMonthNameShort11DBName()
+        public static string GetMonthNameShort11DBName()
         {
             return "s_month_name_short_c_11";
         }
@@ -9024,7 +9037,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetMonthNameShort12DBName()
+        public static string GetMonthNameShort12DBName()
         {
             return "s_month_name_short_c_12";
         }
@@ -9036,7 +9049,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetDateCreatedDBName()
+        public static string GetDateCreatedDBName()
         {
             return "s_date_created_d";
         }
@@ -9048,7 +9061,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetCreatedByDBName()
+        public static string GetCreatedByDBName()
         {
             return "s_created_by_c";
         }
@@ -9060,7 +9073,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetDateModifiedDBName()
+        public static string GetDateModifiedDBName()
         {
             return "s_date_modified_d";
         }
@@ -9072,7 +9085,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetModifiedByDBName()
+        public static string GetModifiedByDBName()
         {
             return "s_modified_by_c";
         }
@@ -9084,7 +9097,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetModificationIdDBName()
+        public static string GetModificationIdDBName()
         {
             return "s_modification_id_c";
         }
@@ -10317,7 +10330,8 @@ namespace Ict.Petra.Shared.MSysMan.Data
         /// This identifies the current version of the record.
         public DataColumn ColumnModificationId;
 
-        private static short TableId = -1;
+        /// TableId for Ict.Common.Data generic functions
+        public static short TableId = 18;
 
         private static bool FInitInfoValues = InitInfoValues();
         private static bool InitInfoValues()
@@ -10338,8 +10352,8 @@ namespace Ict.Petra.Shared.MSysMan.Data
                     new TTypedColumnInfo(11, "ModifiedBy", "s_modified_by_c", OdbcType.VarChar, 20, false),
                     new TTypedColumnInfo(12, "ModificationId", "s_modification_id_c", OdbcType.VarChar, 150, false)
                 },
-                new string[] {
-                    "s_user_id_c", "s_login_date_d", "s_login_time_i"
+                new int[] {
+                    0, 3, 2
                 }));
             return true;
         }
@@ -10443,7 +10457,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetUserIdDBName()
+        public static string GetUserIdDBName()
         {
             return "s_user_id_c";
         }
@@ -10455,7 +10469,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetLoginTtyLineDBName()
+        public static string GetLoginTtyLineDBName()
         {
             return "s_login_tty_line_c";
         }
@@ -10467,7 +10481,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetLoginTimeDBName()
+        public static string GetLoginTimeDBName()
         {
             return "s_login_time_i";
         }
@@ -10479,7 +10493,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetLoginDateDBName()
+        public static string GetLoginDateDBName()
         {
             return "s_login_date_d";
         }
@@ -10491,7 +10505,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetLoginStatusDBName()
+        public static string GetLoginStatusDBName()
         {
             return "s_login_status_c";
         }
@@ -10503,7 +10517,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetLogoutTimeDBName()
+        public static string GetLogoutTimeDBName()
         {
             return "s_logout_time_i";
         }
@@ -10515,7 +10529,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetLogoutDateDBName()
+        public static string GetLogoutDateDBName()
         {
             return "s_logout_date_d";
         }
@@ -10527,7 +10541,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetLoginProcessIdDBName()
+        public static string GetLoginProcessIdDBName()
         {
             return "s_login_process_id_r";
         }
@@ -10539,7 +10553,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetDateCreatedDBName()
+        public static string GetDateCreatedDBName()
         {
             return "s_date_created_d";
         }
@@ -10551,7 +10565,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetCreatedByDBName()
+        public static string GetCreatedByDBName()
         {
             return "s_created_by_c";
         }
@@ -10563,7 +10577,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetDateModifiedDBName()
+        public static string GetDateModifiedDBName()
         {
             return "s_date_modified_d";
         }
@@ -10575,7 +10589,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetModifiedByDBName()
+        public static string GetModifiedByDBName()
         {
             return "s_modified_by_c";
         }
@@ -10587,7 +10601,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetModificationIdDBName()
+        public static string GetModificationIdDBName()
         {
             return "s_modification_id_c";
         }
@@ -11145,7 +11159,8 @@ namespace Ict.Petra.Shared.MSysMan.Data
         /// This identifies the current version of the record.
         public DataColumn ColumnModificationId;
 
-        private static short TableId = -1;
+        /// TableId for Ict.Common.Data generic functions
+        public static short TableId = 19;
 
         private static bool FInitInfoValues = InitInfoValues();
         private static bool InitInfoValues()
@@ -11160,8 +11175,8 @@ namespace Ict.Petra.Shared.MSysMan.Data
                     new TTypedColumnInfo(5, "ModifiedBy", "s_modified_by_c", OdbcType.VarChar, 20, false),
                     new TTypedColumnInfo(6, "ModificationId", "s_modification_id_c", OdbcType.VarChar, 150, false)
                 },
-                new string[] {
-                    "s_language_code_c"
+                new int[] {
+                    0
                 }));
             return true;
         }
@@ -11253,7 +11268,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetLanguageCodeDBName()
+        public static string GetLanguageCodeDBName()
         {
             return "s_language_code_c";
         }
@@ -11265,7 +11280,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetLogonMessageDBName()
+        public static string GetLogonMessageDBName()
         {
             return "s_logon_message_c";
         }
@@ -11277,7 +11292,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetDateCreatedDBName()
+        public static string GetDateCreatedDBName()
         {
             return "s_date_created_d";
         }
@@ -11289,7 +11304,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetCreatedByDBName()
+        public static string GetCreatedByDBName()
         {
             return "s_created_by_c";
         }
@@ -11301,7 +11316,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetDateModifiedDBName()
+        public static string GetDateModifiedDBName()
         {
             return "s_date_modified_d";
         }
@@ -11313,7 +11328,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetModifiedByDBName()
+        public static string GetModifiedByDBName()
         {
             return "s_modified_by_c";
         }
@@ -11325,7 +11340,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetModificationIdDBName()
+        public static string GetModificationIdDBName()
         {
             return "s_modification_id_c";
         }
@@ -11651,7 +11666,8 @@ namespace Ict.Petra.Shared.MSysMan.Data
         /// This identifies the current version of the record.
         public DataColumn ColumnModificationId;
 
-        private static short TableId = -1;
+        /// TableId for Ict.Common.Data generic functions
+        public static short TableId = 20;
 
         private static bool FInitInfoValues = InitInfoValues();
         private static bool InitInfoValues()
@@ -11667,8 +11683,8 @@ namespace Ict.Petra.Shared.MSysMan.Data
                     new TTypedColumnInfo(6, "ModifiedBy", "s_modified_by_c", OdbcType.VarChar, 20, false),
                     new TTypedColumnInfo(7, "ModificationId", "s_modification_id_c", OdbcType.VarChar, 150, false)
                 },
-                new string[] {
-                    "s_patch_name_c"
+                new int[] {
+                    0
                 }));
             return true;
         }
@@ -11762,7 +11778,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetPatchNameDBName()
+        public static string GetPatchNameDBName()
         {
             return "s_patch_name_c";
         }
@@ -11774,7 +11790,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetUserIdDBName()
+        public static string GetUserIdDBName()
         {
             return "s_user_id_c";
         }
@@ -11786,7 +11802,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetDateRunDBName()
+        public static string GetDateRunDBName()
         {
             return "s_date_run_d";
         }
@@ -11798,7 +11814,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetDateCreatedDBName()
+        public static string GetDateCreatedDBName()
         {
             return "s_date_created_d";
         }
@@ -11810,7 +11826,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetCreatedByDBName()
+        public static string GetCreatedByDBName()
         {
             return "s_created_by_c";
         }
@@ -11822,7 +11838,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetDateModifiedDBName()
+        public static string GetDateModifiedDBName()
         {
             return "s_date_modified_d";
         }
@@ -11834,7 +11850,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetModifiedByDBName()
+        public static string GetModifiedByDBName()
         {
             return "s_modified_by_c";
         }
@@ -11846,7 +11862,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetModificationIdDBName()
+        public static string GetModificationIdDBName()
         {
             return "s_modification_id_c";
         }
@@ -12207,7 +12223,8 @@ namespace Ict.Petra.Shared.MSysMan.Data
         /// This identifies the current version of the record.
         public DataColumn ColumnModificationId;
 
-        private static short TableId = -1;
+        /// TableId for Ict.Common.Data generic functions
+        public static short TableId = 21;
 
         private static bool FInitInfoValues = InitInfoValues();
         private static bool InitInfoValues()
@@ -12221,8 +12238,8 @@ namespace Ict.Petra.Shared.MSysMan.Data
                     new TTypedColumnInfo(4, "ModifiedBy", "s_modified_by_c", OdbcType.VarChar, 20, false),
                     new TTypedColumnInfo(5, "ModificationId", "s_modification_id_c", OdbcType.VarChar, 150, false)
                 },
-                new string[] {
-                    "s_report_title_c"
+                new int[] {
+                    0
                 }));
             return true;
         }
@@ -12312,7 +12329,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetReportTitleDBName()
+        public static string GetReportTitleDBName()
         {
             return "s_report_title_c";
         }
@@ -12324,7 +12341,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetDateCreatedDBName()
+        public static string GetDateCreatedDBName()
         {
             return "s_date_created_d";
         }
@@ -12336,7 +12353,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetCreatedByDBName()
+        public static string GetCreatedByDBName()
         {
             return "s_created_by_c";
         }
@@ -12348,7 +12365,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetDateModifiedDBName()
+        public static string GetDateModifiedDBName()
         {
             return "s_date_modified_d";
         }
@@ -12360,7 +12377,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetModifiedByDBName()
+        public static string GetModifiedByDBName()
         {
             return "s_modified_by_c";
         }
@@ -12372,7 +12389,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetModificationIdDBName()
+        public static string GetModificationIdDBName()
         {
             return "s_modification_id_c";
         }
@@ -12665,7 +12682,8 @@ namespace Ict.Petra.Shared.MSysMan.Data
         /// This identifies the current version of the record.
         public DataColumn ColumnModificationId;
 
-        private static short TableId = -1;
+        /// TableId for Ict.Common.Data generic functions
+        public static short TableId = 22;
 
         private static bool FInitInfoValues = InitInfoValues();
         private static bool InitInfoValues()
@@ -12684,8 +12702,8 @@ namespace Ict.Petra.Shared.MSysMan.Data
                     new TTypedColumnInfo(9, "ModifiedBy", "s_modified_by_c", OdbcType.VarChar, 20, false),
                     new TTypedColumnInfo(10, "ModificationId", "s_modification_id_c", OdbcType.VarChar, 150, false)
                 },
-                new string[] {
-                    "s_report_file_name_c"
+                new int[] {
+                    1
                 }));
             return true;
         }
@@ -12785,7 +12803,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetUserIdDBName()
+        public static string GetUserIdDBName()
         {
             return "s_user_id_c";
         }
@@ -12797,7 +12815,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetReportFileNameDBName()
+        public static string GetReportFileNameDBName()
         {
             return "s_report_file_name_c";
         }
@@ -12809,7 +12827,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetRpgDBName()
+        public static string GetRpgDBName()
         {
             return "s_rpg_c";
         }
@@ -12821,7 +12839,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetReportDateDBName()
+        public static string GetReportDateDBName()
         {
             return "s_report_date_d";
         }
@@ -12833,7 +12851,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetReportTimeDBName()
+        public static string GetReportTimeDBName()
         {
             return "s_report_time_i";
         }
@@ -12845,7 +12863,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetReportTitleDBName()
+        public static string GetReportTitleDBName()
         {
             return "s_report_title_c";
         }
@@ -12857,7 +12875,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetDateCreatedDBName()
+        public static string GetDateCreatedDBName()
         {
             return "s_date_created_d";
         }
@@ -12869,7 +12887,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetCreatedByDBName()
+        public static string GetCreatedByDBName()
         {
             return "s_created_by_c";
         }
@@ -12881,7 +12899,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetDateModifiedDBName()
+        public static string GetDateModifiedDBName()
         {
             return "s_date_modified_d";
         }
@@ -12893,7 +12911,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetModifiedByDBName()
+        public static string GetModifiedByDBName()
         {
             return "s_modified_by_c";
         }
@@ -12905,7 +12923,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetModificationIdDBName()
+        public static string GetModificationIdDBName()
         {
             return "s_modification_id_c";
         }
@@ -13401,7 +13419,8 @@ namespace Ict.Petra.Shared.MSysMan.Data
         /// This identifies the current version of the record.
         public DataColumn ColumnModificationId;
 
-        private static short TableId = -1;
+        /// TableId for Ict.Common.Data generic functions
+        public static short TableId = 23;
 
         private static bool FInitInfoValues = InitInfoValues();
         private static bool InitInfoValues()
@@ -13424,7 +13443,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
                     new TTypedColumnInfo(13, "ModifiedBy", "s_modified_by_c", OdbcType.VarChar, 20, false),
                     new TTypedColumnInfo(14, "ModificationId", "s_modification_id_c", OdbcType.VarChar, 150, false)
                 },
-                new string[] {
+                new int[] {
 
                 }));
             return true;
@@ -13533,7 +13552,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetUserIdDBName()
+        public static string GetUserIdDBName()
         {
             return "s_user_id_c";
         }
@@ -13545,7 +13564,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetModuleIdDBName()
+        public static string GetModuleIdDBName()
         {
             return "s_module_id_c";
         }
@@ -13557,7 +13576,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetReportFileNameDBName()
+        public static string GetReportFileNameDBName()
         {
             return "s_report_file_name_c";
         }
@@ -13569,7 +13588,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetReportTitleDBName()
+        public static string GetReportTitleDBName()
         {
             return "s_report_title_c";
         }
@@ -13581,7 +13600,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetInteractiveDBName()
+        public static string GetInteractiveDBName()
         {
             return "s_interactive_l";
         }
@@ -13593,7 +13612,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetRpgDBName()
+        public static string GetRpgDBName()
         {
             return "s_rpg_c";
         }
@@ -13605,7 +13624,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetCopiesDBName()
+        public static string GetCopiesDBName()
         {
             return "s_copies_i";
         }
@@ -13617,7 +13636,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetFromPageDBName()
+        public static string GetFromPageDBName()
         {
             return "s_from_page_i";
         }
@@ -13629,7 +13648,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetToPageDBName()
+        public static string GetToPageDBName()
         {
             return "s_to_page_i";
         }
@@ -13641,7 +13660,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetDataDBName()
+        public static string GetDataDBName()
         {
             return "s_data_c";
         }
@@ -13653,7 +13672,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetDateCreatedDBName()
+        public static string GetDateCreatedDBName()
         {
             return "s_date_created_d";
         }
@@ -13665,7 +13684,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetCreatedByDBName()
+        public static string GetCreatedByDBName()
         {
             return "s_created_by_c";
         }
@@ -13677,7 +13696,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetDateModifiedDBName()
+        public static string GetDateModifiedDBName()
         {
             return "s_date_modified_d";
         }
@@ -13689,7 +13708,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetModifiedByDBName()
+        public static string GetModifiedByDBName()
         {
             return "s_modified_by_c";
         }
@@ -13701,7 +13720,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetModificationIdDBName()
+        public static string GetModificationIdDBName()
         {
             return "s_modification_id_c";
         }
@@ -14347,7 +14366,8 @@ namespace Ict.Petra.Shared.MSysMan.Data
         /// This identifies the current version of the record.
         public DataColumn ColumnModificationId;
 
-        private static short TableId = -1;
+        /// TableId for Ict.Common.Data generic functions
+        public static short TableId = 24;
 
         private static bool FInitInfoValues = InitInfoValues();
         private static bool InitInfoValues()
@@ -14367,7 +14387,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
                     new TTypedColumnInfo(10, "ModifiedBy", "s_modified_by_c", OdbcType.VarChar, 20, false),
                     new TTypedColumnInfo(11, "ModificationId", "s_modification_id_c", OdbcType.VarChar, 150, false)
                 },
-                new string[] {
+                new int[] {
 
                 }));
             return true;
@@ -14470,7 +14490,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetUserIdDBName()
+        public static string GetUserIdDBName()
         {
             return "s_user_id_c";
         }
@@ -14482,7 +14502,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetModuleIdDBName()
+        public static string GetModuleIdDBName()
         {
             return "s_module_id_c";
         }
@@ -14494,7 +14514,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetFormNameDBName()
+        public static string GetFormNameDBName()
         {
             return "s_form_name_c";
         }
@@ -14506,7 +14526,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetPrinterNameDBName()
+        public static string GetPrinterNameDBName()
         {
             return "s_printer_name_c";
         }
@@ -14518,7 +14538,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetBatchJobIdDBName()
+        public static string GetBatchJobIdDBName()
         {
             return "s_batch_job_id_r";
         }
@@ -14530,7 +14550,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetLoginProcessIdDBName()
+        public static string GetLoginProcessIdDBName()
         {
             return "s_login_process_id_r";
         }
@@ -14542,7 +14562,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetPaperSourceDBName()
+        public static string GetPaperSourceDBName()
         {
             return "s_paper_source_i";
         }
@@ -14554,7 +14574,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetDateCreatedDBName()
+        public static string GetDateCreatedDBName()
         {
             return "s_date_created_d";
         }
@@ -14566,7 +14586,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetCreatedByDBName()
+        public static string GetCreatedByDBName()
         {
             return "s_created_by_c";
         }
@@ -14578,7 +14598,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetDateModifiedDBName()
+        public static string GetDateModifiedDBName()
         {
             return "s_date_modified_d";
         }
@@ -14590,7 +14610,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetModifiedByDBName()
+        public static string GetModifiedByDBName()
         {
             return "s_modified_by_c";
         }
@@ -14602,7 +14622,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetModificationIdDBName()
+        public static string GetModificationIdDBName()
         {
             return "s_modification_id_c";
         }
@@ -15131,7 +15151,8 @@ namespace Ict.Petra.Shared.MSysMan.Data
         /// This identifies the current version of the record.
         public DataColumn ColumnModificationId;
 
-        private static short TableId = -1;
+        /// TableId for Ict.Common.Data generic functions
+        public static short TableId = 25;
 
         private static bool FInitInfoValues = InitInfoValues();
         private static bool InitInfoValues()
@@ -15151,8 +15172,8 @@ namespace Ict.Petra.Shared.MSysMan.Data
                     new TTypedColumnInfo(10, "ModifiedBy", "s_modified_by_c", OdbcType.VarChar, 20, false),
                     new TTypedColumnInfo(11, "ModificationId", "s_modification_id_c", OdbcType.VarChar, 150, false)
                 },
-                new string[] {
-                    "s_user_id_c"
+                new int[] {
+                    0
                 }));
             return true;
         }
@@ -15254,7 +15275,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetUserIdDBName()
+        public static string GetUserIdDBName()
         {
             return "s_user_id_c";
         }
@@ -15266,7 +15287,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetSystemDisabledDateDBName()
+        public static string GetSystemDisabledDateDBName()
         {
             return "s_system_disabled_date_d";
         }
@@ -15278,7 +15299,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetSystemDisabledTimeDBName()
+        public static string GetSystemDisabledTimeDBName()
         {
             return "s_system_disabled_time_i";
         }
@@ -15290,7 +15311,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetSystemDisabledReasonDBName()
+        public static string GetSystemDisabledReasonDBName()
         {
             return "s_system_disabled_reason_c";
         }
@@ -15302,7 +15323,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetSystemAvailableDateDBName()
+        public static string GetSystemAvailableDateDBName()
         {
             return "s_system_available_date_d";
         }
@@ -15314,7 +15335,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetSystemAvailableTimeDBName()
+        public static string GetSystemAvailableTimeDBName()
         {
             return "s_system_available_time_i";
         }
@@ -15326,7 +15347,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetSystemLoginStatusDBName()
+        public static string GetSystemLoginStatusDBName()
         {
             return "s_system_login_status_l";
         }
@@ -15338,7 +15359,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetDateCreatedDBName()
+        public static string GetDateCreatedDBName()
         {
             return "s_date_created_d";
         }
@@ -15350,7 +15371,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetCreatedByDBName()
+        public static string GetCreatedByDBName()
         {
             return "s_created_by_c";
         }
@@ -15362,7 +15383,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetDateModifiedDBName()
+        public static string GetDateModifiedDBName()
         {
             return "s_date_modified_d";
         }
@@ -15374,7 +15395,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetModifiedByDBName()
+        public static string GetModifiedByDBName()
         {
             return "s_modified_by_c";
         }
@@ -15386,7 +15407,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetModificationIdDBName()
+        public static string GetModificationIdDBName()
         {
             return "s_modification_id_c";
         }
@@ -15913,7 +15934,8 @@ namespace Ict.Petra.Shared.MSysMan.Data
         /// This identifies the current version of the record.
         public DataColumn ColumnModificationId;
 
-        private static short TableId = -1;
+        /// TableId for Ict.Common.Data generic functions
+        public static short TableId = 26;
 
         private static bool FInitInfoValues = InitInfoValues();
         private static bool InitInfoValues()
@@ -15932,7 +15954,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
                     new TTypedColumnInfo(9, "ModifiedBy", "s_modified_by_c", OdbcType.VarChar, 20, false),
                     new TTypedColumnInfo(10, "ModificationId", "s_modification_id_c", OdbcType.VarChar, 150, false)
                 },
-                new string[] {
+                new int[] {
 
                 }));
             return true;
@@ -16033,7 +16055,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetUserIdDBName()
+        public static string GetUserIdDBName()
         {
             return "s_user_id_c";
         }
@@ -16045,7 +16067,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetSystemDisabledDateDBName()
+        public static string GetSystemDisabledDateDBName()
         {
             return "s_system_disabled_date_d";
         }
@@ -16057,7 +16079,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetSystemDisabledTimeDBName()
+        public static string GetSystemDisabledTimeDBName()
         {
             return "s_system_disabled_time_i";
         }
@@ -16069,7 +16091,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetSystemDisabledReasonDBName()
+        public static string GetSystemDisabledReasonDBName()
         {
             return "s_system_disabled_reason_c";
         }
@@ -16081,7 +16103,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetSystemEnabledDateDBName()
+        public static string GetSystemEnabledDateDBName()
         {
             return "s_system_enabled_date_d";
         }
@@ -16093,7 +16115,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetSystemEnabledTimeDBName()
+        public static string GetSystemEnabledTimeDBName()
         {
             return "s_system_enabled_time_i";
         }
@@ -16105,7 +16127,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetDateCreatedDBName()
+        public static string GetDateCreatedDBName()
         {
             return "s_date_created_d";
         }
@@ -16117,7 +16139,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetCreatedByDBName()
+        public static string GetCreatedByDBName()
         {
             return "s_created_by_c";
         }
@@ -16129,7 +16151,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetDateModifiedDBName()
+        public static string GetDateModifiedDBName()
         {
             return "s_date_modified_d";
         }
@@ -16141,7 +16163,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetModifiedByDBName()
+        public static string GetModifiedByDBName()
         {
             return "s_modified_by_c";
         }
@@ -16153,7 +16175,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetModificationIdDBName()
+        public static string GetModificationIdDBName()
         {
             return "s_modification_id_c";
         }
@@ -16635,7 +16657,8 @@ namespace Ict.Petra.Shared.MSysMan.Data
         /// This identifies the current version of the record.
         public DataColumn ColumnModificationId;
 
-        private static short TableId = -1;
+        /// TableId for Ict.Common.Data generic functions
+        public static short TableId = 27;
 
         private static bool FInitInfoValues = InitInfoValues();
         private static bool InitInfoValues()
@@ -16651,8 +16674,8 @@ namespace Ict.Petra.Shared.MSysMan.Data
                     new TTypedColumnInfo(6, "ModifiedBy", "s_modified_by_c", OdbcType.VarChar, 20, false),
                     new TTypedColumnInfo(7, "ModificationId", "s_modification_id_c", OdbcType.VarChar, 150, false)
                 },
-                new string[] {
-                    "s_user_id_c", "s_default_code_c"
+                new int[] {
+                    0, 1
                 }));
             return true;
         }
@@ -16746,7 +16769,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetUserIdDBName()
+        public static string GetUserIdDBName()
         {
             return "s_user_id_c";
         }
@@ -16758,7 +16781,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetDefaultCodeDBName()
+        public static string GetDefaultCodeDBName()
         {
             return "s_default_code_c";
         }
@@ -16770,7 +16793,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetDefaultValueDBName()
+        public static string GetDefaultValueDBName()
         {
             return "s_default_value_c";
         }
@@ -16782,7 +16805,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetDateCreatedDBName()
+        public static string GetDateCreatedDBName()
         {
             return "s_date_created_d";
         }
@@ -16794,7 +16817,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetCreatedByDBName()
+        public static string GetCreatedByDBName()
         {
             return "s_created_by_c";
         }
@@ -16806,7 +16829,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetDateModifiedDBName()
+        public static string GetDateModifiedDBName()
         {
             return "s_date_modified_d";
         }
@@ -16818,7 +16841,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetModifiedByDBName()
+        public static string GetModifiedByDBName()
         {
             return "s_modified_by_c";
         }
@@ -16830,7 +16853,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetModificationIdDBName()
+        public static string GetModificationIdDBName()
         {
             return "s_modification_id_c";
         }
@@ -17195,7 +17218,8 @@ namespace Ict.Petra.Shared.MSysMan.Data
         /// This identifies the current version of the record.
         public DataColumn ColumnModificationId;
 
-        private static short TableId = -1;
+        /// TableId for Ict.Common.Data generic functions
+        public static short TableId = 28;
 
         private static bool FInitInfoValues = InitInfoValues();
         private static bool InitInfoValues()
@@ -17211,8 +17235,8 @@ namespace Ict.Petra.Shared.MSysMan.Data
                     new TTypedColumnInfo(6, "ModifiedBy", "s_modified_by_c", OdbcType.VarChar, 20, false),
                     new TTypedColumnInfo(7, "ModificationId", "s_modification_id_c", OdbcType.VarChar, 150, false)
                 },
-                new string[] {
-                    "s_default_code_c"
+                new int[] {
+                    0
                 }));
             return true;
         }
@@ -17306,7 +17330,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetDefaultCodeDBName()
+        public static string GetDefaultCodeDBName()
         {
             return "s_default_code_c";
         }
@@ -17318,7 +17342,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetDefaultDescriptionDBName()
+        public static string GetDefaultDescriptionDBName()
         {
             return "s_default_description_c";
         }
@@ -17330,7 +17354,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetDefaultValueDBName()
+        public static string GetDefaultValueDBName()
         {
             return "s_default_value_c";
         }
@@ -17342,7 +17366,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetDateCreatedDBName()
+        public static string GetDateCreatedDBName()
         {
             return "s_date_created_d";
         }
@@ -17354,7 +17378,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetCreatedByDBName()
+        public static string GetCreatedByDBName()
         {
             return "s_created_by_c";
         }
@@ -17366,7 +17390,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetDateModifiedDBName()
+        public static string GetDateModifiedDBName()
         {
             return "s_date_modified_d";
         }
@@ -17378,7 +17402,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetModifiedByDBName()
+        public static string GetModifiedByDBName()
         {
             return "s_modified_by_c";
         }
@@ -17390,7 +17414,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetModificationIdDBName()
+        public static string GetModificationIdDBName()
         {
             return "s_modification_id_c";
         }
@@ -17775,7 +17799,8 @@ namespace Ict.Petra.Shared.MSysMan.Data
         /// This identifies the current version of the record.
         public DataColumn ColumnModificationId;
 
-        private static short TableId = -1;
+        /// TableId for Ict.Common.Data generic functions
+        public static short TableId = 29;
 
         private static bool FInitInfoValues = InitInfoValues();
         private static bool InitInfoValues()
@@ -17801,8 +17826,8 @@ namespace Ict.Petra.Shared.MSysMan.Data
                     new TTypedColumnInfo(16, "ModifiedBy", "s_modified_by_c", OdbcType.VarChar, 20, false),
                     new TTypedColumnInfo(17, "ModificationId", "s_modification_id_c", OdbcType.VarChar, 150, false)
                 },
-                new string[] {
-                    "s_file_name_c", "s_user_id_c", "s_date_submitted_d", "s_time_submitted_i"
+                new int[] {
+                    0, 1, 11, 12
                 }));
             return true;
         }
@@ -17916,7 +17941,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetFileNameDBName()
+        public static string GetFileNameDBName()
         {
             return "s_file_name_c";
         }
@@ -17928,7 +17953,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetUserIdDBName()
+        public static string GetUserIdDBName()
         {
             return "s_user_id_c";
         }
@@ -17940,7 +17965,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetJobTypeDBName()
+        public static string GetJobTypeDBName()
         {
             return "s_job_type_c";
         }
@@ -17952,7 +17977,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetMinutesDBName()
+        public static string GetMinutesDBName()
         {
             return "s_minutes_i";
         }
@@ -17964,7 +17989,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetHoursDBName()
+        public static string GetHoursDBName()
         {
             return "s_hours_i";
         }
@@ -17976,7 +18001,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetDayOfMonthDBName()
+        public static string GetDayOfMonthDBName()
         {
             return "s_day_of_month_c";
         }
@@ -17988,7 +18013,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetMonthOfYearDBName()
+        public static string GetMonthOfYearDBName()
         {
             return "s_month_of_year_c";
         }
@@ -18000,7 +18025,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetDayOfWeekDBName()
+        public static string GetDayOfWeekDBName()
         {
             return "s_day_of_week_c";
         }
@@ -18012,7 +18037,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetParametersUsedDBName()
+        public static string GetParametersUsedDBName()
         {
             return "s_parameters_used_l";
         }
@@ -18024,7 +18049,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetDataDBName()
+        public static string GetDataDBName()
         {
             return "s_data_c";
         }
@@ -18036,7 +18061,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetRemoveDBName()
+        public static string GetRemoveDBName()
         {
             return "s_remove_l";
         }
@@ -18048,7 +18073,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetDateSubmittedDBName()
+        public static string GetDateSubmittedDBName()
         {
             return "s_date_submitted_d";
         }
@@ -18060,7 +18085,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetTimeSubmittedDBName()
+        public static string GetTimeSubmittedDBName()
         {
             return "s_time_submitted_i";
         }
@@ -18072,7 +18097,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetDateCreatedDBName()
+        public static string GetDateCreatedDBName()
         {
             return "s_date_created_d";
         }
@@ -18084,7 +18109,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetCreatedByDBName()
+        public static string GetCreatedByDBName()
         {
             return "s_created_by_c";
         }
@@ -18096,7 +18121,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetDateModifiedDBName()
+        public static string GetDateModifiedDBName()
         {
             return "s_date_modified_d";
         }
@@ -18108,7 +18133,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetModifiedByDBName()
+        public static string GetModifiedByDBName()
         {
             return "s_modified_by_c";
         }
@@ -18120,7 +18145,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetModificationIdDBName()
+        public static string GetModificationIdDBName()
         {
             return "s_modification_id_c";
         }
@@ -18887,7 +18912,8 @@ namespace Ict.Petra.Shared.MSysMan.Data
         /// This identifies the current version of the record.
         public DataColumn ColumnModificationId;
 
-        private static short TableId = -1;
+        /// TableId for Ict.Common.Data generic functions
+        public static short TableId = 30;
 
         private static bool FInitInfoValues = InitInfoValues();
         private static bool InitInfoValues()
@@ -18909,8 +18935,8 @@ namespace Ict.Petra.Shared.MSysMan.Data
                     new TTypedColumnInfo(12, "ModifiedBy", "s_modified_by_c", OdbcType.VarChar, 20, false),
                     new TTypedColumnInfo(13, "ModificationId", "s_modification_id_c", OdbcType.VarChar, 150, false)
                 },
-                new string[] {
-                    "s_language_code_c", "s_error_code_c"
+                new int[] {
+                    0, 1
                 }));
             return true;
         }
@@ -19016,7 +19042,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetLanguageCodeDBName()
+        public static string GetLanguageCodeDBName()
         {
             return "s_language_code_c";
         }
@@ -19028,7 +19054,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetErrorCodeDBName()
+        public static string GetErrorCodeDBName()
         {
             return "s_error_code_c";
         }
@@ -19040,7 +19066,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetMessageLine1DBName()
+        public static string GetMessageLine1DBName()
         {
             return "s_message_line_1_c";
         }
@@ -19052,7 +19078,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetMessageLine2DBName()
+        public static string GetMessageLine2DBName()
         {
             return "s_message_line_2_c";
         }
@@ -19064,7 +19090,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetMessageLine3DBName()
+        public static string GetMessageLine3DBName()
         {
             return "s_message_line_3_c";
         }
@@ -19076,7 +19102,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetResponseDBName()
+        public static string GetResponseDBName()
         {
             return "s_response_c";
         }
@@ -19088,7 +19114,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetAlertTypeDBName()
+        public static string GetAlertTypeDBName()
         {
             return "s_alert_type_c";
         }
@@ -19100,7 +19126,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetTitleDBName()
+        public static string GetTitleDBName()
         {
             return "s_title_c";
         }
@@ -19112,7 +19138,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetLogErrorDBName()
+        public static string GetLogErrorDBName()
         {
             return "s_log_error_l";
         }
@@ -19124,7 +19150,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetDateCreatedDBName()
+        public static string GetDateCreatedDBName()
         {
             return "s_date_created_d";
         }
@@ -19136,7 +19162,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetCreatedByDBName()
+        public static string GetCreatedByDBName()
         {
             return "s_created_by_c";
         }
@@ -19148,7 +19174,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetDateModifiedDBName()
+        public static string GetDateModifiedDBName()
         {
             return "s_date_modified_d";
         }
@@ -19160,7 +19186,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetModifiedByDBName()
+        public static string GetModifiedByDBName()
         {
             return "s_modified_by_c";
         }
@@ -19172,7 +19198,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetModificationIdDBName()
+        public static string GetModificationIdDBName()
         {
             return "s_modification_id_c";
         }
@@ -19785,7 +19811,8 @@ namespace Ict.Petra.Shared.MSysMan.Data
         /// This identifies the current version of the record.
         public DataColumn ColumnModificationId;
 
-        private static short TableId = -1;
+        /// TableId for Ict.Common.Data generic functions
+        public static short TableId = 31;
 
         private static bool FInitInfoValues = InitInfoValues();
         private static bool InitInfoValues()
@@ -19808,8 +19835,8 @@ namespace Ict.Petra.Shared.MSysMan.Data
                     new TTypedColumnInfo(13, "ModifiedBy", "s_modified_by_c", OdbcType.VarChar, 20, false),
                     new TTypedColumnInfo(14, "ModificationId", "s_modification_id_c", OdbcType.VarChar, 150, false)
                 },
-                new string[] {
-                    "s_error_code_c", "s_user_id_c", "s_date_d", "s_time_i"
+                new int[] {
+                    0, 2, 5, 6
                 }));
             return true;
         }
@@ -19917,7 +19944,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetErrorCodeDBName()
+        public static string GetErrorCodeDBName()
         {
             return "s_error_code_c";
         }
@@ -19929,7 +19956,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetReleaseNumberDBName()
+        public static string GetReleaseNumberDBName()
         {
             return "s_release_number_c";
         }
@@ -19941,7 +19968,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetUserIdDBName()
+        public static string GetUserIdDBName()
         {
             return "s_user_id_c";
         }
@@ -19953,7 +19980,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetFileNameDBName()
+        public static string GetFileNameDBName()
         {
             return "s_file_name_c";
         }
@@ -19965,7 +19992,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetProcessIdDBName()
+        public static string GetProcessIdDBName()
         {
             return "s_process_id_c";
         }
@@ -19977,7 +20004,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetDateDBName()
+        public static string GetDateDBName()
         {
             return "s_date_d";
         }
@@ -19989,7 +20016,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetTimeDBName()
+        public static string GetTimeDBName()
         {
             return "s_time_i";
         }
@@ -20001,7 +20028,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetMessageLine1DBName()
+        public static string GetMessageLine1DBName()
         {
             return "s_message_line_1_c";
         }
@@ -20013,7 +20040,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetMessageLine2DBName()
+        public static string GetMessageLine2DBName()
         {
             return "s_message_line_2_c";
         }
@@ -20025,7 +20052,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetMessageLine3DBName()
+        public static string GetMessageLine3DBName()
         {
             return "s_message_line_3_c";
         }
@@ -20037,7 +20064,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetDateCreatedDBName()
+        public static string GetDateCreatedDBName()
         {
             return "s_date_created_d";
         }
@@ -20049,7 +20076,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetCreatedByDBName()
+        public static string GetCreatedByDBName()
         {
             return "s_created_by_c";
         }
@@ -20061,7 +20088,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetDateModifiedDBName()
+        public static string GetDateModifiedDBName()
         {
             return "s_date_modified_d";
         }
@@ -20073,7 +20100,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetModifiedByDBName()
+        public static string GetModifiedByDBName()
         {
             return "s_modified_by_c";
         }
@@ -20085,7 +20112,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetModificationIdDBName()
+        public static string GetModificationIdDBName()
         {
             return "s_modification_id_c";
         }
@@ -20725,7 +20752,8 @@ namespace Ict.Petra.Shared.MSysMan.Data
         /// This identifies the current version of the record.
         public DataColumn ColumnModificationId;
 
-        private static short TableId = -1;
+        /// TableId for Ict.Common.Data generic functions
+        public static short TableId = 302;
 
         private static bool FInitInfoValues = InitInfoValues();
         private static bool InitInfoValues()
@@ -20742,8 +20770,8 @@ namespace Ict.Petra.Shared.MSysMan.Data
                     new TTypedColumnInfo(7, "ModifiedBy", "s_modified_by_c", OdbcType.VarChar, 20, false),
                     new TTypedColumnInfo(8, "ModificationId", "s_modification_id_c", OdbcType.VarChar, 150, false)
                 },
-                new string[] {
-                    "s_group_id_c", "s_unit_key_n", "s_function_id_c"
+                new int[] {
+                    0, 1, 2
                 }));
             return true;
         }
@@ -20839,7 +20867,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetGroupIdDBName()
+        public static string GetGroupIdDBName()
         {
             return "s_group_id_c";
         }
@@ -20851,7 +20879,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetUnitKeyDBName()
+        public static string GetUnitKeyDBName()
         {
             return "s_unit_key_n";
         }
@@ -20863,7 +20891,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetFunctionIdDBName()
+        public static string GetFunctionIdDBName()
         {
             return "s_function_id_c";
         }
@@ -20875,7 +20903,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetCanAccessDBName()
+        public static string GetCanAccessDBName()
         {
             return "s_can_access_l";
         }
@@ -20887,7 +20915,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetDateCreatedDBName()
+        public static string GetDateCreatedDBName()
         {
             return "s_date_created_d";
         }
@@ -20899,7 +20927,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetCreatedByDBName()
+        public static string GetCreatedByDBName()
         {
             return "s_created_by_c";
         }
@@ -20911,7 +20939,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetDateModifiedDBName()
+        public static string GetDateModifiedDBName()
         {
             return "s_date_modified_d";
         }
@@ -20923,7 +20951,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetModifiedByDBName()
+        public static string GetModifiedByDBName()
         {
             return "s_modified_by_c";
         }
@@ -20935,7 +20963,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetModificationIdDBName()
+        public static string GetModificationIdDBName()
         {
             return "s_modification_id_c";
         }
@@ -21343,7 +21371,8 @@ namespace Ict.Petra.Shared.MSysMan.Data
         /// This identifies the current version of the record.
         public DataColumn ColumnModificationId;
 
-        private static short TableId = -1;
+        /// TableId for Ict.Common.Data generic functions
+        public static short TableId = 303;
 
         private static bool FInitInfoValues = InitInfoValues();
         private static bool InitInfoValues()
@@ -21361,8 +21390,8 @@ namespace Ict.Petra.Shared.MSysMan.Data
                     new TTypedColumnInfo(8, "ModifiedBy", "s_modified_by_c", OdbcType.VarChar, 20, false),
                     new TTypedColumnInfo(9, "ModificationId", "s_modification_id_c", OdbcType.VarChar, 150, false)
                 },
-                new string[] {
-                    "s_function_id_c"
+                new int[] {
+                    0
                 }));
             return true;
         }
@@ -21460,7 +21489,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetFunctionIdDBName()
+        public static string GetFunctionIdDBName()
         {
             return "s_function_id_c";
         }
@@ -21472,7 +21501,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetModuleNameDBName()
+        public static string GetModuleNameDBName()
         {
             return "s_module_name_c";
         }
@@ -21484,7 +21513,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetSubModuleNameDBName()
+        public static string GetSubModuleNameDBName()
         {
             return "s_sub_module_name_c";
         }
@@ -21496,7 +21525,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetFunctionNameDBName()
+        public static string GetFunctionNameDBName()
         {
             return "s_function_name_c";
         }
@@ -21508,7 +21537,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetFilenameDBName()
+        public static string GetFilenameDBName()
         {
             return "s_filename_c";
         }
@@ -21520,7 +21549,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetDateCreatedDBName()
+        public static string GetDateCreatedDBName()
         {
             return "s_date_created_d";
         }
@@ -21532,7 +21561,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetCreatedByDBName()
+        public static string GetCreatedByDBName()
         {
             return "s_created_by_c";
         }
@@ -21544,7 +21573,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetDateModifiedDBName()
+        public static string GetDateModifiedDBName()
         {
             return "s_date_modified_d";
         }
@@ -21556,7 +21585,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetModifiedByDBName()
+        public static string GetModifiedByDBName()
         {
             return "s_modified_by_c";
         }
@@ -21568,7 +21597,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetModificationIdDBName()
+        public static string GetModificationIdDBName()
         {
             return "s_modification_id_c";
         }
@@ -22015,7 +22044,8 @@ namespace Ict.Petra.Shared.MSysMan.Data
         /// This identifies the current version of the record.
         public DataColumn ColumnModificationId;
 
-        private static short TableId = -1;
+        /// TableId for Ict.Common.Data generic functions
+        public static short TableId = 304;
 
         private static bool FInitInfoValues = InitInfoValues();
         private static bool InitInfoValues()
@@ -22033,8 +22063,8 @@ namespace Ict.Petra.Shared.MSysMan.Data
                     new TTypedColumnInfo(8, "ModifiedBy", "s_modified_by_c", OdbcType.VarChar, 20, false),
                     new TTypedColumnInfo(9, "ModificationId", "s_modification_id_c", OdbcType.VarChar, 150, false)
                 },
-                new string[] {
-                    "pt_position_name_c", "pt_position_scope_c", "um_job_key_i", "s_group_id_c", "s_unit_key_n"
+                new int[] {
+                    0, 1, 2, 3, 4
                 }));
             return true;
         }
@@ -22132,7 +22162,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetPositionNameDBName()
+        public static string GetPositionNameDBName()
         {
             return "pt_position_name_c";
         }
@@ -22144,7 +22174,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetPositionScopeDBName()
+        public static string GetPositionScopeDBName()
         {
             return "pt_position_scope_c";
         }
@@ -22156,7 +22186,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetJobKeyDBName()
+        public static string GetJobKeyDBName()
         {
             return "um_job_key_i";
         }
@@ -22168,7 +22198,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetGroupIdDBName()
+        public static string GetGroupIdDBName()
         {
             return "s_group_id_c";
         }
@@ -22180,7 +22210,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetUnitKeyDBName()
+        public static string GetUnitKeyDBName()
         {
             return "s_unit_key_n";
         }
@@ -22192,7 +22222,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetDateCreatedDBName()
+        public static string GetDateCreatedDBName()
         {
             return "s_date_created_d";
         }
@@ -22204,7 +22234,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetCreatedByDBName()
+        public static string GetCreatedByDBName()
         {
             return "s_created_by_c";
         }
@@ -22216,7 +22246,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetDateModifiedDBName()
+        public static string GetDateModifiedDBName()
         {
             return "s_date_modified_d";
         }
@@ -22228,7 +22258,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetModifiedByDBName()
+        public static string GetModifiedByDBName()
         {
             return "s_modified_by_c";
         }
@@ -22240,7 +22270,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetModificationIdDBName()
+        public static string GetModificationIdDBName()
         {
             return "s_modification_id_c";
         }
@@ -22693,7 +22723,8 @@ namespace Ict.Petra.Shared.MSysMan.Data
         /// This identifies the current version of the record.
         public DataColumn ColumnModificationId;
 
-        private static short TableId = -1;
+        /// TableId for Ict.Common.Data generic functions
+        public static short TableId = 305;
 
         private static bool FInitInfoValues = InitInfoValues();
         private static bool InitInfoValues()
@@ -22714,8 +22745,8 @@ namespace Ict.Petra.Shared.MSysMan.Data
                     new TTypedColumnInfo(11, "ModifiedBy", "s_modified_by_c", OdbcType.VarChar, 20, false),
                     new TTypedColumnInfo(12, "ModificationId", "s_modification_id_c", OdbcType.VarChar, 150, false)
                 },
-                new string[] {
-                    "s_group_id_c", "s_group_unit_key_n", "p_partner_set_id_c", "p_partner_set_unit_key_n"
+                new int[] {
+                    0, 1, 2, 3
                 }));
             return true;
         }
@@ -22819,7 +22850,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetGroupIdDBName()
+        public static string GetGroupIdDBName()
         {
             return "s_group_id_c";
         }
@@ -22831,7 +22862,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetGroupUnitKeyDBName()
+        public static string GetGroupUnitKeyDBName()
         {
             return "s_group_unit_key_n";
         }
@@ -22843,7 +22874,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetPartnerSetIdDBName()
+        public static string GetPartnerSetIdDBName()
         {
             return "p_partner_set_id_c";
         }
@@ -22855,7 +22886,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetPartnerSetUnitKeyDBName()
+        public static string GetPartnerSetUnitKeyDBName()
         {
             return "p_partner_set_unit_key_n";
         }
@@ -22867,7 +22898,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetInclusiveOrExclusiveDBName()
+        public static string GetInclusiveOrExclusiveDBName()
         {
             return "s_inclusive_or_exclusive_l";
         }
@@ -22879,7 +22910,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetReadAccessDBName()
+        public static string GetReadAccessDBName()
         {
             return "s_read_access_l";
         }
@@ -22891,7 +22922,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetWriteAccessDBName()
+        public static string GetWriteAccessDBName()
         {
             return "s_write_access_l";
         }
@@ -22903,7 +22934,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetDeleteAccessDBName()
+        public static string GetDeleteAccessDBName()
         {
             return "s_delete_access_l";
         }
@@ -22915,7 +22946,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetDateCreatedDBName()
+        public static string GetDateCreatedDBName()
         {
             return "s_date_created_d";
         }
@@ -22927,7 +22958,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetCreatedByDBName()
+        public static string GetCreatedByDBName()
         {
             return "s_created_by_c";
         }
@@ -22939,7 +22970,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetDateModifiedDBName()
+        public static string GetDateModifiedDBName()
         {
             return "s_date_modified_d";
         }
@@ -22951,7 +22982,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetModifiedByDBName()
+        public static string GetModifiedByDBName()
         {
             return "s_modified_by_c";
         }
@@ -22963,7 +22994,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetModificationIdDBName()
+        public static string GetModificationIdDBName()
         {
             return "s_modification_id_c";
         }
@@ -23533,7 +23564,8 @@ namespace Ict.Petra.Shared.MSysMan.Data
         /// This identifies the current version of the record.
         public DataColumn ColumnModificationId;
 
-        private static short TableId = -1;
+        /// TableId for Ict.Common.Data generic functions
+        public static short TableId = 308;
 
         private static bool FInitInfoValues = InitInfoValues();
         private static bool InitInfoValues()
@@ -23554,8 +23586,8 @@ namespace Ict.Petra.Shared.MSysMan.Data
                     new TTypedColumnInfo(11, "ModifiedBy", "s_modified_by_c", OdbcType.VarChar, 20, false),
                     new TTypedColumnInfo(12, "ModificationId", "s_modification_id_c", OdbcType.VarChar, 150, false)
                 },
-                new string[] {
-                    "s_group_id_c", "s_group_unit_key_n", "a_ledger_number_i", "a_batch_number_i", "a_gift_transaction_number_i"
+                new int[] {
+                    0, 1, 2, 3, 4
                 }));
             return true;
         }
@@ -23659,7 +23691,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetGroupIdDBName()
+        public static string GetGroupIdDBName()
         {
             return "s_group_id_c";
         }
@@ -23671,7 +23703,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetGroupUnitKeyDBName()
+        public static string GetGroupUnitKeyDBName()
         {
             return "s_group_unit_key_n";
         }
@@ -23683,7 +23715,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetLedgerNumberDBName()
+        public static string GetLedgerNumberDBName()
         {
             return "a_ledger_number_i";
         }
@@ -23695,7 +23727,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetBatchNumberDBName()
+        public static string GetBatchNumberDBName()
         {
             return "a_batch_number_i";
         }
@@ -23707,7 +23739,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetGiftTransactionNumberDBName()
+        public static string GetGiftTransactionNumberDBName()
         {
             return "a_gift_transaction_number_i";
         }
@@ -23719,7 +23751,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetReadAccessDBName()
+        public static string GetReadAccessDBName()
         {
             return "s_read_access_l";
         }
@@ -23731,7 +23763,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetWriteAccessDBName()
+        public static string GetWriteAccessDBName()
         {
             return "s_write_access_l";
         }
@@ -23743,7 +23775,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetDeleteAccessDBName()
+        public static string GetDeleteAccessDBName()
         {
             return "s_delete_access_l";
         }
@@ -23755,7 +23787,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetDateCreatedDBName()
+        public static string GetDateCreatedDBName()
         {
             return "s_date_created_d";
         }
@@ -23767,7 +23799,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetCreatedByDBName()
+        public static string GetCreatedByDBName()
         {
             return "s_created_by_c";
         }
@@ -23779,7 +23811,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetDateModifiedDBName()
+        public static string GetDateModifiedDBName()
         {
             return "s_date_modified_d";
         }
@@ -23791,7 +23823,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetModifiedByDBName()
+        public static string GetModifiedByDBName()
         {
             return "s_modified_by_c";
         }
@@ -23803,7 +23835,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetModificationIdDBName()
+        public static string GetModificationIdDBName()
         {
             return "s_modification_id_c";
         }
@@ -24373,7 +24405,8 @@ namespace Ict.Petra.Shared.MSysMan.Data
         /// This identifies the current version of the record.
         public DataColumn ColumnModificationId;
 
-        private static short TableId = -1;
+        /// TableId for Ict.Common.Data generic functions
+        public static short TableId = 309;
 
         private static bool FInitInfoValues = InitInfoValues();
         private static bool InitInfoValues()
@@ -24394,8 +24427,8 @@ namespace Ict.Petra.Shared.MSysMan.Data
                     new TTypedColumnInfo(11, "ModifiedBy", "s_modified_by_c", OdbcType.VarChar, 20, false),
                     new TTypedColumnInfo(12, "ModificationId", "s_modification_id_c", OdbcType.VarChar, 150, false)
                 },
-                new string[] {
-                    "s_group_id_c", "s_group_unit_key_n", "a_ledger_number_i", "a_motivation_group_code_c", "a_motivation_detail_code_c"
+                new int[] {
+                    0, 1, 2, 3, 4
                 }));
             return true;
         }
@@ -24499,7 +24532,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetGroupIdDBName()
+        public static string GetGroupIdDBName()
         {
             return "s_group_id_c";
         }
@@ -24511,7 +24544,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetGroupUnitKeyDBName()
+        public static string GetGroupUnitKeyDBName()
         {
             return "s_group_unit_key_n";
         }
@@ -24523,7 +24556,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetLedgerNumberDBName()
+        public static string GetLedgerNumberDBName()
         {
             return "a_ledger_number_i";
         }
@@ -24535,7 +24568,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetMotivationGroupCodeDBName()
+        public static string GetMotivationGroupCodeDBName()
         {
             return "a_motivation_group_code_c";
         }
@@ -24547,7 +24580,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetMotivationDetailCodeDBName()
+        public static string GetMotivationDetailCodeDBName()
         {
             return "a_motivation_detail_code_c";
         }
@@ -24559,7 +24592,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetReadAccessDBName()
+        public static string GetReadAccessDBName()
         {
             return "s_read_access_l";
         }
@@ -24571,7 +24604,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetWriteAccessDBName()
+        public static string GetWriteAccessDBName()
         {
             return "s_write_access_l";
         }
@@ -24583,7 +24616,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetDeleteAccessDBName()
+        public static string GetDeleteAccessDBName()
         {
             return "s_delete_access_l";
         }
@@ -24595,7 +24628,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetDateCreatedDBName()
+        public static string GetDateCreatedDBName()
         {
             return "s_date_created_d";
         }
@@ -24607,7 +24640,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetCreatedByDBName()
+        public static string GetCreatedByDBName()
         {
             return "s_created_by_c";
         }
@@ -24619,7 +24652,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetDateModifiedDBName()
+        public static string GetDateModifiedDBName()
         {
             return "s_date_modified_d";
         }
@@ -24631,7 +24664,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetModifiedByDBName()
+        public static string GetModifiedByDBName()
         {
             return "s_modified_by_c";
         }
@@ -24643,7 +24676,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetModificationIdDBName()
+        public static string GetModificationIdDBName()
         {
             return "s_modification_id_c";
         }
@@ -25209,7 +25242,8 @@ namespace Ict.Petra.Shared.MSysMan.Data
         /// This identifies the current version of the record.
         public DataColumn ColumnModificationId;
 
-        private static short TableId = -1;
+        /// TableId for Ict.Common.Data generic functions
+        public static short TableId = 310;
 
         private static bool FInitInfoValues = InitInfoValues();
         private static bool InitInfoValues()
@@ -25228,8 +25262,8 @@ namespace Ict.Petra.Shared.MSysMan.Data
                     new TTypedColumnInfo(9, "ModifiedBy", "s_modified_by_c", OdbcType.VarChar, 20, false),
                     new TTypedColumnInfo(10, "ModificationId", "s_modification_id_c", OdbcType.VarChar, 150, false)
                 },
-                new string[] {
-                    "s_group_id_c", "s_group_unit_key_n", "p_contact_id_i"
+                new int[] {
+                    0, 1, 2
                 }));
             return true;
         }
@@ -25329,7 +25363,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetGroupIdDBName()
+        public static string GetGroupIdDBName()
         {
             return "s_group_id_c";
         }
@@ -25341,7 +25375,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetGroupUnitKeyDBName()
+        public static string GetGroupUnitKeyDBName()
         {
             return "s_group_unit_key_n";
         }
@@ -25353,7 +25387,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetContactIdDBName()
+        public static string GetContactIdDBName()
         {
             return "p_contact_id_i";
         }
@@ -25365,7 +25399,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetReadAccessDBName()
+        public static string GetReadAccessDBName()
         {
             return "s_read_access_l";
         }
@@ -25377,7 +25411,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetWriteAccessDBName()
+        public static string GetWriteAccessDBName()
         {
             return "s_write_access_l";
         }
@@ -25389,7 +25423,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetDeleteAccessDBName()
+        public static string GetDeleteAccessDBName()
         {
             return "s_delete_access_l";
         }
@@ -25401,7 +25435,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetDateCreatedDBName()
+        public static string GetDateCreatedDBName()
         {
             return "s_date_created_d";
         }
@@ -25413,7 +25447,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetCreatedByDBName()
+        public static string GetCreatedByDBName()
         {
             return "s_created_by_c";
         }
@@ -25425,7 +25459,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetDateModifiedDBName()
+        public static string GetDateModifiedDBName()
         {
             return "s_date_modified_d";
         }
@@ -25437,7 +25471,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetModifiedByDBName()
+        public static string GetModifiedByDBName()
         {
             return "s_modified_by_c";
         }
@@ -25449,7 +25483,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetModificationIdDBName()
+        public static string GetModificationIdDBName()
         {
             return "s_modification_id_c";
         }
@@ -25941,7 +25975,8 @@ namespace Ict.Petra.Shared.MSysMan.Data
         /// This identifies the current version of the record.
         public DataColumn ColumnModificationId;
 
-        private static short TableId = -1;
+        /// TableId for Ict.Common.Data generic functions
+        public static short TableId = 311;
 
         private static bool FInitInfoValues = InitInfoValues();
         private static bool InitInfoValues()
@@ -25962,8 +25997,8 @@ namespace Ict.Petra.Shared.MSysMan.Data
                     new TTypedColumnInfo(11, "ModifiedBy", "s_modified_by_c", OdbcType.VarChar, 20, false),
                     new TTypedColumnInfo(12, "ModificationId", "s_modification_id_c", OdbcType.VarChar, 150, false)
                 },
-                new string[] {
-                    "s_group_id_c", "s_group_unit_key_n", "p_partner_key_n", "p_contact_id_i", "p_reminder_id_i"
+                new int[] {
+                    0, 1, 2, 3, 4
                 }));
             return true;
         }
@@ -26067,7 +26102,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetGroupIdDBName()
+        public static string GetGroupIdDBName()
         {
             return "s_group_id_c";
         }
@@ -26079,7 +26114,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetGroupUnitKeyDBName()
+        public static string GetGroupUnitKeyDBName()
         {
             return "s_group_unit_key_n";
         }
@@ -26091,7 +26126,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetPartnerKeyDBName()
+        public static string GetPartnerKeyDBName()
         {
             return "p_partner_key_n";
         }
@@ -26103,7 +26138,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetContactIdDBName()
+        public static string GetContactIdDBName()
         {
             return "p_contact_id_i";
         }
@@ -26115,7 +26150,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetReminderIdDBName()
+        public static string GetReminderIdDBName()
         {
             return "p_reminder_id_i";
         }
@@ -26127,7 +26162,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetReadAccessDBName()
+        public static string GetReadAccessDBName()
         {
             return "s_read_access_l";
         }
@@ -26139,7 +26174,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetWriteAccessDBName()
+        public static string GetWriteAccessDBName()
         {
             return "s_write_access_l";
         }
@@ -26151,7 +26186,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetDeleteAccessDBName()
+        public static string GetDeleteAccessDBName()
         {
             return "s_delete_access_l";
         }
@@ -26163,7 +26198,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetDateCreatedDBName()
+        public static string GetDateCreatedDBName()
         {
             return "s_date_created_d";
         }
@@ -26175,7 +26210,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetCreatedByDBName()
+        public static string GetCreatedByDBName()
         {
             return "s_created_by_c";
         }
@@ -26187,7 +26222,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetDateModifiedDBName()
+        public static string GetDateModifiedDBName()
         {
             return "s_date_modified_d";
         }
@@ -26199,7 +26234,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetModifiedByDBName()
+        public static string GetModifiedByDBName()
         {
             return "s_modified_by_c";
         }
@@ -26211,7 +26246,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetModificationIdDBName()
+        public static string GetModificationIdDBName()
         {
             return "s_modification_id_c";
         }
@@ -26779,7 +26814,8 @@ namespace Ict.Petra.Shared.MSysMan.Data
         /// This identifies the current version of the record.
         public DataColumn ColumnModificationId;
 
-        private static short TableId = -1;
+        /// TableId for Ict.Common.Data generic functions
+        public static short TableId = 312;
 
         private static bool FInitInfoValues = InitInfoValues();
         private static bool InitInfoValues()
@@ -26799,8 +26835,8 @@ namespace Ict.Petra.Shared.MSysMan.Data
                     new TTypedColumnInfo(10, "ModifiedBy", "s_modified_by_c", OdbcType.VarChar, 20, false),
                     new TTypedColumnInfo(11, "ModificationId", "s_modification_id_c", OdbcType.VarChar, 150, false)
                 },
-                new string[] {
-                    "s_group_id_c", "s_group_unit_key_n", "p_site_key_n", "p_location_key_i"
+                new int[] {
+                    0, 1, 2, 3
                 }));
             return true;
         }
@@ -26902,7 +26938,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetGroupIdDBName()
+        public static string GetGroupIdDBName()
         {
             return "s_group_id_c";
         }
@@ -26914,7 +26950,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetGroupUnitKeyDBName()
+        public static string GetGroupUnitKeyDBName()
         {
             return "s_group_unit_key_n";
         }
@@ -26926,7 +26962,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetSiteKeyDBName()
+        public static string GetSiteKeyDBName()
         {
             return "p_site_key_n";
         }
@@ -26938,7 +26974,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetLocationKeyDBName()
+        public static string GetLocationKeyDBName()
         {
             return "p_location_key_i";
         }
@@ -26950,7 +26986,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetReadAccessDBName()
+        public static string GetReadAccessDBName()
         {
             return "s_read_access_l";
         }
@@ -26962,7 +26998,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetWriteAccessDBName()
+        public static string GetWriteAccessDBName()
         {
             return "s_write_access_l";
         }
@@ -26974,7 +27010,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetDeleteAccessDBName()
+        public static string GetDeleteAccessDBName()
         {
             return "s_delete_access_l";
         }
@@ -26986,7 +27022,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetDateCreatedDBName()
+        public static string GetDateCreatedDBName()
         {
             return "s_date_created_d";
         }
@@ -26998,7 +27034,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetCreatedByDBName()
+        public static string GetCreatedByDBName()
         {
             return "s_created_by_c";
         }
@@ -27010,7 +27046,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetDateModifiedDBName()
+        public static string GetDateModifiedDBName()
         {
             return "s_date_modified_d";
         }
@@ -27022,7 +27058,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetModifiedByDBName()
+        public static string GetModifiedByDBName()
         {
             return "s_modified_by_c";
         }
@@ -27034,7 +27070,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetModificationIdDBName()
+        public static string GetModificationIdDBName()
         {
             return "s_modification_id_c";
         }
@@ -27565,7 +27601,8 @@ namespace Ict.Petra.Shared.MSysMan.Data
         /// This identifies the current version of the record.
         public DataColumn ColumnModificationId;
 
-        private static short TableId = -1;
+        /// TableId for Ict.Common.Data generic functions
+        public static short TableId = 313;
 
         private static bool FInitInfoValues = InitInfoValues();
         private static bool InitInfoValues()
@@ -27586,8 +27623,8 @@ namespace Ict.Petra.Shared.MSysMan.Data
                     new TTypedColumnInfo(11, "ModifiedBy", "s_modified_by_c", OdbcType.VarChar, 20, false),
                     new TTypedColumnInfo(12, "ModificationId", "s_modification_id_c", OdbcType.VarChar, 150, false)
                 },
-                new string[] {
-                    "s_group_id_c", "s_group_unit_key_n", "p_partner_key_n", "p_site_key_n", "p_location_key_i"
+                new int[] {
+                    0, 1, 2, 3, 4
                 }));
             return true;
         }
@@ -27691,7 +27728,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetGroupIdDBName()
+        public static string GetGroupIdDBName()
         {
             return "s_group_id_c";
         }
@@ -27703,7 +27740,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetGroupUnitKeyDBName()
+        public static string GetGroupUnitKeyDBName()
         {
             return "s_group_unit_key_n";
         }
@@ -27715,7 +27752,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetPartnerKeyDBName()
+        public static string GetPartnerKeyDBName()
         {
             return "p_partner_key_n";
         }
@@ -27727,7 +27764,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetSiteKeyDBName()
+        public static string GetSiteKeyDBName()
         {
             return "p_site_key_n";
         }
@@ -27739,7 +27776,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetLocationKeyDBName()
+        public static string GetLocationKeyDBName()
         {
             return "p_location_key_i";
         }
@@ -27751,7 +27788,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetReadAccessDBName()
+        public static string GetReadAccessDBName()
         {
             return "s_read_access_l";
         }
@@ -27763,7 +27800,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetWriteAccessDBName()
+        public static string GetWriteAccessDBName()
         {
             return "s_write_access_l";
         }
@@ -27775,7 +27812,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetDeleteAccessDBName()
+        public static string GetDeleteAccessDBName()
         {
             return "s_delete_access_l";
         }
@@ -27787,7 +27824,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetDateCreatedDBName()
+        public static string GetDateCreatedDBName()
         {
             return "s_date_created_d";
         }
@@ -27799,7 +27836,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetCreatedByDBName()
+        public static string GetCreatedByDBName()
         {
             return "s_created_by_c";
         }
@@ -27811,7 +27848,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetDateModifiedDBName()
+        public static string GetDateModifiedDBName()
         {
             return "s_date_modified_d";
         }
@@ -27823,7 +27860,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetModifiedByDBName()
+        public static string GetModifiedByDBName()
         {
             return "s_modified_by_c";
         }
@@ -27835,7 +27872,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetModificationIdDBName()
+        public static string GetModificationIdDBName()
         {
             return "s_modification_id_c";
         }
@@ -28401,7 +28438,8 @@ namespace Ict.Petra.Shared.MSysMan.Data
         /// This identifies the current version of the record.
         public DataColumn ColumnModificationId;
 
-        private static short TableId = -1;
+        /// TableId for Ict.Common.Data generic functions
+        public static short TableId = 314;
 
         private static bool FInitInfoValues = InitInfoValues();
         private static bool InitInfoValues()
@@ -28420,8 +28458,8 @@ namespace Ict.Petra.Shared.MSysMan.Data
                     new TTypedColumnInfo(9, "ModifiedBy", "s_modified_by_c", OdbcType.VarChar, 20, false),
                     new TTypedColumnInfo(10, "ModificationId", "s_modification_id_c", OdbcType.VarChar, 150, false)
                 },
-                new string[] {
-                    "s_group_id_c", "s_group_unit_key_n", "p_data_label_key_i"
+                new int[] {
+                    0, 1, 2
                 }));
             return true;
         }
@@ -28521,7 +28559,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetGroupIdDBName()
+        public static string GetGroupIdDBName()
         {
             return "s_group_id_c";
         }
@@ -28533,7 +28571,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetGroupUnitKeyDBName()
+        public static string GetGroupUnitKeyDBName()
         {
             return "s_group_unit_key_n";
         }
@@ -28545,7 +28583,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetDataLabelKeyDBName()
+        public static string GetDataLabelKeyDBName()
         {
             return "p_data_label_key_i";
         }
@@ -28557,7 +28595,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetReadAccessDBName()
+        public static string GetReadAccessDBName()
         {
             return "s_read_access_l";
         }
@@ -28569,7 +28607,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetWriteAccessDBName()
+        public static string GetWriteAccessDBName()
         {
             return "s_write_access_l";
         }
@@ -28581,7 +28619,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetDeleteAccessDBName()
+        public static string GetDeleteAccessDBName()
         {
             return "s_delete_access_l";
         }
@@ -28593,7 +28631,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetDateCreatedDBName()
+        public static string GetDateCreatedDBName()
         {
             return "s_date_created_d";
         }
@@ -28605,7 +28643,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetCreatedByDBName()
+        public static string GetCreatedByDBName()
         {
             return "s_created_by_c";
         }
@@ -28617,7 +28655,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetDateModifiedDBName()
+        public static string GetDateModifiedDBName()
         {
             return "s_date_modified_d";
         }
@@ -28629,7 +28667,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetModifiedByDBName()
+        public static string GetModifiedByDBName()
         {
             return "s_modified_by_c";
         }
@@ -28641,7 +28679,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetModificationIdDBName()
+        public static string GetModificationIdDBName()
         {
             return "s_modification_id_c";
         }
@@ -29123,7 +29161,8 @@ namespace Ict.Petra.Shared.MSysMan.Data
         /// This identifies the current version of the record.
         public DataColumn ColumnModificationId;
 
-        private static short TableId = -1;
+        /// TableId for Ict.Common.Data generic functions
+        public static short TableId = 315;
 
         private static bool FInitInfoValues = InitInfoValues();
         private static bool InitInfoValues()
@@ -29139,8 +29178,8 @@ namespace Ict.Petra.Shared.MSysMan.Data
                     new TTypedColumnInfo(6, "ModifiedBy", "s_modified_by_c", OdbcType.VarChar, 20, false),
                     new TTypedColumnInfo(7, "ModificationId", "s_modification_id_c", OdbcType.VarChar, 150, false)
                 },
-                new string[] {
-                    "s_group_id_c", "s_group_unit_key_n", "a_ledger_number_i"
+                new int[] {
+                    0, 1, 2
                 }));
             return true;
         }
@@ -29234,7 +29273,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetGroupIdDBName()
+        public static string GetGroupIdDBName()
         {
             return "s_group_id_c";
         }
@@ -29246,7 +29285,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetGroupUnitKeyDBName()
+        public static string GetGroupUnitKeyDBName()
         {
             return "s_group_unit_key_n";
         }
@@ -29258,7 +29297,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetLedgerNumberDBName()
+        public static string GetLedgerNumberDBName()
         {
             return "a_ledger_number_i";
         }
@@ -29270,7 +29309,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetDateCreatedDBName()
+        public static string GetDateCreatedDBName()
         {
             return "s_date_created_d";
         }
@@ -29282,7 +29321,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetCreatedByDBName()
+        public static string GetCreatedByDBName()
         {
             return "s_created_by_c";
         }
@@ -29294,7 +29333,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetDateModifiedDBName()
+        public static string GetDateModifiedDBName()
         {
             return "s_date_modified_d";
         }
@@ -29306,7 +29345,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetModifiedByDBName()
+        public static string GetModifiedByDBName()
         {
             return "s_modified_by_c";
         }
@@ -29318,7 +29357,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetModificationIdDBName()
+        public static string GetModificationIdDBName()
         {
             return "s_modification_id_c";
         }
@@ -29685,7 +29724,8 @@ namespace Ict.Petra.Shared.MSysMan.Data
         /// This identifies the current version of the record.
         public DataColumn ColumnModificationId;
 
-        private static short TableId = -1;
+        /// TableId for Ict.Common.Data generic functions
+        public static short TableId = 316;
 
         private static bool FInitInfoValues = InitInfoValues();
         private static bool InitInfoValues()
@@ -29702,8 +29742,8 @@ namespace Ict.Petra.Shared.MSysMan.Data
                     new TTypedColumnInfo(7, "ModifiedBy", "s_modified_by_c", OdbcType.VarChar, 20, false),
                     new TTypedColumnInfo(8, "ModificationId", "s_modification_id_c", OdbcType.VarChar, 150, false)
                 },
-                new string[] {
-                    "s_group_id_c", "s_group_unit_key_n", "a_ledger_number_i", "a_cost_centre_code_c"
+                new int[] {
+                    0, 1, 2, 3
                 }));
             return true;
         }
@@ -29799,7 +29839,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetGroupIdDBName()
+        public static string GetGroupIdDBName()
         {
             return "s_group_id_c";
         }
@@ -29811,7 +29851,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetGroupUnitKeyDBName()
+        public static string GetGroupUnitKeyDBName()
         {
             return "s_group_unit_key_n";
         }
@@ -29823,7 +29863,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetLedgerNumberDBName()
+        public static string GetLedgerNumberDBName()
         {
             return "a_ledger_number_i";
         }
@@ -29835,7 +29875,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetCostCentreCodeDBName()
+        public static string GetCostCentreCodeDBName()
         {
             return "a_cost_centre_code_c";
         }
@@ -29847,7 +29887,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetDateCreatedDBName()
+        public static string GetDateCreatedDBName()
         {
             return "s_date_created_d";
         }
@@ -29859,7 +29899,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetCreatedByDBName()
+        public static string GetCreatedByDBName()
         {
             return "s_created_by_c";
         }
@@ -29871,7 +29911,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetDateModifiedDBName()
+        public static string GetDateModifiedDBName()
         {
             return "s_date_modified_d";
         }
@@ -29883,7 +29923,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetModifiedByDBName()
+        public static string GetModifiedByDBName()
         {
             return "s_modified_by_c";
         }
@@ -29895,7 +29935,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetModificationIdDBName()
+        public static string GetModificationIdDBName()
         {
             return "s_modification_id_c";
         }
@@ -30305,7 +30345,8 @@ namespace Ict.Petra.Shared.MSysMan.Data
         /// This identifies the current version of the record.
         public DataColumn ColumnModificationId;
 
-        private static short TableId = -1;
+        /// TableId for Ict.Common.Data generic functions
+        public static short TableId = 317;
 
         private static bool FInitInfoValues = InitInfoValues();
         private static bool InitInfoValues()
@@ -30324,8 +30365,8 @@ namespace Ict.Petra.Shared.MSysMan.Data
                     new TTypedColumnInfo(9, "ModifiedBy", "s_modified_by_c", OdbcType.VarChar, 20, false),
                     new TTypedColumnInfo(10, "ModificationId", "s_modification_id_c", OdbcType.VarChar, 150, false)
                 },
-                new string[] {
-                    "s_group_id_c", "s_group_unit_key_n", "m_extract_id_i"
+                new int[] {
+                    0, 1, 2
                 }));
             return true;
         }
@@ -30425,7 +30466,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetGroupIdDBName()
+        public static string GetGroupIdDBName()
         {
             return "s_group_id_c";
         }
@@ -30437,7 +30478,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetGroupUnitKeyDBName()
+        public static string GetGroupUnitKeyDBName()
         {
             return "s_group_unit_key_n";
         }
@@ -30449,7 +30490,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetExtractIdDBName()
+        public static string GetExtractIdDBName()
         {
             return "m_extract_id_i";
         }
@@ -30461,7 +30502,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetReadAccessDBName()
+        public static string GetReadAccessDBName()
         {
             return "s_read_access_l";
         }
@@ -30473,7 +30514,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetWriteAccessDBName()
+        public static string GetWriteAccessDBName()
         {
             return "s_write_access_l";
         }
@@ -30485,7 +30526,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetDeleteAccessDBName()
+        public static string GetDeleteAccessDBName()
         {
             return "s_delete_access_l";
         }
@@ -30497,7 +30538,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetDateCreatedDBName()
+        public static string GetDateCreatedDBName()
         {
             return "s_date_created_d";
         }
@@ -30509,7 +30550,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetCreatedByDBName()
+        public static string GetCreatedByDBName()
         {
             return "s_created_by_c";
         }
@@ -30521,7 +30562,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetDateModifiedDBName()
+        public static string GetDateModifiedDBName()
         {
             return "s_date_modified_d";
         }
@@ -30533,7 +30574,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetModifiedByDBName()
+        public static string GetModifiedByDBName()
         {
             return "s_modified_by_c";
         }
@@ -30545,7 +30586,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetModificationIdDBName()
+        public static string GetModificationIdDBName()
         {
             return "s_modification_id_c";
         }
@@ -31033,7 +31074,8 @@ namespace Ict.Petra.Shared.MSysMan.Data
         /// This identifies the current version of the record.
         public DataColumn ColumnModificationId;
 
-        private static short TableId = -1;
+        /// TableId for Ict.Common.Data generic functions
+        public static short TableId = 318;
 
         private static bool FInitInfoValues = InitInfoValues();
         private static bool InitInfoValues()
@@ -31052,8 +31094,8 @@ namespace Ict.Petra.Shared.MSysMan.Data
                     new TTypedColumnInfo(9, "ModifiedBy", "s_modified_by_c", OdbcType.VarChar, 20, false),
                     new TTypedColumnInfo(10, "ModificationId", "s_modification_id_c", OdbcType.VarChar, 150, false)
                 },
-                new string[] {
-                    "s_table_name_c", "s_rowid_c"
+                new int[] {
+                    0, 1
                 }));
             return true;
         }
@@ -31153,7 +31195,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetTableNameDBName()
+        public static string GetTableNameDBName()
         {
             return "s_table_name_c";
         }
@@ -31165,7 +31207,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetRowidDBName()
+        public static string GetRowidDBName()
         {
             return "s_rowid_c";
         }
@@ -31177,7 +31219,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetChangeTypeDBName()
+        public static string GetChangeTypeDBName()
         {
             return "s_change_type_c";
         }
@@ -31189,7 +31231,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetNaturalKeyDBName()
+        public static string GetNaturalKeyDBName()
         {
             return "s_natural_key_c";
         }
@@ -31201,7 +31243,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetDateDBName()
+        public static string GetDateDBName()
         {
             return "s_date_d";
         }
@@ -31213,7 +31255,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetTimeDBName()
+        public static string GetTimeDBName()
         {
             return "s_time_i";
         }
@@ -31225,7 +31267,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetDateCreatedDBName()
+        public static string GetDateCreatedDBName()
         {
             return "s_date_created_d";
         }
@@ -31237,7 +31279,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetCreatedByDBName()
+        public static string GetCreatedByDBName()
         {
             return "s_created_by_c";
         }
@@ -31249,7 +31291,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetDateModifiedDBName()
+        public static string GetDateModifiedDBName()
         {
             return "s_date_modified_d";
         }
@@ -31261,7 +31303,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetModifiedByDBName()
+        public static string GetModifiedByDBName()
         {
             return "s_modified_by_c";
         }
@@ -31273,7 +31315,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetModificationIdDBName()
+        public static string GetModificationIdDBName()
         {
             return "s_modification_id_c";
         }
@@ -31771,7 +31813,8 @@ namespace Ict.Petra.Shared.MSysMan.Data
         /// This identifies the current version of the record.
         public DataColumn ColumnModificationId;
 
-        private static short TableId = -1;
+        /// TableId for Ict.Common.Data generic functions
+        public static short TableId = 319;
 
         private static bool FInitInfoValues = InitInfoValues();
         private static bool InitInfoValues()
@@ -31795,8 +31838,8 @@ namespace Ict.Petra.Shared.MSysMan.Data
                     new TTypedColumnInfo(14, "ModifiedBy", "s_modified_by_c", OdbcType.VarChar, 20, false),
                     new TTypedColumnInfo(15, "ModificationId", "s_modification_id_c", OdbcType.VarChar, 150, false)
                 },
-                new string[] {
-                    "p_label_name_c"
+                new int[] {
+                    0
                 }));
             return true;
         }
@@ -31906,7 +31949,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetLabelNameDBName()
+        public static string GetLabelNameDBName()
         {
             return "p_label_name_c";
         }
@@ -31918,7 +31961,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetLabelDescriptionDBName()
+        public static string GetLabelDescriptionDBName()
         {
             return "s_label_description_c";
         }
@@ -31930,7 +31973,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetFormNameDBName()
+        public static string GetFormNameDBName()
         {
             return "s_form_name_c";
         }
@@ -31942,7 +31985,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetTopMarginDBName()
+        public static string GetTopMarginDBName()
         {
             return "s_top_margin_n";
         }
@@ -31954,7 +31997,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetSideMarginDBName()
+        public static string GetSideMarginDBName()
         {
             return "s_side_margin_n";
         }
@@ -31966,7 +32009,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetVerticalPitchDBName()
+        public static string GetVerticalPitchDBName()
         {
             return "s_vertical_pitch_n";
         }
@@ -31978,7 +32021,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetHorizontalPitchDBName()
+        public static string GetHorizontalPitchDBName()
         {
             return "s_horizontal_pitch_n";
         }
@@ -31990,7 +32033,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetLabelHeightDBName()
+        public static string GetLabelHeightDBName()
         {
             return "s_label_height_n";
         }
@@ -32002,7 +32045,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetLabelWidthDBName()
+        public static string GetLabelWidthDBName()
         {
             return "s_label_width_n";
         }
@@ -32014,7 +32057,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetLabelsAcrossDBName()
+        public static string GetLabelsAcrossDBName()
         {
             return "s_labels_across_i";
         }
@@ -32026,7 +32069,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetLabelsDownDBName()
+        public static string GetLabelsDownDBName()
         {
             return "s_labels_down_i";
         }
@@ -32038,7 +32081,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetDateCreatedDBName()
+        public static string GetDateCreatedDBName()
         {
             return "s_date_created_d";
         }
@@ -32050,7 +32093,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetCreatedByDBName()
+        public static string GetCreatedByDBName()
         {
             return "s_created_by_c";
         }
@@ -32062,7 +32105,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetDateModifiedDBName()
+        public static string GetDateModifiedDBName()
         {
             return "s_date_modified_d";
         }
@@ -32074,7 +32117,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetModifiedByDBName()
+        public static string GetModifiedByDBName()
         {
             return "s_modified_by_c";
         }
@@ -32086,7 +32129,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetModificationIdDBName()
+        public static string GetModificationIdDBName()
         {
             return "s_modification_id_c";
         }
@@ -32767,7 +32810,8 @@ namespace Ict.Petra.Shared.MSysMan.Data
         /// This identifies the current version of the record.
         public DataColumn ColumnModificationId;
 
-        private static short TableId = -1;
+        /// TableId for Ict.Common.Data generic functions
+        public static short TableId = 327;
 
         private static bool FInitInfoValues = InitInfoValues();
         private static bool InitInfoValues()
@@ -32785,8 +32829,8 @@ namespace Ict.Petra.Shared.MSysMan.Data
                     new TTypedColumnInfo(8, "ModifiedBy", "s_modified_by_c", OdbcType.VarChar, 20, false),
                     new TTypedColumnInfo(9, "ModificationId", "s_modification_id_c", OdbcType.VarChar, 150, false)
                 },
-                new string[] {
-                    "s_workflow_id_i"
+                new int[] {
+                    0
                 }));
             return true;
         }
@@ -32884,7 +32928,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetWorkflowIdDBName()
+        public static string GetWorkflowIdDBName()
         {
             return "s_workflow_id_i";
         }
@@ -32896,7 +32940,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetNameDBName()
+        public static string GetNameDBName()
         {
             return "s_name_c";
         }
@@ -32908,7 +32952,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetDescriptionDBName()
+        public static string GetDescriptionDBName()
         {
             return "s_description_c";
         }
@@ -32920,7 +32964,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetModuleListDBName()
+        public static string GetModuleListDBName()
         {
             return "s_module_list_c";
         }
@@ -32932,7 +32976,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetTypeOfSharedDataDBName()
+        public static string GetTypeOfSharedDataDBName()
         {
             return "s_type_of_shared_data_c";
         }
@@ -32944,7 +32988,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetDateCreatedDBName()
+        public static string GetDateCreatedDBName()
         {
             return "s_date_created_d";
         }
@@ -32956,7 +33000,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetCreatedByDBName()
+        public static string GetCreatedByDBName()
         {
             return "s_created_by_c";
         }
@@ -32968,7 +33012,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetDateModifiedDBName()
+        public static string GetDateModifiedDBName()
         {
             return "s_date_modified_d";
         }
@@ -32980,7 +33024,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetModifiedByDBName()
+        public static string GetModifiedByDBName()
         {
             return "s_modified_by_c";
         }
@@ -32992,7 +33036,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetModificationIdDBName()
+        public static string GetModificationIdDBName()
         {
             return "s_modification_id_c";
         }
@@ -33433,7 +33477,8 @@ namespace Ict.Petra.Shared.MSysMan.Data
         /// This identifies the current version of the record.
         public DataColumn ColumnModificationId;
 
-        private static short TableId = -1;
+        /// TableId for Ict.Common.Data generic functions
+        public static short TableId = 328;
 
         private static bool FInitInfoValues = InitInfoValues();
         private static bool InitInfoValues()
@@ -33448,8 +33493,8 @@ namespace Ict.Petra.Shared.MSysMan.Data
                     new TTypedColumnInfo(5, "ModifiedBy", "s_modified_by_c", OdbcType.VarChar, 20, false),
                     new TTypedColumnInfo(6, "ModificationId", "s_modification_id_c", OdbcType.VarChar, 150, false)
                 },
-                new string[] {
-                    "s_workflow_id_i", "s_user_id_c"
+                new int[] {
+                    0, 1
                 }));
             return true;
         }
@@ -33541,7 +33586,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetWorkflowIdDBName()
+        public static string GetWorkflowIdDBName()
         {
             return "s_workflow_id_i";
         }
@@ -33553,7 +33598,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetUserIdDBName()
+        public static string GetUserIdDBName()
         {
             return "s_user_id_c";
         }
@@ -33565,7 +33610,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetDateCreatedDBName()
+        public static string GetDateCreatedDBName()
         {
             return "s_date_created_d";
         }
@@ -33577,7 +33622,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetCreatedByDBName()
+        public static string GetCreatedByDBName()
         {
             return "s_created_by_c";
         }
@@ -33589,7 +33634,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetDateModifiedDBName()
+        public static string GetDateModifiedDBName()
         {
             return "s_date_modified_d";
         }
@@ -33601,7 +33646,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetModifiedByDBName()
+        public static string GetModifiedByDBName()
         {
             return "s_modified_by_c";
         }
@@ -33613,7 +33658,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetModificationIdDBName()
+        public static string GetModificationIdDBName()
         {
             return "s_modification_id_c";
         }
@@ -33939,7 +33984,8 @@ namespace Ict.Petra.Shared.MSysMan.Data
         /// This identifies the current version of the record.
         public DataColumn ColumnModificationId;
 
-        private static short TableId = -1;
+        /// TableId for Ict.Common.Data generic functions
+        public static short TableId = 329;
 
         private static bool FInitInfoValues = InitInfoValues();
         private static bool InitInfoValues()
@@ -33955,8 +34001,8 @@ namespace Ict.Petra.Shared.MSysMan.Data
                     new TTypedColumnInfo(6, "ModifiedBy", "s_modified_by_c", OdbcType.VarChar, 20, false),
                     new TTypedColumnInfo(7, "ModificationId", "s_modification_id_c", OdbcType.VarChar, 150, false)
                 },
-                new string[] {
-                    "s_workflow_id_i", "s_group_id_c", "s_group_unit_key_n"
+                new int[] {
+                    0, 1, 2
                 }));
             return true;
         }
@@ -34050,7 +34096,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetWorkflowIdDBName()
+        public static string GetWorkflowIdDBName()
         {
             return "s_workflow_id_i";
         }
@@ -34062,7 +34108,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetGroupIdDBName()
+        public static string GetGroupIdDBName()
         {
             return "s_group_id_c";
         }
@@ -34074,7 +34120,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetGroupUnitKeyDBName()
+        public static string GetGroupUnitKeyDBName()
         {
             return "s_group_unit_key_n";
         }
@@ -34086,7 +34132,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetDateCreatedDBName()
+        public static string GetDateCreatedDBName()
         {
             return "s_date_created_d";
         }
@@ -34098,7 +34144,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetCreatedByDBName()
+        public static string GetCreatedByDBName()
         {
             return "s_created_by_c";
         }
@@ -34110,7 +34156,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetDateModifiedDBName()
+        public static string GetDateModifiedDBName()
         {
             return "s_date_modified_d";
         }
@@ -34122,7 +34168,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetModifiedByDBName()
+        public static string GetModifiedByDBName()
         {
             return "s_modified_by_c";
         }
@@ -34134,7 +34180,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetModificationIdDBName()
+        public static string GetModificationIdDBName()
         {
             return "s_modification_id_c";
         }
@@ -34499,7 +34545,8 @@ namespace Ict.Petra.Shared.MSysMan.Data
         /// This identifies the current version of the record.
         public DataColumn ColumnModificationId;
 
-        private static short TableId = -1;
+        /// TableId for Ict.Common.Data generic functions
+        public static short TableId = 330;
 
         private static bool FInitInfoValues = InitInfoValues();
         private static bool InitInfoValues()
@@ -34515,8 +34562,8 @@ namespace Ict.Petra.Shared.MSysMan.Data
                     new TTypedColumnInfo(6, "ModifiedBy", "s_modified_by_c", OdbcType.VarChar, 20, false),
                     new TTypedColumnInfo(7, "ModificationId", "s_modification_id_c", OdbcType.VarChar, 150, false)
                 },
-                new string[] {
-                    "s_workflow_id_i", "s_step_number_i"
+                new int[] {
+                    0, 1
                 }));
             return true;
         }
@@ -34610,7 +34657,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetWorkflowIdDBName()
+        public static string GetWorkflowIdDBName()
         {
             return "s_workflow_id_i";
         }
@@ -34622,7 +34669,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetStepNumberDBName()
+        public static string GetStepNumberDBName()
         {
             return "s_step_number_i";
         }
@@ -34634,7 +34681,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetFunctionIdDBName()
+        public static string GetFunctionIdDBName()
         {
             return "s_function_id_c";
         }
@@ -34646,7 +34693,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetDateCreatedDBName()
+        public static string GetDateCreatedDBName()
         {
             return "s_date_created_d";
         }
@@ -34658,7 +34705,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetCreatedByDBName()
+        public static string GetCreatedByDBName()
         {
             return "s_created_by_c";
         }
@@ -34670,7 +34717,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetDateModifiedDBName()
+        public static string GetDateModifiedDBName()
         {
             return "s_date_modified_d";
         }
@@ -34682,7 +34729,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetModifiedByDBName()
+        public static string GetModifiedByDBName()
         {
             return "s_modified_by_c";
         }
@@ -34694,7 +34741,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetModificationIdDBName()
+        public static string GetModificationIdDBName()
         {
             return "s_modification_id_c";
         }
@@ -35059,7 +35106,8 @@ namespace Ict.Petra.Shared.MSysMan.Data
         /// This identifies the current version of the record.
         public DataColumn ColumnModificationId;
 
-        private static short TableId = -1;
+        /// TableId for Ict.Common.Data generic functions
+        public static short TableId = 331;
 
         private static bool FInitInfoValues = InitInfoValues();
         private static bool InitInfoValues()
@@ -35075,8 +35123,8 @@ namespace Ict.Petra.Shared.MSysMan.Data
                     new TTypedColumnInfo(6, "ModifiedBy", "s_modified_by_c", OdbcType.VarChar, 20, false),
                     new TTypedColumnInfo(7, "ModificationId", "s_modification_id_c", OdbcType.VarChar, 150, false)
                 },
-                new string[] {
-                    "s_function_1_c", "s_function_2_c"
+                new int[] {
+                    0, 1
                 }));
             return true;
         }
@@ -35170,7 +35218,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetFunction1DBName()
+        public static string GetFunction1DBName()
         {
             return "s_function_1_c";
         }
@@ -35182,7 +35230,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetFunction2DBName()
+        public static string GetFunction2DBName()
         {
             return "s_function_2_c";
         }
@@ -35194,7 +35242,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetCodeToRunDBName()
+        public static string GetCodeToRunDBName()
         {
             return "s_code_to_run_c";
         }
@@ -35206,7 +35254,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetDateCreatedDBName()
+        public static string GetDateCreatedDBName()
         {
             return "s_date_created_d";
         }
@@ -35218,7 +35266,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetCreatedByDBName()
+        public static string GetCreatedByDBName()
         {
             return "s_created_by_c";
         }
@@ -35230,7 +35278,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetDateModifiedDBName()
+        public static string GetDateModifiedDBName()
         {
             return "s_date_modified_d";
         }
@@ -35242,7 +35290,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetModifiedByDBName()
+        public static string GetModifiedByDBName()
         {
             return "s_modified_by_c";
         }
@@ -35254,7 +35302,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetModificationIdDBName()
+        public static string GetModificationIdDBName()
         {
             return "s_modification_id_c";
         }
@@ -35627,7 +35675,8 @@ namespace Ict.Petra.Shared.MSysMan.Data
         /// This identifies the current version of the record.
         public DataColumn ColumnModificationId;
 
-        private static short TableId = -1;
+        /// TableId for Ict.Common.Data generic functions
+        public static short TableId = 332;
 
         private static bool FInitInfoValues = InitInfoValues();
         private static bool InitInfoValues()
@@ -35647,8 +35696,8 @@ namespace Ict.Petra.Shared.MSysMan.Data
                     new TTypedColumnInfo(10, "ModifiedBy", "s_modified_by_c", OdbcType.VarChar, 20, false),
                     new TTypedColumnInfo(11, "ModificationId", "s_modification_id_c", OdbcType.VarChar, 150, false)
                 },
-                new string[] {
-                    "s_workflow_instance_id_i"
+                new int[] {
+                    0
                 }));
             return true;
         }
@@ -35750,7 +35799,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetWorkflowInstanceIdDBName()
+        public static string GetWorkflowInstanceIdDBName()
         {
             return "s_workflow_instance_id_i";
         }
@@ -35762,7 +35811,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetWorkflowIdDBName()
+        public static string GetWorkflowIdDBName()
         {
             return "s_workflow_id_i";
         }
@@ -35774,7 +35823,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetKeyDataItemDBName()
+        public static string GetKeyDataItemDBName()
         {
             return "s_key_data_item_c";
         }
@@ -35786,7 +35835,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetKeyDataItemTypeDBName()
+        public static string GetKeyDataItemTypeDBName()
         {
             return "s_key_data_item_type_c";
         }
@@ -35798,7 +35847,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetSystemGeneratedDBName()
+        public static string GetSystemGeneratedDBName()
         {
             return "s_system_generated_l";
         }
@@ -35810,7 +35859,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetCompleteDBName()
+        public static string GetCompleteDBName()
         {
             return "s_complete_l";
         }
@@ -35822,7 +35871,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetNoteDBName()
+        public static string GetNoteDBName()
         {
             return "s_note_c";
         }
@@ -35834,7 +35883,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetDateCreatedDBName()
+        public static string GetDateCreatedDBName()
         {
             return "s_date_created_d";
         }
@@ -35846,7 +35895,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetCreatedByDBName()
+        public static string GetCreatedByDBName()
         {
             return "s_created_by_c";
         }
@@ -35858,7 +35907,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetDateModifiedDBName()
+        public static string GetDateModifiedDBName()
         {
             return "s_date_modified_d";
         }
@@ -35870,7 +35919,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetModifiedByDBName()
+        public static string GetModifiedByDBName()
         {
             return "s_modified_by_c";
         }
@@ -35882,7 +35931,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetModificationIdDBName()
+        public static string GetModificationIdDBName()
         {
             return "s_modification_id_c";
         }
@@ -36407,7 +36456,8 @@ namespace Ict.Petra.Shared.MSysMan.Data
         /// This identifies the current version of the record.
         public DataColumn ColumnModificationId;
 
-        private static short TableId = -1;
+        /// TableId for Ict.Common.Data generic functions
+        public static short TableId = 333;
 
         private static bool FInitInfoValues = InitInfoValues();
         private static bool InitInfoValues()
@@ -36425,8 +36475,8 @@ namespace Ict.Petra.Shared.MSysMan.Data
                     new TTypedColumnInfo(8, "ModifiedBy", "s_modified_by_c", OdbcType.VarChar, 20, false),
                     new TTypedColumnInfo(9, "ModificationId", "s_modification_id_c", OdbcType.VarChar, 150, false)
                 },
-                new string[] {
-                    "s_workflow_instance_id_i", "s_step_number_i"
+                new int[] {
+                    0, 1
                 }));
             return true;
         }
@@ -36524,7 +36574,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetWorkflowInstanceIdDBName()
+        public static string GetWorkflowInstanceIdDBName()
         {
             return "s_workflow_instance_id_i";
         }
@@ -36536,7 +36586,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetStepNumberDBName()
+        public static string GetStepNumberDBName()
         {
             return "s_step_number_i";
         }
@@ -36548,7 +36598,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetCompleteDBName()
+        public static string GetCompleteDBName()
         {
             return "s_complete_l";
         }
@@ -36560,7 +36610,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetUserIdDBName()
+        public static string GetUserIdDBName()
         {
             return "s_user_id_c";
         }
@@ -36572,7 +36622,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetOutputParametersDBName()
+        public static string GetOutputParametersDBName()
         {
             return "s_output_parameters_c";
         }
@@ -36584,7 +36634,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetDateCreatedDBName()
+        public static string GetDateCreatedDBName()
         {
             return "s_date_created_d";
         }
@@ -36596,7 +36646,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetCreatedByDBName()
+        public static string GetCreatedByDBName()
         {
             return "s_created_by_c";
         }
@@ -36608,7 +36658,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetDateModifiedDBName()
+        public static string GetDateModifiedDBName()
         {
             return "s_date_modified_d";
         }
@@ -36620,7 +36670,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetModifiedByDBName()
+        public static string GetModifiedByDBName()
         {
             return "s_modified_by_c";
         }
@@ -36632,7 +36682,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetModificationIdDBName()
+        public static string GetModificationIdDBName()
         {
             return "s_modification_id_c";
         }
@@ -37077,7 +37127,8 @@ namespace Ict.Petra.Shared.MSysMan.Data
         /// This identifies the current version of the record.
         public DataColumn ColumnModificationId;
 
-        private static short TableId = -1;
+        /// TableId for Ict.Common.Data generic functions
+        public static short TableId = 341;
 
         private static bool FInitInfoValues = InitInfoValues();
         private static bool InitInfoValues()
@@ -37094,8 +37145,8 @@ namespace Ict.Petra.Shared.MSysMan.Data
                     new TTypedColumnInfo(7, "ModifiedBy", "s_modified_by_c", OdbcType.VarChar, 20, false),
                     new TTypedColumnInfo(8, "ModificationId", "s_modification_id_c", OdbcType.VarChar, 150, false)
                 },
-                new string[] {
-                    "s_name_c"
+                new int[] {
+                    0
                 }));
             return true;
         }
@@ -37191,7 +37242,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetNameDBName()
+        public static string GetNameDBName()
         {
             return "s_name_c";
         }
@@ -37203,7 +37254,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetParentVolumeNameDBName()
+        public static string GetParentVolumeNameDBName()
         {
             return "s_parent_volume_name_c";
         }
@@ -37215,7 +37266,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetPathDBName()
+        public static string GetPathDBName()
         {
             return "s_path_c";
         }
@@ -37227,7 +37278,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetCommentDBName()
+        public static string GetCommentDBName()
         {
             return "s_comment_c";
         }
@@ -37239,7 +37290,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetDateCreatedDBName()
+        public static string GetDateCreatedDBName()
         {
             return "s_date_created_d";
         }
@@ -37251,7 +37302,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetCreatedByDBName()
+        public static string GetCreatedByDBName()
         {
             return "s_created_by_c";
         }
@@ -37263,7 +37314,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetDateModifiedDBName()
+        public static string GetDateModifiedDBName()
         {
             return "s_date_modified_d";
         }
@@ -37275,7 +37326,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetModifiedByDBName()
+        public static string GetModifiedByDBName()
         {
             return "s_modified_by_c";
         }
@@ -37287,7 +37338,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetModificationIdDBName()
+        public static string GetModificationIdDBName()
         {
             return "s_modification_id_c";
         }
@@ -37691,7 +37742,8 @@ namespace Ict.Petra.Shared.MSysMan.Data
         /// This identifies the current version of the record.
         public DataColumn ColumnModificationId;
 
-        private static short TableId = -1;
+        /// TableId for Ict.Common.Data generic functions
+        public static short TableId = 342;
 
         private static bool FInitInfoValues = InitInfoValues();
         private static bool InitInfoValues()
@@ -37707,8 +37759,8 @@ namespace Ict.Petra.Shared.MSysMan.Data
                     new TTypedColumnInfo(6, "ModifiedBy", "s_modified_by_c", OdbcType.VarChar, 20, false),
                     new TTypedColumnInfo(7, "ModificationId", "s_modification_id_c", OdbcType.VarChar, 150, false)
                 },
-                new string[] {
-                    "s_group_name_c", "s_area_c"
+                new int[] {
+                    0, 1
                 }));
             return true;
         }
@@ -37802,7 +37854,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetGroupNameDBName()
+        public static string GetGroupNameDBName()
         {
             return "s_group_name_c";
         }
@@ -37814,7 +37866,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetAreaDBName()
+        public static string GetAreaDBName()
         {
             return "s_area_c";
         }
@@ -37826,7 +37878,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetVolumeNameDBName()
+        public static string GetVolumeNameDBName()
         {
             return "s_volume_name_c";
         }
@@ -37838,7 +37890,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetDateCreatedDBName()
+        public static string GetDateCreatedDBName()
         {
             return "s_date_created_d";
         }
@@ -37850,7 +37902,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetCreatedByDBName()
+        public static string GetCreatedByDBName()
         {
             return "s_created_by_c";
         }
@@ -37862,7 +37914,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetDateModifiedDBName()
+        public static string GetDateModifiedDBName()
         {
             return "s_date_modified_d";
         }
@@ -37874,7 +37926,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetModifiedByDBName()
+        public static string GetModifiedByDBName()
         {
             return "s_modified_by_c";
         }
@@ -37886,7 +37938,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetModificationIdDBName()
+        public static string GetModificationIdDBName()
         {
             return "s_modification_id_c";
         }
@@ -38251,7 +38303,8 @@ namespace Ict.Petra.Shared.MSysMan.Data
         /// This identifies the current version of the record.
         public DataColumn ColumnModificationId;
 
-        private static short TableId = -1;
+        /// TableId for Ict.Common.Data generic functions
+        public static short TableId = 343;
 
         private static bool FInitInfoValues = InitInfoValues();
         private static bool InitInfoValues()
@@ -38267,8 +38320,8 @@ namespace Ict.Petra.Shared.MSysMan.Data
                     new TTypedColumnInfo(6, "ModifiedBy", "s_modified_by_c", OdbcType.VarChar, 20, false),
                     new TTypedColumnInfo(7, "ModificationId", "s_modification_id_c", OdbcType.VarChar, 150, false)
                 },
-                new string[] {
-                    "s_name_c"
+                new int[] {
+                    0
                 }));
             return true;
         }
@@ -38362,7 +38415,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetNameDBName()
+        public static string GetNameDBName()
         {
             return "s_name_c";
         }
@@ -38374,7 +38427,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetDescriptionDBName()
+        public static string GetDescriptionDBName()
         {
             return "s_description_c";
         }
@@ -38386,7 +38439,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetCommentDBName()
+        public static string GetCommentDBName()
         {
             return "s_comment_c";
         }
@@ -38398,7 +38451,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetDateCreatedDBName()
+        public static string GetDateCreatedDBName()
         {
             return "s_date_created_d";
         }
@@ -38410,7 +38463,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetCreatedByDBName()
+        public static string GetCreatedByDBName()
         {
             return "s_created_by_c";
         }
@@ -38422,7 +38475,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetDateModifiedDBName()
+        public static string GetDateModifiedDBName()
         {
             return "s_date_modified_d";
         }
@@ -38434,7 +38487,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetModifiedByDBName()
+        public static string GetModifiedByDBName()
         {
             return "s_modified_by_c";
         }
@@ -38446,7 +38499,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetModificationIdDBName()
+        public static string GetModificationIdDBName()
         {
             return "s_modification_id_c";
         }
@@ -38809,7 +38862,8 @@ namespace Ict.Petra.Shared.MSysMan.Data
         /// This identifies the current version of the record.
         public DataColumn ColumnModificationId;
 
-        private static short TableId = -1;
+        /// TableId for Ict.Common.Data generic functions
+        public static short TableId = 344;
 
         private static bool FInitInfoValues = InitInfoValues();
         private static bool InitInfoValues()
@@ -38824,8 +38878,8 @@ namespace Ict.Petra.Shared.MSysMan.Data
                     new TTypedColumnInfo(5, "ModifiedBy", "s_modified_by_c", OdbcType.VarChar, 20, false),
                     new TTypedColumnInfo(6, "ModificationId", "s_modification_id_c", OdbcType.VarChar, 150, false)
                 },
-                new string[] {
-                    "s_group_name_c", "p_partner_key_n"
+                new int[] {
+                    0, 1
                 }));
             return true;
         }
@@ -38917,7 +38971,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetGroupNameDBName()
+        public static string GetGroupNameDBName()
         {
             return "s_group_name_c";
         }
@@ -38929,7 +38983,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetPartnerKeyDBName()
+        public static string GetPartnerKeyDBName()
         {
             return "p_partner_key_n";
         }
@@ -38941,7 +38995,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetDateCreatedDBName()
+        public static string GetDateCreatedDBName()
         {
             return "s_date_created_d";
         }
@@ -38953,7 +39007,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetCreatedByDBName()
+        public static string GetCreatedByDBName()
         {
             return "s_created_by_c";
         }
@@ -38965,7 +39019,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetDateModifiedDBName()
+        public static string GetDateModifiedDBName()
         {
             return "s_date_modified_d";
         }
@@ -38977,7 +39031,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetModifiedByDBName()
+        public static string GetModifiedByDBName()
         {
             return "s_modified_by_c";
         }
@@ -38989,7 +39043,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetModificationIdDBName()
+        public static string GetModificationIdDBName()
         {
             return "s_modification_id_c";
         }
@@ -39321,7 +39375,8 @@ namespace Ict.Petra.Shared.MSysMan.Data
         /// This identifies the current version of the record.
         public DataColumn ColumnModificationId;
 
-        private static short TableId = -1;
+        /// TableId for Ict.Common.Data generic functions
+        public static short TableId = 345;
 
         private static bool FInitInfoValues = InitInfoValues();
         private static bool InitInfoValues()
@@ -39340,8 +39395,8 @@ namespace Ict.Petra.Shared.MSysMan.Data
                     new TTypedColumnInfo(9, "ModifiedBy", "s_modified_by_c", OdbcType.VarChar, 20, false),
                     new TTypedColumnInfo(10, "ModificationId", "s_modification_id_c", OdbcType.VarChar, 150, false)
                 },
-                new string[] {
-                    "s_group_id_c", "s_group_unit_key_n", "p_file_info_key_n"
+                new int[] {
+                    0, 1, 2
                 }));
             return true;
         }
@@ -39441,7 +39496,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetGroupIdDBName()
+        public static string GetGroupIdDBName()
         {
             return "s_group_id_c";
         }
@@ -39453,7 +39508,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetGroupUnitKeyDBName()
+        public static string GetGroupUnitKeyDBName()
         {
             return "s_group_unit_key_n";
         }
@@ -39465,7 +39520,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetFileInfoKeyDBName()
+        public static string GetFileInfoKeyDBName()
         {
             return "p_file_info_key_n";
         }
@@ -39477,7 +39532,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetReadAccessDBName()
+        public static string GetReadAccessDBName()
         {
             return "s_read_access_l";
         }
@@ -39489,7 +39544,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetWriteAccessDBName()
+        public static string GetWriteAccessDBName()
         {
             return "s_write_access_l";
         }
@@ -39501,7 +39556,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetDeleteAccessDBName()
+        public static string GetDeleteAccessDBName()
         {
             return "s_delete_access_l";
         }
@@ -39513,7 +39568,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetDateCreatedDBName()
+        public static string GetDateCreatedDBName()
         {
             return "s_date_created_d";
         }
@@ -39525,7 +39580,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetCreatedByDBName()
+        public static string GetCreatedByDBName()
         {
             return "s_created_by_c";
         }
@@ -39537,7 +39592,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetDateModifiedDBName()
+        public static string GetDateModifiedDBName()
         {
             return "s_date_modified_d";
         }
@@ -39549,7 +39604,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetModifiedByDBName()
+        public static string GetModifiedByDBName()
         {
             return "s_modified_by_c";
         }
@@ -39561,7 +39616,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetModificationIdDBName()
+        public static string GetModificationIdDBName()
         {
             return "s_modification_id_c";
         }

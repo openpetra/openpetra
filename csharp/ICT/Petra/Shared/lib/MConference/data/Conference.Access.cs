@@ -54,9 +54,8 @@ namespace Ict.Petra.Shared.MConference.Data.Access
         /// this method is called by all overloads
         public static void LoadAll(DataSet ADataSet, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, ((GenerateSelectClause(AFieldList, new string[] {
-                            "pc_conference_key_n"}) + " FROM PUB_pc_conference")
-                            + GenerateOrderByClause(AOrderBy)), PcConferenceTable.GetTableName(), ATransaction, AStartRecord, AMaxRecords);
+            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, ((GenerateSelectClause(AFieldList, PcConferenceTable.TableId) + " FROM PUB_pc_conference") +
+                            GenerateOrderByClause(AOrderBy)), TTypedDataTable.GetTableName(PcConferenceTable.TableId), ATransaction, AStartRecord, AMaxRecords);
         }
 
         /// auto generated
@@ -96,12 +95,8 @@ namespace Ict.Petra.Shared.MConference.Data.Access
         /// this method is called by all overloads
         public static void LoadByPrimaryKey(DataSet ADataSet, Int64 AConferenceKey, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            OdbcParameter[] ParametersArray = new OdbcParameter[1];
-            ParametersArray[0] = new OdbcParameter("", OdbcType.Decimal, 10);
-            ParametersArray[0].Value = ((object)(AConferenceKey));
-            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, ((GenerateSelectClause(AFieldList, new string[] {
-                            "pc_conference_key_n"}) + " FROM PUB_pc_conference WHERE pc_conference_key_n = ?")
-                            + GenerateOrderByClause(AOrderBy)), PcConferenceTable.GetTableName(), ATransaction, ParametersArray, AStartRecord, AMaxRecords);
+            ADataSet = LoadByPrimaryKey(PcConferenceTable.TableId,
+                ADataSet, new System.Object[1]{AConferenceKey}, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
         }
 
         /// auto generated
@@ -141,10 +136,10 @@ namespace Ict.Petra.Shared.MConference.Data.Access
         /// this method is called by all overloads
         public static void LoadUsingTemplate(DataSet ADataSet, PcConferenceRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClause(AFieldList, new string[] {
-                            "pc_conference_key_n"}) + " FROM PUB_pc_conference")
-                            + GenerateWhereClause(PcConferenceTable.GetColumnStringList(), ATemplateRow, ATemplateOperators))
-                            + GenerateOrderByClause(AOrderBy)), PcConferenceTable.GetTableName(), ATransaction, GetParametersForWhereClause(ATemplateRow), AStartRecord, AMaxRecords);
+            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClause(AFieldList, PcConferenceTable.TableId) + " FROM PUB_pc_conference") +
+                            GenerateWhereClause(TTypedDataTable.GetColumnStringList(PcConferenceTable.TableId), ATemplateRow, ATemplateOperators)) +
+                            GenerateOrderByClause(AOrderBy)), TTypedDataTable.GetTableName(PcConferenceTable.TableId), ATransaction,
+                            GetParametersForWhereClause(PcConferenceTable.TableId, ATemplateRow), AStartRecord, AMaxRecords);
         }
 
         /// auto generated
@@ -190,11 +185,10 @@ namespace Ict.Petra.Shared.MConference.Data.Access
         /// this method is called by all overloads
         public static void LoadUsingTemplate(DataSet ADataSet, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClause(AFieldList, new string[] {
-                            "pc_conference_key_n"}) + " FROM PUB_pc_conference")
-                            + GenerateWhereClause(PcConferenceTable.GetColumnStringList(), ASearchCriteria))
-                            + GenerateOrderByClause(AOrderBy)), PcConferenceTable.GetTableName(), ATransaction,
-                            GetParametersForWhereClause(new PcConferenceTable(), ASearchCriteria), AStartRecord, AMaxRecords);
+            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClause(AFieldList, PcConferenceTable.TableId) + " FROM PUB_pc_conference") +
+                            GenerateWhereClause(TTypedDataTable.GetColumnStringList(PcConferenceTable.TableId), ASearchCriteria)) +
+                            GenerateOrderByClause(AOrderBy)), TTypedDataTable.GetTableName(PcConferenceTable.TableId), ATransaction,
+                            GetParametersForWhereClause(PcConferenceTable.TableId, ASearchCriteria), AStartRecord, AMaxRecords);
         }
 
         /// auto generated
@@ -237,26 +231,24 @@ namespace Ict.Petra.Shared.MConference.Data.Access
             return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar("SELECT COUNT(*) FROM PUB_pc_conference", ATransaction, false));
         }
 
-        /// this method is called by all overloads
-        public static int CountByPrimaryKey(Int64 AConferenceKey, TDBTransaction ATransaction)
+        /// check if a row exists by using the primary key
+        public static bool Exists(Int64 AConferenceKey, TDBTransaction ATransaction)
         {
-            OdbcParameter[] ParametersArray = new OdbcParameter[1];
-            ParametersArray[0] = new OdbcParameter("", OdbcType.Decimal, 10);
-            ParametersArray[0].Value = ((object)(AConferenceKey));
-            return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar("SELECT COUNT(*) FROM PUB_pc_conference WHERE pc_conference_key_n = ?", ATransaction, false, ParametersArray));
+            return Exists(PcConferenceTable.TableId, new System.Object[1]{AConferenceKey}, ATransaction);
         }
 
         /// this method is called by all overloads
         public static int CountUsingTemplate(PcConferenceRow ATemplateRow, StringCollection ATemplateOperators, TDBTransaction ATransaction)
         {
-            return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_pc_conference" + GenerateWhereClause(PcConferenceTable.GetColumnStringList(), ATemplateRow, ATemplateOperators)), ATransaction, false, GetParametersForWhereClause(ATemplateRow)));
+            return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_pc_conference" + GenerateWhereClause(TTypedDataTable.GetColumnStringList(PcConferenceTable.TableId), ATemplateRow, ATemplateOperators)), ATransaction, false,
+                   GetParametersForWhereClause(PcConferenceTable.TableId, ATemplateRow)));
         }
 
         /// this method is called by all overloads
         public static int CountUsingTemplate(TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
         {
-            return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_pc_conference" + GenerateWhereClause(PcConferenceTable.GetColumnStringList(), ASearchCriteria)), ATransaction, false,
-            GetParametersForWhereClause(new PcConferenceTable(), ASearchCriteria)));
+            return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_pc_conference" + GenerateWhereClause(TTypedDataTable.GetColumnStringList(PcConferenceTable.TableId), ASearchCriteria)), ATransaction, false,
+            GetParametersForWhereClause(PcConferenceTable.TableId, ASearchCriteria)));
         }
 
         /// auto generated
@@ -265,9 +257,9 @@ namespace Ict.Petra.Shared.MConference.Data.Access
             OdbcParameter[] ParametersArray = new OdbcParameter[1];
             ParametersArray[0] = new OdbcParameter("", OdbcType.Decimal, 10);
             ParametersArray[0].Value = ((object)(APartnerKey));
-            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, ((GenerateSelectClause(AFieldList, new string[] {
-                            "pc_conference_key_n"}) + " FROM PUB_pc_conference WHERE pc_conference_key_n = ?")
-                            + GenerateOrderByClause(AOrderBy)), PcConferenceTable.GetTableName(), ATransaction, ParametersArray, AStartRecord, AMaxRecords);
+            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, ((GenerateSelectClause(AFieldList, PcConferenceTable.TableId) +
+                            " FROM PUB_pc_conference WHERE pc_conference_key_n = ?") +
+                            GenerateOrderByClause(AOrderBy)), TTypedDataTable.GetTableName(PcConferenceTable.TableId), ATransaction, ParametersArray, AStartRecord, AMaxRecords);
         }
 
         /// auto generated
@@ -307,11 +299,12 @@ namespace Ict.Petra.Shared.MConference.Data.Access
         /// auto generated
         public static void LoadViaPUnitTemplate(DataSet ADataSet, PUnitRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClauseLong("PUB_pc_conference", AFieldList, new string[] {
-                            "pc_conference_key_n"}) + " FROM PUB_pc_conference, PUB_p_unit WHERE " +
-                            "PUB_pc_conference.pc_conference_key_n = PUB_p_unit.p_partner_key_n")
-                            + GenerateWhereClauseLong("PUB_p_unit", PUnitTable.GetColumnStringList(), ATemplateRow, ATemplateOperators))
-                            + GenerateOrderByClause(AOrderBy)), PcConferenceTable.GetTableName(), ATransaction, GetParametersForWhereClause(ATemplateRow), AStartRecord, AMaxRecords);
+            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClauseLong("PUB_pc_conference", AFieldList, PcConferenceTable.TableId) +
+                            " FROM PUB_pc_conference, PUB_p_unit WHERE " +
+                            "PUB_pc_conference.pc_conference_key_n = PUB_p_unit.p_partner_key_n") +
+                            GenerateWhereClauseLong("PUB_p_unit", PUnitTable.TableId, ATemplateRow, ATemplateOperators)) +
+                            GenerateOrderByClause(AOrderBy)), TTypedDataTable.GetTableName(PcConferenceTable.TableId), ATransaction,
+                            GetParametersForWhereClause(PUnitTable.TableId, ATemplateRow), AStartRecord, AMaxRecords);
         }
 
         /// auto generated
@@ -357,12 +350,12 @@ namespace Ict.Petra.Shared.MConference.Data.Access
         /// auto generated
         public static void LoadViaPUnitTemplate(DataSet ADataSet, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClauseLong("PUB_pc_conference", AFieldList, new string[] {
-                            "pc_conference_key_n"}) + " FROM PUB_pc_conference, PUB_p_unit WHERE " +
-                            "PUB_pc_conference.pc_conference_key_n = PUB_p_unit.p_partner_key_n")
-                            + GenerateWhereClauseLong("PUB_p_unit", PUnitTable.GetColumnStringList(), ASearchCriteria))
-                            + GenerateOrderByClause(AOrderBy)), PcConferenceTable.GetTableName(), ATransaction,
-                            GetParametersForWhereClause(new PcConferenceTable(), ASearchCriteria), AStartRecord, AMaxRecords);
+            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClauseLong("PUB_pc_conference", AFieldList, PcConferenceTable.TableId) +
+                            " FROM PUB_pc_conference, PUB_p_unit WHERE " +
+                            "PUB_pc_conference.pc_conference_key_n = PUB_p_unit.p_partner_key_n") +
+                            GenerateWhereClauseLong("PUB_p_unit", ASearchCriteria)) +
+                            GenerateOrderByClause(AOrderBy)), TTypedDataTable.GetTableName(PcConferenceTable.TableId), ATransaction,
+                            GetParametersForWhereClause(PcConferenceTable.TableId, ASearchCriteria), AStartRecord, AMaxRecords);
         }
 
         /// auto generated
@@ -412,7 +405,10 @@ namespace Ict.Petra.Shared.MConference.Data.Access
         public static int CountViaPUnitTemplate(PUnitRow ATemplateRow, StringCollection ATemplateOperators, TDBTransaction ATransaction)
         {
             return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_pc_conference, PUB_p_unit WHERE " +
-                "PUB_pc_conference.pc_conference_key_n = PUB_p_unit.p_partner_key_n" + GenerateWhereClauseLong("PUB_p_unit", PUnitTable.GetColumnStringList(), ATemplateRow, ATemplateOperators)), ATransaction, false, GetParametersForWhereClause(ATemplateRow, PUnitTable.GetPrimKeyColumnOrdList())));
+                "PUB_pc_conference.pc_conference_key_n = PUB_p_unit.p_partner_key_n" + GenerateWhereClauseLong("PUB_p_unit",
+                PUnitTable.TableId, ATemplateRow, ATemplateOperators)),
+                ATransaction, false,
+                GetParametersForWhereClauseWithPrimaryKey(PUnitTable.TableId, ATemplateRow)));
         }
 
         /// auto generated
@@ -420,8 +416,8 @@ namespace Ict.Petra.Shared.MConference.Data.Access
         {
             return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_pc_conference, PUB_p_unit WHERE " +
                 "PUB_pc_conference.pc_conference_key_n = PUB_p_unit.p_partner_key_n" +
-                GenerateWhereClauseLong("PUB_p_unit", PUnitTable.GetColumnStringList(), ASearchCriteria)), ATransaction, false,
-                GetParametersForWhereClause(new PUnitTable(), ASearchCriteria)));
+                GenerateWhereClauseLong("PUB_p_unit", ASearchCriteria)), ATransaction, false,
+                GetParametersForWhereClause(PUnitTable.TableId, ASearchCriteria)));
         }
 
         /// auto generated
@@ -430,9 +426,9 @@ namespace Ict.Petra.Shared.MConference.Data.Access
             OdbcParameter[] ParametersArray = new OdbcParameter[1];
             ParametersArray[0] = new OdbcParameter("", OdbcType.VarChar, 16);
             ParametersArray[0].Value = ((object)(ACurrencyCode));
-            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, ((GenerateSelectClause(AFieldList, new string[] {
-                            "pc_conference_key_n"}) + " FROM PUB_pc_conference WHERE a_currency_code_c = ?")
-                            + GenerateOrderByClause(AOrderBy)), PcConferenceTable.GetTableName(), ATransaction, ParametersArray, AStartRecord, AMaxRecords);
+            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, ((GenerateSelectClause(AFieldList, PcConferenceTable.TableId) +
+                            " FROM PUB_pc_conference WHERE a_currency_code_c = ?") +
+                            GenerateOrderByClause(AOrderBy)), TTypedDataTable.GetTableName(PcConferenceTable.TableId), ATransaction, ParametersArray, AStartRecord, AMaxRecords);
         }
 
         /// auto generated
@@ -472,11 +468,12 @@ namespace Ict.Petra.Shared.MConference.Data.Access
         /// auto generated
         public static void LoadViaACurrencyTemplate(DataSet ADataSet, ACurrencyRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClauseLong("PUB_pc_conference", AFieldList, new string[] {
-                            "pc_conference_key_n"}) + " FROM PUB_pc_conference, PUB_a_currency WHERE " +
-                            "PUB_pc_conference.a_currency_code_c = PUB_a_currency.a_currency_code_c")
-                            + GenerateWhereClauseLong("PUB_a_currency", ACurrencyTable.GetColumnStringList(), ATemplateRow, ATemplateOperators))
-                            + GenerateOrderByClause(AOrderBy)), PcConferenceTable.GetTableName(), ATransaction, GetParametersForWhereClause(ATemplateRow), AStartRecord, AMaxRecords);
+            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClauseLong("PUB_pc_conference", AFieldList, PcConferenceTable.TableId) +
+                            " FROM PUB_pc_conference, PUB_a_currency WHERE " +
+                            "PUB_pc_conference.a_currency_code_c = PUB_a_currency.a_currency_code_c") +
+                            GenerateWhereClauseLong("PUB_a_currency", ACurrencyTable.TableId, ATemplateRow, ATemplateOperators)) +
+                            GenerateOrderByClause(AOrderBy)), TTypedDataTable.GetTableName(PcConferenceTable.TableId), ATransaction,
+                            GetParametersForWhereClause(ACurrencyTable.TableId, ATemplateRow), AStartRecord, AMaxRecords);
         }
 
         /// auto generated
@@ -522,12 +519,12 @@ namespace Ict.Petra.Shared.MConference.Data.Access
         /// auto generated
         public static void LoadViaACurrencyTemplate(DataSet ADataSet, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClauseLong("PUB_pc_conference", AFieldList, new string[] {
-                            "pc_conference_key_n"}) + " FROM PUB_pc_conference, PUB_a_currency WHERE " +
-                            "PUB_pc_conference.a_currency_code_c = PUB_a_currency.a_currency_code_c")
-                            + GenerateWhereClauseLong("PUB_a_currency", ACurrencyTable.GetColumnStringList(), ASearchCriteria))
-                            + GenerateOrderByClause(AOrderBy)), PcConferenceTable.GetTableName(), ATransaction,
-                            GetParametersForWhereClause(new PcConferenceTable(), ASearchCriteria), AStartRecord, AMaxRecords);
+            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClauseLong("PUB_pc_conference", AFieldList, PcConferenceTable.TableId) +
+                            " FROM PUB_pc_conference, PUB_a_currency WHERE " +
+                            "PUB_pc_conference.a_currency_code_c = PUB_a_currency.a_currency_code_c") +
+                            GenerateWhereClauseLong("PUB_a_currency", ASearchCriteria)) +
+                            GenerateOrderByClause(AOrderBy)), TTypedDataTable.GetTableName(PcConferenceTable.TableId), ATransaction,
+                            GetParametersForWhereClause(PcConferenceTable.TableId, ASearchCriteria), AStartRecord, AMaxRecords);
         }
 
         /// auto generated
@@ -577,7 +574,10 @@ namespace Ict.Petra.Shared.MConference.Data.Access
         public static int CountViaACurrencyTemplate(ACurrencyRow ATemplateRow, StringCollection ATemplateOperators, TDBTransaction ATransaction)
         {
             return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_pc_conference, PUB_a_currency WHERE " +
-                "PUB_pc_conference.a_currency_code_c = PUB_a_currency.a_currency_code_c" + GenerateWhereClauseLong("PUB_a_currency", ACurrencyTable.GetColumnStringList(), ATemplateRow, ATemplateOperators)), ATransaction, false, GetParametersForWhereClause(ATemplateRow, ACurrencyTable.GetPrimKeyColumnOrdList())));
+                "PUB_pc_conference.a_currency_code_c = PUB_a_currency.a_currency_code_c" + GenerateWhereClauseLong("PUB_a_currency",
+                ACurrencyTable.TableId, ATemplateRow, ATemplateOperators)),
+                ATransaction, false,
+                GetParametersForWhereClauseWithPrimaryKey(ACurrencyTable.TableId, ATemplateRow)));
         }
 
         /// auto generated
@@ -585,8 +585,8 @@ namespace Ict.Petra.Shared.MConference.Data.Access
         {
             return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_pc_conference, PUB_a_currency WHERE " +
                 "PUB_pc_conference.a_currency_code_c = PUB_a_currency.a_currency_code_c" +
-                GenerateWhereClauseLong("PUB_a_currency", ACurrencyTable.GetColumnStringList(), ASearchCriteria)), ATransaction, false,
-                GetParametersForWhereClause(new ACurrencyTable(), ASearchCriteria)));
+                GenerateWhereClauseLong("PUB_a_currency", ASearchCriteria)), ATransaction, false,
+                GetParametersForWhereClause(ACurrencyTable.TableId, ASearchCriteria)));
         }
 
         /// auto generated LoadViaLinkTable
@@ -595,10 +595,10 @@ namespace Ict.Petra.Shared.MConference.Data.Access
             OdbcParameter[] ParametersArray = new OdbcParameter[1];
             ParametersArray[0] = new OdbcParameter("", OdbcType.VarChar, 32);
             ParametersArray[0].Value = ((object)(AOptionTypeCode));
-            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, ((GenerateSelectClauseLong("PUB_pc_conference", AFieldList, new string[] {
-                            "pc_conference_key_n"}) + " FROM PUB_pc_conference, PUB_pc_conference_option WHERE " +
-                            "PUB_pc_conference_option.pc_conference_key_n = PUB_pc_conference.pc_conference_key_n AND PUB_pc_conference_option.pc_option_type_code_c = ?")
-                            + GenerateOrderByClause(AOrderBy)), PcConferenceTable.GetTableName(), ATransaction, ParametersArray, AStartRecord, AMaxRecords);
+            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, ((GenerateSelectClauseLong("PUB_pc_conference", AFieldList, PcConferenceTable.TableId) +
+                            " FROM PUB_pc_conference, PUB_pc_conference_option WHERE " +
+                            "PUB_pc_conference_option.pc_conference_key_n = PUB_pc_conference.pc_conference_key_n AND PUB_pc_conference_option.pc_option_type_code_c = ?") +
+                            GenerateOrderByClause(AOrderBy)), TTypedDataTable.GetTableName(PcConferenceTable.TableId), ATransaction, ParametersArray, AStartRecord, AMaxRecords);
         }
 
         /// auto generated
@@ -638,11 +638,12 @@ namespace Ict.Petra.Shared.MConference.Data.Access
         /// auto generated
         public static void LoadViaPcConferenceOptionTypeTemplate(DataSet ADataSet, PcConferenceOptionTypeRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClauseLong("PUB_pc_conference", AFieldList, new string[] {
-                            "pc_conference_key_n"}) + " FROM PUB_pc_conference, PUB_pc_conference_option, PUB_pc_conference_option_type WHERE " +
-                            "PUB_pc_conference_option.pc_conference_key_n = PUB_pc_conference.pc_conference_key_n AND PUB_pc_conference_option.pc_option_type_code_c = PUB_pc_conference_option_type.pc_option_type_code_c")
-                            + GenerateWhereClauseLong("PUB_pc_conference_option_type", PcConferenceOptionTypeTable.GetColumnStringList(), ATemplateRow, ATemplateOperators))
-                            + GenerateOrderByClause(AOrderBy)), PcConferenceTable.GetTableName(), ATransaction, GetParametersForWhereClause(ATemplateRow), AStartRecord, AMaxRecords);
+            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClauseLong("PUB_pc_conference", AFieldList, PcConferenceTable.TableId) +
+                            " FROM PUB_pc_conference, PUB_pc_conference_option, PUB_pc_conference_option_type WHERE " +
+                            "PUB_pc_conference_option.pc_conference_key_n = PUB_pc_conference.pc_conference_key_n AND PUB_pc_conference_option.pc_option_type_code_c = PUB_pc_conference_option_type.pc_option_type_code_c") +
+                            GenerateWhereClauseLong("PUB_pc_conference_option_type", PcConferenceOptionTypeTable.TableId, ATemplateRow, ATemplateOperators)) +
+                            GenerateOrderByClause(AOrderBy)), TTypedDataTable.GetTableName(PcConferenceTable.TableId), ATransaction,
+                            GetParametersForWhereClause(PcConferenceOptionTypeTable.TableId, ATemplateRow), AStartRecord, AMaxRecords);
         }
 
         /// auto generated
@@ -688,12 +689,12 @@ namespace Ict.Petra.Shared.MConference.Data.Access
         /// auto generated
         public static void LoadViaPcConferenceOptionTypeTemplate(DataSet ADataSet, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClauseLong("PUB_pc_conference", AFieldList, new string[] {
-                            "pc_conference_key_n"}) + " FROM PUB_pc_conference, PUB_pc_conference_option, PUB_pc_conference_option_type WHERE " +
-                            "PUB_pc_conference_option.pc_conference_key_n = PUB_pc_conference.pc_conference_key_n AND PUB_pc_conference_option.pc_option_type_code_c = PUB_pc_conference_option_type.pc_option_type_code_c")
-                            + GenerateWhereClauseLong("PUB_pc_conference_option_type", PcConferenceOptionTypeTable.GetColumnStringList(), ASearchCriteria))
-                            + GenerateOrderByClause(AOrderBy)), PcConferenceTable.GetTableName(), ATransaction,
-                            GetParametersForWhereClause(new PcConferenceTable(), ASearchCriteria), AStartRecord, AMaxRecords);
+            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClauseLong("PUB_pc_conference", AFieldList, PcConferenceTable.TableId) +
+                            " FROM PUB_pc_conference, PUB_pc_conference_option, PUB_pc_conference_option_type WHERE " +
+                            "PUB_pc_conference_option.pc_conference_key_n = PUB_pc_conference.pc_conference_key_n AND PUB_pc_conference_option.pc_option_type_code_c = PUB_pc_conference_option_type.pc_option_type_code_c") +
+                            GenerateWhereClauseLong("PUB_pc_conference_option_type", ASearchCriteria)) +
+                            GenerateOrderByClause(AOrderBy)), TTypedDataTable.GetTableName(PcConferenceTable.TableId), ATransaction,
+                            GetParametersForWhereClause(PcConferenceTable.TableId, ASearchCriteria), AStartRecord, AMaxRecords);
         }
 
         /// auto generated
@@ -746,7 +747,8 @@ namespace Ict.Petra.Shared.MConference.Data.Access
         {
             return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_pc_conference, PUB_pc_conference_option, PUB_pc_conference_option_type WHERE " +
                         "PUB_pc_conference_option.pc_conference_key_n = PUB_pc_conference.pc_conference_key_n AND PUB_pc_conference_option.pc_option_type_code_c = PUB_pc_conference_option_type.pc_option_type_code_c" +
-                        GenerateWhereClauseLong("PUB_pc_conference_option", PcConferenceTable.GetColumnStringList(), ATemplateRow, ATemplateOperators)), ATransaction, false, GetParametersForWhereClause(ATemplateRow, PcConferenceOptionTypeTable.GetPrimKeyColumnOrdList())));
+                        GenerateWhereClauseLong("PUB_pc_conference_option", PcConferenceTable.TableId, ATemplateRow, ATemplateOperators)), ATransaction, false,
+                        GetParametersForWhereClauseWithPrimaryKey(PcConferenceOptionTypeTable.TableId, ATemplateRow)));
         }
 
         /// auto generated
@@ -754,8 +756,8 @@ namespace Ict.Petra.Shared.MConference.Data.Access
         {
             return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_pc_conference, PUB_pc_conference_option, PUB_pc_conference_option_type WHERE " +
                         "PUB_pc_conference_option.pc_conference_key_n = PUB_pc_conference.pc_conference_key_n AND PUB_pc_conference_option.pc_option_type_code_c = PUB_pc_conference_option_type.pc_option_type_code_c" +
-                        GenerateWhereClauseLong("PUB_pc_conference_option", PcConferenceTable.GetColumnStringList(), ASearchCriteria)), ATransaction, false,
-                        GetParametersForWhereClause(new PcConferenceTable(), ASearchCriteria)));
+                        GenerateWhereClauseLong("PUB_pc_conference_option", ASearchCriteria)), ATransaction, false,
+                        GetParametersForWhereClause(PcConferenceTable.TableId, ASearchCriteria)));
         }
 
         /// auto generated LoadViaLinkTable
@@ -764,10 +766,10 @@ namespace Ict.Petra.Shared.MConference.Data.Access
             OdbcParameter[] ParametersArray = new OdbcParameter[1];
             ParametersArray[0] = new OdbcParameter("", OdbcType.Decimal, 10);
             ParametersArray[0].Value = ((object)(APartnerKey));
-            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, ((GenerateSelectClauseLong("PUB_pc_conference", AFieldList, new string[] {
-                            "pc_conference_key_n"}) + " FROM PUB_pc_conference, PUB_pc_attendee WHERE " +
-                            "PUB_pc_attendee.pc_conference_key_n = PUB_pc_conference.pc_conference_key_n AND PUB_pc_attendee.p_partner_key_n = ?")
-                            + GenerateOrderByClause(AOrderBy)), PcConferenceTable.GetTableName(), ATransaction, ParametersArray, AStartRecord, AMaxRecords);
+            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, ((GenerateSelectClauseLong("PUB_pc_conference", AFieldList, PcConferenceTable.TableId) +
+                            " FROM PUB_pc_conference, PUB_pc_attendee WHERE " +
+                            "PUB_pc_attendee.pc_conference_key_n = PUB_pc_conference.pc_conference_key_n AND PUB_pc_attendee.p_partner_key_n = ?") +
+                            GenerateOrderByClause(AOrderBy)), TTypedDataTable.GetTableName(PcConferenceTable.TableId), ATransaction, ParametersArray, AStartRecord, AMaxRecords);
         }
 
         /// auto generated
@@ -807,11 +809,12 @@ namespace Ict.Petra.Shared.MConference.Data.Access
         /// auto generated
         public static void LoadViaPPersonTemplate(DataSet ADataSet, PPersonRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClauseLong("PUB_pc_conference", AFieldList, new string[] {
-                            "pc_conference_key_n"}) + " FROM PUB_pc_conference, PUB_pc_attendee, PUB_p_person WHERE " +
-                            "PUB_pc_attendee.pc_conference_key_n = PUB_pc_conference.pc_conference_key_n AND PUB_pc_attendee.p_partner_key_n = PUB_p_person.p_partner_key_n")
-                            + GenerateWhereClauseLong("PUB_p_person", PPersonTable.GetColumnStringList(), ATemplateRow, ATemplateOperators))
-                            + GenerateOrderByClause(AOrderBy)), PcConferenceTable.GetTableName(), ATransaction, GetParametersForWhereClause(ATemplateRow), AStartRecord, AMaxRecords);
+            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClauseLong("PUB_pc_conference", AFieldList, PcConferenceTable.TableId) +
+                            " FROM PUB_pc_conference, PUB_pc_attendee, PUB_p_person WHERE " +
+                            "PUB_pc_attendee.pc_conference_key_n = PUB_pc_conference.pc_conference_key_n AND PUB_pc_attendee.p_partner_key_n = PUB_p_person.p_partner_key_n") +
+                            GenerateWhereClauseLong("PUB_p_person", PPersonTable.TableId, ATemplateRow, ATemplateOperators)) +
+                            GenerateOrderByClause(AOrderBy)), TTypedDataTable.GetTableName(PcConferenceTable.TableId), ATransaction,
+                            GetParametersForWhereClause(PPersonTable.TableId, ATemplateRow), AStartRecord, AMaxRecords);
         }
 
         /// auto generated
@@ -857,12 +860,12 @@ namespace Ict.Petra.Shared.MConference.Data.Access
         /// auto generated
         public static void LoadViaPPersonTemplate(DataSet ADataSet, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClauseLong("PUB_pc_conference", AFieldList, new string[] {
-                            "pc_conference_key_n"}) + " FROM PUB_pc_conference, PUB_pc_attendee, PUB_p_person WHERE " +
-                            "PUB_pc_attendee.pc_conference_key_n = PUB_pc_conference.pc_conference_key_n AND PUB_pc_attendee.p_partner_key_n = PUB_p_person.p_partner_key_n")
-                            + GenerateWhereClauseLong("PUB_p_person", PPersonTable.GetColumnStringList(), ASearchCriteria))
-                            + GenerateOrderByClause(AOrderBy)), PcConferenceTable.GetTableName(), ATransaction,
-                            GetParametersForWhereClause(new PcConferenceTable(), ASearchCriteria), AStartRecord, AMaxRecords);
+            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClauseLong("PUB_pc_conference", AFieldList, PcConferenceTable.TableId) +
+                            " FROM PUB_pc_conference, PUB_pc_attendee, PUB_p_person WHERE " +
+                            "PUB_pc_attendee.pc_conference_key_n = PUB_pc_conference.pc_conference_key_n AND PUB_pc_attendee.p_partner_key_n = PUB_p_person.p_partner_key_n") +
+                            GenerateWhereClauseLong("PUB_p_person", ASearchCriteria)) +
+                            GenerateOrderByClause(AOrderBy)), TTypedDataTable.GetTableName(PcConferenceTable.TableId), ATransaction,
+                            GetParametersForWhereClause(PcConferenceTable.TableId, ASearchCriteria), AStartRecord, AMaxRecords);
         }
 
         /// auto generated
@@ -915,7 +918,8 @@ namespace Ict.Petra.Shared.MConference.Data.Access
         {
             return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_pc_conference, PUB_pc_attendee, PUB_p_person WHERE " +
                         "PUB_pc_attendee.pc_conference_key_n = PUB_pc_conference.pc_conference_key_n AND PUB_pc_attendee.p_partner_key_n = PUB_p_person.p_partner_key_n" +
-                        GenerateWhereClauseLong("PUB_pc_attendee", PcConferenceTable.GetColumnStringList(), ATemplateRow, ATemplateOperators)), ATransaction, false, GetParametersForWhereClause(ATemplateRow, PPersonTable.GetPrimKeyColumnOrdList())));
+                        GenerateWhereClauseLong("PUB_pc_attendee", PcConferenceTable.TableId, ATemplateRow, ATemplateOperators)), ATransaction, false,
+                        GetParametersForWhereClauseWithPrimaryKey(PPersonTable.TableId, ATemplateRow)));
         }
 
         /// auto generated
@@ -923,8 +927,8 @@ namespace Ict.Petra.Shared.MConference.Data.Access
         {
             return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_pc_conference, PUB_pc_attendee, PUB_p_person WHERE " +
                         "PUB_pc_attendee.pc_conference_key_n = PUB_pc_conference.pc_conference_key_n AND PUB_pc_attendee.p_partner_key_n = PUB_p_person.p_partner_key_n" +
-                        GenerateWhereClauseLong("PUB_pc_attendee", PcConferenceTable.GetColumnStringList(), ASearchCriteria)), ATransaction, false,
-                        GetParametersForWhereClause(new PcConferenceTable(), ASearchCriteria)));
+                        GenerateWhereClauseLong("PUB_pc_attendee", ASearchCriteria)), ATransaction, false,
+                        GetParametersForWhereClause(PcConferenceTable.TableId, ASearchCriteria)));
         }
 
         /// auto generated LoadViaLinkTable
@@ -933,10 +937,10 @@ namespace Ict.Petra.Shared.MConference.Data.Access
             OdbcParameter[] ParametersArray = new OdbcParameter[1];
             ParametersArray[0] = new OdbcParameter("", OdbcType.Decimal, 10);
             ParametersArray[0].Value = ((object)(APartnerKey));
-            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, ((GenerateSelectClauseLong("PUB_pc_conference", AFieldList, new string[] {
-                            "pc_conference_key_n"}) + " FROM PUB_pc_conference, PUB_pc_conference_venue WHERE " +
-                            "PUB_pc_conference_venue.pc_conference_key_n = PUB_pc_conference.pc_conference_key_n AND PUB_pc_conference_venue.p_venue_key_n = ?")
-                            + GenerateOrderByClause(AOrderBy)), PcConferenceTable.GetTableName(), ATransaction, ParametersArray, AStartRecord, AMaxRecords);
+            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, ((GenerateSelectClauseLong("PUB_pc_conference", AFieldList, PcConferenceTable.TableId) +
+                            " FROM PUB_pc_conference, PUB_pc_conference_venue WHERE " +
+                            "PUB_pc_conference_venue.pc_conference_key_n = PUB_pc_conference.pc_conference_key_n AND PUB_pc_conference_venue.p_venue_key_n = ?") +
+                            GenerateOrderByClause(AOrderBy)), TTypedDataTable.GetTableName(PcConferenceTable.TableId), ATransaction, ParametersArray, AStartRecord, AMaxRecords);
         }
 
         /// auto generated
@@ -976,11 +980,12 @@ namespace Ict.Petra.Shared.MConference.Data.Access
         /// auto generated
         public static void LoadViaPVenueTemplate(DataSet ADataSet, PVenueRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClauseLong("PUB_pc_conference", AFieldList, new string[] {
-                            "pc_conference_key_n"}) + " FROM PUB_pc_conference, PUB_pc_conference_venue, PUB_p_venue WHERE " +
-                            "PUB_pc_conference_venue.pc_conference_key_n = PUB_pc_conference.pc_conference_key_n AND PUB_pc_conference_venue.p_venue_key_n = PUB_p_venue.p_partner_key_n")
-                            + GenerateWhereClauseLong("PUB_p_venue", PVenueTable.GetColumnStringList(), ATemplateRow, ATemplateOperators))
-                            + GenerateOrderByClause(AOrderBy)), PcConferenceTable.GetTableName(), ATransaction, GetParametersForWhereClause(ATemplateRow), AStartRecord, AMaxRecords);
+            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClauseLong("PUB_pc_conference", AFieldList, PcConferenceTable.TableId) +
+                            " FROM PUB_pc_conference, PUB_pc_conference_venue, PUB_p_venue WHERE " +
+                            "PUB_pc_conference_venue.pc_conference_key_n = PUB_pc_conference.pc_conference_key_n AND PUB_pc_conference_venue.p_venue_key_n = PUB_p_venue.p_partner_key_n") +
+                            GenerateWhereClauseLong("PUB_p_venue", PVenueTable.TableId, ATemplateRow, ATemplateOperators)) +
+                            GenerateOrderByClause(AOrderBy)), TTypedDataTable.GetTableName(PcConferenceTable.TableId), ATransaction,
+                            GetParametersForWhereClause(PVenueTable.TableId, ATemplateRow), AStartRecord, AMaxRecords);
         }
 
         /// auto generated
@@ -1026,12 +1031,12 @@ namespace Ict.Petra.Shared.MConference.Data.Access
         /// auto generated
         public static void LoadViaPVenueTemplate(DataSet ADataSet, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClauseLong("PUB_pc_conference", AFieldList, new string[] {
-                            "pc_conference_key_n"}) + " FROM PUB_pc_conference, PUB_pc_conference_venue, PUB_p_venue WHERE " +
-                            "PUB_pc_conference_venue.pc_conference_key_n = PUB_pc_conference.pc_conference_key_n AND PUB_pc_conference_venue.p_venue_key_n = PUB_p_venue.p_partner_key_n")
-                            + GenerateWhereClauseLong("PUB_p_venue", PVenueTable.GetColumnStringList(), ASearchCriteria))
-                            + GenerateOrderByClause(AOrderBy)), PcConferenceTable.GetTableName(), ATransaction,
-                            GetParametersForWhereClause(new PcConferenceTable(), ASearchCriteria), AStartRecord, AMaxRecords);
+            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClauseLong("PUB_pc_conference", AFieldList, PcConferenceTable.TableId) +
+                            " FROM PUB_pc_conference, PUB_pc_conference_venue, PUB_p_venue WHERE " +
+                            "PUB_pc_conference_venue.pc_conference_key_n = PUB_pc_conference.pc_conference_key_n AND PUB_pc_conference_venue.p_venue_key_n = PUB_p_venue.p_partner_key_n") +
+                            GenerateWhereClauseLong("PUB_p_venue", ASearchCriteria)) +
+                            GenerateOrderByClause(AOrderBy)), TTypedDataTable.GetTableName(PcConferenceTable.TableId), ATransaction,
+                            GetParametersForWhereClause(PcConferenceTable.TableId, ASearchCriteria), AStartRecord, AMaxRecords);
         }
 
         /// auto generated
@@ -1084,7 +1089,8 @@ namespace Ict.Petra.Shared.MConference.Data.Access
         {
             return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_pc_conference, PUB_pc_conference_venue, PUB_p_venue WHERE " +
                         "PUB_pc_conference_venue.pc_conference_key_n = PUB_pc_conference.pc_conference_key_n AND PUB_pc_conference_venue.p_venue_key_n = PUB_p_venue.p_partner_key_n" +
-                        GenerateWhereClauseLong("PUB_pc_conference_venue", PcConferenceTable.GetColumnStringList(), ATemplateRow, ATemplateOperators)), ATransaction, false, GetParametersForWhereClause(ATemplateRow, PVenueTable.GetPrimKeyColumnOrdList())));
+                        GenerateWhereClauseLong("PUB_pc_conference_venue", PcConferenceTable.TableId, ATemplateRow, ATemplateOperators)), ATransaction, false,
+                        GetParametersForWhereClauseWithPrimaryKey(PVenueTable.TableId, ATemplateRow)));
         }
 
         /// auto generated
@@ -1092,31 +1098,26 @@ namespace Ict.Petra.Shared.MConference.Data.Access
         {
             return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_pc_conference, PUB_pc_conference_venue, PUB_p_venue WHERE " +
                         "PUB_pc_conference_venue.pc_conference_key_n = PUB_pc_conference.pc_conference_key_n AND PUB_pc_conference_venue.p_venue_key_n = PUB_p_venue.p_partner_key_n" +
-                        GenerateWhereClauseLong("PUB_pc_conference_venue", PcConferenceTable.GetColumnStringList(), ASearchCriteria)), ATransaction, false,
-                        GetParametersForWhereClause(new PcConferenceTable(), ASearchCriteria)));
+                        GenerateWhereClauseLong("PUB_pc_conference_venue", ASearchCriteria)), ATransaction, false,
+                        GetParametersForWhereClause(PcConferenceTable.TableId, ASearchCriteria)));
         }
 
         /// auto generated
         public static void DeleteByPrimaryKey(Int64 AConferenceKey, TDBTransaction ATransaction)
         {
-            OdbcParameter[] ParametersArray = new OdbcParameter[1];
-            ParametersArray[0] = new OdbcParameter("", OdbcType.Decimal, 10);
-            ParametersArray[0].Value = ((object)(AConferenceKey));
-            DBAccess.GDBAccessObj.ExecuteNonQuery("DELETE FROM PUB_pc_conference WHERE pc_conference_key_n = ?", ATransaction, false, ParametersArray);
+            DeleteByPrimaryKey(PcConferenceTable.TableId, new System.Object[1]{AConferenceKey}, ATransaction);
         }
 
         /// auto generated
         public static void DeleteUsingTemplate(PcConferenceRow ATemplateRow, StringCollection ATemplateOperators, TDBTransaction ATransaction)
         {
-            DBAccess.GDBAccessObj.ExecuteNonQuery(("DELETE FROM PUB_pc_conference" + GenerateWhereClause(PcConferenceTable.GetColumnStringList(), ATemplateRow, ATemplateOperators)), ATransaction, false, GetParametersForWhereClause(ATemplateRow));
+            DeleteUsingTemplate(PcConferenceTable.TableId, ATemplateRow, ATemplateOperators, ATransaction);
         }
 
         /// auto generated
         public static void DeleteUsingTemplate(TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
         {
-            DBAccess.GDBAccessObj.ExecuteNonQuery(("DELETE FROM PUB_pc_conference" +
-                GenerateWhereClause(PcConferenceTable.GetColumnStringList(), ASearchCriteria)), ATransaction, false,
-                GetParametersForWhereClause(new PcConferenceTable(), ASearchCriteria));
+            DeleteUsingTemplate(PcConferenceTable.TableId, ASearchCriteria, ATransaction);
         }
 
         /// auto generated
@@ -1133,15 +1134,15 @@ namespace Ict.Petra.Shared.MConference.Data.Access
                 {
                     if ((TheRow.RowState == DataRowState.Added))
                     {
-                        TTypedDataAccess.InsertRow("pc_conference", PcConferenceTable.GetColumnStringList(), ref TheRow, ATransaction, UserInfo.GUserInfo.UserID);
+                        TTypedDataAccess.InsertRow(PcConferenceTable.TableId, ref TheRow, ATransaction, UserInfo.GUserInfo.UserID);
                     }
                     if ((TheRow.RowState == DataRowState.Modified))
                     {
-                        TTypedDataAccess.UpdateRow("pc_conference", PcConferenceTable.GetColumnStringList(), PcConferenceTable.GetPrimKeyColumnOrdList(), ref TheRow, ATransaction, UserInfo.GUserInfo.UserID);
+                        TTypedDataAccess.UpdateRow(PcConferenceTable.TableId, ref TheRow, ATransaction, UserInfo.GUserInfo.UserID);
                     }
                     if ((TheRow.RowState == DataRowState.Deleted))
                     {
-                        TTypedDataAccess.DeleteRow("pc_conference", PcConferenceTable.GetColumnStringList(), PcConferenceTable.GetPrimKeyColumnOrdList(), TheRow, ATransaction);
+                        TTypedDataAccess.DeleteRow(PcConferenceTable.TableId, TheRow, ATransaction);
                     }
                 }
                 catch (OdbcException ex)
@@ -1171,9 +1172,8 @@ namespace Ict.Petra.Shared.MConference.Data.Access
         /// this method is called by all overloads
         public static void LoadAll(DataSet ADataSet, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, ((GenerateSelectClause(AFieldList, new string[] {
-                            "pc_cost_type_code_c"}) + " FROM PUB_pc_cost_type")
-                            + GenerateOrderByClause(AOrderBy)), PcCostTypeTable.GetTableName(), ATransaction, AStartRecord, AMaxRecords);
+            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, ((GenerateSelectClause(AFieldList, PcCostTypeTable.TableId) + " FROM PUB_pc_cost_type") +
+                            GenerateOrderByClause(AOrderBy)), TTypedDataTable.GetTableName(PcCostTypeTable.TableId), ATransaction, AStartRecord, AMaxRecords);
         }
 
         /// auto generated
@@ -1213,12 +1213,8 @@ namespace Ict.Petra.Shared.MConference.Data.Access
         /// this method is called by all overloads
         public static void LoadByPrimaryKey(DataSet ADataSet, String ACostTypeCode, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            OdbcParameter[] ParametersArray = new OdbcParameter[1];
-            ParametersArray[0] = new OdbcParameter("", OdbcType.VarChar, 32);
-            ParametersArray[0].Value = ((object)(ACostTypeCode));
-            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, ((GenerateSelectClause(AFieldList, new string[] {
-                            "pc_cost_type_code_c"}) + " FROM PUB_pc_cost_type WHERE pc_cost_type_code_c = ?")
-                            + GenerateOrderByClause(AOrderBy)), PcCostTypeTable.GetTableName(), ATransaction, ParametersArray, AStartRecord, AMaxRecords);
+            ADataSet = LoadByPrimaryKey(PcCostTypeTable.TableId,
+                ADataSet, new System.Object[1]{ACostTypeCode}, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
         }
 
         /// auto generated
@@ -1258,10 +1254,10 @@ namespace Ict.Petra.Shared.MConference.Data.Access
         /// this method is called by all overloads
         public static void LoadUsingTemplate(DataSet ADataSet, PcCostTypeRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClause(AFieldList, new string[] {
-                            "pc_cost_type_code_c"}) + " FROM PUB_pc_cost_type")
-                            + GenerateWhereClause(PcCostTypeTable.GetColumnStringList(), ATemplateRow, ATemplateOperators))
-                            + GenerateOrderByClause(AOrderBy)), PcCostTypeTable.GetTableName(), ATransaction, GetParametersForWhereClause(ATemplateRow), AStartRecord, AMaxRecords);
+            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClause(AFieldList, PcCostTypeTable.TableId) + " FROM PUB_pc_cost_type") +
+                            GenerateWhereClause(TTypedDataTable.GetColumnStringList(PcCostTypeTable.TableId), ATemplateRow, ATemplateOperators)) +
+                            GenerateOrderByClause(AOrderBy)), TTypedDataTable.GetTableName(PcCostTypeTable.TableId), ATransaction,
+                            GetParametersForWhereClause(PcCostTypeTable.TableId, ATemplateRow), AStartRecord, AMaxRecords);
         }
 
         /// auto generated
@@ -1307,11 +1303,10 @@ namespace Ict.Petra.Shared.MConference.Data.Access
         /// this method is called by all overloads
         public static void LoadUsingTemplate(DataSet ADataSet, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClause(AFieldList, new string[] {
-                            "pc_cost_type_code_c"}) + " FROM PUB_pc_cost_type")
-                            + GenerateWhereClause(PcCostTypeTable.GetColumnStringList(), ASearchCriteria))
-                            + GenerateOrderByClause(AOrderBy)), PcCostTypeTable.GetTableName(), ATransaction,
-                            GetParametersForWhereClause(new PcCostTypeTable(), ASearchCriteria), AStartRecord, AMaxRecords);
+            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClause(AFieldList, PcCostTypeTable.TableId) + " FROM PUB_pc_cost_type") +
+                            GenerateWhereClause(TTypedDataTable.GetColumnStringList(PcCostTypeTable.TableId), ASearchCriteria)) +
+                            GenerateOrderByClause(AOrderBy)), TTypedDataTable.GetTableName(PcCostTypeTable.TableId), ATransaction,
+                            GetParametersForWhereClause(PcCostTypeTable.TableId, ASearchCriteria), AStartRecord, AMaxRecords);
         }
 
         /// auto generated
@@ -1354,49 +1349,42 @@ namespace Ict.Petra.Shared.MConference.Data.Access
             return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar("SELECT COUNT(*) FROM PUB_pc_cost_type", ATransaction, false));
         }
 
-        /// this method is called by all overloads
-        public static int CountByPrimaryKey(String ACostTypeCode, TDBTransaction ATransaction)
+        /// check if a row exists by using the primary key
+        public static bool Exists(String ACostTypeCode, TDBTransaction ATransaction)
         {
-            OdbcParameter[] ParametersArray = new OdbcParameter[1];
-            ParametersArray[0] = new OdbcParameter("", OdbcType.VarChar, 32);
-            ParametersArray[0].Value = ((object)(ACostTypeCode));
-            return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar("SELECT COUNT(*) FROM PUB_pc_cost_type WHERE pc_cost_type_code_c = ?", ATransaction, false, ParametersArray));
+            return Exists(PcCostTypeTable.TableId, new System.Object[1]{ACostTypeCode}, ATransaction);
         }
 
         /// this method is called by all overloads
         public static int CountUsingTemplate(PcCostTypeRow ATemplateRow, StringCollection ATemplateOperators, TDBTransaction ATransaction)
         {
-            return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_pc_cost_type" + GenerateWhereClause(PcCostTypeTable.GetColumnStringList(), ATemplateRow, ATemplateOperators)), ATransaction, false, GetParametersForWhereClause(ATemplateRow)));
+            return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_pc_cost_type" + GenerateWhereClause(TTypedDataTable.GetColumnStringList(PcCostTypeTable.TableId), ATemplateRow, ATemplateOperators)), ATransaction, false,
+                   GetParametersForWhereClause(PcCostTypeTable.TableId, ATemplateRow)));
         }
 
         /// this method is called by all overloads
         public static int CountUsingTemplate(TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
         {
-            return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_pc_cost_type" + GenerateWhereClause(PcCostTypeTable.GetColumnStringList(), ASearchCriteria)), ATransaction, false,
-            GetParametersForWhereClause(new PcCostTypeTable(), ASearchCriteria)));
+            return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_pc_cost_type" + GenerateWhereClause(TTypedDataTable.GetColumnStringList(PcCostTypeTable.TableId), ASearchCriteria)), ATransaction, false,
+            GetParametersForWhereClause(PcCostTypeTable.TableId, ASearchCriteria)));
         }
 
         /// auto generated
         public static void DeleteByPrimaryKey(String ACostTypeCode, TDBTransaction ATransaction)
         {
-            OdbcParameter[] ParametersArray = new OdbcParameter[1];
-            ParametersArray[0] = new OdbcParameter("", OdbcType.VarChar, 32);
-            ParametersArray[0].Value = ((object)(ACostTypeCode));
-            DBAccess.GDBAccessObj.ExecuteNonQuery("DELETE FROM PUB_pc_cost_type WHERE pc_cost_type_code_c = ?", ATransaction, false, ParametersArray);
+            DeleteByPrimaryKey(PcCostTypeTable.TableId, new System.Object[1]{ACostTypeCode}, ATransaction);
         }
 
         /// auto generated
         public static void DeleteUsingTemplate(PcCostTypeRow ATemplateRow, StringCollection ATemplateOperators, TDBTransaction ATransaction)
         {
-            DBAccess.GDBAccessObj.ExecuteNonQuery(("DELETE FROM PUB_pc_cost_type" + GenerateWhereClause(PcCostTypeTable.GetColumnStringList(), ATemplateRow, ATemplateOperators)), ATransaction, false, GetParametersForWhereClause(ATemplateRow));
+            DeleteUsingTemplate(PcCostTypeTable.TableId, ATemplateRow, ATemplateOperators, ATransaction);
         }
 
         /// auto generated
         public static void DeleteUsingTemplate(TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
         {
-            DBAccess.GDBAccessObj.ExecuteNonQuery(("DELETE FROM PUB_pc_cost_type" +
-                GenerateWhereClause(PcCostTypeTable.GetColumnStringList(), ASearchCriteria)), ATransaction, false,
-                GetParametersForWhereClause(new PcCostTypeTable(), ASearchCriteria));
+            DeleteUsingTemplate(PcCostTypeTable.TableId, ASearchCriteria, ATransaction);
         }
 
         /// auto generated
@@ -1413,15 +1401,15 @@ namespace Ict.Petra.Shared.MConference.Data.Access
                 {
                     if ((TheRow.RowState == DataRowState.Added))
                     {
-                        TTypedDataAccess.InsertRow("pc_cost_type", PcCostTypeTable.GetColumnStringList(), ref TheRow, ATransaction, UserInfo.GUserInfo.UserID);
+                        TTypedDataAccess.InsertRow(PcCostTypeTable.TableId, ref TheRow, ATransaction, UserInfo.GUserInfo.UserID);
                     }
                     if ((TheRow.RowState == DataRowState.Modified))
                     {
-                        TTypedDataAccess.UpdateRow("pc_cost_type", PcCostTypeTable.GetColumnStringList(), PcCostTypeTable.GetPrimKeyColumnOrdList(), ref TheRow, ATransaction, UserInfo.GUserInfo.UserID);
+                        TTypedDataAccess.UpdateRow(PcCostTypeTable.TableId, ref TheRow, ATransaction, UserInfo.GUserInfo.UserID);
                     }
                     if ((TheRow.RowState == DataRowState.Deleted))
                     {
-                        TTypedDataAccess.DeleteRow("pc_cost_type", PcCostTypeTable.GetColumnStringList(), PcCostTypeTable.GetPrimKeyColumnOrdList(), TheRow, ATransaction);
+                        TTypedDataAccess.DeleteRow(PcCostTypeTable.TableId, TheRow, ATransaction);
                     }
                 }
                 catch (OdbcException ex)
@@ -1451,9 +1439,8 @@ namespace Ict.Petra.Shared.MConference.Data.Access
         /// this method is called by all overloads
         public static void LoadAll(DataSet ADataSet, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, ((GenerateSelectClause(AFieldList, new string[] {
-                            "pc_option_type_code_c"}) + " FROM PUB_pc_conference_option_type")
-                            + GenerateOrderByClause(AOrderBy)), PcConferenceOptionTypeTable.GetTableName(), ATransaction, AStartRecord, AMaxRecords);
+            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, ((GenerateSelectClause(AFieldList, PcConferenceOptionTypeTable.TableId) + " FROM PUB_pc_conference_option_type") +
+                            GenerateOrderByClause(AOrderBy)), TTypedDataTable.GetTableName(PcConferenceOptionTypeTable.TableId), ATransaction, AStartRecord, AMaxRecords);
         }
 
         /// auto generated
@@ -1493,12 +1480,8 @@ namespace Ict.Petra.Shared.MConference.Data.Access
         /// this method is called by all overloads
         public static void LoadByPrimaryKey(DataSet ADataSet, String AOptionTypeCode, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            OdbcParameter[] ParametersArray = new OdbcParameter[1];
-            ParametersArray[0] = new OdbcParameter("", OdbcType.VarChar, 32);
-            ParametersArray[0].Value = ((object)(AOptionTypeCode));
-            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, ((GenerateSelectClause(AFieldList, new string[] {
-                            "pc_option_type_code_c"}) + " FROM PUB_pc_conference_option_type WHERE pc_option_type_code_c = ?")
-                            + GenerateOrderByClause(AOrderBy)), PcConferenceOptionTypeTable.GetTableName(), ATransaction, ParametersArray, AStartRecord, AMaxRecords);
+            ADataSet = LoadByPrimaryKey(PcConferenceOptionTypeTable.TableId,
+                ADataSet, new System.Object[1]{AOptionTypeCode}, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
         }
 
         /// auto generated
@@ -1538,10 +1521,10 @@ namespace Ict.Petra.Shared.MConference.Data.Access
         /// this method is called by all overloads
         public static void LoadUsingTemplate(DataSet ADataSet, PcConferenceOptionTypeRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClause(AFieldList, new string[] {
-                            "pc_option_type_code_c"}) + " FROM PUB_pc_conference_option_type")
-                            + GenerateWhereClause(PcConferenceOptionTypeTable.GetColumnStringList(), ATemplateRow, ATemplateOperators))
-                            + GenerateOrderByClause(AOrderBy)), PcConferenceOptionTypeTable.GetTableName(), ATransaction, GetParametersForWhereClause(ATemplateRow), AStartRecord, AMaxRecords);
+            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClause(AFieldList, PcConferenceOptionTypeTable.TableId) + " FROM PUB_pc_conference_option_type") +
+                            GenerateWhereClause(TTypedDataTable.GetColumnStringList(PcConferenceOptionTypeTable.TableId), ATemplateRow, ATemplateOperators)) +
+                            GenerateOrderByClause(AOrderBy)), TTypedDataTable.GetTableName(PcConferenceOptionTypeTable.TableId), ATransaction,
+                            GetParametersForWhereClause(PcConferenceOptionTypeTable.TableId, ATemplateRow), AStartRecord, AMaxRecords);
         }
 
         /// auto generated
@@ -1587,11 +1570,10 @@ namespace Ict.Petra.Shared.MConference.Data.Access
         /// this method is called by all overloads
         public static void LoadUsingTemplate(DataSet ADataSet, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClause(AFieldList, new string[] {
-                            "pc_option_type_code_c"}) + " FROM PUB_pc_conference_option_type")
-                            + GenerateWhereClause(PcConferenceOptionTypeTable.GetColumnStringList(), ASearchCriteria))
-                            + GenerateOrderByClause(AOrderBy)), PcConferenceOptionTypeTable.GetTableName(), ATransaction,
-                            GetParametersForWhereClause(new PcConferenceOptionTypeTable(), ASearchCriteria), AStartRecord, AMaxRecords);
+            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClause(AFieldList, PcConferenceOptionTypeTable.TableId) + " FROM PUB_pc_conference_option_type") +
+                            GenerateWhereClause(TTypedDataTable.GetColumnStringList(PcConferenceOptionTypeTable.TableId), ASearchCriteria)) +
+                            GenerateOrderByClause(AOrderBy)), TTypedDataTable.GetTableName(PcConferenceOptionTypeTable.TableId), ATransaction,
+                            GetParametersForWhereClause(PcConferenceOptionTypeTable.TableId, ASearchCriteria), AStartRecord, AMaxRecords);
         }
 
         /// auto generated
@@ -1634,26 +1616,24 @@ namespace Ict.Petra.Shared.MConference.Data.Access
             return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar("SELECT COUNT(*) FROM PUB_pc_conference_option_type", ATransaction, false));
         }
 
-        /// this method is called by all overloads
-        public static int CountByPrimaryKey(String AOptionTypeCode, TDBTransaction ATransaction)
+        /// check if a row exists by using the primary key
+        public static bool Exists(String AOptionTypeCode, TDBTransaction ATransaction)
         {
-            OdbcParameter[] ParametersArray = new OdbcParameter[1];
-            ParametersArray[0] = new OdbcParameter("", OdbcType.VarChar, 32);
-            ParametersArray[0].Value = ((object)(AOptionTypeCode));
-            return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar("SELECT COUNT(*) FROM PUB_pc_conference_option_type WHERE pc_option_type_code_c = ?", ATransaction, false, ParametersArray));
+            return Exists(PcConferenceOptionTypeTable.TableId, new System.Object[1]{AOptionTypeCode}, ATransaction);
         }
 
         /// this method is called by all overloads
         public static int CountUsingTemplate(PcConferenceOptionTypeRow ATemplateRow, StringCollection ATemplateOperators, TDBTransaction ATransaction)
         {
-            return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_pc_conference_option_type" + GenerateWhereClause(PcConferenceOptionTypeTable.GetColumnStringList(), ATemplateRow, ATemplateOperators)), ATransaction, false, GetParametersForWhereClause(ATemplateRow)));
+            return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_pc_conference_option_type" + GenerateWhereClause(TTypedDataTable.GetColumnStringList(PcConferenceOptionTypeTable.TableId), ATemplateRow, ATemplateOperators)), ATransaction, false,
+                   GetParametersForWhereClause(PcConferenceOptionTypeTable.TableId, ATemplateRow)));
         }
 
         /// this method is called by all overloads
         public static int CountUsingTemplate(TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
         {
-            return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_pc_conference_option_type" + GenerateWhereClause(PcConferenceOptionTypeTable.GetColumnStringList(), ASearchCriteria)), ATransaction, false,
-            GetParametersForWhereClause(new PcConferenceOptionTypeTable(), ASearchCriteria)));
+            return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_pc_conference_option_type" + GenerateWhereClause(TTypedDataTable.GetColumnStringList(PcConferenceOptionTypeTable.TableId), ASearchCriteria)), ATransaction, false,
+            GetParametersForWhereClause(PcConferenceOptionTypeTable.TableId, ASearchCriteria)));
         }
 
         /// auto generated LoadViaLinkTable
@@ -1662,10 +1642,10 @@ namespace Ict.Petra.Shared.MConference.Data.Access
             OdbcParameter[] ParametersArray = new OdbcParameter[1];
             ParametersArray[0] = new OdbcParameter("", OdbcType.Decimal, 10);
             ParametersArray[0].Value = ((object)(AConferenceKey));
-            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, ((GenerateSelectClauseLong("PUB_pc_conference_option_type", AFieldList, new string[] {
-                            "pc_option_type_code_c"}) + " FROM PUB_pc_conference_option_type, PUB_pc_conference_option WHERE " +
-                            "PUB_pc_conference_option.pc_option_type_code_c = PUB_pc_conference_option_type.pc_option_type_code_c AND PUB_pc_conference_option.pc_conference_key_n = ?")
-                            + GenerateOrderByClause(AOrderBy)), PcConferenceOptionTypeTable.GetTableName(), ATransaction, ParametersArray, AStartRecord, AMaxRecords);
+            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, ((GenerateSelectClauseLong("PUB_pc_conference_option_type", AFieldList, PcConferenceOptionTypeTable.TableId) +
+                            " FROM PUB_pc_conference_option_type, PUB_pc_conference_option WHERE " +
+                            "PUB_pc_conference_option.pc_option_type_code_c = PUB_pc_conference_option_type.pc_option_type_code_c AND PUB_pc_conference_option.pc_conference_key_n = ?") +
+                            GenerateOrderByClause(AOrderBy)), TTypedDataTable.GetTableName(PcConferenceOptionTypeTable.TableId), ATransaction, ParametersArray, AStartRecord, AMaxRecords);
         }
 
         /// auto generated
@@ -1705,11 +1685,12 @@ namespace Ict.Petra.Shared.MConference.Data.Access
         /// auto generated
         public static void LoadViaPcConferenceTemplate(DataSet ADataSet, PcConferenceRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClauseLong("PUB_pc_conference_option_type", AFieldList, new string[] {
-                            "pc_option_type_code_c"}) + " FROM PUB_pc_conference_option_type, PUB_pc_conference_option, PUB_pc_conference WHERE " +
-                            "PUB_pc_conference_option.pc_option_type_code_c = PUB_pc_conference_option_type.pc_option_type_code_c AND PUB_pc_conference_option.pc_conference_key_n = PUB_pc_conference.pc_conference_key_n")
-                            + GenerateWhereClauseLong("PUB_pc_conference", PcConferenceTable.GetColumnStringList(), ATemplateRow, ATemplateOperators))
-                            + GenerateOrderByClause(AOrderBy)), PcConferenceOptionTypeTable.GetTableName(), ATransaction, GetParametersForWhereClause(ATemplateRow), AStartRecord, AMaxRecords);
+            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClauseLong("PUB_pc_conference_option_type", AFieldList, PcConferenceOptionTypeTable.TableId) +
+                            " FROM PUB_pc_conference_option_type, PUB_pc_conference_option, PUB_pc_conference WHERE " +
+                            "PUB_pc_conference_option.pc_option_type_code_c = PUB_pc_conference_option_type.pc_option_type_code_c AND PUB_pc_conference_option.pc_conference_key_n = PUB_pc_conference.pc_conference_key_n") +
+                            GenerateWhereClauseLong("PUB_pc_conference", PcConferenceTable.TableId, ATemplateRow, ATemplateOperators)) +
+                            GenerateOrderByClause(AOrderBy)), TTypedDataTable.GetTableName(PcConferenceOptionTypeTable.TableId), ATransaction,
+                            GetParametersForWhereClause(PcConferenceTable.TableId, ATemplateRow), AStartRecord, AMaxRecords);
         }
 
         /// auto generated
@@ -1755,12 +1736,12 @@ namespace Ict.Petra.Shared.MConference.Data.Access
         /// auto generated
         public static void LoadViaPcConferenceTemplate(DataSet ADataSet, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClauseLong("PUB_pc_conference_option_type", AFieldList, new string[] {
-                            "pc_option_type_code_c"}) + " FROM PUB_pc_conference_option_type, PUB_pc_conference_option, PUB_pc_conference WHERE " +
-                            "PUB_pc_conference_option.pc_option_type_code_c = PUB_pc_conference_option_type.pc_option_type_code_c AND PUB_pc_conference_option.pc_conference_key_n = PUB_pc_conference.pc_conference_key_n")
-                            + GenerateWhereClauseLong("PUB_pc_conference", PcConferenceTable.GetColumnStringList(), ASearchCriteria))
-                            + GenerateOrderByClause(AOrderBy)), PcConferenceOptionTypeTable.GetTableName(), ATransaction,
-                            GetParametersForWhereClause(new PcConferenceOptionTypeTable(), ASearchCriteria), AStartRecord, AMaxRecords);
+            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClauseLong("PUB_pc_conference_option_type", AFieldList, PcConferenceOptionTypeTable.TableId) +
+                            " FROM PUB_pc_conference_option_type, PUB_pc_conference_option, PUB_pc_conference WHERE " +
+                            "PUB_pc_conference_option.pc_option_type_code_c = PUB_pc_conference_option_type.pc_option_type_code_c AND PUB_pc_conference_option.pc_conference_key_n = PUB_pc_conference.pc_conference_key_n") +
+                            GenerateWhereClauseLong("PUB_pc_conference", ASearchCriteria)) +
+                            GenerateOrderByClause(AOrderBy)), TTypedDataTable.GetTableName(PcConferenceOptionTypeTable.TableId), ATransaction,
+                            GetParametersForWhereClause(PcConferenceOptionTypeTable.TableId, ASearchCriteria), AStartRecord, AMaxRecords);
         }
 
         /// auto generated
@@ -1813,7 +1794,8 @@ namespace Ict.Petra.Shared.MConference.Data.Access
         {
             return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_pc_conference_option_type, PUB_pc_conference_option, PUB_pc_conference WHERE " +
                         "PUB_pc_conference_option.pc_option_type_code_c = PUB_pc_conference_option_type.pc_option_type_code_c AND PUB_pc_conference_option.pc_conference_key_n = PUB_pc_conference.pc_conference_key_n" +
-                        GenerateWhereClauseLong("PUB_pc_conference_option", PcConferenceOptionTypeTable.GetColumnStringList(), ATemplateRow, ATemplateOperators)), ATransaction, false, GetParametersForWhereClause(ATemplateRow, PcConferenceTable.GetPrimKeyColumnOrdList())));
+                        GenerateWhereClauseLong("PUB_pc_conference_option", PcConferenceOptionTypeTable.TableId, ATemplateRow, ATemplateOperators)), ATransaction, false,
+                        GetParametersForWhereClauseWithPrimaryKey(PcConferenceTable.TableId, ATemplateRow)));
         }
 
         /// auto generated
@@ -1821,31 +1803,26 @@ namespace Ict.Petra.Shared.MConference.Data.Access
         {
             return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_pc_conference_option_type, PUB_pc_conference_option, PUB_pc_conference WHERE " +
                         "PUB_pc_conference_option.pc_option_type_code_c = PUB_pc_conference_option_type.pc_option_type_code_c AND PUB_pc_conference_option.pc_conference_key_n = PUB_pc_conference.pc_conference_key_n" +
-                        GenerateWhereClauseLong("PUB_pc_conference_option", PcConferenceOptionTypeTable.GetColumnStringList(), ASearchCriteria)), ATransaction, false,
-                        GetParametersForWhereClause(new PcConferenceOptionTypeTable(), ASearchCriteria)));
+                        GenerateWhereClauseLong("PUB_pc_conference_option", ASearchCriteria)), ATransaction, false,
+                        GetParametersForWhereClause(PcConferenceOptionTypeTable.TableId, ASearchCriteria)));
         }
 
         /// auto generated
         public static void DeleteByPrimaryKey(String AOptionTypeCode, TDBTransaction ATransaction)
         {
-            OdbcParameter[] ParametersArray = new OdbcParameter[1];
-            ParametersArray[0] = new OdbcParameter("", OdbcType.VarChar, 32);
-            ParametersArray[0].Value = ((object)(AOptionTypeCode));
-            DBAccess.GDBAccessObj.ExecuteNonQuery("DELETE FROM PUB_pc_conference_option_type WHERE pc_option_type_code_c = ?", ATransaction, false, ParametersArray);
+            DeleteByPrimaryKey(PcConferenceOptionTypeTable.TableId, new System.Object[1]{AOptionTypeCode}, ATransaction);
         }
 
         /// auto generated
         public static void DeleteUsingTemplate(PcConferenceOptionTypeRow ATemplateRow, StringCollection ATemplateOperators, TDBTransaction ATransaction)
         {
-            DBAccess.GDBAccessObj.ExecuteNonQuery(("DELETE FROM PUB_pc_conference_option_type" + GenerateWhereClause(PcConferenceOptionTypeTable.GetColumnStringList(), ATemplateRow, ATemplateOperators)), ATransaction, false, GetParametersForWhereClause(ATemplateRow));
+            DeleteUsingTemplate(PcConferenceOptionTypeTable.TableId, ATemplateRow, ATemplateOperators, ATransaction);
         }
 
         /// auto generated
         public static void DeleteUsingTemplate(TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
         {
-            DBAccess.GDBAccessObj.ExecuteNonQuery(("DELETE FROM PUB_pc_conference_option_type" +
-                GenerateWhereClause(PcConferenceOptionTypeTable.GetColumnStringList(), ASearchCriteria)), ATransaction, false,
-                GetParametersForWhereClause(new PcConferenceOptionTypeTable(), ASearchCriteria));
+            DeleteUsingTemplate(PcConferenceOptionTypeTable.TableId, ASearchCriteria, ATransaction);
         }
 
         /// auto generated
@@ -1862,15 +1839,15 @@ namespace Ict.Petra.Shared.MConference.Data.Access
                 {
                     if ((TheRow.RowState == DataRowState.Added))
                     {
-                        TTypedDataAccess.InsertRow("pc_conference_option_type", PcConferenceOptionTypeTable.GetColumnStringList(), ref TheRow, ATransaction, UserInfo.GUserInfo.UserID);
+                        TTypedDataAccess.InsertRow(PcConferenceOptionTypeTable.TableId, ref TheRow, ATransaction, UserInfo.GUserInfo.UserID);
                     }
                     if ((TheRow.RowState == DataRowState.Modified))
                     {
-                        TTypedDataAccess.UpdateRow("pc_conference_option_type", PcConferenceOptionTypeTable.GetColumnStringList(), PcConferenceOptionTypeTable.GetPrimKeyColumnOrdList(), ref TheRow, ATransaction, UserInfo.GUserInfo.UserID);
+                        TTypedDataAccess.UpdateRow(PcConferenceOptionTypeTable.TableId, ref TheRow, ATransaction, UserInfo.GUserInfo.UserID);
                     }
                     if ((TheRow.RowState == DataRowState.Deleted))
                     {
-                        TTypedDataAccess.DeleteRow("pc_conference_option_type", PcConferenceOptionTypeTable.GetColumnStringList(), PcConferenceOptionTypeTable.GetPrimKeyColumnOrdList(), TheRow, ATransaction);
+                        TTypedDataAccess.DeleteRow(PcConferenceOptionTypeTable.TableId, TheRow, ATransaction);
                     }
                 }
                 catch (OdbcException ex)
@@ -1900,9 +1877,8 @@ namespace Ict.Petra.Shared.MConference.Data.Access
         /// this method is called by all overloads
         public static void LoadAll(DataSet ADataSet, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, ((GenerateSelectClause(AFieldList, new string[] {
-                            "pc_conference_key_n", "pc_option_type_code_c"}) + " FROM PUB_pc_conference_option")
-                            + GenerateOrderByClause(AOrderBy)), PcConferenceOptionTable.GetTableName(), ATransaction, AStartRecord, AMaxRecords);
+            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, ((GenerateSelectClause(AFieldList, PcConferenceOptionTable.TableId) + " FROM PUB_pc_conference_option") +
+                            GenerateOrderByClause(AOrderBy)), TTypedDataTable.GetTableName(PcConferenceOptionTable.TableId), ATransaction, AStartRecord, AMaxRecords);
         }
 
         /// auto generated
@@ -1942,14 +1918,8 @@ namespace Ict.Petra.Shared.MConference.Data.Access
         /// this method is called by all overloads
         public static void LoadByPrimaryKey(DataSet ADataSet, Int64 AConferenceKey, String AOptionTypeCode, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            OdbcParameter[] ParametersArray = new OdbcParameter[2];
-            ParametersArray[0] = new OdbcParameter("", OdbcType.Decimal, 10);
-            ParametersArray[0].Value = ((object)(AConferenceKey));
-            ParametersArray[1] = new OdbcParameter("", OdbcType.VarChar, 32);
-            ParametersArray[1].Value = ((object)(AOptionTypeCode));
-            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, ((GenerateSelectClause(AFieldList, new string[] {
-                            "pc_conference_key_n", "pc_option_type_code_c"}) + " FROM PUB_pc_conference_option WHERE pc_conference_key_n = ? AND pc_option_type_code_c = ?")
-                            + GenerateOrderByClause(AOrderBy)), PcConferenceOptionTable.GetTableName(), ATransaction, ParametersArray, AStartRecord, AMaxRecords);
+            ADataSet = LoadByPrimaryKey(PcConferenceOptionTable.TableId,
+                ADataSet, new System.Object[2]{AConferenceKey, AOptionTypeCode}, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
         }
 
         /// auto generated
@@ -1989,10 +1959,10 @@ namespace Ict.Petra.Shared.MConference.Data.Access
         /// this method is called by all overloads
         public static void LoadUsingTemplate(DataSet ADataSet, PcConferenceOptionRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClause(AFieldList, new string[] {
-                            "pc_conference_key_n", "pc_option_type_code_c"}) + " FROM PUB_pc_conference_option")
-                            + GenerateWhereClause(PcConferenceOptionTable.GetColumnStringList(), ATemplateRow, ATemplateOperators))
-                            + GenerateOrderByClause(AOrderBy)), PcConferenceOptionTable.GetTableName(), ATransaction, GetParametersForWhereClause(ATemplateRow), AStartRecord, AMaxRecords);
+            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClause(AFieldList, PcConferenceOptionTable.TableId) + " FROM PUB_pc_conference_option") +
+                            GenerateWhereClause(TTypedDataTable.GetColumnStringList(PcConferenceOptionTable.TableId), ATemplateRow, ATemplateOperators)) +
+                            GenerateOrderByClause(AOrderBy)), TTypedDataTable.GetTableName(PcConferenceOptionTable.TableId), ATransaction,
+                            GetParametersForWhereClause(PcConferenceOptionTable.TableId, ATemplateRow), AStartRecord, AMaxRecords);
         }
 
         /// auto generated
@@ -2038,11 +2008,10 @@ namespace Ict.Petra.Shared.MConference.Data.Access
         /// this method is called by all overloads
         public static void LoadUsingTemplate(DataSet ADataSet, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClause(AFieldList, new string[] {
-                            "pc_conference_key_n", "pc_option_type_code_c"}) + " FROM PUB_pc_conference_option")
-                            + GenerateWhereClause(PcConferenceOptionTable.GetColumnStringList(), ASearchCriteria))
-                            + GenerateOrderByClause(AOrderBy)), PcConferenceOptionTable.GetTableName(), ATransaction,
-                            GetParametersForWhereClause(new PcConferenceOptionTable(), ASearchCriteria), AStartRecord, AMaxRecords);
+            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClause(AFieldList, PcConferenceOptionTable.TableId) + " FROM PUB_pc_conference_option") +
+                            GenerateWhereClause(TTypedDataTable.GetColumnStringList(PcConferenceOptionTable.TableId), ASearchCriteria)) +
+                            GenerateOrderByClause(AOrderBy)), TTypedDataTable.GetTableName(PcConferenceOptionTable.TableId), ATransaction,
+                            GetParametersForWhereClause(PcConferenceOptionTable.TableId, ASearchCriteria), AStartRecord, AMaxRecords);
         }
 
         /// auto generated
@@ -2085,28 +2054,24 @@ namespace Ict.Petra.Shared.MConference.Data.Access
             return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar("SELECT COUNT(*) FROM PUB_pc_conference_option", ATransaction, false));
         }
 
-        /// this method is called by all overloads
-        public static int CountByPrimaryKey(Int64 AConferenceKey, String AOptionTypeCode, TDBTransaction ATransaction)
+        /// check if a row exists by using the primary key
+        public static bool Exists(Int64 AConferenceKey, String AOptionTypeCode, TDBTransaction ATransaction)
         {
-            OdbcParameter[] ParametersArray = new OdbcParameter[2];
-            ParametersArray[0] = new OdbcParameter("", OdbcType.Decimal, 10);
-            ParametersArray[0].Value = ((object)(AConferenceKey));
-            ParametersArray[1] = new OdbcParameter("", OdbcType.VarChar, 32);
-            ParametersArray[1].Value = ((object)(AOptionTypeCode));
-            return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar("SELECT COUNT(*) FROM PUB_pc_conference_option WHERE pc_conference_key_n = ? AND pc_option_type_code_c = ?", ATransaction, false, ParametersArray));
+            return Exists(PcConferenceOptionTable.TableId, new System.Object[2]{AConferenceKey, AOptionTypeCode}, ATransaction);
         }
 
         /// this method is called by all overloads
         public static int CountUsingTemplate(PcConferenceOptionRow ATemplateRow, StringCollection ATemplateOperators, TDBTransaction ATransaction)
         {
-            return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_pc_conference_option" + GenerateWhereClause(PcConferenceOptionTable.GetColumnStringList(), ATemplateRow, ATemplateOperators)), ATransaction, false, GetParametersForWhereClause(ATemplateRow)));
+            return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_pc_conference_option" + GenerateWhereClause(TTypedDataTable.GetColumnStringList(PcConferenceOptionTable.TableId), ATemplateRow, ATemplateOperators)), ATransaction, false,
+                   GetParametersForWhereClause(PcConferenceOptionTable.TableId, ATemplateRow)));
         }
 
         /// this method is called by all overloads
         public static int CountUsingTemplate(TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
         {
-            return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_pc_conference_option" + GenerateWhereClause(PcConferenceOptionTable.GetColumnStringList(), ASearchCriteria)), ATransaction, false,
-            GetParametersForWhereClause(new PcConferenceOptionTable(), ASearchCriteria)));
+            return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_pc_conference_option" + GenerateWhereClause(TTypedDataTable.GetColumnStringList(PcConferenceOptionTable.TableId), ASearchCriteria)), ATransaction, false,
+            GetParametersForWhereClause(PcConferenceOptionTable.TableId, ASearchCriteria)));
         }
 
         /// auto generated
@@ -2115,9 +2080,9 @@ namespace Ict.Petra.Shared.MConference.Data.Access
             OdbcParameter[] ParametersArray = new OdbcParameter[1];
             ParametersArray[0] = new OdbcParameter("", OdbcType.Decimal, 10);
             ParametersArray[0].Value = ((object)(AConferenceKey));
-            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, ((GenerateSelectClause(AFieldList, new string[] {
-                            "pc_conference_key_n", "pc_option_type_code_c"}) + " FROM PUB_pc_conference_option WHERE pc_conference_key_n = ?")
-                            + GenerateOrderByClause(AOrderBy)), PcConferenceOptionTable.GetTableName(), ATransaction, ParametersArray, AStartRecord, AMaxRecords);
+            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, ((GenerateSelectClause(AFieldList, PcConferenceOptionTable.TableId) +
+                            " FROM PUB_pc_conference_option WHERE pc_conference_key_n = ?") +
+                            GenerateOrderByClause(AOrderBy)), TTypedDataTable.GetTableName(PcConferenceOptionTable.TableId), ATransaction, ParametersArray, AStartRecord, AMaxRecords);
         }
 
         /// auto generated
@@ -2157,11 +2122,12 @@ namespace Ict.Petra.Shared.MConference.Data.Access
         /// auto generated
         public static void LoadViaPcConferenceTemplate(DataSet ADataSet, PcConferenceRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClauseLong("PUB_pc_conference_option", AFieldList, new string[] {
-                            "pc_conference_key_n", "pc_option_type_code_c"}) + " FROM PUB_pc_conference_option, PUB_pc_conference WHERE " +
-                            "PUB_pc_conference_option.pc_conference_key_n = PUB_pc_conference.pc_conference_key_n")
-                            + GenerateWhereClauseLong("PUB_pc_conference", PcConferenceTable.GetColumnStringList(), ATemplateRow, ATemplateOperators))
-                            + GenerateOrderByClause(AOrderBy)), PcConferenceOptionTable.GetTableName(), ATransaction, GetParametersForWhereClause(ATemplateRow), AStartRecord, AMaxRecords);
+            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClauseLong("PUB_pc_conference_option", AFieldList, PcConferenceOptionTable.TableId) +
+                            " FROM PUB_pc_conference_option, PUB_pc_conference WHERE " +
+                            "PUB_pc_conference_option.pc_conference_key_n = PUB_pc_conference.pc_conference_key_n") +
+                            GenerateWhereClauseLong("PUB_pc_conference", PcConferenceTable.TableId, ATemplateRow, ATemplateOperators)) +
+                            GenerateOrderByClause(AOrderBy)), TTypedDataTable.GetTableName(PcConferenceOptionTable.TableId), ATransaction,
+                            GetParametersForWhereClause(PcConferenceTable.TableId, ATemplateRow), AStartRecord, AMaxRecords);
         }
 
         /// auto generated
@@ -2207,12 +2173,12 @@ namespace Ict.Petra.Shared.MConference.Data.Access
         /// auto generated
         public static void LoadViaPcConferenceTemplate(DataSet ADataSet, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClauseLong("PUB_pc_conference_option", AFieldList, new string[] {
-                            "pc_conference_key_n", "pc_option_type_code_c"}) + " FROM PUB_pc_conference_option, PUB_pc_conference WHERE " +
-                            "PUB_pc_conference_option.pc_conference_key_n = PUB_pc_conference.pc_conference_key_n")
-                            + GenerateWhereClauseLong("PUB_pc_conference", PcConferenceTable.GetColumnStringList(), ASearchCriteria))
-                            + GenerateOrderByClause(AOrderBy)), PcConferenceOptionTable.GetTableName(), ATransaction,
-                            GetParametersForWhereClause(new PcConferenceOptionTable(), ASearchCriteria), AStartRecord, AMaxRecords);
+            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClauseLong("PUB_pc_conference_option", AFieldList, PcConferenceOptionTable.TableId) +
+                            " FROM PUB_pc_conference_option, PUB_pc_conference WHERE " +
+                            "PUB_pc_conference_option.pc_conference_key_n = PUB_pc_conference.pc_conference_key_n") +
+                            GenerateWhereClauseLong("PUB_pc_conference", ASearchCriteria)) +
+                            GenerateOrderByClause(AOrderBy)), TTypedDataTable.GetTableName(PcConferenceOptionTable.TableId), ATransaction,
+                            GetParametersForWhereClause(PcConferenceOptionTable.TableId, ASearchCriteria), AStartRecord, AMaxRecords);
         }
 
         /// auto generated
@@ -2262,7 +2228,10 @@ namespace Ict.Petra.Shared.MConference.Data.Access
         public static int CountViaPcConferenceTemplate(PcConferenceRow ATemplateRow, StringCollection ATemplateOperators, TDBTransaction ATransaction)
         {
             return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_pc_conference_option, PUB_pc_conference WHERE " +
-                "PUB_pc_conference_option.pc_conference_key_n = PUB_pc_conference.pc_conference_key_n" + GenerateWhereClauseLong("PUB_pc_conference", PcConferenceTable.GetColumnStringList(), ATemplateRow, ATemplateOperators)), ATransaction, false, GetParametersForWhereClause(ATemplateRow, PcConferenceTable.GetPrimKeyColumnOrdList())));
+                "PUB_pc_conference_option.pc_conference_key_n = PUB_pc_conference.pc_conference_key_n" + GenerateWhereClauseLong("PUB_pc_conference",
+                PcConferenceTable.TableId, ATemplateRow, ATemplateOperators)),
+                ATransaction, false,
+                GetParametersForWhereClauseWithPrimaryKey(PcConferenceTable.TableId, ATemplateRow)));
         }
 
         /// auto generated
@@ -2270,8 +2239,8 @@ namespace Ict.Petra.Shared.MConference.Data.Access
         {
             return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_pc_conference_option, PUB_pc_conference WHERE " +
                 "PUB_pc_conference_option.pc_conference_key_n = PUB_pc_conference.pc_conference_key_n" +
-                GenerateWhereClauseLong("PUB_pc_conference", PcConferenceTable.GetColumnStringList(), ASearchCriteria)), ATransaction, false,
-                GetParametersForWhereClause(new PcConferenceTable(), ASearchCriteria)));
+                GenerateWhereClauseLong("PUB_pc_conference", ASearchCriteria)), ATransaction, false,
+                GetParametersForWhereClause(PcConferenceTable.TableId, ASearchCriteria)));
         }
 
         /// auto generated
@@ -2280,9 +2249,9 @@ namespace Ict.Petra.Shared.MConference.Data.Access
             OdbcParameter[] ParametersArray = new OdbcParameter[1];
             ParametersArray[0] = new OdbcParameter("", OdbcType.VarChar, 32);
             ParametersArray[0].Value = ((object)(AOptionTypeCode));
-            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, ((GenerateSelectClause(AFieldList, new string[] {
-                            "pc_conference_key_n", "pc_option_type_code_c"}) + " FROM PUB_pc_conference_option WHERE pc_option_type_code_c = ?")
-                            + GenerateOrderByClause(AOrderBy)), PcConferenceOptionTable.GetTableName(), ATransaction, ParametersArray, AStartRecord, AMaxRecords);
+            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, ((GenerateSelectClause(AFieldList, PcConferenceOptionTable.TableId) +
+                            " FROM PUB_pc_conference_option WHERE pc_option_type_code_c = ?") +
+                            GenerateOrderByClause(AOrderBy)), TTypedDataTable.GetTableName(PcConferenceOptionTable.TableId), ATransaction, ParametersArray, AStartRecord, AMaxRecords);
         }
 
         /// auto generated
@@ -2322,11 +2291,12 @@ namespace Ict.Petra.Shared.MConference.Data.Access
         /// auto generated
         public static void LoadViaPcConferenceOptionTypeTemplate(DataSet ADataSet, PcConferenceOptionTypeRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClauseLong("PUB_pc_conference_option", AFieldList, new string[] {
-                            "pc_conference_key_n", "pc_option_type_code_c"}) + " FROM PUB_pc_conference_option, PUB_pc_conference_option_type WHERE " +
-                            "PUB_pc_conference_option.pc_option_type_code_c = PUB_pc_conference_option_type.pc_option_type_code_c")
-                            + GenerateWhereClauseLong("PUB_pc_conference_option_type", PcConferenceOptionTypeTable.GetColumnStringList(), ATemplateRow, ATemplateOperators))
-                            + GenerateOrderByClause(AOrderBy)), PcConferenceOptionTable.GetTableName(), ATransaction, GetParametersForWhereClause(ATemplateRow), AStartRecord, AMaxRecords);
+            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClauseLong("PUB_pc_conference_option", AFieldList, PcConferenceOptionTable.TableId) +
+                            " FROM PUB_pc_conference_option, PUB_pc_conference_option_type WHERE " +
+                            "PUB_pc_conference_option.pc_option_type_code_c = PUB_pc_conference_option_type.pc_option_type_code_c") +
+                            GenerateWhereClauseLong("PUB_pc_conference_option_type", PcConferenceOptionTypeTable.TableId, ATemplateRow, ATemplateOperators)) +
+                            GenerateOrderByClause(AOrderBy)), TTypedDataTable.GetTableName(PcConferenceOptionTable.TableId), ATransaction,
+                            GetParametersForWhereClause(PcConferenceOptionTypeTable.TableId, ATemplateRow), AStartRecord, AMaxRecords);
         }
 
         /// auto generated
@@ -2372,12 +2342,12 @@ namespace Ict.Petra.Shared.MConference.Data.Access
         /// auto generated
         public static void LoadViaPcConferenceOptionTypeTemplate(DataSet ADataSet, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClauseLong("PUB_pc_conference_option", AFieldList, new string[] {
-                            "pc_conference_key_n", "pc_option_type_code_c"}) + " FROM PUB_pc_conference_option, PUB_pc_conference_option_type WHERE " +
-                            "PUB_pc_conference_option.pc_option_type_code_c = PUB_pc_conference_option_type.pc_option_type_code_c")
-                            + GenerateWhereClauseLong("PUB_pc_conference_option_type", PcConferenceOptionTypeTable.GetColumnStringList(), ASearchCriteria))
-                            + GenerateOrderByClause(AOrderBy)), PcConferenceOptionTable.GetTableName(), ATransaction,
-                            GetParametersForWhereClause(new PcConferenceOptionTable(), ASearchCriteria), AStartRecord, AMaxRecords);
+            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClauseLong("PUB_pc_conference_option", AFieldList, PcConferenceOptionTable.TableId) +
+                            " FROM PUB_pc_conference_option, PUB_pc_conference_option_type WHERE " +
+                            "PUB_pc_conference_option.pc_option_type_code_c = PUB_pc_conference_option_type.pc_option_type_code_c") +
+                            GenerateWhereClauseLong("PUB_pc_conference_option_type", ASearchCriteria)) +
+                            GenerateOrderByClause(AOrderBy)), TTypedDataTable.GetTableName(PcConferenceOptionTable.TableId), ATransaction,
+                            GetParametersForWhereClause(PcConferenceOptionTable.TableId, ASearchCriteria), AStartRecord, AMaxRecords);
         }
 
         /// auto generated
@@ -2427,7 +2397,10 @@ namespace Ict.Petra.Shared.MConference.Data.Access
         public static int CountViaPcConferenceOptionTypeTemplate(PcConferenceOptionTypeRow ATemplateRow, StringCollection ATemplateOperators, TDBTransaction ATransaction)
         {
             return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_pc_conference_option, PUB_pc_conference_option_type WHERE " +
-                "PUB_pc_conference_option.pc_option_type_code_c = PUB_pc_conference_option_type.pc_option_type_code_c" + GenerateWhereClauseLong("PUB_pc_conference_option_type", PcConferenceOptionTypeTable.GetColumnStringList(), ATemplateRow, ATemplateOperators)), ATransaction, false, GetParametersForWhereClause(ATemplateRow, PcConferenceOptionTypeTable.GetPrimKeyColumnOrdList())));
+                "PUB_pc_conference_option.pc_option_type_code_c = PUB_pc_conference_option_type.pc_option_type_code_c" + GenerateWhereClauseLong("PUB_pc_conference_option_type",
+                PcConferenceOptionTypeTable.TableId, ATemplateRow, ATemplateOperators)),
+                ATransaction, false,
+                GetParametersForWhereClauseWithPrimaryKey(PcConferenceOptionTypeTable.TableId, ATemplateRow)));
         }
 
         /// auto generated
@@ -2435,33 +2408,26 @@ namespace Ict.Petra.Shared.MConference.Data.Access
         {
             return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_pc_conference_option, PUB_pc_conference_option_type WHERE " +
                 "PUB_pc_conference_option.pc_option_type_code_c = PUB_pc_conference_option_type.pc_option_type_code_c" +
-                GenerateWhereClauseLong("PUB_pc_conference_option_type", PcConferenceOptionTypeTable.GetColumnStringList(), ASearchCriteria)), ATransaction, false,
-                GetParametersForWhereClause(new PcConferenceOptionTypeTable(), ASearchCriteria)));
+                GenerateWhereClauseLong("PUB_pc_conference_option_type", ASearchCriteria)), ATransaction, false,
+                GetParametersForWhereClause(PcConferenceOptionTypeTable.TableId, ASearchCriteria)));
         }
 
         /// auto generated
         public static void DeleteByPrimaryKey(Int64 AConferenceKey, String AOptionTypeCode, TDBTransaction ATransaction)
         {
-            OdbcParameter[] ParametersArray = new OdbcParameter[2];
-            ParametersArray[0] = new OdbcParameter("", OdbcType.Decimal, 10);
-            ParametersArray[0].Value = ((object)(AConferenceKey));
-            ParametersArray[1] = new OdbcParameter("", OdbcType.VarChar, 32);
-            ParametersArray[1].Value = ((object)(AOptionTypeCode));
-            DBAccess.GDBAccessObj.ExecuteNonQuery("DELETE FROM PUB_pc_conference_option WHERE pc_conference_key_n = ? AND pc_option_type_code_c = ?", ATransaction, false, ParametersArray);
+            DeleteByPrimaryKey(PcConferenceOptionTable.TableId, new System.Object[2]{AConferenceKey, AOptionTypeCode}, ATransaction);
         }
 
         /// auto generated
         public static void DeleteUsingTemplate(PcConferenceOptionRow ATemplateRow, StringCollection ATemplateOperators, TDBTransaction ATransaction)
         {
-            DBAccess.GDBAccessObj.ExecuteNonQuery(("DELETE FROM PUB_pc_conference_option" + GenerateWhereClause(PcConferenceOptionTable.GetColumnStringList(), ATemplateRow, ATemplateOperators)), ATransaction, false, GetParametersForWhereClause(ATemplateRow));
+            DeleteUsingTemplate(PcConferenceOptionTable.TableId, ATemplateRow, ATemplateOperators, ATransaction);
         }
 
         /// auto generated
         public static void DeleteUsingTemplate(TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
         {
-            DBAccess.GDBAccessObj.ExecuteNonQuery(("DELETE FROM PUB_pc_conference_option" +
-                GenerateWhereClause(PcConferenceOptionTable.GetColumnStringList(), ASearchCriteria)), ATransaction, false,
-                GetParametersForWhereClause(new PcConferenceOptionTable(), ASearchCriteria));
+            DeleteUsingTemplate(PcConferenceOptionTable.TableId, ASearchCriteria, ATransaction);
         }
 
         /// auto generated
@@ -2478,15 +2444,15 @@ namespace Ict.Petra.Shared.MConference.Data.Access
                 {
                     if ((TheRow.RowState == DataRowState.Added))
                     {
-                        TTypedDataAccess.InsertRow("pc_conference_option", PcConferenceOptionTable.GetColumnStringList(), ref TheRow, ATransaction, UserInfo.GUserInfo.UserID);
+                        TTypedDataAccess.InsertRow(PcConferenceOptionTable.TableId, ref TheRow, ATransaction, UserInfo.GUserInfo.UserID);
                     }
                     if ((TheRow.RowState == DataRowState.Modified))
                     {
-                        TTypedDataAccess.UpdateRow("pc_conference_option", PcConferenceOptionTable.GetColumnStringList(), PcConferenceOptionTable.GetPrimKeyColumnOrdList(), ref TheRow, ATransaction, UserInfo.GUserInfo.UserID);
+                        TTypedDataAccess.UpdateRow(PcConferenceOptionTable.TableId, ref TheRow, ATransaction, UserInfo.GUserInfo.UserID);
                     }
                     if ((TheRow.RowState == DataRowState.Deleted))
                     {
-                        TTypedDataAccess.DeleteRow("pc_conference_option", PcConferenceOptionTable.GetColumnStringList(), PcConferenceOptionTable.GetPrimKeyColumnOrdList(), TheRow, ATransaction);
+                        TTypedDataAccess.DeleteRow(PcConferenceOptionTable.TableId, TheRow, ATransaction);
                     }
                 }
                 catch (OdbcException ex)
@@ -2516,9 +2482,8 @@ namespace Ict.Petra.Shared.MConference.Data.Access
         /// this method is called by all overloads
         public static void LoadAll(DataSet ADataSet, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, ((GenerateSelectClause(AFieldList, new string[] {
-                            "pc_discount_criteria_code_c"}) + " FROM PUB_pc_discount_criteria")
-                            + GenerateOrderByClause(AOrderBy)), PcDiscountCriteriaTable.GetTableName(), ATransaction, AStartRecord, AMaxRecords);
+            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, ((GenerateSelectClause(AFieldList, PcDiscountCriteriaTable.TableId) + " FROM PUB_pc_discount_criteria") +
+                            GenerateOrderByClause(AOrderBy)), TTypedDataTable.GetTableName(PcDiscountCriteriaTable.TableId), ATransaction, AStartRecord, AMaxRecords);
         }
 
         /// auto generated
@@ -2558,12 +2523,8 @@ namespace Ict.Petra.Shared.MConference.Data.Access
         /// this method is called by all overloads
         public static void LoadByPrimaryKey(DataSet ADataSet, String ADiscountCriteriaCode, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            OdbcParameter[] ParametersArray = new OdbcParameter[1];
-            ParametersArray[0] = new OdbcParameter("", OdbcType.VarChar, 16);
-            ParametersArray[0].Value = ((object)(ADiscountCriteriaCode));
-            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, ((GenerateSelectClause(AFieldList, new string[] {
-                            "pc_discount_criteria_code_c"}) + " FROM PUB_pc_discount_criteria WHERE pc_discount_criteria_code_c = ?")
-                            + GenerateOrderByClause(AOrderBy)), PcDiscountCriteriaTable.GetTableName(), ATransaction, ParametersArray, AStartRecord, AMaxRecords);
+            ADataSet = LoadByPrimaryKey(PcDiscountCriteriaTable.TableId,
+                ADataSet, new System.Object[1]{ADiscountCriteriaCode}, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
         }
 
         /// auto generated
@@ -2603,10 +2564,10 @@ namespace Ict.Petra.Shared.MConference.Data.Access
         /// this method is called by all overloads
         public static void LoadUsingTemplate(DataSet ADataSet, PcDiscountCriteriaRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClause(AFieldList, new string[] {
-                            "pc_discount_criteria_code_c"}) + " FROM PUB_pc_discount_criteria")
-                            + GenerateWhereClause(PcDiscountCriteriaTable.GetColumnStringList(), ATemplateRow, ATemplateOperators))
-                            + GenerateOrderByClause(AOrderBy)), PcDiscountCriteriaTable.GetTableName(), ATransaction, GetParametersForWhereClause(ATemplateRow), AStartRecord, AMaxRecords);
+            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClause(AFieldList, PcDiscountCriteriaTable.TableId) + " FROM PUB_pc_discount_criteria") +
+                            GenerateWhereClause(TTypedDataTable.GetColumnStringList(PcDiscountCriteriaTable.TableId), ATemplateRow, ATemplateOperators)) +
+                            GenerateOrderByClause(AOrderBy)), TTypedDataTable.GetTableName(PcDiscountCriteriaTable.TableId), ATransaction,
+                            GetParametersForWhereClause(PcDiscountCriteriaTable.TableId, ATemplateRow), AStartRecord, AMaxRecords);
         }
 
         /// auto generated
@@ -2652,11 +2613,10 @@ namespace Ict.Petra.Shared.MConference.Data.Access
         /// this method is called by all overloads
         public static void LoadUsingTemplate(DataSet ADataSet, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClause(AFieldList, new string[] {
-                            "pc_discount_criteria_code_c"}) + " FROM PUB_pc_discount_criteria")
-                            + GenerateWhereClause(PcDiscountCriteriaTable.GetColumnStringList(), ASearchCriteria))
-                            + GenerateOrderByClause(AOrderBy)), PcDiscountCriteriaTable.GetTableName(), ATransaction,
-                            GetParametersForWhereClause(new PcDiscountCriteriaTable(), ASearchCriteria), AStartRecord, AMaxRecords);
+            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClause(AFieldList, PcDiscountCriteriaTable.TableId) + " FROM PUB_pc_discount_criteria") +
+                            GenerateWhereClause(TTypedDataTable.GetColumnStringList(PcDiscountCriteriaTable.TableId), ASearchCriteria)) +
+                            GenerateOrderByClause(AOrderBy)), TTypedDataTable.GetTableName(PcDiscountCriteriaTable.TableId), ATransaction,
+                            GetParametersForWhereClause(PcDiscountCriteriaTable.TableId, ASearchCriteria), AStartRecord, AMaxRecords);
         }
 
         /// auto generated
@@ -2699,49 +2659,42 @@ namespace Ict.Petra.Shared.MConference.Data.Access
             return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar("SELECT COUNT(*) FROM PUB_pc_discount_criteria", ATransaction, false));
         }
 
-        /// this method is called by all overloads
-        public static int CountByPrimaryKey(String ADiscountCriteriaCode, TDBTransaction ATransaction)
+        /// check if a row exists by using the primary key
+        public static bool Exists(String ADiscountCriteriaCode, TDBTransaction ATransaction)
         {
-            OdbcParameter[] ParametersArray = new OdbcParameter[1];
-            ParametersArray[0] = new OdbcParameter("", OdbcType.VarChar, 16);
-            ParametersArray[0].Value = ((object)(ADiscountCriteriaCode));
-            return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar("SELECT COUNT(*) FROM PUB_pc_discount_criteria WHERE pc_discount_criteria_code_c = ?", ATransaction, false, ParametersArray));
+            return Exists(PcDiscountCriteriaTable.TableId, new System.Object[1]{ADiscountCriteriaCode}, ATransaction);
         }
 
         /// this method is called by all overloads
         public static int CountUsingTemplate(PcDiscountCriteriaRow ATemplateRow, StringCollection ATemplateOperators, TDBTransaction ATransaction)
         {
-            return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_pc_discount_criteria" + GenerateWhereClause(PcDiscountCriteriaTable.GetColumnStringList(), ATemplateRow, ATemplateOperators)), ATransaction, false, GetParametersForWhereClause(ATemplateRow)));
+            return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_pc_discount_criteria" + GenerateWhereClause(TTypedDataTable.GetColumnStringList(PcDiscountCriteriaTable.TableId), ATemplateRow, ATemplateOperators)), ATransaction, false,
+                   GetParametersForWhereClause(PcDiscountCriteriaTable.TableId, ATemplateRow)));
         }
 
         /// this method is called by all overloads
         public static int CountUsingTemplate(TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
         {
-            return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_pc_discount_criteria" + GenerateWhereClause(PcDiscountCriteriaTable.GetColumnStringList(), ASearchCriteria)), ATransaction, false,
-            GetParametersForWhereClause(new PcDiscountCriteriaTable(), ASearchCriteria)));
+            return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_pc_discount_criteria" + GenerateWhereClause(TTypedDataTable.GetColumnStringList(PcDiscountCriteriaTable.TableId), ASearchCriteria)), ATransaction, false,
+            GetParametersForWhereClause(PcDiscountCriteriaTable.TableId, ASearchCriteria)));
         }
 
         /// auto generated
         public static void DeleteByPrimaryKey(String ADiscountCriteriaCode, TDBTransaction ATransaction)
         {
-            OdbcParameter[] ParametersArray = new OdbcParameter[1];
-            ParametersArray[0] = new OdbcParameter("", OdbcType.VarChar, 16);
-            ParametersArray[0].Value = ((object)(ADiscountCriteriaCode));
-            DBAccess.GDBAccessObj.ExecuteNonQuery("DELETE FROM PUB_pc_discount_criteria WHERE pc_discount_criteria_code_c = ?", ATransaction, false, ParametersArray);
+            DeleteByPrimaryKey(PcDiscountCriteriaTable.TableId, new System.Object[1]{ADiscountCriteriaCode}, ATransaction);
         }
 
         /// auto generated
         public static void DeleteUsingTemplate(PcDiscountCriteriaRow ATemplateRow, StringCollection ATemplateOperators, TDBTransaction ATransaction)
         {
-            DBAccess.GDBAccessObj.ExecuteNonQuery(("DELETE FROM PUB_pc_discount_criteria" + GenerateWhereClause(PcDiscountCriteriaTable.GetColumnStringList(), ATemplateRow, ATemplateOperators)), ATransaction, false, GetParametersForWhereClause(ATemplateRow));
+            DeleteUsingTemplate(PcDiscountCriteriaTable.TableId, ATemplateRow, ATemplateOperators, ATransaction);
         }
 
         /// auto generated
         public static void DeleteUsingTemplate(TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
         {
-            DBAccess.GDBAccessObj.ExecuteNonQuery(("DELETE FROM PUB_pc_discount_criteria" +
-                GenerateWhereClause(PcDiscountCriteriaTable.GetColumnStringList(), ASearchCriteria)), ATransaction, false,
-                GetParametersForWhereClause(new PcDiscountCriteriaTable(), ASearchCriteria));
+            DeleteUsingTemplate(PcDiscountCriteriaTable.TableId, ASearchCriteria, ATransaction);
         }
 
         /// auto generated
@@ -2758,15 +2711,15 @@ namespace Ict.Petra.Shared.MConference.Data.Access
                 {
                     if ((TheRow.RowState == DataRowState.Added))
                     {
-                        TTypedDataAccess.InsertRow("pc_discount_criteria", PcDiscountCriteriaTable.GetColumnStringList(), ref TheRow, ATransaction, UserInfo.GUserInfo.UserID);
+                        TTypedDataAccess.InsertRow(PcDiscountCriteriaTable.TableId, ref TheRow, ATransaction, UserInfo.GUserInfo.UserID);
                     }
                     if ((TheRow.RowState == DataRowState.Modified))
                     {
-                        TTypedDataAccess.UpdateRow("pc_discount_criteria", PcDiscountCriteriaTable.GetColumnStringList(), PcDiscountCriteriaTable.GetPrimKeyColumnOrdList(), ref TheRow, ATransaction, UserInfo.GUserInfo.UserID);
+                        TTypedDataAccess.UpdateRow(PcDiscountCriteriaTable.TableId, ref TheRow, ATransaction, UserInfo.GUserInfo.UserID);
                     }
                     if ((TheRow.RowState == DataRowState.Deleted))
                     {
-                        TTypedDataAccess.DeleteRow("pc_discount_criteria", PcDiscountCriteriaTable.GetColumnStringList(), PcDiscountCriteriaTable.GetPrimKeyColumnOrdList(), TheRow, ATransaction);
+                        TTypedDataAccess.DeleteRow(PcDiscountCriteriaTable.TableId, TheRow, ATransaction);
                     }
                 }
                 catch (OdbcException ex)
@@ -2796,9 +2749,8 @@ namespace Ict.Petra.Shared.MConference.Data.Access
         /// this method is called by all overloads
         public static void LoadAll(DataSet ADataSet, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, ((GenerateSelectClause(AFieldList, new string[] {
-                            "pc_conference_key_n", "pc_discount_criteria_code_c", "pc_cost_type_code_c", "pc_validity_c", "pc_up_to_age_i"}) + " FROM PUB_pc_discount")
-                            + GenerateOrderByClause(AOrderBy)), PcDiscountTable.GetTableName(), ATransaction, AStartRecord, AMaxRecords);
+            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, ((GenerateSelectClause(AFieldList, PcDiscountTable.TableId) + " FROM PUB_pc_discount") +
+                            GenerateOrderByClause(AOrderBy)), TTypedDataTable.GetTableName(PcDiscountTable.TableId), ATransaction, AStartRecord, AMaxRecords);
         }
 
         /// auto generated
@@ -2838,20 +2790,8 @@ namespace Ict.Petra.Shared.MConference.Data.Access
         /// this method is called by all overloads
         public static void LoadByPrimaryKey(DataSet ADataSet, Int64 AConferenceKey, String ADiscountCriteriaCode, String ACostTypeCode, String AValidity, Int32 AUpToAge, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            OdbcParameter[] ParametersArray = new OdbcParameter[5];
-            ParametersArray[0] = new OdbcParameter("", OdbcType.Decimal, 10);
-            ParametersArray[0].Value = ((object)(AConferenceKey));
-            ParametersArray[1] = new OdbcParameter("", OdbcType.VarChar, 16);
-            ParametersArray[1].Value = ((object)(ADiscountCriteriaCode));
-            ParametersArray[2] = new OdbcParameter("", OdbcType.VarChar, 32);
-            ParametersArray[2].Value = ((object)(ACostTypeCode));
-            ParametersArray[3] = new OdbcParameter("", OdbcType.VarChar, 6);
-            ParametersArray[3].Value = ((object)(AValidity));
-            ParametersArray[4] = new OdbcParameter("", OdbcType.Int);
-            ParametersArray[4].Value = ((object)(AUpToAge));
-            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, ((GenerateSelectClause(AFieldList, new string[] {
-                            "pc_conference_key_n", "pc_discount_criteria_code_c", "pc_cost_type_code_c", "pc_validity_c", "pc_up_to_age_i"}) + " FROM PUB_pc_discount WHERE pc_conference_key_n = ? AND pc_discount_criteria_code_c = ? AND pc_cost_type_code_c = ? AND pc_validity_c = ? AND pc_up_to_age_i = ?")
-                            + GenerateOrderByClause(AOrderBy)), PcDiscountTable.GetTableName(), ATransaction, ParametersArray, AStartRecord, AMaxRecords);
+            ADataSet = LoadByPrimaryKey(PcDiscountTable.TableId,
+                ADataSet, new System.Object[5]{AConferenceKey, ADiscountCriteriaCode, ACostTypeCode, AValidity, AUpToAge}, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
         }
 
         /// auto generated
@@ -2891,10 +2831,10 @@ namespace Ict.Petra.Shared.MConference.Data.Access
         /// this method is called by all overloads
         public static void LoadUsingTemplate(DataSet ADataSet, PcDiscountRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClause(AFieldList, new string[] {
-                            "pc_conference_key_n", "pc_discount_criteria_code_c", "pc_cost_type_code_c", "pc_validity_c", "pc_up_to_age_i"}) + " FROM PUB_pc_discount")
-                            + GenerateWhereClause(PcDiscountTable.GetColumnStringList(), ATemplateRow, ATemplateOperators))
-                            + GenerateOrderByClause(AOrderBy)), PcDiscountTable.GetTableName(), ATransaction, GetParametersForWhereClause(ATemplateRow), AStartRecord, AMaxRecords);
+            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClause(AFieldList, PcDiscountTable.TableId) + " FROM PUB_pc_discount") +
+                            GenerateWhereClause(TTypedDataTable.GetColumnStringList(PcDiscountTable.TableId), ATemplateRow, ATemplateOperators)) +
+                            GenerateOrderByClause(AOrderBy)), TTypedDataTable.GetTableName(PcDiscountTable.TableId), ATransaction,
+                            GetParametersForWhereClause(PcDiscountTable.TableId, ATemplateRow), AStartRecord, AMaxRecords);
         }
 
         /// auto generated
@@ -2940,11 +2880,10 @@ namespace Ict.Petra.Shared.MConference.Data.Access
         /// this method is called by all overloads
         public static void LoadUsingTemplate(DataSet ADataSet, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClause(AFieldList, new string[] {
-                            "pc_conference_key_n", "pc_discount_criteria_code_c", "pc_cost_type_code_c", "pc_validity_c", "pc_up_to_age_i"}) + " FROM PUB_pc_discount")
-                            + GenerateWhereClause(PcDiscountTable.GetColumnStringList(), ASearchCriteria))
-                            + GenerateOrderByClause(AOrderBy)), PcDiscountTable.GetTableName(), ATransaction,
-                            GetParametersForWhereClause(new PcDiscountTable(), ASearchCriteria), AStartRecord, AMaxRecords);
+            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClause(AFieldList, PcDiscountTable.TableId) + " FROM PUB_pc_discount") +
+                            GenerateWhereClause(TTypedDataTable.GetColumnStringList(PcDiscountTable.TableId), ASearchCriteria)) +
+                            GenerateOrderByClause(AOrderBy)), TTypedDataTable.GetTableName(PcDiscountTable.TableId), ATransaction,
+                            GetParametersForWhereClause(PcDiscountTable.TableId, ASearchCriteria), AStartRecord, AMaxRecords);
         }
 
         /// auto generated
@@ -2987,34 +2926,24 @@ namespace Ict.Petra.Shared.MConference.Data.Access
             return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar("SELECT COUNT(*) FROM PUB_pc_discount", ATransaction, false));
         }
 
-        /// this method is called by all overloads
-        public static int CountByPrimaryKey(Int64 AConferenceKey, String ADiscountCriteriaCode, String ACostTypeCode, String AValidity, Int32 AUpToAge, TDBTransaction ATransaction)
+        /// check if a row exists by using the primary key
+        public static bool Exists(Int64 AConferenceKey, String ADiscountCriteriaCode, String ACostTypeCode, String AValidity, Int32 AUpToAge, TDBTransaction ATransaction)
         {
-            OdbcParameter[] ParametersArray = new OdbcParameter[5];
-            ParametersArray[0] = new OdbcParameter("", OdbcType.Decimal, 10);
-            ParametersArray[0].Value = ((object)(AConferenceKey));
-            ParametersArray[1] = new OdbcParameter("", OdbcType.VarChar, 16);
-            ParametersArray[1].Value = ((object)(ADiscountCriteriaCode));
-            ParametersArray[2] = new OdbcParameter("", OdbcType.VarChar, 32);
-            ParametersArray[2].Value = ((object)(ACostTypeCode));
-            ParametersArray[3] = new OdbcParameter("", OdbcType.VarChar, 6);
-            ParametersArray[3].Value = ((object)(AValidity));
-            ParametersArray[4] = new OdbcParameter("", OdbcType.Int);
-            ParametersArray[4].Value = ((object)(AUpToAge));
-            return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar("SELECT COUNT(*) FROM PUB_pc_discount WHERE pc_conference_key_n = ? AND pc_discount_criteria_code_c = ? AND pc_cost_type_code_c = ? AND pc_validity_c = ? AND pc_up_to_age_i = ?", ATransaction, false, ParametersArray));
+            return Exists(PcDiscountTable.TableId, new System.Object[5]{AConferenceKey, ADiscountCriteriaCode, ACostTypeCode, AValidity, AUpToAge}, ATransaction);
         }
 
         /// this method is called by all overloads
         public static int CountUsingTemplate(PcDiscountRow ATemplateRow, StringCollection ATemplateOperators, TDBTransaction ATransaction)
         {
-            return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_pc_discount" + GenerateWhereClause(PcDiscountTable.GetColumnStringList(), ATemplateRow, ATemplateOperators)), ATransaction, false, GetParametersForWhereClause(ATemplateRow)));
+            return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_pc_discount" + GenerateWhereClause(TTypedDataTable.GetColumnStringList(PcDiscountTable.TableId), ATemplateRow, ATemplateOperators)), ATransaction, false,
+                   GetParametersForWhereClause(PcDiscountTable.TableId, ATemplateRow)));
         }
 
         /// this method is called by all overloads
         public static int CountUsingTemplate(TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
         {
-            return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_pc_discount" + GenerateWhereClause(PcDiscountTable.GetColumnStringList(), ASearchCriteria)), ATransaction, false,
-            GetParametersForWhereClause(new PcDiscountTable(), ASearchCriteria)));
+            return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_pc_discount" + GenerateWhereClause(TTypedDataTable.GetColumnStringList(PcDiscountTable.TableId), ASearchCriteria)), ATransaction, false,
+            GetParametersForWhereClause(PcDiscountTable.TableId, ASearchCriteria)));
         }
 
         /// auto generated
@@ -3023,9 +2952,9 @@ namespace Ict.Petra.Shared.MConference.Data.Access
             OdbcParameter[] ParametersArray = new OdbcParameter[1];
             ParametersArray[0] = new OdbcParameter("", OdbcType.Decimal, 10);
             ParametersArray[0].Value = ((object)(AConferenceKey));
-            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, ((GenerateSelectClause(AFieldList, new string[] {
-                            "pc_conference_key_n", "pc_discount_criteria_code_c", "pc_cost_type_code_c", "pc_validity_c", "pc_up_to_age_i"}) + " FROM PUB_pc_discount WHERE pc_conference_key_n = ?")
-                            + GenerateOrderByClause(AOrderBy)), PcDiscountTable.GetTableName(), ATransaction, ParametersArray, AStartRecord, AMaxRecords);
+            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, ((GenerateSelectClause(AFieldList, PcDiscountTable.TableId) +
+                            " FROM PUB_pc_discount WHERE pc_conference_key_n = ?") +
+                            GenerateOrderByClause(AOrderBy)), TTypedDataTable.GetTableName(PcDiscountTable.TableId), ATransaction, ParametersArray, AStartRecord, AMaxRecords);
         }
 
         /// auto generated
@@ -3065,11 +2994,12 @@ namespace Ict.Petra.Shared.MConference.Data.Access
         /// auto generated
         public static void LoadViaPcConferenceTemplate(DataSet ADataSet, PcConferenceRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClauseLong("PUB_pc_discount", AFieldList, new string[] {
-                            "pc_conference_key_n", "pc_discount_criteria_code_c", "pc_cost_type_code_c", "pc_validity_c", "pc_up_to_age_i"}) + " FROM PUB_pc_discount, PUB_pc_conference WHERE " +
-                            "PUB_pc_discount.pc_conference_key_n = PUB_pc_conference.pc_conference_key_n")
-                            + GenerateWhereClauseLong("PUB_pc_conference", PcConferenceTable.GetColumnStringList(), ATemplateRow, ATemplateOperators))
-                            + GenerateOrderByClause(AOrderBy)), PcDiscountTable.GetTableName(), ATransaction, GetParametersForWhereClause(ATemplateRow), AStartRecord, AMaxRecords);
+            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClauseLong("PUB_pc_discount", AFieldList, PcDiscountTable.TableId) +
+                            " FROM PUB_pc_discount, PUB_pc_conference WHERE " +
+                            "PUB_pc_discount.pc_conference_key_n = PUB_pc_conference.pc_conference_key_n") +
+                            GenerateWhereClauseLong("PUB_pc_conference", PcConferenceTable.TableId, ATemplateRow, ATemplateOperators)) +
+                            GenerateOrderByClause(AOrderBy)), TTypedDataTable.GetTableName(PcDiscountTable.TableId), ATransaction,
+                            GetParametersForWhereClause(PcConferenceTable.TableId, ATemplateRow), AStartRecord, AMaxRecords);
         }
 
         /// auto generated
@@ -3115,12 +3045,12 @@ namespace Ict.Petra.Shared.MConference.Data.Access
         /// auto generated
         public static void LoadViaPcConferenceTemplate(DataSet ADataSet, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClauseLong("PUB_pc_discount", AFieldList, new string[] {
-                            "pc_conference_key_n", "pc_discount_criteria_code_c", "pc_cost_type_code_c", "pc_validity_c", "pc_up_to_age_i"}) + " FROM PUB_pc_discount, PUB_pc_conference WHERE " +
-                            "PUB_pc_discount.pc_conference_key_n = PUB_pc_conference.pc_conference_key_n")
-                            + GenerateWhereClauseLong("PUB_pc_conference", PcConferenceTable.GetColumnStringList(), ASearchCriteria))
-                            + GenerateOrderByClause(AOrderBy)), PcDiscountTable.GetTableName(), ATransaction,
-                            GetParametersForWhereClause(new PcDiscountTable(), ASearchCriteria), AStartRecord, AMaxRecords);
+            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClauseLong("PUB_pc_discount", AFieldList, PcDiscountTable.TableId) +
+                            " FROM PUB_pc_discount, PUB_pc_conference WHERE " +
+                            "PUB_pc_discount.pc_conference_key_n = PUB_pc_conference.pc_conference_key_n") +
+                            GenerateWhereClauseLong("PUB_pc_conference", ASearchCriteria)) +
+                            GenerateOrderByClause(AOrderBy)), TTypedDataTable.GetTableName(PcDiscountTable.TableId), ATransaction,
+                            GetParametersForWhereClause(PcDiscountTable.TableId, ASearchCriteria), AStartRecord, AMaxRecords);
         }
 
         /// auto generated
@@ -3170,7 +3100,10 @@ namespace Ict.Petra.Shared.MConference.Data.Access
         public static int CountViaPcConferenceTemplate(PcConferenceRow ATemplateRow, StringCollection ATemplateOperators, TDBTransaction ATransaction)
         {
             return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_pc_discount, PUB_pc_conference WHERE " +
-                "PUB_pc_discount.pc_conference_key_n = PUB_pc_conference.pc_conference_key_n" + GenerateWhereClauseLong("PUB_pc_conference", PcConferenceTable.GetColumnStringList(), ATemplateRow, ATemplateOperators)), ATransaction, false, GetParametersForWhereClause(ATemplateRow, PcConferenceTable.GetPrimKeyColumnOrdList())));
+                "PUB_pc_discount.pc_conference_key_n = PUB_pc_conference.pc_conference_key_n" + GenerateWhereClauseLong("PUB_pc_conference",
+                PcConferenceTable.TableId, ATemplateRow, ATemplateOperators)),
+                ATransaction, false,
+                GetParametersForWhereClauseWithPrimaryKey(PcConferenceTable.TableId, ATemplateRow)));
         }
 
         /// auto generated
@@ -3178,8 +3111,8 @@ namespace Ict.Petra.Shared.MConference.Data.Access
         {
             return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_pc_discount, PUB_pc_conference WHERE " +
                 "PUB_pc_discount.pc_conference_key_n = PUB_pc_conference.pc_conference_key_n" +
-                GenerateWhereClauseLong("PUB_pc_conference", PcConferenceTable.GetColumnStringList(), ASearchCriteria)), ATransaction, false,
-                GetParametersForWhereClause(new PcConferenceTable(), ASearchCriteria)));
+                GenerateWhereClauseLong("PUB_pc_conference", ASearchCriteria)), ATransaction, false,
+                GetParametersForWhereClause(PcConferenceTable.TableId, ASearchCriteria)));
         }
 
         /// auto generated
@@ -3188,9 +3121,9 @@ namespace Ict.Petra.Shared.MConference.Data.Access
             OdbcParameter[] ParametersArray = new OdbcParameter[1];
             ParametersArray[0] = new OdbcParameter("", OdbcType.VarChar, 16);
             ParametersArray[0].Value = ((object)(ADiscountCriteriaCode));
-            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, ((GenerateSelectClause(AFieldList, new string[] {
-                            "pc_conference_key_n", "pc_discount_criteria_code_c", "pc_cost_type_code_c", "pc_validity_c", "pc_up_to_age_i"}) + " FROM PUB_pc_discount WHERE pc_discount_criteria_code_c = ?")
-                            + GenerateOrderByClause(AOrderBy)), PcDiscountTable.GetTableName(), ATransaction, ParametersArray, AStartRecord, AMaxRecords);
+            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, ((GenerateSelectClause(AFieldList, PcDiscountTable.TableId) +
+                            " FROM PUB_pc_discount WHERE pc_discount_criteria_code_c = ?") +
+                            GenerateOrderByClause(AOrderBy)), TTypedDataTable.GetTableName(PcDiscountTable.TableId), ATransaction, ParametersArray, AStartRecord, AMaxRecords);
         }
 
         /// auto generated
@@ -3230,11 +3163,12 @@ namespace Ict.Petra.Shared.MConference.Data.Access
         /// auto generated
         public static void LoadViaPcDiscountCriteriaTemplate(DataSet ADataSet, PcDiscountCriteriaRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClauseLong("PUB_pc_discount", AFieldList, new string[] {
-                            "pc_conference_key_n", "pc_discount_criteria_code_c", "pc_cost_type_code_c", "pc_validity_c", "pc_up_to_age_i"}) + " FROM PUB_pc_discount, PUB_pc_discount_criteria WHERE " +
-                            "PUB_pc_discount.pc_discount_criteria_code_c = PUB_pc_discount_criteria.pc_discount_criteria_code_c")
-                            + GenerateWhereClauseLong("PUB_pc_discount_criteria", PcDiscountCriteriaTable.GetColumnStringList(), ATemplateRow, ATemplateOperators))
-                            + GenerateOrderByClause(AOrderBy)), PcDiscountTable.GetTableName(), ATransaction, GetParametersForWhereClause(ATemplateRow), AStartRecord, AMaxRecords);
+            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClauseLong("PUB_pc_discount", AFieldList, PcDiscountTable.TableId) +
+                            " FROM PUB_pc_discount, PUB_pc_discount_criteria WHERE " +
+                            "PUB_pc_discount.pc_discount_criteria_code_c = PUB_pc_discount_criteria.pc_discount_criteria_code_c") +
+                            GenerateWhereClauseLong("PUB_pc_discount_criteria", PcDiscountCriteriaTable.TableId, ATemplateRow, ATemplateOperators)) +
+                            GenerateOrderByClause(AOrderBy)), TTypedDataTable.GetTableName(PcDiscountTable.TableId), ATransaction,
+                            GetParametersForWhereClause(PcDiscountCriteriaTable.TableId, ATemplateRow), AStartRecord, AMaxRecords);
         }
 
         /// auto generated
@@ -3280,12 +3214,12 @@ namespace Ict.Petra.Shared.MConference.Data.Access
         /// auto generated
         public static void LoadViaPcDiscountCriteriaTemplate(DataSet ADataSet, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClauseLong("PUB_pc_discount", AFieldList, new string[] {
-                            "pc_conference_key_n", "pc_discount_criteria_code_c", "pc_cost_type_code_c", "pc_validity_c", "pc_up_to_age_i"}) + " FROM PUB_pc_discount, PUB_pc_discount_criteria WHERE " +
-                            "PUB_pc_discount.pc_discount_criteria_code_c = PUB_pc_discount_criteria.pc_discount_criteria_code_c")
-                            + GenerateWhereClauseLong("PUB_pc_discount_criteria", PcDiscountCriteriaTable.GetColumnStringList(), ASearchCriteria))
-                            + GenerateOrderByClause(AOrderBy)), PcDiscountTable.GetTableName(), ATransaction,
-                            GetParametersForWhereClause(new PcDiscountTable(), ASearchCriteria), AStartRecord, AMaxRecords);
+            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClauseLong("PUB_pc_discount", AFieldList, PcDiscountTable.TableId) +
+                            " FROM PUB_pc_discount, PUB_pc_discount_criteria WHERE " +
+                            "PUB_pc_discount.pc_discount_criteria_code_c = PUB_pc_discount_criteria.pc_discount_criteria_code_c") +
+                            GenerateWhereClauseLong("PUB_pc_discount_criteria", ASearchCriteria)) +
+                            GenerateOrderByClause(AOrderBy)), TTypedDataTable.GetTableName(PcDiscountTable.TableId), ATransaction,
+                            GetParametersForWhereClause(PcDiscountTable.TableId, ASearchCriteria), AStartRecord, AMaxRecords);
         }
 
         /// auto generated
@@ -3335,7 +3269,10 @@ namespace Ict.Petra.Shared.MConference.Data.Access
         public static int CountViaPcDiscountCriteriaTemplate(PcDiscountCriteriaRow ATemplateRow, StringCollection ATemplateOperators, TDBTransaction ATransaction)
         {
             return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_pc_discount, PUB_pc_discount_criteria WHERE " +
-                "PUB_pc_discount.pc_discount_criteria_code_c = PUB_pc_discount_criteria.pc_discount_criteria_code_c" + GenerateWhereClauseLong("PUB_pc_discount_criteria", PcDiscountCriteriaTable.GetColumnStringList(), ATemplateRow, ATemplateOperators)), ATransaction, false, GetParametersForWhereClause(ATemplateRow, PcDiscountCriteriaTable.GetPrimKeyColumnOrdList())));
+                "PUB_pc_discount.pc_discount_criteria_code_c = PUB_pc_discount_criteria.pc_discount_criteria_code_c" + GenerateWhereClauseLong("PUB_pc_discount_criteria",
+                PcDiscountCriteriaTable.TableId, ATemplateRow, ATemplateOperators)),
+                ATransaction, false,
+                GetParametersForWhereClauseWithPrimaryKey(PcDiscountCriteriaTable.TableId, ATemplateRow)));
         }
 
         /// auto generated
@@ -3343,8 +3280,8 @@ namespace Ict.Petra.Shared.MConference.Data.Access
         {
             return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_pc_discount, PUB_pc_discount_criteria WHERE " +
                 "PUB_pc_discount.pc_discount_criteria_code_c = PUB_pc_discount_criteria.pc_discount_criteria_code_c" +
-                GenerateWhereClauseLong("PUB_pc_discount_criteria", PcDiscountCriteriaTable.GetColumnStringList(), ASearchCriteria)), ATransaction, false,
-                GetParametersForWhereClause(new PcDiscountCriteriaTable(), ASearchCriteria)));
+                GenerateWhereClauseLong("PUB_pc_discount_criteria", ASearchCriteria)), ATransaction, false,
+                GetParametersForWhereClause(PcDiscountCriteriaTable.TableId, ASearchCriteria)));
         }
 
         /// auto generated
@@ -3353,9 +3290,9 @@ namespace Ict.Petra.Shared.MConference.Data.Access
             OdbcParameter[] ParametersArray = new OdbcParameter[1];
             ParametersArray[0] = new OdbcParameter("", OdbcType.VarChar, 32);
             ParametersArray[0].Value = ((object)(ACostTypeCode));
-            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, ((GenerateSelectClause(AFieldList, new string[] {
-                            "pc_conference_key_n", "pc_discount_criteria_code_c", "pc_cost_type_code_c", "pc_validity_c", "pc_up_to_age_i"}) + " FROM PUB_pc_discount WHERE pc_cost_type_code_c = ?")
-                            + GenerateOrderByClause(AOrderBy)), PcDiscountTable.GetTableName(), ATransaction, ParametersArray, AStartRecord, AMaxRecords);
+            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, ((GenerateSelectClause(AFieldList, PcDiscountTable.TableId) +
+                            " FROM PUB_pc_discount WHERE pc_cost_type_code_c = ?") +
+                            GenerateOrderByClause(AOrderBy)), TTypedDataTable.GetTableName(PcDiscountTable.TableId), ATransaction, ParametersArray, AStartRecord, AMaxRecords);
         }
 
         /// auto generated
@@ -3395,11 +3332,12 @@ namespace Ict.Petra.Shared.MConference.Data.Access
         /// auto generated
         public static void LoadViaPcCostTypeTemplate(DataSet ADataSet, PcCostTypeRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClauseLong("PUB_pc_discount", AFieldList, new string[] {
-                            "pc_conference_key_n", "pc_discount_criteria_code_c", "pc_cost_type_code_c", "pc_validity_c", "pc_up_to_age_i"}) + " FROM PUB_pc_discount, PUB_pc_cost_type WHERE " +
-                            "PUB_pc_discount.pc_cost_type_code_c = PUB_pc_cost_type.pc_cost_type_code_c")
-                            + GenerateWhereClauseLong("PUB_pc_cost_type", PcCostTypeTable.GetColumnStringList(), ATemplateRow, ATemplateOperators))
-                            + GenerateOrderByClause(AOrderBy)), PcDiscountTable.GetTableName(), ATransaction, GetParametersForWhereClause(ATemplateRow), AStartRecord, AMaxRecords);
+            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClauseLong("PUB_pc_discount", AFieldList, PcDiscountTable.TableId) +
+                            " FROM PUB_pc_discount, PUB_pc_cost_type WHERE " +
+                            "PUB_pc_discount.pc_cost_type_code_c = PUB_pc_cost_type.pc_cost_type_code_c") +
+                            GenerateWhereClauseLong("PUB_pc_cost_type", PcCostTypeTable.TableId, ATemplateRow, ATemplateOperators)) +
+                            GenerateOrderByClause(AOrderBy)), TTypedDataTable.GetTableName(PcDiscountTable.TableId), ATransaction,
+                            GetParametersForWhereClause(PcCostTypeTable.TableId, ATemplateRow), AStartRecord, AMaxRecords);
         }
 
         /// auto generated
@@ -3445,12 +3383,12 @@ namespace Ict.Petra.Shared.MConference.Data.Access
         /// auto generated
         public static void LoadViaPcCostTypeTemplate(DataSet ADataSet, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClauseLong("PUB_pc_discount", AFieldList, new string[] {
-                            "pc_conference_key_n", "pc_discount_criteria_code_c", "pc_cost_type_code_c", "pc_validity_c", "pc_up_to_age_i"}) + " FROM PUB_pc_discount, PUB_pc_cost_type WHERE " +
-                            "PUB_pc_discount.pc_cost_type_code_c = PUB_pc_cost_type.pc_cost_type_code_c")
-                            + GenerateWhereClauseLong("PUB_pc_cost_type", PcCostTypeTable.GetColumnStringList(), ASearchCriteria))
-                            + GenerateOrderByClause(AOrderBy)), PcDiscountTable.GetTableName(), ATransaction,
-                            GetParametersForWhereClause(new PcDiscountTable(), ASearchCriteria), AStartRecord, AMaxRecords);
+            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClauseLong("PUB_pc_discount", AFieldList, PcDiscountTable.TableId) +
+                            " FROM PUB_pc_discount, PUB_pc_cost_type WHERE " +
+                            "PUB_pc_discount.pc_cost_type_code_c = PUB_pc_cost_type.pc_cost_type_code_c") +
+                            GenerateWhereClauseLong("PUB_pc_cost_type", ASearchCriteria)) +
+                            GenerateOrderByClause(AOrderBy)), TTypedDataTable.GetTableName(PcDiscountTable.TableId), ATransaction,
+                            GetParametersForWhereClause(PcDiscountTable.TableId, ASearchCriteria), AStartRecord, AMaxRecords);
         }
 
         /// auto generated
@@ -3500,7 +3438,10 @@ namespace Ict.Petra.Shared.MConference.Data.Access
         public static int CountViaPcCostTypeTemplate(PcCostTypeRow ATemplateRow, StringCollection ATemplateOperators, TDBTransaction ATransaction)
         {
             return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_pc_discount, PUB_pc_cost_type WHERE " +
-                "PUB_pc_discount.pc_cost_type_code_c = PUB_pc_cost_type.pc_cost_type_code_c" + GenerateWhereClauseLong("PUB_pc_cost_type", PcCostTypeTable.GetColumnStringList(), ATemplateRow, ATemplateOperators)), ATransaction, false, GetParametersForWhereClause(ATemplateRow, PcCostTypeTable.GetPrimKeyColumnOrdList())));
+                "PUB_pc_discount.pc_cost_type_code_c = PUB_pc_cost_type.pc_cost_type_code_c" + GenerateWhereClauseLong("PUB_pc_cost_type",
+                PcCostTypeTable.TableId, ATemplateRow, ATemplateOperators)),
+                ATransaction, false,
+                GetParametersForWhereClauseWithPrimaryKey(PcCostTypeTable.TableId, ATemplateRow)));
         }
 
         /// auto generated
@@ -3508,39 +3449,26 @@ namespace Ict.Petra.Shared.MConference.Data.Access
         {
             return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_pc_discount, PUB_pc_cost_type WHERE " +
                 "PUB_pc_discount.pc_cost_type_code_c = PUB_pc_cost_type.pc_cost_type_code_c" +
-                GenerateWhereClauseLong("PUB_pc_cost_type", PcCostTypeTable.GetColumnStringList(), ASearchCriteria)), ATransaction, false,
-                GetParametersForWhereClause(new PcCostTypeTable(), ASearchCriteria)));
+                GenerateWhereClauseLong("PUB_pc_cost_type", ASearchCriteria)), ATransaction, false,
+                GetParametersForWhereClause(PcCostTypeTable.TableId, ASearchCriteria)));
         }
 
         /// auto generated
         public static void DeleteByPrimaryKey(Int64 AConferenceKey, String ADiscountCriteriaCode, String ACostTypeCode, String AValidity, Int32 AUpToAge, TDBTransaction ATransaction)
         {
-            OdbcParameter[] ParametersArray = new OdbcParameter[5];
-            ParametersArray[0] = new OdbcParameter("", OdbcType.Decimal, 10);
-            ParametersArray[0].Value = ((object)(AConferenceKey));
-            ParametersArray[1] = new OdbcParameter("", OdbcType.VarChar, 16);
-            ParametersArray[1].Value = ((object)(ADiscountCriteriaCode));
-            ParametersArray[2] = new OdbcParameter("", OdbcType.VarChar, 32);
-            ParametersArray[2].Value = ((object)(ACostTypeCode));
-            ParametersArray[3] = new OdbcParameter("", OdbcType.VarChar, 6);
-            ParametersArray[3].Value = ((object)(AValidity));
-            ParametersArray[4] = new OdbcParameter("", OdbcType.Int);
-            ParametersArray[4].Value = ((object)(AUpToAge));
-            DBAccess.GDBAccessObj.ExecuteNonQuery("DELETE FROM PUB_pc_discount WHERE pc_conference_key_n = ? AND pc_discount_criteria_code_c = ? AND pc_cost_type_code_c = ? AND pc_validity_c = ? AND pc_up_to_age_i = ?", ATransaction, false, ParametersArray);
+            DeleteByPrimaryKey(PcDiscountTable.TableId, new System.Object[5]{AConferenceKey, ADiscountCriteriaCode, ACostTypeCode, AValidity, AUpToAge}, ATransaction);
         }
 
         /// auto generated
         public static void DeleteUsingTemplate(PcDiscountRow ATemplateRow, StringCollection ATemplateOperators, TDBTransaction ATransaction)
         {
-            DBAccess.GDBAccessObj.ExecuteNonQuery(("DELETE FROM PUB_pc_discount" + GenerateWhereClause(PcDiscountTable.GetColumnStringList(), ATemplateRow, ATemplateOperators)), ATransaction, false, GetParametersForWhereClause(ATemplateRow));
+            DeleteUsingTemplate(PcDiscountTable.TableId, ATemplateRow, ATemplateOperators, ATransaction);
         }
 
         /// auto generated
         public static void DeleteUsingTemplate(TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
         {
-            DBAccess.GDBAccessObj.ExecuteNonQuery(("DELETE FROM PUB_pc_discount" +
-                GenerateWhereClause(PcDiscountTable.GetColumnStringList(), ASearchCriteria)), ATransaction, false,
-                GetParametersForWhereClause(new PcDiscountTable(), ASearchCriteria));
+            DeleteUsingTemplate(PcDiscountTable.TableId, ASearchCriteria, ATransaction);
         }
 
         /// auto generated
@@ -3557,15 +3485,15 @@ namespace Ict.Petra.Shared.MConference.Data.Access
                 {
                     if ((TheRow.RowState == DataRowState.Added))
                     {
-                        TTypedDataAccess.InsertRow("pc_discount", PcDiscountTable.GetColumnStringList(), ref TheRow, ATransaction, UserInfo.GUserInfo.UserID);
+                        TTypedDataAccess.InsertRow(PcDiscountTable.TableId, ref TheRow, ATransaction, UserInfo.GUserInfo.UserID);
                     }
                     if ((TheRow.RowState == DataRowState.Modified))
                     {
-                        TTypedDataAccess.UpdateRow("pc_discount", PcDiscountTable.GetColumnStringList(), PcDiscountTable.GetPrimKeyColumnOrdList(), ref TheRow, ATransaction, UserInfo.GUserInfo.UserID);
+                        TTypedDataAccess.UpdateRow(PcDiscountTable.TableId, ref TheRow, ATransaction, UserInfo.GUserInfo.UserID);
                     }
                     if ((TheRow.RowState == DataRowState.Deleted))
                     {
-                        TTypedDataAccess.DeleteRow("pc_discount", PcDiscountTable.GetColumnStringList(), PcDiscountTable.GetPrimKeyColumnOrdList(), TheRow, ATransaction);
+                        TTypedDataAccess.DeleteRow(PcDiscountTable.TableId, TheRow, ATransaction);
                     }
                 }
                 catch (OdbcException ex)
@@ -3595,9 +3523,8 @@ namespace Ict.Petra.Shared.MConference.Data.Access
         /// this method is called by all overloads
         public static void LoadAll(DataSet ADataSet, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, ((GenerateSelectClause(AFieldList, new string[] {
-                            "pc_conference_key_n", "p_partner_key_n"}) + " FROM PUB_pc_attendee")
-                            + GenerateOrderByClause(AOrderBy)), PcAttendeeTable.GetTableName(), ATransaction, AStartRecord, AMaxRecords);
+            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, ((GenerateSelectClause(AFieldList, PcAttendeeTable.TableId) + " FROM PUB_pc_attendee") +
+                            GenerateOrderByClause(AOrderBy)), TTypedDataTable.GetTableName(PcAttendeeTable.TableId), ATransaction, AStartRecord, AMaxRecords);
         }
 
         /// auto generated
@@ -3637,14 +3564,8 @@ namespace Ict.Petra.Shared.MConference.Data.Access
         /// this method is called by all overloads
         public static void LoadByPrimaryKey(DataSet ADataSet, Int64 AConferenceKey, Int64 APartnerKey, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            OdbcParameter[] ParametersArray = new OdbcParameter[2];
-            ParametersArray[0] = new OdbcParameter("", OdbcType.Decimal, 10);
-            ParametersArray[0].Value = ((object)(AConferenceKey));
-            ParametersArray[1] = new OdbcParameter("", OdbcType.Decimal, 10);
-            ParametersArray[1].Value = ((object)(APartnerKey));
-            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, ((GenerateSelectClause(AFieldList, new string[] {
-                            "pc_conference_key_n", "p_partner_key_n"}) + " FROM PUB_pc_attendee WHERE pc_conference_key_n = ? AND p_partner_key_n = ?")
-                            + GenerateOrderByClause(AOrderBy)), PcAttendeeTable.GetTableName(), ATransaction, ParametersArray, AStartRecord, AMaxRecords);
+            ADataSet = LoadByPrimaryKey(PcAttendeeTable.TableId,
+                ADataSet, new System.Object[2]{AConferenceKey, APartnerKey}, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
         }
 
         /// auto generated
@@ -3684,10 +3605,10 @@ namespace Ict.Petra.Shared.MConference.Data.Access
         /// this method is called by all overloads
         public static void LoadUsingTemplate(DataSet ADataSet, PcAttendeeRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClause(AFieldList, new string[] {
-                            "pc_conference_key_n", "p_partner_key_n"}) + " FROM PUB_pc_attendee")
-                            + GenerateWhereClause(PcAttendeeTable.GetColumnStringList(), ATemplateRow, ATemplateOperators))
-                            + GenerateOrderByClause(AOrderBy)), PcAttendeeTable.GetTableName(), ATransaction, GetParametersForWhereClause(ATemplateRow), AStartRecord, AMaxRecords);
+            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClause(AFieldList, PcAttendeeTable.TableId) + " FROM PUB_pc_attendee") +
+                            GenerateWhereClause(TTypedDataTable.GetColumnStringList(PcAttendeeTable.TableId), ATemplateRow, ATemplateOperators)) +
+                            GenerateOrderByClause(AOrderBy)), TTypedDataTable.GetTableName(PcAttendeeTable.TableId), ATransaction,
+                            GetParametersForWhereClause(PcAttendeeTable.TableId, ATemplateRow), AStartRecord, AMaxRecords);
         }
 
         /// auto generated
@@ -3733,11 +3654,10 @@ namespace Ict.Petra.Shared.MConference.Data.Access
         /// this method is called by all overloads
         public static void LoadUsingTemplate(DataSet ADataSet, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClause(AFieldList, new string[] {
-                            "pc_conference_key_n", "p_partner_key_n"}) + " FROM PUB_pc_attendee")
-                            + GenerateWhereClause(PcAttendeeTable.GetColumnStringList(), ASearchCriteria))
-                            + GenerateOrderByClause(AOrderBy)), PcAttendeeTable.GetTableName(), ATransaction,
-                            GetParametersForWhereClause(new PcAttendeeTable(), ASearchCriteria), AStartRecord, AMaxRecords);
+            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClause(AFieldList, PcAttendeeTable.TableId) + " FROM PUB_pc_attendee") +
+                            GenerateWhereClause(TTypedDataTable.GetColumnStringList(PcAttendeeTable.TableId), ASearchCriteria)) +
+                            GenerateOrderByClause(AOrderBy)), TTypedDataTable.GetTableName(PcAttendeeTable.TableId), ATransaction,
+                            GetParametersForWhereClause(PcAttendeeTable.TableId, ASearchCriteria), AStartRecord, AMaxRecords);
         }
 
         /// auto generated
@@ -3780,28 +3700,24 @@ namespace Ict.Petra.Shared.MConference.Data.Access
             return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar("SELECT COUNT(*) FROM PUB_pc_attendee", ATransaction, false));
         }
 
-        /// this method is called by all overloads
-        public static int CountByPrimaryKey(Int64 AConferenceKey, Int64 APartnerKey, TDBTransaction ATransaction)
+        /// check if a row exists by using the primary key
+        public static bool Exists(Int64 AConferenceKey, Int64 APartnerKey, TDBTransaction ATransaction)
         {
-            OdbcParameter[] ParametersArray = new OdbcParameter[2];
-            ParametersArray[0] = new OdbcParameter("", OdbcType.Decimal, 10);
-            ParametersArray[0].Value = ((object)(AConferenceKey));
-            ParametersArray[1] = new OdbcParameter("", OdbcType.Decimal, 10);
-            ParametersArray[1].Value = ((object)(APartnerKey));
-            return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar("SELECT COUNT(*) FROM PUB_pc_attendee WHERE pc_conference_key_n = ? AND p_partner_key_n = ?", ATransaction, false, ParametersArray));
+            return Exists(PcAttendeeTable.TableId, new System.Object[2]{AConferenceKey, APartnerKey}, ATransaction);
         }
 
         /// this method is called by all overloads
         public static int CountUsingTemplate(PcAttendeeRow ATemplateRow, StringCollection ATemplateOperators, TDBTransaction ATransaction)
         {
-            return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_pc_attendee" + GenerateWhereClause(PcAttendeeTable.GetColumnStringList(), ATemplateRow, ATemplateOperators)), ATransaction, false, GetParametersForWhereClause(ATemplateRow)));
+            return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_pc_attendee" + GenerateWhereClause(TTypedDataTable.GetColumnStringList(PcAttendeeTable.TableId), ATemplateRow, ATemplateOperators)), ATransaction, false,
+                   GetParametersForWhereClause(PcAttendeeTable.TableId, ATemplateRow)));
         }
 
         /// this method is called by all overloads
         public static int CountUsingTemplate(TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
         {
-            return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_pc_attendee" + GenerateWhereClause(PcAttendeeTable.GetColumnStringList(), ASearchCriteria)), ATransaction, false,
-            GetParametersForWhereClause(new PcAttendeeTable(), ASearchCriteria)));
+            return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_pc_attendee" + GenerateWhereClause(TTypedDataTable.GetColumnStringList(PcAttendeeTable.TableId), ASearchCriteria)), ATransaction, false,
+            GetParametersForWhereClause(PcAttendeeTable.TableId, ASearchCriteria)));
         }
 
         /// auto generated
@@ -3810,9 +3726,9 @@ namespace Ict.Petra.Shared.MConference.Data.Access
             OdbcParameter[] ParametersArray = new OdbcParameter[1];
             ParametersArray[0] = new OdbcParameter("", OdbcType.Decimal, 10);
             ParametersArray[0].Value = ((object)(AConferenceKey));
-            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, ((GenerateSelectClause(AFieldList, new string[] {
-                            "pc_conference_key_n", "p_partner_key_n"}) + " FROM PUB_pc_attendee WHERE pc_conference_key_n = ?")
-                            + GenerateOrderByClause(AOrderBy)), PcAttendeeTable.GetTableName(), ATransaction, ParametersArray, AStartRecord, AMaxRecords);
+            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, ((GenerateSelectClause(AFieldList, PcAttendeeTable.TableId) +
+                            " FROM PUB_pc_attendee WHERE pc_conference_key_n = ?") +
+                            GenerateOrderByClause(AOrderBy)), TTypedDataTable.GetTableName(PcAttendeeTable.TableId), ATransaction, ParametersArray, AStartRecord, AMaxRecords);
         }
 
         /// auto generated
@@ -3852,11 +3768,12 @@ namespace Ict.Petra.Shared.MConference.Data.Access
         /// auto generated
         public static void LoadViaPcConferenceTemplate(DataSet ADataSet, PcConferenceRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClauseLong("PUB_pc_attendee", AFieldList, new string[] {
-                            "pc_conference_key_n", "p_partner_key_n"}) + " FROM PUB_pc_attendee, PUB_pc_conference WHERE " +
-                            "PUB_pc_attendee.pc_conference_key_n = PUB_pc_conference.pc_conference_key_n")
-                            + GenerateWhereClauseLong("PUB_pc_conference", PcConferenceTable.GetColumnStringList(), ATemplateRow, ATemplateOperators))
-                            + GenerateOrderByClause(AOrderBy)), PcAttendeeTable.GetTableName(), ATransaction, GetParametersForWhereClause(ATemplateRow), AStartRecord, AMaxRecords);
+            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClauseLong("PUB_pc_attendee", AFieldList, PcAttendeeTable.TableId) +
+                            " FROM PUB_pc_attendee, PUB_pc_conference WHERE " +
+                            "PUB_pc_attendee.pc_conference_key_n = PUB_pc_conference.pc_conference_key_n") +
+                            GenerateWhereClauseLong("PUB_pc_conference", PcConferenceTable.TableId, ATemplateRow, ATemplateOperators)) +
+                            GenerateOrderByClause(AOrderBy)), TTypedDataTable.GetTableName(PcAttendeeTable.TableId), ATransaction,
+                            GetParametersForWhereClause(PcConferenceTable.TableId, ATemplateRow), AStartRecord, AMaxRecords);
         }
 
         /// auto generated
@@ -3902,12 +3819,12 @@ namespace Ict.Petra.Shared.MConference.Data.Access
         /// auto generated
         public static void LoadViaPcConferenceTemplate(DataSet ADataSet, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClauseLong("PUB_pc_attendee", AFieldList, new string[] {
-                            "pc_conference_key_n", "p_partner_key_n"}) + " FROM PUB_pc_attendee, PUB_pc_conference WHERE " +
-                            "PUB_pc_attendee.pc_conference_key_n = PUB_pc_conference.pc_conference_key_n")
-                            + GenerateWhereClauseLong("PUB_pc_conference", PcConferenceTable.GetColumnStringList(), ASearchCriteria))
-                            + GenerateOrderByClause(AOrderBy)), PcAttendeeTable.GetTableName(), ATransaction,
-                            GetParametersForWhereClause(new PcAttendeeTable(), ASearchCriteria), AStartRecord, AMaxRecords);
+            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClauseLong("PUB_pc_attendee", AFieldList, PcAttendeeTable.TableId) +
+                            " FROM PUB_pc_attendee, PUB_pc_conference WHERE " +
+                            "PUB_pc_attendee.pc_conference_key_n = PUB_pc_conference.pc_conference_key_n") +
+                            GenerateWhereClauseLong("PUB_pc_conference", ASearchCriteria)) +
+                            GenerateOrderByClause(AOrderBy)), TTypedDataTable.GetTableName(PcAttendeeTable.TableId), ATransaction,
+                            GetParametersForWhereClause(PcAttendeeTable.TableId, ASearchCriteria), AStartRecord, AMaxRecords);
         }
 
         /// auto generated
@@ -3957,7 +3874,10 @@ namespace Ict.Petra.Shared.MConference.Data.Access
         public static int CountViaPcConferenceTemplate(PcConferenceRow ATemplateRow, StringCollection ATemplateOperators, TDBTransaction ATransaction)
         {
             return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_pc_attendee, PUB_pc_conference WHERE " +
-                "PUB_pc_attendee.pc_conference_key_n = PUB_pc_conference.pc_conference_key_n" + GenerateWhereClauseLong("PUB_pc_conference", PcConferenceTable.GetColumnStringList(), ATemplateRow, ATemplateOperators)), ATransaction, false, GetParametersForWhereClause(ATemplateRow, PcConferenceTable.GetPrimKeyColumnOrdList())));
+                "PUB_pc_attendee.pc_conference_key_n = PUB_pc_conference.pc_conference_key_n" + GenerateWhereClauseLong("PUB_pc_conference",
+                PcConferenceTable.TableId, ATemplateRow, ATemplateOperators)),
+                ATransaction, false,
+                GetParametersForWhereClauseWithPrimaryKey(PcConferenceTable.TableId, ATemplateRow)));
         }
 
         /// auto generated
@@ -3965,8 +3885,8 @@ namespace Ict.Petra.Shared.MConference.Data.Access
         {
             return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_pc_attendee, PUB_pc_conference WHERE " +
                 "PUB_pc_attendee.pc_conference_key_n = PUB_pc_conference.pc_conference_key_n" +
-                GenerateWhereClauseLong("PUB_pc_conference", PcConferenceTable.GetColumnStringList(), ASearchCriteria)), ATransaction, false,
-                GetParametersForWhereClause(new PcConferenceTable(), ASearchCriteria)));
+                GenerateWhereClauseLong("PUB_pc_conference", ASearchCriteria)), ATransaction, false,
+                GetParametersForWhereClause(PcConferenceTable.TableId, ASearchCriteria)));
         }
 
         /// auto generated
@@ -3975,9 +3895,9 @@ namespace Ict.Petra.Shared.MConference.Data.Access
             OdbcParameter[] ParametersArray = new OdbcParameter[1];
             ParametersArray[0] = new OdbcParameter("", OdbcType.Decimal, 10);
             ParametersArray[0].Value = ((object)(APartnerKey));
-            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, ((GenerateSelectClause(AFieldList, new string[] {
-                            "pc_conference_key_n", "p_partner_key_n"}) + " FROM PUB_pc_attendee WHERE p_partner_key_n = ?")
-                            + GenerateOrderByClause(AOrderBy)), PcAttendeeTable.GetTableName(), ATransaction, ParametersArray, AStartRecord, AMaxRecords);
+            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, ((GenerateSelectClause(AFieldList, PcAttendeeTable.TableId) +
+                            " FROM PUB_pc_attendee WHERE p_partner_key_n = ?") +
+                            GenerateOrderByClause(AOrderBy)), TTypedDataTable.GetTableName(PcAttendeeTable.TableId), ATransaction, ParametersArray, AStartRecord, AMaxRecords);
         }
 
         /// auto generated
@@ -4017,11 +3937,12 @@ namespace Ict.Petra.Shared.MConference.Data.Access
         /// auto generated
         public static void LoadViaPPersonTemplate(DataSet ADataSet, PPersonRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClauseLong("PUB_pc_attendee", AFieldList, new string[] {
-                            "pc_conference_key_n", "p_partner_key_n"}) + " FROM PUB_pc_attendee, PUB_p_person WHERE " +
-                            "PUB_pc_attendee.p_partner_key_n = PUB_p_person.p_partner_key_n")
-                            + GenerateWhereClauseLong("PUB_p_person", PPersonTable.GetColumnStringList(), ATemplateRow, ATemplateOperators))
-                            + GenerateOrderByClause(AOrderBy)), PcAttendeeTable.GetTableName(), ATransaction, GetParametersForWhereClause(ATemplateRow), AStartRecord, AMaxRecords);
+            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClauseLong("PUB_pc_attendee", AFieldList, PcAttendeeTable.TableId) +
+                            " FROM PUB_pc_attendee, PUB_p_person WHERE " +
+                            "PUB_pc_attendee.p_partner_key_n = PUB_p_person.p_partner_key_n") +
+                            GenerateWhereClauseLong("PUB_p_person", PPersonTable.TableId, ATemplateRow, ATemplateOperators)) +
+                            GenerateOrderByClause(AOrderBy)), TTypedDataTable.GetTableName(PcAttendeeTable.TableId), ATransaction,
+                            GetParametersForWhereClause(PPersonTable.TableId, ATemplateRow), AStartRecord, AMaxRecords);
         }
 
         /// auto generated
@@ -4067,12 +3988,12 @@ namespace Ict.Petra.Shared.MConference.Data.Access
         /// auto generated
         public static void LoadViaPPersonTemplate(DataSet ADataSet, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClauseLong("PUB_pc_attendee", AFieldList, new string[] {
-                            "pc_conference_key_n", "p_partner_key_n"}) + " FROM PUB_pc_attendee, PUB_p_person WHERE " +
-                            "PUB_pc_attendee.p_partner_key_n = PUB_p_person.p_partner_key_n")
-                            + GenerateWhereClauseLong("PUB_p_person", PPersonTable.GetColumnStringList(), ASearchCriteria))
-                            + GenerateOrderByClause(AOrderBy)), PcAttendeeTable.GetTableName(), ATransaction,
-                            GetParametersForWhereClause(new PcAttendeeTable(), ASearchCriteria), AStartRecord, AMaxRecords);
+            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClauseLong("PUB_pc_attendee", AFieldList, PcAttendeeTable.TableId) +
+                            " FROM PUB_pc_attendee, PUB_p_person WHERE " +
+                            "PUB_pc_attendee.p_partner_key_n = PUB_p_person.p_partner_key_n") +
+                            GenerateWhereClauseLong("PUB_p_person", ASearchCriteria)) +
+                            GenerateOrderByClause(AOrderBy)), TTypedDataTable.GetTableName(PcAttendeeTable.TableId), ATransaction,
+                            GetParametersForWhereClause(PcAttendeeTable.TableId, ASearchCriteria), AStartRecord, AMaxRecords);
         }
 
         /// auto generated
@@ -4122,7 +4043,10 @@ namespace Ict.Petra.Shared.MConference.Data.Access
         public static int CountViaPPersonTemplate(PPersonRow ATemplateRow, StringCollection ATemplateOperators, TDBTransaction ATransaction)
         {
             return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_pc_attendee, PUB_p_person WHERE " +
-                "PUB_pc_attendee.p_partner_key_n = PUB_p_person.p_partner_key_n" + GenerateWhereClauseLong("PUB_p_person", PPersonTable.GetColumnStringList(), ATemplateRow, ATemplateOperators)), ATransaction, false, GetParametersForWhereClause(ATemplateRow, PPersonTable.GetPrimKeyColumnOrdList())));
+                "PUB_pc_attendee.p_partner_key_n = PUB_p_person.p_partner_key_n" + GenerateWhereClauseLong("PUB_p_person",
+                PPersonTable.TableId, ATemplateRow, ATemplateOperators)),
+                ATransaction, false,
+                GetParametersForWhereClauseWithPrimaryKey(PPersonTable.TableId, ATemplateRow)));
         }
 
         /// auto generated
@@ -4130,8 +4054,8 @@ namespace Ict.Petra.Shared.MConference.Data.Access
         {
             return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_pc_attendee, PUB_p_person WHERE " +
                 "PUB_pc_attendee.p_partner_key_n = PUB_p_person.p_partner_key_n" +
-                GenerateWhereClauseLong("PUB_p_person", PPersonTable.GetColumnStringList(), ASearchCriteria)), ATransaction, false,
-                GetParametersForWhereClause(new PPersonTable(), ASearchCriteria)));
+                GenerateWhereClauseLong("PUB_p_person", ASearchCriteria)), ATransaction, false,
+                GetParametersForWhereClause(PPersonTable.TableId, ASearchCriteria)));
         }
 
         /// auto generated
@@ -4140,9 +4064,9 @@ namespace Ict.Petra.Shared.MConference.Data.Access
             OdbcParameter[] ParametersArray = new OdbcParameter[1];
             ParametersArray[0] = new OdbcParameter("", OdbcType.Decimal, 10);
             ParametersArray[0].Value = ((object)(APartnerKey));
-            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, ((GenerateSelectClause(AFieldList, new string[] {
-                            "pc_conference_key_n", "p_partner_key_n"}) + " FROM PUB_pc_attendee WHERE pc_home_office_key_n = ?")
-                            + GenerateOrderByClause(AOrderBy)), PcAttendeeTable.GetTableName(), ATransaction, ParametersArray, AStartRecord, AMaxRecords);
+            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, ((GenerateSelectClause(AFieldList, PcAttendeeTable.TableId) +
+                            " FROM PUB_pc_attendee WHERE pc_home_office_key_n = ?") +
+                            GenerateOrderByClause(AOrderBy)), TTypedDataTable.GetTableName(PcAttendeeTable.TableId), ATransaction, ParametersArray, AStartRecord, AMaxRecords);
         }
 
         /// auto generated
@@ -4182,11 +4106,12 @@ namespace Ict.Petra.Shared.MConference.Data.Access
         /// auto generated
         public static void LoadViaPUnitTemplate(DataSet ADataSet, PUnitRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClauseLong("PUB_pc_attendee", AFieldList, new string[] {
-                            "pc_conference_key_n", "p_partner_key_n"}) + " FROM PUB_pc_attendee, PUB_p_unit WHERE " +
-                            "PUB_pc_attendee.pc_home_office_key_n = PUB_p_unit.p_partner_key_n")
-                            + GenerateWhereClauseLong("PUB_p_unit", PUnitTable.GetColumnStringList(), ATemplateRow, ATemplateOperators))
-                            + GenerateOrderByClause(AOrderBy)), PcAttendeeTable.GetTableName(), ATransaction, GetParametersForWhereClause(ATemplateRow), AStartRecord, AMaxRecords);
+            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClauseLong("PUB_pc_attendee", AFieldList, PcAttendeeTable.TableId) +
+                            " FROM PUB_pc_attendee, PUB_p_unit WHERE " +
+                            "PUB_pc_attendee.pc_home_office_key_n = PUB_p_unit.p_partner_key_n") +
+                            GenerateWhereClauseLong("PUB_p_unit", PUnitTable.TableId, ATemplateRow, ATemplateOperators)) +
+                            GenerateOrderByClause(AOrderBy)), TTypedDataTable.GetTableName(PcAttendeeTable.TableId), ATransaction,
+                            GetParametersForWhereClause(PUnitTable.TableId, ATemplateRow), AStartRecord, AMaxRecords);
         }
 
         /// auto generated
@@ -4232,12 +4157,12 @@ namespace Ict.Petra.Shared.MConference.Data.Access
         /// auto generated
         public static void LoadViaPUnitTemplate(DataSet ADataSet, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClauseLong("PUB_pc_attendee", AFieldList, new string[] {
-                            "pc_conference_key_n", "p_partner_key_n"}) + " FROM PUB_pc_attendee, PUB_p_unit WHERE " +
-                            "PUB_pc_attendee.pc_home_office_key_n = PUB_p_unit.p_partner_key_n")
-                            + GenerateWhereClauseLong("PUB_p_unit", PUnitTable.GetColumnStringList(), ASearchCriteria))
-                            + GenerateOrderByClause(AOrderBy)), PcAttendeeTable.GetTableName(), ATransaction,
-                            GetParametersForWhereClause(new PcAttendeeTable(), ASearchCriteria), AStartRecord, AMaxRecords);
+            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClauseLong("PUB_pc_attendee", AFieldList, PcAttendeeTable.TableId) +
+                            " FROM PUB_pc_attendee, PUB_p_unit WHERE " +
+                            "PUB_pc_attendee.pc_home_office_key_n = PUB_p_unit.p_partner_key_n") +
+                            GenerateWhereClauseLong("PUB_p_unit", ASearchCriteria)) +
+                            GenerateOrderByClause(AOrderBy)), TTypedDataTable.GetTableName(PcAttendeeTable.TableId), ATransaction,
+                            GetParametersForWhereClause(PcAttendeeTable.TableId, ASearchCriteria), AStartRecord, AMaxRecords);
         }
 
         /// auto generated
@@ -4287,7 +4212,10 @@ namespace Ict.Petra.Shared.MConference.Data.Access
         public static int CountViaPUnitTemplate(PUnitRow ATemplateRow, StringCollection ATemplateOperators, TDBTransaction ATransaction)
         {
             return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_pc_attendee, PUB_p_unit WHERE " +
-                "PUB_pc_attendee.pc_home_office_key_n = PUB_p_unit.p_partner_key_n" + GenerateWhereClauseLong("PUB_p_unit", PUnitTable.GetColumnStringList(), ATemplateRow, ATemplateOperators)), ATransaction, false, GetParametersForWhereClause(ATemplateRow, PUnitTable.GetPrimKeyColumnOrdList())));
+                "PUB_pc_attendee.pc_home_office_key_n = PUB_p_unit.p_partner_key_n" + GenerateWhereClauseLong("PUB_p_unit",
+                PUnitTable.TableId, ATemplateRow, ATemplateOperators)),
+                ATransaction, false,
+                GetParametersForWhereClauseWithPrimaryKey(PUnitTable.TableId, ATemplateRow)));
         }
 
         /// auto generated
@@ -4295,33 +4223,26 @@ namespace Ict.Petra.Shared.MConference.Data.Access
         {
             return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_pc_attendee, PUB_p_unit WHERE " +
                 "PUB_pc_attendee.pc_home_office_key_n = PUB_p_unit.p_partner_key_n" +
-                GenerateWhereClauseLong("PUB_p_unit", PUnitTable.GetColumnStringList(), ASearchCriteria)), ATransaction, false,
-                GetParametersForWhereClause(new PUnitTable(), ASearchCriteria)));
+                GenerateWhereClauseLong("PUB_p_unit", ASearchCriteria)), ATransaction, false,
+                GetParametersForWhereClause(PUnitTable.TableId, ASearchCriteria)));
         }
 
         /// auto generated
         public static void DeleteByPrimaryKey(Int64 AConferenceKey, Int64 APartnerKey, TDBTransaction ATransaction)
         {
-            OdbcParameter[] ParametersArray = new OdbcParameter[2];
-            ParametersArray[0] = new OdbcParameter("", OdbcType.Decimal, 10);
-            ParametersArray[0].Value = ((object)(AConferenceKey));
-            ParametersArray[1] = new OdbcParameter("", OdbcType.Decimal, 10);
-            ParametersArray[1].Value = ((object)(APartnerKey));
-            DBAccess.GDBAccessObj.ExecuteNonQuery("DELETE FROM PUB_pc_attendee WHERE pc_conference_key_n = ? AND p_partner_key_n = ?", ATransaction, false, ParametersArray);
+            DeleteByPrimaryKey(PcAttendeeTable.TableId, new System.Object[2]{AConferenceKey, APartnerKey}, ATransaction);
         }
 
         /// auto generated
         public static void DeleteUsingTemplate(PcAttendeeRow ATemplateRow, StringCollection ATemplateOperators, TDBTransaction ATransaction)
         {
-            DBAccess.GDBAccessObj.ExecuteNonQuery(("DELETE FROM PUB_pc_attendee" + GenerateWhereClause(PcAttendeeTable.GetColumnStringList(), ATemplateRow, ATemplateOperators)), ATransaction, false, GetParametersForWhereClause(ATemplateRow));
+            DeleteUsingTemplate(PcAttendeeTable.TableId, ATemplateRow, ATemplateOperators, ATransaction);
         }
 
         /// auto generated
         public static void DeleteUsingTemplate(TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
         {
-            DBAccess.GDBAccessObj.ExecuteNonQuery(("DELETE FROM PUB_pc_attendee" +
-                GenerateWhereClause(PcAttendeeTable.GetColumnStringList(), ASearchCriteria)), ATransaction, false,
-                GetParametersForWhereClause(new PcAttendeeTable(), ASearchCriteria));
+            DeleteUsingTemplate(PcAttendeeTable.TableId, ASearchCriteria, ATransaction);
         }
 
         /// auto generated
@@ -4338,15 +4259,15 @@ namespace Ict.Petra.Shared.MConference.Data.Access
                 {
                     if ((TheRow.RowState == DataRowState.Added))
                     {
-                        TTypedDataAccess.InsertRow("pc_attendee", PcAttendeeTable.GetColumnStringList(), ref TheRow, ATransaction, UserInfo.GUserInfo.UserID);
+                        TTypedDataAccess.InsertRow(PcAttendeeTable.TableId, ref TheRow, ATransaction, UserInfo.GUserInfo.UserID);
                     }
                     if ((TheRow.RowState == DataRowState.Modified))
                     {
-                        TTypedDataAccess.UpdateRow("pc_attendee", PcAttendeeTable.GetColumnStringList(), PcAttendeeTable.GetPrimKeyColumnOrdList(), ref TheRow, ATransaction, UserInfo.GUserInfo.UserID);
+                        TTypedDataAccess.UpdateRow(PcAttendeeTable.TableId, ref TheRow, ATransaction, UserInfo.GUserInfo.UserID);
                     }
                     if ((TheRow.RowState == DataRowState.Deleted))
                     {
-                        TTypedDataAccess.DeleteRow("pc_attendee", PcAttendeeTable.GetColumnStringList(), PcAttendeeTable.GetPrimKeyColumnOrdList(), TheRow, ATransaction);
+                        TTypedDataAccess.DeleteRow(PcAttendeeTable.TableId, TheRow, ATransaction);
                     }
                 }
                 catch (OdbcException ex)
@@ -4376,9 +4297,8 @@ namespace Ict.Petra.Shared.MConference.Data.Access
         /// this method is called by all overloads
         public static void LoadAll(DataSet ADataSet, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, ((GenerateSelectClause(AFieldList, new string[] {
-                            "pc_conference_key_n", "pc_option_days_i"}) + " FROM PUB_pc_conference_cost")
-                            + GenerateOrderByClause(AOrderBy)), PcConferenceCostTable.GetTableName(), ATransaction, AStartRecord, AMaxRecords);
+            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, ((GenerateSelectClause(AFieldList, PcConferenceCostTable.TableId) + " FROM PUB_pc_conference_cost") +
+                            GenerateOrderByClause(AOrderBy)), TTypedDataTable.GetTableName(PcConferenceCostTable.TableId), ATransaction, AStartRecord, AMaxRecords);
         }
 
         /// auto generated
@@ -4418,14 +4338,8 @@ namespace Ict.Petra.Shared.MConference.Data.Access
         /// this method is called by all overloads
         public static void LoadByPrimaryKey(DataSet ADataSet, Int64 AConferenceKey, Int32 AOptionDays, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            OdbcParameter[] ParametersArray = new OdbcParameter[2];
-            ParametersArray[0] = new OdbcParameter("", OdbcType.Decimal, 10);
-            ParametersArray[0].Value = ((object)(AConferenceKey));
-            ParametersArray[1] = new OdbcParameter("", OdbcType.Int);
-            ParametersArray[1].Value = ((object)(AOptionDays));
-            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, ((GenerateSelectClause(AFieldList, new string[] {
-                            "pc_conference_key_n", "pc_option_days_i"}) + " FROM PUB_pc_conference_cost WHERE pc_conference_key_n = ? AND pc_option_days_i = ?")
-                            + GenerateOrderByClause(AOrderBy)), PcConferenceCostTable.GetTableName(), ATransaction, ParametersArray, AStartRecord, AMaxRecords);
+            ADataSet = LoadByPrimaryKey(PcConferenceCostTable.TableId,
+                ADataSet, new System.Object[2]{AConferenceKey, AOptionDays}, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
         }
 
         /// auto generated
@@ -4465,10 +4379,10 @@ namespace Ict.Petra.Shared.MConference.Data.Access
         /// this method is called by all overloads
         public static void LoadUsingTemplate(DataSet ADataSet, PcConferenceCostRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClause(AFieldList, new string[] {
-                            "pc_conference_key_n", "pc_option_days_i"}) + " FROM PUB_pc_conference_cost")
-                            + GenerateWhereClause(PcConferenceCostTable.GetColumnStringList(), ATemplateRow, ATemplateOperators))
-                            + GenerateOrderByClause(AOrderBy)), PcConferenceCostTable.GetTableName(), ATransaction, GetParametersForWhereClause(ATemplateRow), AStartRecord, AMaxRecords);
+            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClause(AFieldList, PcConferenceCostTable.TableId) + " FROM PUB_pc_conference_cost") +
+                            GenerateWhereClause(TTypedDataTable.GetColumnStringList(PcConferenceCostTable.TableId), ATemplateRow, ATemplateOperators)) +
+                            GenerateOrderByClause(AOrderBy)), TTypedDataTable.GetTableName(PcConferenceCostTable.TableId), ATransaction,
+                            GetParametersForWhereClause(PcConferenceCostTable.TableId, ATemplateRow), AStartRecord, AMaxRecords);
         }
 
         /// auto generated
@@ -4514,11 +4428,10 @@ namespace Ict.Petra.Shared.MConference.Data.Access
         /// this method is called by all overloads
         public static void LoadUsingTemplate(DataSet ADataSet, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClause(AFieldList, new string[] {
-                            "pc_conference_key_n", "pc_option_days_i"}) + " FROM PUB_pc_conference_cost")
-                            + GenerateWhereClause(PcConferenceCostTable.GetColumnStringList(), ASearchCriteria))
-                            + GenerateOrderByClause(AOrderBy)), PcConferenceCostTable.GetTableName(), ATransaction,
-                            GetParametersForWhereClause(new PcConferenceCostTable(), ASearchCriteria), AStartRecord, AMaxRecords);
+            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClause(AFieldList, PcConferenceCostTable.TableId) + " FROM PUB_pc_conference_cost") +
+                            GenerateWhereClause(TTypedDataTable.GetColumnStringList(PcConferenceCostTable.TableId), ASearchCriteria)) +
+                            GenerateOrderByClause(AOrderBy)), TTypedDataTable.GetTableName(PcConferenceCostTable.TableId), ATransaction,
+                            GetParametersForWhereClause(PcConferenceCostTable.TableId, ASearchCriteria), AStartRecord, AMaxRecords);
         }
 
         /// auto generated
@@ -4561,28 +4474,24 @@ namespace Ict.Petra.Shared.MConference.Data.Access
             return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar("SELECT COUNT(*) FROM PUB_pc_conference_cost", ATransaction, false));
         }
 
-        /// this method is called by all overloads
-        public static int CountByPrimaryKey(Int64 AConferenceKey, Int32 AOptionDays, TDBTransaction ATransaction)
+        /// check if a row exists by using the primary key
+        public static bool Exists(Int64 AConferenceKey, Int32 AOptionDays, TDBTransaction ATransaction)
         {
-            OdbcParameter[] ParametersArray = new OdbcParameter[2];
-            ParametersArray[0] = new OdbcParameter("", OdbcType.Decimal, 10);
-            ParametersArray[0].Value = ((object)(AConferenceKey));
-            ParametersArray[1] = new OdbcParameter("", OdbcType.Int);
-            ParametersArray[1].Value = ((object)(AOptionDays));
-            return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar("SELECT COUNT(*) FROM PUB_pc_conference_cost WHERE pc_conference_key_n = ? AND pc_option_days_i = ?", ATransaction, false, ParametersArray));
+            return Exists(PcConferenceCostTable.TableId, new System.Object[2]{AConferenceKey, AOptionDays}, ATransaction);
         }
 
         /// this method is called by all overloads
         public static int CountUsingTemplate(PcConferenceCostRow ATemplateRow, StringCollection ATemplateOperators, TDBTransaction ATransaction)
         {
-            return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_pc_conference_cost" + GenerateWhereClause(PcConferenceCostTable.GetColumnStringList(), ATemplateRow, ATemplateOperators)), ATransaction, false, GetParametersForWhereClause(ATemplateRow)));
+            return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_pc_conference_cost" + GenerateWhereClause(TTypedDataTable.GetColumnStringList(PcConferenceCostTable.TableId), ATemplateRow, ATemplateOperators)), ATransaction, false,
+                   GetParametersForWhereClause(PcConferenceCostTable.TableId, ATemplateRow)));
         }
 
         /// this method is called by all overloads
         public static int CountUsingTemplate(TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
         {
-            return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_pc_conference_cost" + GenerateWhereClause(PcConferenceCostTable.GetColumnStringList(), ASearchCriteria)), ATransaction, false,
-            GetParametersForWhereClause(new PcConferenceCostTable(), ASearchCriteria)));
+            return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_pc_conference_cost" + GenerateWhereClause(TTypedDataTable.GetColumnStringList(PcConferenceCostTable.TableId), ASearchCriteria)), ATransaction, false,
+            GetParametersForWhereClause(PcConferenceCostTable.TableId, ASearchCriteria)));
         }
 
         /// auto generated
@@ -4591,9 +4500,9 @@ namespace Ict.Petra.Shared.MConference.Data.Access
             OdbcParameter[] ParametersArray = new OdbcParameter[1];
             ParametersArray[0] = new OdbcParameter("", OdbcType.Decimal, 10);
             ParametersArray[0].Value = ((object)(AConferenceKey));
-            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, ((GenerateSelectClause(AFieldList, new string[] {
-                            "pc_conference_key_n", "pc_option_days_i"}) + " FROM PUB_pc_conference_cost WHERE pc_conference_key_n = ?")
-                            + GenerateOrderByClause(AOrderBy)), PcConferenceCostTable.GetTableName(), ATransaction, ParametersArray, AStartRecord, AMaxRecords);
+            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, ((GenerateSelectClause(AFieldList, PcConferenceCostTable.TableId) +
+                            " FROM PUB_pc_conference_cost WHERE pc_conference_key_n = ?") +
+                            GenerateOrderByClause(AOrderBy)), TTypedDataTable.GetTableName(PcConferenceCostTable.TableId), ATransaction, ParametersArray, AStartRecord, AMaxRecords);
         }
 
         /// auto generated
@@ -4633,11 +4542,12 @@ namespace Ict.Petra.Shared.MConference.Data.Access
         /// auto generated
         public static void LoadViaPcConferenceTemplate(DataSet ADataSet, PcConferenceRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClauseLong("PUB_pc_conference_cost", AFieldList, new string[] {
-                            "pc_conference_key_n", "pc_option_days_i"}) + " FROM PUB_pc_conference_cost, PUB_pc_conference WHERE " +
-                            "PUB_pc_conference_cost.pc_conference_key_n = PUB_pc_conference.pc_conference_key_n")
-                            + GenerateWhereClauseLong("PUB_pc_conference", PcConferenceTable.GetColumnStringList(), ATemplateRow, ATemplateOperators))
-                            + GenerateOrderByClause(AOrderBy)), PcConferenceCostTable.GetTableName(), ATransaction, GetParametersForWhereClause(ATemplateRow), AStartRecord, AMaxRecords);
+            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClauseLong("PUB_pc_conference_cost", AFieldList, PcConferenceCostTable.TableId) +
+                            " FROM PUB_pc_conference_cost, PUB_pc_conference WHERE " +
+                            "PUB_pc_conference_cost.pc_conference_key_n = PUB_pc_conference.pc_conference_key_n") +
+                            GenerateWhereClauseLong("PUB_pc_conference", PcConferenceTable.TableId, ATemplateRow, ATemplateOperators)) +
+                            GenerateOrderByClause(AOrderBy)), TTypedDataTable.GetTableName(PcConferenceCostTable.TableId), ATransaction,
+                            GetParametersForWhereClause(PcConferenceTable.TableId, ATemplateRow), AStartRecord, AMaxRecords);
         }
 
         /// auto generated
@@ -4683,12 +4593,12 @@ namespace Ict.Petra.Shared.MConference.Data.Access
         /// auto generated
         public static void LoadViaPcConferenceTemplate(DataSet ADataSet, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClauseLong("PUB_pc_conference_cost", AFieldList, new string[] {
-                            "pc_conference_key_n", "pc_option_days_i"}) + " FROM PUB_pc_conference_cost, PUB_pc_conference WHERE " +
-                            "PUB_pc_conference_cost.pc_conference_key_n = PUB_pc_conference.pc_conference_key_n")
-                            + GenerateWhereClauseLong("PUB_pc_conference", PcConferenceTable.GetColumnStringList(), ASearchCriteria))
-                            + GenerateOrderByClause(AOrderBy)), PcConferenceCostTable.GetTableName(), ATransaction,
-                            GetParametersForWhereClause(new PcConferenceCostTable(), ASearchCriteria), AStartRecord, AMaxRecords);
+            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClauseLong("PUB_pc_conference_cost", AFieldList, PcConferenceCostTable.TableId) +
+                            " FROM PUB_pc_conference_cost, PUB_pc_conference WHERE " +
+                            "PUB_pc_conference_cost.pc_conference_key_n = PUB_pc_conference.pc_conference_key_n") +
+                            GenerateWhereClauseLong("PUB_pc_conference", ASearchCriteria)) +
+                            GenerateOrderByClause(AOrderBy)), TTypedDataTable.GetTableName(PcConferenceCostTable.TableId), ATransaction,
+                            GetParametersForWhereClause(PcConferenceCostTable.TableId, ASearchCriteria), AStartRecord, AMaxRecords);
         }
 
         /// auto generated
@@ -4738,7 +4648,10 @@ namespace Ict.Petra.Shared.MConference.Data.Access
         public static int CountViaPcConferenceTemplate(PcConferenceRow ATemplateRow, StringCollection ATemplateOperators, TDBTransaction ATransaction)
         {
             return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_pc_conference_cost, PUB_pc_conference WHERE " +
-                "PUB_pc_conference_cost.pc_conference_key_n = PUB_pc_conference.pc_conference_key_n" + GenerateWhereClauseLong("PUB_pc_conference", PcConferenceTable.GetColumnStringList(), ATemplateRow, ATemplateOperators)), ATransaction, false, GetParametersForWhereClause(ATemplateRow, PcConferenceTable.GetPrimKeyColumnOrdList())));
+                "PUB_pc_conference_cost.pc_conference_key_n = PUB_pc_conference.pc_conference_key_n" + GenerateWhereClauseLong("PUB_pc_conference",
+                PcConferenceTable.TableId, ATemplateRow, ATemplateOperators)),
+                ATransaction, false,
+                GetParametersForWhereClauseWithPrimaryKey(PcConferenceTable.TableId, ATemplateRow)));
         }
 
         /// auto generated
@@ -4746,33 +4659,26 @@ namespace Ict.Petra.Shared.MConference.Data.Access
         {
             return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_pc_conference_cost, PUB_pc_conference WHERE " +
                 "PUB_pc_conference_cost.pc_conference_key_n = PUB_pc_conference.pc_conference_key_n" +
-                GenerateWhereClauseLong("PUB_pc_conference", PcConferenceTable.GetColumnStringList(), ASearchCriteria)), ATransaction, false,
-                GetParametersForWhereClause(new PcConferenceTable(), ASearchCriteria)));
+                GenerateWhereClauseLong("PUB_pc_conference", ASearchCriteria)), ATransaction, false,
+                GetParametersForWhereClause(PcConferenceTable.TableId, ASearchCriteria)));
         }
 
         /// auto generated
         public static void DeleteByPrimaryKey(Int64 AConferenceKey, Int32 AOptionDays, TDBTransaction ATransaction)
         {
-            OdbcParameter[] ParametersArray = new OdbcParameter[2];
-            ParametersArray[0] = new OdbcParameter("", OdbcType.Decimal, 10);
-            ParametersArray[0].Value = ((object)(AConferenceKey));
-            ParametersArray[1] = new OdbcParameter("", OdbcType.Int);
-            ParametersArray[1].Value = ((object)(AOptionDays));
-            DBAccess.GDBAccessObj.ExecuteNonQuery("DELETE FROM PUB_pc_conference_cost WHERE pc_conference_key_n = ? AND pc_option_days_i = ?", ATransaction, false, ParametersArray);
+            DeleteByPrimaryKey(PcConferenceCostTable.TableId, new System.Object[2]{AConferenceKey, AOptionDays}, ATransaction);
         }
 
         /// auto generated
         public static void DeleteUsingTemplate(PcConferenceCostRow ATemplateRow, StringCollection ATemplateOperators, TDBTransaction ATransaction)
         {
-            DBAccess.GDBAccessObj.ExecuteNonQuery(("DELETE FROM PUB_pc_conference_cost" + GenerateWhereClause(PcConferenceCostTable.GetColumnStringList(), ATemplateRow, ATemplateOperators)), ATransaction, false, GetParametersForWhereClause(ATemplateRow));
+            DeleteUsingTemplate(PcConferenceCostTable.TableId, ATemplateRow, ATemplateOperators, ATransaction);
         }
 
         /// auto generated
         public static void DeleteUsingTemplate(TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
         {
-            DBAccess.GDBAccessObj.ExecuteNonQuery(("DELETE FROM PUB_pc_conference_cost" +
-                GenerateWhereClause(PcConferenceCostTable.GetColumnStringList(), ASearchCriteria)), ATransaction, false,
-                GetParametersForWhereClause(new PcConferenceCostTable(), ASearchCriteria));
+            DeleteUsingTemplate(PcConferenceCostTable.TableId, ASearchCriteria, ATransaction);
         }
 
         /// auto generated
@@ -4789,15 +4695,15 @@ namespace Ict.Petra.Shared.MConference.Data.Access
                 {
                     if ((TheRow.RowState == DataRowState.Added))
                     {
-                        TTypedDataAccess.InsertRow("pc_conference_cost", PcConferenceCostTable.GetColumnStringList(), ref TheRow, ATransaction, UserInfo.GUserInfo.UserID);
+                        TTypedDataAccess.InsertRow(PcConferenceCostTable.TableId, ref TheRow, ATransaction, UserInfo.GUserInfo.UserID);
                     }
                     if ((TheRow.RowState == DataRowState.Modified))
                     {
-                        TTypedDataAccess.UpdateRow("pc_conference_cost", PcConferenceCostTable.GetColumnStringList(), PcConferenceCostTable.GetPrimKeyColumnOrdList(), ref TheRow, ATransaction, UserInfo.GUserInfo.UserID);
+                        TTypedDataAccess.UpdateRow(PcConferenceCostTable.TableId, ref TheRow, ATransaction, UserInfo.GUserInfo.UserID);
                     }
                     if ((TheRow.RowState == DataRowState.Deleted))
                     {
-                        TTypedDataAccess.DeleteRow("pc_conference_cost", PcConferenceCostTable.GetColumnStringList(), PcConferenceCostTable.GetPrimKeyColumnOrdList(), TheRow, ATransaction);
+                        TTypedDataAccess.DeleteRow(PcConferenceCostTable.TableId, TheRow, ATransaction);
                     }
                 }
                 catch (OdbcException ex)
@@ -4827,9 +4733,8 @@ namespace Ict.Petra.Shared.MConference.Data.Access
         /// this method is called by all overloads
         public static void LoadAll(DataSet ADataSet, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, ((GenerateSelectClause(AFieldList, new string[] {
-                            "pc_conference_key_n", "p_partner_key_n", "pc_extra_cost_key_i"}) + " FROM PUB_pc_extra_cost")
-                            + GenerateOrderByClause(AOrderBy)), PcExtraCostTable.GetTableName(), ATransaction, AStartRecord, AMaxRecords);
+            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, ((GenerateSelectClause(AFieldList, PcExtraCostTable.TableId) + " FROM PUB_pc_extra_cost") +
+                            GenerateOrderByClause(AOrderBy)), TTypedDataTable.GetTableName(PcExtraCostTable.TableId), ATransaction, AStartRecord, AMaxRecords);
         }
 
         /// auto generated
@@ -4869,16 +4774,8 @@ namespace Ict.Petra.Shared.MConference.Data.Access
         /// this method is called by all overloads
         public static void LoadByPrimaryKey(DataSet ADataSet, Int64 AConferenceKey, Int64 APartnerKey, Int32 AExtraCostKey, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            OdbcParameter[] ParametersArray = new OdbcParameter[3];
-            ParametersArray[0] = new OdbcParameter("", OdbcType.Decimal, 10);
-            ParametersArray[0].Value = ((object)(AConferenceKey));
-            ParametersArray[1] = new OdbcParameter("", OdbcType.Decimal, 10);
-            ParametersArray[1].Value = ((object)(APartnerKey));
-            ParametersArray[2] = new OdbcParameter("", OdbcType.Int);
-            ParametersArray[2].Value = ((object)(AExtraCostKey));
-            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, ((GenerateSelectClause(AFieldList, new string[] {
-                            "pc_conference_key_n", "p_partner_key_n", "pc_extra_cost_key_i"}) + " FROM PUB_pc_extra_cost WHERE pc_conference_key_n = ? AND p_partner_key_n = ? AND pc_extra_cost_key_i = ?")
-                            + GenerateOrderByClause(AOrderBy)), PcExtraCostTable.GetTableName(), ATransaction, ParametersArray, AStartRecord, AMaxRecords);
+            ADataSet = LoadByPrimaryKey(PcExtraCostTable.TableId,
+                ADataSet, new System.Object[3]{AConferenceKey, APartnerKey, AExtraCostKey}, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
         }
 
         /// auto generated
@@ -4918,10 +4815,10 @@ namespace Ict.Petra.Shared.MConference.Data.Access
         /// this method is called by all overloads
         public static void LoadUsingTemplate(DataSet ADataSet, PcExtraCostRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClause(AFieldList, new string[] {
-                            "pc_conference_key_n", "p_partner_key_n", "pc_extra_cost_key_i"}) + " FROM PUB_pc_extra_cost")
-                            + GenerateWhereClause(PcExtraCostTable.GetColumnStringList(), ATemplateRow, ATemplateOperators))
-                            + GenerateOrderByClause(AOrderBy)), PcExtraCostTable.GetTableName(), ATransaction, GetParametersForWhereClause(ATemplateRow), AStartRecord, AMaxRecords);
+            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClause(AFieldList, PcExtraCostTable.TableId) + " FROM PUB_pc_extra_cost") +
+                            GenerateWhereClause(TTypedDataTable.GetColumnStringList(PcExtraCostTable.TableId), ATemplateRow, ATemplateOperators)) +
+                            GenerateOrderByClause(AOrderBy)), TTypedDataTable.GetTableName(PcExtraCostTable.TableId), ATransaction,
+                            GetParametersForWhereClause(PcExtraCostTable.TableId, ATemplateRow), AStartRecord, AMaxRecords);
         }
 
         /// auto generated
@@ -4967,11 +4864,10 @@ namespace Ict.Petra.Shared.MConference.Data.Access
         /// this method is called by all overloads
         public static void LoadUsingTemplate(DataSet ADataSet, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClause(AFieldList, new string[] {
-                            "pc_conference_key_n", "p_partner_key_n", "pc_extra_cost_key_i"}) + " FROM PUB_pc_extra_cost")
-                            + GenerateWhereClause(PcExtraCostTable.GetColumnStringList(), ASearchCriteria))
-                            + GenerateOrderByClause(AOrderBy)), PcExtraCostTable.GetTableName(), ATransaction,
-                            GetParametersForWhereClause(new PcExtraCostTable(), ASearchCriteria), AStartRecord, AMaxRecords);
+            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClause(AFieldList, PcExtraCostTable.TableId) + " FROM PUB_pc_extra_cost") +
+                            GenerateWhereClause(TTypedDataTable.GetColumnStringList(PcExtraCostTable.TableId), ASearchCriteria)) +
+                            GenerateOrderByClause(AOrderBy)), TTypedDataTable.GetTableName(PcExtraCostTable.TableId), ATransaction,
+                            GetParametersForWhereClause(PcExtraCostTable.TableId, ASearchCriteria), AStartRecord, AMaxRecords);
         }
 
         /// auto generated
@@ -5014,30 +4910,24 @@ namespace Ict.Petra.Shared.MConference.Data.Access
             return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar("SELECT COUNT(*) FROM PUB_pc_extra_cost", ATransaction, false));
         }
 
-        /// this method is called by all overloads
-        public static int CountByPrimaryKey(Int64 AConferenceKey, Int64 APartnerKey, Int32 AExtraCostKey, TDBTransaction ATransaction)
+        /// check if a row exists by using the primary key
+        public static bool Exists(Int64 AConferenceKey, Int64 APartnerKey, Int32 AExtraCostKey, TDBTransaction ATransaction)
         {
-            OdbcParameter[] ParametersArray = new OdbcParameter[3];
-            ParametersArray[0] = new OdbcParameter("", OdbcType.Decimal, 10);
-            ParametersArray[0].Value = ((object)(AConferenceKey));
-            ParametersArray[1] = new OdbcParameter("", OdbcType.Decimal, 10);
-            ParametersArray[1].Value = ((object)(APartnerKey));
-            ParametersArray[2] = new OdbcParameter("", OdbcType.Int);
-            ParametersArray[2].Value = ((object)(AExtraCostKey));
-            return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar("SELECT COUNT(*) FROM PUB_pc_extra_cost WHERE pc_conference_key_n = ? AND p_partner_key_n = ? AND pc_extra_cost_key_i = ?", ATransaction, false, ParametersArray));
+            return Exists(PcExtraCostTable.TableId, new System.Object[3]{AConferenceKey, APartnerKey, AExtraCostKey}, ATransaction);
         }
 
         /// this method is called by all overloads
         public static int CountUsingTemplate(PcExtraCostRow ATemplateRow, StringCollection ATemplateOperators, TDBTransaction ATransaction)
         {
-            return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_pc_extra_cost" + GenerateWhereClause(PcExtraCostTable.GetColumnStringList(), ATemplateRow, ATemplateOperators)), ATransaction, false, GetParametersForWhereClause(ATemplateRow)));
+            return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_pc_extra_cost" + GenerateWhereClause(TTypedDataTable.GetColumnStringList(PcExtraCostTable.TableId), ATemplateRow, ATemplateOperators)), ATransaction, false,
+                   GetParametersForWhereClause(PcExtraCostTable.TableId, ATemplateRow)));
         }
 
         /// this method is called by all overloads
         public static int CountUsingTemplate(TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
         {
-            return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_pc_extra_cost" + GenerateWhereClause(PcExtraCostTable.GetColumnStringList(), ASearchCriteria)), ATransaction, false,
-            GetParametersForWhereClause(new PcExtraCostTable(), ASearchCriteria)));
+            return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_pc_extra_cost" + GenerateWhereClause(TTypedDataTable.GetColumnStringList(PcExtraCostTable.TableId), ASearchCriteria)), ATransaction, false,
+            GetParametersForWhereClause(PcExtraCostTable.TableId, ASearchCriteria)));
         }
 
         /// auto generated
@@ -5048,9 +4938,9 @@ namespace Ict.Petra.Shared.MConference.Data.Access
             ParametersArray[0].Value = ((object)(AConferenceKey));
             ParametersArray[1] = new OdbcParameter("", OdbcType.Decimal, 10);
             ParametersArray[1].Value = ((object)(APartnerKey));
-            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, ((GenerateSelectClause(AFieldList, new string[] {
-                            "pc_conference_key_n", "p_partner_key_n", "pc_extra_cost_key_i"}) + " FROM PUB_pc_extra_cost WHERE pc_conference_key_n = ? AND p_partner_key_n = ?")
-                            + GenerateOrderByClause(AOrderBy)), PcExtraCostTable.GetTableName(), ATransaction, ParametersArray, AStartRecord, AMaxRecords);
+            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, ((GenerateSelectClause(AFieldList, PcExtraCostTable.TableId) +
+                            " FROM PUB_pc_extra_cost WHERE pc_conference_key_n = ? AND p_partner_key_n = ?") +
+                            GenerateOrderByClause(AOrderBy)), TTypedDataTable.GetTableName(PcExtraCostTable.TableId), ATransaction, ParametersArray, AStartRecord, AMaxRecords);
         }
 
         /// auto generated
@@ -5090,11 +4980,12 @@ namespace Ict.Petra.Shared.MConference.Data.Access
         /// auto generated
         public static void LoadViaPcAttendeeTemplate(DataSet ADataSet, PcAttendeeRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClauseLong("PUB_pc_extra_cost", AFieldList, new string[] {
-                            "pc_conference_key_n", "p_partner_key_n", "pc_extra_cost_key_i"}) + " FROM PUB_pc_extra_cost, PUB_pc_attendee WHERE " +
-                            "PUB_pc_extra_cost.pc_conference_key_n = PUB_pc_attendee.pc_conference_key_n AND PUB_pc_extra_cost.p_partner_key_n = PUB_pc_attendee.p_partner_key_n")
-                            + GenerateWhereClauseLong("PUB_pc_attendee", PcAttendeeTable.GetColumnStringList(), ATemplateRow, ATemplateOperators))
-                            + GenerateOrderByClause(AOrderBy)), PcExtraCostTable.GetTableName(), ATransaction, GetParametersForWhereClause(ATemplateRow), AStartRecord, AMaxRecords);
+            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClauseLong("PUB_pc_extra_cost", AFieldList, PcExtraCostTable.TableId) +
+                            " FROM PUB_pc_extra_cost, PUB_pc_attendee WHERE " +
+                            "PUB_pc_extra_cost.pc_conference_key_n = PUB_pc_attendee.pc_conference_key_n AND PUB_pc_extra_cost.p_partner_key_n = PUB_pc_attendee.p_partner_key_n") +
+                            GenerateWhereClauseLong("PUB_pc_attendee", PcAttendeeTable.TableId, ATemplateRow, ATemplateOperators)) +
+                            GenerateOrderByClause(AOrderBy)), TTypedDataTable.GetTableName(PcExtraCostTable.TableId), ATransaction,
+                            GetParametersForWhereClause(PcAttendeeTable.TableId, ATemplateRow), AStartRecord, AMaxRecords);
         }
 
         /// auto generated
@@ -5140,12 +5031,12 @@ namespace Ict.Petra.Shared.MConference.Data.Access
         /// auto generated
         public static void LoadViaPcAttendeeTemplate(DataSet ADataSet, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClauseLong("PUB_pc_extra_cost", AFieldList, new string[] {
-                            "pc_conference_key_n", "p_partner_key_n", "pc_extra_cost_key_i"}) + " FROM PUB_pc_extra_cost, PUB_pc_attendee WHERE " +
-                            "PUB_pc_extra_cost.pc_conference_key_n = PUB_pc_attendee.pc_conference_key_n AND PUB_pc_extra_cost.p_partner_key_n = PUB_pc_attendee.p_partner_key_n")
-                            + GenerateWhereClauseLong("PUB_pc_attendee", PcAttendeeTable.GetColumnStringList(), ASearchCriteria))
-                            + GenerateOrderByClause(AOrderBy)), PcExtraCostTable.GetTableName(), ATransaction,
-                            GetParametersForWhereClause(new PcExtraCostTable(), ASearchCriteria), AStartRecord, AMaxRecords);
+            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClauseLong("PUB_pc_extra_cost", AFieldList, PcExtraCostTable.TableId) +
+                            " FROM PUB_pc_extra_cost, PUB_pc_attendee WHERE " +
+                            "PUB_pc_extra_cost.pc_conference_key_n = PUB_pc_attendee.pc_conference_key_n AND PUB_pc_extra_cost.p_partner_key_n = PUB_pc_attendee.p_partner_key_n") +
+                            GenerateWhereClauseLong("PUB_pc_attendee", ASearchCriteria)) +
+                            GenerateOrderByClause(AOrderBy)), TTypedDataTable.GetTableName(PcExtraCostTable.TableId), ATransaction,
+                            GetParametersForWhereClause(PcExtraCostTable.TableId, ASearchCriteria), AStartRecord, AMaxRecords);
         }
 
         /// auto generated
@@ -5197,7 +5088,10 @@ namespace Ict.Petra.Shared.MConference.Data.Access
         public static int CountViaPcAttendeeTemplate(PcAttendeeRow ATemplateRow, StringCollection ATemplateOperators, TDBTransaction ATransaction)
         {
             return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_pc_extra_cost, PUB_pc_attendee WHERE " +
-                "PUB_pc_extra_cost.pc_conference_key_n = PUB_pc_attendee.pc_conference_key_n AND PUB_pc_extra_cost.p_partner_key_n = PUB_pc_attendee.p_partner_key_n" + GenerateWhereClauseLong("PUB_pc_attendee", PcAttendeeTable.GetColumnStringList(), ATemplateRow, ATemplateOperators)), ATransaction, false, GetParametersForWhereClause(ATemplateRow, PcAttendeeTable.GetPrimKeyColumnOrdList())));
+                "PUB_pc_extra_cost.pc_conference_key_n = PUB_pc_attendee.pc_conference_key_n AND PUB_pc_extra_cost.p_partner_key_n = PUB_pc_attendee.p_partner_key_n" + GenerateWhereClauseLong("PUB_pc_attendee",
+                PcAttendeeTable.TableId, ATemplateRow, ATemplateOperators)),
+                ATransaction, false,
+                GetParametersForWhereClauseWithPrimaryKey(PcAttendeeTable.TableId, ATemplateRow)));
         }
 
         /// auto generated
@@ -5205,8 +5099,8 @@ namespace Ict.Petra.Shared.MConference.Data.Access
         {
             return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_pc_extra_cost, PUB_pc_attendee WHERE " +
                 "PUB_pc_extra_cost.pc_conference_key_n = PUB_pc_attendee.pc_conference_key_n AND PUB_pc_extra_cost.p_partner_key_n = PUB_pc_attendee.p_partner_key_n" +
-                GenerateWhereClauseLong("PUB_pc_attendee", PcAttendeeTable.GetColumnStringList(), ASearchCriteria)), ATransaction, false,
-                GetParametersForWhereClause(new PcAttendeeTable(), ASearchCriteria)));
+                GenerateWhereClauseLong("PUB_pc_attendee", ASearchCriteria)), ATransaction, false,
+                GetParametersForWhereClause(PcAttendeeTable.TableId, ASearchCriteria)));
         }
 
         /// auto generated
@@ -5215,9 +5109,9 @@ namespace Ict.Petra.Shared.MConference.Data.Access
             OdbcParameter[] ParametersArray = new OdbcParameter[1];
             ParametersArray[0] = new OdbcParameter("", OdbcType.Decimal, 10);
             ParametersArray[0].Value = ((object)(AConferenceKey));
-            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, ((GenerateSelectClause(AFieldList, new string[] {
-                            "pc_conference_key_n", "p_partner_key_n", "pc_extra_cost_key_i"}) + " FROM PUB_pc_extra_cost WHERE pc_conference_key_n = ?")
-                            + GenerateOrderByClause(AOrderBy)), PcExtraCostTable.GetTableName(), ATransaction, ParametersArray, AStartRecord, AMaxRecords);
+            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, ((GenerateSelectClause(AFieldList, PcExtraCostTable.TableId) +
+                            " FROM PUB_pc_extra_cost WHERE pc_conference_key_n = ?") +
+                            GenerateOrderByClause(AOrderBy)), TTypedDataTable.GetTableName(PcExtraCostTable.TableId), ATransaction, ParametersArray, AStartRecord, AMaxRecords);
         }
 
         /// auto generated
@@ -5257,11 +5151,12 @@ namespace Ict.Petra.Shared.MConference.Data.Access
         /// auto generated
         public static void LoadViaPcConferenceTemplate(DataSet ADataSet, PcConferenceRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClauseLong("PUB_pc_extra_cost", AFieldList, new string[] {
-                            "pc_conference_key_n", "p_partner_key_n", "pc_extra_cost_key_i"}) + " FROM PUB_pc_extra_cost, PUB_pc_conference WHERE " +
-                            "PUB_pc_extra_cost.pc_conference_key_n = PUB_pc_conference.pc_conference_key_n")
-                            + GenerateWhereClauseLong("PUB_pc_conference", PcConferenceTable.GetColumnStringList(), ATemplateRow, ATemplateOperators))
-                            + GenerateOrderByClause(AOrderBy)), PcExtraCostTable.GetTableName(), ATransaction, GetParametersForWhereClause(ATemplateRow), AStartRecord, AMaxRecords);
+            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClauseLong("PUB_pc_extra_cost", AFieldList, PcExtraCostTable.TableId) +
+                            " FROM PUB_pc_extra_cost, PUB_pc_conference WHERE " +
+                            "PUB_pc_extra_cost.pc_conference_key_n = PUB_pc_conference.pc_conference_key_n") +
+                            GenerateWhereClauseLong("PUB_pc_conference", PcConferenceTable.TableId, ATemplateRow, ATemplateOperators)) +
+                            GenerateOrderByClause(AOrderBy)), TTypedDataTable.GetTableName(PcExtraCostTable.TableId), ATransaction,
+                            GetParametersForWhereClause(PcConferenceTable.TableId, ATemplateRow), AStartRecord, AMaxRecords);
         }
 
         /// auto generated
@@ -5307,12 +5202,12 @@ namespace Ict.Petra.Shared.MConference.Data.Access
         /// auto generated
         public static void LoadViaPcConferenceTemplate(DataSet ADataSet, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClauseLong("PUB_pc_extra_cost", AFieldList, new string[] {
-                            "pc_conference_key_n", "p_partner_key_n", "pc_extra_cost_key_i"}) + " FROM PUB_pc_extra_cost, PUB_pc_conference WHERE " +
-                            "PUB_pc_extra_cost.pc_conference_key_n = PUB_pc_conference.pc_conference_key_n")
-                            + GenerateWhereClauseLong("PUB_pc_conference", PcConferenceTable.GetColumnStringList(), ASearchCriteria))
-                            + GenerateOrderByClause(AOrderBy)), PcExtraCostTable.GetTableName(), ATransaction,
-                            GetParametersForWhereClause(new PcExtraCostTable(), ASearchCriteria), AStartRecord, AMaxRecords);
+            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClauseLong("PUB_pc_extra_cost", AFieldList, PcExtraCostTable.TableId) +
+                            " FROM PUB_pc_extra_cost, PUB_pc_conference WHERE " +
+                            "PUB_pc_extra_cost.pc_conference_key_n = PUB_pc_conference.pc_conference_key_n") +
+                            GenerateWhereClauseLong("PUB_pc_conference", ASearchCriteria)) +
+                            GenerateOrderByClause(AOrderBy)), TTypedDataTable.GetTableName(PcExtraCostTable.TableId), ATransaction,
+                            GetParametersForWhereClause(PcExtraCostTable.TableId, ASearchCriteria), AStartRecord, AMaxRecords);
         }
 
         /// auto generated
@@ -5362,7 +5257,10 @@ namespace Ict.Petra.Shared.MConference.Data.Access
         public static int CountViaPcConferenceTemplate(PcConferenceRow ATemplateRow, StringCollection ATemplateOperators, TDBTransaction ATransaction)
         {
             return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_pc_extra_cost, PUB_pc_conference WHERE " +
-                "PUB_pc_extra_cost.pc_conference_key_n = PUB_pc_conference.pc_conference_key_n" + GenerateWhereClauseLong("PUB_pc_conference", PcConferenceTable.GetColumnStringList(), ATemplateRow, ATemplateOperators)), ATransaction, false, GetParametersForWhereClause(ATemplateRow, PcConferenceTable.GetPrimKeyColumnOrdList())));
+                "PUB_pc_extra_cost.pc_conference_key_n = PUB_pc_conference.pc_conference_key_n" + GenerateWhereClauseLong("PUB_pc_conference",
+                PcConferenceTable.TableId, ATemplateRow, ATemplateOperators)),
+                ATransaction, false,
+                GetParametersForWhereClauseWithPrimaryKey(PcConferenceTable.TableId, ATemplateRow)));
         }
 
         /// auto generated
@@ -5370,8 +5268,8 @@ namespace Ict.Petra.Shared.MConference.Data.Access
         {
             return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_pc_extra_cost, PUB_pc_conference WHERE " +
                 "PUB_pc_extra_cost.pc_conference_key_n = PUB_pc_conference.pc_conference_key_n" +
-                GenerateWhereClauseLong("PUB_pc_conference", PcConferenceTable.GetColumnStringList(), ASearchCriteria)), ATransaction, false,
-                GetParametersForWhereClause(new PcConferenceTable(), ASearchCriteria)));
+                GenerateWhereClauseLong("PUB_pc_conference", ASearchCriteria)), ATransaction, false,
+                GetParametersForWhereClause(PcConferenceTable.TableId, ASearchCriteria)));
         }
 
         /// auto generated
@@ -5380,9 +5278,9 @@ namespace Ict.Petra.Shared.MConference.Data.Access
             OdbcParameter[] ParametersArray = new OdbcParameter[1];
             ParametersArray[0] = new OdbcParameter("", OdbcType.Decimal, 10);
             ParametersArray[0].Value = ((object)(APartnerKey));
-            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, ((GenerateSelectClause(AFieldList, new string[] {
-                            "pc_conference_key_n", "p_partner_key_n", "pc_extra_cost_key_i"}) + " FROM PUB_pc_extra_cost WHERE p_partner_key_n = ?")
-                            + GenerateOrderByClause(AOrderBy)), PcExtraCostTable.GetTableName(), ATransaction, ParametersArray, AStartRecord, AMaxRecords);
+            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, ((GenerateSelectClause(AFieldList, PcExtraCostTable.TableId) +
+                            " FROM PUB_pc_extra_cost WHERE p_partner_key_n = ?") +
+                            GenerateOrderByClause(AOrderBy)), TTypedDataTable.GetTableName(PcExtraCostTable.TableId), ATransaction, ParametersArray, AStartRecord, AMaxRecords);
         }
 
         /// auto generated
@@ -5422,11 +5320,12 @@ namespace Ict.Petra.Shared.MConference.Data.Access
         /// auto generated
         public static void LoadViaPPersonTemplate(DataSet ADataSet, PPersonRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClauseLong("PUB_pc_extra_cost", AFieldList, new string[] {
-                            "pc_conference_key_n", "p_partner_key_n", "pc_extra_cost_key_i"}) + " FROM PUB_pc_extra_cost, PUB_p_person WHERE " +
-                            "PUB_pc_extra_cost.p_partner_key_n = PUB_p_person.p_partner_key_n")
-                            + GenerateWhereClauseLong("PUB_p_person", PPersonTable.GetColumnStringList(), ATemplateRow, ATemplateOperators))
-                            + GenerateOrderByClause(AOrderBy)), PcExtraCostTable.GetTableName(), ATransaction, GetParametersForWhereClause(ATemplateRow), AStartRecord, AMaxRecords);
+            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClauseLong("PUB_pc_extra_cost", AFieldList, PcExtraCostTable.TableId) +
+                            " FROM PUB_pc_extra_cost, PUB_p_person WHERE " +
+                            "PUB_pc_extra_cost.p_partner_key_n = PUB_p_person.p_partner_key_n") +
+                            GenerateWhereClauseLong("PUB_p_person", PPersonTable.TableId, ATemplateRow, ATemplateOperators)) +
+                            GenerateOrderByClause(AOrderBy)), TTypedDataTable.GetTableName(PcExtraCostTable.TableId), ATransaction,
+                            GetParametersForWhereClause(PPersonTable.TableId, ATemplateRow), AStartRecord, AMaxRecords);
         }
 
         /// auto generated
@@ -5472,12 +5371,12 @@ namespace Ict.Petra.Shared.MConference.Data.Access
         /// auto generated
         public static void LoadViaPPersonTemplate(DataSet ADataSet, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClauseLong("PUB_pc_extra_cost", AFieldList, new string[] {
-                            "pc_conference_key_n", "p_partner_key_n", "pc_extra_cost_key_i"}) + " FROM PUB_pc_extra_cost, PUB_p_person WHERE " +
-                            "PUB_pc_extra_cost.p_partner_key_n = PUB_p_person.p_partner_key_n")
-                            + GenerateWhereClauseLong("PUB_p_person", PPersonTable.GetColumnStringList(), ASearchCriteria))
-                            + GenerateOrderByClause(AOrderBy)), PcExtraCostTable.GetTableName(), ATransaction,
-                            GetParametersForWhereClause(new PcExtraCostTable(), ASearchCriteria), AStartRecord, AMaxRecords);
+            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClauseLong("PUB_pc_extra_cost", AFieldList, PcExtraCostTable.TableId) +
+                            " FROM PUB_pc_extra_cost, PUB_p_person WHERE " +
+                            "PUB_pc_extra_cost.p_partner_key_n = PUB_p_person.p_partner_key_n") +
+                            GenerateWhereClauseLong("PUB_p_person", ASearchCriteria)) +
+                            GenerateOrderByClause(AOrderBy)), TTypedDataTable.GetTableName(PcExtraCostTable.TableId), ATransaction,
+                            GetParametersForWhereClause(PcExtraCostTable.TableId, ASearchCriteria), AStartRecord, AMaxRecords);
         }
 
         /// auto generated
@@ -5527,7 +5426,10 @@ namespace Ict.Petra.Shared.MConference.Data.Access
         public static int CountViaPPersonTemplate(PPersonRow ATemplateRow, StringCollection ATemplateOperators, TDBTransaction ATransaction)
         {
             return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_pc_extra_cost, PUB_p_person WHERE " +
-                "PUB_pc_extra_cost.p_partner_key_n = PUB_p_person.p_partner_key_n" + GenerateWhereClauseLong("PUB_p_person", PPersonTable.GetColumnStringList(), ATemplateRow, ATemplateOperators)), ATransaction, false, GetParametersForWhereClause(ATemplateRow, PPersonTable.GetPrimKeyColumnOrdList())));
+                "PUB_pc_extra_cost.p_partner_key_n = PUB_p_person.p_partner_key_n" + GenerateWhereClauseLong("PUB_p_person",
+                PPersonTable.TableId, ATemplateRow, ATemplateOperators)),
+                ATransaction, false,
+                GetParametersForWhereClauseWithPrimaryKey(PPersonTable.TableId, ATemplateRow)));
         }
 
         /// auto generated
@@ -5535,8 +5437,8 @@ namespace Ict.Petra.Shared.MConference.Data.Access
         {
             return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_pc_extra_cost, PUB_p_person WHERE " +
                 "PUB_pc_extra_cost.p_partner_key_n = PUB_p_person.p_partner_key_n" +
-                GenerateWhereClauseLong("PUB_p_person", PPersonTable.GetColumnStringList(), ASearchCriteria)), ATransaction, false,
-                GetParametersForWhereClause(new PPersonTable(), ASearchCriteria)));
+                GenerateWhereClauseLong("PUB_p_person", ASearchCriteria)), ATransaction, false,
+                GetParametersForWhereClause(PPersonTable.TableId, ASearchCriteria)));
         }
 
         /// auto generated
@@ -5545,9 +5447,9 @@ namespace Ict.Petra.Shared.MConference.Data.Access
             OdbcParameter[] ParametersArray = new OdbcParameter[1];
             ParametersArray[0] = new OdbcParameter("", OdbcType.VarChar, 32);
             ParametersArray[0].Value = ((object)(ACostTypeCode));
-            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, ((GenerateSelectClause(AFieldList, new string[] {
-                            "pc_conference_key_n", "p_partner_key_n", "pc_extra_cost_key_i"}) + " FROM PUB_pc_extra_cost WHERE pc_cost_type_code_c = ?")
-                            + GenerateOrderByClause(AOrderBy)), PcExtraCostTable.GetTableName(), ATransaction, ParametersArray, AStartRecord, AMaxRecords);
+            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, ((GenerateSelectClause(AFieldList, PcExtraCostTable.TableId) +
+                            " FROM PUB_pc_extra_cost WHERE pc_cost_type_code_c = ?") +
+                            GenerateOrderByClause(AOrderBy)), TTypedDataTable.GetTableName(PcExtraCostTable.TableId), ATransaction, ParametersArray, AStartRecord, AMaxRecords);
         }
 
         /// auto generated
@@ -5587,11 +5489,12 @@ namespace Ict.Petra.Shared.MConference.Data.Access
         /// auto generated
         public static void LoadViaPcCostTypeTemplate(DataSet ADataSet, PcCostTypeRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClauseLong("PUB_pc_extra_cost", AFieldList, new string[] {
-                            "pc_conference_key_n", "p_partner_key_n", "pc_extra_cost_key_i"}) + " FROM PUB_pc_extra_cost, PUB_pc_cost_type WHERE " +
-                            "PUB_pc_extra_cost.pc_cost_type_code_c = PUB_pc_cost_type.pc_cost_type_code_c")
-                            + GenerateWhereClauseLong("PUB_pc_cost_type", PcCostTypeTable.GetColumnStringList(), ATemplateRow, ATemplateOperators))
-                            + GenerateOrderByClause(AOrderBy)), PcExtraCostTable.GetTableName(), ATransaction, GetParametersForWhereClause(ATemplateRow), AStartRecord, AMaxRecords);
+            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClauseLong("PUB_pc_extra_cost", AFieldList, PcExtraCostTable.TableId) +
+                            " FROM PUB_pc_extra_cost, PUB_pc_cost_type WHERE " +
+                            "PUB_pc_extra_cost.pc_cost_type_code_c = PUB_pc_cost_type.pc_cost_type_code_c") +
+                            GenerateWhereClauseLong("PUB_pc_cost_type", PcCostTypeTable.TableId, ATemplateRow, ATemplateOperators)) +
+                            GenerateOrderByClause(AOrderBy)), TTypedDataTable.GetTableName(PcExtraCostTable.TableId), ATransaction,
+                            GetParametersForWhereClause(PcCostTypeTable.TableId, ATemplateRow), AStartRecord, AMaxRecords);
         }
 
         /// auto generated
@@ -5637,12 +5540,12 @@ namespace Ict.Petra.Shared.MConference.Data.Access
         /// auto generated
         public static void LoadViaPcCostTypeTemplate(DataSet ADataSet, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClauseLong("PUB_pc_extra_cost", AFieldList, new string[] {
-                            "pc_conference_key_n", "p_partner_key_n", "pc_extra_cost_key_i"}) + " FROM PUB_pc_extra_cost, PUB_pc_cost_type WHERE " +
-                            "PUB_pc_extra_cost.pc_cost_type_code_c = PUB_pc_cost_type.pc_cost_type_code_c")
-                            + GenerateWhereClauseLong("PUB_pc_cost_type", PcCostTypeTable.GetColumnStringList(), ASearchCriteria))
-                            + GenerateOrderByClause(AOrderBy)), PcExtraCostTable.GetTableName(), ATransaction,
-                            GetParametersForWhereClause(new PcExtraCostTable(), ASearchCriteria), AStartRecord, AMaxRecords);
+            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClauseLong("PUB_pc_extra_cost", AFieldList, PcExtraCostTable.TableId) +
+                            " FROM PUB_pc_extra_cost, PUB_pc_cost_type WHERE " +
+                            "PUB_pc_extra_cost.pc_cost_type_code_c = PUB_pc_cost_type.pc_cost_type_code_c") +
+                            GenerateWhereClauseLong("PUB_pc_cost_type", ASearchCriteria)) +
+                            GenerateOrderByClause(AOrderBy)), TTypedDataTable.GetTableName(PcExtraCostTable.TableId), ATransaction,
+                            GetParametersForWhereClause(PcExtraCostTable.TableId, ASearchCriteria), AStartRecord, AMaxRecords);
         }
 
         /// auto generated
@@ -5692,7 +5595,10 @@ namespace Ict.Petra.Shared.MConference.Data.Access
         public static int CountViaPcCostTypeTemplate(PcCostTypeRow ATemplateRow, StringCollection ATemplateOperators, TDBTransaction ATransaction)
         {
             return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_pc_extra_cost, PUB_pc_cost_type WHERE " +
-                "PUB_pc_extra_cost.pc_cost_type_code_c = PUB_pc_cost_type.pc_cost_type_code_c" + GenerateWhereClauseLong("PUB_pc_cost_type", PcCostTypeTable.GetColumnStringList(), ATemplateRow, ATemplateOperators)), ATransaction, false, GetParametersForWhereClause(ATemplateRow, PcCostTypeTable.GetPrimKeyColumnOrdList())));
+                "PUB_pc_extra_cost.pc_cost_type_code_c = PUB_pc_cost_type.pc_cost_type_code_c" + GenerateWhereClauseLong("PUB_pc_cost_type",
+                PcCostTypeTable.TableId, ATemplateRow, ATemplateOperators)),
+                ATransaction, false,
+                GetParametersForWhereClauseWithPrimaryKey(PcCostTypeTable.TableId, ATemplateRow)));
         }
 
         /// auto generated
@@ -5700,8 +5606,8 @@ namespace Ict.Petra.Shared.MConference.Data.Access
         {
             return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_pc_extra_cost, PUB_pc_cost_type WHERE " +
                 "PUB_pc_extra_cost.pc_cost_type_code_c = PUB_pc_cost_type.pc_cost_type_code_c" +
-                GenerateWhereClauseLong("PUB_pc_cost_type", PcCostTypeTable.GetColumnStringList(), ASearchCriteria)), ATransaction, false,
-                GetParametersForWhereClause(new PcCostTypeTable(), ASearchCriteria)));
+                GenerateWhereClauseLong("PUB_pc_cost_type", ASearchCriteria)), ATransaction, false,
+                GetParametersForWhereClause(PcCostTypeTable.TableId, ASearchCriteria)));
         }
 
         /// auto generated
@@ -5710,9 +5616,9 @@ namespace Ict.Petra.Shared.MConference.Data.Access
             OdbcParameter[] ParametersArray = new OdbcParameter[1];
             ParametersArray[0] = new OdbcParameter("", OdbcType.Decimal, 10);
             ParametersArray[0].Value = ((object)(APartnerKey));
-            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, ((GenerateSelectClause(AFieldList, new string[] {
-                            "pc_conference_key_n", "p_partner_key_n", "pc_extra_cost_key_i"}) + " FROM PUB_pc_extra_cost WHERE pc_authorising_field_n = ?")
-                            + GenerateOrderByClause(AOrderBy)), PcExtraCostTable.GetTableName(), ATransaction, ParametersArray, AStartRecord, AMaxRecords);
+            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, ((GenerateSelectClause(AFieldList, PcExtraCostTable.TableId) +
+                            " FROM PUB_pc_extra_cost WHERE pc_authorising_field_n = ?") +
+                            GenerateOrderByClause(AOrderBy)), TTypedDataTable.GetTableName(PcExtraCostTable.TableId), ATransaction, ParametersArray, AStartRecord, AMaxRecords);
         }
 
         /// auto generated
@@ -5752,11 +5658,12 @@ namespace Ict.Petra.Shared.MConference.Data.Access
         /// auto generated
         public static void LoadViaPUnitTemplate(DataSet ADataSet, PUnitRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClauseLong("PUB_pc_extra_cost", AFieldList, new string[] {
-                            "pc_conference_key_n", "p_partner_key_n", "pc_extra_cost_key_i"}) + " FROM PUB_pc_extra_cost, PUB_p_unit WHERE " +
-                            "PUB_pc_extra_cost.pc_authorising_field_n = PUB_p_unit.p_partner_key_n")
-                            + GenerateWhereClauseLong("PUB_p_unit", PUnitTable.GetColumnStringList(), ATemplateRow, ATemplateOperators))
-                            + GenerateOrderByClause(AOrderBy)), PcExtraCostTable.GetTableName(), ATransaction, GetParametersForWhereClause(ATemplateRow), AStartRecord, AMaxRecords);
+            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClauseLong("PUB_pc_extra_cost", AFieldList, PcExtraCostTable.TableId) +
+                            " FROM PUB_pc_extra_cost, PUB_p_unit WHERE " +
+                            "PUB_pc_extra_cost.pc_authorising_field_n = PUB_p_unit.p_partner_key_n") +
+                            GenerateWhereClauseLong("PUB_p_unit", PUnitTable.TableId, ATemplateRow, ATemplateOperators)) +
+                            GenerateOrderByClause(AOrderBy)), TTypedDataTable.GetTableName(PcExtraCostTable.TableId), ATransaction,
+                            GetParametersForWhereClause(PUnitTable.TableId, ATemplateRow), AStartRecord, AMaxRecords);
         }
 
         /// auto generated
@@ -5802,12 +5709,12 @@ namespace Ict.Petra.Shared.MConference.Data.Access
         /// auto generated
         public static void LoadViaPUnitTemplate(DataSet ADataSet, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClauseLong("PUB_pc_extra_cost", AFieldList, new string[] {
-                            "pc_conference_key_n", "p_partner_key_n", "pc_extra_cost_key_i"}) + " FROM PUB_pc_extra_cost, PUB_p_unit WHERE " +
-                            "PUB_pc_extra_cost.pc_authorising_field_n = PUB_p_unit.p_partner_key_n")
-                            + GenerateWhereClauseLong("PUB_p_unit", PUnitTable.GetColumnStringList(), ASearchCriteria))
-                            + GenerateOrderByClause(AOrderBy)), PcExtraCostTable.GetTableName(), ATransaction,
-                            GetParametersForWhereClause(new PcExtraCostTable(), ASearchCriteria), AStartRecord, AMaxRecords);
+            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClauseLong("PUB_pc_extra_cost", AFieldList, PcExtraCostTable.TableId) +
+                            " FROM PUB_pc_extra_cost, PUB_p_unit WHERE " +
+                            "PUB_pc_extra_cost.pc_authorising_field_n = PUB_p_unit.p_partner_key_n") +
+                            GenerateWhereClauseLong("PUB_p_unit", ASearchCriteria)) +
+                            GenerateOrderByClause(AOrderBy)), TTypedDataTable.GetTableName(PcExtraCostTable.TableId), ATransaction,
+                            GetParametersForWhereClause(PcExtraCostTable.TableId, ASearchCriteria), AStartRecord, AMaxRecords);
         }
 
         /// auto generated
@@ -5857,7 +5764,10 @@ namespace Ict.Petra.Shared.MConference.Data.Access
         public static int CountViaPUnitTemplate(PUnitRow ATemplateRow, StringCollection ATemplateOperators, TDBTransaction ATransaction)
         {
             return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_pc_extra_cost, PUB_p_unit WHERE " +
-                "PUB_pc_extra_cost.pc_authorising_field_n = PUB_p_unit.p_partner_key_n" + GenerateWhereClauseLong("PUB_p_unit", PUnitTable.GetColumnStringList(), ATemplateRow, ATemplateOperators)), ATransaction, false, GetParametersForWhereClause(ATemplateRow, PUnitTable.GetPrimKeyColumnOrdList())));
+                "PUB_pc_extra_cost.pc_authorising_field_n = PUB_p_unit.p_partner_key_n" + GenerateWhereClauseLong("PUB_p_unit",
+                PUnitTable.TableId, ATemplateRow, ATemplateOperators)),
+                ATransaction, false,
+                GetParametersForWhereClauseWithPrimaryKey(PUnitTable.TableId, ATemplateRow)));
         }
 
         /// auto generated
@@ -5865,35 +5775,26 @@ namespace Ict.Petra.Shared.MConference.Data.Access
         {
             return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_pc_extra_cost, PUB_p_unit WHERE " +
                 "PUB_pc_extra_cost.pc_authorising_field_n = PUB_p_unit.p_partner_key_n" +
-                GenerateWhereClauseLong("PUB_p_unit", PUnitTable.GetColumnStringList(), ASearchCriteria)), ATransaction, false,
-                GetParametersForWhereClause(new PUnitTable(), ASearchCriteria)));
+                GenerateWhereClauseLong("PUB_p_unit", ASearchCriteria)), ATransaction, false,
+                GetParametersForWhereClause(PUnitTable.TableId, ASearchCriteria)));
         }
 
         /// auto generated
         public static void DeleteByPrimaryKey(Int64 AConferenceKey, Int64 APartnerKey, Int32 AExtraCostKey, TDBTransaction ATransaction)
         {
-            OdbcParameter[] ParametersArray = new OdbcParameter[3];
-            ParametersArray[0] = new OdbcParameter("", OdbcType.Decimal, 10);
-            ParametersArray[0].Value = ((object)(AConferenceKey));
-            ParametersArray[1] = new OdbcParameter("", OdbcType.Decimal, 10);
-            ParametersArray[1].Value = ((object)(APartnerKey));
-            ParametersArray[2] = new OdbcParameter("", OdbcType.Int);
-            ParametersArray[2].Value = ((object)(AExtraCostKey));
-            DBAccess.GDBAccessObj.ExecuteNonQuery("DELETE FROM PUB_pc_extra_cost WHERE pc_conference_key_n = ? AND p_partner_key_n = ? AND pc_extra_cost_key_i = ?", ATransaction, false, ParametersArray);
+            DeleteByPrimaryKey(PcExtraCostTable.TableId, new System.Object[3]{AConferenceKey, APartnerKey, AExtraCostKey}, ATransaction);
         }
 
         /// auto generated
         public static void DeleteUsingTemplate(PcExtraCostRow ATemplateRow, StringCollection ATemplateOperators, TDBTransaction ATransaction)
         {
-            DBAccess.GDBAccessObj.ExecuteNonQuery(("DELETE FROM PUB_pc_extra_cost" + GenerateWhereClause(PcExtraCostTable.GetColumnStringList(), ATemplateRow, ATemplateOperators)), ATransaction, false, GetParametersForWhereClause(ATemplateRow));
+            DeleteUsingTemplate(PcExtraCostTable.TableId, ATemplateRow, ATemplateOperators, ATransaction);
         }
 
         /// auto generated
         public static void DeleteUsingTemplate(TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
         {
-            DBAccess.GDBAccessObj.ExecuteNonQuery(("DELETE FROM PUB_pc_extra_cost" +
-                GenerateWhereClause(PcExtraCostTable.GetColumnStringList(), ASearchCriteria)), ATransaction, false,
-                GetParametersForWhereClause(new PcExtraCostTable(), ASearchCriteria));
+            DeleteUsingTemplate(PcExtraCostTable.TableId, ASearchCriteria, ATransaction);
         }
 
         /// auto generated
@@ -5910,15 +5811,15 @@ namespace Ict.Petra.Shared.MConference.Data.Access
                 {
                     if ((TheRow.RowState == DataRowState.Added))
                     {
-                        TTypedDataAccess.InsertRow("pc_extra_cost", PcExtraCostTable.GetColumnStringList(), ref TheRow, ATransaction, UserInfo.GUserInfo.UserID);
+                        TTypedDataAccess.InsertRow(PcExtraCostTable.TableId, ref TheRow, ATransaction, UserInfo.GUserInfo.UserID);
                     }
                     if ((TheRow.RowState == DataRowState.Modified))
                     {
-                        TTypedDataAccess.UpdateRow("pc_extra_cost", PcExtraCostTable.GetColumnStringList(), PcExtraCostTable.GetPrimKeyColumnOrdList(), ref TheRow, ATransaction, UserInfo.GUserInfo.UserID);
+                        TTypedDataAccess.UpdateRow(PcExtraCostTable.TableId, ref TheRow, ATransaction, UserInfo.GUserInfo.UserID);
                     }
                     if ((TheRow.RowState == DataRowState.Deleted))
                     {
-                        TTypedDataAccess.DeleteRow("pc_extra_cost", PcExtraCostTable.GetColumnStringList(), PcExtraCostTable.GetPrimKeyColumnOrdList(), TheRow, ATransaction);
+                        TTypedDataAccess.DeleteRow(PcExtraCostTable.TableId, TheRow, ATransaction);
                     }
                 }
                 catch (OdbcException ex)
@@ -5948,9 +5849,8 @@ namespace Ict.Petra.Shared.MConference.Data.Access
         /// this method is called by all overloads
         public static void LoadAll(DataSet ADataSet, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, ((GenerateSelectClause(AFieldList, new string[] {
-                            "pc_conference_key_n", "pc_applicable_d"}) + " FROM PUB_pc_early_late")
-                            + GenerateOrderByClause(AOrderBy)), PcEarlyLateTable.GetTableName(), ATransaction, AStartRecord, AMaxRecords);
+            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, ((GenerateSelectClause(AFieldList, PcEarlyLateTable.TableId) + " FROM PUB_pc_early_late") +
+                            GenerateOrderByClause(AOrderBy)), TTypedDataTable.GetTableName(PcEarlyLateTable.TableId), ATransaction, AStartRecord, AMaxRecords);
         }
 
         /// auto generated
@@ -5990,14 +5890,8 @@ namespace Ict.Petra.Shared.MConference.Data.Access
         /// this method is called by all overloads
         public static void LoadByPrimaryKey(DataSet ADataSet, Int64 AConferenceKey, System.DateTime AApplicable, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            OdbcParameter[] ParametersArray = new OdbcParameter[2];
-            ParametersArray[0] = new OdbcParameter("", OdbcType.Decimal, 10);
-            ParametersArray[0].Value = ((object)(AConferenceKey));
-            ParametersArray[1] = new OdbcParameter("", OdbcType.Date);
-            ParametersArray[1].Value = ((object)(AApplicable));
-            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, ((GenerateSelectClause(AFieldList, new string[] {
-                            "pc_conference_key_n", "pc_applicable_d"}) + " FROM PUB_pc_early_late WHERE pc_conference_key_n = ? AND pc_applicable_d = ?")
-                            + GenerateOrderByClause(AOrderBy)), PcEarlyLateTable.GetTableName(), ATransaction, ParametersArray, AStartRecord, AMaxRecords);
+            ADataSet = LoadByPrimaryKey(PcEarlyLateTable.TableId,
+                ADataSet, new System.Object[2]{AConferenceKey, AApplicable}, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
         }
 
         /// auto generated
@@ -6037,10 +5931,10 @@ namespace Ict.Petra.Shared.MConference.Data.Access
         /// this method is called by all overloads
         public static void LoadUsingTemplate(DataSet ADataSet, PcEarlyLateRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClause(AFieldList, new string[] {
-                            "pc_conference_key_n", "pc_applicable_d"}) + " FROM PUB_pc_early_late")
-                            + GenerateWhereClause(PcEarlyLateTable.GetColumnStringList(), ATemplateRow, ATemplateOperators))
-                            + GenerateOrderByClause(AOrderBy)), PcEarlyLateTable.GetTableName(), ATransaction, GetParametersForWhereClause(ATemplateRow), AStartRecord, AMaxRecords);
+            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClause(AFieldList, PcEarlyLateTable.TableId) + " FROM PUB_pc_early_late") +
+                            GenerateWhereClause(TTypedDataTable.GetColumnStringList(PcEarlyLateTable.TableId), ATemplateRow, ATemplateOperators)) +
+                            GenerateOrderByClause(AOrderBy)), TTypedDataTable.GetTableName(PcEarlyLateTable.TableId), ATransaction,
+                            GetParametersForWhereClause(PcEarlyLateTable.TableId, ATemplateRow), AStartRecord, AMaxRecords);
         }
 
         /// auto generated
@@ -6086,11 +5980,10 @@ namespace Ict.Petra.Shared.MConference.Data.Access
         /// this method is called by all overloads
         public static void LoadUsingTemplate(DataSet ADataSet, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClause(AFieldList, new string[] {
-                            "pc_conference_key_n", "pc_applicable_d"}) + " FROM PUB_pc_early_late")
-                            + GenerateWhereClause(PcEarlyLateTable.GetColumnStringList(), ASearchCriteria))
-                            + GenerateOrderByClause(AOrderBy)), PcEarlyLateTable.GetTableName(), ATransaction,
-                            GetParametersForWhereClause(new PcEarlyLateTable(), ASearchCriteria), AStartRecord, AMaxRecords);
+            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClause(AFieldList, PcEarlyLateTable.TableId) + " FROM PUB_pc_early_late") +
+                            GenerateWhereClause(TTypedDataTable.GetColumnStringList(PcEarlyLateTable.TableId), ASearchCriteria)) +
+                            GenerateOrderByClause(AOrderBy)), TTypedDataTable.GetTableName(PcEarlyLateTable.TableId), ATransaction,
+                            GetParametersForWhereClause(PcEarlyLateTable.TableId, ASearchCriteria), AStartRecord, AMaxRecords);
         }
 
         /// auto generated
@@ -6133,28 +6026,24 @@ namespace Ict.Petra.Shared.MConference.Data.Access
             return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar("SELECT COUNT(*) FROM PUB_pc_early_late", ATransaction, false));
         }
 
-        /// this method is called by all overloads
-        public static int CountByPrimaryKey(Int64 AConferenceKey, System.DateTime AApplicable, TDBTransaction ATransaction)
+        /// check if a row exists by using the primary key
+        public static bool Exists(Int64 AConferenceKey, System.DateTime AApplicable, TDBTransaction ATransaction)
         {
-            OdbcParameter[] ParametersArray = new OdbcParameter[2];
-            ParametersArray[0] = new OdbcParameter("", OdbcType.Decimal, 10);
-            ParametersArray[0].Value = ((object)(AConferenceKey));
-            ParametersArray[1] = new OdbcParameter("", OdbcType.Date);
-            ParametersArray[1].Value = ((object)(AApplicable));
-            return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar("SELECT COUNT(*) FROM PUB_pc_early_late WHERE pc_conference_key_n = ? AND pc_applicable_d = ?", ATransaction, false, ParametersArray));
+            return Exists(PcEarlyLateTable.TableId, new System.Object[2]{AConferenceKey, AApplicable}, ATransaction);
         }
 
         /// this method is called by all overloads
         public static int CountUsingTemplate(PcEarlyLateRow ATemplateRow, StringCollection ATemplateOperators, TDBTransaction ATransaction)
         {
-            return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_pc_early_late" + GenerateWhereClause(PcEarlyLateTable.GetColumnStringList(), ATemplateRow, ATemplateOperators)), ATransaction, false, GetParametersForWhereClause(ATemplateRow)));
+            return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_pc_early_late" + GenerateWhereClause(TTypedDataTable.GetColumnStringList(PcEarlyLateTable.TableId), ATemplateRow, ATemplateOperators)), ATransaction, false,
+                   GetParametersForWhereClause(PcEarlyLateTable.TableId, ATemplateRow)));
         }
 
         /// this method is called by all overloads
         public static int CountUsingTemplate(TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
         {
-            return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_pc_early_late" + GenerateWhereClause(PcEarlyLateTable.GetColumnStringList(), ASearchCriteria)), ATransaction, false,
-            GetParametersForWhereClause(new PcEarlyLateTable(), ASearchCriteria)));
+            return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_pc_early_late" + GenerateWhereClause(TTypedDataTable.GetColumnStringList(PcEarlyLateTable.TableId), ASearchCriteria)), ATransaction, false,
+            GetParametersForWhereClause(PcEarlyLateTable.TableId, ASearchCriteria)));
         }
 
         /// auto generated
@@ -6163,9 +6052,9 @@ namespace Ict.Petra.Shared.MConference.Data.Access
             OdbcParameter[] ParametersArray = new OdbcParameter[1];
             ParametersArray[0] = new OdbcParameter("", OdbcType.Decimal, 10);
             ParametersArray[0].Value = ((object)(AConferenceKey));
-            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, ((GenerateSelectClause(AFieldList, new string[] {
-                            "pc_conference_key_n", "pc_applicable_d"}) + " FROM PUB_pc_early_late WHERE pc_conference_key_n = ?")
-                            + GenerateOrderByClause(AOrderBy)), PcEarlyLateTable.GetTableName(), ATransaction, ParametersArray, AStartRecord, AMaxRecords);
+            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, ((GenerateSelectClause(AFieldList, PcEarlyLateTable.TableId) +
+                            " FROM PUB_pc_early_late WHERE pc_conference_key_n = ?") +
+                            GenerateOrderByClause(AOrderBy)), TTypedDataTable.GetTableName(PcEarlyLateTable.TableId), ATransaction, ParametersArray, AStartRecord, AMaxRecords);
         }
 
         /// auto generated
@@ -6205,11 +6094,12 @@ namespace Ict.Petra.Shared.MConference.Data.Access
         /// auto generated
         public static void LoadViaPcConferenceTemplate(DataSet ADataSet, PcConferenceRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClauseLong("PUB_pc_early_late", AFieldList, new string[] {
-                            "pc_conference_key_n", "pc_applicable_d"}) + " FROM PUB_pc_early_late, PUB_pc_conference WHERE " +
-                            "PUB_pc_early_late.pc_conference_key_n = PUB_pc_conference.pc_conference_key_n")
-                            + GenerateWhereClauseLong("PUB_pc_conference", PcConferenceTable.GetColumnStringList(), ATemplateRow, ATemplateOperators))
-                            + GenerateOrderByClause(AOrderBy)), PcEarlyLateTable.GetTableName(), ATransaction, GetParametersForWhereClause(ATemplateRow), AStartRecord, AMaxRecords);
+            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClauseLong("PUB_pc_early_late", AFieldList, PcEarlyLateTable.TableId) +
+                            " FROM PUB_pc_early_late, PUB_pc_conference WHERE " +
+                            "PUB_pc_early_late.pc_conference_key_n = PUB_pc_conference.pc_conference_key_n") +
+                            GenerateWhereClauseLong("PUB_pc_conference", PcConferenceTable.TableId, ATemplateRow, ATemplateOperators)) +
+                            GenerateOrderByClause(AOrderBy)), TTypedDataTable.GetTableName(PcEarlyLateTable.TableId), ATransaction,
+                            GetParametersForWhereClause(PcConferenceTable.TableId, ATemplateRow), AStartRecord, AMaxRecords);
         }
 
         /// auto generated
@@ -6255,12 +6145,12 @@ namespace Ict.Petra.Shared.MConference.Data.Access
         /// auto generated
         public static void LoadViaPcConferenceTemplate(DataSet ADataSet, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClauseLong("PUB_pc_early_late", AFieldList, new string[] {
-                            "pc_conference_key_n", "pc_applicable_d"}) + " FROM PUB_pc_early_late, PUB_pc_conference WHERE " +
-                            "PUB_pc_early_late.pc_conference_key_n = PUB_pc_conference.pc_conference_key_n")
-                            + GenerateWhereClauseLong("PUB_pc_conference", PcConferenceTable.GetColumnStringList(), ASearchCriteria))
-                            + GenerateOrderByClause(AOrderBy)), PcEarlyLateTable.GetTableName(), ATransaction,
-                            GetParametersForWhereClause(new PcEarlyLateTable(), ASearchCriteria), AStartRecord, AMaxRecords);
+            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClauseLong("PUB_pc_early_late", AFieldList, PcEarlyLateTable.TableId) +
+                            " FROM PUB_pc_early_late, PUB_pc_conference WHERE " +
+                            "PUB_pc_early_late.pc_conference_key_n = PUB_pc_conference.pc_conference_key_n") +
+                            GenerateWhereClauseLong("PUB_pc_conference", ASearchCriteria)) +
+                            GenerateOrderByClause(AOrderBy)), TTypedDataTable.GetTableName(PcEarlyLateTable.TableId), ATransaction,
+                            GetParametersForWhereClause(PcEarlyLateTable.TableId, ASearchCriteria), AStartRecord, AMaxRecords);
         }
 
         /// auto generated
@@ -6310,7 +6200,10 @@ namespace Ict.Petra.Shared.MConference.Data.Access
         public static int CountViaPcConferenceTemplate(PcConferenceRow ATemplateRow, StringCollection ATemplateOperators, TDBTransaction ATransaction)
         {
             return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_pc_early_late, PUB_pc_conference WHERE " +
-                "PUB_pc_early_late.pc_conference_key_n = PUB_pc_conference.pc_conference_key_n" + GenerateWhereClauseLong("PUB_pc_conference", PcConferenceTable.GetColumnStringList(), ATemplateRow, ATemplateOperators)), ATransaction, false, GetParametersForWhereClause(ATemplateRow, PcConferenceTable.GetPrimKeyColumnOrdList())));
+                "PUB_pc_early_late.pc_conference_key_n = PUB_pc_conference.pc_conference_key_n" + GenerateWhereClauseLong("PUB_pc_conference",
+                PcConferenceTable.TableId, ATemplateRow, ATemplateOperators)),
+                ATransaction, false,
+                GetParametersForWhereClauseWithPrimaryKey(PcConferenceTable.TableId, ATemplateRow)));
         }
 
         /// auto generated
@@ -6318,33 +6211,26 @@ namespace Ict.Petra.Shared.MConference.Data.Access
         {
             return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_pc_early_late, PUB_pc_conference WHERE " +
                 "PUB_pc_early_late.pc_conference_key_n = PUB_pc_conference.pc_conference_key_n" +
-                GenerateWhereClauseLong("PUB_pc_conference", PcConferenceTable.GetColumnStringList(), ASearchCriteria)), ATransaction, false,
-                GetParametersForWhereClause(new PcConferenceTable(), ASearchCriteria)));
+                GenerateWhereClauseLong("PUB_pc_conference", ASearchCriteria)), ATransaction, false,
+                GetParametersForWhereClause(PcConferenceTable.TableId, ASearchCriteria)));
         }
 
         /// auto generated
         public static void DeleteByPrimaryKey(Int64 AConferenceKey, System.DateTime AApplicable, TDBTransaction ATransaction)
         {
-            OdbcParameter[] ParametersArray = new OdbcParameter[2];
-            ParametersArray[0] = new OdbcParameter("", OdbcType.Decimal, 10);
-            ParametersArray[0].Value = ((object)(AConferenceKey));
-            ParametersArray[1] = new OdbcParameter("", OdbcType.Date);
-            ParametersArray[1].Value = ((object)(AApplicable));
-            DBAccess.GDBAccessObj.ExecuteNonQuery("DELETE FROM PUB_pc_early_late WHERE pc_conference_key_n = ? AND pc_applicable_d = ?", ATransaction, false, ParametersArray);
+            DeleteByPrimaryKey(PcEarlyLateTable.TableId, new System.Object[2]{AConferenceKey, AApplicable}, ATransaction);
         }
 
         /// auto generated
         public static void DeleteUsingTemplate(PcEarlyLateRow ATemplateRow, StringCollection ATemplateOperators, TDBTransaction ATransaction)
         {
-            DBAccess.GDBAccessObj.ExecuteNonQuery(("DELETE FROM PUB_pc_early_late" + GenerateWhereClause(PcEarlyLateTable.GetColumnStringList(), ATemplateRow, ATemplateOperators)), ATransaction, false, GetParametersForWhereClause(ATemplateRow));
+            DeleteUsingTemplate(PcEarlyLateTable.TableId, ATemplateRow, ATemplateOperators, ATransaction);
         }
 
         /// auto generated
         public static void DeleteUsingTemplate(TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
         {
-            DBAccess.GDBAccessObj.ExecuteNonQuery(("DELETE FROM PUB_pc_early_late" +
-                GenerateWhereClause(PcEarlyLateTable.GetColumnStringList(), ASearchCriteria)), ATransaction, false,
-                GetParametersForWhereClause(new PcEarlyLateTable(), ASearchCriteria));
+            DeleteUsingTemplate(PcEarlyLateTable.TableId, ASearchCriteria, ATransaction);
         }
 
         /// auto generated
@@ -6361,15 +6247,15 @@ namespace Ict.Petra.Shared.MConference.Data.Access
                 {
                     if ((TheRow.RowState == DataRowState.Added))
                     {
-                        TTypedDataAccess.InsertRow("pc_early_late", PcEarlyLateTable.GetColumnStringList(), ref TheRow, ATransaction, UserInfo.GUserInfo.UserID);
+                        TTypedDataAccess.InsertRow(PcEarlyLateTable.TableId, ref TheRow, ATransaction, UserInfo.GUserInfo.UserID);
                     }
                     if ((TheRow.RowState == DataRowState.Modified))
                     {
-                        TTypedDataAccess.UpdateRow("pc_early_late", PcEarlyLateTable.GetColumnStringList(), PcEarlyLateTable.GetPrimKeyColumnOrdList(), ref TheRow, ATransaction, UserInfo.GUserInfo.UserID);
+                        TTypedDataAccess.UpdateRow(PcEarlyLateTable.TableId, ref TheRow, ATransaction, UserInfo.GUserInfo.UserID);
                     }
                     if ((TheRow.RowState == DataRowState.Deleted))
                     {
-                        TTypedDataAccess.DeleteRow("pc_early_late", PcEarlyLateTable.GetColumnStringList(), PcEarlyLateTable.GetPrimKeyColumnOrdList(), TheRow, ATransaction);
+                        TTypedDataAccess.DeleteRow(PcEarlyLateTable.TableId, TheRow, ATransaction);
                     }
                 }
                 catch (OdbcException ex)
@@ -6399,9 +6285,8 @@ namespace Ict.Petra.Shared.MConference.Data.Access
         /// this method is called by all overloads
         public static void LoadAll(DataSet ADataSet, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, ((GenerateSelectClause(AFieldList, new string[] {
-                            "pc_conference_key_n", "p_partner_key_n", "pc_group_type_c", "pc_group_name_c"}) + " FROM PUB_pc_group")
-                            + GenerateOrderByClause(AOrderBy)), PcGroupTable.GetTableName(), ATransaction, AStartRecord, AMaxRecords);
+            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, ((GenerateSelectClause(AFieldList, PcGroupTable.TableId) + " FROM PUB_pc_group") +
+                            GenerateOrderByClause(AOrderBy)), TTypedDataTable.GetTableName(PcGroupTable.TableId), ATransaction, AStartRecord, AMaxRecords);
         }
 
         /// auto generated
@@ -6441,18 +6326,8 @@ namespace Ict.Petra.Shared.MConference.Data.Access
         /// this method is called by all overloads
         public static void LoadByPrimaryKey(DataSet ADataSet, Int64 AConferenceKey, Int64 APartnerKey, String AGroupType, String AGroupName, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            OdbcParameter[] ParametersArray = new OdbcParameter[4];
-            ParametersArray[0] = new OdbcParameter("", OdbcType.Decimal, 10);
-            ParametersArray[0].Value = ((object)(AConferenceKey));
-            ParametersArray[1] = new OdbcParameter("", OdbcType.Decimal, 10);
-            ParametersArray[1].Value = ((object)(APartnerKey));
-            ParametersArray[2] = new OdbcParameter("", OdbcType.VarChar, 40);
-            ParametersArray[2].Value = ((object)(AGroupType));
-            ParametersArray[3] = new OdbcParameter("", OdbcType.VarChar, 80);
-            ParametersArray[3].Value = ((object)(AGroupName));
-            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, ((GenerateSelectClause(AFieldList, new string[] {
-                            "pc_conference_key_n", "p_partner_key_n", "pc_group_type_c", "pc_group_name_c"}) + " FROM PUB_pc_group WHERE pc_conference_key_n = ? AND p_partner_key_n = ? AND pc_group_type_c = ? AND pc_group_name_c = ?")
-                            + GenerateOrderByClause(AOrderBy)), PcGroupTable.GetTableName(), ATransaction, ParametersArray, AStartRecord, AMaxRecords);
+            ADataSet = LoadByPrimaryKey(PcGroupTable.TableId,
+                ADataSet, new System.Object[4]{AConferenceKey, APartnerKey, AGroupType, AGroupName}, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
         }
 
         /// auto generated
@@ -6492,10 +6367,10 @@ namespace Ict.Petra.Shared.MConference.Data.Access
         /// this method is called by all overloads
         public static void LoadUsingTemplate(DataSet ADataSet, PcGroupRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClause(AFieldList, new string[] {
-                            "pc_conference_key_n", "p_partner_key_n", "pc_group_type_c", "pc_group_name_c"}) + " FROM PUB_pc_group")
-                            + GenerateWhereClause(PcGroupTable.GetColumnStringList(), ATemplateRow, ATemplateOperators))
-                            + GenerateOrderByClause(AOrderBy)), PcGroupTable.GetTableName(), ATransaction, GetParametersForWhereClause(ATemplateRow), AStartRecord, AMaxRecords);
+            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClause(AFieldList, PcGroupTable.TableId) + " FROM PUB_pc_group") +
+                            GenerateWhereClause(TTypedDataTable.GetColumnStringList(PcGroupTable.TableId), ATemplateRow, ATemplateOperators)) +
+                            GenerateOrderByClause(AOrderBy)), TTypedDataTable.GetTableName(PcGroupTable.TableId), ATransaction,
+                            GetParametersForWhereClause(PcGroupTable.TableId, ATemplateRow), AStartRecord, AMaxRecords);
         }
 
         /// auto generated
@@ -6541,11 +6416,10 @@ namespace Ict.Petra.Shared.MConference.Data.Access
         /// this method is called by all overloads
         public static void LoadUsingTemplate(DataSet ADataSet, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClause(AFieldList, new string[] {
-                            "pc_conference_key_n", "p_partner_key_n", "pc_group_type_c", "pc_group_name_c"}) + " FROM PUB_pc_group")
-                            + GenerateWhereClause(PcGroupTable.GetColumnStringList(), ASearchCriteria))
-                            + GenerateOrderByClause(AOrderBy)), PcGroupTable.GetTableName(), ATransaction,
-                            GetParametersForWhereClause(new PcGroupTable(), ASearchCriteria), AStartRecord, AMaxRecords);
+            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClause(AFieldList, PcGroupTable.TableId) + " FROM PUB_pc_group") +
+                            GenerateWhereClause(TTypedDataTable.GetColumnStringList(PcGroupTable.TableId), ASearchCriteria)) +
+                            GenerateOrderByClause(AOrderBy)), TTypedDataTable.GetTableName(PcGroupTable.TableId), ATransaction,
+                            GetParametersForWhereClause(PcGroupTable.TableId, ASearchCriteria), AStartRecord, AMaxRecords);
         }
 
         /// auto generated
@@ -6588,32 +6462,24 @@ namespace Ict.Petra.Shared.MConference.Data.Access
             return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar("SELECT COUNT(*) FROM PUB_pc_group", ATransaction, false));
         }
 
-        /// this method is called by all overloads
-        public static int CountByPrimaryKey(Int64 AConferenceKey, Int64 APartnerKey, String AGroupType, String AGroupName, TDBTransaction ATransaction)
+        /// check if a row exists by using the primary key
+        public static bool Exists(Int64 AConferenceKey, Int64 APartnerKey, String AGroupType, String AGroupName, TDBTransaction ATransaction)
         {
-            OdbcParameter[] ParametersArray = new OdbcParameter[4];
-            ParametersArray[0] = new OdbcParameter("", OdbcType.Decimal, 10);
-            ParametersArray[0].Value = ((object)(AConferenceKey));
-            ParametersArray[1] = new OdbcParameter("", OdbcType.Decimal, 10);
-            ParametersArray[1].Value = ((object)(APartnerKey));
-            ParametersArray[2] = new OdbcParameter("", OdbcType.VarChar, 40);
-            ParametersArray[2].Value = ((object)(AGroupType));
-            ParametersArray[3] = new OdbcParameter("", OdbcType.VarChar, 80);
-            ParametersArray[3].Value = ((object)(AGroupName));
-            return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar("SELECT COUNT(*) FROM PUB_pc_group WHERE pc_conference_key_n = ? AND p_partner_key_n = ? AND pc_group_type_c = ? AND pc_group_name_c = ?", ATransaction, false, ParametersArray));
+            return Exists(PcGroupTable.TableId, new System.Object[4]{AConferenceKey, APartnerKey, AGroupType, AGroupName}, ATransaction);
         }
 
         /// this method is called by all overloads
         public static int CountUsingTemplate(PcGroupRow ATemplateRow, StringCollection ATemplateOperators, TDBTransaction ATransaction)
         {
-            return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_pc_group" + GenerateWhereClause(PcGroupTable.GetColumnStringList(), ATemplateRow, ATemplateOperators)), ATransaction, false, GetParametersForWhereClause(ATemplateRow)));
+            return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_pc_group" + GenerateWhereClause(TTypedDataTable.GetColumnStringList(PcGroupTable.TableId), ATemplateRow, ATemplateOperators)), ATransaction, false,
+                   GetParametersForWhereClause(PcGroupTable.TableId, ATemplateRow)));
         }
 
         /// this method is called by all overloads
         public static int CountUsingTemplate(TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
         {
-            return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_pc_group" + GenerateWhereClause(PcGroupTable.GetColumnStringList(), ASearchCriteria)), ATransaction, false,
-            GetParametersForWhereClause(new PcGroupTable(), ASearchCriteria)));
+            return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_pc_group" + GenerateWhereClause(TTypedDataTable.GetColumnStringList(PcGroupTable.TableId), ASearchCriteria)), ATransaction, false,
+            GetParametersForWhereClause(PcGroupTable.TableId, ASearchCriteria)));
         }
 
         /// auto generated
@@ -6624,9 +6490,9 @@ namespace Ict.Petra.Shared.MConference.Data.Access
             ParametersArray[0].Value = ((object)(AConferenceKey));
             ParametersArray[1] = new OdbcParameter("", OdbcType.Decimal, 10);
             ParametersArray[1].Value = ((object)(APartnerKey));
-            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, ((GenerateSelectClause(AFieldList, new string[] {
-                            "pc_conference_key_n", "p_partner_key_n", "pc_group_type_c", "pc_group_name_c"}) + " FROM PUB_pc_group WHERE pc_conference_key_n = ? AND p_partner_key_n = ?")
-                            + GenerateOrderByClause(AOrderBy)), PcGroupTable.GetTableName(), ATransaction, ParametersArray, AStartRecord, AMaxRecords);
+            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, ((GenerateSelectClause(AFieldList, PcGroupTable.TableId) +
+                            " FROM PUB_pc_group WHERE pc_conference_key_n = ? AND p_partner_key_n = ?") +
+                            GenerateOrderByClause(AOrderBy)), TTypedDataTable.GetTableName(PcGroupTable.TableId), ATransaction, ParametersArray, AStartRecord, AMaxRecords);
         }
 
         /// auto generated
@@ -6666,11 +6532,12 @@ namespace Ict.Petra.Shared.MConference.Data.Access
         /// auto generated
         public static void LoadViaPcAttendeeTemplate(DataSet ADataSet, PcAttendeeRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClauseLong("PUB_pc_group", AFieldList, new string[] {
-                            "pc_conference_key_n", "p_partner_key_n", "pc_group_type_c", "pc_group_name_c"}) + " FROM PUB_pc_group, PUB_pc_attendee WHERE " +
-                            "PUB_pc_group.pc_conference_key_n = PUB_pc_attendee.pc_conference_key_n AND PUB_pc_group.p_partner_key_n = PUB_pc_attendee.p_partner_key_n")
-                            + GenerateWhereClauseLong("PUB_pc_attendee", PcAttendeeTable.GetColumnStringList(), ATemplateRow, ATemplateOperators))
-                            + GenerateOrderByClause(AOrderBy)), PcGroupTable.GetTableName(), ATransaction, GetParametersForWhereClause(ATemplateRow), AStartRecord, AMaxRecords);
+            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClauseLong("PUB_pc_group", AFieldList, PcGroupTable.TableId) +
+                            " FROM PUB_pc_group, PUB_pc_attendee WHERE " +
+                            "PUB_pc_group.pc_conference_key_n = PUB_pc_attendee.pc_conference_key_n AND PUB_pc_group.p_partner_key_n = PUB_pc_attendee.p_partner_key_n") +
+                            GenerateWhereClauseLong("PUB_pc_attendee", PcAttendeeTable.TableId, ATemplateRow, ATemplateOperators)) +
+                            GenerateOrderByClause(AOrderBy)), TTypedDataTable.GetTableName(PcGroupTable.TableId), ATransaction,
+                            GetParametersForWhereClause(PcAttendeeTable.TableId, ATemplateRow), AStartRecord, AMaxRecords);
         }
 
         /// auto generated
@@ -6716,12 +6583,12 @@ namespace Ict.Petra.Shared.MConference.Data.Access
         /// auto generated
         public static void LoadViaPcAttendeeTemplate(DataSet ADataSet, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClauseLong("PUB_pc_group", AFieldList, new string[] {
-                            "pc_conference_key_n", "p_partner_key_n", "pc_group_type_c", "pc_group_name_c"}) + " FROM PUB_pc_group, PUB_pc_attendee WHERE " +
-                            "PUB_pc_group.pc_conference_key_n = PUB_pc_attendee.pc_conference_key_n AND PUB_pc_group.p_partner_key_n = PUB_pc_attendee.p_partner_key_n")
-                            + GenerateWhereClauseLong("PUB_pc_attendee", PcAttendeeTable.GetColumnStringList(), ASearchCriteria))
-                            + GenerateOrderByClause(AOrderBy)), PcGroupTable.GetTableName(), ATransaction,
-                            GetParametersForWhereClause(new PcGroupTable(), ASearchCriteria), AStartRecord, AMaxRecords);
+            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClauseLong("PUB_pc_group", AFieldList, PcGroupTable.TableId) +
+                            " FROM PUB_pc_group, PUB_pc_attendee WHERE " +
+                            "PUB_pc_group.pc_conference_key_n = PUB_pc_attendee.pc_conference_key_n AND PUB_pc_group.p_partner_key_n = PUB_pc_attendee.p_partner_key_n") +
+                            GenerateWhereClauseLong("PUB_pc_attendee", ASearchCriteria)) +
+                            GenerateOrderByClause(AOrderBy)), TTypedDataTable.GetTableName(PcGroupTable.TableId), ATransaction,
+                            GetParametersForWhereClause(PcGroupTable.TableId, ASearchCriteria), AStartRecord, AMaxRecords);
         }
 
         /// auto generated
@@ -6773,7 +6640,10 @@ namespace Ict.Petra.Shared.MConference.Data.Access
         public static int CountViaPcAttendeeTemplate(PcAttendeeRow ATemplateRow, StringCollection ATemplateOperators, TDBTransaction ATransaction)
         {
             return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_pc_group, PUB_pc_attendee WHERE " +
-                "PUB_pc_group.pc_conference_key_n = PUB_pc_attendee.pc_conference_key_n AND PUB_pc_group.p_partner_key_n = PUB_pc_attendee.p_partner_key_n" + GenerateWhereClauseLong("PUB_pc_attendee", PcAttendeeTable.GetColumnStringList(), ATemplateRow, ATemplateOperators)), ATransaction, false, GetParametersForWhereClause(ATemplateRow, PcAttendeeTable.GetPrimKeyColumnOrdList())));
+                "PUB_pc_group.pc_conference_key_n = PUB_pc_attendee.pc_conference_key_n AND PUB_pc_group.p_partner_key_n = PUB_pc_attendee.p_partner_key_n" + GenerateWhereClauseLong("PUB_pc_attendee",
+                PcAttendeeTable.TableId, ATemplateRow, ATemplateOperators)),
+                ATransaction, false,
+                GetParametersForWhereClauseWithPrimaryKey(PcAttendeeTable.TableId, ATemplateRow)));
         }
 
         /// auto generated
@@ -6781,8 +6651,8 @@ namespace Ict.Petra.Shared.MConference.Data.Access
         {
             return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_pc_group, PUB_pc_attendee WHERE " +
                 "PUB_pc_group.pc_conference_key_n = PUB_pc_attendee.pc_conference_key_n AND PUB_pc_group.p_partner_key_n = PUB_pc_attendee.p_partner_key_n" +
-                GenerateWhereClauseLong("PUB_pc_attendee", PcAttendeeTable.GetColumnStringList(), ASearchCriteria)), ATransaction, false,
-                GetParametersForWhereClause(new PcAttendeeTable(), ASearchCriteria)));
+                GenerateWhereClauseLong("PUB_pc_attendee", ASearchCriteria)), ATransaction, false,
+                GetParametersForWhereClause(PcAttendeeTable.TableId, ASearchCriteria)));
         }
 
         /// auto generated
@@ -6791,9 +6661,9 @@ namespace Ict.Petra.Shared.MConference.Data.Access
             OdbcParameter[] ParametersArray = new OdbcParameter[1];
             ParametersArray[0] = new OdbcParameter("", OdbcType.Decimal, 10);
             ParametersArray[0].Value = ((object)(AConferenceKey));
-            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, ((GenerateSelectClause(AFieldList, new string[] {
-                            "pc_conference_key_n", "p_partner_key_n", "pc_group_type_c", "pc_group_name_c"}) + " FROM PUB_pc_group WHERE pc_conference_key_n = ?")
-                            + GenerateOrderByClause(AOrderBy)), PcGroupTable.GetTableName(), ATransaction, ParametersArray, AStartRecord, AMaxRecords);
+            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, ((GenerateSelectClause(AFieldList, PcGroupTable.TableId) +
+                            " FROM PUB_pc_group WHERE pc_conference_key_n = ?") +
+                            GenerateOrderByClause(AOrderBy)), TTypedDataTable.GetTableName(PcGroupTable.TableId), ATransaction, ParametersArray, AStartRecord, AMaxRecords);
         }
 
         /// auto generated
@@ -6833,11 +6703,12 @@ namespace Ict.Petra.Shared.MConference.Data.Access
         /// auto generated
         public static void LoadViaPcConferenceTemplate(DataSet ADataSet, PcConferenceRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClauseLong("PUB_pc_group", AFieldList, new string[] {
-                            "pc_conference_key_n", "p_partner_key_n", "pc_group_type_c", "pc_group_name_c"}) + " FROM PUB_pc_group, PUB_pc_conference WHERE " +
-                            "PUB_pc_group.pc_conference_key_n = PUB_pc_conference.pc_conference_key_n")
-                            + GenerateWhereClauseLong("PUB_pc_conference", PcConferenceTable.GetColumnStringList(), ATemplateRow, ATemplateOperators))
-                            + GenerateOrderByClause(AOrderBy)), PcGroupTable.GetTableName(), ATransaction, GetParametersForWhereClause(ATemplateRow), AStartRecord, AMaxRecords);
+            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClauseLong("PUB_pc_group", AFieldList, PcGroupTable.TableId) +
+                            " FROM PUB_pc_group, PUB_pc_conference WHERE " +
+                            "PUB_pc_group.pc_conference_key_n = PUB_pc_conference.pc_conference_key_n") +
+                            GenerateWhereClauseLong("PUB_pc_conference", PcConferenceTable.TableId, ATemplateRow, ATemplateOperators)) +
+                            GenerateOrderByClause(AOrderBy)), TTypedDataTable.GetTableName(PcGroupTable.TableId), ATransaction,
+                            GetParametersForWhereClause(PcConferenceTable.TableId, ATemplateRow), AStartRecord, AMaxRecords);
         }
 
         /// auto generated
@@ -6883,12 +6754,12 @@ namespace Ict.Petra.Shared.MConference.Data.Access
         /// auto generated
         public static void LoadViaPcConferenceTemplate(DataSet ADataSet, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClauseLong("PUB_pc_group", AFieldList, new string[] {
-                            "pc_conference_key_n", "p_partner_key_n", "pc_group_type_c", "pc_group_name_c"}) + " FROM PUB_pc_group, PUB_pc_conference WHERE " +
-                            "PUB_pc_group.pc_conference_key_n = PUB_pc_conference.pc_conference_key_n")
-                            + GenerateWhereClauseLong("PUB_pc_conference", PcConferenceTable.GetColumnStringList(), ASearchCriteria))
-                            + GenerateOrderByClause(AOrderBy)), PcGroupTable.GetTableName(), ATransaction,
-                            GetParametersForWhereClause(new PcGroupTable(), ASearchCriteria), AStartRecord, AMaxRecords);
+            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClauseLong("PUB_pc_group", AFieldList, PcGroupTable.TableId) +
+                            " FROM PUB_pc_group, PUB_pc_conference WHERE " +
+                            "PUB_pc_group.pc_conference_key_n = PUB_pc_conference.pc_conference_key_n") +
+                            GenerateWhereClauseLong("PUB_pc_conference", ASearchCriteria)) +
+                            GenerateOrderByClause(AOrderBy)), TTypedDataTable.GetTableName(PcGroupTable.TableId), ATransaction,
+                            GetParametersForWhereClause(PcGroupTable.TableId, ASearchCriteria), AStartRecord, AMaxRecords);
         }
 
         /// auto generated
@@ -6938,7 +6809,10 @@ namespace Ict.Petra.Shared.MConference.Data.Access
         public static int CountViaPcConferenceTemplate(PcConferenceRow ATemplateRow, StringCollection ATemplateOperators, TDBTransaction ATransaction)
         {
             return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_pc_group, PUB_pc_conference WHERE " +
-                "PUB_pc_group.pc_conference_key_n = PUB_pc_conference.pc_conference_key_n" + GenerateWhereClauseLong("PUB_pc_conference", PcConferenceTable.GetColumnStringList(), ATemplateRow, ATemplateOperators)), ATransaction, false, GetParametersForWhereClause(ATemplateRow, PcConferenceTable.GetPrimKeyColumnOrdList())));
+                "PUB_pc_group.pc_conference_key_n = PUB_pc_conference.pc_conference_key_n" + GenerateWhereClauseLong("PUB_pc_conference",
+                PcConferenceTable.TableId, ATemplateRow, ATemplateOperators)),
+                ATransaction, false,
+                GetParametersForWhereClauseWithPrimaryKey(PcConferenceTable.TableId, ATemplateRow)));
         }
 
         /// auto generated
@@ -6946,8 +6820,8 @@ namespace Ict.Petra.Shared.MConference.Data.Access
         {
             return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_pc_group, PUB_pc_conference WHERE " +
                 "PUB_pc_group.pc_conference_key_n = PUB_pc_conference.pc_conference_key_n" +
-                GenerateWhereClauseLong("PUB_pc_conference", PcConferenceTable.GetColumnStringList(), ASearchCriteria)), ATransaction, false,
-                GetParametersForWhereClause(new PcConferenceTable(), ASearchCriteria)));
+                GenerateWhereClauseLong("PUB_pc_conference", ASearchCriteria)), ATransaction, false,
+                GetParametersForWhereClause(PcConferenceTable.TableId, ASearchCriteria)));
         }
 
         /// auto generated
@@ -6956,9 +6830,9 @@ namespace Ict.Petra.Shared.MConference.Data.Access
             OdbcParameter[] ParametersArray = new OdbcParameter[1];
             ParametersArray[0] = new OdbcParameter("", OdbcType.Decimal, 10);
             ParametersArray[0].Value = ((object)(APartnerKey));
-            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, ((GenerateSelectClause(AFieldList, new string[] {
-                            "pc_conference_key_n", "p_partner_key_n", "pc_group_type_c", "pc_group_name_c"}) + " FROM PUB_pc_group WHERE p_partner_key_n = ?")
-                            + GenerateOrderByClause(AOrderBy)), PcGroupTable.GetTableName(), ATransaction, ParametersArray, AStartRecord, AMaxRecords);
+            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, ((GenerateSelectClause(AFieldList, PcGroupTable.TableId) +
+                            " FROM PUB_pc_group WHERE p_partner_key_n = ?") +
+                            GenerateOrderByClause(AOrderBy)), TTypedDataTable.GetTableName(PcGroupTable.TableId), ATransaction, ParametersArray, AStartRecord, AMaxRecords);
         }
 
         /// auto generated
@@ -6998,11 +6872,12 @@ namespace Ict.Petra.Shared.MConference.Data.Access
         /// auto generated
         public static void LoadViaPPersonTemplate(DataSet ADataSet, PPersonRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClauseLong("PUB_pc_group", AFieldList, new string[] {
-                            "pc_conference_key_n", "p_partner_key_n", "pc_group_type_c", "pc_group_name_c"}) + " FROM PUB_pc_group, PUB_p_person WHERE " +
-                            "PUB_pc_group.p_partner_key_n = PUB_p_person.p_partner_key_n")
-                            + GenerateWhereClauseLong("PUB_p_person", PPersonTable.GetColumnStringList(), ATemplateRow, ATemplateOperators))
-                            + GenerateOrderByClause(AOrderBy)), PcGroupTable.GetTableName(), ATransaction, GetParametersForWhereClause(ATemplateRow), AStartRecord, AMaxRecords);
+            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClauseLong("PUB_pc_group", AFieldList, PcGroupTable.TableId) +
+                            " FROM PUB_pc_group, PUB_p_person WHERE " +
+                            "PUB_pc_group.p_partner_key_n = PUB_p_person.p_partner_key_n") +
+                            GenerateWhereClauseLong("PUB_p_person", PPersonTable.TableId, ATemplateRow, ATemplateOperators)) +
+                            GenerateOrderByClause(AOrderBy)), TTypedDataTable.GetTableName(PcGroupTable.TableId), ATransaction,
+                            GetParametersForWhereClause(PPersonTable.TableId, ATemplateRow), AStartRecord, AMaxRecords);
         }
 
         /// auto generated
@@ -7048,12 +6923,12 @@ namespace Ict.Petra.Shared.MConference.Data.Access
         /// auto generated
         public static void LoadViaPPersonTemplate(DataSet ADataSet, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClauseLong("PUB_pc_group", AFieldList, new string[] {
-                            "pc_conference_key_n", "p_partner_key_n", "pc_group_type_c", "pc_group_name_c"}) + " FROM PUB_pc_group, PUB_p_person WHERE " +
-                            "PUB_pc_group.p_partner_key_n = PUB_p_person.p_partner_key_n")
-                            + GenerateWhereClauseLong("PUB_p_person", PPersonTable.GetColumnStringList(), ASearchCriteria))
-                            + GenerateOrderByClause(AOrderBy)), PcGroupTable.GetTableName(), ATransaction,
-                            GetParametersForWhereClause(new PcGroupTable(), ASearchCriteria), AStartRecord, AMaxRecords);
+            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClauseLong("PUB_pc_group", AFieldList, PcGroupTable.TableId) +
+                            " FROM PUB_pc_group, PUB_p_person WHERE " +
+                            "PUB_pc_group.p_partner_key_n = PUB_p_person.p_partner_key_n") +
+                            GenerateWhereClauseLong("PUB_p_person", ASearchCriteria)) +
+                            GenerateOrderByClause(AOrderBy)), TTypedDataTable.GetTableName(PcGroupTable.TableId), ATransaction,
+                            GetParametersForWhereClause(PcGroupTable.TableId, ASearchCriteria), AStartRecord, AMaxRecords);
         }
 
         /// auto generated
@@ -7103,7 +6978,10 @@ namespace Ict.Petra.Shared.MConference.Data.Access
         public static int CountViaPPersonTemplate(PPersonRow ATemplateRow, StringCollection ATemplateOperators, TDBTransaction ATransaction)
         {
             return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_pc_group, PUB_p_person WHERE " +
-                "PUB_pc_group.p_partner_key_n = PUB_p_person.p_partner_key_n" + GenerateWhereClauseLong("PUB_p_person", PPersonTable.GetColumnStringList(), ATemplateRow, ATemplateOperators)), ATransaction, false, GetParametersForWhereClause(ATemplateRow, PPersonTable.GetPrimKeyColumnOrdList())));
+                "PUB_pc_group.p_partner_key_n = PUB_p_person.p_partner_key_n" + GenerateWhereClauseLong("PUB_p_person",
+                PPersonTable.TableId, ATemplateRow, ATemplateOperators)),
+                ATransaction, false,
+                GetParametersForWhereClauseWithPrimaryKey(PPersonTable.TableId, ATemplateRow)));
         }
 
         /// auto generated
@@ -7111,37 +6989,26 @@ namespace Ict.Petra.Shared.MConference.Data.Access
         {
             return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_pc_group, PUB_p_person WHERE " +
                 "PUB_pc_group.p_partner_key_n = PUB_p_person.p_partner_key_n" +
-                GenerateWhereClauseLong("PUB_p_person", PPersonTable.GetColumnStringList(), ASearchCriteria)), ATransaction, false,
-                GetParametersForWhereClause(new PPersonTable(), ASearchCriteria)));
+                GenerateWhereClauseLong("PUB_p_person", ASearchCriteria)), ATransaction, false,
+                GetParametersForWhereClause(PPersonTable.TableId, ASearchCriteria)));
         }
 
         /// auto generated
         public static void DeleteByPrimaryKey(Int64 AConferenceKey, Int64 APartnerKey, String AGroupType, String AGroupName, TDBTransaction ATransaction)
         {
-            OdbcParameter[] ParametersArray = new OdbcParameter[4];
-            ParametersArray[0] = new OdbcParameter("", OdbcType.Decimal, 10);
-            ParametersArray[0].Value = ((object)(AConferenceKey));
-            ParametersArray[1] = new OdbcParameter("", OdbcType.Decimal, 10);
-            ParametersArray[1].Value = ((object)(APartnerKey));
-            ParametersArray[2] = new OdbcParameter("", OdbcType.VarChar, 40);
-            ParametersArray[2].Value = ((object)(AGroupType));
-            ParametersArray[3] = new OdbcParameter("", OdbcType.VarChar, 80);
-            ParametersArray[3].Value = ((object)(AGroupName));
-            DBAccess.GDBAccessObj.ExecuteNonQuery("DELETE FROM PUB_pc_group WHERE pc_conference_key_n = ? AND p_partner_key_n = ? AND pc_group_type_c = ? AND pc_group_name_c = ?", ATransaction, false, ParametersArray);
+            DeleteByPrimaryKey(PcGroupTable.TableId, new System.Object[4]{AConferenceKey, APartnerKey, AGroupType, AGroupName}, ATransaction);
         }
 
         /// auto generated
         public static void DeleteUsingTemplate(PcGroupRow ATemplateRow, StringCollection ATemplateOperators, TDBTransaction ATransaction)
         {
-            DBAccess.GDBAccessObj.ExecuteNonQuery(("DELETE FROM PUB_pc_group" + GenerateWhereClause(PcGroupTable.GetColumnStringList(), ATemplateRow, ATemplateOperators)), ATransaction, false, GetParametersForWhereClause(ATemplateRow));
+            DeleteUsingTemplate(PcGroupTable.TableId, ATemplateRow, ATemplateOperators, ATransaction);
         }
 
         /// auto generated
         public static void DeleteUsingTemplate(TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
         {
-            DBAccess.GDBAccessObj.ExecuteNonQuery(("DELETE FROM PUB_pc_group" +
-                GenerateWhereClause(PcGroupTable.GetColumnStringList(), ASearchCriteria)), ATransaction, false,
-                GetParametersForWhereClause(new PcGroupTable(), ASearchCriteria));
+            DeleteUsingTemplate(PcGroupTable.TableId, ASearchCriteria, ATransaction);
         }
 
         /// auto generated
@@ -7158,15 +7025,15 @@ namespace Ict.Petra.Shared.MConference.Data.Access
                 {
                     if ((TheRow.RowState == DataRowState.Added))
                     {
-                        TTypedDataAccess.InsertRow("pc_group", PcGroupTable.GetColumnStringList(), ref TheRow, ATransaction, UserInfo.GUserInfo.UserID);
+                        TTypedDataAccess.InsertRow(PcGroupTable.TableId, ref TheRow, ATransaction, UserInfo.GUserInfo.UserID);
                     }
                     if ((TheRow.RowState == DataRowState.Modified))
                     {
-                        TTypedDataAccess.UpdateRow("pc_group", PcGroupTable.GetColumnStringList(), PcGroupTable.GetPrimKeyColumnOrdList(), ref TheRow, ATransaction, UserInfo.GUserInfo.UserID);
+                        TTypedDataAccess.UpdateRow(PcGroupTable.TableId, ref TheRow, ATransaction, UserInfo.GUserInfo.UserID);
                     }
                     if ((TheRow.RowState == DataRowState.Deleted))
                     {
-                        TTypedDataAccess.DeleteRow("pc_group", PcGroupTable.GetColumnStringList(), PcGroupTable.GetPrimKeyColumnOrdList(), TheRow, ATransaction);
+                        TTypedDataAccess.DeleteRow(PcGroupTable.TableId, TheRow, ATransaction);
                     }
                 }
                 catch (OdbcException ex)
@@ -7196,9 +7063,8 @@ namespace Ict.Petra.Shared.MConference.Data.Access
         /// this method is called by all overloads
         public static void LoadAll(DataSet ADataSet, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, ((GenerateSelectClause(AFieldList, new string[] {
-                            "pc_conference_key_n", "pc_xyz_tbd_type_c"}) + " FROM PUB_pc_supplement")
-                            + GenerateOrderByClause(AOrderBy)), PcSupplementTable.GetTableName(), ATransaction, AStartRecord, AMaxRecords);
+            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, ((GenerateSelectClause(AFieldList, PcSupplementTable.TableId) + " FROM PUB_pc_supplement") +
+                            GenerateOrderByClause(AOrderBy)), TTypedDataTable.GetTableName(PcSupplementTable.TableId), ATransaction, AStartRecord, AMaxRecords);
         }
 
         /// auto generated
@@ -7238,14 +7104,8 @@ namespace Ict.Petra.Shared.MConference.Data.Access
         /// this method is called by all overloads
         public static void LoadByPrimaryKey(DataSet ADataSet, Int64 AConferenceKey, String AXyzTbdType, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            OdbcParameter[] ParametersArray = new OdbcParameter[2];
-            ParametersArray[0] = new OdbcParameter("", OdbcType.Decimal, 10);
-            ParametersArray[0].Value = ((object)(AConferenceKey));
-            ParametersArray[1] = new OdbcParameter("", OdbcType.VarChar, 12);
-            ParametersArray[1].Value = ((object)(AXyzTbdType));
-            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, ((GenerateSelectClause(AFieldList, new string[] {
-                            "pc_conference_key_n", "pc_xyz_tbd_type_c"}) + " FROM PUB_pc_supplement WHERE pc_conference_key_n = ? AND pc_xyz_tbd_type_c = ?")
-                            + GenerateOrderByClause(AOrderBy)), PcSupplementTable.GetTableName(), ATransaction, ParametersArray, AStartRecord, AMaxRecords);
+            ADataSet = LoadByPrimaryKey(PcSupplementTable.TableId,
+                ADataSet, new System.Object[2]{AConferenceKey, AXyzTbdType}, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
         }
 
         /// auto generated
@@ -7285,10 +7145,10 @@ namespace Ict.Petra.Shared.MConference.Data.Access
         /// this method is called by all overloads
         public static void LoadUsingTemplate(DataSet ADataSet, PcSupplementRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClause(AFieldList, new string[] {
-                            "pc_conference_key_n", "pc_xyz_tbd_type_c"}) + " FROM PUB_pc_supplement")
-                            + GenerateWhereClause(PcSupplementTable.GetColumnStringList(), ATemplateRow, ATemplateOperators))
-                            + GenerateOrderByClause(AOrderBy)), PcSupplementTable.GetTableName(), ATransaction, GetParametersForWhereClause(ATemplateRow), AStartRecord, AMaxRecords);
+            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClause(AFieldList, PcSupplementTable.TableId) + " FROM PUB_pc_supplement") +
+                            GenerateWhereClause(TTypedDataTable.GetColumnStringList(PcSupplementTable.TableId), ATemplateRow, ATemplateOperators)) +
+                            GenerateOrderByClause(AOrderBy)), TTypedDataTable.GetTableName(PcSupplementTable.TableId), ATransaction,
+                            GetParametersForWhereClause(PcSupplementTable.TableId, ATemplateRow), AStartRecord, AMaxRecords);
         }
 
         /// auto generated
@@ -7334,11 +7194,10 @@ namespace Ict.Petra.Shared.MConference.Data.Access
         /// this method is called by all overloads
         public static void LoadUsingTemplate(DataSet ADataSet, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClause(AFieldList, new string[] {
-                            "pc_conference_key_n", "pc_xyz_tbd_type_c"}) + " FROM PUB_pc_supplement")
-                            + GenerateWhereClause(PcSupplementTable.GetColumnStringList(), ASearchCriteria))
-                            + GenerateOrderByClause(AOrderBy)), PcSupplementTable.GetTableName(), ATransaction,
-                            GetParametersForWhereClause(new PcSupplementTable(), ASearchCriteria), AStartRecord, AMaxRecords);
+            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClause(AFieldList, PcSupplementTable.TableId) + " FROM PUB_pc_supplement") +
+                            GenerateWhereClause(TTypedDataTable.GetColumnStringList(PcSupplementTable.TableId), ASearchCriteria)) +
+                            GenerateOrderByClause(AOrderBy)), TTypedDataTable.GetTableName(PcSupplementTable.TableId), ATransaction,
+                            GetParametersForWhereClause(PcSupplementTable.TableId, ASearchCriteria), AStartRecord, AMaxRecords);
         }
 
         /// auto generated
@@ -7381,28 +7240,24 @@ namespace Ict.Petra.Shared.MConference.Data.Access
             return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar("SELECT COUNT(*) FROM PUB_pc_supplement", ATransaction, false));
         }
 
-        /// this method is called by all overloads
-        public static int CountByPrimaryKey(Int64 AConferenceKey, String AXyzTbdType, TDBTransaction ATransaction)
+        /// check if a row exists by using the primary key
+        public static bool Exists(Int64 AConferenceKey, String AXyzTbdType, TDBTransaction ATransaction)
         {
-            OdbcParameter[] ParametersArray = new OdbcParameter[2];
-            ParametersArray[0] = new OdbcParameter("", OdbcType.Decimal, 10);
-            ParametersArray[0].Value = ((object)(AConferenceKey));
-            ParametersArray[1] = new OdbcParameter("", OdbcType.VarChar, 12);
-            ParametersArray[1].Value = ((object)(AXyzTbdType));
-            return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar("SELECT COUNT(*) FROM PUB_pc_supplement WHERE pc_conference_key_n = ? AND pc_xyz_tbd_type_c = ?", ATransaction, false, ParametersArray));
+            return Exists(PcSupplementTable.TableId, new System.Object[2]{AConferenceKey, AXyzTbdType}, ATransaction);
         }
 
         /// this method is called by all overloads
         public static int CountUsingTemplate(PcSupplementRow ATemplateRow, StringCollection ATemplateOperators, TDBTransaction ATransaction)
         {
-            return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_pc_supplement" + GenerateWhereClause(PcSupplementTable.GetColumnStringList(), ATemplateRow, ATemplateOperators)), ATransaction, false, GetParametersForWhereClause(ATemplateRow)));
+            return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_pc_supplement" + GenerateWhereClause(TTypedDataTable.GetColumnStringList(PcSupplementTable.TableId), ATemplateRow, ATemplateOperators)), ATransaction, false,
+                   GetParametersForWhereClause(PcSupplementTable.TableId, ATemplateRow)));
         }
 
         /// this method is called by all overloads
         public static int CountUsingTemplate(TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
         {
-            return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_pc_supplement" + GenerateWhereClause(PcSupplementTable.GetColumnStringList(), ASearchCriteria)), ATransaction, false,
-            GetParametersForWhereClause(new PcSupplementTable(), ASearchCriteria)));
+            return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_pc_supplement" + GenerateWhereClause(TTypedDataTable.GetColumnStringList(PcSupplementTable.TableId), ASearchCriteria)), ATransaction, false,
+            GetParametersForWhereClause(PcSupplementTable.TableId, ASearchCriteria)));
         }
 
         /// auto generated
@@ -7411,9 +7266,9 @@ namespace Ict.Petra.Shared.MConference.Data.Access
             OdbcParameter[] ParametersArray = new OdbcParameter[1];
             ParametersArray[0] = new OdbcParameter("", OdbcType.Decimal, 10);
             ParametersArray[0].Value = ((object)(AConferenceKey));
-            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, ((GenerateSelectClause(AFieldList, new string[] {
-                            "pc_conference_key_n", "pc_xyz_tbd_type_c"}) + " FROM PUB_pc_supplement WHERE pc_conference_key_n = ?")
-                            + GenerateOrderByClause(AOrderBy)), PcSupplementTable.GetTableName(), ATransaction, ParametersArray, AStartRecord, AMaxRecords);
+            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, ((GenerateSelectClause(AFieldList, PcSupplementTable.TableId) +
+                            " FROM PUB_pc_supplement WHERE pc_conference_key_n = ?") +
+                            GenerateOrderByClause(AOrderBy)), TTypedDataTable.GetTableName(PcSupplementTable.TableId), ATransaction, ParametersArray, AStartRecord, AMaxRecords);
         }
 
         /// auto generated
@@ -7453,11 +7308,12 @@ namespace Ict.Petra.Shared.MConference.Data.Access
         /// auto generated
         public static void LoadViaPcConferenceTemplate(DataSet ADataSet, PcConferenceRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClauseLong("PUB_pc_supplement", AFieldList, new string[] {
-                            "pc_conference_key_n", "pc_xyz_tbd_type_c"}) + " FROM PUB_pc_supplement, PUB_pc_conference WHERE " +
-                            "PUB_pc_supplement.pc_conference_key_n = PUB_pc_conference.pc_conference_key_n")
-                            + GenerateWhereClauseLong("PUB_pc_conference", PcConferenceTable.GetColumnStringList(), ATemplateRow, ATemplateOperators))
-                            + GenerateOrderByClause(AOrderBy)), PcSupplementTable.GetTableName(), ATransaction, GetParametersForWhereClause(ATemplateRow), AStartRecord, AMaxRecords);
+            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClauseLong("PUB_pc_supplement", AFieldList, PcSupplementTable.TableId) +
+                            " FROM PUB_pc_supplement, PUB_pc_conference WHERE " +
+                            "PUB_pc_supplement.pc_conference_key_n = PUB_pc_conference.pc_conference_key_n") +
+                            GenerateWhereClauseLong("PUB_pc_conference", PcConferenceTable.TableId, ATemplateRow, ATemplateOperators)) +
+                            GenerateOrderByClause(AOrderBy)), TTypedDataTable.GetTableName(PcSupplementTable.TableId), ATransaction,
+                            GetParametersForWhereClause(PcConferenceTable.TableId, ATemplateRow), AStartRecord, AMaxRecords);
         }
 
         /// auto generated
@@ -7503,12 +7359,12 @@ namespace Ict.Petra.Shared.MConference.Data.Access
         /// auto generated
         public static void LoadViaPcConferenceTemplate(DataSet ADataSet, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClauseLong("PUB_pc_supplement", AFieldList, new string[] {
-                            "pc_conference_key_n", "pc_xyz_tbd_type_c"}) + " FROM PUB_pc_supplement, PUB_pc_conference WHERE " +
-                            "PUB_pc_supplement.pc_conference_key_n = PUB_pc_conference.pc_conference_key_n")
-                            + GenerateWhereClauseLong("PUB_pc_conference", PcConferenceTable.GetColumnStringList(), ASearchCriteria))
-                            + GenerateOrderByClause(AOrderBy)), PcSupplementTable.GetTableName(), ATransaction,
-                            GetParametersForWhereClause(new PcSupplementTable(), ASearchCriteria), AStartRecord, AMaxRecords);
+            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClauseLong("PUB_pc_supplement", AFieldList, PcSupplementTable.TableId) +
+                            " FROM PUB_pc_supplement, PUB_pc_conference WHERE " +
+                            "PUB_pc_supplement.pc_conference_key_n = PUB_pc_conference.pc_conference_key_n") +
+                            GenerateWhereClauseLong("PUB_pc_conference", ASearchCriteria)) +
+                            GenerateOrderByClause(AOrderBy)), TTypedDataTable.GetTableName(PcSupplementTable.TableId), ATransaction,
+                            GetParametersForWhereClause(PcSupplementTable.TableId, ASearchCriteria), AStartRecord, AMaxRecords);
         }
 
         /// auto generated
@@ -7558,7 +7414,10 @@ namespace Ict.Petra.Shared.MConference.Data.Access
         public static int CountViaPcConferenceTemplate(PcConferenceRow ATemplateRow, StringCollection ATemplateOperators, TDBTransaction ATransaction)
         {
             return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_pc_supplement, PUB_pc_conference WHERE " +
-                "PUB_pc_supplement.pc_conference_key_n = PUB_pc_conference.pc_conference_key_n" + GenerateWhereClauseLong("PUB_pc_conference", PcConferenceTable.GetColumnStringList(), ATemplateRow, ATemplateOperators)), ATransaction, false, GetParametersForWhereClause(ATemplateRow, PcConferenceTable.GetPrimKeyColumnOrdList())));
+                "PUB_pc_supplement.pc_conference_key_n = PUB_pc_conference.pc_conference_key_n" + GenerateWhereClauseLong("PUB_pc_conference",
+                PcConferenceTable.TableId, ATemplateRow, ATemplateOperators)),
+                ATransaction, false,
+                GetParametersForWhereClauseWithPrimaryKey(PcConferenceTable.TableId, ATemplateRow)));
         }
 
         /// auto generated
@@ -7566,33 +7425,26 @@ namespace Ict.Petra.Shared.MConference.Data.Access
         {
             return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_pc_supplement, PUB_pc_conference WHERE " +
                 "PUB_pc_supplement.pc_conference_key_n = PUB_pc_conference.pc_conference_key_n" +
-                GenerateWhereClauseLong("PUB_pc_conference", PcConferenceTable.GetColumnStringList(), ASearchCriteria)), ATransaction, false,
-                GetParametersForWhereClause(new PcConferenceTable(), ASearchCriteria)));
+                GenerateWhereClauseLong("PUB_pc_conference", ASearchCriteria)), ATransaction, false,
+                GetParametersForWhereClause(PcConferenceTable.TableId, ASearchCriteria)));
         }
 
         /// auto generated
         public static void DeleteByPrimaryKey(Int64 AConferenceKey, String AXyzTbdType, TDBTransaction ATransaction)
         {
-            OdbcParameter[] ParametersArray = new OdbcParameter[2];
-            ParametersArray[0] = new OdbcParameter("", OdbcType.Decimal, 10);
-            ParametersArray[0].Value = ((object)(AConferenceKey));
-            ParametersArray[1] = new OdbcParameter("", OdbcType.VarChar, 12);
-            ParametersArray[1].Value = ((object)(AXyzTbdType));
-            DBAccess.GDBAccessObj.ExecuteNonQuery("DELETE FROM PUB_pc_supplement WHERE pc_conference_key_n = ? AND pc_xyz_tbd_type_c = ?", ATransaction, false, ParametersArray);
+            DeleteByPrimaryKey(PcSupplementTable.TableId, new System.Object[2]{AConferenceKey, AXyzTbdType}, ATransaction);
         }
 
         /// auto generated
         public static void DeleteUsingTemplate(PcSupplementRow ATemplateRow, StringCollection ATemplateOperators, TDBTransaction ATransaction)
         {
-            DBAccess.GDBAccessObj.ExecuteNonQuery(("DELETE FROM PUB_pc_supplement" + GenerateWhereClause(PcSupplementTable.GetColumnStringList(), ATemplateRow, ATemplateOperators)), ATransaction, false, GetParametersForWhereClause(ATemplateRow));
+            DeleteUsingTemplate(PcSupplementTable.TableId, ATemplateRow, ATemplateOperators, ATransaction);
         }
 
         /// auto generated
         public static void DeleteUsingTemplate(TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
         {
-            DBAccess.GDBAccessObj.ExecuteNonQuery(("DELETE FROM PUB_pc_supplement" +
-                GenerateWhereClause(PcSupplementTable.GetColumnStringList(), ASearchCriteria)), ATransaction, false,
-                GetParametersForWhereClause(new PcSupplementTable(), ASearchCriteria));
+            DeleteUsingTemplate(PcSupplementTable.TableId, ASearchCriteria, ATransaction);
         }
 
         /// auto generated
@@ -7609,15 +7461,15 @@ namespace Ict.Petra.Shared.MConference.Data.Access
                 {
                     if ((TheRow.RowState == DataRowState.Added))
                     {
-                        TTypedDataAccess.InsertRow("pc_supplement", PcSupplementTable.GetColumnStringList(), ref TheRow, ATransaction, UserInfo.GUserInfo.UserID);
+                        TTypedDataAccess.InsertRow(PcSupplementTable.TableId, ref TheRow, ATransaction, UserInfo.GUserInfo.UserID);
                     }
                     if ((TheRow.RowState == DataRowState.Modified))
                     {
-                        TTypedDataAccess.UpdateRow("pc_supplement", PcSupplementTable.GetColumnStringList(), PcSupplementTable.GetPrimKeyColumnOrdList(), ref TheRow, ATransaction, UserInfo.GUserInfo.UserID);
+                        TTypedDataAccess.UpdateRow(PcSupplementTable.TableId, ref TheRow, ATransaction, UserInfo.GUserInfo.UserID);
                     }
                     if ((TheRow.RowState == DataRowState.Deleted))
                     {
-                        TTypedDataAccess.DeleteRow("pc_supplement", PcSupplementTable.GetColumnStringList(), PcSupplementTable.GetPrimKeyColumnOrdList(), TheRow, ATransaction);
+                        TTypedDataAccess.DeleteRow(PcSupplementTable.TableId, TheRow, ATransaction);
                     }
                 }
                 catch (OdbcException ex)
@@ -7647,9 +7499,8 @@ namespace Ict.Petra.Shared.MConference.Data.Access
         /// this method is called by all overloads
         public static void LoadAll(DataSet ADataSet, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, ((GenerateSelectClause(AFieldList, new string[] {
-                            "pc_conference_key_n", "p_venue_key_n"}) + " FROM PUB_pc_conference_venue")
-                            + GenerateOrderByClause(AOrderBy)), PcConferenceVenueTable.GetTableName(), ATransaction, AStartRecord, AMaxRecords);
+            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, ((GenerateSelectClause(AFieldList, PcConferenceVenueTable.TableId) + " FROM PUB_pc_conference_venue") +
+                            GenerateOrderByClause(AOrderBy)), TTypedDataTable.GetTableName(PcConferenceVenueTable.TableId), ATransaction, AStartRecord, AMaxRecords);
         }
 
         /// auto generated
@@ -7689,14 +7540,8 @@ namespace Ict.Petra.Shared.MConference.Data.Access
         /// this method is called by all overloads
         public static void LoadByPrimaryKey(DataSet ADataSet, Int64 AConferenceKey, Int64 AVenueKey, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            OdbcParameter[] ParametersArray = new OdbcParameter[2];
-            ParametersArray[0] = new OdbcParameter("", OdbcType.Decimal, 10);
-            ParametersArray[0].Value = ((object)(AConferenceKey));
-            ParametersArray[1] = new OdbcParameter("", OdbcType.Decimal, 10);
-            ParametersArray[1].Value = ((object)(AVenueKey));
-            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, ((GenerateSelectClause(AFieldList, new string[] {
-                            "pc_conference_key_n", "p_venue_key_n"}) + " FROM PUB_pc_conference_venue WHERE pc_conference_key_n = ? AND p_venue_key_n = ?")
-                            + GenerateOrderByClause(AOrderBy)), PcConferenceVenueTable.GetTableName(), ATransaction, ParametersArray, AStartRecord, AMaxRecords);
+            ADataSet = LoadByPrimaryKey(PcConferenceVenueTable.TableId,
+                ADataSet, new System.Object[2]{AConferenceKey, AVenueKey}, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
         }
 
         /// auto generated
@@ -7736,10 +7581,10 @@ namespace Ict.Petra.Shared.MConference.Data.Access
         /// this method is called by all overloads
         public static void LoadUsingTemplate(DataSet ADataSet, PcConferenceVenueRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClause(AFieldList, new string[] {
-                            "pc_conference_key_n", "p_venue_key_n"}) + " FROM PUB_pc_conference_venue")
-                            + GenerateWhereClause(PcConferenceVenueTable.GetColumnStringList(), ATemplateRow, ATemplateOperators))
-                            + GenerateOrderByClause(AOrderBy)), PcConferenceVenueTable.GetTableName(), ATransaction, GetParametersForWhereClause(ATemplateRow), AStartRecord, AMaxRecords);
+            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClause(AFieldList, PcConferenceVenueTable.TableId) + " FROM PUB_pc_conference_venue") +
+                            GenerateWhereClause(TTypedDataTable.GetColumnStringList(PcConferenceVenueTable.TableId), ATemplateRow, ATemplateOperators)) +
+                            GenerateOrderByClause(AOrderBy)), TTypedDataTable.GetTableName(PcConferenceVenueTable.TableId), ATransaction,
+                            GetParametersForWhereClause(PcConferenceVenueTable.TableId, ATemplateRow), AStartRecord, AMaxRecords);
         }
 
         /// auto generated
@@ -7785,11 +7630,10 @@ namespace Ict.Petra.Shared.MConference.Data.Access
         /// this method is called by all overloads
         public static void LoadUsingTemplate(DataSet ADataSet, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClause(AFieldList, new string[] {
-                            "pc_conference_key_n", "p_venue_key_n"}) + " FROM PUB_pc_conference_venue")
-                            + GenerateWhereClause(PcConferenceVenueTable.GetColumnStringList(), ASearchCriteria))
-                            + GenerateOrderByClause(AOrderBy)), PcConferenceVenueTable.GetTableName(), ATransaction,
-                            GetParametersForWhereClause(new PcConferenceVenueTable(), ASearchCriteria), AStartRecord, AMaxRecords);
+            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClause(AFieldList, PcConferenceVenueTable.TableId) + " FROM PUB_pc_conference_venue") +
+                            GenerateWhereClause(TTypedDataTable.GetColumnStringList(PcConferenceVenueTable.TableId), ASearchCriteria)) +
+                            GenerateOrderByClause(AOrderBy)), TTypedDataTable.GetTableName(PcConferenceVenueTable.TableId), ATransaction,
+                            GetParametersForWhereClause(PcConferenceVenueTable.TableId, ASearchCriteria), AStartRecord, AMaxRecords);
         }
 
         /// auto generated
@@ -7832,28 +7676,24 @@ namespace Ict.Petra.Shared.MConference.Data.Access
             return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar("SELECT COUNT(*) FROM PUB_pc_conference_venue", ATransaction, false));
         }
 
-        /// this method is called by all overloads
-        public static int CountByPrimaryKey(Int64 AConferenceKey, Int64 AVenueKey, TDBTransaction ATransaction)
+        /// check if a row exists by using the primary key
+        public static bool Exists(Int64 AConferenceKey, Int64 AVenueKey, TDBTransaction ATransaction)
         {
-            OdbcParameter[] ParametersArray = new OdbcParameter[2];
-            ParametersArray[0] = new OdbcParameter("", OdbcType.Decimal, 10);
-            ParametersArray[0].Value = ((object)(AConferenceKey));
-            ParametersArray[1] = new OdbcParameter("", OdbcType.Decimal, 10);
-            ParametersArray[1].Value = ((object)(AVenueKey));
-            return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar("SELECT COUNT(*) FROM PUB_pc_conference_venue WHERE pc_conference_key_n = ? AND p_venue_key_n = ?", ATransaction, false, ParametersArray));
+            return Exists(PcConferenceVenueTable.TableId, new System.Object[2]{AConferenceKey, AVenueKey}, ATransaction);
         }
 
         /// this method is called by all overloads
         public static int CountUsingTemplate(PcConferenceVenueRow ATemplateRow, StringCollection ATemplateOperators, TDBTransaction ATransaction)
         {
-            return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_pc_conference_venue" + GenerateWhereClause(PcConferenceVenueTable.GetColumnStringList(), ATemplateRow, ATemplateOperators)), ATransaction, false, GetParametersForWhereClause(ATemplateRow)));
+            return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_pc_conference_venue" + GenerateWhereClause(TTypedDataTable.GetColumnStringList(PcConferenceVenueTable.TableId), ATemplateRow, ATemplateOperators)), ATransaction, false,
+                   GetParametersForWhereClause(PcConferenceVenueTable.TableId, ATemplateRow)));
         }
 
         /// this method is called by all overloads
         public static int CountUsingTemplate(TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
         {
-            return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_pc_conference_venue" + GenerateWhereClause(PcConferenceVenueTable.GetColumnStringList(), ASearchCriteria)), ATransaction, false,
-            GetParametersForWhereClause(new PcConferenceVenueTable(), ASearchCriteria)));
+            return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_pc_conference_venue" + GenerateWhereClause(TTypedDataTable.GetColumnStringList(PcConferenceVenueTable.TableId), ASearchCriteria)), ATransaction, false,
+            GetParametersForWhereClause(PcConferenceVenueTable.TableId, ASearchCriteria)));
         }
 
         /// auto generated
@@ -7862,9 +7702,9 @@ namespace Ict.Petra.Shared.MConference.Data.Access
             OdbcParameter[] ParametersArray = new OdbcParameter[1];
             ParametersArray[0] = new OdbcParameter("", OdbcType.Decimal, 10);
             ParametersArray[0].Value = ((object)(AConferenceKey));
-            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, ((GenerateSelectClause(AFieldList, new string[] {
-                            "pc_conference_key_n", "p_venue_key_n"}) + " FROM PUB_pc_conference_venue WHERE pc_conference_key_n = ?")
-                            + GenerateOrderByClause(AOrderBy)), PcConferenceVenueTable.GetTableName(), ATransaction, ParametersArray, AStartRecord, AMaxRecords);
+            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, ((GenerateSelectClause(AFieldList, PcConferenceVenueTable.TableId) +
+                            " FROM PUB_pc_conference_venue WHERE pc_conference_key_n = ?") +
+                            GenerateOrderByClause(AOrderBy)), TTypedDataTable.GetTableName(PcConferenceVenueTable.TableId), ATransaction, ParametersArray, AStartRecord, AMaxRecords);
         }
 
         /// auto generated
@@ -7904,11 +7744,12 @@ namespace Ict.Petra.Shared.MConference.Data.Access
         /// auto generated
         public static void LoadViaPcConferenceTemplate(DataSet ADataSet, PcConferenceRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClauseLong("PUB_pc_conference_venue", AFieldList, new string[] {
-                            "pc_conference_key_n", "p_venue_key_n"}) + " FROM PUB_pc_conference_venue, PUB_pc_conference WHERE " +
-                            "PUB_pc_conference_venue.pc_conference_key_n = PUB_pc_conference.pc_conference_key_n")
-                            + GenerateWhereClauseLong("PUB_pc_conference", PcConferenceTable.GetColumnStringList(), ATemplateRow, ATemplateOperators))
-                            + GenerateOrderByClause(AOrderBy)), PcConferenceVenueTable.GetTableName(), ATransaction, GetParametersForWhereClause(ATemplateRow), AStartRecord, AMaxRecords);
+            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClauseLong("PUB_pc_conference_venue", AFieldList, PcConferenceVenueTable.TableId) +
+                            " FROM PUB_pc_conference_venue, PUB_pc_conference WHERE " +
+                            "PUB_pc_conference_venue.pc_conference_key_n = PUB_pc_conference.pc_conference_key_n") +
+                            GenerateWhereClauseLong("PUB_pc_conference", PcConferenceTable.TableId, ATemplateRow, ATemplateOperators)) +
+                            GenerateOrderByClause(AOrderBy)), TTypedDataTable.GetTableName(PcConferenceVenueTable.TableId), ATransaction,
+                            GetParametersForWhereClause(PcConferenceTable.TableId, ATemplateRow), AStartRecord, AMaxRecords);
         }
 
         /// auto generated
@@ -7954,12 +7795,12 @@ namespace Ict.Petra.Shared.MConference.Data.Access
         /// auto generated
         public static void LoadViaPcConferenceTemplate(DataSet ADataSet, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClauseLong("PUB_pc_conference_venue", AFieldList, new string[] {
-                            "pc_conference_key_n", "p_venue_key_n"}) + " FROM PUB_pc_conference_venue, PUB_pc_conference WHERE " +
-                            "PUB_pc_conference_venue.pc_conference_key_n = PUB_pc_conference.pc_conference_key_n")
-                            + GenerateWhereClauseLong("PUB_pc_conference", PcConferenceTable.GetColumnStringList(), ASearchCriteria))
-                            + GenerateOrderByClause(AOrderBy)), PcConferenceVenueTable.GetTableName(), ATransaction,
-                            GetParametersForWhereClause(new PcConferenceVenueTable(), ASearchCriteria), AStartRecord, AMaxRecords);
+            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClauseLong("PUB_pc_conference_venue", AFieldList, PcConferenceVenueTable.TableId) +
+                            " FROM PUB_pc_conference_venue, PUB_pc_conference WHERE " +
+                            "PUB_pc_conference_venue.pc_conference_key_n = PUB_pc_conference.pc_conference_key_n") +
+                            GenerateWhereClauseLong("PUB_pc_conference", ASearchCriteria)) +
+                            GenerateOrderByClause(AOrderBy)), TTypedDataTable.GetTableName(PcConferenceVenueTable.TableId), ATransaction,
+                            GetParametersForWhereClause(PcConferenceVenueTable.TableId, ASearchCriteria), AStartRecord, AMaxRecords);
         }
 
         /// auto generated
@@ -8009,7 +7850,10 @@ namespace Ict.Petra.Shared.MConference.Data.Access
         public static int CountViaPcConferenceTemplate(PcConferenceRow ATemplateRow, StringCollection ATemplateOperators, TDBTransaction ATransaction)
         {
             return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_pc_conference_venue, PUB_pc_conference WHERE " +
-                "PUB_pc_conference_venue.pc_conference_key_n = PUB_pc_conference.pc_conference_key_n" + GenerateWhereClauseLong("PUB_pc_conference", PcConferenceTable.GetColumnStringList(), ATemplateRow, ATemplateOperators)), ATransaction, false, GetParametersForWhereClause(ATemplateRow, PcConferenceTable.GetPrimKeyColumnOrdList())));
+                "PUB_pc_conference_venue.pc_conference_key_n = PUB_pc_conference.pc_conference_key_n" + GenerateWhereClauseLong("PUB_pc_conference",
+                PcConferenceTable.TableId, ATemplateRow, ATemplateOperators)),
+                ATransaction, false,
+                GetParametersForWhereClauseWithPrimaryKey(PcConferenceTable.TableId, ATemplateRow)));
         }
 
         /// auto generated
@@ -8017,8 +7861,8 @@ namespace Ict.Petra.Shared.MConference.Data.Access
         {
             return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_pc_conference_venue, PUB_pc_conference WHERE " +
                 "PUB_pc_conference_venue.pc_conference_key_n = PUB_pc_conference.pc_conference_key_n" +
-                GenerateWhereClauseLong("PUB_pc_conference", PcConferenceTable.GetColumnStringList(), ASearchCriteria)), ATransaction, false,
-                GetParametersForWhereClause(new PcConferenceTable(), ASearchCriteria)));
+                GenerateWhereClauseLong("PUB_pc_conference", ASearchCriteria)), ATransaction, false,
+                GetParametersForWhereClause(PcConferenceTable.TableId, ASearchCriteria)));
         }
 
         /// auto generated
@@ -8027,9 +7871,9 @@ namespace Ict.Petra.Shared.MConference.Data.Access
             OdbcParameter[] ParametersArray = new OdbcParameter[1];
             ParametersArray[0] = new OdbcParameter("", OdbcType.Decimal, 10);
             ParametersArray[0].Value = ((object)(APartnerKey));
-            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, ((GenerateSelectClause(AFieldList, new string[] {
-                            "pc_conference_key_n", "p_venue_key_n"}) + " FROM PUB_pc_conference_venue WHERE p_venue_key_n = ?")
-                            + GenerateOrderByClause(AOrderBy)), PcConferenceVenueTable.GetTableName(), ATransaction, ParametersArray, AStartRecord, AMaxRecords);
+            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, ((GenerateSelectClause(AFieldList, PcConferenceVenueTable.TableId) +
+                            " FROM PUB_pc_conference_venue WHERE p_venue_key_n = ?") +
+                            GenerateOrderByClause(AOrderBy)), TTypedDataTable.GetTableName(PcConferenceVenueTable.TableId), ATransaction, ParametersArray, AStartRecord, AMaxRecords);
         }
 
         /// auto generated
@@ -8069,11 +7913,12 @@ namespace Ict.Petra.Shared.MConference.Data.Access
         /// auto generated
         public static void LoadViaPVenueTemplate(DataSet ADataSet, PVenueRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClauseLong("PUB_pc_conference_venue", AFieldList, new string[] {
-                            "pc_conference_key_n", "p_venue_key_n"}) + " FROM PUB_pc_conference_venue, PUB_p_venue WHERE " +
-                            "PUB_pc_conference_venue.p_venue_key_n = PUB_p_venue.p_partner_key_n")
-                            + GenerateWhereClauseLong("PUB_p_venue", PVenueTable.GetColumnStringList(), ATemplateRow, ATemplateOperators))
-                            + GenerateOrderByClause(AOrderBy)), PcConferenceVenueTable.GetTableName(), ATransaction, GetParametersForWhereClause(ATemplateRow), AStartRecord, AMaxRecords);
+            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClauseLong("PUB_pc_conference_venue", AFieldList, PcConferenceVenueTable.TableId) +
+                            " FROM PUB_pc_conference_venue, PUB_p_venue WHERE " +
+                            "PUB_pc_conference_venue.p_venue_key_n = PUB_p_venue.p_partner_key_n") +
+                            GenerateWhereClauseLong("PUB_p_venue", PVenueTable.TableId, ATemplateRow, ATemplateOperators)) +
+                            GenerateOrderByClause(AOrderBy)), TTypedDataTable.GetTableName(PcConferenceVenueTable.TableId), ATransaction,
+                            GetParametersForWhereClause(PVenueTable.TableId, ATemplateRow), AStartRecord, AMaxRecords);
         }
 
         /// auto generated
@@ -8119,12 +7964,12 @@ namespace Ict.Petra.Shared.MConference.Data.Access
         /// auto generated
         public static void LoadViaPVenueTemplate(DataSet ADataSet, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClauseLong("PUB_pc_conference_venue", AFieldList, new string[] {
-                            "pc_conference_key_n", "p_venue_key_n"}) + " FROM PUB_pc_conference_venue, PUB_p_venue WHERE " +
-                            "PUB_pc_conference_venue.p_venue_key_n = PUB_p_venue.p_partner_key_n")
-                            + GenerateWhereClauseLong("PUB_p_venue", PVenueTable.GetColumnStringList(), ASearchCriteria))
-                            + GenerateOrderByClause(AOrderBy)), PcConferenceVenueTable.GetTableName(), ATransaction,
-                            GetParametersForWhereClause(new PcConferenceVenueTable(), ASearchCriteria), AStartRecord, AMaxRecords);
+            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClauseLong("PUB_pc_conference_venue", AFieldList, PcConferenceVenueTable.TableId) +
+                            " FROM PUB_pc_conference_venue, PUB_p_venue WHERE " +
+                            "PUB_pc_conference_venue.p_venue_key_n = PUB_p_venue.p_partner_key_n") +
+                            GenerateWhereClauseLong("PUB_p_venue", ASearchCriteria)) +
+                            GenerateOrderByClause(AOrderBy)), TTypedDataTable.GetTableName(PcConferenceVenueTable.TableId), ATransaction,
+                            GetParametersForWhereClause(PcConferenceVenueTable.TableId, ASearchCriteria), AStartRecord, AMaxRecords);
         }
 
         /// auto generated
@@ -8174,7 +8019,10 @@ namespace Ict.Petra.Shared.MConference.Data.Access
         public static int CountViaPVenueTemplate(PVenueRow ATemplateRow, StringCollection ATemplateOperators, TDBTransaction ATransaction)
         {
             return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_pc_conference_venue, PUB_p_venue WHERE " +
-                "PUB_pc_conference_venue.p_venue_key_n = PUB_p_venue.p_partner_key_n" + GenerateWhereClauseLong("PUB_p_venue", PVenueTable.GetColumnStringList(), ATemplateRow, ATemplateOperators)), ATransaction, false, GetParametersForWhereClause(ATemplateRow, PVenueTable.GetPrimKeyColumnOrdList())));
+                "PUB_pc_conference_venue.p_venue_key_n = PUB_p_venue.p_partner_key_n" + GenerateWhereClauseLong("PUB_p_venue",
+                PVenueTable.TableId, ATemplateRow, ATemplateOperators)),
+                ATransaction, false,
+                GetParametersForWhereClauseWithPrimaryKey(PVenueTable.TableId, ATemplateRow)));
         }
 
         /// auto generated
@@ -8182,33 +8030,26 @@ namespace Ict.Petra.Shared.MConference.Data.Access
         {
             return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_pc_conference_venue, PUB_p_venue WHERE " +
                 "PUB_pc_conference_venue.p_venue_key_n = PUB_p_venue.p_partner_key_n" +
-                GenerateWhereClauseLong("PUB_p_venue", PVenueTable.GetColumnStringList(), ASearchCriteria)), ATransaction, false,
-                GetParametersForWhereClause(new PVenueTable(), ASearchCriteria)));
+                GenerateWhereClauseLong("PUB_p_venue", ASearchCriteria)), ATransaction, false,
+                GetParametersForWhereClause(PVenueTable.TableId, ASearchCriteria)));
         }
 
         /// auto generated
         public static void DeleteByPrimaryKey(Int64 AConferenceKey, Int64 AVenueKey, TDBTransaction ATransaction)
         {
-            OdbcParameter[] ParametersArray = new OdbcParameter[2];
-            ParametersArray[0] = new OdbcParameter("", OdbcType.Decimal, 10);
-            ParametersArray[0].Value = ((object)(AConferenceKey));
-            ParametersArray[1] = new OdbcParameter("", OdbcType.Decimal, 10);
-            ParametersArray[1].Value = ((object)(AVenueKey));
-            DBAccess.GDBAccessObj.ExecuteNonQuery("DELETE FROM PUB_pc_conference_venue WHERE pc_conference_key_n = ? AND p_venue_key_n = ?", ATransaction, false, ParametersArray);
+            DeleteByPrimaryKey(PcConferenceVenueTable.TableId, new System.Object[2]{AConferenceKey, AVenueKey}, ATransaction);
         }
 
         /// auto generated
         public static void DeleteUsingTemplate(PcConferenceVenueRow ATemplateRow, StringCollection ATemplateOperators, TDBTransaction ATransaction)
         {
-            DBAccess.GDBAccessObj.ExecuteNonQuery(("DELETE FROM PUB_pc_conference_venue" + GenerateWhereClause(PcConferenceVenueTable.GetColumnStringList(), ATemplateRow, ATemplateOperators)), ATransaction, false, GetParametersForWhereClause(ATemplateRow));
+            DeleteUsingTemplate(PcConferenceVenueTable.TableId, ATemplateRow, ATemplateOperators, ATransaction);
         }
 
         /// auto generated
         public static void DeleteUsingTemplate(TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
         {
-            DBAccess.GDBAccessObj.ExecuteNonQuery(("DELETE FROM PUB_pc_conference_venue" +
-                GenerateWhereClause(PcConferenceVenueTable.GetColumnStringList(), ASearchCriteria)), ATransaction, false,
-                GetParametersForWhereClause(new PcConferenceVenueTable(), ASearchCriteria));
+            DeleteUsingTemplate(PcConferenceVenueTable.TableId, ASearchCriteria, ATransaction);
         }
 
         /// auto generated
@@ -8225,15 +8066,15 @@ namespace Ict.Petra.Shared.MConference.Data.Access
                 {
                     if ((TheRow.RowState == DataRowState.Added))
                     {
-                        TTypedDataAccess.InsertRow("pc_conference_venue", PcConferenceVenueTable.GetColumnStringList(), ref TheRow, ATransaction, UserInfo.GUserInfo.UserID);
+                        TTypedDataAccess.InsertRow(PcConferenceVenueTable.TableId, ref TheRow, ATransaction, UserInfo.GUserInfo.UserID);
                     }
                     if ((TheRow.RowState == DataRowState.Modified))
                     {
-                        TTypedDataAccess.UpdateRow("pc_conference_venue", PcConferenceVenueTable.GetColumnStringList(), PcConferenceVenueTable.GetPrimKeyColumnOrdList(), ref TheRow, ATransaction, UserInfo.GUserInfo.UserID);
+                        TTypedDataAccess.UpdateRow(PcConferenceVenueTable.TableId, ref TheRow, ATransaction, UserInfo.GUserInfo.UserID);
                     }
                     if ((TheRow.RowState == DataRowState.Deleted))
                     {
-                        TTypedDataAccess.DeleteRow("pc_conference_venue", PcConferenceVenueTable.GetColumnStringList(), PcConferenceVenueTable.GetPrimKeyColumnOrdList(), TheRow, ATransaction);
+                        TTypedDataAccess.DeleteRow(PcConferenceVenueTable.TableId, TheRow, ATransaction);
                     }
                 }
                 catch (OdbcException ex)

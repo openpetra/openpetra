@@ -57,7 +57,8 @@ namespace Ict.Petra.Shared.MFinance.AR.Data
         /// This identifies the current version of the record.
         public DataColumn ColumnModificationId;
 
-        private static short TableId = -1;
+        /// TableId for Ict.Common.Data generic functions
+        public static short TableId = 106;
 
         private static bool FInitInfoValues = InitInfoValues();
         private static bool InitInfoValues()
@@ -72,8 +73,8 @@ namespace Ict.Petra.Shared.MFinance.AR.Data
                     new TTypedColumnInfo(5, "ModifiedBy", "s_modified_by_c", OdbcType.VarChar, 20, false),
                     new TTypedColumnInfo(6, "ModificationId", "s_modification_id_c", OdbcType.VarChar, 150, false)
                 },
-                new string[] {
-                    "a_tax_type_code_c"
+                new int[] {
+                    0
                 }));
             return true;
         }
@@ -165,7 +166,7 @@ namespace Ict.Petra.Shared.MFinance.AR.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetTaxTypeCodeDBName()
+        public static string GetTaxTypeCodeDBName()
         {
             return "a_tax_type_code_c";
         }
@@ -177,7 +178,7 @@ namespace Ict.Petra.Shared.MFinance.AR.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetTaxTypeDescriptionDBName()
+        public static string GetTaxTypeDescriptionDBName()
         {
             return "a_tax_type_description_c";
         }
@@ -189,7 +190,7 @@ namespace Ict.Petra.Shared.MFinance.AR.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetDateCreatedDBName()
+        public static string GetDateCreatedDBName()
         {
             return "s_date_created_d";
         }
@@ -201,7 +202,7 @@ namespace Ict.Petra.Shared.MFinance.AR.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetCreatedByDBName()
+        public static string GetCreatedByDBName()
         {
             return "s_created_by_c";
         }
@@ -213,7 +214,7 @@ namespace Ict.Petra.Shared.MFinance.AR.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetDateModifiedDBName()
+        public static string GetDateModifiedDBName()
         {
             return "s_date_modified_d";
         }
@@ -225,7 +226,7 @@ namespace Ict.Petra.Shared.MFinance.AR.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetModifiedByDBName()
+        public static string GetModifiedByDBName()
         {
             return "s_modified_by_c";
         }
@@ -237,7 +238,7 @@ namespace Ict.Petra.Shared.MFinance.AR.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetModificationIdDBName()
+        public static string GetModificationIdDBName()
         {
             return "s_modification_id_c";
         }
@@ -571,7 +572,8 @@ namespace Ict.Petra.Shared.MFinance.AR.Data
         /// This identifies the current version of the record.
         public DataColumn ColumnModificationId;
 
-        private static short TableId = -1;
+        /// TableId for Ict.Common.Data generic functions
+        public static short TableId = 108;
 
         private static bool FInitInfoValues = InitInfoValues();
         private static bool InitInfoValues()
@@ -591,8 +593,8 @@ namespace Ict.Petra.Shared.MFinance.AR.Data
                     new TTypedColumnInfo(10, "ModifiedBy", "s_modified_by_c", OdbcType.VarChar, 20, false),
                     new TTypedColumnInfo(11, "ModificationId", "s_modification_id_c", OdbcType.VarChar, 150, false)
                 },
-                new string[] {
-                    "a_ledger_number_i", "a_tax_type_code_c", "a_tax_rate_code_c", "a_tax_valid_from_d"
+                new int[] {
+                    0, 1, 2, 3
                 }));
             return true;
         }
@@ -694,7 +696,7 @@ namespace Ict.Petra.Shared.MFinance.AR.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetLedgerNumberDBName()
+        public static string GetLedgerNumberDBName()
         {
             return "a_ledger_number_i";
         }
@@ -706,7 +708,7 @@ namespace Ict.Petra.Shared.MFinance.AR.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetTaxTypeCodeDBName()
+        public static string GetTaxTypeCodeDBName()
         {
             return "a_tax_type_code_c";
         }
@@ -718,7 +720,7 @@ namespace Ict.Petra.Shared.MFinance.AR.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetTaxRateCodeDBName()
+        public static string GetTaxRateCodeDBName()
         {
             return "a_tax_rate_code_c";
         }
@@ -730,7 +732,7 @@ namespace Ict.Petra.Shared.MFinance.AR.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetTaxValidFromDBName()
+        public static string GetTaxValidFromDBName()
         {
             return "a_tax_valid_from_d";
         }
@@ -742,7 +744,7 @@ namespace Ict.Petra.Shared.MFinance.AR.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetTaxRateDescriptionDBName()
+        public static string GetTaxRateDescriptionDBName()
         {
             return "a_tax_rate_description_c";
         }
@@ -754,7 +756,7 @@ namespace Ict.Petra.Shared.MFinance.AR.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetTaxRateDBName()
+        public static string GetTaxRateDBName()
         {
             return "a_tax_rate_n";
         }
@@ -766,7 +768,7 @@ namespace Ict.Petra.Shared.MFinance.AR.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetActiveDBName()
+        public static string GetActiveDBName()
         {
             return "a_active_l";
         }
@@ -778,7 +780,7 @@ namespace Ict.Petra.Shared.MFinance.AR.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetDateCreatedDBName()
+        public static string GetDateCreatedDBName()
         {
             return "s_date_created_d";
         }
@@ -790,7 +792,7 @@ namespace Ict.Petra.Shared.MFinance.AR.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetCreatedByDBName()
+        public static string GetCreatedByDBName()
         {
             return "s_created_by_c";
         }
@@ -802,7 +804,7 @@ namespace Ict.Petra.Shared.MFinance.AR.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetDateModifiedDBName()
+        public static string GetDateModifiedDBName()
         {
             return "s_date_modified_d";
         }
@@ -814,7 +816,7 @@ namespace Ict.Petra.Shared.MFinance.AR.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetModifiedByDBName()
+        public static string GetModifiedByDBName()
         {
             return "s_modified_by_c";
         }
@@ -826,7 +828,7 @@ namespace Ict.Petra.Shared.MFinance.AR.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetModificationIdDBName()
+        public static string GetModificationIdDBName()
         {
             return "s_modification_id_c";
         }
@@ -1347,7 +1349,8 @@ namespace Ict.Petra.Shared.MFinance.AR.Data
         /// This identifies the current version of the record.
         public DataColumn ColumnModificationId;
 
-        private static short TableId = -1;
+        /// TableId for Ict.Common.Data generic functions
+        public static short TableId = 184;
 
         private static bool FInitInfoValues = InitInfoValues();
         private static bool InitInfoValues()
@@ -1363,8 +1366,8 @@ namespace Ict.Petra.Shared.MFinance.AR.Data
                     new TTypedColumnInfo(6, "ModifiedBy", "s_modified_by_c", OdbcType.VarChar, 20, false),
                     new TTypedColumnInfo(7, "ModificationId", "s_modification_id_c", OdbcType.VarChar, 150, false)
                 },
-                new string[] {
-                    "a_ar_category_code_c"
+                new int[] {
+                    0
                 }));
             return true;
         }
@@ -1458,7 +1461,7 @@ namespace Ict.Petra.Shared.MFinance.AR.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetArCategoryCodeDBName()
+        public static string GetArCategoryCodeDBName()
         {
             return "a_ar_category_code_c";
         }
@@ -1470,7 +1473,7 @@ namespace Ict.Petra.Shared.MFinance.AR.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetArDescriptionDBName()
+        public static string GetArDescriptionDBName()
         {
             return "a_ar_description_c";
         }
@@ -1482,7 +1485,7 @@ namespace Ict.Petra.Shared.MFinance.AR.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetArLocalDescriptionDBName()
+        public static string GetArLocalDescriptionDBName()
         {
             return "a_ar_local_description_c";
         }
@@ -1494,7 +1497,7 @@ namespace Ict.Petra.Shared.MFinance.AR.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetDateCreatedDBName()
+        public static string GetDateCreatedDBName()
         {
             return "s_date_created_d";
         }
@@ -1506,7 +1509,7 @@ namespace Ict.Petra.Shared.MFinance.AR.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetCreatedByDBName()
+        public static string GetCreatedByDBName()
         {
             return "s_created_by_c";
         }
@@ -1518,7 +1521,7 @@ namespace Ict.Petra.Shared.MFinance.AR.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetDateModifiedDBName()
+        public static string GetDateModifiedDBName()
         {
             return "s_date_modified_d";
         }
@@ -1530,7 +1533,7 @@ namespace Ict.Petra.Shared.MFinance.AR.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetModifiedByDBName()
+        public static string GetModifiedByDBName()
         {
             return "s_modified_by_c";
         }
@@ -1542,7 +1545,7 @@ namespace Ict.Petra.Shared.MFinance.AR.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetModificationIdDBName()
+        public static string GetModificationIdDBName()
         {
             return "s_modification_id_c";
         }
@@ -1913,7 +1916,8 @@ namespace Ict.Petra.Shared.MFinance.AR.Data
         /// This identifies the current version of the record.
         public DataColumn ColumnModificationId;
 
-        private static short TableId = -1;
+        /// TableId for Ict.Common.Data generic functions
+        public static short TableId = 185;
 
         private static bool FInitInfoValues = InitInfoValues();
         private static bool InitInfoValues()
@@ -1932,8 +1936,8 @@ namespace Ict.Petra.Shared.MFinance.AR.Data
                     new TTypedColumnInfo(9, "ModifiedBy", "s_modified_by_c", OdbcType.VarChar, 20, false),
                     new TTypedColumnInfo(10, "ModificationId", "s_modification_id_c", OdbcType.VarChar, 150, false)
                 },
-                new string[] {
-                    "a_ar_article_code_c"
+                new int[] {
+                    0
                 }));
             return true;
         }
@@ -2033,7 +2037,7 @@ namespace Ict.Petra.Shared.MFinance.AR.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetArArticleCodeDBName()
+        public static string GetArArticleCodeDBName()
         {
             return "a_ar_article_code_c";
         }
@@ -2045,7 +2049,7 @@ namespace Ict.Petra.Shared.MFinance.AR.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetArCategoryCodeDBName()
+        public static string GetArCategoryCodeDBName()
         {
             return "a_ar_category_code_c";
         }
@@ -2057,7 +2061,7 @@ namespace Ict.Petra.Shared.MFinance.AR.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetTaxTypeCodeDBName()
+        public static string GetTaxTypeCodeDBName()
         {
             return "a_tax_type_code_c";
         }
@@ -2069,7 +2073,7 @@ namespace Ict.Petra.Shared.MFinance.AR.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetArSpecificArticleDBName()
+        public static string GetArSpecificArticleDBName()
         {
             return "a_ar_specific_article_l";
         }
@@ -2081,7 +2085,7 @@ namespace Ict.Petra.Shared.MFinance.AR.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetArDescriptionDBName()
+        public static string GetArDescriptionDBName()
         {
             return "a_ar_description_c";
         }
@@ -2093,7 +2097,7 @@ namespace Ict.Petra.Shared.MFinance.AR.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetArLocalDescriptionDBName()
+        public static string GetArLocalDescriptionDBName()
         {
             return "a_ar_local_description_c";
         }
@@ -2105,7 +2109,7 @@ namespace Ict.Petra.Shared.MFinance.AR.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetDateCreatedDBName()
+        public static string GetDateCreatedDBName()
         {
             return "s_date_created_d";
         }
@@ -2117,7 +2121,7 @@ namespace Ict.Petra.Shared.MFinance.AR.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetCreatedByDBName()
+        public static string GetCreatedByDBName()
         {
             return "s_created_by_c";
         }
@@ -2129,7 +2133,7 @@ namespace Ict.Petra.Shared.MFinance.AR.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetDateModifiedDBName()
+        public static string GetDateModifiedDBName()
         {
             return "s_date_modified_d";
         }
@@ -2141,7 +2145,7 @@ namespace Ict.Petra.Shared.MFinance.AR.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetModifiedByDBName()
+        public static string GetModifiedByDBName()
         {
             return "s_modified_by_c";
         }
@@ -2153,7 +2157,7 @@ namespace Ict.Petra.Shared.MFinance.AR.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetModificationIdDBName()
+        public static string GetModificationIdDBName()
         {
             return "s_modification_id_c";
         }
@@ -2637,7 +2641,8 @@ namespace Ict.Petra.Shared.MFinance.AR.Data
         /// This identifies the current version of the record.
         public DataColumn ColumnModificationId;
 
-        private static short TableId = -1;
+        /// TableId for Ict.Common.Data generic functions
+        public static short TableId = 186;
 
         private static bool FInitInfoValues = InitInfoValues();
         private static bool InitInfoValues()
@@ -2654,8 +2659,8 @@ namespace Ict.Petra.Shared.MFinance.AR.Data
                     new TTypedColumnInfo(7, "ModifiedBy", "s_modified_by_c", OdbcType.VarChar, 20, false),
                     new TTypedColumnInfo(8, "ModificationId", "s_modification_id_c", OdbcType.VarChar, 150, false)
                 },
-                new string[] {
-                    "a_ar_article_code_c", "a_ar_date_valid_from_d"
+                new int[] {
+                    0, 1
                 }));
             return true;
         }
@@ -2751,7 +2756,7 @@ namespace Ict.Petra.Shared.MFinance.AR.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetArArticleCodeDBName()
+        public static string GetArArticleCodeDBName()
         {
             return "a_ar_article_code_c";
         }
@@ -2763,7 +2768,7 @@ namespace Ict.Petra.Shared.MFinance.AR.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetArDateValidFromDBName()
+        public static string GetArDateValidFromDBName()
         {
             return "a_ar_date_valid_from_d";
         }
@@ -2775,7 +2780,7 @@ namespace Ict.Petra.Shared.MFinance.AR.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetArAmountDBName()
+        public static string GetArAmountDBName()
         {
             return "a_ar_amount_n";
         }
@@ -2787,7 +2792,7 @@ namespace Ict.Petra.Shared.MFinance.AR.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetCurrencyCodeDBName()
+        public static string GetCurrencyCodeDBName()
         {
             return "a_currency_code_c";
         }
@@ -2799,7 +2804,7 @@ namespace Ict.Petra.Shared.MFinance.AR.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetDateCreatedDBName()
+        public static string GetDateCreatedDBName()
         {
             return "s_date_created_d";
         }
@@ -2811,7 +2816,7 @@ namespace Ict.Petra.Shared.MFinance.AR.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetCreatedByDBName()
+        public static string GetCreatedByDBName()
         {
             return "s_created_by_c";
         }
@@ -2823,7 +2828,7 @@ namespace Ict.Petra.Shared.MFinance.AR.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetDateModifiedDBName()
+        public static string GetDateModifiedDBName()
         {
             return "s_date_modified_d";
         }
@@ -2835,7 +2840,7 @@ namespace Ict.Petra.Shared.MFinance.AR.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetModifiedByDBName()
+        public static string GetModifiedByDBName()
         {
             return "s_modified_by_c";
         }
@@ -2847,7 +2852,7 @@ namespace Ict.Petra.Shared.MFinance.AR.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetModificationIdDBName()
+        public static string GetModificationIdDBName()
         {
             return "s_modification_id_c";
         }
@@ -3281,7 +3286,8 @@ namespace Ict.Petra.Shared.MFinance.AR.Data
         /// This identifies the current version of the record.
         public DataColumn ColumnModificationId;
 
-        private static short TableId = -1;
+        /// TableId for Ict.Common.Data generic functions
+        public static short TableId = 187;
 
         private static bool FInitInfoValues = InitInfoValues();
         private static bool InitInfoValues()
@@ -3312,8 +3318,8 @@ namespace Ict.Petra.Shared.MFinance.AR.Data
                     new TTypedColumnInfo(21, "ModifiedBy", "s_modified_by_c", OdbcType.VarChar, 20, false),
                     new TTypedColumnInfo(22, "ModificationId", "s_modification_id_c", OdbcType.VarChar, 150, false)
                 },
-                new string[] {
-                    "a_ar_discount_code_c", "a_ar_date_valid_from_d"
+                new int[] {
+                    0, 1
                 }));
             return true;
         }
@@ -3437,7 +3443,7 @@ namespace Ict.Petra.Shared.MFinance.AR.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetArDiscountCodeDBName()
+        public static string GetArDiscountCodeDBName()
         {
             return "a_ar_discount_code_c";
         }
@@ -3449,7 +3455,7 @@ namespace Ict.Petra.Shared.MFinance.AR.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetArDateValidFromDBName()
+        public static string GetArDateValidFromDBName()
         {
             return "a_ar_date_valid_from_d";
         }
@@ -3461,7 +3467,7 @@ namespace Ict.Petra.Shared.MFinance.AR.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetArAdhocDBName()
+        public static string GetArAdhocDBName()
         {
             return "a_ar_adhoc_l";
         }
@@ -3473,7 +3479,7 @@ namespace Ict.Petra.Shared.MFinance.AR.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetActiveDBName()
+        public static string GetActiveDBName()
         {
             return "a_active_l";
         }
@@ -3485,7 +3491,7 @@ namespace Ict.Petra.Shared.MFinance.AR.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetArDiscountPercentageDBName()
+        public static string GetArDiscountPercentageDBName()
         {
             return "a_ar_discount_percentage_n";
         }
@@ -3497,7 +3503,7 @@ namespace Ict.Petra.Shared.MFinance.AR.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetArDiscountAbsoluteDBName()
+        public static string GetArDiscountAbsoluteDBName()
         {
             return "a_ar_discount_absolute_n";
         }
@@ -3509,7 +3515,7 @@ namespace Ict.Petra.Shared.MFinance.AR.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetArAbsoluteAmountDBName()
+        public static string GetArAbsoluteAmountDBName()
         {
             return "a_ar_absolute_amount_n";
         }
@@ -3521,7 +3527,7 @@ namespace Ict.Petra.Shared.MFinance.AR.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetCurrencyCodeDBName()
+        public static string GetCurrencyCodeDBName()
         {
             return "a_currency_code_c";
         }
@@ -3533,7 +3539,7 @@ namespace Ict.Petra.Shared.MFinance.AR.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetArNumberOfItemsDBName()
+        public static string GetArNumberOfItemsDBName()
         {
             return "a_ar_number_of_items_i";
         }
@@ -3545,7 +3551,7 @@ namespace Ict.Petra.Shared.MFinance.AR.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetArMinimumNumberOfItemsDBName()
+        public static string GetArMinimumNumberOfItemsDBName()
         {
             return "a_ar_minimum_number_of_items_i";
         }
@@ -3557,7 +3563,7 @@ namespace Ict.Petra.Shared.MFinance.AR.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetArNumberOfNightsDBName()
+        public static string GetArNumberOfNightsDBName()
         {
             return "a_ar_number_of_nights_i";
         }
@@ -3569,7 +3575,7 @@ namespace Ict.Petra.Shared.MFinance.AR.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetArMinimumNumberOfNightsDBName()
+        public static string GetArMinimumNumberOfNightsDBName()
         {
             return "a_ar_minimum_number_of_nights_i";
         }
@@ -3581,7 +3587,7 @@ namespace Ict.Petra.Shared.MFinance.AR.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetArWholeRoomDBName()
+        public static string GetArWholeRoomDBName()
         {
             return "a_ar_whole_room_l";
         }
@@ -3593,7 +3599,7 @@ namespace Ict.Petra.Shared.MFinance.AR.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetArChildrenDBName()
+        public static string GetArChildrenDBName()
         {
             return "a_ar_children_l";
         }
@@ -3605,7 +3611,7 @@ namespace Ict.Petra.Shared.MFinance.AR.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetArEarlyBookingDaysDBName()
+        public static string GetArEarlyBookingDaysDBName()
         {
             return "a_ar_early_booking_days_i";
         }
@@ -3617,7 +3623,7 @@ namespace Ict.Petra.Shared.MFinance.AR.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetArEarlyPaymentDaysDBName()
+        public static string GetArEarlyPaymentDaysDBName()
         {
             return "a_ar_early_payment_days_i";
         }
@@ -3629,7 +3635,7 @@ namespace Ict.Petra.Shared.MFinance.AR.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetArArticleCodeDBName()
+        public static string GetArArticleCodeDBName()
         {
             return "a_ar_article_code_c";
         }
@@ -3641,7 +3647,7 @@ namespace Ict.Petra.Shared.MFinance.AR.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetPartnerTypeCodeDBName()
+        public static string GetPartnerTypeCodeDBName()
         {
             return "p_partner_type_code_c";
         }
@@ -3653,7 +3659,7 @@ namespace Ict.Petra.Shared.MFinance.AR.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetDateCreatedDBName()
+        public static string GetDateCreatedDBName()
         {
             return "s_date_created_d";
         }
@@ -3665,7 +3671,7 @@ namespace Ict.Petra.Shared.MFinance.AR.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetCreatedByDBName()
+        public static string GetCreatedByDBName()
         {
             return "s_created_by_c";
         }
@@ -3677,7 +3683,7 @@ namespace Ict.Petra.Shared.MFinance.AR.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetDateModifiedDBName()
+        public static string GetDateModifiedDBName()
         {
             return "s_date_modified_d";
         }
@@ -3689,7 +3695,7 @@ namespace Ict.Petra.Shared.MFinance.AR.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetModifiedByDBName()
+        public static string GetModifiedByDBName()
         {
             return "s_modified_by_c";
         }
@@ -3701,7 +3707,7 @@ namespace Ict.Petra.Shared.MFinance.AR.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetModificationIdDBName()
+        public static string GetModificationIdDBName()
         {
             return "s_modification_id_c";
         }
@@ -4651,7 +4657,8 @@ namespace Ict.Petra.Shared.MFinance.AR.Data
         /// This identifies the current version of the record.
         public DataColumn ColumnModificationId;
 
-        private static short TableId = -1;
+        /// TableId for Ict.Common.Data generic functions
+        public static short TableId = 188;
 
         private static bool FInitInfoValues = InitInfoValues();
         private static bool InitInfoValues()
@@ -4667,8 +4674,8 @@ namespace Ict.Petra.Shared.MFinance.AR.Data
                     new TTypedColumnInfo(6, "ModifiedBy", "s_modified_by_c", OdbcType.VarChar, 20, false),
                     new TTypedColumnInfo(7, "ModificationId", "s_modification_id_c", OdbcType.VarChar, 150, false)
                 },
-                new string[] {
-                    "a_ar_category_code_c", "a_ar_discount_code_c"
+                new int[] {
+                    0, 1
                 }));
             return true;
         }
@@ -4762,7 +4769,7 @@ namespace Ict.Petra.Shared.MFinance.AR.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetArCategoryCodeDBName()
+        public static string GetArCategoryCodeDBName()
         {
             return "a_ar_category_code_c";
         }
@@ -4774,7 +4781,7 @@ namespace Ict.Petra.Shared.MFinance.AR.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetArDiscountCodeDBName()
+        public static string GetArDiscountCodeDBName()
         {
             return "a_ar_discount_code_c";
         }
@@ -4786,7 +4793,7 @@ namespace Ict.Petra.Shared.MFinance.AR.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetArDateValidFromDBName()
+        public static string GetArDateValidFromDBName()
         {
             return "a_ar_date_valid_from_d";
         }
@@ -4798,7 +4805,7 @@ namespace Ict.Petra.Shared.MFinance.AR.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetDateCreatedDBName()
+        public static string GetDateCreatedDBName()
         {
             return "s_date_created_d";
         }
@@ -4810,7 +4817,7 @@ namespace Ict.Petra.Shared.MFinance.AR.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetCreatedByDBName()
+        public static string GetCreatedByDBName()
         {
             return "s_created_by_c";
         }
@@ -4822,7 +4829,7 @@ namespace Ict.Petra.Shared.MFinance.AR.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetDateModifiedDBName()
+        public static string GetDateModifiedDBName()
         {
             return "s_date_modified_d";
         }
@@ -4834,7 +4841,7 @@ namespace Ict.Petra.Shared.MFinance.AR.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetModifiedByDBName()
+        public static string GetModifiedByDBName()
         {
             return "s_modified_by_c";
         }
@@ -4846,7 +4853,7 @@ namespace Ict.Petra.Shared.MFinance.AR.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetModificationIdDBName()
+        public static string GetModificationIdDBName()
         {
             return "s_modification_id_c";
         }
@@ -5215,7 +5222,8 @@ namespace Ict.Petra.Shared.MFinance.AR.Data
         /// This identifies the current version of the record.
         public DataColumn ColumnModificationId;
 
-        private static short TableId = -1;
+        /// TableId for Ict.Common.Data generic functions
+        public static short TableId = 189;
 
         private static bool FInitInfoValues = InitInfoValues();
         private static bool InitInfoValues()
@@ -5233,8 +5241,8 @@ namespace Ict.Petra.Shared.MFinance.AR.Data
                     new TTypedColumnInfo(8, "ModifiedBy", "s_modified_by_c", OdbcType.VarChar, 20, false),
                     new TTypedColumnInfo(9, "ModificationId", "s_modification_id_c", OdbcType.VarChar, 150, false)
                 },
-                new string[] {
-                    "a_ar_category_code_c", "a_ar_discount_code_c", "a_ar_date_valid_from_d"
+                new int[] {
+                    0, 1, 3
                 }));
             return true;
         }
@@ -5332,7 +5340,7 @@ namespace Ict.Petra.Shared.MFinance.AR.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetArCategoryCodeDBName()
+        public static string GetArCategoryCodeDBName()
         {
             return "a_ar_category_code_c";
         }
@@ -5344,7 +5352,7 @@ namespace Ict.Petra.Shared.MFinance.AR.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetArDiscountCodeDBName()
+        public static string GetArDiscountCodeDBName()
         {
             return "a_ar_discount_code_c";
         }
@@ -5356,7 +5364,7 @@ namespace Ict.Petra.Shared.MFinance.AR.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetArDiscountDateValidFromDBName()
+        public static string GetArDiscountDateValidFromDBName()
         {
             return "a_ar_discount_date_valid_from_d";
         }
@@ -5368,7 +5376,7 @@ namespace Ict.Petra.Shared.MFinance.AR.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetArDateValidFromDBName()
+        public static string GetArDateValidFromDBName()
         {
             return "a_ar_date_valid_from_d";
         }
@@ -5380,7 +5388,7 @@ namespace Ict.Petra.Shared.MFinance.AR.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetArDateValidToDBName()
+        public static string GetArDateValidToDBName()
         {
             return "a_ar_date_valid_to_d";
         }
@@ -5392,7 +5400,7 @@ namespace Ict.Petra.Shared.MFinance.AR.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetDateCreatedDBName()
+        public static string GetDateCreatedDBName()
         {
             return "s_date_created_d";
         }
@@ -5404,7 +5412,7 @@ namespace Ict.Petra.Shared.MFinance.AR.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetCreatedByDBName()
+        public static string GetCreatedByDBName()
         {
             return "s_created_by_c";
         }
@@ -5416,7 +5424,7 @@ namespace Ict.Petra.Shared.MFinance.AR.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetDateModifiedDBName()
+        public static string GetDateModifiedDBName()
         {
             return "s_date_modified_d";
         }
@@ -5428,7 +5436,7 @@ namespace Ict.Petra.Shared.MFinance.AR.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetModifiedByDBName()
+        public static string GetModifiedByDBName()
         {
             return "s_modified_by_c";
         }
@@ -5440,7 +5448,7 @@ namespace Ict.Petra.Shared.MFinance.AR.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetModificationIdDBName()
+        public static string GetModificationIdDBName()
         {
             return "s_modification_id_c";
         }
@@ -5901,7 +5909,8 @@ namespace Ict.Petra.Shared.MFinance.AR.Data
         /// This identifies the current version of the record.
         public DataColumn ColumnModificationId;
 
-        private static short TableId = -1;
+        /// TableId for Ict.Common.Data generic functions
+        public static short TableId = 190;
 
         private static bool FInitInfoValues = InitInfoValues();
         private static bool InitInfoValues()
@@ -5926,8 +5935,8 @@ namespace Ict.Petra.Shared.MFinance.AR.Data
                     new TTypedColumnInfo(15, "ModifiedBy", "s_modified_by_c", OdbcType.VarChar, 20, false),
                     new TTypedColumnInfo(16, "ModificationId", "s_modification_id_c", OdbcType.VarChar, 150, false)
                 },
-                new string[] {
-                    "a_ledger_number_i", "a_key_i"
+                new int[] {
+                    0, 1
                 }));
             return true;
         }
@@ -6039,7 +6048,7 @@ namespace Ict.Petra.Shared.MFinance.AR.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetLedgerNumberDBName()
+        public static string GetLedgerNumberDBName()
         {
             return "a_ledger_number_i";
         }
@@ -6051,7 +6060,7 @@ namespace Ict.Petra.Shared.MFinance.AR.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetKeyDBName()
+        public static string GetKeyDBName()
         {
             return "a_key_i";
         }
@@ -6063,7 +6072,7 @@ namespace Ict.Petra.Shared.MFinance.AR.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetStatusDBName()
+        public static string GetStatusDBName()
         {
             return "a_status_c";
         }
@@ -6075,7 +6084,7 @@ namespace Ict.Petra.Shared.MFinance.AR.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetPartnerKeyDBName()
+        public static string GetPartnerKeyDBName()
         {
             return "p_partner_key_n";
         }
@@ -6087,7 +6096,7 @@ namespace Ict.Petra.Shared.MFinance.AR.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetDateEffectiveDBName()
+        public static string GetDateEffectiveDBName()
         {
             return "a_date_effective_d";
         }
@@ -6099,7 +6108,7 @@ namespace Ict.Petra.Shared.MFinance.AR.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetOfferDBName()
+        public static string GetOfferDBName()
         {
             return "a_offer_i";
         }
@@ -6111,7 +6120,7 @@ namespace Ict.Petra.Shared.MFinance.AR.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetTaxingDBName()
+        public static string GetTaxingDBName()
         {
             return "a_taxing_c";
         }
@@ -6123,7 +6132,7 @@ namespace Ict.Petra.Shared.MFinance.AR.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetSpecialTaxTypeCodeDBName()
+        public static string GetSpecialTaxTypeCodeDBName()
         {
             return "a_special_tax_type_code_c";
         }
@@ -6135,7 +6144,7 @@ namespace Ict.Petra.Shared.MFinance.AR.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetSpecialTaxRateCodeDBName()
+        public static string GetSpecialTaxRateCodeDBName()
         {
             return "a_special_tax_rate_code_c";
         }
@@ -6147,7 +6156,7 @@ namespace Ict.Petra.Shared.MFinance.AR.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetSpecialTaxValidFromDBName()
+        public static string GetSpecialTaxValidFromDBName()
         {
             return "a_special_tax_valid_from_d";
         }
@@ -6159,7 +6168,7 @@ namespace Ict.Petra.Shared.MFinance.AR.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetTotalAmountDBName()
+        public static string GetTotalAmountDBName()
         {
             return "a_total_amount_n";
         }
@@ -6171,7 +6180,7 @@ namespace Ict.Petra.Shared.MFinance.AR.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetCurrencyCodeDBName()
+        public static string GetCurrencyCodeDBName()
         {
             return "a_currency_code_c";
         }
@@ -6183,7 +6192,7 @@ namespace Ict.Petra.Shared.MFinance.AR.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetDateCreatedDBName()
+        public static string GetDateCreatedDBName()
         {
             return "s_date_created_d";
         }
@@ -6195,7 +6204,7 @@ namespace Ict.Petra.Shared.MFinance.AR.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetCreatedByDBName()
+        public static string GetCreatedByDBName()
         {
             return "s_created_by_c";
         }
@@ -6207,7 +6216,7 @@ namespace Ict.Petra.Shared.MFinance.AR.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetDateModifiedDBName()
+        public static string GetDateModifiedDBName()
         {
             return "s_date_modified_d";
         }
@@ -6219,7 +6228,7 @@ namespace Ict.Petra.Shared.MFinance.AR.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetModifiedByDBName()
+        public static string GetModifiedByDBName()
         {
             return "s_modified_by_c";
         }
@@ -6231,7 +6240,7 @@ namespace Ict.Petra.Shared.MFinance.AR.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetModificationIdDBName()
+        public static string GetModificationIdDBName()
         {
             return "s_modification_id_c";
         }
@@ -6965,7 +6974,8 @@ namespace Ict.Petra.Shared.MFinance.AR.Data
         /// This identifies the current version of the record.
         public DataColumn ColumnModificationId;
 
-        private static short TableId = -1;
+        /// TableId for Ict.Common.Data generic functions
+        public static short TableId = 191;
 
         private static bool FInitInfoValues = InitInfoValues();
         private static bool InitInfoValues()
@@ -6990,8 +7000,8 @@ namespace Ict.Petra.Shared.MFinance.AR.Data
                     new TTypedColumnInfo(15, "ModifiedBy", "s_modified_by_c", OdbcType.VarChar, 20, false),
                     new TTypedColumnInfo(16, "ModificationId", "s_modification_id_c", OdbcType.VarChar, 150, false)
                 },
-                new string[] {
-                    "a_ledger_number_i", "a_invoice_key_i", "a_detail_number_i"
+                new int[] {
+                    0, 1, 2
                 }));
             return true;
         }
@@ -7103,7 +7113,7 @@ namespace Ict.Petra.Shared.MFinance.AR.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetLedgerNumberDBName()
+        public static string GetLedgerNumberDBName()
         {
             return "a_ledger_number_i";
         }
@@ -7115,7 +7125,7 @@ namespace Ict.Petra.Shared.MFinance.AR.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetInvoiceKeyDBName()
+        public static string GetInvoiceKeyDBName()
         {
             return "a_invoice_key_i";
         }
@@ -7127,7 +7137,7 @@ namespace Ict.Petra.Shared.MFinance.AR.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetDetailNumberDBName()
+        public static string GetDetailNumberDBName()
         {
             return "a_detail_number_i";
         }
@@ -7139,7 +7149,7 @@ namespace Ict.Petra.Shared.MFinance.AR.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetArArticleCodeDBName()
+        public static string GetArArticleCodeDBName()
         {
             return "a_ar_article_code_c";
         }
@@ -7151,7 +7161,7 @@ namespace Ict.Petra.Shared.MFinance.AR.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetArReferenceDBName()
+        public static string GetArReferenceDBName()
         {
             return "a_ar_reference_c";
         }
@@ -7163,7 +7173,7 @@ namespace Ict.Petra.Shared.MFinance.AR.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetArNumberOfItemDBName()
+        public static string GetArNumberOfItemDBName()
         {
             return "a_ar_number_of_item_i";
         }
@@ -7175,7 +7185,7 @@ namespace Ict.Petra.Shared.MFinance.AR.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetArArticlePriceDBName()
+        public static string GetArArticlePriceDBName()
         {
             return "a_ar_article_price_d";
         }
@@ -7187,7 +7197,7 @@ namespace Ict.Petra.Shared.MFinance.AR.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetCalculatedAmountDBName()
+        public static string GetCalculatedAmountDBName()
         {
             return "a_calculated_amount_n";
         }
@@ -7199,7 +7209,7 @@ namespace Ict.Petra.Shared.MFinance.AR.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetCurrencyCodeDBName()
+        public static string GetCurrencyCodeDBName()
         {
             return "a_currency_code_c";
         }
@@ -7211,7 +7221,7 @@ namespace Ict.Petra.Shared.MFinance.AR.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetTaxTypeCodeDBName()
+        public static string GetTaxTypeCodeDBName()
         {
             return "a_tax_type_code_c";
         }
@@ -7223,7 +7233,7 @@ namespace Ict.Petra.Shared.MFinance.AR.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetTaxRateCodeDBName()
+        public static string GetTaxRateCodeDBName()
         {
             return "a_tax_rate_code_c";
         }
@@ -7235,7 +7245,7 @@ namespace Ict.Petra.Shared.MFinance.AR.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetTaxValidFromDBName()
+        public static string GetTaxValidFromDBName()
         {
             return "a_tax_valid_from_d";
         }
@@ -7247,7 +7257,7 @@ namespace Ict.Petra.Shared.MFinance.AR.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetDateCreatedDBName()
+        public static string GetDateCreatedDBName()
         {
             return "s_date_created_d";
         }
@@ -7259,7 +7269,7 @@ namespace Ict.Petra.Shared.MFinance.AR.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetCreatedByDBName()
+        public static string GetCreatedByDBName()
         {
             return "s_created_by_c";
         }
@@ -7271,7 +7281,7 @@ namespace Ict.Petra.Shared.MFinance.AR.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetDateModifiedDBName()
+        public static string GetDateModifiedDBName()
         {
             return "s_date_modified_d";
         }
@@ -7283,7 +7293,7 @@ namespace Ict.Petra.Shared.MFinance.AR.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetModifiedByDBName()
+        public static string GetModifiedByDBName()
         {
             return "s_modified_by_c";
         }
@@ -7295,7 +7305,7 @@ namespace Ict.Petra.Shared.MFinance.AR.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetModificationIdDBName()
+        public static string GetModificationIdDBName()
         {
             return "s_modification_id_c";
         }
@@ -8013,7 +8023,8 @@ namespace Ict.Petra.Shared.MFinance.AR.Data
         /// This identifies the current version of the record.
         public DataColumn ColumnModificationId;
 
-        private static short TableId = -1;
+        /// TableId for Ict.Common.Data generic functions
+        public static short TableId = 192;
 
         private static bool FInitInfoValues = InitInfoValues();
         private static bool InitInfoValues()
@@ -8030,8 +8041,8 @@ namespace Ict.Petra.Shared.MFinance.AR.Data
                     new TTypedColumnInfo(7, "ModifiedBy", "s_modified_by_c", OdbcType.VarChar, 20, false),
                     new TTypedColumnInfo(8, "ModificationId", "s_modification_id_c", OdbcType.VarChar, 150, false)
                 },
-                new string[] {
-                    "a_ledger_number_i", "a_invoice_key_i", "a_ar_discount_code_c", "a_ar_discount_date_valid_from_d"
+                new int[] {
+                    0, 1, 2, 3
                 }));
             return true;
         }
@@ -8127,7 +8138,7 @@ namespace Ict.Petra.Shared.MFinance.AR.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetLedgerNumberDBName()
+        public static string GetLedgerNumberDBName()
         {
             return "a_ledger_number_i";
         }
@@ -8139,7 +8150,7 @@ namespace Ict.Petra.Shared.MFinance.AR.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetInvoiceKeyDBName()
+        public static string GetInvoiceKeyDBName()
         {
             return "a_invoice_key_i";
         }
@@ -8151,7 +8162,7 @@ namespace Ict.Petra.Shared.MFinance.AR.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetArDiscountCodeDBName()
+        public static string GetArDiscountCodeDBName()
         {
             return "a_ar_discount_code_c";
         }
@@ -8163,7 +8174,7 @@ namespace Ict.Petra.Shared.MFinance.AR.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetArDiscountDateValidFromDBName()
+        public static string GetArDiscountDateValidFromDBName()
         {
             return "a_ar_discount_date_valid_from_d";
         }
@@ -8175,7 +8186,7 @@ namespace Ict.Petra.Shared.MFinance.AR.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetDateCreatedDBName()
+        public static string GetDateCreatedDBName()
         {
             return "s_date_created_d";
         }
@@ -8187,7 +8198,7 @@ namespace Ict.Petra.Shared.MFinance.AR.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetCreatedByDBName()
+        public static string GetCreatedByDBName()
         {
             return "s_created_by_c";
         }
@@ -8199,7 +8210,7 @@ namespace Ict.Petra.Shared.MFinance.AR.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetDateModifiedDBName()
+        public static string GetDateModifiedDBName()
         {
             return "s_date_modified_d";
         }
@@ -8211,7 +8222,7 @@ namespace Ict.Petra.Shared.MFinance.AR.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetModifiedByDBName()
+        public static string GetModifiedByDBName()
         {
             return "s_modified_by_c";
         }
@@ -8223,7 +8234,7 @@ namespace Ict.Petra.Shared.MFinance.AR.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetModificationIdDBName()
+        public static string GetModificationIdDBName()
         {
             return "s_modification_id_c";
         }
@@ -8631,7 +8642,8 @@ namespace Ict.Petra.Shared.MFinance.AR.Data
         /// This identifies the current version of the record.
         public DataColumn ColumnModificationId;
 
-        private static short TableId = -1;
+        /// TableId for Ict.Common.Data generic functions
+        public static short TableId = 193;
 
         private static bool FInitInfoValues = InitInfoValues();
         private static bool InitInfoValues()
@@ -8649,8 +8661,8 @@ namespace Ict.Petra.Shared.MFinance.AR.Data
                     new TTypedColumnInfo(8, "ModifiedBy", "s_modified_by_c", OdbcType.VarChar, 20, false),
                     new TTypedColumnInfo(9, "ModificationId", "s_modification_id_c", OdbcType.VarChar, 150, false)
                 },
-                new string[] {
-                    "a_ledger_number_i", "a_invoice_key_i", "a_detail_number_i", "a_ar_discount_code_c", "a_ar_discount_date_valid_from_d"
+                new int[] {
+                    0, 1, 2, 3, 4
                 }));
             return true;
         }
@@ -8748,7 +8760,7 @@ namespace Ict.Petra.Shared.MFinance.AR.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetLedgerNumberDBName()
+        public static string GetLedgerNumberDBName()
         {
             return "a_ledger_number_i";
         }
@@ -8760,7 +8772,7 @@ namespace Ict.Petra.Shared.MFinance.AR.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetInvoiceKeyDBName()
+        public static string GetInvoiceKeyDBName()
         {
             return "a_invoice_key_i";
         }
@@ -8772,7 +8784,7 @@ namespace Ict.Petra.Shared.MFinance.AR.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetDetailNumberDBName()
+        public static string GetDetailNumberDBName()
         {
             return "a_detail_number_i";
         }
@@ -8784,7 +8796,7 @@ namespace Ict.Petra.Shared.MFinance.AR.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetArDiscountCodeDBName()
+        public static string GetArDiscountCodeDBName()
         {
             return "a_ar_discount_code_c";
         }
@@ -8796,7 +8808,7 @@ namespace Ict.Petra.Shared.MFinance.AR.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetArDiscountDateValidFromDBName()
+        public static string GetArDiscountDateValidFromDBName()
         {
             return "a_ar_discount_date_valid_from_d";
         }
@@ -8808,7 +8820,7 @@ namespace Ict.Petra.Shared.MFinance.AR.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetDateCreatedDBName()
+        public static string GetDateCreatedDBName()
         {
             return "s_date_created_d";
         }
@@ -8820,7 +8832,7 @@ namespace Ict.Petra.Shared.MFinance.AR.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetCreatedByDBName()
+        public static string GetCreatedByDBName()
         {
             return "s_created_by_c";
         }
@@ -8832,7 +8844,7 @@ namespace Ict.Petra.Shared.MFinance.AR.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetDateModifiedDBName()
+        public static string GetDateModifiedDBName()
         {
             return "s_date_modified_d";
         }
@@ -8844,7 +8856,7 @@ namespace Ict.Petra.Shared.MFinance.AR.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetModifiedByDBName()
+        public static string GetModifiedByDBName()
         {
             return "s_modified_by_c";
         }
@@ -8856,7 +8868,7 @@ namespace Ict.Petra.Shared.MFinance.AR.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetModificationIdDBName()
+        public static string GetModificationIdDBName()
         {
             return "s_modification_id_c";
         }

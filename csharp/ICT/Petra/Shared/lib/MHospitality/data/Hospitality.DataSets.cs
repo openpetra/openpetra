@@ -1,7 +1,31 @@
 /* Auto generated with nant generateORM
- * based on TypedDataSets.xml
  * Do not modify this file manually!
  */
+/*************************************************************************
+ *
+ * DO NOT REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
+ *
+ * @Authors:
+ *       auto generated
+ *
+ * Copyright 2004-2009 by OM International
+ *
+ * This file is part of OpenPetra.org.
+ *
+ * OpenPetra.org is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * OpenPetra.org is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with OpenPetra.org.  If not, see <http://www.gnu.org/licenses/>.
+ *
+ ************************************************************************/
 namespace Ict.Petra.Shared.MHospitality.Data
 {
     using Ict.Common;
@@ -12,43 +36,37 @@ namespace Ict.Petra.Shared.MHospitality.Data
     using Ict.Petra.Shared.MConference.Data;
     using Ict.Petra.Shared.MPartner.Partner.Data;
     using Ict.Petra.Shared.MHospitality.Data;
-    
-    
-    /// auto generated
+
+     /// auto generated
     [Serializable()]
     public class HospitalityTDS : TTypedDataSet
     {
-        
+
         private PcBuildingTable TablePcBuilding;
-        
         private PcRoomTable TablePcRoom;
-        
         private PcRoomAllocTable TablePcRoomAlloc;
-        
         private PcRoomAttributeTable TablePcRoomAttribute;
-        
         private PhBookingTable TablePhBooking;
-        
         private PhRoomBookingTable TablePhRoomBooking;
-        
+
         /// auto generated
-        public HospitalityTDS() : 
+        public HospitalityTDS() :
                 base("HospitalityTDS")
         {
         }
-        
+
         /// auto generated for serialization
-        public HospitalityTDS(System.Runtime.Serialization.SerializationInfo info, System.Runtime.Serialization.StreamingContext context) : 
+        public HospitalityTDS(System.Runtime.Serialization.SerializationInfo info, System.Runtime.Serialization.StreamingContext context) :
                 base(info, context)
         {
         }
-        
+
         /// auto generated
-        public HospitalityTDS(string ADatasetName) : 
+        public HospitalityTDS(string ADatasetName) :
                 base(ADatasetName)
         {
         }
-        
+
         /// auto generated
         public PcBuildingTable PcBuilding
         {
@@ -57,7 +75,7 @@ namespace Ict.Petra.Shared.MHospitality.Data
                 return this.TablePcBuilding;
             }
         }
-        
+
         /// auto generated
         public PcRoomTable PcRoom
         {
@@ -66,7 +84,7 @@ namespace Ict.Petra.Shared.MHospitality.Data
                 return this.TablePcRoom;
             }
         }
-        
+
         /// auto generated
         public PcRoomAllocTable PcRoomAlloc
         {
@@ -75,7 +93,7 @@ namespace Ict.Petra.Shared.MHospitality.Data
                 return this.TablePcRoomAlloc;
             }
         }
-        
+
         /// auto generated
         public PcRoomAttributeTable PcRoomAttribute
         {
@@ -84,7 +102,7 @@ namespace Ict.Petra.Shared.MHospitality.Data
                 return this.TablePcRoomAttribute;
             }
         }
-        
+
         /// auto generated
         public PhBookingTable PhBooking
         {
@@ -93,7 +111,7 @@ namespace Ict.Petra.Shared.MHospitality.Data
                 return this.TablePhBooking;
             }
         }
-        
+
         /// auto generated
         public PhRoomBookingTable PhRoomBooking
         {
@@ -102,13 +120,13 @@ namespace Ict.Petra.Shared.MHospitality.Data
                 return this.TablePhRoomBooking;
             }
         }
-        
+
         /// auto generated
         public new virtual HospitalityTDS GetChangesTyped(bool removeEmptyTables)
         {
             return ((HospitalityTDS)(base.GetChangesTyped(removeEmptyTables)));
         }
-        
+
         /// auto generated
         protected override void InitTables()
         {
@@ -119,7 +137,7 @@ namespace Ict.Petra.Shared.MHospitality.Data
             this.Tables.Add(new PhBookingTable("PhBooking"));
             this.Tables.Add(new PhRoomBookingTable("PhRoomBooking"));
         }
-        
+
         /// auto generated
         protected override void InitTables(System.Data.DataSet ds)
         {
@@ -148,7 +166,7 @@ namespace Ict.Petra.Shared.MHospitality.Data
                 this.Tables.Add(new PhRoomBookingTable("PhRoomBooking"));
             }
         }
-        
+
         /// auto generated
         protected override void MapTables()
         {
@@ -179,7 +197,7 @@ namespace Ict.Petra.Shared.MHospitality.Data
                 this.TablePhRoomBooking.InitVars();
             }
         }
-        
+
         /// auto generated
         public override void InitVars()
         {
@@ -191,55 +209,47 @@ namespace Ict.Petra.Shared.MHospitality.Data
             this.TablePhBooking = ((PhBookingTable)(this.Tables["PhBooking"]));
             this.TablePhRoomBooking = ((PhRoomBookingTable)(this.Tables["PhRoomBooking"]));
         }
-        
+
         /// auto generated
         protected override void InitConstraints()
         {
-            if (((this.TablePcBuilding != null) 
+
+            if (((this.TablePcBuilding != null)
                         && (this.TablePcRoom != null)))
             {
                 this.FConstraints.Add(new TTypedConstraint("FKRoom1", "PcBuilding", new string[] {
-                                "p_venue_key_n",
-                                "pc_building_code_c"}, "PcRoom", new string[] {
-                                "p_venue_key_n",
-                                "pc_building_code_c"}));
+                                "p_venue_key_n", "pc_building_code_c"}, "PcRoom", new string[] {
+                                "p_venue_key_n", "pc_building_code_c"}));
             }
-            if (((this.TablePcRoom != null) 
+            if (((this.TablePcRoom != null)
                         && (this.TablePcRoomAlloc != null)))
             {
                 this.FConstraints.Add(new TTypedConstraint("FKRoomAlloc2", "PcRoom", new string[] {
-                                "p_venue_key_n",
-                                "pc_building_code_c",
-                                "pc_room_number_c"}, "PcRoomAlloc", new string[] {
-                                "p_venue_key_n",
-                                "pc_building_code_c",
-                                "pc_room_number_c"}));
+                                "p_venue_key_n", "pc_building_code_c", "pc_room_number_c"}, "PcRoomAlloc", new string[] {
+                                "p_venue_key_n", "pc_building_code_c", "pc_room_number_c"}));
             }
-            if (((this.TablePcRoom != null) 
+            if (((this.TablePcRoom != null)
                         && (this.TablePcRoomAttribute != null)))
             {
                 this.FConstraints.Add(new TTypedConstraint("FKRoomAttribute1", "PcRoom", new string[] {
-                                "p_venue_key_n",
-                                "pc_building_code_c",
-                                "pc_room_number_c"}, "PcRoomAttribute", new string[] {
-                                "p_venue_key_n",
-                                "pc_building_code_c",
-                                "pc_room_number_c"}));
+                                "p_venue_key_n", "pc_building_code_c", "pc_room_number_c"}, "PcRoomAttribute", new string[] {
+                                "p_venue_key_n", "pc_building_code_c", "pc_room_number_c"}));
             }
-            if (((this.TablePhBooking != null) 
+            if (((this.TablePhBooking != null)
                         && (this.TablePhRoomBooking != null)))
             {
                 this.FConstraints.Add(new TTypedConstraint("FKRoomBooking1", "PhBooking", new string[] {
                                 "ph_key_i"}, "PhRoomBooking", new string[] {
                                 "ph_booking_key_i"}));
             }
-            if (((this.TablePcRoomAlloc != null) 
+            if (((this.TablePcRoomAlloc != null)
                         && (this.TablePhRoomBooking != null)))
             {
                 this.FConstraints.Add(new TTypedConstraint("FKRoomBooking2", "PcRoomAlloc", new string[] {
                                 "pc_key_i"}, "PhRoomBooking", new string[] {
                                 "ph_room_alloc_key_i"}));
             }
+
         }
     }
 }

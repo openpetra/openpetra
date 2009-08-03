@@ -1,7 +1,31 @@
 /* Auto generated with nant generateORM
- * based on Finance.AP.TypedDataSets.xml
  * Do not modify this file manually!
  */
+/*************************************************************************
+ *
+ * DO NOT REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
+ *
+ * @Authors:
+ *       auto generated
+ *
+ * Copyright 2004-2009 by OM International
+ *
+ * This file is part of OpenPetra.org.
+ *
+ * OpenPetra.org is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * OpenPetra.org is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with OpenPetra.org.  If not, see <http://www.gnu.org/licenses/>.
+ *
+ ************************************************************************/
 namespace Ict.Petra.Shared.MFinance.AP.Data
 {
     using Ict.Common;
@@ -10,43 +34,37 @@ namespace Ict.Petra.Shared.MFinance.AP.Data
     using System.Data;
     using System.Data.Odbc;
     using Ict.Petra.Shared.MFinance.Account.Data;
-    
-    
-    /// auto generated
+
+     /// auto generated
     [Serializable()]
     public class AccountsPayableTDS : TTypedDataSet
     {
-        
+
         private AApSupplierTable TableAApSupplier;
-        
         private AApDocumentTable TableAApDocument;
-        
         private AApDocumentDetailTable TableAApDocumentDetail;
-        
         private AApDocumentPaymentTable TableAApDocumentPayment;
-        
         private AApPaymentTable TableAApPayment;
-        
         private AApAnalAttribTable TableAApAnalAttrib;
-        
+
         /// auto generated
-        public AccountsPayableTDS() : 
+        public AccountsPayableTDS() :
                 base("AccountsPayableTDS")
         {
         }
-        
+
         /// auto generated for serialization
-        public AccountsPayableTDS(System.Runtime.Serialization.SerializationInfo info, System.Runtime.Serialization.StreamingContext context) : 
+        public AccountsPayableTDS(System.Runtime.Serialization.SerializationInfo info, System.Runtime.Serialization.StreamingContext context) :
                 base(info, context)
         {
         }
-        
+
         /// auto generated
-        public AccountsPayableTDS(string ADatasetName) : 
+        public AccountsPayableTDS(string ADatasetName) :
                 base(ADatasetName)
         {
         }
-        
+
         /// auto generated
         public AApSupplierTable AApSupplier
         {
@@ -55,7 +73,7 @@ namespace Ict.Petra.Shared.MFinance.AP.Data
                 return this.TableAApSupplier;
             }
         }
-        
+
         /// auto generated
         public AApDocumentTable AApDocument
         {
@@ -64,7 +82,7 @@ namespace Ict.Petra.Shared.MFinance.AP.Data
                 return this.TableAApDocument;
             }
         }
-        
+
         /// auto generated
         public AApDocumentDetailTable AApDocumentDetail
         {
@@ -73,7 +91,7 @@ namespace Ict.Petra.Shared.MFinance.AP.Data
                 return this.TableAApDocumentDetail;
             }
         }
-        
+
         /// auto generated
         public AApDocumentPaymentTable AApDocumentPayment
         {
@@ -82,7 +100,7 @@ namespace Ict.Petra.Shared.MFinance.AP.Data
                 return this.TableAApDocumentPayment;
             }
         }
-        
+
         /// auto generated
         public AApPaymentTable AApPayment
         {
@@ -91,7 +109,7 @@ namespace Ict.Petra.Shared.MFinance.AP.Data
                 return this.TableAApPayment;
             }
         }
-        
+
         /// auto generated
         public AApAnalAttribTable AApAnalAttrib
         {
@@ -100,13 +118,13 @@ namespace Ict.Petra.Shared.MFinance.AP.Data
                 return this.TableAApAnalAttrib;
             }
         }
-        
+
         /// auto generated
         public new virtual AccountsPayableTDS GetChangesTyped(bool removeEmptyTables)
         {
             return ((AccountsPayableTDS)(base.GetChangesTyped(removeEmptyTables)));
         }
-        
+
         /// auto generated
         protected override void InitTables()
         {
@@ -117,7 +135,7 @@ namespace Ict.Petra.Shared.MFinance.AP.Data
             this.Tables.Add(new AApPaymentTable("AApPayment"));
             this.Tables.Add(new AApAnalAttribTable("AApAnalAttrib"));
         }
-        
+
         /// auto generated
         protected override void InitTables(System.Data.DataSet ds)
         {
@@ -146,7 +164,7 @@ namespace Ict.Petra.Shared.MFinance.AP.Data
                 this.Tables.Add(new AApAnalAttribTable("AApAnalAttrib"));
             }
         }
-        
+
         /// auto generated
         protected override void MapTables()
         {
@@ -177,7 +195,7 @@ namespace Ict.Petra.Shared.MFinance.AP.Data
                 this.TableAApAnalAttrib.InitVars();
             }
         }
-        
+
         /// auto generated
         public override void InitVars()
         {
@@ -189,55 +207,47 @@ namespace Ict.Petra.Shared.MFinance.AP.Data
             this.TableAApPayment = ((AApPaymentTable)(this.Tables["AApPayment"]));
             this.TableAApAnalAttrib = ((AApAnalAttribTable)(this.Tables["AApAnalAttrib"]));
         }
-        
+
         /// auto generated
         protected override void InitConstraints()
         {
-            if (((this.TableAApSupplier != null) 
+
+            if (((this.TableAApDocumentDetail != null)
+                        && (this.TableAApAnalAttrib != null)))
+            {
+                this.FConstraints.Add(new TTypedConstraint("FKApAnalAttrib1", "AApDocumentDetail", new string[] {
+                                "a_ledger_number_i", "a_ap_number_i", "a_detail_number_i"}, "AApAnalAttrib", new string[] {
+                                "a_ledger_number_i", "a_ap_number_i", "a_detail_number_i"}));
+            }
+            if (((this.TableAApSupplier != null)
                         && (this.TableAApDocument != null)))
             {
                 this.FConstraints.Add(new TTypedConstraint("FKApDocument2", "AApSupplier", new string[] {
                                 "p_partner_key_n"}, "AApDocument", new string[] {
                                 "p_partner_key_n"}));
             }
-            if (((this.TableAApDocument != null) 
+            if (((this.TableAApDocument != null)
                         && (this.TableAApDocumentDetail != null)))
             {
                 this.FConstraints.Add(new TTypedConstraint("FKApDocumentDetail2", "AApDocument", new string[] {
-                                "a_ledger_number_i",
-                                "a_ap_number_i"}, "AApDocumentDetail", new string[] {
-                                "a_ledger_number_i",
-                                "a_ap_number_i"}));
+                                "a_ledger_number_i", "a_ap_number_i"}, "AApDocumentDetail", new string[] {
+                                "a_ledger_number_i", "a_ap_number_i"}));
             }
-            if (((this.TableAApDocument != null) 
+            if (((this.TableAApDocument != null)
                         && (this.TableAApDocumentPayment != null)))
             {
                 this.FConstraints.Add(new TTypedConstraint("FKApDocumentPayment2", "AApDocument", new string[] {
-                                "a_ledger_number_i",
-                                "a_ap_number_i"}, "AApDocumentPayment", new string[] {
-                                "a_ledger_number_i",
-                                "a_ap_number_i"}));
+                                "a_ledger_number_i", "a_ap_number_i"}, "AApDocumentPayment", new string[] {
+                                "a_ledger_number_i", "a_ap_number_i"}));
             }
-            if (((this.TableAApPayment != null) 
+            if (((this.TableAApPayment != null)
                         && (this.TableAApDocumentPayment != null)))
             {
                 this.FConstraints.Add(new TTypedConstraint("FKApDocumentPayment3", "AApPayment", new string[] {
-                                "a_ledger_number_i",
-                                "a_payment_number_i"}, "AApDocumentPayment", new string[] {
-                                "a_ledger_number_i",
-                                "a_payment_number_i"}));
+                                "a_ledger_number_i", "a_payment_number_i"}, "AApDocumentPayment", new string[] {
+                                "a_ledger_number_i", "a_payment_number_i"}));
             }
-            if (((this.TableAApDocumentDetail != null) 
-                        && (this.TableAApAnalAttrib != null)))
-            {
-                this.FConstraints.Add(new TTypedConstraint("FKApAnalAttrib1", "AApDocumentDetail", new string[] {
-                                "a_ledger_number_i",
-                                "a_ap_number_i",
-                                "a_detail_number_i"}, "AApAnalAttrib", new string[] {
-                                "a_ledger_number_i",
-                                "a_ap_number_i",
-                                "a_detail_number_i"}));
-            }
+
         }
     }
 }

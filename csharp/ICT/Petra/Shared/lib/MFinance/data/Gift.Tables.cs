@@ -65,7 +65,8 @@ namespace Ict.Petra.Shared.MFinance.Gift.Data
         /// This identifies the current version of the record.
         public DataColumn ColumnModificationId;
 
-        private static short TableId = -1;
+        /// TableId for Ict.Common.Data generic functions
+        public static short TableId = 142;
 
         private static bool FInitInfoValues = InitInfoValues();
         private static bool InitInfoValues()
@@ -84,8 +85,8 @@ namespace Ict.Petra.Shared.MFinance.Gift.Data
                     new TTypedColumnInfo(9, "ModifiedBy", "s_modified_by_c", OdbcType.VarChar, 20, false),
                     new TTypedColumnInfo(10, "ModificationId", "s_modification_id_c", OdbcType.VarChar, 150, false)
                 },
-                new string[] {
-                    "a_method_of_payment_code_c"
+                new int[] {
+                    0
                 }));
             return true;
         }
@@ -185,7 +186,7 @@ namespace Ict.Petra.Shared.MFinance.Gift.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetMethodOfPaymentCodeDBName()
+        public static string GetMethodOfPaymentCodeDBName()
         {
             return "a_method_of_payment_code_c";
         }
@@ -197,7 +198,7 @@ namespace Ict.Petra.Shared.MFinance.Gift.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetMethodOfPaymentDescDBName()
+        public static string GetMethodOfPaymentDescDBName()
         {
             return "a_method_of_payment_desc_c";
         }
@@ -209,7 +210,7 @@ namespace Ict.Petra.Shared.MFinance.Gift.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetMethodOfPaymentTypeDBName()
+        public static string GetMethodOfPaymentTypeDBName()
         {
             return "a_method_of_payment_type_c";
         }
@@ -221,7 +222,7 @@ namespace Ict.Petra.Shared.MFinance.Gift.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetProcessToCallDBName()
+        public static string GetProcessToCallDBName()
         {
             return "a_process_to_call_c";
         }
@@ -233,7 +234,7 @@ namespace Ict.Petra.Shared.MFinance.Gift.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetSpecialMethodOfPmtDBName()
+        public static string GetSpecialMethodOfPmtDBName()
         {
             return "a_special_method_of_pmt_l";
         }
@@ -245,7 +246,7 @@ namespace Ict.Petra.Shared.MFinance.Gift.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetActiveDBName()
+        public static string GetActiveDBName()
         {
             return "a_active_l";
         }
@@ -257,7 +258,7 @@ namespace Ict.Petra.Shared.MFinance.Gift.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetDateCreatedDBName()
+        public static string GetDateCreatedDBName()
         {
             return "s_date_created_d";
         }
@@ -269,7 +270,7 @@ namespace Ict.Petra.Shared.MFinance.Gift.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetCreatedByDBName()
+        public static string GetCreatedByDBName()
         {
             return "s_created_by_c";
         }
@@ -281,7 +282,7 @@ namespace Ict.Petra.Shared.MFinance.Gift.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetDateModifiedDBName()
+        public static string GetDateModifiedDBName()
         {
             return "s_date_modified_d";
         }
@@ -293,7 +294,7 @@ namespace Ict.Petra.Shared.MFinance.Gift.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetModifiedByDBName()
+        public static string GetModifiedByDBName()
         {
             return "s_modified_by_c";
         }
@@ -305,7 +306,7 @@ namespace Ict.Petra.Shared.MFinance.Gift.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetModificationIdDBName()
+        public static string GetModificationIdDBName()
         {
             return "s_modification_id_c";
         }
@@ -793,7 +794,8 @@ namespace Ict.Petra.Shared.MFinance.Gift.Data
         /// This identifies the current version of the record.
         public DataColumn ColumnModificationId;
 
-        private static short TableId = -1;
+        /// TableId for Ict.Common.Data generic functions
+        public static short TableId = 143;
 
         private static bool FInitInfoValues = InitInfoValues();
         private static bool InitInfoValues()
@@ -812,8 +814,8 @@ namespace Ict.Petra.Shared.MFinance.Gift.Data
                     new TTypedColumnInfo(9, "ModifiedBy", "s_modified_by_c", OdbcType.VarChar, 20, false),
                     new TTypedColumnInfo(10, "ModificationId", "s_modification_id_c", OdbcType.VarChar, 150, false)
                 },
-                new string[] {
-                    "a_ledger_number_i", "a_motivation_group_code_c"
+                new int[] {
+                    0, 1
                 }));
             return true;
         }
@@ -913,7 +915,7 @@ namespace Ict.Petra.Shared.MFinance.Gift.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetLedgerNumberDBName()
+        public static string GetLedgerNumberDBName()
         {
             return "a_ledger_number_i";
         }
@@ -925,7 +927,7 @@ namespace Ict.Petra.Shared.MFinance.Gift.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetMotivationGroupCodeDBName()
+        public static string GetMotivationGroupCodeDBName()
         {
             return "a_motivation_group_code_c";
         }
@@ -937,7 +939,7 @@ namespace Ict.Petra.Shared.MFinance.Gift.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetMotivationGroupDescriptionDBName()
+        public static string GetMotivationGroupDescriptionDBName()
         {
             return "a_motivation_group_description_c";
         }
@@ -949,7 +951,7 @@ namespace Ict.Petra.Shared.MFinance.Gift.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetGroupStatusDBName()
+        public static string GetGroupStatusDBName()
         {
             return "a_group_status_l";
         }
@@ -961,7 +963,7 @@ namespace Ict.Petra.Shared.MFinance.Gift.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetMotivationGroupDescLocalDBName()
+        public static string GetMotivationGroupDescLocalDBName()
         {
             return "a_motivation_group_desc_local_c";
         }
@@ -973,7 +975,7 @@ namespace Ict.Petra.Shared.MFinance.Gift.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetRestrictedDBName()
+        public static string GetRestrictedDBName()
         {
             return "a_restricted_l";
         }
@@ -985,7 +987,7 @@ namespace Ict.Petra.Shared.MFinance.Gift.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetDateCreatedDBName()
+        public static string GetDateCreatedDBName()
         {
             return "s_date_created_d";
         }
@@ -997,7 +999,7 @@ namespace Ict.Petra.Shared.MFinance.Gift.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetCreatedByDBName()
+        public static string GetCreatedByDBName()
         {
             return "s_created_by_c";
         }
@@ -1009,7 +1011,7 @@ namespace Ict.Petra.Shared.MFinance.Gift.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetDateModifiedDBName()
+        public static string GetDateModifiedDBName()
         {
             return "s_date_modified_d";
         }
@@ -1021,7 +1023,7 @@ namespace Ict.Petra.Shared.MFinance.Gift.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetModifiedByDBName()
+        public static string GetModifiedByDBName()
         {
             return "s_modified_by_c";
         }
@@ -1033,7 +1035,7 @@ namespace Ict.Petra.Shared.MFinance.Gift.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetModificationIdDBName()
+        public static string GetModificationIdDBName()
         {
             return "s_modification_id_c";
         }
@@ -1559,7 +1561,8 @@ namespace Ict.Petra.Shared.MFinance.Gift.Data
         /// This identifies the current version of the record.
         public DataColumn ColumnModificationId;
 
-        private static short TableId = -1;
+        /// TableId for Ict.Common.Data generic functions
+        public static short TableId = 144;
 
         private static bool FInitInfoValues = InitInfoValues();
         private static bool InitInfoValues()
@@ -1597,8 +1600,8 @@ namespace Ict.Petra.Shared.MFinance.Gift.Data
                     new TTypedColumnInfo(28, "ModifiedBy", "s_modified_by_c", OdbcType.VarChar, 20, false),
                     new TTypedColumnInfo(29, "ModificationId", "s_modification_id_c", OdbcType.VarChar, 150, false)
                 },
-                new string[] {
-                    "a_ledger_number_i", "a_motivation_group_code_c", "a_motivation_detail_code_c"
+                new int[] {
+                    0, 1, 2
                 }));
             return true;
         }
@@ -1736,7 +1739,7 @@ namespace Ict.Petra.Shared.MFinance.Gift.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetLedgerNumberDBName()
+        public static string GetLedgerNumberDBName()
         {
             return "a_ledger_number_i";
         }
@@ -1748,7 +1751,7 @@ namespace Ict.Petra.Shared.MFinance.Gift.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetMotivationGroupCodeDBName()
+        public static string GetMotivationGroupCodeDBName()
         {
             return "a_motivation_group_code_c";
         }
@@ -1760,7 +1763,7 @@ namespace Ict.Petra.Shared.MFinance.Gift.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetMotivationDetailCodeDBName()
+        public static string GetMotivationDetailCodeDBName()
         {
             return "a_motivation_detail_code_c";
         }
@@ -1772,7 +1775,7 @@ namespace Ict.Petra.Shared.MFinance.Gift.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetMotivationDetailAudienceDBName()
+        public static string GetMotivationDetailAudienceDBName()
         {
             return "a_motivation_detail_audience_c";
         }
@@ -1784,7 +1787,7 @@ namespace Ict.Petra.Shared.MFinance.Gift.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetMotivationDetailDescDBName()
+        public static string GetMotivationDetailDescDBName()
         {
             return "a_motivation_detail_desc_c";
         }
@@ -1796,7 +1799,7 @@ namespace Ict.Petra.Shared.MFinance.Gift.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetAccountCodeDBName()
+        public static string GetAccountCodeDBName()
         {
             return "a_account_code_c";
         }
@@ -1808,7 +1811,7 @@ namespace Ict.Petra.Shared.MFinance.Gift.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetCostCentreCodeDBName()
+        public static string GetCostCentreCodeDBName()
         {
             return "a_cost_centre_code_c";
         }
@@ -1820,7 +1823,7 @@ namespace Ict.Petra.Shared.MFinance.Gift.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetMotivationStatusDBName()
+        public static string GetMotivationStatusDBName()
         {
             return "a_motivation_status_l";
         }
@@ -1832,7 +1835,7 @@ namespace Ict.Petra.Shared.MFinance.Gift.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetMailingCostDBName()
+        public static string GetMailingCostDBName()
         {
             return "a_mailing_cost_n";
         }
@@ -1844,7 +1847,7 @@ namespace Ict.Petra.Shared.MFinance.Gift.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetBulkRateFlagDBName()
+        public static string GetBulkRateFlagDBName()
         {
             return "a_bulk_rate_flag_l";
         }
@@ -1856,7 +1859,7 @@ namespace Ict.Petra.Shared.MFinance.Gift.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetNextResponseStatusDBName()
+        public static string GetNextResponseStatusDBName()
         {
             return "a_next_response_status_c";
         }
@@ -1868,7 +1871,7 @@ namespace Ict.Petra.Shared.MFinance.Gift.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetActivatePartnerFlagDBName()
+        public static string GetActivatePartnerFlagDBName()
         {
             return "a_activate_partner_flag_l";
         }
@@ -1880,7 +1883,7 @@ namespace Ict.Petra.Shared.MFinance.Gift.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetNumberSentDBName()
+        public static string GetNumberSentDBName()
         {
             return "a_number_sent_i";
         }
@@ -1892,7 +1895,7 @@ namespace Ict.Petra.Shared.MFinance.Gift.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetNumberOfResponsesDBName()
+        public static string GetNumberOfResponsesDBName()
         {
             return "a_number_of_responses_i";
         }
@@ -1904,7 +1907,7 @@ namespace Ict.Petra.Shared.MFinance.Gift.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetTargetNumberOfResponsesDBName()
+        public static string GetTargetNumberOfResponsesDBName()
         {
             return "a_target_number_of_responses_i";
         }
@@ -1916,7 +1919,7 @@ namespace Ict.Petra.Shared.MFinance.Gift.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetTargetAmountDBName()
+        public static string GetTargetAmountDBName()
         {
             return "a_target_amount_n";
         }
@@ -1928,7 +1931,7 @@ namespace Ict.Petra.Shared.MFinance.Gift.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetAmountReceivedDBName()
+        public static string GetAmountReceivedDBName()
         {
             return "a_amount_received_n";
         }
@@ -1940,7 +1943,7 @@ namespace Ict.Petra.Shared.MFinance.Gift.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetRecipientKeyDBName()
+        public static string GetRecipientKeyDBName()
         {
             return "p_recipient_key_n";
         }
@@ -1952,7 +1955,7 @@ namespace Ict.Petra.Shared.MFinance.Gift.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetAutopopdescDBName()
+        public static string GetAutopopdescDBName()
         {
             return "a_autopopdesc_l";
         }
@@ -1964,7 +1967,7 @@ namespace Ict.Petra.Shared.MFinance.Gift.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetReceiptDBName()
+        public static string GetReceiptDBName()
         {
             return "a_receipt_l";
         }
@@ -1976,7 +1979,7 @@ namespace Ict.Petra.Shared.MFinance.Gift.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetTaxDeductableDBName()
+        public static string GetTaxDeductableDBName()
         {
             return "a_tax_deductable_l";
         }
@@ -1988,7 +1991,7 @@ namespace Ict.Petra.Shared.MFinance.Gift.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetMotivationDetailDescLocalDBName()
+        public static string GetMotivationDetailDescLocalDBName()
         {
             return "a_motivation_detail_desc_local_c";
         }
@@ -2000,7 +2003,7 @@ namespace Ict.Petra.Shared.MFinance.Gift.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetShortCodeDBName()
+        public static string GetShortCodeDBName()
         {
             return "a_short_code_c";
         }
@@ -2012,7 +2015,7 @@ namespace Ict.Petra.Shared.MFinance.Gift.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetRestrictedDBName()
+        public static string GetRestrictedDBName()
         {
             return "a_restricted_l";
         }
@@ -2024,7 +2027,7 @@ namespace Ict.Petra.Shared.MFinance.Gift.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetExportToIntranetDBName()
+        public static string GetExportToIntranetDBName()
         {
             return "a_export_to_intranet_l";
         }
@@ -2036,7 +2039,7 @@ namespace Ict.Petra.Shared.MFinance.Gift.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetDateCreatedDBName()
+        public static string GetDateCreatedDBName()
         {
             return "s_date_created_d";
         }
@@ -2048,7 +2051,7 @@ namespace Ict.Petra.Shared.MFinance.Gift.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetCreatedByDBName()
+        public static string GetCreatedByDBName()
         {
             return "s_created_by_c";
         }
@@ -2060,7 +2063,7 @@ namespace Ict.Petra.Shared.MFinance.Gift.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetDateModifiedDBName()
+        public static string GetDateModifiedDBName()
         {
             return "s_date_modified_d";
         }
@@ -2072,7 +2075,7 @@ namespace Ict.Petra.Shared.MFinance.Gift.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetModifiedByDBName()
+        public static string GetModifiedByDBName()
         {
             return "s_modified_by_c";
         }
@@ -2084,7 +2087,7 @@ namespace Ict.Petra.Shared.MFinance.Gift.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetModificationIdDBName()
+        public static string GetModificationIdDBName()
         {
             return "s_modification_id_c";
         }
@@ -3309,7 +3312,8 @@ namespace Ict.Petra.Shared.MFinance.Gift.Data
         /// This identifies the current version of the record.
         public DataColumn ColumnModificationId;
 
-        private static short TableId = -1;
+        /// TableId for Ict.Common.Data generic functions
+        public static short TableId = 145;
 
         private static bool FInitInfoValues = InitInfoValues();
         private static bool InitInfoValues()
@@ -3326,8 +3330,8 @@ namespace Ict.Petra.Shared.MFinance.Gift.Data
                     new TTypedColumnInfo(7, "ModifiedBy", "s_modified_by_c", OdbcType.VarChar, 20, false),
                     new TTypedColumnInfo(8, "ModificationId", "s_modification_id_c", OdbcType.VarChar, 150, false)
                 },
-                new string[] {
-                    "a_ledger_number_i", "a_motivation_group_code_c", "a_motivation_detail_code_c", "a_fee_code_c"
+                new int[] {
+                    0, 1, 2, 3
                 }));
             return true;
         }
@@ -3423,7 +3427,7 @@ namespace Ict.Petra.Shared.MFinance.Gift.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetLedgerNumberDBName()
+        public static string GetLedgerNumberDBName()
         {
             return "a_ledger_number_i";
         }
@@ -3435,7 +3439,7 @@ namespace Ict.Petra.Shared.MFinance.Gift.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetMotivationGroupCodeDBName()
+        public static string GetMotivationGroupCodeDBName()
         {
             return "a_motivation_group_code_c";
         }
@@ -3447,7 +3451,7 @@ namespace Ict.Petra.Shared.MFinance.Gift.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetMotivationDetailCodeDBName()
+        public static string GetMotivationDetailCodeDBName()
         {
             return "a_motivation_detail_code_c";
         }
@@ -3459,7 +3463,7 @@ namespace Ict.Petra.Shared.MFinance.Gift.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetFeeCodeDBName()
+        public static string GetFeeCodeDBName()
         {
             return "a_fee_code_c";
         }
@@ -3471,7 +3475,7 @@ namespace Ict.Petra.Shared.MFinance.Gift.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetDateCreatedDBName()
+        public static string GetDateCreatedDBName()
         {
             return "s_date_created_d";
         }
@@ -3483,7 +3487,7 @@ namespace Ict.Petra.Shared.MFinance.Gift.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetCreatedByDBName()
+        public static string GetCreatedByDBName()
         {
             return "s_created_by_c";
         }
@@ -3495,7 +3499,7 @@ namespace Ict.Petra.Shared.MFinance.Gift.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetDateModifiedDBName()
+        public static string GetDateModifiedDBName()
         {
             return "s_date_modified_d";
         }
@@ -3507,7 +3511,7 @@ namespace Ict.Petra.Shared.MFinance.Gift.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetModifiedByDBName()
+        public static string GetModifiedByDBName()
         {
             return "s_modified_by_c";
         }
@@ -3519,7 +3523,7 @@ namespace Ict.Petra.Shared.MFinance.Gift.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetModificationIdDBName()
+        public static string GetModificationIdDBName()
         {
             return "s_modification_id_c";
         }
@@ -3939,7 +3943,8 @@ namespace Ict.Petra.Shared.MFinance.Gift.Data
         /// This identifies the current version of the record.
         public DataColumn ColumnModificationId;
 
-        private static short TableId = -1;
+        /// TableId for Ict.Common.Data generic functions
+        public static short TableId = 161;
 
         private static bool FInitInfoValues = InitInfoValues();
         private static bool InitInfoValues()
@@ -3963,8 +3968,8 @@ namespace Ict.Petra.Shared.MFinance.Gift.Data
                     new TTypedColumnInfo(14, "ModifiedBy", "s_modified_by_c", OdbcType.VarChar, 20, false),
                     new TTypedColumnInfo(15, "ModificationId", "s_modification_id_c", OdbcType.VarChar, 150, false)
                 },
-                new string[] {
-                    "a_ledger_number_i", "a_batch_number_i"
+                new int[] {
+                    0, 1
                 }));
             return true;
         }
@@ -4074,7 +4079,7 @@ namespace Ict.Petra.Shared.MFinance.Gift.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetLedgerNumberDBName()
+        public static string GetLedgerNumberDBName()
         {
             return "a_ledger_number_i";
         }
@@ -4086,7 +4091,7 @@ namespace Ict.Petra.Shared.MFinance.Gift.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetBatchNumberDBName()
+        public static string GetBatchNumberDBName()
         {
             return "a_batch_number_i";
         }
@@ -4098,7 +4103,7 @@ namespace Ict.Petra.Shared.MFinance.Gift.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetBatchDescriptionDBName()
+        public static string GetBatchDescriptionDBName()
         {
             return "a_batch_description_c";
         }
@@ -4110,7 +4115,7 @@ namespace Ict.Petra.Shared.MFinance.Gift.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetHashTotalDBName()
+        public static string GetHashTotalDBName()
         {
             return "a_hash_total_n";
         }
@@ -4122,7 +4127,7 @@ namespace Ict.Petra.Shared.MFinance.Gift.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetBatchTotalDBName()
+        public static string GetBatchTotalDBName()
         {
             return "a_batch_total_n";
         }
@@ -4134,7 +4139,7 @@ namespace Ict.Petra.Shared.MFinance.Gift.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetBankAccountCodeDBName()
+        public static string GetBankAccountCodeDBName()
         {
             return "a_bank_account_code_c";
         }
@@ -4146,7 +4151,7 @@ namespace Ict.Petra.Shared.MFinance.Gift.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetLastGiftNumberDBName()
+        public static string GetLastGiftNumberDBName()
         {
             return "a_last_gift_number_i";
         }
@@ -4158,7 +4163,7 @@ namespace Ict.Petra.Shared.MFinance.Gift.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetCurrencyCodeDBName()
+        public static string GetCurrencyCodeDBName()
         {
             return "a_currency_code_c";
         }
@@ -4170,7 +4175,7 @@ namespace Ict.Petra.Shared.MFinance.Gift.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetBankCostCentreDBName()
+        public static string GetBankCostCentreDBName()
         {
             return "a_bank_cost_centre_c";
         }
@@ -4182,7 +4187,7 @@ namespace Ict.Petra.Shared.MFinance.Gift.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetGiftTypeDBName()
+        public static string GetGiftTypeDBName()
         {
             return "a_gift_type_c";
         }
@@ -4194,7 +4199,7 @@ namespace Ict.Petra.Shared.MFinance.Gift.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetMethodOfPaymentCodeDBName()
+        public static string GetMethodOfPaymentCodeDBName()
         {
             return "a_method_of_payment_code_c";
         }
@@ -4206,7 +4211,7 @@ namespace Ict.Petra.Shared.MFinance.Gift.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetDateCreatedDBName()
+        public static string GetDateCreatedDBName()
         {
             return "s_date_created_d";
         }
@@ -4218,7 +4223,7 @@ namespace Ict.Petra.Shared.MFinance.Gift.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetCreatedByDBName()
+        public static string GetCreatedByDBName()
         {
             return "s_created_by_c";
         }
@@ -4230,7 +4235,7 @@ namespace Ict.Petra.Shared.MFinance.Gift.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetDateModifiedDBName()
+        public static string GetDateModifiedDBName()
         {
             return "s_date_modified_d";
         }
@@ -4242,7 +4247,7 @@ namespace Ict.Petra.Shared.MFinance.Gift.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetModifiedByDBName()
+        public static string GetModifiedByDBName()
         {
             return "s_modified_by_c";
         }
@@ -4254,7 +4259,7 @@ namespace Ict.Petra.Shared.MFinance.Gift.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetModificationIdDBName()
+        public static string GetModificationIdDBName()
         {
             return "s_modification_id_c";
         }
@@ -4953,7 +4958,8 @@ namespace Ict.Petra.Shared.MFinance.Gift.Data
         /// This identifies the current version of the record.
         public DataColumn ColumnModificationId;
 
-        private static short TableId = -1;
+        /// TableId for Ict.Common.Data generic functions
+        public static short TableId = 162;
 
         private static bool FInitInfoValues = InitInfoValues();
         private static bool InitInfoValues()
@@ -4980,8 +4986,8 @@ namespace Ict.Petra.Shared.MFinance.Gift.Data
                     new TTypedColumnInfo(17, "ModifiedBy", "s_modified_by_c", OdbcType.VarChar, 20, false),
                     new TTypedColumnInfo(18, "ModificationId", "s_modification_id_c", OdbcType.VarChar, 150, false)
                 },
-                new string[] {
-                    "a_ledger_number_i", "a_batch_number_i", "a_gift_transaction_number_i"
+                new int[] {
+                    0, 1, 2
                 }));
             return true;
         }
@@ -5097,7 +5103,7 @@ namespace Ict.Petra.Shared.MFinance.Gift.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetLedgerNumberDBName()
+        public static string GetLedgerNumberDBName()
         {
             return "a_ledger_number_i";
         }
@@ -5109,7 +5115,7 @@ namespace Ict.Petra.Shared.MFinance.Gift.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetBatchNumberDBName()
+        public static string GetBatchNumberDBName()
         {
             return "a_batch_number_i";
         }
@@ -5121,7 +5127,7 @@ namespace Ict.Petra.Shared.MFinance.Gift.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetGiftTransactionNumberDBName()
+        public static string GetGiftTransactionNumberDBName()
         {
             return "a_gift_transaction_number_i";
         }
@@ -5133,7 +5139,7 @@ namespace Ict.Petra.Shared.MFinance.Gift.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetReceiptLetterCodeDBName()
+        public static string GetReceiptLetterCodeDBName()
         {
             return "a_receipt_letter_code_c";
         }
@@ -5145,7 +5151,7 @@ namespace Ict.Petra.Shared.MFinance.Gift.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetMethodOfGivingCodeDBName()
+        public static string GetMethodOfGivingCodeDBName()
         {
             return "a_method_of_giving_code_c";
         }
@@ -5157,7 +5163,7 @@ namespace Ict.Petra.Shared.MFinance.Gift.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetMethodOfPaymentCodeDBName()
+        public static string GetMethodOfPaymentCodeDBName()
         {
             return "a_method_of_payment_code_c";
         }
@@ -5169,7 +5175,7 @@ namespace Ict.Petra.Shared.MFinance.Gift.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetDonorKeyDBName()
+        public static string GetDonorKeyDBName()
         {
             return "p_donor_key_n";
         }
@@ -5181,7 +5187,7 @@ namespace Ict.Petra.Shared.MFinance.Gift.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetLastDetailNumberDBName()
+        public static string GetLastDetailNumberDBName()
         {
             return "a_last_detail_number_i";
         }
@@ -5193,7 +5199,7 @@ namespace Ict.Petra.Shared.MFinance.Gift.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetReferenceDBName()
+        public static string GetReferenceDBName()
         {
             return "a_reference_c";
         }
@@ -5205,7 +5211,7 @@ namespace Ict.Petra.Shared.MFinance.Gift.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetBankingDetailsKeyDBName()
+        public static string GetBankingDetailsKeyDBName()
         {
             return "p_banking_details_key_i";
         }
@@ -5217,7 +5223,7 @@ namespace Ict.Petra.Shared.MFinance.Gift.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetChargeStatusDBName()
+        public static string GetChargeStatusDBName()
         {
             return "a_charge_status_c";
         }
@@ -5229,7 +5235,7 @@ namespace Ict.Petra.Shared.MFinance.Gift.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetLastDebitDBName()
+        public static string GetLastDebitDBName()
         {
             return "a_last_debit_d";
         }
@@ -5241,7 +5247,7 @@ namespace Ict.Petra.Shared.MFinance.Gift.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetDebitDayDBName()
+        public static string GetDebitDayDBName()
         {
             return "a_debit_day_i";
         }
@@ -5253,7 +5259,7 @@ namespace Ict.Petra.Shared.MFinance.Gift.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetActiveDBName()
+        public static string GetActiveDBName()
         {
             return "a_active_l";
         }
@@ -5265,7 +5271,7 @@ namespace Ict.Petra.Shared.MFinance.Gift.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetDateCreatedDBName()
+        public static string GetDateCreatedDBName()
         {
             return "s_date_created_d";
         }
@@ -5277,7 +5283,7 @@ namespace Ict.Petra.Shared.MFinance.Gift.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetCreatedByDBName()
+        public static string GetCreatedByDBName()
         {
             return "s_created_by_c";
         }
@@ -5289,7 +5295,7 @@ namespace Ict.Petra.Shared.MFinance.Gift.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetDateModifiedDBName()
+        public static string GetDateModifiedDBName()
         {
             return "s_date_modified_d";
         }
@@ -5301,7 +5307,7 @@ namespace Ict.Petra.Shared.MFinance.Gift.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetModifiedByDBName()
+        public static string GetModifiedByDBName()
         {
             return "s_modified_by_c";
         }
@@ -5313,7 +5319,7 @@ namespace Ict.Petra.Shared.MFinance.Gift.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetModificationIdDBName()
+        public static string GetModificationIdDBName()
         {
             return "s_modification_id_c";
         }
@@ -6143,7 +6149,8 @@ namespace Ict.Petra.Shared.MFinance.Gift.Data
         /// This identifies the current version of the record.
         public DataColumn ColumnModificationId;
 
-        private static short TableId = -1;
+        /// TableId for Ict.Common.Data generic functions
+        public static short TableId = 163;
 
         private static bool FInitInfoValues = InitInfoValues();
         private static bool InitInfoValues()
@@ -6177,8 +6184,8 @@ namespace Ict.Petra.Shared.MFinance.Gift.Data
                     new TTypedColumnInfo(24, "ModifiedBy", "s_modified_by_c", OdbcType.VarChar, 20, false),
                     new TTypedColumnInfo(25, "ModificationId", "s_modification_id_c", OdbcType.VarChar, 150, false)
                 },
-                new string[] {
-                    "a_ledger_number_i", "a_batch_number_i", "a_gift_transaction_number_i", "a_detail_number_i"
+                new int[] {
+                    0, 1, 2, 3
                 }));
             return true;
         }
@@ -6308,7 +6315,7 @@ namespace Ict.Petra.Shared.MFinance.Gift.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetLedgerNumberDBName()
+        public static string GetLedgerNumberDBName()
         {
             return "a_ledger_number_i";
         }
@@ -6320,7 +6327,7 @@ namespace Ict.Petra.Shared.MFinance.Gift.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetBatchNumberDBName()
+        public static string GetBatchNumberDBName()
         {
             return "a_batch_number_i";
         }
@@ -6332,7 +6339,7 @@ namespace Ict.Petra.Shared.MFinance.Gift.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetGiftTransactionNumberDBName()
+        public static string GetGiftTransactionNumberDBName()
         {
             return "a_gift_transaction_number_i";
         }
@@ -6344,7 +6351,7 @@ namespace Ict.Petra.Shared.MFinance.Gift.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetDetailNumberDBName()
+        public static string GetDetailNumberDBName()
         {
             return "a_detail_number_i";
         }
@@ -6356,7 +6363,7 @@ namespace Ict.Petra.Shared.MFinance.Gift.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetRecipientLedgerNumberDBName()
+        public static string GetRecipientLedgerNumberDBName()
         {
             return "a_recipient_ledger_number_n";
         }
@@ -6368,7 +6375,7 @@ namespace Ict.Petra.Shared.MFinance.Gift.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetGiftAmountDBName()
+        public static string GetGiftAmountDBName()
         {
             return "a_gift_amount_n";
         }
@@ -6380,7 +6387,7 @@ namespace Ict.Petra.Shared.MFinance.Gift.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetMotivationGroupCodeDBName()
+        public static string GetMotivationGroupCodeDBName()
         {
             return "a_motivation_group_code_c";
         }
@@ -6392,7 +6399,7 @@ namespace Ict.Petra.Shared.MFinance.Gift.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetMotivationDetailCodeDBName()
+        public static string GetMotivationDetailCodeDBName()
         {
             return "a_motivation_detail_code_c";
         }
@@ -6404,7 +6411,7 @@ namespace Ict.Petra.Shared.MFinance.Gift.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetCommentOneTypeDBName()
+        public static string GetCommentOneTypeDBName()
         {
             return "a_comment_one_type_c";
         }
@@ -6416,7 +6423,7 @@ namespace Ict.Petra.Shared.MFinance.Gift.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetGiftCommentOneDBName()
+        public static string GetGiftCommentOneDBName()
         {
             return "a_gift_comment_one_c";
         }
@@ -6428,7 +6435,7 @@ namespace Ict.Petra.Shared.MFinance.Gift.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetConfidentialGiftFlagDBName()
+        public static string GetConfidentialGiftFlagDBName()
         {
             return "a_confidential_gift_flag_l";
         }
@@ -6440,7 +6447,7 @@ namespace Ict.Petra.Shared.MFinance.Gift.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetTaxDeductableDBName()
+        public static string GetTaxDeductableDBName()
         {
             return "a_tax_deductable_l";
         }
@@ -6452,7 +6459,7 @@ namespace Ict.Petra.Shared.MFinance.Gift.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetRecipientKeyDBName()
+        public static string GetRecipientKeyDBName()
         {
             return "p_recipient_key_n";
         }
@@ -6464,7 +6471,7 @@ namespace Ict.Petra.Shared.MFinance.Gift.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetChargeFlagDBName()
+        public static string GetChargeFlagDBName()
         {
             return "a_charge_flag_l";
         }
@@ -6476,7 +6483,7 @@ namespace Ict.Petra.Shared.MFinance.Gift.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetMailingCodeDBName()
+        public static string GetMailingCodeDBName()
         {
             return "p_mailing_code_c";
         }
@@ -6488,7 +6495,7 @@ namespace Ict.Petra.Shared.MFinance.Gift.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetCommentTwoTypeDBName()
+        public static string GetCommentTwoTypeDBName()
         {
             return "a_comment_two_type_c";
         }
@@ -6500,7 +6507,7 @@ namespace Ict.Petra.Shared.MFinance.Gift.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetGiftCommentTwoDBName()
+        public static string GetGiftCommentTwoDBName()
         {
             return "a_gift_comment_two_c";
         }
@@ -6512,7 +6519,7 @@ namespace Ict.Petra.Shared.MFinance.Gift.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetCommentThreeTypeDBName()
+        public static string GetCommentThreeTypeDBName()
         {
             return "a_comment_three_type_c";
         }
@@ -6524,7 +6531,7 @@ namespace Ict.Petra.Shared.MFinance.Gift.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetGiftCommentThreeDBName()
+        public static string GetGiftCommentThreeDBName()
         {
             return "a_gift_comment_three_c";
         }
@@ -6536,7 +6543,7 @@ namespace Ict.Petra.Shared.MFinance.Gift.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetStartDonationsDBName()
+        public static string GetStartDonationsDBName()
         {
             return "a_start_donations_d";
         }
@@ -6548,7 +6555,7 @@ namespace Ict.Petra.Shared.MFinance.Gift.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetEndDonationsDBName()
+        public static string GetEndDonationsDBName()
         {
             return "a_end_donations_d";
         }
@@ -6560,7 +6567,7 @@ namespace Ict.Petra.Shared.MFinance.Gift.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetDateCreatedDBName()
+        public static string GetDateCreatedDBName()
         {
             return "s_date_created_d";
         }
@@ -6572,7 +6579,7 @@ namespace Ict.Petra.Shared.MFinance.Gift.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetCreatedByDBName()
+        public static string GetCreatedByDBName()
         {
             return "s_created_by_c";
         }
@@ -6584,7 +6591,7 @@ namespace Ict.Petra.Shared.MFinance.Gift.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetDateModifiedDBName()
+        public static string GetDateModifiedDBName()
         {
             return "s_date_modified_d";
         }
@@ -6596,7 +6603,7 @@ namespace Ict.Petra.Shared.MFinance.Gift.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetModifiedByDBName()
+        public static string GetModifiedByDBName()
         {
             return "s_modified_by_c";
         }
@@ -6608,7 +6615,7 @@ namespace Ict.Petra.Shared.MFinance.Gift.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetModificationIdDBName()
+        public static string GetModificationIdDBName()
         {
             return "s_modification_id_c";
         }
@@ -7703,7 +7710,8 @@ namespace Ict.Petra.Shared.MFinance.Gift.Data
         /// This identifies the current version of the record.
         public DataColumn ColumnModificationId;
 
-        private static short TableId = -1;
+        /// TableId for Ict.Common.Data generic functions
+        public static short TableId = 164;
 
         private static bool FInitInfoValues = InitInfoValues();
         private static bool InitInfoValues()
@@ -7733,8 +7741,8 @@ namespace Ict.Petra.Shared.MFinance.Gift.Data
                     new TTypedColumnInfo(20, "ModifiedBy", "s_modified_by_c", OdbcType.VarChar, 20, false),
                     new TTypedColumnInfo(21, "ModificationId", "s_modification_id_c", OdbcType.VarChar, 150, false)
                 },
-                new string[] {
-                    "a_ledger_number_i", "a_batch_number_i"
+                new int[] {
+                    0, 1
                 }));
             return true;
         }
@@ -7856,7 +7864,7 @@ namespace Ict.Petra.Shared.MFinance.Gift.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetLedgerNumberDBName()
+        public static string GetLedgerNumberDBName()
         {
             return "a_ledger_number_i";
         }
@@ -7868,7 +7876,7 @@ namespace Ict.Petra.Shared.MFinance.Gift.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetBatchNumberDBName()
+        public static string GetBatchNumberDBName()
         {
             return "a_batch_number_i";
         }
@@ -7880,7 +7888,7 @@ namespace Ict.Petra.Shared.MFinance.Gift.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetBatchDescriptionDBName()
+        public static string GetBatchDescriptionDBName()
         {
             return "a_batch_description_c";
         }
@@ -7892,7 +7900,7 @@ namespace Ict.Petra.Shared.MFinance.Gift.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetModificationDateDBName()
+        public static string GetModificationDateDBName()
         {
             return "s_modification_date_d";
         }
@@ -7904,7 +7912,7 @@ namespace Ict.Petra.Shared.MFinance.Gift.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetHashTotalDBName()
+        public static string GetHashTotalDBName()
         {
             return "a_hash_total_n";
         }
@@ -7916,7 +7924,7 @@ namespace Ict.Petra.Shared.MFinance.Gift.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetBatchTotalDBName()
+        public static string GetBatchTotalDBName()
         {
             return "a_batch_total_n";
         }
@@ -7928,7 +7936,7 @@ namespace Ict.Petra.Shared.MFinance.Gift.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetBankAccountCodeDBName()
+        public static string GetBankAccountCodeDBName()
         {
             return "a_bank_account_code_c";
         }
@@ -7940,7 +7948,7 @@ namespace Ict.Petra.Shared.MFinance.Gift.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetLastGiftNumberDBName()
+        public static string GetLastGiftNumberDBName()
         {
             return "a_last_gift_number_i";
         }
@@ -7952,7 +7960,7 @@ namespace Ict.Petra.Shared.MFinance.Gift.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetBatchStatusDBName()
+        public static string GetBatchStatusDBName()
         {
             return "a_batch_status_c";
         }
@@ -7964,7 +7972,7 @@ namespace Ict.Petra.Shared.MFinance.Gift.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetBatchPeriodDBName()
+        public static string GetBatchPeriodDBName()
         {
             return "a_batch_period_i";
         }
@@ -7976,7 +7984,7 @@ namespace Ict.Petra.Shared.MFinance.Gift.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetBatchYearDBName()
+        public static string GetBatchYearDBName()
         {
             return "a_batch_year_i";
         }
@@ -7988,7 +7996,7 @@ namespace Ict.Petra.Shared.MFinance.Gift.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetGlEffectiveDateDBName()
+        public static string GetGlEffectiveDateDBName()
         {
             return "a_gl_effective_date_d";
         }
@@ -8000,7 +8008,7 @@ namespace Ict.Petra.Shared.MFinance.Gift.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetCurrencyCodeDBName()
+        public static string GetCurrencyCodeDBName()
         {
             return "a_currency_code_c";
         }
@@ -8012,7 +8020,7 @@ namespace Ict.Petra.Shared.MFinance.Gift.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetExchangeRateToBaseDBName()
+        public static string GetExchangeRateToBaseDBName()
         {
             return "a_exchange_rate_to_base_n";
         }
@@ -8024,7 +8032,7 @@ namespace Ict.Petra.Shared.MFinance.Gift.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetBankCostCentreDBName()
+        public static string GetBankCostCentreDBName()
         {
             return "a_bank_cost_centre_c";
         }
@@ -8036,7 +8044,7 @@ namespace Ict.Petra.Shared.MFinance.Gift.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetGiftTypeDBName()
+        public static string GetGiftTypeDBName()
         {
             return "a_gift_type_c";
         }
@@ -8048,7 +8056,7 @@ namespace Ict.Petra.Shared.MFinance.Gift.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetMethodOfPaymentCodeDBName()
+        public static string GetMethodOfPaymentCodeDBName()
         {
             return "a_method_of_payment_code_c";
         }
@@ -8060,7 +8068,7 @@ namespace Ict.Petra.Shared.MFinance.Gift.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetDateCreatedDBName()
+        public static string GetDateCreatedDBName()
         {
             return "s_date_created_d";
         }
@@ -8072,7 +8080,7 @@ namespace Ict.Petra.Shared.MFinance.Gift.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetCreatedByDBName()
+        public static string GetCreatedByDBName()
         {
             return "s_created_by_c";
         }
@@ -8084,7 +8092,7 @@ namespace Ict.Petra.Shared.MFinance.Gift.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetDateModifiedDBName()
+        public static string GetDateModifiedDBName()
         {
             return "s_date_modified_d";
         }
@@ -8096,7 +8104,7 @@ namespace Ict.Petra.Shared.MFinance.Gift.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetModifiedByDBName()
+        public static string GetModifiedByDBName()
         {
             return "s_modified_by_c";
         }
@@ -8108,7 +8116,7 @@ namespace Ict.Petra.Shared.MFinance.Gift.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetModificationIdDBName()
+        public static string GetModificationIdDBName()
         {
             return "s_modification_id_c";
         }
@@ -9051,7 +9059,8 @@ namespace Ict.Petra.Shared.MFinance.Gift.Data
         /// This identifies the current version of the record.
         public DataColumn ColumnModificationId;
 
-        private static short TableId = -1;
+        /// TableId for Ict.Common.Data generic functions
+        public static short TableId = 165;
 
         private static bool FInitInfoValues = InitInfoValues();
         private static bool InitInfoValues()
@@ -9083,8 +9092,8 @@ namespace Ict.Petra.Shared.MFinance.Gift.Data
                     new TTypedColumnInfo(22, "ModifiedBy", "s_modified_by_c", OdbcType.VarChar, 20, false),
                     new TTypedColumnInfo(23, "ModificationId", "s_modification_id_c", OdbcType.VarChar, 150, false)
                 },
-                new string[] {
-                    "a_ledger_number_i", "a_batch_number_i", "a_gift_transaction_number_i"
+                new int[] {
+                    0, 1, 2
                 }));
             return true;
         }
@@ -9210,7 +9219,7 @@ namespace Ict.Petra.Shared.MFinance.Gift.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetLedgerNumberDBName()
+        public static string GetLedgerNumberDBName()
         {
             return "a_ledger_number_i";
         }
@@ -9222,7 +9231,7 @@ namespace Ict.Petra.Shared.MFinance.Gift.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetBatchNumberDBName()
+        public static string GetBatchNumberDBName()
         {
             return "a_batch_number_i";
         }
@@ -9234,7 +9243,7 @@ namespace Ict.Petra.Shared.MFinance.Gift.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetGiftTransactionNumberDBName()
+        public static string GetGiftTransactionNumberDBName()
         {
             return "a_gift_transaction_number_i";
         }
@@ -9246,7 +9255,7 @@ namespace Ict.Petra.Shared.MFinance.Gift.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetGiftStatusDBName()
+        public static string GetGiftStatusDBName()
         {
             return "a_gift_status_c";
         }
@@ -9258,7 +9267,7 @@ namespace Ict.Petra.Shared.MFinance.Gift.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetDateEnteredDBName()
+        public static string GetDateEnteredDBName()
         {
             return "a_date_entered_d";
         }
@@ -9270,7 +9279,7 @@ namespace Ict.Petra.Shared.MFinance.Gift.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetHomeAdminChargesFlagDBName()
+        public static string GetHomeAdminChargesFlagDBName()
         {
             return "a_home_admin_charges_flag_l";
         }
@@ -9282,7 +9291,7 @@ namespace Ict.Petra.Shared.MFinance.Gift.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetIltAdminChargesFlagDBName()
+        public static string GetIltAdminChargesFlagDBName()
         {
             return "a_ilt_admin_charges_flag_l";
         }
@@ -9294,7 +9303,7 @@ namespace Ict.Petra.Shared.MFinance.Gift.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetReceiptLetterCodeDBName()
+        public static string GetReceiptLetterCodeDBName()
         {
             return "a_receipt_letter_code_c";
         }
@@ -9306,7 +9315,7 @@ namespace Ict.Petra.Shared.MFinance.Gift.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetMethodOfGivingCodeDBName()
+        public static string GetMethodOfGivingCodeDBName()
         {
             return "a_method_of_giving_code_c";
         }
@@ -9318,7 +9327,7 @@ namespace Ict.Petra.Shared.MFinance.Gift.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetMethodOfPaymentCodeDBName()
+        public static string GetMethodOfPaymentCodeDBName()
         {
             return "a_method_of_payment_code_c";
         }
@@ -9330,7 +9339,7 @@ namespace Ict.Petra.Shared.MFinance.Gift.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetDonorKeyDBName()
+        public static string GetDonorKeyDBName()
         {
             return "p_donor_key_n";
         }
@@ -9342,7 +9351,7 @@ namespace Ict.Petra.Shared.MFinance.Gift.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetAdminChargeDBName()
+        public static string GetAdminChargeDBName()
         {
             return "a_admin_charge_l";
         }
@@ -9354,7 +9363,7 @@ namespace Ict.Petra.Shared.MFinance.Gift.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetReceiptNumberDBName()
+        public static string GetReceiptNumberDBName()
         {
             return "a_receipt_number_i";
         }
@@ -9366,7 +9375,7 @@ namespace Ict.Petra.Shared.MFinance.Gift.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetLastDetailNumberDBName()
+        public static string GetLastDetailNumberDBName()
         {
             return "a_last_detail_number_i";
         }
@@ -9378,7 +9387,7 @@ namespace Ict.Petra.Shared.MFinance.Gift.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetReferenceDBName()
+        public static string GetReferenceDBName()
         {
             return "a_reference_c";
         }
@@ -9390,7 +9399,7 @@ namespace Ict.Petra.Shared.MFinance.Gift.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetFirstTimeGiftDBName()
+        public static string GetFirstTimeGiftDBName()
         {
             return "a_first_time_gift_l";
         }
@@ -9402,7 +9411,7 @@ namespace Ict.Petra.Shared.MFinance.Gift.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetReceiptPrintedDBName()
+        public static string GetReceiptPrintedDBName()
         {
             return "a_receipt_printed_l";
         }
@@ -9414,7 +9423,7 @@ namespace Ict.Petra.Shared.MFinance.Gift.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetRestrictedDBName()
+        public static string GetRestrictedDBName()
         {
             return "a_restricted_l";
         }
@@ -9426,7 +9435,7 @@ namespace Ict.Petra.Shared.MFinance.Gift.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetBankingDetailsKeyDBName()
+        public static string GetBankingDetailsKeyDBName()
         {
             return "p_banking_details_key_i";
         }
@@ -9438,7 +9447,7 @@ namespace Ict.Petra.Shared.MFinance.Gift.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetDateCreatedDBName()
+        public static string GetDateCreatedDBName()
         {
             return "s_date_created_d";
         }
@@ -9450,7 +9459,7 @@ namespace Ict.Petra.Shared.MFinance.Gift.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetCreatedByDBName()
+        public static string GetCreatedByDBName()
         {
             return "s_created_by_c";
         }
@@ -9462,7 +9471,7 @@ namespace Ict.Petra.Shared.MFinance.Gift.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetDateModifiedDBName()
+        public static string GetDateModifiedDBName()
         {
             return "s_date_modified_d";
         }
@@ -9474,7 +9483,7 @@ namespace Ict.Petra.Shared.MFinance.Gift.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetModifiedByDBName()
+        public static string GetModifiedByDBName()
         {
             return "s_modified_by_c";
         }
@@ -9486,7 +9495,7 @@ namespace Ict.Petra.Shared.MFinance.Gift.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetModificationIdDBName()
+        public static string GetModificationIdDBName()
         {
             return "s_modification_id_c";
         }
@@ -10517,7 +10526,8 @@ namespace Ict.Petra.Shared.MFinance.Gift.Data
         /// This identifies the current version of the record.
         public DataColumn ColumnModificationId;
 
-        private static short TableId = -1;
+        /// TableId for Ict.Common.Data generic functions
+        public static short TableId = 166;
 
         private static bool FInitInfoValues = InitInfoValues();
         private static bool InitInfoValues()
@@ -10554,8 +10564,8 @@ namespace Ict.Petra.Shared.MFinance.Gift.Data
                     new TTypedColumnInfo(27, "ModifiedBy", "s_modified_by_c", OdbcType.VarChar, 20, false),
                     new TTypedColumnInfo(28, "ModificationId", "s_modification_id_c", OdbcType.VarChar, 150, false)
                 },
-                new string[] {
-                    "a_ledger_number_i", "a_batch_number_i", "a_gift_transaction_number_i", "a_detail_number_i"
+                new int[] {
+                    0, 1, 2, 3
                 }));
             return true;
         }
@@ -10691,7 +10701,7 @@ namespace Ict.Petra.Shared.MFinance.Gift.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetLedgerNumberDBName()
+        public static string GetLedgerNumberDBName()
         {
             return "a_ledger_number_i";
         }
@@ -10703,7 +10713,7 @@ namespace Ict.Petra.Shared.MFinance.Gift.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetBatchNumberDBName()
+        public static string GetBatchNumberDBName()
         {
             return "a_batch_number_i";
         }
@@ -10715,7 +10725,7 @@ namespace Ict.Petra.Shared.MFinance.Gift.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetGiftTransactionNumberDBName()
+        public static string GetGiftTransactionNumberDBName()
         {
             return "a_gift_transaction_number_i";
         }
@@ -10727,7 +10737,7 @@ namespace Ict.Petra.Shared.MFinance.Gift.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetDetailNumberDBName()
+        public static string GetDetailNumberDBName()
         {
             return "a_detail_number_i";
         }
@@ -10739,7 +10749,7 @@ namespace Ict.Petra.Shared.MFinance.Gift.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetRecipientLedgerNumberDBName()
+        public static string GetRecipientLedgerNumberDBName()
         {
             return "a_recipient_ledger_number_n";
         }
@@ -10751,7 +10761,7 @@ namespace Ict.Petra.Shared.MFinance.Gift.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetGiftAmountDBName()
+        public static string GetGiftAmountDBName()
         {
             return "a_gift_amount_n";
         }
@@ -10763,7 +10773,7 @@ namespace Ict.Petra.Shared.MFinance.Gift.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetMotivationGroupCodeDBName()
+        public static string GetMotivationGroupCodeDBName()
         {
             return "a_motivation_group_code_c";
         }
@@ -10775,7 +10785,7 @@ namespace Ict.Petra.Shared.MFinance.Gift.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetMotivationDetailCodeDBName()
+        public static string GetMotivationDetailCodeDBName()
         {
             return "a_motivation_detail_code_c";
         }
@@ -10787,7 +10797,7 @@ namespace Ict.Petra.Shared.MFinance.Gift.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetCommentOneTypeDBName()
+        public static string GetCommentOneTypeDBName()
         {
             return "a_comment_one_type_c";
         }
@@ -10799,7 +10809,7 @@ namespace Ict.Petra.Shared.MFinance.Gift.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetGiftCommentOneDBName()
+        public static string GetGiftCommentOneDBName()
         {
             return "a_gift_comment_one_c";
         }
@@ -10811,7 +10821,7 @@ namespace Ict.Petra.Shared.MFinance.Gift.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetConfidentialGiftFlagDBName()
+        public static string GetConfidentialGiftFlagDBName()
         {
             return "a_confidential_gift_flag_l";
         }
@@ -10823,7 +10833,7 @@ namespace Ict.Petra.Shared.MFinance.Gift.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetTaxDeductableDBName()
+        public static string GetTaxDeductableDBName()
         {
             return "a_tax_deductable_l";
         }
@@ -10835,7 +10845,7 @@ namespace Ict.Petra.Shared.MFinance.Gift.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetRecipientKeyDBName()
+        public static string GetRecipientKeyDBName()
         {
             return "p_recipient_key_n";
         }
@@ -10847,7 +10857,7 @@ namespace Ict.Petra.Shared.MFinance.Gift.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetChargeFlagDBName()
+        public static string GetChargeFlagDBName()
         {
             return "a_charge_flag_l";
         }
@@ -10859,7 +10869,7 @@ namespace Ict.Petra.Shared.MFinance.Gift.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetCostCentreCodeDBName()
+        public static string GetCostCentreCodeDBName()
         {
             return "a_cost_centre_code_c";
         }
@@ -10871,7 +10881,7 @@ namespace Ict.Petra.Shared.MFinance.Gift.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetGiftAmountIntlDBName()
+        public static string GetGiftAmountIntlDBName()
         {
             return "a_gift_amount_intl_n";
         }
@@ -10883,7 +10893,7 @@ namespace Ict.Petra.Shared.MFinance.Gift.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetModifiedDetailDBName()
+        public static string GetModifiedDetailDBName()
         {
             return "a_modified_detail_l";
         }
@@ -10895,7 +10905,7 @@ namespace Ict.Petra.Shared.MFinance.Gift.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetGiftTransactionAmountDBName()
+        public static string GetGiftTransactionAmountDBName()
         {
             return "a_gift_transaction_amount_n";
         }
@@ -10907,7 +10917,7 @@ namespace Ict.Petra.Shared.MFinance.Gift.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetIchNumberDBName()
+        public static string GetIchNumberDBName()
         {
             return "a_ich_number_i";
         }
@@ -10919,7 +10929,7 @@ namespace Ict.Petra.Shared.MFinance.Gift.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetMailingCodeDBName()
+        public static string GetMailingCodeDBName()
         {
             return "p_mailing_code_c";
         }
@@ -10931,7 +10941,7 @@ namespace Ict.Petra.Shared.MFinance.Gift.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetCommentTwoTypeDBName()
+        public static string GetCommentTwoTypeDBName()
         {
             return "a_comment_two_type_c";
         }
@@ -10943,7 +10953,7 @@ namespace Ict.Petra.Shared.MFinance.Gift.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetGiftCommentTwoDBName()
+        public static string GetGiftCommentTwoDBName()
         {
             return "a_gift_comment_two_c";
         }
@@ -10955,7 +10965,7 @@ namespace Ict.Petra.Shared.MFinance.Gift.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetCommentThreeTypeDBName()
+        public static string GetCommentThreeTypeDBName()
         {
             return "a_comment_three_type_c";
         }
@@ -10967,7 +10977,7 @@ namespace Ict.Petra.Shared.MFinance.Gift.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetGiftCommentThreeDBName()
+        public static string GetGiftCommentThreeDBName()
         {
             return "a_gift_comment_three_c";
         }
@@ -10979,7 +10989,7 @@ namespace Ict.Petra.Shared.MFinance.Gift.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetDateCreatedDBName()
+        public static string GetDateCreatedDBName()
         {
             return "s_date_created_d";
         }
@@ -10991,7 +11001,7 @@ namespace Ict.Petra.Shared.MFinance.Gift.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetCreatedByDBName()
+        public static string GetCreatedByDBName()
         {
             return "s_created_by_c";
         }
@@ -11003,7 +11013,7 @@ namespace Ict.Petra.Shared.MFinance.Gift.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetDateModifiedDBName()
+        public static string GetDateModifiedDBName()
         {
             return "s_date_modified_d";
         }
@@ -11015,7 +11025,7 @@ namespace Ict.Petra.Shared.MFinance.Gift.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetModifiedByDBName()
+        public static string GetModifiedByDBName()
         {
             return "s_modified_by_c";
         }
@@ -11027,7 +11037,7 @@ namespace Ict.Petra.Shared.MFinance.Gift.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetModificationIdDBName()
+        public static string GetModificationIdDBName()
         {
             return "s_modification_id_c";
         }

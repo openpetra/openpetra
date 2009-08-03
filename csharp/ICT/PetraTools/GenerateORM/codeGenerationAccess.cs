@@ -43,6 +43,25 @@ namespace Ict.Tools.CodeGeneration.DataStore
         /// </summary>
         private static ArrayList DirectReferences;
 
+        /// <summary>
+        /// This function checks if there is already a similar constraint that connects the two tables on the same fields
+        /// </summary>
+        /// <returns>true if other constraint exists</returns>
+        private static Boolean LoadViaHasAlreadyBeenImplemented(TConstraint AConstraint)
+        {
+            return DirectReferences.Contains(
+                AConstraint.strOtherTable + "," +
+                StringHelper.StrMerge(AConstraint.strThisFields, ",") + "," +
+                StringHelper.StrMerge(AConstraint.strOtherFields, ","));
+        }
+
+        private static void AddDirectReference(TConstraint AConstraint)
+        {
+            DirectReferences.Add(AConstraint.strOtherTable + "," +
+                StringHelper.StrMerge(AConstraint.strThisFields, ",") + "," +
+                StringHelper.StrMerge(AConstraint.strOtherFields, ","));
+        }
+
         public static Boolean ValidForeignKeyConstraintForLoadVia(TConstraint AConstraint)
         {
             return (AConstraint.strType == "foreignkey") && (!AConstraint.strThisFields.Contains("s_created_by_c"))
@@ -103,51 +122,35 @@ namespace Ict.Tools.CodeGeneration.DataStore
 
         private static void PrepareCodeletsPrimaryKey(
             TTable ACurrentTable,
-            out string csvListPrimaryKeyFields,
             out string formalParametersPrimaryKey,
             out string actualParametersPrimaryKey,
-            out string whereClausePrimaryKey,
-            out string odbcParametersPrimaryKey)
+            out int numberPrimaryKeyColumns)
         {
-            csvListPrimaryKeyFields = "";
             formalParametersPrimaryKey = "";
             actualParametersPrimaryKey = "";
-            whereClausePrimaryKey = "";
-            odbcParametersPrimaryKey = "";
+            numberPrimaryKeyColumns = 0;
 
             if (!ACurrentTable.HasPrimaryKey())
             {
                 return;
             }
 
-            odbcParametersPrimaryKey =
-                "OdbcParameter[] ParametersArray = new OdbcParameter[" +
-                ACurrentTable.GetPrimaryKey().strThisFields.Count.ToString() + "];" +
-                Environment.NewLine;
+            numberPrimaryKeyColumns = ACurrentTable.GetPrimaryKey().strThisFields.Count;
+
             int counterPrimaryKeyField = 0;
 
             foreach (string field in ACurrentTable.GetPrimaryKey().strThisFields)
             {
                 if (counterPrimaryKeyField > 0)
                 {
-                    csvListPrimaryKeyFields += ", ";
                     formalParametersPrimaryKey += ", ";
                     actualParametersPrimaryKey += ", ";
-                    whereClausePrimaryKey += " AND ";
                 }
 
                 TTableField typedField = ACurrentTable.GetField(field);
 
-                csvListPrimaryKeyFields += "\"" + field + "\"";
                 formalParametersPrimaryKey += typedField.GetDotNetType() + " A" + TTable.NiceFieldName(field);
                 actualParametersPrimaryKey += "A" + TTable.NiceFieldName(field);
-                whereClausePrimaryKey += field + " = ?";
-
-                odbcParametersPrimaryKey += "ParametersArray[" + counterPrimaryKeyField.ToString() + "] = " +
-                                            "new OdbcParameter(\"\", " + codeGenerationPetra.ToOdbcTypeString(typedField) +
-                                            (typedField.iLength != -1 ? ", " + typedField.iLength.ToString() : "") + ");" + Environment.NewLine;
-                odbcParametersPrimaryKey += "ParametersArray[" + counterPrimaryKeyField.ToString() + "].Value = " +
-                                            "((object)(A" + TTable.NiceFieldName(field) + "));" + Environment.NewLine;
 
                 counterPrimaryKeyField++;
             }
@@ -287,16 +290,14 @@ namespace Ict.Tools.CodeGeneration.DataStore
                 ProcedureName += TTable.NiceFieldName(DifferentField);
             }
 
-            string notUsed;
+            int notUsedInt;
             string formalParametersOtherPrimaryKey;
             string actualParametersOtherPrimaryKey;
 
             PrepareCodeletsPrimaryKey(AOtherTable,
-                out notUsed,
                 out formalParametersOtherPrimaryKey,
                 out actualParametersOtherPrimaryKey,
-                out notUsed,
-                out notUsed);
+                out notUsedInt);
 
             string whereClauseForeignKey;
             string whereClauseViaOtherTable;
@@ -315,7 +316,7 @@ namespace Ict.Tools.CodeGeneration.DataStore
             snippetViaTable.SetCodelet("ODBCPARAMETERSFOREIGNKEY", odbcParametersForeignKey);
             snippetViaTable.SetCodelet("WHERECLAUSEVIAOTHERTABLE", whereClauseViaOtherTable);
 
-            DirectReferences.Add(AConstraint);
+            AddDirectReference(AConstraint);
 
             ASnippet.InsertSnippet("VIAOTHERTABLE", snippetViaTable);
         }
@@ -338,7 +339,7 @@ namespace Ict.Tools.CodeGeneration.DataStore
                 {
                     TTable OtherTable = AStore.GetTable(myConstraint.strOtherTable);
 
-                    if (!FindOtherConstraintSameOtherTable2(DirectReferences, myConstraint))
+                    if (!LoadViaHasAlreadyBeenImplemented(myConstraint))
                     {
                         InsertViaOtherTableConstraint(AStore,
                             myConstraint,
@@ -350,13 +351,13 @@ namespace Ict.Tools.CodeGeneration.DataStore
 
                     // AccountHierarchy: there is no constraint that references Ledger directly, but constraint referencing the Account table with a key that contains the ledger reference
                     // but because the key in Ledger is already the primary key, a LoadViaLedger is required.
+                    // other way round: p_foundation_proposal_detail has 2 constraints for foundation and foundationproposal
                     foreach (string field in myConstraint.strOtherFields)
                     {
                         // get a constraint that is only based on that field
                         TConstraint OtherLinkConstraint = OtherTable.GetConstraint(StringHelper.StrSplit(field, ","));
 
-                        if ((OtherLinkConstraint != null) && ValidForeignKeyConstraintForLoadVia(OtherLinkConstraint)
-                            && !FindOtherConstraintSameOtherTable2(DirectReferences, OtherLinkConstraint))
+                        if ((OtherLinkConstraint != null) && ValidForeignKeyConstraintForLoadVia(OtherLinkConstraint))
                         {
                             TConstraint NewConstraint = new TConstraint();
                             NewConstraint.strName = OtherLinkConstraint.strName + "forLoadVia";
@@ -368,12 +369,15 @@ namespace Ict.Tools.CodeGeneration.DataStore
                             NewConstraint.strOtherTable = OtherLinkConstraint.strOtherTable;
                             NewConstraint.strOtherFields = OtherLinkConstraint.strOtherFields;
 
-                            InsertViaOtherTableConstraint(AStore,
-                                NewConstraint,
-                                ACurrentTable,
-                                AStore.GetTable(OtherLinkConstraint.strOtherTable),
-                                ATemplate,
-                                ASnippet);
+                            if (!LoadViaHasAlreadyBeenImplemented(NewConstraint))
+                            {
+                                InsertViaOtherTableConstraint(AStore,
+                                    NewConstraint,
+                                    ACurrentTable,
+                                    AStore.GetTable(OtherLinkConstraint.strOtherTable),
+                                    ATemplate,
+                                    ASnippet);
+                            }
                         }
                     }
                 }
@@ -420,7 +424,8 @@ namespace Ict.Tools.CodeGeneration.DataStore
         {
             foreach (TConstraint myConstraint in AConstraints)
             {
-                if ((myConstraint != AConstraint) && (myConstraint.strOtherTable == AConstraint.strOtherTable))
+                if ((myConstraint != AConstraint)
+                    && (myConstraint.strOtherTable == AConstraint.strOtherTable))
                 {
                     return true;
                 }
@@ -515,10 +520,16 @@ namespace Ict.Tools.CodeGeneration.DataStore
                 // check if other foreign key exists that references the same table, e.g.
                 // PPartnerAccess.LoadViaSUserPRecentPartners
                 // PPartnerAccess.LoadViaSUserPCustomisedGreeting
-                // DirectReferences necessary for PPersonAccess.LoadViaPUnit (p_om_field_key_n) and PPersonAccess.LoadViaPUnitPmGeneralApplication
+                // also PFoundationProposalAccess.LoadViaPFoundationPFoundationProposalDetail and
+                // TODO AlreadyExistsProcedureSameName necessary for PPersonAccess.LoadViaPUnit (p_field_key_n) and PPersonAccess.LoadViaPUnitPmGeneralApplication
+                // Question: does PPersonAccess.LoadViaPUnitPmGeneralApplication make sense?
                 if (FindOtherConstraintSameOtherTable2(OtherLinkConstraints,
                         OtherLinkConstraint)
-                    || FindOtherConstraintSameOtherTable2(DirectReferences, OtherLinkConstraint))
+                    || LoadViaHasAlreadyBeenImplemented(OtherLinkConstraint)
+
+                    // TODO || AlreadyExistsProcedureSameName(ProcedureName)
+                    || ((ProcedureName == "ViaPUnit") && (OtherLinkConstraint.strThisTable == "pm_general_application"))
+                    )
                 {
                     ProcedureName += TTable.NiceTableName(OtherLinkConstraint.strThisTable);
                 }
@@ -534,23 +545,19 @@ namespace Ict.Tools.CodeGeneration.DataStore
                 snippetLinkTable.SetCodelet("SQLLINKTABLENAME", OtherLinkConstraint.strThisTable);
 
                 string notUsed;
-                string csvListPrimaryKeyFields;
+                int notUsedInt;
                 string formalParametersOtherPrimaryKey;
                 string actualParametersOtherPrimaryKey;
 
                 PrepareCodeletsPrimaryKey(OtherTable,
-                    out notUsed,
                     out formalParametersOtherPrimaryKey,
                     out actualParametersOtherPrimaryKey,
-                    out notUsed,
-                    out notUsed);
+                    out notUsedInt);
 
                 PrepareCodeletsPrimaryKey(ACurrentTable,
-                    out csvListPrimaryKeyFields,
                     out notUsed,
                     out notUsed,
-                    out notUsed,
-                    out notUsed);
+                    out notUsedInt);
 
                 string whereClauseForeignKey;
                 string whereClauseViaOtherTable;
@@ -570,7 +577,6 @@ namespace Ict.Tools.CodeGeneration.DataStore
                     out whereClauseViaLinkTable,
                     out whereClauseAllViaTables);
 
-                snippetLinkTable.SetCodelet("CSVLISTPRIMARYKEYFIELDS", csvListPrimaryKeyFields);
                 snippetLinkTable.SetCodelet("FORMALPARAMETERSOTHERPRIMARYKEY", formalParametersOtherPrimaryKey);
                 snippetLinkTable.SetCodelet("ACTUALPARAMETERSOTHERPRIMARYKEY", actualParametersOtherPrimaryKey);
                 snippetLinkTable.SetCodelet("ODBCPARAMETERSFOREIGNKEY", odbcParametersForeignKey);
@@ -594,24 +600,18 @@ namespace Ict.Tools.CodeGeneration.DataStore
             ASnippet.SetCodelet("VIAOTHERTABLE", "");
             ASnippet.SetCodelet("VIALINKTABLE", "");
 
-            string csvListPrimaryKeyFields;
             string formalParametersPrimaryKey;
             string actualParametersPrimaryKey;
-            string whereClausePrimaryKey;
-            string odbcParametersPrimaryKey;
+            int numberPrimaryKeyColumns;
 
             PrepareCodeletsPrimaryKey(ACurrentTable,
-                out csvListPrimaryKeyFields,
                 out formalParametersPrimaryKey,
                 out actualParametersPrimaryKey,
-                out whereClausePrimaryKey,
-                out odbcParametersPrimaryKey);
+                out numberPrimaryKeyColumns);
 
-            ASnippet.SetCodelet("CSVLISTPRIMARYKEYFIELDS", csvListPrimaryKeyFields);
             ASnippet.SetCodelet("FORMALPARAMETERSPRIMARYKEY", formalParametersPrimaryKey);
             ASnippet.SetCodelet("ACTUALPARAMETERSPRIMARYKEY", actualParametersPrimaryKey);
-            ASnippet.SetCodelet("WHERECLAUSEPRIMARYKEY", whereClausePrimaryKey);
-            ASnippet.SetCodelet("ODBCPARAMETERSPRIMARYKEY", odbcParametersPrimaryKey);
+            ASnippet.SetCodelet("PRIMARYKEYNUMBERCOLUMNS", numberPrimaryKeyColumns.ToString());
 
             foreach (TTableField tablefield in ACurrentTable.grpTableField.List)
             {
@@ -658,13 +658,12 @@ namespace Ict.Tools.CodeGeneration.DataStore
             fileheader = fileheader.Replace(">>>> Put your full name or just a shortname here <<<<", "auto generated");
             Template.SetCodelet("GPLFILEHEADER", fileheader);
 
+            Template.AddToCodelet("USINGNAMESPACES", GetNamespace(strGroup), false);
+
             foreach (TTable currentTable in AStore.GetTables())
             {
                 if (currentTable.strGroup == strGroup)
                 {
-                    Template.AddToCodelet("USINGNAMESPACES",
-                        GetNamespace(currentTable.strGroup), false);
-
                     DirectReferences = new ArrayList();
 
                     ProcessTemplate snippet = Template.GetSnippet("TABLEACCESS");

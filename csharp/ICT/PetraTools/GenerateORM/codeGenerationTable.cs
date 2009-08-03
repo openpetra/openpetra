@@ -55,7 +55,7 @@ namespace Ict.Tools.CodeGeneration.DataStore
 
                 foreach (string columnName in primKey.strThisFields)
                 {
-                    string toAdd = '"' + columnName + '"';
+                    string toAdd = currentTable.grpTableField.List.IndexOf(currentTable.GetField(columnName)).ToString();
 
                     if (!first)
                     {
@@ -64,12 +64,12 @@ namespace Ict.Tools.CodeGeneration.DataStore
 
                     first = false;
 
-                    snippet.AddToCodelet("COLUMNPRIMARYKEYFIELDNAMES", toAdd);
+                    snippet.AddToCodelet("COLUMNPRIMARYKEYORDER", toAdd);
                 }
             }
             else
             {
-                snippet.AddToCodelet("COLUMNPRIMARYKEYFIELDNAMES", "");
+                snippet.AddToCodelet("COLUMNPRIMARYKEYORDER", "");
             }
 
             int colOrder = 0;

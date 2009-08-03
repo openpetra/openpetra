@@ -74,7 +74,10 @@ namespace Ict.Tools.CodeGeneration.DataStore
 
             foreach (TDataSetTable table in ATables.Values)
             {
-                if ((table.tablealias == ATableName) || (table.tablename == ATableName) || (table.tableorig == ATableName))
+                if ((table.tablealias == ATableName)
+                    || (table.tablename == ATableName)
+                    || (table.tableorig == ATableName)
+                    || (TTable.NiceTableName(table.strName) == ATableName))
                 {
                     currentTable = table;
                 }
@@ -97,7 +100,7 @@ namespace Ict.Tools.CodeGeneration.DataStore
 
                 first = false;
 
-                TTableField field = currentTable.OrigTable.GetField(fieldname);
+                TTableField field = currentTable.GetField(fieldname);
 
                 if (field == null)
                 {
@@ -177,6 +180,10 @@ namespace Ict.Tools.CodeGeneration.DataStore
 
             Template.SetCodelet("NAMESPACE", ANameSpace);
 
+            // if no dataset is defined yet in the xml file, the following variables can be empty
+            Template.AddToCodelet("USINGNAMESPACES", "");
+            Template.AddToCodelet("CONTENTDATASETSANDTABLESANDROWS", "");
+
             TXMLParser parserDataSet = new TXMLParser(AInputXmlfile, false);
             XmlDocument myDoc = parserDataSet.GetDocument();
             XmlNode startNode = myDoc.DocumentElement;
@@ -209,18 +216,64 @@ namespace Ict.Tools.CodeGeneration.DataStore
                     {
                         if (curChild.Name.ToLower() == "table")
                         {
+                            bool OverloadTable = false;
                             string tabletype = TTable.NiceTableName(TXMLParser.GetAttribute(curChild, "sqltable"));
                             string variablename = (TXMLParser.HasAttribute(curChild, "name") ?
                                                    TXMLParser.GetAttribute(curChild, "name") :
                                                    tabletype);
 
-                            tables.Add(TXMLParser.GetAttribute(curChild, "sqltable"), new TDataSetTable(
-                                    TXMLParser.GetAttribute(curChild, "sqltable"),
-                                    tabletype,
-                                    variablename,
-                                    store.GetTable(tabletype),
-                                    null,
-                                    null));
+                            TDataSetTable table = new TDataSetTable(
+                                TXMLParser.GetAttribute(curChild, "sqltable"),
+                                tabletype,
+                                variablename,
+                                store.GetTable(tabletype));
+                            XmlNode tableNodes = curChild.FirstChild;
+
+                            while (tableNodes != null)
+                            {
+                                if (tableNodes.Name.ToLower() == "customfield")
+                                {
+                                    // eg. BestAddress in PartnerEditTDS.PPartnerLocation
+                                    TTableField customField = new TTableField();
+                                    customField.strName = TXMLParser.GetAttribute(tableNodes, "name");
+                                    customField.strTypeDotNet = TXMLParser.GetAttribute(tableNodes, "type");
+                                    customField.strDescription = TXMLParser.GetAttribute(tableNodes, "comment");
+                                    table.grpTableField.List.Add(customField);
+
+                                    OverloadTable = true;
+                                }
+
+                                if (tableNodes.Name.ToLower() == "field")
+                                {
+                                    // eg. UnitName in PartnerEditTDS.PPerson
+                                    TTableField field = new TTableField(store.GetTable(TXMLParser.GetAttribute(tableNodes, "sqltable")).
+                                        GetField(TXMLParser.GetAttribute(tableNodes, "sqlfield")));
+
+                                    if (TXMLParser.HasAttribute(tableNodes, "name"))
+                                    {
+                                        field.strNameDotNet = TXMLParser.GetAttribute(tableNodes, "name");
+                                    }
+
+                                    table.grpTableField.List.Add(field);
+
+                                    OverloadTable = true;
+                                }
+
+                                tableNodes = tableNodes.NextSibling;
+                            }
+
+                            tables.Add(TXMLParser.GetAttribute(curChild, "sqltable"), table);
+
+                            if (OverloadTable)
+                            {
+                                tabletype = datasetname + TTable.NiceTableName(table.strName);
+
+                                table.strName = tabletype;
+
+                                // TODO: can we derive from the base table, and just overload a few functions?
+                                codeGenerationTable.InsertTableDefinition(snippetDataset, table, "TABLELOOP");
+                                codeGenerationTable.InsertRowDefinition(snippetDataset, table, "TABLELOOP");
+                            }
 
                             AddTableToDataset(tabletype, variablename, snippetDataset);
                         }
@@ -245,10 +298,13 @@ namespace Ict.Tools.CodeGeneration.DataStore
                         {
                             string variablename = TXMLParser.GetAttribute(curChild, "name");
                             string tabletype = datasetname + TXMLParser.GetAttribute(curChild, "name");
-                            AddTableToDataset(tabletype, variablename, snippetDataset);
 
                             XmlNode customTableNodes = curChild.FirstChild;
-                            TTable customTable = new TTable();
+                            TDataSetTable customTable = new TDataSetTable(
+                                tabletype,
+                                tabletype,
+                                variablename,
+                                null);
 
                             customTable.strDescription = TXMLParser.GetAttribute(curChild, "comment");
                             customTable.strName = tabletype;
@@ -264,25 +320,39 @@ namespace Ict.Tools.CodeGeneration.DataStore
                                     customTable.grpTableField.List.Add(customField);
                                 }
 
-                                // TODO: references to fields from petra.xml
+                                if (customTableNodes.Name.ToLower() == "field")
+                                {
+                                    // eg. SelectedSiteKey in PartnerEditTDS.MiscellaneousData
+                                    TTableField field = new TTableField(store.GetTable(TXMLParser.GetAttribute(customTableNodes, "sqltable")).
+                                        GetField(TXMLParser.GetAttribute(customTableNodes, "sqlfield")));
+
+                                    if (TXMLParser.HasAttribute(customTableNodes, "name"))
+                                    {
+                                        field.strNameDotNet = TXMLParser.GetAttribute(customTableNodes, "name");
+                                    }
+
+                                    customTable.grpTableField.List.Add(field);
+                                }
+
+                                if (customTableNodes.Name.ToLower() == "primarykey")
+                                {
+                                    TConstraint primKeyConstraint = new TConstraint();
+                                    primKeyConstraint.strName = "PK";
+                                    primKeyConstraint.strThisFields = StringHelper.StrSplit(TXMLParser.GetAttribute(customTableNodes,
+                                            "thisFields"), ",");
+                                    customTable.grpConstraint.List.Add(primKeyConstraint);
+                                }
 
                                 customTableNodes = customTableNodes.NextSibling;
                             }
 
-                            tables.Add(tabletype,
-                                new TDataSetTable(
-                                    tabletype,
-                                    tabletype,
-                                    variablename,
-                                    customTable,
-                                    null,
-                                    null));
+                            tables.Add(tabletype, customTable);
+
+                            AddTableToDataset(tabletype, variablename, snippetDataset);
 
                             codeGenerationTable.InsertTableDefinition(snippetDataset, customTable, "TABLELOOP");
                             codeGenerationTable.InsertRowDefinition(snippetDataset, customTable, "TABLELOOP");
                         }
-
-                        // TODO: derived table, with some custom fields
 
                         curChild = curChild.NextSibling;
                     }
@@ -290,7 +360,7 @@ namespace Ict.Tools.CodeGeneration.DataStore
                     foreach (TDataSetTable table in tables.Values)
                     {
                         // todo? also other constraints, not only from original table?
-                        foreach (TConstraint constraint in table.OrigTable.grpConstraint.List)
+                        foreach (TConstraint constraint in table.grpConstraint.List)
                         {
                             if ((constraint.strType == "foreignkey") && tables.ContainsKey(constraint.strOtherTable))
                             {

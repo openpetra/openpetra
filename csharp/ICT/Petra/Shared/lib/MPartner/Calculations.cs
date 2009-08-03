@@ -31,6 +31,7 @@ using Ict.Petra.Shared.MPartner.Partner.Data;
 using System.Text;
 using System.Windows.Forms;
 using Ict.Common;
+using Ict.Common.Data;
 
 namespace Ict.Petra.Shared.MPartner
 {
@@ -76,9 +77,9 @@ namespace Ict.Petra.Shared.MPartner
         {
             DataTable ProcessDT;
 
-            if ((APartnerLocationsDS is PartnerEditTDS) || (APartnerLocationsDS.Tables.Contains(PPartnerLocationTable.GetTableName()) == true))
+            if ((APartnerLocationsDS is PartnerEditTDS) || (APartnerLocationsDS.Tables.Contains(TTypedDataTable.GetTableName(PPartnerLocationTable.TableId)) == true))
             {
-                ProcessDT = APartnerLocationsDS.Tables[PPartnerLocationTable.GetTableName()];
+                ProcessDT = APartnerLocationsDS.Tables[TTypedDataTable.GetTableName(PPartnerLocationTable.TableId)];
             }
             else
             {
@@ -147,9 +148,9 @@ namespace Ict.Petra.Shared.MPartner
         {
             DataTable ProcessDT;
 
-            if ((APartnerLocationsDS is PartnerEditTDS) || (APartnerLocationsDS.Tables.Contains(PPartnerLocationTable.GetTableName()) == true))
+            if ((APartnerLocationsDS is PartnerEditTDS) || (APartnerLocationsDS.Tables.Contains(TTypedDataTable.GetTableName(PPartnerLocationTable.TableId)) == true))
             {
-                ProcessDT = APartnerLocationsDS.Tables[PPartnerLocationTable.GetTableName()];
+                ProcessDT = APartnerLocationsDS.Tables[TTypedDataTable.GetTableName(PPartnerLocationTable.TableId)];
             }
             else
             {

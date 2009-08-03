@@ -136,7 +136,7 @@ namespace Ict.Common.Data
         ///
         /// </summary>
         /// <returns>void</returns>
-        public static void GetStoredModification(String ADBTableName,
+        public static void GetStoredModification(short ATableId,
             string[] AColumnNames,
             int[] APrimKeyColumnOrdList,
             DataRow ADataRow,
@@ -150,7 +150,9 @@ namespace Ict.Common.Data
             String SqlString;
             DataTable table;
 
-            SqlString = "SELECT " + MODIFICATION_ID + ", " + MODIFIED_BY + ", " + MODIFIED_DATE + " FROM PUB_" + ADBTableName + " WHERE ";
+            SqlString = "SELECT " + MODIFICATION_ID + ", " + MODIFIED_BY + ", " + MODIFIED_DATE +
+                        " FROM PUB_" + TTypedDataTable.GetTableNameSQL(ATableId) +
+                        " WHERE ";
             First = true;
 
             foreach (int PrimKeyOrd in APrimKeyColumnOrdList)
@@ -173,12 +175,12 @@ namespace Ict.Common.Data
 
             foreach (int i in APrimKeyColumnOrdList)
             {
-                Parameters[Counter] = CreateOdbcParameter(ADataRow.Table, i, ADataRow[i, DataRowVersion.Original]);
+                Parameters[Counter] = CreateOdbcParameter(ATableId, i, ADataRow[i, DataRowVersion.Original]);
                 Parameters[Counter].Value = ADataRow[i, DataRowVersion.Original];
                 Counter = Counter + 1;
             }
 
-            table = DBAccess.GDBAccessObj.SelectDT(SqlString, ADBTableName, ATransaction, Parameters);
+            table = DBAccess.GDBAccessObj.SelectDT(SqlString, TTypedDataTable.GetTableNameSQL(ATableId), ATransaction, Parameters);
             AModificationID = "";
             AModifiedBy = "";
             AModifiedDate = DateTime.MinValue;
@@ -211,15 +213,18 @@ namespace Ict.Common.Data
         ///
         /// </summary>
         /// <returns>void</returns>
-        public static void InsertRow(String ADBTableName,
-            string[] AColumns,
+        public static void InsertRow(
+            short ATableId,
             ref DataRow ADataRow,
             DB.TDBTransaction ATransaction,
             String ACurrentUser)
         {
-            DBAccess.GDBAccessObj.ExecuteNonQuery(GenerateInsertClause("PUB_" + ADBTableName,
-                    AColumns,
-                    ADataRow), ATransaction, false, GetParametersForInsertClause(ref ADataRow, AColumns.Length, ATransaction, ACurrentUser));
+            string[] Columns = TTypedDataTable.GetColumnStringList(ATableId);
+            DBAccess.GDBAccessObj.ExecuteNonQuery(GenerateInsertClause("PUB_" +
+                    TTypedDataTable.GetTableNameSQL(ATableId),
+                    Columns,
+                    ADataRow), ATransaction, false,
+                GetParametersForInsertClause(ATableId, ref ADataRow, Columns.Length, ATransaction, ACurrentUser));
         }
 
         /// <summary>
@@ -227,9 +232,8 @@ namespace Ict.Common.Data
         ///
         /// </summary>
         /// <returns>void</returns>
-        public static void UpdateRow(String ADBTableName,
-            string[] AColumns,
-            int[] APrimKeyColumnOrdList,
+        public static void UpdateRow(
+            short ATableId,
             ref DataRow ADataRow,
             DB.TDBTransaction ATransaction,
             String ACurrentUser)
@@ -241,10 +245,14 @@ namespace Ict.Common.Data
             String OriginalModificationID;
             String CurrentModificationID;
 
+            string[] Columns = TTypedDataTable.GetColumnStringList(ATableId);
+            int[] PrimKeyColumnOrdList = TTypedDataTable.GetPrimaryKeyColumnOrdList(ATableId);
+            string DBTableName = TTypedDataTable.GetTableNameSQL(ATableId);
+
             // check if modification id of the changed row is the same as currently stored in the database
-            GetStoredModification(ADBTableName,
-                AColumns,
-                APrimKeyColumnOrdList,
+            GetStoredModification(ATableId,
+                Columns,
+                PrimKeyColumnOrdList,
                 ADataRow,
                 ATransaction,
                 ref LastModificationId,
@@ -287,31 +295,31 @@ namespace Ict.Common.Data
                 if (OriginalModificationID != CurrentModificationID)
                 {
                     throw new Exception(
-                        "Developer should fix this: Forgot to call AcceptChanges on table " + ADBTableName + " (OriginalModificationID: '" +
+                        "Developer should fix this: Forgot to call AcceptChanges on table " + DBTableName + " (OriginalModificationID: '" +
                         OriginalModificationID + "', CurrentModificationID: '" + CurrentModificationID + "'");
                 }
 
                 if (LastModificationId != OriginalModificationID)
                 {
                     throw new EDBConcurrencyException(
-                        "Cannot update row of table " + ADBTableName + " because the row has been edited by user " + LastModifiedBy,
+                        "Cannot update row of table " + DBTableName + " because the row has been edited by user " + LastModifiedBy,
                         "update",
-                        ADBTableName,
+                        DBTableName,
                         LastModifiedBy,
                         LastModifiedDate);
                 }
 
-                DBAccess.GDBAccessObj.ExecuteNonQuery(GenerateUpdateClause("PUB_" + ADBTableName,
-                        AColumns,
+                DBAccess.GDBAccessObj.ExecuteNonQuery(GenerateUpdateClause("PUB_" + DBTableName,
+                        Columns,
                         ADataRow,
-                        APrimKeyColumnOrdList), ATransaction, false,
-                    GetParametersForUpdateClause(ref ADataRow, APrimKeyColumnOrdList, AColumns.Length, ATransaction, ACurrentUser));
+                        PrimKeyColumnOrdList), ATransaction, false,
+                    GetParametersForUpdateClause(ATableId, ref ADataRow, PrimKeyColumnOrdList, Columns.Length, ATransaction, ACurrentUser));
             }
             else
             {
-                throw new EDBConcurrencyRowDeletedException("Cannot update row of table " + ADBTableName + " because the row has been deleted.",
+                throw new EDBConcurrencyRowDeletedException("Cannot update row of table " + DBTableName + " because the row has been deleted.",
                     "update",
-                    ADBTableName,
+                    DBTableName,
                     "",
                     DateTime.MinValue);
             }
@@ -322,21 +330,24 @@ namespace Ict.Common.Data
         ///
         /// </summary>
         /// <returns>void</returns>
-        public static void DeleteRow(String ADBTableName,
-            string[] AColumns,
-            int[] APrimKeyColumnOrdList,
+        public static void DeleteRow(
+            short ATableId,
             DataRow ADataRow,
             DB.TDBTransaction ATransaction)
         {
             String LastModificationId = "";
             String LastModifiedBy = "";
 
+            string[] Columns = TTypedDataTable.GetColumnStringList(ATableId);
+            int[] PrimKeyColumnOrdList = TTypedDataTable.GetPrimaryKeyColumnOrdList(ATableId);
+            string DBTableName = TTypedDataTable.GetTableNameSQL(ATableId);
+
             System.DateTime LastModifiedDate;
 
             // check if modification id of the changed row is the same as currently stored in the database
-            GetStoredModification(ADBTableName,
-                AColumns,
-                APrimKeyColumnOrdList,
+            GetStoredModification(ATableId,
+                Columns,
+                PrimKeyColumnOrdList,
                 ADataRow,
                 ATransaction,
                 ref LastModificationId,
@@ -346,17 +357,18 @@ namespace Ict.Common.Data
             if (LastModificationId != (string)(ADataRow[MODIFICATION_ID, DataRowVersion.Original]))
             {
                 throw new EDBConcurrencyException(
-                    "Cannot delete row of table " + ADBTableName + " because the row has been edited by user " + LastModifiedBy,
+                    "Cannot delete row of table " + DBTableName + " because the row has been edited by user " + LastModifiedBy,
                     "delete",
-                    ADBTableName,
+                    DBTableName,
                     LastModifiedBy,
                     LastModifiedDate);
             }
 
-            DBAccess.GDBAccessObj.ExecuteNonQuery(GenerateDeleteClause("PUB_" + ADBTableName,
-                    AColumns,
+            DBAccess.GDBAccessObj.ExecuteNonQuery(GenerateDeleteClause("PUB_" + DBTableName,
+                    Columns,
                     ADataRow,
-                    APrimKeyColumnOrdList), ATransaction, false, GetParametersForDeleteClause(ADataRow, APrimKeyColumnOrdList));
+                    PrimKeyColumnOrdList), ATransaction, false,
+                GetParametersForDeleteClause(ATableId, ADataRow, PrimKeyColumnOrdList));
         }
 
         /// <summary>
@@ -408,11 +420,11 @@ namespace Ict.Common.Data
         /// </summary>
         /// <returns>the Select Clause
         /// </returns>
-        public static String GenerateSelectClauseLong(String ATableName, StringCollection AFieldList, string[] APrimaryKeyFields)
+        public static String GenerateSelectClauseLong(String ATableName, StringCollection AFieldList, short ATableId)
         {
-            String ReturnValue;
+            String ReturnValue = "SELECT ";
 
-            ReturnValue = "SELECT ";
+            string[] PrimaryKeyFields = TTypedDataTable.GetPrimaryKeyColumnStringList(ATableId);
 
             if ((AFieldList == null) || (AFieldList.Count == 0))
             {
@@ -437,7 +449,7 @@ namespace Ict.Common.Data
                     }
                 }
 
-                foreach (string primkeyField in APrimaryKeyFields)
+                foreach (string primkeyField in PrimaryKeyFields)
                 {
                     if ((!AFieldList.Contains(primkeyField)))
                     {
@@ -582,6 +594,34 @@ namespace Ict.Common.Data
         }
 
         /// <summary>
+        /// this function generates a where clause for the primary key of the given table
+        /// </summary>
+        /// <param name="ATableId"></param>
+        /// <returns></returns>
+        public static String GenerateWhereClauseFromPrimaryKey(short ATableId)
+        {
+            String ReturnValue = "";
+
+            string[] primaryKeyColumns = TTypedDataTable.GetPrimaryKeyColumnStringList(ATableId);
+
+            foreach (string columnname in primaryKeyColumns)
+            {
+                if (ReturnValue.Length == 0)                     //first time around
+                {
+                    ReturnValue = " WHERE ";
+                }
+                else
+                {
+                    ReturnValue += " AND ";
+                }
+
+                ReturnValue += columnname + " = ?";
+            }
+
+            return ReturnValue;
+        }
+
+        /// <summary>
         /// This function expects a string list of all existing columns,
         /// and a datarow that has a value or an empty value for each column.
         /// It will return a Where clause, using the given values.
@@ -590,12 +630,12 @@ namespace Ict.Common.Data
         ///
         /// </summary>
         /// <param name="ATableName">the table that the where clause is generated for</param>
-        /// <param name="AColumnNames">list of all columns of that table</param>
+        /// <param name="ATableId">id of the table to get the list of all columns of that table</param>
         /// <param name="ADataRow">contains the values for the where clause</param>
         /// <param name="ATemplateOperators">Every template field can have an operator; the default version always used = or LIKE</param>
         /// <returns>the Where Clause
         /// </returns>
-        public static String GenerateWhereClauseLong(String ATableName, string[] AColumnNames, DataRow ADataRow, StringCollection ATemplateOperators)
+        public static String GenerateWhereClauseLong(String ATableName, short ATableId, DataRow ADataRow, StringCollection ATemplateOperators)
         {
             String ReturnValue;
             Int32 Counter;
@@ -604,13 +644,14 @@ namespace Ict.Common.Data
             ReturnValue = "";
             Counter = 0;
             CounterOperator = 0;
+            string[] ColumnNames = TTypedDataTable.GetColumnStringList(ATableId);
 
             while (Counter < ADataRow.ItemArray.Length)
             {
                 if (ADataRow[Counter] != System.DBNull.Value)
                 {
                     ReturnValue = ReturnValue + " AND ";
-                    ReturnValue = ReturnValue + ATableName + '.' + AColumnNames[Counter];
+                    ReturnValue = ReturnValue + ATableName + '.' + ColumnNames[Counter];
 
                     if ((ATemplateOperators == null) || (CounterOperator >= ATemplateOperators.Count))
                     {
@@ -655,10 +696,9 @@ namespace Ict.Common.Data
         /// </summary>
         /// <param name="ATableName">the table that the where clause is generated for</param>
         /// <param name="ASearchCriteria"></param>
-        /// <param name="AColumnNames">list of all columns of that table</param>
         /// <returns>the Where Clause
         /// </returns>
-        public static String GenerateWhereClauseLong(String ATableName, string[] AColumnNames, TSearchCriteria[] ASearchCriteria)
+        public static String GenerateWhereClauseLong(String ATableName, TSearchCriteria[] ASearchCriteria)
         {
             String ReturnValue = "";
 
@@ -679,13 +719,13 @@ namespace Ict.Common.Data
         ///
         /// </summary>
         /// <param name="ATableName">the table that the where clause is generated for</param>
-        /// <param name="AColumnNames">list of all columns of that table</param>
+        /// <param name="ATableId">id of the table to get the list of all columns of that table</param>
         /// <param name="ADataRow">contains the values for the where clause</param>
         /// <returns>the Where Clause
         /// </returns>
-        public static String GenerateWhereClauseLong(String ATableName, string[] AColumnNames, DataRow ADataRow)
+        public static String GenerateWhereClauseLong(String ATableName, short ATableId, DataRow ADataRow)
         {
-            return GenerateWhereClauseLong(ATableName, AColumnNames, ADataRow, null);
+            return GenerateWhereClauseLong(ATableName, ATableId, ADataRow, null);
         }
 
         /// <summary>
@@ -725,11 +765,11 @@ namespace Ict.Common.Data
         /// This function creates an odbc parameter with the correct type, based on the obj which comes from a DataRow
         ///
         /// </summary>
-        /// <param name="ATable">Table that we are operating on</param>
+        /// <param name="ATableId">Table that we are operating on</param>
         /// <param name="AColumnNr">which column should the parameter be generated for</param>
         /// <param name="obj">the value that needs to be converted to OdbcParameter</param>
         /// <returns>the Odbc parameter</returns>
-        public static OdbcParameter CreateOdbcParameter(DataTable ATable, Int32 AColumnNr, System.Object obj)
+        public static OdbcParameter CreateOdbcParameter(short ATableId, Int32 AColumnNr, System.Object obj)
         {
             OdbcParameter ReturnValue;
             OdbcType newType;
@@ -767,7 +807,7 @@ namespace Ict.Common.Data
                 // I should find the maximum number for this field specifically;
                 // multiplying by 2 is not safe with multibyte characters?
                 // Length := (obj as System.String).Length  2;
-                Length = ((TTypedDataTable)ATable).CreateOdbcParameter(AColumnNr).Size;
+                Length = TTypedDataTable.CreateOdbcParameter(ATableId, AColumnNr).Size;
 
                 if (Length == 0)
                 {
@@ -799,6 +839,27 @@ namespace Ict.Common.Data
             }
 
             return ReturnValue;
+        }
+
+        /// <summary>
+        /// create the odbc parameters for the primary key, with the actual values
+        /// </summary>
+        /// <param name="ATableId"></param>
+        /// <param name="APrimaryKeyValues"></param>
+        /// <returns></returns>
+        private static OdbcParameter[] CreateOdbcParameterArrayFromPrimaryKey(short ATableId, System.Object[] APrimaryKeyValues)
+        {
+            OdbcParameter[] ParametersArray = new OdbcParameter[APrimaryKeyValues.Length];
+            int counter = 0;
+            int[] primaryKeyColumns = TTypedDataTable.GetPrimaryKeyColumnOrdList(ATableId);
+
+            foreach (System.Object obj in APrimaryKeyValues)
+            {
+                ParametersArray[counter] = CreateOdbcParameter(ATableId, primaryKeyColumns[counter], obj);
+                counter++;
+            }
+
+            return ParametersArray;
         }
 
         /// <summary>
@@ -906,7 +967,7 @@ namespace Ict.Common.Data
         /// </summary>
         /// <returns>an array of OdbcParameters
         /// </returns>
-        public static OdbcParameter[] GetParametersForWhereClause(DataRow ADataRow)
+        public static OdbcParameter[] GetParametersForWhereClause(short ATableId, DataRow ADataRow)
         {
             OdbcParameter[] ReturnValue;
             System.Int32 Counter;
@@ -931,7 +992,7 @@ namespace Ict.Common.Data
             {
                 if (item != System.DBNull.Value)
                 {
-                    ReturnValue[Counter] = CreateOdbcParameter(ADataRow.Table, ColumnCounter, item);
+                    ReturnValue[Counter] = CreateOdbcParameter(ATableId, ColumnCounter, item);
                     ReturnValue[Counter].Value = item;
                     Counter = Counter + 1;
                 }
@@ -947,18 +1008,17 @@ namespace Ict.Common.Data
         /// uses only the values that are not DBNULL
         /// </summary>
         /// <param name="ADataRow">values that are used as parameters</param>
-        /// <param name="APrimaryKeyColumnOrd">is needed for the SELECT COUNT statement; it has the order numbers of the columns that make up the primary key</param>
+        /// <param name="ATableId">identifier of the table to get the primary key from it</param>
         /// <returns>an array of OdbcParameters
         /// </returns>
-        public static OdbcParameter[] GetParametersForWhereClause(DataRow ADataRow, int[] APrimaryKeyColumnOrd)
+        public static OdbcParameter[] GetParametersForWhereClauseWithPrimaryKey(short ATableId, DataRow ADataRow)
         {
             OdbcParameter[] ReturnValue;
-            System.Int32 Counter;
+            System.Int32 Counter = 0;
             System.Int32 i;
             System.Object CurrentValue = null;
-            Boolean First;
-            Counter = 0;
-            First = true;
+            Boolean First = true;
+            int[] PrimaryKeyColumnOrderList = TTypedDataTable.GetPrimaryKeyColumnOrdList(ATableId);
 
             // find out how many template values there are, to be able to create the array in one go
             for (i = 0; i <= ADataRow.ItemArray.Length - 1; i += 1)
@@ -981,9 +1041,9 @@ namespace Ict.Common.Data
                 Counter = 1;
             }
 
-            if (APrimaryKeyColumnOrd != null)
+            if (PrimaryKeyColumnOrderList != null)
             {
-                Counter = Counter + APrimaryKeyColumnOrd.Length;
+                Counter = Counter + PrimaryKeyColumnOrderList.Length;
             }
 
             ReturnValue = new OdbcParameter[Counter];
@@ -1000,7 +1060,7 @@ namespace Ict.Common.Data
                     // problem with mono: NULL is printed directly in the statement, no odbc parameter
                     if ((CurrentValue != System.DBNull.Value) && (CurrentValue.GetType() != typeof(double)))
                     {
-                        ReturnValue[Counter] = CreateOdbcParameter(ADataRow.Table, i, CurrentValue);
+                        ReturnValue[Counter] = CreateOdbcParameter(ATableId, i, CurrentValue);
                         ReturnValue[Counter].Value = CurrentValue;
                         Counter = Counter + 1;
                     }
@@ -1011,17 +1071,17 @@ namespace Ict.Common.Data
             {
                 // we need at least 1 column, otherwise the SQL statement will be invalid...
                 CurrentValue = ADataRow.ItemArray[0];
-                ReturnValue[Counter] = CreateOdbcParameter(ADataRow.Table, 0, CurrentValue);
+                ReturnValue[Counter] = CreateOdbcParameter(ATableId, 0, CurrentValue);
                 ReturnValue[Counter].Value = CurrentValue;
                 Counter = 1;
             }
 
             // for the SELECT COUNT statement
-            if (APrimaryKeyColumnOrd != null)
+            if (PrimaryKeyColumnOrderList != null)
             {
-                foreach (int item in APrimaryKeyColumnOrd)
+                foreach (int item in PrimaryKeyColumnOrderList)
                 {
-                    ReturnValue[Counter] = CreateOdbcParameter(ADataRow.Table, item, ADataRow[item]);
+                    ReturnValue[Counter] = CreateOdbcParameter(ATableId, item, ADataRow[item]);
                     ReturnValue[Counter].Value = ADataRow[item, DataRowVersion.Original];
                     Counter = Counter + 1;
                 }
@@ -1055,13 +1115,16 @@ namespace Ict.Common.Data
         /// uses only the values that are not DBNULL
         /// adds the next modification ID
         /// </summary>
+        /// <param name="ATableId"></param>
         /// <param name="ADataRow">values that are used as parameters</param>
         /// <param name="ANumberDBColumns">the number of columns of this row that should be stored in the database; that allows some columns to be added temporarily, e.g. PPartnerLocation.BestAddress in PartnerEdit Dataset</param>
         /// <param name="ATransaction">need a transaction for getting the next modification id</param>
         /// <param name="ACurrentUser">for setting modified by</param>
         /// <returns>an array of OdbcParameters
         /// </returns>
-        public static OdbcParameter[] GetParametersForInsertClause(ref DataRow ADataRow,
+        public static OdbcParameter[] GetParametersForInsertClause(
+            short ATableId,
+            ref DataRow ADataRow,
             Int32 ANumberDBColumns,
             DB.TDBTransaction ATransaction,
             String ACurrentUser)
@@ -1106,7 +1169,7 @@ namespace Ict.Common.Data
 
                     if (CurrentValue.GetType() != typeof(double))
                     {
-                        ReturnValue[Counter] = CreateOdbcParameter(ADataRow.Table, i, item);
+                        ReturnValue[Counter] = CreateOdbcParameter(ATableId, i, item);
                         ReturnValue[Counter].Value = item;
                         Counter = Counter + 1;
                     }
@@ -1132,6 +1195,7 @@ namespace Ict.Common.Data
         /// This function provides the actual parameters for the GenerateUpdateClause
         /// uses only the values that are changed (comparing the current and the original version of the row)
         /// </summary>
+        /// <param name="ATableId"></param>
         /// <param name="ADataRow">values that are used as parameters</param>
         /// <param name="APrimaryKeyColumnOrd">can be empty; is needed for the UPDATE WHERE statement; it has the order numbers of the columns that make up the primary key</param>
         /// <param name="ANumberDBColumns">the number of columns of this row that should be stored in the database; that allows some columns to be added temporarily, e.g. PPartnerLocation.BestAddress in PartnerEdit Dataset</param>
@@ -1139,7 +1203,9 @@ namespace Ict.Common.Data
         /// <param name="ACurrentUser">for setting modified by</param>
         /// <returns>an array of OdbcParameters
         /// </returns>
-        public static OdbcParameter[] GetParametersForUpdateClause(ref DataRow ADataRow,
+        public static OdbcParameter[] GetParametersForUpdateClause(
+            short ATableId,
+            ref DataRow ADataRow,
             int[] APrimaryKeyColumnOrd,
             Int32 ANumberDBColumns,
             DB.TDBTransaction ATransaction,
@@ -1188,7 +1254,7 @@ namespace Ict.Common.Data
                         // problem with mono: NULL is printed directly in the statement, no odbc parameter
                         if ((CurrentValue != System.DBNull.Value) && (CurrentValue.GetType() != typeof(double)))
                         {
-                            ReturnValue[Counter] = CreateOdbcParameter(ADataRow.Table, i, CurrentValue);
+                            ReturnValue[Counter] = CreateOdbcParameter(ATableId, i, CurrentValue);
                             ReturnValue[Counter].Value = CurrentValue;
                             Counter = Counter + 1;
                         }
@@ -1215,7 +1281,7 @@ namespace Ict.Common.Data
             {
                 foreach (int pki in APrimaryKeyColumnOrd)
                 {
-                    ReturnValue[Counter] = CreateOdbcParameter(ADataRow.Table, pki, ADataRow[pki]);
+                    ReturnValue[Counter] = CreateOdbcParameter(ATableId, pki, ADataRow[pki]);
                     ReturnValue[Counter].Value = ADataRow[pki, DataRowVersion.Original];
                     Counter = Counter + 1;
                 }
@@ -1228,11 +1294,13 @@ namespace Ict.Common.Data
         /// This function provides the actual parameters for the GenerateDeleteClause
         /// it uses the OriginalVersion of the primary key values
         /// </summary>
+        /// <param name="ATableId"></param>
         /// <param name="ADataRow">values that are used as parameters</param>
         /// <param name="APrimaryKeyColumnOrd">has the order numbers of the columns that make up the primary key</param>
         /// <returns>an array of OdbcParameters
         /// </returns>
-        public static OdbcParameter[] GetParametersForDeleteClause(DataRow ADataRow, int[] APrimaryKeyColumnOrd)
+        public static OdbcParameter[] GetParametersForDeleteClause(
+            short ATableId, DataRow ADataRow, int[] APrimaryKeyColumnOrd)
         {
             OdbcParameter[] ReturnValue;
             System.Int32 Counter;
@@ -1242,7 +1310,7 @@ namespace Ict.Common.Data
 
             foreach (int i in APrimaryKeyColumnOrd)
             {
-                ReturnValue[Counter] = CreateOdbcParameter(ADataRow.Table, i, ADataRow[i, DataRowVersion.Original]);
+                ReturnValue[Counter] = CreateOdbcParameter(ATableId, i, ADataRow[i, DataRowVersion.Original]);
                 ReturnValue[Counter].Value = ADataRow[i, DataRowVersion.Original];
                 Counter = Counter + 1;
             }
@@ -1452,6 +1520,67 @@ namespace Ict.Common.Data
             return ReturnValue;
         }
 
+        #region CalledByORMGenerateCode
+
+        /// <summary>
+        /// load data row by primary key into a dataset
+        /// </summary>
+        /// <param name="ATableId"></param>
+        /// <param name="ADataSet"></param>
+        /// <param name="APrimaryKeyValues"></param>
+        /// <param name="AFieldList"></param>
+        /// <param name="ATransaction"></param>
+        /// <param name="AOrderBy"></param>
+        /// <param name="AStartRecord"></param>
+        /// <param name="AMaxRecords"></param>
+        public static DataSet LoadByPrimaryKey(short ATableId,
+            DataSet ADataSet,
+            System.Object[] APrimaryKeyValues,
+            StringCollection AFieldList,
+            TDBTransaction ATransaction,
+            StringCollection AOrderBy,
+            int AStartRecord,
+            int AMaxRecords)
+        {
+            OdbcParameter[] ParametersArray = CreateOdbcParameterArrayFromPrimaryKey(ATableId, APrimaryKeyValues);
+            return DBAccess.GDBAccessObj.Select(ADataSet,
+                GenerateSelectClause(AFieldList, ATableId) +
+                " FROM PUB_" + TTypedDataTable.GetTableNameSQL(ATableId) +
+                GenerateWhereClauseFromPrimaryKey(ATableId) +
+                GenerateOrderByClause(AOrderBy),
+                TTypedDataTable.GetTableName(ATableId),
+                ATransaction, ParametersArray, AStartRecord, AMaxRecords);
+        }
+
+        /// <summary>
+        /// delete by primary key values
+        /// </summary>
+        /// <param name="ATableId"></param>
+        /// <param name="APrimaryKeyValues"></param>
+        /// <param name="ATransaction"></param>
+        public static void DeleteByPrimaryKey(short ATableId, System.Object[] APrimaryKeyValues, TDBTransaction ATransaction)
+        {
+            OdbcParameter[] ParametersArray = CreateOdbcParameterArrayFromPrimaryKey(ATableId, APrimaryKeyValues);
+            DBAccess.GDBAccessObj.ExecuteNonQuery("DELETE FROM PUB_" + TTypedDataTable.GetTableNameSQL(ATableId) +
+                GenerateWhereClauseFromPrimaryKey(ATableId),
+                ATransaction, false, ParametersArray);
+        }
+
+        /// <summary>
+        /// check if row exists with the primary key
+        /// </summary>
+        /// <param name="ATableId"></param>
+        /// <param name="APrimaryKeyValues"></param>
+        /// <param name="ATransaction"></param>
+        public static bool Exists(short ATableId, System.Object[] APrimaryKeyValues, TDBTransaction ATransaction)
+        {
+            OdbcParameter[] ParametersArray = CreateOdbcParameterArrayFromPrimaryKey(ATableId, APrimaryKeyValues);
+            return 1 == Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar("SELECT COUNT(*) FROM PUB_" +
+                TTypedDataTable.GetTableNameSQL(ATableId) +
+                GenerateWhereClauseFromPrimaryKey(ATableId),
+                ATransaction, ParametersArray));
+        }
+
         /// <summary>
         /// loads all rows matching certain search criteria into a dataset
         /// </summary>
@@ -1508,17 +1637,34 @@ namespace Ict.Common.Data
         }
 
         /// <summary>
+        /// delete all rows matching the given row
+        /// </summary>
+        /// <param name="ATableId"></param>
+        /// <param name="ATemplateRow"></param>
+        /// <param name="ATemplateOperators"></param>
+        /// <param name="ATransaction"></param>
+        public static void DeleteUsingTemplate(short ATableId, DataRow ATemplateRow, StringCollection ATemplateOperators, TDBTransaction ATransaction)
+        {
+            DBAccess.GDBAccessObj.ExecuteNonQuery("DELETE FROM PUB_" + TTypedDataTable.GetTableNameSQL(ATableId) +
+                GenerateWhereClause(TTypedDataTable.GetColumnStringList(ATableId), ATemplateRow, ATemplateOperators),
+                ATransaction, false,
+                GetParametersForWhereClause(ATableId, ATemplateRow));
+        }
+
+        /// <summary>
         /// delete all rows matching the search criteria
         /// </summary>
-        /// <param name="ATableID">specify which typed table is used</param>
+        /// <param name="ATableId">specify which typed table is used</param>
         /// <param name="ASearchCriteria"></param>
         /// <param name="ATransaction"></param>
-        public static void DeleteUsingTemplate(short ATableID, TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        public static void DeleteUsingTemplate(short ATableId, TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
         {
-            DBAccess.GDBAccessObj.ExecuteNonQuery(("DELETE FROM PUB_" +
-                                                   GenerateWhereClause(TTypedDataTable.GetColumnStringList(
-                                                           ATableID), ASearchCriteria)), ATransaction, false,
-                GetParametersForWhereClause(ATableID, ASearchCriteria));
+            DBAccess.GDBAccessObj.ExecuteNonQuery(("DELETE FROM PUB_" + TTypedDataTable.GetTableNameSQL(ATableId) +
+                                                   GenerateWhereClause(TTypedDataTable.GetColumnStringList(ATableId), ASearchCriteria)),
+                ATransaction, false,
+                GetParametersForWhereClause(ATableId, ASearchCriteria));
         }
+
+        #endregion CalledByORMGenerateCode
     }
 }

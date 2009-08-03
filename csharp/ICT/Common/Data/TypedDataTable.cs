@@ -199,14 +199,14 @@ namespace Ict.Common.Data
             /// name of the table as it is in the SQL database
             public string dbname;
 
-            /// the names of the columns that are part of the primary key
-            public string[] PrimaryKeyColumns;
+            /// the order number of the columns that are part of the primary key
+            public int[] PrimaryKeyColumns;
 
             /// the columns of this table
             public TTypedColumnInfo[] columns;
 
             /// constructor
-            public TTypedTableInfo(short AId, string AName, string ADBName, TTypedColumnInfo[] AColumns, string[] APrimaryKeyColumns)
+            public TTypedTableInfo(short AId, string AName, string ADBName, TTypedColumnInfo[] AColumns, int[] APrimaryKeyColumns)
             {
                 id = AId;
                 name = AName;
@@ -230,6 +230,25 @@ namespace Ict.Common.Data
 
         /// get the names of the columns that are part of the primary key
         public static string[] GetPrimaryKeyColumnStringList(short ATableNumber)
+        {
+            int[] primaryKeyColumnsOrder = GetPrimaryKeyColumnOrdList(ATableNumber);
+            string s = "";
+
+            foreach (int item in primaryKeyColumnsOrder)
+            {
+                if (s.Length > 0)
+                {
+                    s += ",";
+                }
+
+                s += '"' + TableInfo[ATableNumber].columns[item].name + '"';
+            }
+
+            return s.Split(',');
+        }
+
+        /// get the order number of the columns that are part of the primary key
+        public static int[] GetPrimaryKeyColumnOrdList(short ATableNumber)
         {
             return TableInfo[ATableNumber].PrimaryKeyColumns;
         }

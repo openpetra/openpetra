@@ -182,6 +182,40 @@ namespace Ict.Tools.DBXML
         }
 
         /// <summary>
+        /// copy the values from another table;
+        /// used for generating datasets by deriving from database tables
+        /// </summary>
+        /// <param name="AOtherTable"></param>
+        public void Assign(TTable AOtherTable)
+        {
+            foreach (TTableField f in AOtherTable.grpTableField.List)
+            {
+                this.grpTableField.List.Add(f);
+            }
+
+            foreach (TIndex i in AOtherTable.grpIndex.List)
+            {
+                this.grpIndex.List.Add(i);
+            }
+
+            foreach (TConstraint c in AOtherTable.grpConstraint.List)
+            {
+                this.grpConstraint.List.Add(c);
+            }
+
+            this.order = AOtherTable.order;
+            this.strName = AOtherTable.strName;
+            this.strDumpName = AOtherTable.strDumpName;
+            this.strDescription = AOtherTable.strDescription;
+            this.strArea = AOtherTable.strArea;
+            this.strLabel = AOtherTable.strLabel;
+            this.ExistsStrLabel = AOtherTable.ExistsStrLabel;
+            this.strGroup = AOtherTable.strGroup;
+            this.bWithoutCRMDFields = AOtherTable.bWithoutCRMDFields;
+            this.bCatchUpdateException = AOtherTable.bCatchUpdateException;
+        }
+
+        /// <summary>
         /// change the name from the sql name to a Delphi class name
         /// remove underscores, use capitalised letters
         /// </summary>
@@ -1395,7 +1429,7 @@ namespace Ict.Tools.DBXML
     /** this describes a table that is derived from a database table,
      * has additional custom fields, or is completely customised
      */
-    public class TDataSetTable
+    public class TDataSetTable : TTable
     {
         /// <summary>
         /// the table name from the sql database
@@ -1413,71 +1447,22 @@ namespace Ict.Tools.DBXML
         public string tablealias;
 
         /// <summary>
-        /// constraints within the dataset
-        /// </summary>
-        public ArrayList Constraints;
-
-        /// <summary>
-        /// additional custom fields
-        /// </summary>
-        public ArrayList Fields;
-
-        /// <summary>
-        /// the original base table that is extended (derived from)
-        /// </summary>
-        public TTable OrigTable;
-
-        /// <summary>
         /// constructor
         /// </summary>
         /// <param name="tableorig">the sql name of the table</param>
         /// <param name="tablename">the name of the table in CamelCase</param>
         /// <param name="tablealias">which alias to use for the table</param>
         /// <param name="origtable">this is an instance of a table that should be used as a base</param>
-        /// <param name="constraints">constraints for this dataset</param>
-        /// <param name="fields">fields to be added to the base table</param>
-        public TDataSetTable(string tableorig, string tablename, string tablealias, TTable origtable, ArrayList constraints, ArrayList fields)
+        public TDataSetTable(string tableorig, string tablename, string tablealias, TTable origtable)
         {
+            if (origtable != null)
+            {
+                Assign(origtable);
+            }
+
             this.tableorig = tableorig;
             this.tablename = tablename;
             this.tablealias = tablealias;
-            this.Constraints = constraints;
-            this.Fields = fields;
-            this.OrigTable = origtable;
-        }
-
-        /// <summary>
-        /// get the column with the given name
-        /// </summary>
-        /// <param name="s">the column name</param>
-        /// <returns></returns>
-        public TTableField GetField(string s)
-        {
-            TTableField ReturnValue;
-            TTableField t;
-
-            ReturnValue = null;
-
-            // derived fields from base table
-            if (OrigTable != null)
-            {
-                t = OrigTable.GetField(s);
-
-                if (t != null)
-                {
-                    return t;
-                }
-            }
-
-            foreach (TTableField t2 in this.Fields)
-            {
-                if ((t2.strName == s) || (TTable.NiceFieldName(t2) == s))
-                {
-                    return t2;
-                }
-            }
-
-            return ReturnValue;
         }
     }
 

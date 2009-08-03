@@ -25,7 +25,8 @@ public class {#TABLENAME}Table : TTypedDataTable
 {
     {#DATACOLUMNS}
     
-    private static short TableId = {#TABLEID};
+    /// TableId for Ict.Common.Data generic functions
+    public static short TableId = {#TABLEID};
     
     private static bool FInitInfoValues = InitInfoValues();
     private static bool InitInfoValues()
@@ -34,8 +35,8 @@ public class {#TABLENAME}Table : TTypedDataTable
             new TTypedColumnInfo[] { 
                 {#COLUMNINFO}
             },
-            new string[] { 
-                {#COLUMNPRIMARYKEYFIELDNAMES}
+            new int[] { 
+                {#COLUMNPRIMARYKEYORDER}
             }));
         return true;
     }
@@ -138,7 +139,7 @@ this.Column{#COLUMNNAME} = this.Columns["{#COLUMNDBNAME}"];
 {##STATICCOLUMNPROPERTIES}
 
 /// get the name of the field in the database for this column
-protected static string Get{#COLUMNNAME}DBName()
+public static string Get{#COLUMNNAME}DBName()
 {
     return "{#COLUMNDBNAME}";
 }

@@ -210,6 +210,7 @@ namespace Ict.Tools.DBXML
             return ParseDocument(ref myStore, true, true);
         }
 
+        static int tableCounter = 0;
         /// <summary>
         /// Parse the definition of one database table
         /// </summary>
@@ -226,6 +227,7 @@ namespace Ict.Tools.DBXML
 
             cur = cur2;
             table = new TTable();
+            table.order = tableCounter++;
             table.strName = GetAttribute(cur, "name");
             table.strDumpName = GetAttribute(cur, "dumpname");
             table.strDescription = GetAttribute(cur, "descr");

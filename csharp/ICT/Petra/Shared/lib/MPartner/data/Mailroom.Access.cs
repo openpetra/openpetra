@@ -55,9 +55,8 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data.Access
         /// this method is called by all overloads
         public static void LoadAll(DataSet ADataSet, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, ((GenerateSelectClause(AFieldList, new string[] {
-                            "m_extract_id_i"}) + " FROM PUB_m_extract_master")
-                            + GenerateOrderByClause(AOrderBy)), MExtractMasterTable.GetTableName(), ATransaction, AStartRecord, AMaxRecords);
+            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, ((GenerateSelectClause(AFieldList, MExtractMasterTable.TableId) + " FROM PUB_m_extract_master") +
+                            GenerateOrderByClause(AOrderBy)), TTypedDataTable.GetTableName(MExtractMasterTable.TableId), ATransaction, AStartRecord, AMaxRecords);
         }
 
         /// auto generated
@@ -97,12 +96,8 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data.Access
         /// this method is called by all overloads
         public static void LoadByPrimaryKey(DataSet ADataSet, Int32 AExtractId, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            OdbcParameter[] ParametersArray = new OdbcParameter[1];
-            ParametersArray[0] = new OdbcParameter("", OdbcType.Int);
-            ParametersArray[0].Value = ((object)(AExtractId));
-            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, ((GenerateSelectClause(AFieldList, new string[] {
-                            "m_extract_id_i"}) + " FROM PUB_m_extract_master WHERE m_extract_id_i = ?")
-                            + GenerateOrderByClause(AOrderBy)), MExtractMasterTable.GetTableName(), ATransaction, ParametersArray, AStartRecord, AMaxRecords);
+            ADataSet = LoadByPrimaryKey(MExtractMasterTable.TableId,
+                ADataSet, new System.Object[1]{AExtractId}, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
         }
 
         /// auto generated
@@ -142,10 +137,10 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data.Access
         /// this method is called by all overloads
         public static void LoadUsingTemplate(DataSet ADataSet, MExtractMasterRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClause(AFieldList, new string[] {
-                            "m_extract_id_i"}) + " FROM PUB_m_extract_master")
-                            + GenerateWhereClause(MExtractMasterTable.GetColumnStringList(), ATemplateRow, ATemplateOperators))
-                            + GenerateOrderByClause(AOrderBy)), MExtractMasterTable.GetTableName(), ATransaction, GetParametersForWhereClause(ATemplateRow), AStartRecord, AMaxRecords);
+            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClause(AFieldList, MExtractMasterTable.TableId) + " FROM PUB_m_extract_master") +
+                            GenerateWhereClause(TTypedDataTable.GetColumnStringList(MExtractMasterTable.TableId), ATemplateRow, ATemplateOperators)) +
+                            GenerateOrderByClause(AOrderBy)), TTypedDataTable.GetTableName(MExtractMasterTable.TableId), ATransaction,
+                            GetParametersForWhereClause(MExtractMasterTable.TableId, ATemplateRow), AStartRecord, AMaxRecords);
         }
 
         /// auto generated
@@ -191,11 +186,10 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data.Access
         /// this method is called by all overloads
         public static void LoadUsingTemplate(DataSet ADataSet, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClause(AFieldList, new string[] {
-                            "m_extract_id_i"}) + " FROM PUB_m_extract_master")
-                            + GenerateWhereClause(MExtractMasterTable.GetColumnStringList(), ASearchCriteria))
-                            + GenerateOrderByClause(AOrderBy)), MExtractMasterTable.GetTableName(), ATransaction,
-                            GetParametersForWhereClause(new MExtractMasterTable(), ASearchCriteria), AStartRecord, AMaxRecords);
+            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClause(AFieldList, MExtractMasterTable.TableId) + " FROM PUB_m_extract_master") +
+                            GenerateWhereClause(TTypedDataTable.GetColumnStringList(MExtractMasterTable.TableId), ASearchCriteria)) +
+                            GenerateOrderByClause(AOrderBy)), TTypedDataTable.GetTableName(MExtractMasterTable.TableId), ATransaction,
+                            GetParametersForWhereClause(MExtractMasterTable.TableId, ASearchCriteria), AStartRecord, AMaxRecords);
         }
 
         /// auto generated
@@ -238,26 +232,24 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data.Access
             return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar("SELECT COUNT(*) FROM PUB_m_extract_master", ATransaction, false));
         }
 
-        /// this method is called by all overloads
-        public static int CountByPrimaryKey(Int32 AExtractId, TDBTransaction ATransaction)
+        /// check if a row exists by using the primary key
+        public static bool Exists(Int32 AExtractId, TDBTransaction ATransaction)
         {
-            OdbcParameter[] ParametersArray = new OdbcParameter[1];
-            ParametersArray[0] = new OdbcParameter("", OdbcType.Int);
-            ParametersArray[0].Value = ((object)(AExtractId));
-            return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar("SELECT COUNT(*) FROM PUB_m_extract_master WHERE m_extract_id_i = ?", ATransaction, false, ParametersArray));
+            return Exists(MExtractMasterTable.TableId, new System.Object[1]{AExtractId}, ATransaction);
         }
 
         /// this method is called by all overloads
         public static int CountUsingTemplate(MExtractMasterRow ATemplateRow, StringCollection ATemplateOperators, TDBTransaction ATransaction)
         {
-            return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_m_extract_master" + GenerateWhereClause(MExtractMasterTable.GetColumnStringList(), ATemplateRow, ATemplateOperators)), ATransaction, false, GetParametersForWhereClause(ATemplateRow)));
+            return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_m_extract_master" + GenerateWhereClause(TTypedDataTable.GetColumnStringList(MExtractMasterTable.TableId), ATemplateRow, ATemplateOperators)), ATransaction, false,
+                   GetParametersForWhereClause(MExtractMasterTable.TableId, ATemplateRow)));
         }
 
         /// this method is called by all overloads
         public static int CountUsingTemplate(TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
         {
-            return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_m_extract_master" + GenerateWhereClause(MExtractMasterTable.GetColumnStringList(), ASearchCriteria)), ATransaction, false,
-            GetParametersForWhereClause(new MExtractMasterTable(), ASearchCriteria)));
+            return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_m_extract_master" + GenerateWhereClause(TTypedDataTable.GetColumnStringList(MExtractMasterTable.TableId), ASearchCriteria)), ATransaction, false,
+            GetParametersForWhereClause(MExtractMasterTable.TableId, ASearchCriteria)));
         }
 
         /// auto generated
@@ -266,9 +258,9 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data.Access
             OdbcParameter[] ParametersArray = new OdbcParameter[1];
             ParametersArray[0] = new OdbcParameter("", OdbcType.VarChar, 20);
             ParametersArray[0].Value = ((object)(AUserId));
-            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, ((GenerateSelectClause(AFieldList, new string[] {
-                            "m_extract_id_i"}) + " FROM PUB_m_extract_master WHERE m_manual_mod_by_c = ?")
-                            + GenerateOrderByClause(AOrderBy)), MExtractMasterTable.GetTableName(), ATransaction, ParametersArray, AStartRecord, AMaxRecords);
+            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, ((GenerateSelectClause(AFieldList, MExtractMasterTable.TableId) +
+                            " FROM PUB_m_extract_master WHERE m_manual_mod_by_c = ?") +
+                            GenerateOrderByClause(AOrderBy)), TTypedDataTable.GetTableName(MExtractMasterTable.TableId), ATransaction, ParametersArray, AStartRecord, AMaxRecords);
         }
 
         /// auto generated
@@ -308,11 +300,12 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data.Access
         /// auto generated
         public static void LoadViaSUserTemplate(DataSet ADataSet, SUserRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClauseLong("PUB_m_extract_master", AFieldList, new string[] {
-                            "m_extract_id_i"}) + " FROM PUB_m_extract_master, PUB_s_user WHERE " +
-                            "PUB_m_extract_master.m_manual_mod_by_c = PUB_s_user.s_user_id_c")
-                            + GenerateWhereClauseLong("PUB_s_user", SUserTable.GetColumnStringList(), ATemplateRow, ATemplateOperators))
-                            + GenerateOrderByClause(AOrderBy)), MExtractMasterTable.GetTableName(), ATransaction, GetParametersForWhereClause(ATemplateRow), AStartRecord, AMaxRecords);
+            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClauseLong("PUB_m_extract_master", AFieldList, MExtractMasterTable.TableId) +
+                            " FROM PUB_m_extract_master, PUB_s_user WHERE " +
+                            "PUB_m_extract_master.m_manual_mod_by_c = PUB_s_user.s_user_id_c") +
+                            GenerateWhereClauseLong("PUB_s_user", SUserTable.TableId, ATemplateRow, ATemplateOperators)) +
+                            GenerateOrderByClause(AOrderBy)), TTypedDataTable.GetTableName(MExtractMasterTable.TableId), ATransaction,
+                            GetParametersForWhereClause(SUserTable.TableId, ATemplateRow), AStartRecord, AMaxRecords);
         }
 
         /// auto generated
@@ -358,12 +351,12 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data.Access
         /// auto generated
         public static void LoadViaSUserTemplate(DataSet ADataSet, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClauseLong("PUB_m_extract_master", AFieldList, new string[] {
-                            "m_extract_id_i"}) + " FROM PUB_m_extract_master, PUB_s_user WHERE " +
-                            "PUB_m_extract_master.m_manual_mod_by_c = PUB_s_user.s_user_id_c")
-                            + GenerateWhereClauseLong("PUB_s_user", SUserTable.GetColumnStringList(), ASearchCriteria))
-                            + GenerateOrderByClause(AOrderBy)), MExtractMasterTable.GetTableName(), ATransaction,
-                            GetParametersForWhereClause(new MExtractMasterTable(), ASearchCriteria), AStartRecord, AMaxRecords);
+            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClauseLong("PUB_m_extract_master", AFieldList, MExtractMasterTable.TableId) +
+                            " FROM PUB_m_extract_master, PUB_s_user WHERE " +
+                            "PUB_m_extract_master.m_manual_mod_by_c = PUB_s_user.s_user_id_c") +
+                            GenerateWhereClauseLong("PUB_s_user", ASearchCriteria)) +
+                            GenerateOrderByClause(AOrderBy)), TTypedDataTable.GetTableName(MExtractMasterTable.TableId), ATransaction,
+                            GetParametersForWhereClause(MExtractMasterTable.TableId, ASearchCriteria), AStartRecord, AMaxRecords);
         }
 
         /// auto generated
@@ -413,7 +406,10 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data.Access
         public static int CountViaSUserTemplate(SUserRow ATemplateRow, StringCollection ATemplateOperators, TDBTransaction ATransaction)
         {
             return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_m_extract_master, PUB_s_user WHERE " +
-                "PUB_m_extract_master.m_manual_mod_by_c = PUB_s_user.s_user_id_c" + GenerateWhereClauseLong("PUB_s_user", SUserTable.GetColumnStringList(), ATemplateRow, ATemplateOperators)), ATransaction, false, GetParametersForWhereClause(ATemplateRow, SUserTable.GetPrimKeyColumnOrdList())));
+                "PUB_m_extract_master.m_manual_mod_by_c = PUB_s_user.s_user_id_c" + GenerateWhereClauseLong("PUB_s_user",
+                SUserTable.TableId, ATemplateRow, ATemplateOperators)),
+                ATransaction, false,
+                GetParametersForWhereClauseWithPrimaryKey(SUserTable.TableId, ATemplateRow)));
         }
 
         /// auto generated
@@ -421,8 +417,8 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data.Access
         {
             return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_m_extract_master, PUB_s_user WHERE " +
                 "PUB_m_extract_master.m_manual_mod_by_c = PUB_s_user.s_user_id_c" +
-                GenerateWhereClauseLong("PUB_s_user", SUserTable.GetColumnStringList(), ASearchCriteria)), ATransaction, false,
-                GetParametersForWhereClause(new SUserTable(), ASearchCriteria)));
+                GenerateWhereClauseLong("PUB_s_user", ASearchCriteria)), ATransaction, false,
+                GetParametersForWhereClause(SUserTable.TableId, ASearchCriteria)));
         }
 
         /// auto generated
@@ -431,9 +427,9 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data.Access
             OdbcParameter[] ParametersArray = new OdbcParameter[1];
             ParametersArray[0] = new OdbcParameter("", OdbcType.VarChar, 50);
             ParametersArray[0].Value = ((object)(ACode));
-            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, ((GenerateSelectClause(AFieldList, new string[] {
-                            "m_extract_id_i"}) + " FROM PUB_m_extract_master WHERE m_extract_type_code_c = ?")
-                            + GenerateOrderByClause(AOrderBy)), MExtractMasterTable.GetTableName(), ATransaction, ParametersArray, AStartRecord, AMaxRecords);
+            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, ((GenerateSelectClause(AFieldList, MExtractMasterTable.TableId) +
+                            " FROM PUB_m_extract_master WHERE m_extract_type_code_c = ?") +
+                            GenerateOrderByClause(AOrderBy)), TTypedDataTable.GetTableName(MExtractMasterTable.TableId), ATransaction, ParametersArray, AStartRecord, AMaxRecords);
         }
 
         /// auto generated
@@ -473,11 +469,12 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data.Access
         /// auto generated
         public static void LoadViaMExtractTypeTemplate(DataSet ADataSet, MExtractTypeRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClauseLong("PUB_m_extract_master", AFieldList, new string[] {
-                            "m_extract_id_i"}) + " FROM PUB_m_extract_master, PUB_m_extract_type WHERE " +
-                            "PUB_m_extract_master.m_extract_type_code_c = PUB_m_extract_type.m_code_c")
-                            + GenerateWhereClauseLong("PUB_m_extract_type", MExtractTypeTable.GetColumnStringList(), ATemplateRow, ATemplateOperators))
-                            + GenerateOrderByClause(AOrderBy)), MExtractMasterTable.GetTableName(), ATransaction, GetParametersForWhereClause(ATemplateRow), AStartRecord, AMaxRecords);
+            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClauseLong("PUB_m_extract_master", AFieldList, MExtractMasterTable.TableId) +
+                            " FROM PUB_m_extract_master, PUB_m_extract_type WHERE " +
+                            "PUB_m_extract_master.m_extract_type_code_c = PUB_m_extract_type.m_code_c") +
+                            GenerateWhereClauseLong("PUB_m_extract_type", MExtractTypeTable.TableId, ATemplateRow, ATemplateOperators)) +
+                            GenerateOrderByClause(AOrderBy)), TTypedDataTable.GetTableName(MExtractMasterTable.TableId), ATransaction,
+                            GetParametersForWhereClause(MExtractTypeTable.TableId, ATemplateRow), AStartRecord, AMaxRecords);
         }
 
         /// auto generated
@@ -523,12 +520,12 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data.Access
         /// auto generated
         public static void LoadViaMExtractTypeTemplate(DataSet ADataSet, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClauseLong("PUB_m_extract_master", AFieldList, new string[] {
-                            "m_extract_id_i"}) + " FROM PUB_m_extract_master, PUB_m_extract_type WHERE " +
-                            "PUB_m_extract_master.m_extract_type_code_c = PUB_m_extract_type.m_code_c")
-                            + GenerateWhereClauseLong("PUB_m_extract_type", MExtractTypeTable.GetColumnStringList(), ASearchCriteria))
-                            + GenerateOrderByClause(AOrderBy)), MExtractMasterTable.GetTableName(), ATransaction,
-                            GetParametersForWhereClause(new MExtractMasterTable(), ASearchCriteria), AStartRecord, AMaxRecords);
+            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClauseLong("PUB_m_extract_master", AFieldList, MExtractMasterTable.TableId) +
+                            " FROM PUB_m_extract_master, PUB_m_extract_type WHERE " +
+                            "PUB_m_extract_master.m_extract_type_code_c = PUB_m_extract_type.m_code_c") +
+                            GenerateWhereClauseLong("PUB_m_extract_type", ASearchCriteria)) +
+                            GenerateOrderByClause(AOrderBy)), TTypedDataTable.GetTableName(MExtractMasterTable.TableId), ATransaction,
+                            GetParametersForWhereClause(MExtractMasterTable.TableId, ASearchCriteria), AStartRecord, AMaxRecords);
         }
 
         /// auto generated
@@ -578,7 +575,10 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data.Access
         public static int CountViaMExtractTypeTemplate(MExtractTypeRow ATemplateRow, StringCollection ATemplateOperators, TDBTransaction ATransaction)
         {
             return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_m_extract_master, PUB_m_extract_type WHERE " +
-                "PUB_m_extract_master.m_extract_type_code_c = PUB_m_extract_type.m_code_c" + GenerateWhereClauseLong("PUB_m_extract_type", MExtractTypeTable.GetColumnStringList(), ATemplateRow, ATemplateOperators)), ATransaction, false, GetParametersForWhereClause(ATemplateRow, MExtractTypeTable.GetPrimKeyColumnOrdList())));
+                "PUB_m_extract_master.m_extract_type_code_c = PUB_m_extract_type.m_code_c" + GenerateWhereClauseLong("PUB_m_extract_type",
+                MExtractTypeTable.TableId, ATemplateRow, ATemplateOperators)),
+                ATransaction, false,
+                GetParametersForWhereClauseWithPrimaryKey(MExtractTypeTable.TableId, ATemplateRow)));
         }
 
         /// auto generated
@@ -586,8 +586,8 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data.Access
         {
             return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_m_extract_master, PUB_m_extract_type WHERE " +
                 "PUB_m_extract_master.m_extract_type_code_c = PUB_m_extract_type.m_code_c" +
-                GenerateWhereClauseLong("PUB_m_extract_type", MExtractTypeTable.GetColumnStringList(), ASearchCriteria)), ATransaction, false,
-                GetParametersForWhereClause(new MExtractTypeTable(), ASearchCriteria)));
+                GenerateWhereClauseLong("PUB_m_extract_type", ASearchCriteria)), ATransaction, false,
+                GetParametersForWhereClause(MExtractTypeTable.TableId, ASearchCriteria)));
         }
 
         /// auto generated LoadViaLinkTable
@@ -598,10 +598,10 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data.Access
             ParametersArray[0].Value = ((object)(AGroupId));
             ParametersArray[1] = new OdbcParameter("", OdbcType.Decimal, 10);
             ParametersArray[1].Value = ((object)(AUnitKey));
-            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, ((GenerateSelectClauseLong("PUB_m_extract_master", AFieldList, new string[] {
-                            "m_extract_id_i"}) + " FROM PUB_m_extract_master, PUB_s_group_extract WHERE " +
-                            "PUB_s_group_extract.m_extract_id_i = PUB_m_extract_master.m_extract_id_i AND PUB_s_group_extract.s_group_id_c = ? AND PUB_s_group_extract.s_group_unit_key_n = ?")
-                            + GenerateOrderByClause(AOrderBy)), MExtractMasterTable.GetTableName(), ATransaction, ParametersArray, AStartRecord, AMaxRecords);
+            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, ((GenerateSelectClauseLong("PUB_m_extract_master", AFieldList, MExtractMasterTable.TableId) +
+                            " FROM PUB_m_extract_master, PUB_s_group_extract WHERE " +
+                            "PUB_s_group_extract.m_extract_id_i = PUB_m_extract_master.m_extract_id_i AND PUB_s_group_extract.s_group_id_c = ? AND PUB_s_group_extract.s_group_unit_key_n = ?") +
+                            GenerateOrderByClause(AOrderBy)), TTypedDataTable.GetTableName(MExtractMasterTable.TableId), ATransaction, ParametersArray, AStartRecord, AMaxRecords);
         }
 
         /// auto generated
@@ -641,11 +641,12 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data.Access
         /// auto generated
         public static void LoadViaSGroupTemplate(DataSet ADataSet, SGroupRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClauseLong("PUB_m_extract_master", AFieldList, new string[] {
-                            "m_extract_id_i"}) + " FROM PUB_m_extract_master, PUB_s_group_extract, PUB_s_group WHERE " +
-                            "PUB_s_group_extract.m_extract_id_i = PUB_m_extract_master.m_extract_id_i AND PUB_s_group_extract.s_group_id_c = PUB_s_group.s_group_id_c AND PUB_s_group_extract.s_group_unit_key_n = PUB_s_group.s_unit_key_n")
-                            + GenerateWhereClauseLong("PUB_s_group", SGroupTable.GetColumnStringList(), ATemplateRow, ATemplateOperators))
-                            + GenerateOrderByClause(AOrderBy)), MExtractMasterTable.GetTableName(), ATransaction, GetParametersForWhereClause(ATemplateRow), AStartRecord, AMaxRecords);
+            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClauseLong("PUB_m_extract_master", AFieldList, MExtractMasterTable.TableId) +
+                            " FROM PUB_m_extract_master, PUB_s_group_extract, PUB_s_group WHERE " +
+                            "PUB_s_group_extract.m_extract_id_i = PUB_m_extract_master.m_extract_id_i AND PUB_s_group_extract.s_group_id_c = PUB_s_group.s_group_id_c AND PUB_s_group_extract.s_group_unit_key_n = PUB_s_group.s_unit_key_n") +
+                            GenerateWhereClauseLong("PUB_s_group", SGroupTable.TableId, ATemplateRow, ATemplateOperators)) +
+                            GenerateOrderByClause(AOrderBy)), TTypedDataTable.GetTableName(MExtractMasterTable.TableId), ATransaction,
+                            GetParametersForWhereClause(SGroupTable.TableId, ATemplateRow), AStartRecord, AMaxRecords);
         }
 
         /// auto generated
@@ -691,12 +692,12 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data.Access
         /// auto generated
         public static void LoadViaSGroupTemplate(DataSet ADataSet, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClauseLong("PUB_m_extract_master", AFieldList, new string[] {
-                            "m_extract_id_i"}) + " FROM PUB_m_extract_master, PUB_s_group_extract, PUB_s_group WHERE " +
-                            "PUB_s_group_extract.m_extract_id_i = PUB_m_extract_master.m_extract_id_i AND PUB_s_group_extract.s_group_id_c = PUB_s_group.s_group_id_c AND PUB_s_group_extract.s_group_unit_key_n = PUB_s_group.s_unit_key_n")
-                            + GenerateWhereClauseLong("PUB_s_group", SGroupTable.GetColumnStringList(), ASearchCriteria))
-                            + GenerateOrderByClause(AOrderBy)), MExtractMasterTable.GetTableName(), ATransaction,
-                            GetParametersForWhereClause(new MExtractMasterTable(), ASearchCriteria), AStartRecord, AMaxRecords);
+            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClauseLong("PUB_m_extract_master", AFieldList, MExtractMasterTable.TableId) +
+                            " FROM PUB_m_extract_master, PUB_s_group_extract, PUB_s_group WHERE " +
+                            "PUB_s_group_extract.m_extract_id_i = PUB_m_extract_master.m_extract_id_i AND PUB_s_group_extract.s_group_id_c = PUB_s_group.s_group_id_c AND PUB_s_group_extract.s_group_unit_key_n = PUB_s_group.s_unit_key_n") +
+                            GenerateWhereClauseLong("PUB_s_group", ASearchCriteria)) +
+                            GenerateOrderByClause(AOrderBy)), TTypedDataTable.GetTableName(MExtractMasterTable.TableId), ATransaction,
+                            GetParametersForWhereClause(MExtractMasterTable.TableId, ASearchCriteria), AStartRecord, AMaxRecords);
         }
 
         /// auto generated
@@ -751,7 +752,8 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data.Access
         {
             return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_m_extract_master, PUB_s_group_extract, PUB_s_group WHERE " +
                         "PUB_s_group_extract.m_extract_id_i = PUB_m_extract_master.m_extract_id_i AND PUB_s_group_extract.s_group_id_c = PUB_s_group.s_group_id_c AND PUB_s_group_extract.s_group_unit_key_n = PUB_s_group.s_unit_key_n" +
-                        GenerateWhereClauseLong("PUB_s_group_extract", MExtractMasterTable.GetColumnStringList(), ATemplateRow, ATemplateOperators)), ATransaction, false, GetParametersForWhereClause(ATemplateRow, SGroupTable.GetPrimKeyColumnOrdList())));
+                        GenerateWhereClauseLong("PUB_s_group_extract", MExtractMasterTable.TableId, ATemplateRow, ATemplateOperators)), ATransaction, false,
+                        GetParametersForWhereClauseWithPrimaryKey(SGroupTable.TableId, ATemplateRow)));
         }
 
         /// auto generated
@@ -759,31 +761,26 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data.Access
         {
             return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_m_extract_master, PUB_s_group_extract, PUB_s_group WHERE " +
                         "PUB_s_group_extract.m_extract_id_i = PUB_m_extract_master.m_extract_id_i AND PUB_s_group_extract.s_group_id_c = PUB_s_group.s_group_id_c AND PUB_s_group_extract.s_group_unit_key_n = PUB_s_group.s_unit_key_n" +
-                        GenerateWhereClauseLong("PUB_s_group_extract", MExtractMasterTable.GetColumnStringList(), ASearchCriteria)), ATransaction, false,
-                        GetParametersForWhereClause(new MExtractMasterTable(), ASearchCriteria)));
+                        GenerateWhereClauseLong("PUB_s_group_extract", ASearchCriteria)), ATransaction, false,
+                        GetParametersForWhereClause(MExtractMasterTable.TableId, ASearchCriteria)));
         }
 
         /// auto generated
         public static void DeleteByPrimaryKey(Int32 AExtractId, TDBTransaction ATransaction)
         {
-            OdbcParameter[] ParametersArray = new OdbcParameter[1];
-            ParametersArray[0] = new OdbcParameter("", OdbcType.Int);
-            ParametersArray[0].Value = ((object)(AExtractId));
-            DBAccess.GDBAccessObj.ExecuteNonQuery("DELETE FROM PUB_m_extract_master WHERE m_extract_id_i = ?", ATransaction, false, ParametersArray);
+            DeleteByPrimaryKey(MExtractMasterTable.TableId, new System.Object[1]{AExtractId}, ATransaction);
         }
 
         /// auto generated
         public static void DeleteUsingTemplate(MExtractMasterRow ATemplateRow, StringCollection ATemplateOperators, TDBTransaction ATransaction)
         {
-            DBAccess.GDBAccessObj.ExecuteNonQuery(("DELETE FROM PUB_m_extract_master" + GenerateWhereClause(MExtractMasterTable.GetColumnStringList(), ATemplateRow, ATemplateOperators)), ATransaction, false, GetParametersForWhereClause(ATemplateRow));
+            DeleteUsingTemplate(MExtractMasterTable.TableId, ATemplateRow, ATemplateOperators, ATransaction);
         }
 
         /// auto generated
         public static void DeleteUsingTemplate(TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
         {
-            DBAccess.GDBAccessObj.ExecuteNonQuery(("DELETE FROM PUB_m_extract_master" +
-                GenerateWhereClause(MExtractMasterTable.GetColumnStringList(), ASearchCriteria)), ATransaction, false,
-                GetParametersForWhereClause(new MExtractMasterTable(), ASearchCriteria));
+            DeleteUsingTemplate(MExtractMasterTable.TableId, ASearchCriteria, ATransaction);
         }
 
         /// auto generated
@@ -801,15 +798,15 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data.Access
                     if ((TheRow.RowState == DataRowState.Added))
                     {
                         ((MExtractMasterRow)(TheRow)).ExtractId = ((Int32)(DBAccess.GDBAccessObj.GetNextSequenceValue("seq_extract_number", ATransaction)));
-                        TTypedDataAccess.InsertRow("m_extract_master", MExtractMasterTable.GetColumnStringList(), ref TheRow, ATransaction, UserInfo.GUserInfo.UserID);
+                        TTypedDataAccess.InsertRow(MExtractMasterTable.TableId, ref TheRow, ATransaction, UserInfo.GUserInfo.UserID);
                     }
                     if ((TheRow.RowState == DataRowState.Modified))
                     {
-                        TTypedDataAccess.UpdateRow("m_extract_master", MExtractMasterTable.GetColumnStringList(), MExtractMasterTable.GetPrimKeyColumnOrdList(), ref TheRow, ATransaction, UserInfo.GUserInfo.UserID);
+                        TTypedDataAccess.UpdateRow(MExtractMasterTable.TableId, ref TheRow, ATransaction, UserInfo.GUserInfo.UserID);
                     }
                     if ((TheRow.RowState == DataRowState.Deleted))
                     {
-                        TTypedDataAccess.DeleteRow("m_extract_master", MExtractMasterTable.GetColumnStringList(), MExtractMasterTable.GetPrimKeyColumnOrdList(), TheRow, ATransaction);
+                        TTypedDataAccess.DeleteRow(MExtractMasterTable.TableId, TheRow, ATransaction);
                     }
                 }
                 catch (OdbcException ex)
@@ -839,9 +836,8 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data.Access
         /// this method is called by all overloads
         public static void LoadAll(DataSet ADataSet, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, ((GenerateSelectClause(AFieldList, new string[] {
-                            "m_extract_id_i", "p_partner_key_n", "p_site_key_n"}) + " FROM PUB_m_extract")
-                            + GenerateOrderByClause(AOrderBy)), MExtractTable.GetTableName(), ATransaction, AStartRecord, AMaxRecords);
+            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, ((GenerateSelectClause(AFieldList, MExtractTable.TableId) + " FROM PUB_m_extract") +
+                            GenerateOrderByClause(AOrderBy)), TTypedDataTable.GetTableName(MExtractTable.TableId), ATransaction, AStartRecord, AMaxRecords);
         }
 
         /// auto generated
@@ -881,16 +877,8 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data.Access
         /// this method is called by all overloads
         public static void LoadByPrimaryKey(DataSet ADataSet, Int32 AExtractId, Int64 APartnerKey, Int64 ASiteKey, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            OdbcParameter[] ParametersArray = new OdbcParameter[3];
-            ParametersArray[0] = new OdbcParameter("", OdbcType.Int);
-            ParametersArray[0].Value = ((object)(AExtractId));
-            ParametersArray[1] = new OdbcParameter("", OdbcType.Decimal, 10);
-            ParametersArray[1].Value = ((object)(APartnerKey));
-            ParametersArray[2] = new OdbcParameter("", OdbcType.Decimal, 10);
-            ParametersArray[2].Value = ((object)(ASiteKey));
-            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, ((GenerateSelectClause(AFieldList, new string[] {
-                            "m_extract_id_i", "p_partner_key_n", "p_site_key_n"}) + " FROM PUB_m_extract WHERE m_extract_id_i = ? AND p_partner_key_n = ? AND p_site_key_n = ?")
-                            + GenerateOrderByClause(AOrderBy)), MExtractTable.GetTableName(), ATransaction, ParametersArray, AStartRecord, AMaxRecords);
+            ADataSet = LoadByPrimaryKey(MExtractTable.TableId,
+                ADataSet, new System.Object[3]{AExtractId, APartnerKey, ASiteKey}, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
         }
 
         /// auto generated
@@ -930,10 +918,10 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data.Access
         /// this method is called by all overloads
         public static void LoadUsingTemplate(DataSet ADataSet, MExtractRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClause(AFieldList, new string[] {
-                            "m_extract_id_i", "p_partner_key_n", "p_site_key_n"}) + " FROM PUB_m_extract")
-                            + GenerateWhereClause(MExtractTable.GetColumnStringList(), ATemplateRow, ATemplateOperators))
-                            + GenerateOrderByClause(AOrderBy)), MExtractTable.GetTableName(), ATransaction, GetParametersForWhereClause(ATemplateRow), AStartRecord, AMaxRecords);
+            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClause(AFieldList, MExtractTable.TableId) + " FROM PUB_m_extract") +
+                            GenerateWhereClause(TTypedDataTable.GetColumnStringList(MExtractTable.TableId), ATemplateRow, ATemplateOperators)) +
+                            GenerateOrderByClause(AOrderBy)), TTypedDataTable.GetTableName(MExtractTable.TableId), ATransaction,
+                            GetParametersForWhereClause(MExtractTable.TableId, ATemplateRow), AStartRecord, AMaxRecords);
         }
 
         /// auto generated
@@ -979,11 +967,10 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data.Access
         /// this method is called by all overloads
         public static void LoadUsingTemplate(DataSet ADataSet, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClause(AFieldList, new string[] {
-                            "m_extract_id_i", "p_partner_key_n", "p_site_key_n"}) + " FROM PUB_m_extract")
-                            + GenerateWhereClause(MExtractTable.GetColumnStringList(), ASearchCriteria))
-                            + GenerateOrderByClause(AOrderBy)), MExtractTable.GetTableName(), ATransaction,
-                            GetParametersForWhereClause(new MExtractTable(), ASearchCriteria), AStartRecord, AMaxRecords);
+            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClause(AFieldList, MExtractTable.TableId) + " FROM PUB_m_extract") +
+                            GenerateWhereClause(TTypedDataTable.GetColumnStringList(MExtractTable.TableId), ASearchCriteria)) +
+                            GenerateOrderByClause(AOrderBy)), TTypedDataTable.GetTableName(MExtractTable.TableId), ATransaction,
+                            GetParametersForWhereClause(MExtractTable.TableId, ASearchCriteria), AStartRecord, AMaxRecords);
         }
 
         /// auto generated
@@ -1026,30 +1013,24 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data.Access
             return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar("SELECT COUNT(*) FROM PUB_m_extract", ATransaction, false));
         }
 
-        /// this method is called by all overloads
-        public static int CountByPrimaryKey(Int32 AExtractId, Int64 APartnerKey, Int64 ASiteKey, TDBTransaction ATransaction)
+        /// check if a row exists by using the primary key
+        public static bool Exists(Int32 AExtractId, Int64 APartnerKey, Int64 ASiteKey, TDBTransaction ATransaction)
         {
-            OdbcParameter[] ParametersArray = new OdbcParameter[3];
-            ParametersArray[0] = new OdbcParameter("", OdbcType.Int);
-            ParametersArray[0].Value = ((object)(AExtractId));
-            ParametersArray[1] = new OdbcParameter("", OdbcType.Decimal, 10);
-            ParametersArray[1].Value = ((object)(APartnerKey));
-            ParametersArray[2] = new OdbcParameter("", OdbcType.Decimal, 10);
-            ParametersArray[2].Value = ((object)(ASiteKey));
-            return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar("SELECT COUNT(*) FROM PUB_m_extract WHERE m_extract_id_i = ? AND p_partner_key_n = ? AND p_site_key_n = ?", ATransaction, false, ParametersArray));
+            return Exists(MExtractTable.TableId, new System.Object[3]{AExtractId, APartnerKey, ASiteKey}, ATransaction);
         }
 
         /// this method is called by all overloads
         public static int CountUsingTemplate(MExtractRow ATemplateRow, StringCollection ATemplateOperators, TDBTransaction ATransaction)
         {
-            return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_m_extract" + GenerateWhereClause(MExtractTable.GetColumnStringList(), ATemplateRow, ATemplateOperators)), ATransaction, false, GetParametersForWhereClause(ATemplateRow)));
+            return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_m_extract" + GenerateWhereClause(TTypedDataTable.GetColumnStringList(MExtractTable.TableId), ATemplateRow, ATemplateOperators)), ATransaction, false,
+                   GetParametersForWhereClause(MExtractTable.TableId, ATemplateRow)));
         }
 
         /// this method is called by all overloads
         public static int CountUsingTemplate(TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
         {
-            return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_m_extract" + GenerateWhereClause(MExtractTable.GetColumnStringList(), ASearchCriteria)), ATransaction, false,
-            GetParametersForWhereClause(new MExtractTable(), ASearchCriteria)));
+            return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_m_extract" + GenerateWhereClause(TTypedDataTable.GetColumnStringList(MExtractTable.TableId), ASearchCriteria)), ATransaction, false,
+            GetParametersForWhereClause(MExtractTable.TableId, ASearchCriteria)));
         }
 
         /// auto generated
@@ -1058,9 +1039,9 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data.Access
             OdbcParameter[] ParametersArray = new OdbcParameter[1];
             ParametersArray[0] = new OdbcParameter("", OdbcType.Int);
             ParametersArray[0].Value = ((object)(AExtractId));
-            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, ((GenerateSelectClause(AFieldList, new string[] {
-                            "m_extract_id_i", "p_partner_key_n", "p_site_key_n"}) + " FROM PUB_m_extract WHERE m_extract_id_i = ?")
-                            + GenerateOrderByClause(AOrderBy)), MExtractTable.GetTableName(), ATransaction, ParametersArray, AStartRecord, AMaxRecords);
+            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, ((GenerateSelectClause(AFieldList, MExtractTable.TableId) +
+                            " FROM PUB_m_extract WHERE m_extract_id_i = ?") +
+                            GenerateOrderByClause(AOrderBy)), TTypedDataTable.GetTableName(MExtractTable.TableId), ATransaction, ParametersArray, AStartRecord, AMaxRecords);
         }
 
         /// auto generated
@@ -1100,11 +1081,12 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data.Access
         /// auto generated
         public static void LoadViaMExtractMasterTemplate(DataSet ADataSet, MExtractMasterRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClauseLong("PUB_m_extract", AFieldList, new string[] {
-                            "m_extract_id_i", "p_partner_key_n", "p_site_key_n"}) + " FROM PUB_m_extract, PUB_m_extract_master WHERE " +
-                            "PUB_m_extract.m_extract_id_i = PUB_m_extract_master.m_extract_id_i")
-                            + GenerateWhereClauseLong("PUB_m_extract_master", MExtractMasterTable.GetColumnStringList(), ATemplateRow, ATemplateOperators))
-                            + GenerateOrderByClause(AOrderBy)), MExtractTable.GetTableName(), ATransaction, GetParametersForWhereClause(ATemplateRow), AStartRecord, AMaxRecords);
+            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClauseLong("PUB_m_extract", AFieldList, MExtractTable.TableId) +
+                            " FROM PUB_m_extract, PUB_m_extract_master WHERE " +
+                            "PUB_m_extract.m_extract_id_i = PUB_m_extract_master.m_extract_id_i") +
+                            GenerateWhereClauseLong("PUB_m_extract_master", MExtractMasterTable.TableId, ATemplateRow, ATemplateOperators)) +
+                            GenerateOrderByClause(AOrderBy)), TTypedDataTable.GetTableName(MExtractTable.TableId), ATransaction,
+                            GetParametersForWhereClause(MExtractMasterTable.TableId, ATemplateRow), AStartRecord, AMaxRecords);
         }
 
         /// auto generated
@@ -1150,12 +1132,12 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data.Access
         /// auto generated
         public static void LoadViaMExtractMasterTemplate(DataSet ADataSet, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClauseLong("PUB_m_extract", AFieldList, new string[] {
-                            "m_extract_id_i", "p_partner_key_n", "p_site_key_n"}) + " FROM PUB_m_extract, PUB_m_extract_master WHERE " +
-                            "PUB_m_extract.m_extract_id_i = PUB_m_extract_master.m_extract_id_i")
-                            + GenerateWhereClauseLong("PUB_m_extract_master", MExtractMasterTable.GetColumnStringList(), ASearchCriteria))
-                            + GenerateOrderByClause(AOrderBy)), MExtractTable.GetTableName(), ATransaction,
-                            GetParametersForWhereClause(new MExtractTable(), ASearchCriteria), AStartRecord, AMaxRecords);
+            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClauseLong("PUB_m_extract", AFieldList, MExtractTable.TableId) +
+                            " FROM PUB_m_extract, PUB_m_extract_master WHERE " +
+                            "PUB_m_extract.m_extract_id_i = PUB_m_extract_master.m_extract_id_i") +
+                            GenerateWhereClauseLong("PUB_m_extract_master", ASearchCriteria)) +
+                            GenerateOrderByClause(AOrderBy)), TTypedDataTable.GetTableName(MExtractTable.TableId), ATransaction,
+                            GetParametersForWhereClause(MExtractTable.TableId, ASearchCriteria), AStartRecord, AMaxRecords);
         }
 
         /// auto generated
@@ -1205,7 +1187,10 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data.Access
         public static int CountViaMExtractMasterTemplate(MExtractMasterRow ATemplateRow, StringCollection ATemplateOperators, TDBTransaction ATransaction)
         {
             return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_m_extract, PUB_m_extract_master WHERE " +
-                "PUB_m_extract.m_extract_id_i = PUB_m_extract_master.m_extract_id_i" + GenerateWhereClauseLong("PUB_m_extract_master", MExtractMasterTable.GetColumnStringList(), ATemplateRow, ATemplateOperators)), ATransaction, false, GetParametersForWhereClause(ATemplateRow, MExtractMasterTable.GetPrimKeyColumnOrdList())));
+                "PUB_m_extract.m_extract_id_i = PUB_m_extract_master.m_extract_id_i" + GenerateWhereClauseLong("PUB_m_extract_master",
+                MExtractMasterTable.TableId, ATemplateRow, ATemplateOperators)),
+                ATransaction, false,
+                GetParametersForWhereClauseWithPrimaryKey(MExtractMasterTable.TableId, ATemplateRow)));
         }
 
         /// auto generated
@@ -1213,8 +1198,8 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data.Access
         {
             return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_m_extract, PUB_m_extract_master WHERE " +
                 "PUB_m_extract.m_extract_id_i = PUB_m_extract_master.m_extract_id_i" +
-                GenerateWhereClauseLong("PUB_m_extract_master", MExtractMasterTable.GetColumnStringList(), ASearchCriteria)), ATransaction, false,
-                GetParametersForWhereClause(new MExtractMasterTable(), ASearchCriteria)));
+                GenerateWhereClauseLong("PUB_m_extract_master", ASearchCriteria)), ATransaction, false,
+                GetParametersForWhereClause(MExtractMasterTable.TableId, ASearchCriteria)));
         }
 
         /// auto generated
@@ -1223,9 +1208,9 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data.Access
             OdbcParameter[] ParametersArray = new OdbcParameter[1];
             ParametersArray[0] = new OdbcParameter("", OdbcType.Decimal, 10);
             ParametersArray[0].Value = ((object)(APartnerKey));
-            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, ((GenerateSelectClause(AFieldList, new string[] {
-                            "m_extract_id_i", "p_partner_key_n", "p_site_key_n"}) + " FROM PUB_m_extract WHERE p_partner_key_n = ?")
-                            + GenerateOrderByClause(AOrderBy)), MExtractTable.GetTableName(), ATransaction, ParametersArray, AStartRecord, AMaxRecords);
+            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, ((GenerateSelectClause(AFieldList, MExtractTable.TableId) +
+                            " FROM PUB_m_extract WHERE p_partner_key_n = ?") +
+                            GenerateOrderByClause(AOrderBy)), TTypedDataTable.GetTableName(MExtractTable.TableId), ATransaction, ParametersArray, AStartRecord, AMaxRecords);
         }
 
         /// auto generated
@@ -1265,11 +1250,12 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data.Access
         /// auto generated
         public static void LoadViaPPartnerTemplate(DataSet ADataSet, PPartnerRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClauseLong("PUB_m_extract", AFieldList, new string[] {
-                            "m_extract_id_i", "p_partner_key_n", "p_site_key_n"}) + " FROM PUB_m_extract, PUB_p_partner WHERE " +
-                            "PUB_m_extract.p_partner_key_n = PUB_p_partner.p_partner_key_n")
-                            + GenerateWhereClauseLong("PUB_p_partner", PPartnerTable.GetColumnStringList(), ATemplateRow, ATemplateOperators))
-                            + GenerateOrderByClause(AOrderBy)), MExtractTable.GetTableName(), ATransaction, GetParametersForWhereClause(ATemplateRow), AStartRecord, AMaxRecords);
+            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClauseLong("PUB_m_extract", AFieldList, MExtractTable.TableId) +
+                            " FROM PUB_m_extract, PUB_p_partner WHERE " +
+                            "PUB_m_extract.p_partner_key_n = PUB_p_partner.p_partner_key_n") +
+                            GenerateWhereClauseLong("PUB_p_partner", PPartnerTable.TableId, ATemplateRow, ATemplateOperators)) +
+                            GenerateOrderByClause(AOrderBy)), TTypedDataTable.GetTableName(MExtractTable.TableId), ATransaction,
+                            GetParametersForWhereClause(PPartnerTable.TableId, ATemplateRow), AStartRecord, AMaxRecords);
         }
 
         /// auto generated
@@ -1315,12 +1301,12 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data.Access
         /// auto generated
         public static void LoadViaPPartnerTemplate(DataSet ADataSet, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClauseLong("PUB_m_extract", AFieldList, new string[] {
-                            "m_extract_id_i", "p_partner_key_n", "p_site_key_n"}) + " FROM PUB_m_extract, PUB_p_partner WHERE " +
-                            "PUB_m_extract.p_partner_key_n = PUB_p_partner.p_partner_key_n")
-                            + GenerateWhereClauseLong("PUB_p_partner", PPartnerTable.GetColumnStringList(), ASearchCriteria))
-                            + GenerateOrderByClause(AOrderBy)), MExtractTable.GetTableName(), ATransaction,
-                            GetParametersForWhereClause(new MExtractTable(), ASearchCriteria), AStartRecord, AMaxRecords);
+            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClauseLong("PUB_m_extract", AFieldList, MExtractTable.TableId) +
+                            " FROM PUB_m_extract, PUB_p_partner WHERE " +
+                            "PUB_m_extract.p_partner_key_n = PUB_p_partner.p_partner_key_n") +
+                            GenerateWhereClauseLong("PUB_p_partner", ASearchCriteria)) +
+                            GenerateOrderByClause(AOrderBy)), TTypedDataTable.GetTableName(MExtractTable.TableId), ATransaction,
+                            GetParametersForWhereClause(MExtractTable.TableId, ASearchCriteria), AStartRecord, AMaxRecords);
         }
 
         /// auto generated
@@ -1370,7 +1356,10 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data.Access
         public static int CountViaPPartnerTemplate(PPartnerRow ATemplateRow, StringCollection ATemplateOperators, TDBTransaction ATransaction)
         {
             return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_m_extract, PUB_p_partner WHERE " +
-                "PUB_m_extract.p_partner_key_n = PUB_p_partner.p_partner_key_n" + GenerateWhereClauseLong("PUB_p_partner", PPartnerTable.GetColumnStringList(), ATemplateRow, ATemplateOperators)), ATransaction, false, GetParametersForWhereClause(ATemplateRow, PPartnerTable.GetPrimKeyColumnOrdList())));
+                "PUB_m_extract.p_partner_key_n = PUB_p_partner.p_partner_key_n" + GenerateWhereClauseLong("PUB_p_partner",
+                PPartnerTable.TableId, ATemplateRow, ATemplateOperators)),
+                ATransaction, false,
+                GetParametersForWhereClauseWithPrimaryKey(PPartnerTable.TableId, ATemplateRow)));
         }
 
         /// auto generated
@@ -1378,8 +1367,8 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data.Access
         {
             return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_m_extract, PUB_p_partner WHERE " +
                 "PUB_m_extract.p_partner_key_n = PUB_p_partner.p_partner_key_n" +
-                GenerateWhereClauseLong("PUB_p_partner", PPartnerTable.GetColumnStringList(), ASearchCriteria)), ATransaction, false,
-                GetParametersForWhereClause(new PPartnerTable(), ASearchCriteria)));
+                GenerateWhereClauseLong("PUB_p_partner", ASearchCriteria)), ATransaction, false,
+                GetParametersForWhereClause(PPartnerTable.TableId, ASearchCriteria)));
         }
 
         /// auto generated
@@ -1390,9 +1379,9 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data.Access
             ParametersArray[0].Value = ((object)(ASiteKey));
             ParametersArray[1] = new OdbcParameter("", OdbcType.Int);
             ParametersArray[1].Value = ((object)(ALocationKey));
-            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, ((GenerateSelectClause(AFieldList, new string[] {
-                            "m_extract_id_i", "p_partner_key_n", "p_site_key_n"}) + " FROM PUB_m_extract WHERE p_site_key_n = ? AND p_location_key_i = ?")
-                            + GenerateOrderByClause(AOrderBy)), MExtractTable.GetTableName(), ATransaction, ParametersArray, AStartRecord, AMaxRecords);
+            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, ((GenerateSelectClause(AFieldList, MExtractTable.TableId) +
+                            " FROM PUB_m_extract WHERE p_site_key_n = ? AND p_location_key_i = ?") +
+                            GenerateOrderByClause(AOrderBy)), TTypedDataTable.GetTableName(MExtractTable.TableId), ATransaction, ParametersArray, AStartRecord, AMaxRecords);
         }
 
         /// auto generated
@@ -1432,11 +1421,12 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data.Access
         /// auto generated
         public static void LoadViaPLocationTemplate(DataSet ADataSet, PLocationRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClauseLong("PUB_m_extract", AFieldList, new string[] {
-                            "m_extract_id_i", "p_partner_key_n", "p_site_key_n"}) + " FROM PUB_m_extract, PUB_p_location WHERE " +
-                            "PUB_m_extract.p_site_key_n = PUB_p_location.p_site_key_n AND PUB_m_extract.p_location_key_i = PUB_p_location.p_location_key_i")
-                            + GenerateWhereClauseLong("PUB_p_location", PLocationTable.GetColumnStringList(), ATemplateRow, ATemplateOperators))
-                            + GenerateOrderByClause(AOrderBy)), MExtractTable.GetTableName(), ATransaction, GetParametersForWhereClause(ATemplateRow), AStartRecord, AMaxRecords);
+            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClauseLong("PUB_m_extract", AFieldList, MExtractTable.TableId) +
+                            " FROM PUB_m_extract, PUB_p_location WHERE " +
+                            "PUB_m_extract.p_site_key_n = PUB_p_location.p_site_key_n AND PUB_m_extract.p_location_key_i = PUB_p_location.p_location_key_i") +
+                            GenerateWhereClauseLong("PUB_p_location", PLocationTable.TableId, ATemplateRow, ATemplateOperators)) +
+                            GenerateOrderByClause(AOrderBy)), TTypedDataTable.GetTableName(MExtractTable.TableId), ATransaction,
+                            GetParametersForWhereClause(PLocationTable.TableId, ATemplateRow), AStartRecord, AMaxRecords);
         }
 
         /// auto generated
@@ -1482,12 +1472,12 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data.Access
         /// auto generated
         public static void LoadViaPLocationTemplate(DataSet ADataSet, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClauseLong("PUB_m_extract", AFieldList, new string[] {
-                            "m_extract_id_i", "p_partner_key_n", "p_site_key_n"}) + " FROM PUB_m_extract, PUB_p_location WHERE " +
-                            "PUB_m_extract.p_site_key_n = PUB_p_location.p_site_key_n AND PUB_m_extract.p_location_key_i = PUB_p_location.p_location_key_i")
-                            + GenerateWhereClauseLong("PUB_p_location", PLocationTable.GetColumnStringList(), ASearchCriteria))
-                            + GenerateOrderByClause(AOrderBy)), MExtractTable.GetTableName(), ATransaction,
-                            GetParametersForWhereClause(new MExtractTable(), ASearchCriteria), AStartRecord, AMaxRecords);
+            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClauseLong("PUB_m_extract", AFieldList, MExtractTable.TableId) +
+                            " FROM PUB_m_extract, PUB_p_location WHERE " +
+                            "PUB_m_extract.p_site_key_n = PUB_p_location.p_site_key_n AND PUB_m_extract.p_location_key_i = PUB_p_location.p_location_key_i") +
+                            GenerateWhereClauseLong("PUB_p_location", ASearchCriteria)) +
+                            GenerateOrderByClause(AOrderBy)), TTypedDataTable.GetTableName(MExtractTable.TableId), ATransaction,
+                            GetParametersForWhereClause(MExtractTable.TableId, ASearchCriteria), AStartRecord, AMaxRecords);
         }
 
         /// auto generated
@@ -1539,7 +1529,10 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data.Access
         public static int CountViaPLocationTemplate(PLocationRow ATemplateRow, StringCollection ATemplateOperators, TDBTransaction ATransaction)
         {
             return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_m_extract, PUB_p_location WHERE " +
-                "PUB_m_extract.p_site_key_n = PUB_p_location.p_site_key_n AND PUB_m_extract.p_location_key_i = PUB_p_location.p_location_key_i" + GenerateWhereClauseLong("PUB_p_location", PLocationTable.GetColumnStringList(), ATemplateRow, ATemplateOperators)), ATransaction, false, GetParametersForWhereClause(ATemplateRow, PLocationTable.GetPrimKeyColumnOrdList())));
+                "PUB_m_extract.p_site_key_n = PUB_p_location.p_site_key_n AND PUB_m_extract.p_location_key_i = PUB_p_location.p_location_key_i" + GenerateWhereClauseLong("PUB_p_location",
+                PLocationTable.TableId, ATemplateRow, ATemplateOperators)),
+                ATransaction, false,
+                GetParametersForWhereClauseWithPrimaryKey(PLocationTable.TableId, ATemplateRow)));
         }
 
         /// auto generated
@@ -1547,35 +1540,26 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data.Access
         {
             return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_m_extract, PUB_p_location WHERE " +
                 "PUB_m_extract.p_site_key_n = PUB_p_location.p_site_key_n AND PUB_m_extract.p_location_key_i = PUB_p_location.p_location_key_i" +
-                GenerateWhereClauseLong("PUB_p_location", PLocationTable.GetColumnStringList(), ASearchCriteria)), ATransaction, false,
-                GetParametersForWhereClause(new PLocationTable(), ASearchCriteria)));
+                GenerateWhereClauseLong("PUB_p_location", ASearchCriteria)), ATransaction, false,
+                GetParametersForWhereClause(PLocationTable.TableId, ASearchCriteria)));
         }
 
         /// auto generated
         public static void DeleteByPrimaryKey(Int32 AExtractId, Int64 APartnerKey, Int64 ASiteKey, TDBTransaction ATransaction)
         {
-            OdbcParameter[] ParametersArray = new OdbcParameter[3];
-            ParametersArray[0] = new OdbcParameter("", OdbcType.Int);
-            ParametersArray[0].Value = ((object)(AExtractId));
-            ParametersArray[1] = new OdbcParameter("", OdbcType.Decimal, 10);
-            ParametersArray[1].Value = ((object)(APartnerKey));
-            ParametersArray[2] = new OdbcParameter("", OdbcType.Decimal, 10);
-            ParametersArray[2].Value = ((object)(ASiteKey));
-            DBAccess.GDBAccessObj.ExecuteNonQuery("DELETE FROM PUB_m_extract WHERE m_extract_id_i = ? AND p_partner_key_n = ? AND p_site_key_n = ?", ATransaction, false, ParametersArray);
+            DeleteByPrimaryKey(MExtractTable.TableId, new System.Object[3]{AExtractId, APartnerKey, ASiteKey}, ATransaction);
         }
 
         /// auto generated
         public static void DeleteUsingTemplate(MExtractRow ATemplateRow, StringCollection ATemplateOperators, TDBTransaction ATransaction)
         {
-            DBAccess.GDBAccessObj.ExecuteNonQuery(("DELETE FROM PUB_m_extract" + GenerateWhereClause(MExtractTable.GetColumnStringList(), ATemplateRow, ATemplateOperators)), ATransaction, false, GetParametersForWhereClause(ATemplateRow));
+            DeleteUsingTemplate(MExtractTable.TableId, ATemplateRow, ATemplateOperators, ATransaction);
         }
 
         /// auto generated
         public static void DeleteUsingTemplate(TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
         {
-            DBAccess.GDBAccessObj.ExecuteNonQuery(("DELETE FROM PUB_m_extract" +
-                GenerateWhereClause(MExtractTable.GetColumnStringList(), ASearchCriteria)), ATransaction, false,
-                GetParametersForWhereClause(new MExtractTable(), ASearchCriteria));
+            DeleteUsingTemplate(MExtractTable.TableId, ASearchCriteria, ATransaction);
         }
 
         /// auto generated
@@ -1592,15 +1576,15 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data.Access
                 {
                     if ((TheRow.RowState == DataRowState.Added))
                     {
-                        TTypedDataAccess.InsertRow("m_extract", MExtractTable.GetColumnStringList(), ref TheRow, ATransaction, UserInfo.GUserInfo.UserID);
+                        TTypedDataAccess.InsertRow(MExtractTable.TableId, ref TheRow, ATransaction, UserInfo.GUserInfo.UserID);
                     }
                     if ((TheRow.RowState == DataRowState.Modified))
                     {
-                        TTypedDataAccess.UpdateRow("m_extract", MExtractTable.GetColumnStringList(), MExtractTable.GetPrimKeyColumnOrdList(), ref TheRow, ATransaction, UserInfo.GUserInfo.UserID);
+                        TTypedDataAccess.UpdateRow(MExtractTable.TableId, ref TheRow, ATransaction, UserInfo.GUserInfo.UserID);
                     }
                     if ((TheRow.RowState == DataRowState.Deleted))
                     {
-                        TTypedDataAccess.DeleteRow("m_extract", MExtractTable.GetColumnStringList(), MExtractTable.GetPrimKeyColumnOrdList(), TheRow, ATransaction);
+                        TTypedDataAccess.DeleteRow(MExtractTable.TableId, TheRow, ATransaction);
                     }
                 }
                 catch (OdbcException ex)
@@ -1630,9 +1614,8 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data.Access
         /// this method is called by all overloads
         public static void LoadAll(DataSet ADataSet, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, ((GenerateSelectClause(AFieldList, new string[] {
-                            "m_code_c"}) + " FROM PUB_m_extract_type")
-                            + GenerateOrderByClause(AOrderBy)), MExtractTypeTable.GetTableName(), ATransaction, AStartRecord, AMaxRecords);
+            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, ((GenerateSelectClause(AFieldList, MExtractTypeTable.TableId) + " FROM PUB_m_extract_type") +
+                            GenerateOrderByClause(AOrderBy)), TTypedDataTable.GetTableName(MExtractTypeTable.TableId), ATransaction, AStartRecord, AMaxRecords);
         }
 
         /// auto generated
@@ -1672,12 +1655,8 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data.Access
         /// this method is called by all overloads
         public static void LoadByPrimaryKey(DataSet ADataSet, String ACode, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            OdbcParameter[] ParametersArray = new OdbcParameter[1];
-            ParametersArray[0] = new OdbcParameter("", OdbcType.VarChar, 50);
-            ParametersArray[0].Value = ((object)(ACode));
-            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, ((GenerateSelectClause(AFieldList, new string[] {
-                            "m_code_c"}) + " FROM PUB_m_extract_type WHERE m_code_c = ?")
-                            + GenerateOrderByClause(AOrderBy)), MExtractTypeTable.GetTableName(), ATransaction, ParametersArray, AStartRecord, AMaxRecords);
+            ADataSet = LoadByPrimaryKey(MExtractTypeTable.TableId,
+                ADataSet, new System.Object[1]{ACode}, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
         }
 
         /// auto generated
@@ -1717,10 +1696,10 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data.Access
         /// this method is called by all overloads
         public static void LoadUsingTemplate(DataSet ADataSet, MExtractTypeRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClause(AFieldList, new string[] {
-                            "m_code_c"}) + " FROM PUB_m_extract_type")
-                            + GenerateWhereClause(MExtractTypeTable.GetColumnStringList(), ATemplateRow, ATemplateOperators))
-                            + GenerateOrderByClause(AOrderBy)), MExtractTypeTable.GetTableName(), ATransaction, GetParametersForWhereClause(ATemplateRow), AStartRecord, AMaxRecords);
+            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClause(AFieldList, MExtractTypeTable.TableId) + " FROM PUB_m_extract_type") +
+                            GenerateWhereClause(TTypedDataTable.GetColumnStringList(MExtractTypeTable.TableId), ATemplateRow, ATemplateOperators)) +
+                            GenerateOrderByClause(AOrderBy)), TTypedDataTable.GetTableName(MExtractTypeTable.TableId), ATransaction,
+                            GetParametersForWhereClause(MExtractTypeTable.TableId, ATemplateRow), AStartRecord, AMaxRecords);
         }
 
         /// auto generated
@@ -1766,11 +1745,10 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data.Access
         /// this method is called by all overloads
         public static void LoadUsingTemplate(DataSet ADataSet, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClause(AFieldList, new string[] {
-                            "m_code_c"}) + " FROM PUB_m_extract_type")
-                            + GenerateWhereClause(MExtractTypeTable.GetColumnStringList(), ASearchCriteria))
-                            + GenerateOrderByClause(AOrderBy)), MExtractTypeTable.GetTableName(), ATransaction,
-                            GetParametersForWhereClause(new MExtractTypeTable(), ASearchCriteria), AStartRecord, AMaxRecords);
+            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClause(AFieldList, MExtractTypeTable.TableId) + " FROM PUB_m_extract_type") +
+                            GenerateWhereClause(TTypedDataTable.GetColumnStringList(MExtractTypeTable.TableId), ASearchCriteria)) +
+                            GenerateOrderByClause(AOrderBy)), TTypedDataTable.GetTableName(MExtractTypeTable.TableId), ATransaction,
+                            GetParametersForWhereClause(MExtractTypeTable.TableId, ASearchCriteria), AStartRecord, AMaxRecords);
         }
 
         /// auto generated
@@ -1813,49 +1791,42 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data.Access
             return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar("SELECT COUNT(*) FROM PUB_m_extract_type", ATransaction, false));
         }
 
-        /// this method is called by all overloads
-        public static int CountByPrimaryKey(String ACode, TDBTransaction ATransaction)
+        /// check if a row exists by using the primary key
+        public static bool Exists(String ACode, TDBTransaction ATransaction)
         {
-            OdbcParameter[] ParametersArray = new OdbcParameter[1];
-            ParametersArray[0] = new OdbcParameter("", OdbcType.VarChar, 50);
-            ParametersArray[0].Value = ((object)(ACode));
-            return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar("SELECT COUNT(*) FROM PUB_m_extract_type WHERE m_code_c = ?", ATransaction, false, ParametersArray));
+            return Exists(MExtractTypeTable.TableId, new System.Object[1]{ACode}, ATransaction);
         }
 
         /// this method is called by all overloads
         public static int CountUsingTemplate(MExtractTypeRow ATemplateRow, StringCollection ATemplateOperators, TDBTransaction ATransaction)
         {
-            return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_m_extract_type" + GenerateWhereClause(MExtractTypeTable.GetColumnStringList(), ATemplateRow, ATemplateOperators)), ATransaction, false, GetParametersForWhereClause(ATemplateRow)));
+            return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_m_extract_type" + GenerateWhereClause(TTypedDataTable.GetColumnStringList(MExtractTypeTable.TableId), ATemplateRow, ATemplateOperators)), ATransaction, false,
+                   GetParametersForWhereClause(MExtractTypeTable.TableId, ATemplateRow)));
         }
 
         /// this method is called by all overloads
         public static int CountUsingTemplate(TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
         {
-            return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_m_extract_type" + GenerateWhereClause(MExtractTypeTable.GetColumnStringList(), ASearchCriteria)), ATransaction, false,
-            GetParametersForWhereClause(new MExtractTypeTable(), ASearchCriteria)));
+            return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_m_extract_type" + GenerateWhereClause(TTypedDataTable.GetColumnStringList(MExtractTypeTable.TableId), ASearchCriteria)), ATransaction, false,
+            GetParametersForWhereClause(MExtractTypeTable.TableId, ASearchCriteria)));
         }
 
         /// auto generated
         public static void DeleteByPrimaryKey(String ACode, TDBTransaction ATransaction)
         {
-            OdbcParameter[] ParametersArray = new OdbcParameter[1];
-            ParametersArray[0] = new OdbcParameter("", OdbcType.VarChar, 50);
-            ParametersArray[0].Value = ((object)(ACode));
-            DBAccess.GDBAccessObj.ExecuteNonQuery("DELETE FROM PUB_m_extract_type WHERE m_code_c = ?", ATransaction, false, ParametersArray);
+            DeleteByPrimaryKey(MExtractTypeTable.TableId, new System.Object[1]{ACode}, ATransaction);
         }
 
         /// auto generated
         public static void DeleteUsingTemplate(MExtractTypeRow ATemplateRow, StringCollection ATemplateOperators, TDBTransaction ATransaction)
         {
-            DBAccess.GDBAccessObj.ExecuteNonQuery(("DELETE FROM PUB_m_extract_type" + GenerateWhereClause(MExtractTypeTable.GetColumnStringList(), ATemplateRow, ATemplateOperators)), ATransaction, false, GetParametersForWhereClause(ATemplateRow));
+            DeleteUsingTemplate(MExtractTypeTable.TableId, ATemplateRow, ATemplateOperators, ATransaction);
         }
 
         /// auto generated
         public static void DeleteUsingTemplate(TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
         {
-            DBAccess.GDBAccessObj.ExecuteNonQuery(("DELETE FROM PUB_m_extract_type" +
-                GenerateWhereClause(MExtractTypeTable.GetColumnStringList(), ASearchCriteria)), ATransaction, false,
-                GetParametersForWhereClause(new MExtractTypeTable(), ASearchCriteria));
+            DeleteUsingTemplate(MExtractTypeTable.TableId, ASearchCriteria, ATransaction);
         }
 
         /// auto generated
@@ -1872,15 +1843,15 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data.Access
                 {
                     if ((TheRow.RowState == DataRowState.Added))
                     {
-                        TTypedDataAccess.InsertRow("m_extract_type", MExtractTypeTable.GetColumnStringList(), ref TheRow, ATransaction, UserInfo.GUserInfo.UserID);
+                        TTypedDataAccess.InsertRow(MExtractTypeTable.TableId, ref TheRow, ATransaction, UserInfo.GUserInfo.UserID);
                     }
                     if ((TheRow.RowState == DataRowState.Modified))
                     {
-                        TTypedDataAccess.UpdateRow("m_extract_type", MExtractTypeTable.GetColumnStringList(), MExtractTypeTable.GetPrimKeyColumnOrdList(), ref TheRow, ATransaction, UserInfo.GUserInfo.UserID);
+                        TTypedDataAccess.UpdateRow(MExtractTypeTable.TableId, ref TheRow, ATransaction, UserInfo.GUserInfo.UserID);
                     }
                     if ((TheRow.RowState == DataRowState.Deleted))
                     {
-                        TTypedDataAccess.DeleteRow("m_extract_type", MExtractTypeTable.GetColumnStringList(), MExtractTypeTable.GetPrimKeyColumnOrdList(), TheRow, ATransaction);
+                        TTypedDataAccess.DeleteRow(MExtractTypeTable.TableId, TheRow, ATransaction);
                     }
                 }
                 catch (OdbcException ex)
@@ -1910,9 +1881,8 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data.Access
         /// this method is called by all overloads
         public static void LoadAll(DataSet ADataSet, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, ((GenerateSelectClause(AFieldList, new string[] {
-                            "m_extract_id_i", "m_parameter_code_c", "m_value_index_i"}) + " FROM PUB_m_extract_parameter")
-                            + GenerateOrderByClause(AOrderBy)), MExtractParameterTable.GetTableName(), ATransaction, AStartRecord, AMaxRecords);
+            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, ((GenerateSelectClause(AFieldList, MExtractParameterTable.TableId) + " FROM PUB_m_extract_parameter") +
+                            GenerateOrderByClause(AOrderBy)), TTypedDataTable.GetTableName(MExtractParameterTable.TableId), ATransaction, AStartRecord, AMaxRecords);
         }
 
         /// auto generated
@@ -1952,16 +1922,8 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data.Access
         /// this method is called by all overloads
         public static void LoadByPrimaryKey(DataSet ADataSet, Int32 AExtractId, String AParameterCode, Int32 AValueIndex, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            OdbcParameter[] ParametersArray = new OdbcParameter[3];
-            ParametersArray[0] = new OdbcParameter("", OdbcType.Int);
-            ParametersArray[0].Value = ((object)(AExtractId));
-            ParametersArray[1] = new OdbcParameter("", OdbcType.VarChar, 50);
-            ParametersArray[1].Value = ((object)(AParameterCode));
-            ParametersArray[2] = new OdbcParameter("", OdbcType.Int);
-            ParametersArray[2].Value = ((object)(AValueIndex));
-            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, ((GenerateSelectClause(AFieldList, new string[] {
-                            "m_extract_id_i", "m_parameter_code_c", "m_value_index_i"}) + " FROM PUB_m_extract_parameter WHERE m_extract_id_i = ? AND m_parameter_code_c = ? AND m_value_index_i = ?")
-                            + GenerateOrderByClause(AOrderBy)), MExtractParameterTable.GetTableName(), ATransaction, ParametersArray, AStartRecord, AMaxRecords);
+            ADataSet = LoadByPrimaryKey(MExtractParameterTable.TableId,
+                ADataSet, new System.Object[3]{AExtractId, AParameterCode, AValueIndex}, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
         }
 
         /// auto generated
@@ -2001,10 +1963,10 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data.Access
         /// this method is called by all overloads
         public static void LoadUsingTemplate(DataSet ADataSet, MExtractParameterRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClause(AFieldList, new string[] {
-                            "m_extract_id_i", "m_parameter_code_c", "m_value_index_i"}) + " FROM PUB_m_extract_parameter")
-                            + GenerateWhereClause(MExtractParameterTable.GetColumnStringList(), ATemplateRow, ATemplateOperators))
-                            + GenerateOrderByClause(AOrderBy)), MExtractParameterTable.GetTableName(), ATransaction, GetParametersForWhereClause(ATemplateRow), AStartRecord, AMaxRecords);
+            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClause(AFieldList, MExtractParameterTable.TableId) + " FROM PUB_m_extract_parameter") +
+                            GenerateWhereClause(TTypedDataTable.GetColumnStringList(MExtractParameterTable.TableId), ATemplateRow, ATemplateOperators)) +
+                            GenerateOrderByClause(AOrderBy)), TTypedDataTable.GetTableName(MExtractParameterTable.TableId), ATransaction,
+                            GetParametersForWhereClause(MExtractParameterTable.TableId, ATemplateRow), AStartRecord, AMaxRecords);
         }
 
         /// auto generated
@@ -2050,11 +2012,10 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data.Access
         /// this method is called by all overloads
         public static void LoadUsingTemplate(DataSet ADataSet, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClause(AFieldList, new string[] {
-                            "m_extract_id_i", "m_parameter_code_c", "m_value_index_i"}) + " FROM PUB_m_extract_parameter")
-                            + GenerateWhereClause(MExtractParameterTable.GetColumnStringList(), ASearchCriteria))
-                            + GenerateOrderByClause(AOrderBy)), MExtractParameterTable.GetTableName(), ATransaction,
-                            GetParametersForWhereClause(new MExtractParameterTable(), ASearchCriteria), AStartRecord, AMaxRecords);
+            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClause(AFieldList, MExtractParameterTable.TableId) + " FROM PUB_m_extract_parameter") +
+                            GenerateWhereClause(TTypedDataTable.GetColumnStringList(MExtractParameterTable.TableId), ASearchCriteria)) +
+                            GenerateOrderByClause(AOrderBy)), TTypedDataTable.GetTableName(MExtractParameterTable.TableId), ATransaction,
+                            GetParametersForWhereClause(MExtractParameterTable.TableId, ASearchCriteria), AStartRecord, AMaxRecords);
         }
 
         /// auto generated
@@ -2097,30 +2058,24 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data.Access
             return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar("SELECT COUNT(*) FROM PUB_m_extract_parameter", ATransaction, false));
         }
 
-        /// this method is called by all overloads
-        public static int CountByPrimaryKey(Int32 AExtractId, String AParameterCode, Int32 AValueIndex, TDBTransaction ATransaction)
+        /// check if a row exists by using the primary key
+        public static bool Exists(Int32 AExtractId, String AParameterCode, Int32 AValueIndex, TDBTransaction ATransaction)
         {
-            OdbcParameter[] ParametersArray = new OdbcParameter[3];
-            ParametersArray[0] = new OdbcParameter("", OdbcType.Int);
-            ParametersArray[0].Value = ((object)(AExtractId));
-            ParametersArray[1] = new OdbcParameter("", OdbcType.VarChar, 50);
-            ParametersArray[1].Value = ((object)(AParameterCode));
-            ParametersArray[2] = new OdbcParameter("", OdbcType.Int);
-            ParametersArray[2].Value = ((object)(AValueIndex));
-            return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar("SELECT COUNT(*) FROM PUB_m_extract_parameter WHERE m_extract_id_i = ? AND m_parameter_code_c = ? AND m_value_index_i = ?", ATransaction, false, ParametersArray));
+            return Exists(MExtractParameterTable.TableId, new System.Object[3]{AExtractId, AParameterCode, AValueIndex}, ATransaction);
         }
 
         /// this method is called by all overloads
         public static int CountUsingTemplate(MExtractParameterRow ATemplateRow, StringCollection ATemplateOperators, TDBTransaction ATransaction)
         {
-            return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_m_extract_parameter" + GenerateWhereClause(MExtractParameterTable.GetColumnStringList(), ATemplateRow, ATemplateOperators)), ATransaction, false, GetParametersForWhereClause(ATemplateRow)));
+            return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_m_extract_parameter" + GenerateWhereClause(TTypedDataTable.GetColumnStringList(MExtractParameterTable.TableId), ATemplateRow, ATemplateOperators)), ATransaction, false,
+                   GetParametersForWhereClause(MExtractParameterTable.TableId, ATemplateRow)));
         }
 
         /// this method is called by all overloads
         public static int CountUsingTemplate(TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
         {
-            return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_m_extract_parameter" + GenerateWhereClause(MExtractParameterTable.GetColumnStringList(), ASearchCriteria)), ATransaction, false,
-            GetParametersForWhereClause(new MExtractParameterTable(), ASearchCriteria)));
+            return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_m_extract_parameter" + GenerateWhereClause(TTypedDataTable.GetColumnStringList(MExtractParameterTable.TableId), ASearchCriteria)), ATransaction, false,
+            GetParametersForWhereClause(MExtractParameterTable.TableId, ASearchCriteria)));
         }
 
         /// auto generated
@@ -2129,9 +2084,9 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data.Access
             OdbcParameter[] ParametersArray = new OdbcParameter[1];
             ParametersArray[0] = new OdbcParameter("", OdbcType.Int);
             ParametersArray[0].Value = ((object)(AExtractId));
-            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, ((GenerateSelectClause(AFieldList, new string[] {
-                            "m_extract_id_i", "m_parameter_code_c", "m_value_index_i"}) + " FROM PUB_m_extract_parameter WHERE m_extract_id_i = ?")
-                            + GenerateOrderByClause(AOrderBy)), MExtractParameterTable.GetTableName(), ATransaction, ParametersArray, AStartRecord, AMaxRecords);
+            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, ((GenerateSelectClause(AFieldList, MExtractParameterTable.TableId) +
+                            " FROM PUB_m_extract_parameter WHERE m_extract_id_i = ?") +
+                            GenerateOrderByClause(AOrderBy)), TTypedDataTable.GetTableName(MExtractParameterTable.TableId), ATransaction, ParametersArray, AStartRecord, AMaxRecords);
         }
 
         /// auto generated
@@ -2171,11 +2126,12 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data.Access
         /// auto generated
         public static void LoadViaMExtractMasterTemplate(DataSet ADataSet, MExtractMasterRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClauseLong("PUB_m_extract_parameter", AFieldList, new string[] {
-                            "m_extract_id_i", "m_parameter_code_c", "m_value_index_i"}) + " FROM PUB_m_extract_parameter, PUB_m_extract_master WHERE " +
-                            "PUB_m_extract_parameter.m_extract_id_i = PUB_m_extract_master.m_extract_id_i")
-                            + GenerateWhereClauseLong("PUB_m_extract_master", MExtractMasterTable.GetColumnStringList(), ATemplateRow, ATemplateOperators))
-                            + GenerateOrderByClause(AOrderBy)), MExtractParameterTable.GetTableName(), ATransaction, GetParametersForWhereClause(ATemplateRow), AStartRecord, AMaxRecords);
+            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClauseLong("PUB_m_extract_parameter", AFieldList, MExtractParameterTable.TableId) +
+                            " FROM PUB_m_extract_parameter, PUB_m_extract_master WHERE " +
+                            "PUB_m_extract_parameter.m_extract_id_i = PUB_m_extract_master.m_extract_id_i") +
+                            GenerateWhereClauseLong("PUB_m_extract_master", MExtractMasterTable.TableId, ATemplateRow, ATemplateOperators)) +
+                            GenerateOrderByClause(AOrderBy)), TTypedDataTable.GetTableName(MExtractParameterTable.TableId), ATransaction,
+                            GetParametersForWhereClause(MExtractMasterTable.TableId, ATemplateRow), AStartRecord, AMaxRecords);
         }
 
         /// auto generated
@@ -2221,12 +2177,12 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data.Access
         /// auto generated
         public static void LoadViaMExtractMasterTemplate(DataSet ADataSet, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClauseLong("PUB_m_extract_parameter", AFieldList, new string[] {
-                            "m_extract_id_i", "m_parameter_code_c", "m_value_index_i"}) + " FROM PUB_m_extract_parameter, PUB_m_extract_master WHERE " +
-                            "PUB_m_extract_parameter.m_extract_id_i = PUB_m_extract_master.m_extract_id_i")
-                            + GenerateWhereClauseLong("PUB_m_extract_master", MExtractMasterTable.GetColumnStringList(), ASearchCriteria))
-                            + GenerateOrderByClause(AOrderBy)), MExtractParameterTable.GetTableName(), ATransaction,
-                            GetParametersForWhereClause(new MExtractParameterTable(), ASearchCriteria), AStartRecord, AMaxRecords);
+            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClauseLong("PUB_m_extract_parameter", AFieldList, MExtractParameterTable.TableId) +
+                            " FROM PUB_m_extract_parameter, PUB_m_extract_master WHERE " +
+                            "PUB_m_extract_parameter.m_extract_id_i = PUB_m_extract_master.m_extract_id_i") +
+                            GenerateWhereClauseLong("PUB_m_extract_master", ASearchCriteria)) +
+                            GenerateOrderByClause(AOrderBy)), TTypedDataTable.GetTableName(MExtractParameterTable.TableId), ATransaction,
+                            GetParametersForWhereClause(MExtractParameterTable.TableId, ASearchCriteria), AStartRecord, AMaxRecords);
         }
 
         /// auto generated
@@ -2276,7 +2232,10 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data.Access
         public static int CountViaMExtractMasterTemplate(MExtractMasterRow ATemplateRow, StringCollection ATemplateOperators, TDBTransaction ATransaction)
         {
             return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_m_extract_parameter, PUB_m_extract_master WHERE " +
-                "PUB_m_extract_parameter.m_extract_id_i = PUB_m_extract_master.m_extract_id_i" + GenerateWhereClauseLong("PUB_m_extract_master", MExtractMasterTable.GetColumnStringList(), ATemplateRow, ATemplateOperators)), ATransaction, false, GetParametersForWhereClause(ATemplateRow, MExtractMasterTable.GetPrimKeyColumnOrdList())));
+                "PUB_m_extract_parameter.m_extract_id_i = PUB_m_extract_master.m_extract_id_i" + GenerateWhereClauseLong("PUB_m_extract_master",
+                MExtractMasterTable.TableId, ATemplateRow, ATemplateOperators)),
+                ATransaction, false,
+                GetParametersForWhereClauseWithPrimaryKey(MExtractMasterTable.TableId, ATemplateRow)));
         }
 
         /// auto generated
@@ -2284,35 +2243,26 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data.Access
         {
             return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_m_extract_parameter, PUB_m_extract_master WHERE " +
                 "PUB_m_extract_parameter.m_extract_id_i = PUB_m_extract_master.m_extract_id_i" +
-                GenerateWhereClauseLong("PUB_m_extract_master", MExtractMasterTable.GetColumnStringList(), ASearchCriteria)), ATransaction, false,
-                GetParametersForWhereClause(new MExtractMasterTable(), ASearchCriteria)));
+                GenerateWhereClauseLong("PUB_m_extract_master", ASearchCriteria)), ATransaction, false,
+                GetParametersForWhereClause(MExtractMasterTable.TableId, ASearchCriteria)));
         }
 
         /// auto generated
         public static void DeleteByPrimaryKey(Int32 AExtractId, String AParameterCode, Int32 AValueIndex, TDBTransaction ATransaction)
         {
-            OdbcParameter[] ParametersArray = new OdbcParameter[3];
-            ParametersArray[0] = new OdbcParameter("", OdbcType.Int);
-            ParametersArray[0].Value = ((object)(AExtractId));
-            ParametersArray[1] = new OdbcParameter("", OdbcType.VarChar, 50);
-            ParametersArray[1].Value = ((object)(AParameterCode));
-            ParametersArray[2] = new OdbcParameter("", OdbcType.Int);
-            ParametersArray[2].Value = ((object)(AValueIndex));
-            DBAccess.GDBAccessObj.ExecuteNonQuery("DELETE FROM PUB_m_extract_parameter WHERE m_extract_id_i = ? AND m_parameter_code_c = ? AND m_value_index_i = ?", ATransaction, false, ParametersArray);
+            DeleteByPrimaryKey(MExtractParameterTable.TableId, new System.Object[3]{AExtractId, AParameterCode, AValueIndex}, ATransaction);
         }
 
         /// auto generated
         public static void DeleteUsingTemplate(MExtractParameterRow ATemplateRow, StringCollection ATemplateOperators, TDBTransaction ATransaction)
         {
-            DBAccess.GDBAccessObj.ExecuteNonQuery(("DELETE FROM PUB_m_extract_parameter" + GenerateWhereClause(MExtractParameterTable.GetColumnStringList(), ATemplateRow, ATemplateOperators)), ATransaction, false, GetParametersForWhereClause(ATemplateRow));
+            DeleteUsingTemplate(MExtractParameterTable.TableId, ATemplateRow, ATemplateOperators, ATransaction);
         }
 
         /// auto generated
         public static void DeleteUsingTemplate(TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
         {
-            DBAccess.GDBAccessObj.ExecuteNonQuery(("DELETE FROM PUB_m_extract_parameter" +
-                GenerateWhereClause(MExtractParameterTable.GetColumnStringList(), ASearchCriteria)), ATransaction, false,
-                GetParametersForWhereClause(new MExtractParameterTable(), ASearchCriteria));
+            DeleteUsingTemplate(MExtractParameterTable.TableId, ASearchCriteria, ATransaction);
         }
 
         /// auto generated
@@ -2329,15 +2279,15 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data.Access
                 {
                     if ((TheRow.RowState == DataRowState.Added))
                     {
-                        TTypedDataAccess.InsertRow("m_extract_parameter", MExtractParameterTable.GetColumnStringList(), ref TheRow, ATransaction, UserInfo.GUserInfo.UserID);
+                        TTypedDataAccess.InsertRow(MExtractParameterTable.TableId, ref TheRow, ATransaction, UserInfo.GUserInfo.UserID);
                     }
                     if ((TheRow.RowState == DataRowState.Modified))
                     {
-                        TTypedDataAccess.UpdateRow("m_extract_parameter", MExtractParameterTable.GetColumnStringList(), MExtractParameterTable.GetPrimKeyColumnOrdList(), ref TheRow, ATransaction, UserInfo.GUserInfo.UserID);
+                        TTypedDataAccess.UpdateRow(MExtractParameterTable.TableId, ref TheRow, ATransaction, UserInfo.GUserInfo.UserID);
                     }
                     if ((TheRow.RowState == DataRowState.Deleted))
                     {
-                        TTypedDataAccess.DeleteRow("m_extract_parameter", MExtractParameterTable.GetColumnStringList(), MExtractParameterTable.GetPrimKeyColumnOrdList(), TheRow, ATransaction);
+                        TTypedDataAccess.DeleteRow(MExtractParameterTable.TableId, TheRow, ATransaction);
                     }
                 }
                 catch (OdbcException ex)
@@ -2367,9 +2317,8 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data.Access
         /// this method is called by all overloads
         public static void LoadAll(DataSet ADataSet, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, ((GenerateSelectClause(AFieldList, new string[] {
-                            "p_mailing_code_c"}) + " FROM PUB_p_mailing")
-                            + GenerateOrderByClause(AOrderBy)), PMailingTable.GetTableName(), ATransaction, AStartRecord, AMaxRecords);
+            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, ((GenerateSelectClause(AFieldList, PMailingTable.TableId) + " FROM PUB_p_mailing") +
+                            GenerateOrderByClause(AOrderBy)), TTypedDataTable.GetTableName(PMailingTable.TableId), ATransaction, AStartRecord, AMaxRecords);
         }
 
         /// auto generated
@@ -2409,12 +2358,8 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data.Access
         /// this method is called by all overloads
         public static void LoadByPrimaryKey(DataSet ADataSet, String AMailingCode, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            OdbcParameter[] ParametersArray = new OdbcParameter[1];
-            ParametersArray[0] = new OdbcParameter("", OdbcType.VarChar, 50);
-            ParametersArray[0].Value = ((object)(AMailingCode));
-            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, ((GenerateSelectClause(AFieldList, new string[] {
-                            "p_mailing_code_c"}) + " FROM PUB_p_mailing WHERE p_mailing_code_c = ?")
-                            + GenerateOrderByClause(AOrderBy)), PMailingTable.GetTableName(), ATransaction, ParametersArray, AStartRecord, AMaxRecords);
+            ADataSet = LoadByPrimaryKey(PMailingTable.TableId,
+                ADataSet, new System.Object[1]{AMailingCode}, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
         }
 
         /// auto generated
@@ -2454,10 +2399,10 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data.Access
         /// this method is called by all overloads
         public static void LoadUsingTemplate(DataSet ADataSet, PMailingRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClause(AFieldList, new string[] {
-                            "p_mailing_code_c"}) + " FROM PUB_p_mailing")
-                            + GenerateWhereClause(PMailingTable.GetColumnStringList(), ATemplateRow, ATemplateOperators))
-                            + GenerateOrderByClause(AOrderBy)), PMailingTable.GetTableName(), ATransaction, GetParametersForWhereClause(ATemplateRow), AStartRecord, AMaxRecords);
+            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClause(AFieldList, PMailingTable.TableId) + " FROM PUB_p_mailing") +
+                            GenerateWhereClause(TTypedDataTable.GetColumnStringList(PMailingTable.TableId), ATemplateRow, ATemplateOperators)) +
+                            GenerateOrderByClause(AOrderBy)), TTypedDataTable.GetTableName(PMailingTable.TableId), ATransaction,
+                            GetParametersForWhereClause(PMailingTable.TableId, ATemplateRow), AStartRecord, AMaxRecords);
         }
 
         /// auto generated
@@ -2503,11 +2448,10 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data.Access
         /// this method is called by all overloads
         public static void LoadUsingTemplate(DataSet ADataSet, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClause(AFieldList, new string[] {
-                            "p_mailing_code_c"}) + " FROM PUB_p_mailing")
-                            + GenerateWhereClause(PMailingTable.GetColumnStringList(), ASearchCriteria))
-                            + GenerateOrderByClause(AOrderBy)), PMailingTable.GetTableName(), ATransaction,
-                            GetParametersForWhereClause(new PMailingTable(), ASearchCriteria), AStartRecord, AMaxRecords);
+            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClause(AFieldList, PMailingTable.TableId) + " FROM PUB_p_mailing") +
+                            GenerateWhereClause(TTypedDataTable.GetColumnStringList(PMailingTable.TableId), ASearchCriteria)) +
+                            GenerateOrderByClause(AOrderBy)), TTypedDataTable.GetTableName(PMailingTable.TableId), ATransaction,
+                            GetParametersForWhereClause(PMailingTable.TableId, ASearchCriteria), AStartRecord, AMaxRecords);
         }
 
         /// auto generated
@@ -2550,49 +2494,42 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data.Access
             return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar("SELECT COUNT(*) FROM PUB_p_mailing", ATransaction, false));
         }
 
-        /// this method is called by all overloads
-        public static int CountByPrimaryKey(String AMailingCode, TDBTransaction ATransaction)
+        /// check if a row exists by using the primary key
+        public static bool Exists(String AMailingCode, TDBTransaction ATransaction)
         {
-            OdbcParameter[] ParametersArray = new OdbcParameter[1];
-            ParametersArray[0] = new OdbcParameter("", OdbcType.VarChar, 50);
-            ParametersArray[0].Value = ((object)(AMailingCode));
-            return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar("SELECT COUNT(*) FROM PUB_p_mailing WHERE p_mailing_code_c = ?", ATransaction, false, ParametersArray));
+            return Exists(PMailingTable.TableId, new System.Object[1]{AMailingCode}, ATransaction);
         }
 
         /// this method is called by all overloads
         public static int CountUsingTemplate(PMailingRow ATemplateRow, StringCollection ATemplateOperators, TDBTransaction ATransaction)
         {
-            return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_p_mailing" + GenerateWhereClause(PMailingTable.GetColumnStringList(), ATemplateRow, ATemplateOperators)), ATransaction, false, GetParametersForWhereClause(ATemplateRow)));
+            return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_p_mailing" + GenerateWhereClause(TTypedDataTable.GetColumnStringList(PMailingTable.TableId), ATemplateRow, ATemplateOperators)), ATransaction, false,
+                   GetParametersForWhereClause(PMailingTable.TableId, ATemplateRow)));
         }
 
         /// this method is called by all overloads
         public static int CountUsingTemplate(TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
         {
-            return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_p_mailing" + GenerateWhereClause(PMailingTable.GetColumnStringList(), ASearchCriteria)), ATransaction, false,
-            GetParametersForWhereClause(new PMailingTable(), ASearchCriteria)));
+            return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_p_mailing" + GenerateWhereClause(TTypedDataTable.GetColumnStringList(PMailingTable.TableId), ASearchCriteria)), ATransaction, false,
+            GetParametersForWhereClause(PMailingTable.TableId, ASearchCriteria)));
         }
 
         /// auto generated
         public static void DeleteByPrimaryKey(String AMailingCode, TDBTransaction ATransaction)
         {
-            OdbcParameter[] ParametersArray = new OdbcParameter[1];
-            ParametersArray[0] = new OdbcParameter("", OdbcType.VarChar, 50);
-            ParametersArray[0].Value = ((object)(AMailingCode));
-            DBAccess.GDBAccessObj.ExecuteNonQuery("DELETE FROM PUB_p_mailing WHERE p_mailing_code_c = ?", ATransaction, false, ParametersArray);
+            DeleteByPrimaryKey(PMailingTable.TableId, new System.Object[1]{AMailingCode}, ATransaction);
         }
 
         /// auto generated
         public static void DeleteUsingTemplate(PMailingRow ATemplateRow, StringCollection ATemplateOperators, TDBTransaction ATransaction)
         {
-            DBAccess.GDBAccessObj.ExecuteNonQuery(("DELETE FROM PUB_p_mailing" + GenerateWhereClause(PMailingTable.GetColumnStringList(), ATemplateRow, ATemplateOperators)), ATransaction, false, GetParametersForWhereClause(ATemplateRow));
+            DeleteUsingTemplate(PMailingTable.TableId, ATemplateRow, ATemplateOperators, ATransaction);
         }
 
         /// auto generated
         public static void DeleteUsingTemplate(TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
         {
-            DBAccess.GDBAccessObj.ExecuteNonQuery(("DELETE FROM PUB_p_mailing" +
-                GenerateWhereClause(PMailingTable.GetColumnStringList(), ASearchCriteria)), ATransaction, false,
-                GetParametersForWhereClause(new PMailingTable(), ASearchCriteria));
+            DeleteUsingTemplate(PMailingTable.TableId, ASearchCriteria, ATransaction);
         }
 
         /// auto generated
@@ -2609,15 +2546,15 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data.Access
                 {
                     if ((TheRow.RowState == DataRowState.Added))
                     {
-                        TTypedDataAccess.InsertRow("p_mailing", PMailingTable.GetColumnStringList(), ref TheRow, ATransaction, UserInfo.GUserInfo.UserID);
+                        TTypedDataAccess.InsertRow(PMailingTable.TableId, ref TheRow, ATransaction, UserInfo.GUserInfo.UserID);
                     }
                     if ((TheRow.RowState == DataRowState.Modified))
                     {
-                        TTypedDataAccess.UpdateRow("p_mailing", PMailingTable.GetColumnStringList(), PMailingTable.GetPrimKeyColumnOrdList(), ref TheRow, ATransaction, UserInfo.GUserInfo.UserID);
+                        TTypedDataAccess.UpdateRow(PMailingTable.TableId, ref TheRow, ATransaction, UserInfo.GUserInfo.UserID);
                     }
                     if ((TheRow.RowState == DataRowState.Deleted))
                     {
-                        TTypedDataAccess.DeleteRow("p_mailing", PMailingTable.GetColumnStringList(), PMailingTable.GetPrimKeyColumnOrdList(), TheRow, ATransaction);
+                        TTypedDataAccess.DeleteRow(PMailingTable.TableId, TheRow, ATransaction);
                     }
                 }
                 catch (OdbcException ex)
@@ -2647,9 +2584,8 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data.Access
         /// this method is called by all overloads
         public static void LoadAll(DataSet ADataSet, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, ((GenerateSelectClause(AFieldList, new string[] {
-                            "p_code_c"}) + " FROM PUB_p_address_layout_code")
-                            + GenerateOrderByClause(AOrderBy)), PAddressLayoutCodeTable.GetTableName(), ATransaction, AStartRecord, AMaxRecords);
+            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, ((GenerateSelectClause(AFieldList, PAddressLayoutCodeTable.TableId) + " FROM PUB_p_address_layout_code") +
+                            GenerateOrderByClause(AOrderBy)), TTypedDataTable.GetTableName(PAddressLayoutCodeTable.TableId), ATransaction, AStartRecord, AMaxRecords);
         }
 
         /// auto generated
@@ -2689,12 +2625,8 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data.Access
         /// this method is called by all overloads
         public static void LoadByPrimaryKey(DataSet ADataSet, String ACode, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            OdbcParameter[] ParametersArray = new OdbcParameter[1];
-            ParametersArray[0] = new OdbcParameter("", OdbcType.VarChar, 32);
-            ParametersArray[0].Value = ((object)(ACode));
-            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, ((GenerateSelectClause(AFieldList, new string[] {
-                            "p_code_c"}) + " FROM PUB_p_address_layout_code WHERE p_code_c = ?")
-                            + GenerateOrderByClause(AOrderBy)), PAddressLayoutCodeTable.GetTableName(), ATransaction, ParametersArray, AStartRecord, AMaxRecords);
+            ADataSet = LoadByPrimaryKey(PAddressLayoutCodeTable.TableId,
+                ADataSet, new System.Object[1]{ACode}, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
         }
 
         /// auto generated
@@ -2734,10 +2666,10 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data.Access
         /// this method is called by all overloads
         public static void LoadUsingTemplate(DataSet ADataSet, PAddressLayoutCodeRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClause(AFieldList, new string[] {
-                            "p_code_c"}) + " FROM PUB_p_address_layout_code")
-                            + GenerateWhereClause(PAddressLayoutCodeTable.GetColumnStringList(), ATemplateRow, ATemplateOperators))
-                            + GenerateOrderByClause(AOrderBy)), PAddressLayoutCodeTable.GetTableName(), ATransaction, GetParametersForWhereClause(ATemplateRow), AStartRecord, AMaxRecords);
+            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClause(AFieldList, PAddressLayoutCodeTable.TableId) + " FROM PUB_p_address_layout_code") +
+                            GenerateWhereClause(TTypedDataTable.GetColumnStringList(PAddressLayoutCodeTable.TableId), ATemplateRow, ATemplateOperators)) +
+                            GenerateOrderByClause(AOrderBy)), TTypedDataTable.GetTableName(PAddressLayoutCodeTable.TableId), ATransaction,
+                            GetParametersForWhereClause(PAddressLayoutCodeTable.TableId, ATemplateRow), AStartRecord, AMaxRecords);
         }
 
         /// auto generated
@@ -2783,11 +2715,10 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data.Access
         /// this method is called by all overloads
         public static void LoadUsingTemplate(DataSet ADataSet, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClause(AFieldList, new string[] {
-                            "p_code_c"}) + " FROM PUB_p_address_layout_code")
-                            + GenerateWhereClause(PAddressLayoutCodeTable.GetColumnStringList(), ASearchCriteria))
-                            + GenerateOrderByClause(AOrderBy)), PAddressLayoutCodeTable.GetTableName(), ATransaction,
-                            GetParametersForWhereClause(new PAddressLayoutCodeTable(), ASearchCriteria), AStartRecord, AMaxRecords);
+            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClause(AFieldList, PAddressLayoutCodeTable.TableId) + " FROM PUB_p_address_layout_code") +
+                            GenerateWhereClause(TTypedDataTable.GetColumnStringList(PAddressLayoutCodeTable.TableId), ASearchCriteria)) +
+                            GenerateOrderByClause(AOrderBy)), TTypedDataTable.GetTableName(PAddressLayoutCodeTable.TableId), ATransaction,
+                            GetParametersForWhereClause(PAddressLayoutCodeTable.TableId, ASearchCriteria), AStartRecord, AMaxRecords);
         }
 
         /// auto generated
@@ -2830,26 +2761,24 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data.Access
             return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar("SELECT COUNT(*) FROM PUB_p_address_layout_code", ATransaction, false));
         }
 
-        /// this method is called by all overloads
-        public static int CountByPrimaryKey(String ACode, TDBTransaction ATransaction)
+        /// check if a row exists by using the primary key
+        public static bool Exists(String ACode, TDBTransaction ATransaction)
         {
-            OdbcParameter[] ParametersArray = new OdbcParameter[1];
-            ParametersArray[0] = new OdbcParameter("", OdbcType.VarChar, 32);
-            ParametersArray[0].Value = ((object)(ACode));
-            return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar("SELECT COUNT(*) FROM PUB_p_address_layout_code WHERE p_code_c = ?", ATransaction, false, ParametersArray));
+            return Exists(PAddressLayoutCodeTable.TableId, new System.Object[1]{ACode}, ATransaction);
         }
 
         /// this method is called by all overloads
         public static int CountUsingTemplate(PAddressLayoutCodeRow ATemplateRow, StringCollection ATemplateOperators, TDBTransaction ATransaction)
         {
-            return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_p_address_layout_code" + GenerateWhereClause(PAddressLayoutCodeTable.GetColumnStringList(), ATemplateRow, ATemplateOperators)), ATransaction, false, GetParametersForWhereClause(ATemplateRow)));
+            return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_p_address_layout_code" + GenerateWhereClause(TTypedDataTable.GetColumnStringList(PAddressLayoutCodeTable.TableId), ATemplateRow, ATemplateOperators)), ATransaction, false,
+                   GetParametersForWhereClause(PAddressLayoutCodeTable.TableId, ATemplateRow)));
         }
 
         /// this method is called by all overloads
         public static int CountUsingTemplate(TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
         {
-            return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_p_address_layout_code" + GenerateWhereClause(PAddressLayoutCodeTable.GetColumnStringList(), ASearchCriteria)), ATransaction, false,
-            GetParametersForWhereClause(new PAddressLayoutCodeTable(), ASearchCriteria)));
+            return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_p_address_layout_code" + GenerateWhereClause(TTypedDataTable.GetColumnStringList(PAddressLayoutCodeTable.TableId), ASearchCriteria)), ATransaction, false,
+            GetParametersForWhereClause(PAddressLayoutCodeTable.TableId, ASearchCriteria)));
         }
 
         /// auto generated LoadViaLinkTable
@@ -2858,10 +2787,10 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data.Access
             OdbcParameter[] ParametersArray = new OdbcParameter[1];
             ParametersArray[0] = new OdbcParameter("", OdbcType.VarChar, 8);
             ParametersArray[0].Value = ((object)(ACountryCode));
-            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, ((GenerateSelectClauseLong("PUB_p_address_layout_code", AFieldList, new string[] {
-                            "p_code_c"}) + " FROM PUB_p_address_layout_code, PUB_p_address_layout WHERE " +
-                            "PUB_p_address_layout.p_address_layout_code_c = PUB_p_address_layout_code.p_code_c AND PUB_p_address_layout.p_country_code_c = ?")
-                            + GenerateOrderByClause(AOrderBy)), PAddressLayoutCodeTable.GetTableName(), ATransaction, ParametersArray, AStartRecord, AMaxRecords);
+            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, ((GenerateSelectClauseLong("PUB_p_address_layout_code", AFieldList, PAddressLayoutCodeTable.TableId) +
+                            " FROM PUB_p_address_layout_code, PUB_p_address_layout WHERE " +
+                            "PUB_p_address_layout.p_address_layout_code_c = PUB_p_address_layout_code.p_code_c AND PUB_p_address_layout.p_country_code_c = ?") +
+                            GenerateOrderByClause(AOrderBy)), TTypedDataTable.GetTableName(PAddressLayoutCodeTable.TableId), ATransaction, ParametersArray, AStartRecord, AMaxRecords);
         }
 
         /// auto generated
@@ -2901,11 +2830,12 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data.Access
         /// auto generated
         public static void LoadViaPCountryTemplate(DataSet ADataSet, PCountryRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClauseLong("PUB_p_address_layout_code", AFieldList, new string[] {
-                            "p_code_c"}) + " FROM PUB_p_address_layout_code, PUB_p_address_layout, PUB_p_country WHERE " +
-                            "PUB_p_address_layout.p_address_layout_code_c = PUB_p_address_layout_code.p_code_c AND PUB_p_address_layout.p_country_code_c = PUB_p_country.p_country_code_c")
-                            + GenerateWhereClauseLong("PUB_p_country", PCountryTable.GetColumnStringList(), ATemplateRow, ATemplateOperators))
-                            + GenerateOrderByClause(AOrderBy)), PAddressLayoutCodeTable.GetTableName(), ATransaction, GetParametersForWhereClause(ATemplateRow), AStartRecord, AMaxRecords);
+            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClauseLong("PUB_p_address_layout_code", AFieldList, PAddressLayoutCodeTable.TableId) +
+                            " FROM PUB_p_address_layout_code, PUB_p_address_layout, PUB_p_country WHERE " +
+                            "PUB_p_address_layout.p_address_layout_code_c = PUB_p_address_layout_code.p_code_c AND PUB_p_address_layout.p_country_code_c = PUB_p_country.p_country_code_c") +
+                            GenerateWhereClauseLong("PUB_p_country", PCountryTable.TableId, ATemplateRow, ATemplateOperators)) +
+                            GenerateOrderByClause(AOrderBy)), TTypedDataTable.GetTableName(PAddressLayoutCodeTable.TableId), ATransaction,
+                            GetParametersForWhereClause(PCountryTable.TableId, ATemplateRow), AStartRecord, AMaxRecords);
         }
 
         /// auto generated
@@ -2951,12 +2881,12 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data.Access
         /// auto generated
         public static void LoadViaPCountryTemplate(DataSet ADataSet, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClauseLong("PUB_p_address_layout_code", AFieldList, new string[] {
-                            "p_code_c"}) + " FROM PUB_p_address_layout_code, PUB_p_address_layout, PUB_p_country WHERE " +
-                            "PUB_p_address_layout.p_address_layout_code_c = PUB_p_address_layout_code.p_code_c AND PUB_p_address_layout.p_country_code_c = PUB_p_country.p_country_code_c")
-                            + GenerateWhereClauseLong("PUB_p_country", PCountryTable.GetColumnStringList(), ASearchCriteria))
-                            + GenerateOrderByClause(AOrderBy)), PAddressLayoutCodeTable.GetTableName(), ATransaction,
-                            GetParametersForWhereClause(new PAddressLayoutCodeTable(), ASearchCriteria), AStartRecord, AMaxRecords);
+            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClauseLong("PUB_p_address_layout_code", AFieldList, PAddressLayoutCodeTable.TableId) +
+                            " FROM PUB_p_address_layout_code, PUB_p_address_layout, PUB_p_country WHERE " +
+                            "PUB_p_address_layout.p_address_layout_code_c = PUB_p_address_layout_code.p_code_c AND PUB_p_address_layout.p_country_code_c = PUB_p_country.p_country_code_c") +
+                            GenerateWhereClauseLong("PUB_p_country", ASearchCriteria)) +
+                            GenerateOrderByClause(AOrderBy)), TTypedDataTable.GetTableName(PAddressLayoutCodeTable.TableId), ATransaction,
+                            GetParametersForWhereClause(PAddressLayoutCodeTable.TableId, ASearchCriteria), AStartRecord, AMaxRecords);
         }
 
         /// auto generated
@@ -3009,7 +2939,8 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data.Access
         {
             return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_p_address_layout_code, PUB_p_address_layout, PUB_p_country WHERE " +
                         "PUB_p_address_layout.p_address_layout_code_c = PUB_p_address_layout_code.p_code_c AND PUB_p_address_layout.p_country_code_c = PUB_p_country.p_country_code_c" +
-                        GenerateWhereClauseLong("PUB_p_address_layout", PAddressLayoutCodeTable.GetColumnStringList(), ATemplateRow, ATemplateOperators)), ATransaction, false, GetParametersForWhereClause(ATemplateRow, PCountryTable.GetPrimKeyColumnOrdList())));
+                        GenerateWhereClauseLong("PUB_p_address_layout", PAddressLayoutCodeTable.TableId, ATemplateRow, ATemplateOperators)), ATransaction, false,
+                        GetParametersForWhereClauseWithPrimaryKey(PCountryTable.TableId, ATemplateRow)));
         }
 
         /// auto generated
@@ -3017,31 +2948,26 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data.Access
         {
             return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_p_address_layout_code, PUB_p_address_layout, PUB_p_country WHERE " +
                         "PUB_p_address_layout.p_address_layout_code_c = PUB_p_address_layout_code.p_code_c AND PUB_p_address_layout.p_country_code_c = PUB_p_country.p_country_code_c" +
-                        GenerateWhereClauseLong("PUB_p_address_layout", PAddressLayoutCodeTable.GetColumnStringList(), ASearchCriteria)), ATransaction, false,
-                        GetParametersForWhereClause(new PAddressLayoutCodeTable(), ASearchCriteria)));
+                        GenerateWhereClauseLong("PUB_p_address_layout", ASearchCriteria)), ATransaction, false,
+                        GetParametersForWhereClause(PAddressLayoutCodeTable.TableId, ASearchCriteria)));
         }
 
         /// auto generated
         public static void DeleteByPrimaryKey(String ACode, TDBTransaction ATransaction)
         {
-            OdbcParameter[] ParametersArray = new OdbcParameter[1];
-            ParametersArray[0] = new OdbcParameter("", OdbcType.VarChar, 32);
-            ParametersArray[0].Value = ((object)(ACode));
-            DBAccess.GDBAccessObj.ExecuteNonQuery("DELETE FROM PUB_p_address_layout_code WHERE p_code_c = ?", ATransaction, false, ParametersArray);
+            DeleteByPrimaryKey(PAddressLayoutCodeTable.TableId, new System.Object[1]{ACode}, ATransaction);
         }
 
         /// auto generated
         public static void DeleteUsingTemplate(PAddressLayoutCodeRow ATemplateRow, StringCollection ATemplateOperators, TDBTransaction ATransaction)
         {
-            DBAccess.GDBAccessObj.ExecuteNonQuery(("DELETE FROM PUB_p_address_layout_code" + GenerateWhereClause(PAddressLayoutCodeTable.GetColumnStringList(), ATemplateRow, ATemplateOperators)), ATransaction, false, GetParametersForWhereClause(ATemplateRow));
+            DeleteUsingTemplate(PAddressLayoutCodeTable.TableId, ATemplateRow, ATemplateOperators, ATransaction);
         }
 
         /// auto generated
         public static void DeleteUsingTemplate(TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
         {
-            DBAccess.GDBAccessObj.ExecuteNonQuery(("DELETE FROM PUB_p_address_layout_code" +
-                GenerateWhereClause(PAddressLayoutCodeTable.GetColumnStringList(), ASearchCriteria)), ATransaction, false,
-                GetParametersForWhereClause(new PAddressLayoutCodeTable(), ASearchCriteria));
+            DeleteUsingTemplate(PAddressLayoutCodeTable.TableId, ASearchCriteria, ATransaction);
         }
 
         /// auto generated
@@ -3058,15 +2984,15 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data.Access
                 {
                     if ((TheRow.RowState == DataRowState.Added))
                     {
-                        TTypedDataAccess.InsertRow("p_address_layout_code", PAddressLayoutCodeTable.GetColumnStringList(), ref TheRow, ATransaction, UserInfo.GUserInfo.UserID);
+                        TTypedDataAccess.InsertRow(PAddressLayoutCodeTable.TableId, ref TheRow, ATransaction, UserInfo.GUserInfo.UserID);
                     }
                     if ((TheRow.RowState == DataRowState.Modified))
                     {
-                        TTypedDataAccess.UpdateRow("p_address_layout_code", PAddressLayoutCodeTable.GetColumnStringList(), PAddressLayoutCodeTable.GetPrimKeyColumnOrdList(), ref TheRow, ATransaction, UserInfo.GUserInfo.UserID);
+                        TTypedDataAccess.UpdateRow(PAddressLayoutCodeTable.TableId, ref TheRow, ATransaction, UserInfo.GUserInfo.UserID);
                     }
                     if ((TheRow.RowState == DataRowState.Deleted))
                     {
-                        TTypedDataAccess.DeleteRow("p_address_layout_code", PAddressLayoutCodeTable.GetColumnStringList(), PAddressLayoutCodeTable.GetPrimKeyColumnOrdList(), TheRow, ATransaction);
+                        TTypedDataAccess.DeleteRow(PAddressLayoutCodeTable.TableId, TheRow, ATransaction);
                     }
                 }
                 catch (OdbcException ex)
@@ -3096,9 +3022,8 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data.Access
         /// this method is called by all overloads
         public static void LoadAll(DataSet ADataSet, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, ((GenerateSelectClause(AFieldList, new string[] {
-                            "p_country_code_c", "p_address_layout_code_c", "p_address_line_number_i", "p_address_line_code_c"}) + " FROM PUB_p_address_layout")
-                            + GenerateOrderByClause(AOrderBy)), PAddressLayoutTable.GetTableName(), ATransaction, AStartRecord, AMaxRecords);
+            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, ((GenerateSelectClause(AFieldList, PAddressLayoutTable.TableId) + " FROM PUB_p_address_layout") +
+                            GenerateOrderByClause(AOrderBy)), TTypedDataTable.GetTableName(PAddressLayoutTable.TableId), ATransaction, AStartRecord, AMaxRecords);
         }
 
         /// auto generated
@@ -3138,18 +3063,8 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data.Access
         /// this method is called by all overloads
         public static void LoadByPrimaryKey(DataSet ADataSet, String ACountryCode, String AAddressLayoutCode, Int32 AAddressLineNumber, String AAddressLineCode, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            OdbcParameter[] ParametersArray = new OdbcParameter[4];
-            ParametersArray[0] = new OdbcParameter("", OdbcType.VarChar, 8);
-            ParametersArray[0].Value = ((object)(ACountryCode));
-            ParametersArray[1] = new OdbcParameter("", OdbcType.VarChar, 32);
-            ParametersArray[1].Value = ((object)(AAddressLayoutCode));
-            ParametersArray[2] = new OdbcParameter("", OdbcType.Int);
-            ParametersArray[2].Value = ((object)(AAddressLineNumber));
-            ParametersArray[3] = new OdbcParameter("", OdbcType.VarChar, 16);
-            ParametersArray[3].Value = ((object)(AAddressLineCode));
-            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, ((GenerateSelectClause(AFieldList, new string[] {
-                            "p_country_code_c", "p_address_layout_code_c", "p_address_line_number_i", "p_address_line_code_c"}) + " FROM PUB_p_address_layout WHERE p_country_code_c = ? AND p_address_layout_code_c = ? AND p_address_line_number_i = ? AND p_address_line_code_c = ?")
-                            + GenerateOrderByClause(AOrderBy)), PAddressLayoutTable.GetTableName(), ATransaction, ParametersArray, AStartRecord, AMaxRecords);
+            ADataSet = LoadByPrimaryKey(PAddressLayoutTable.TableId,
+                ADataSet, new System.Object[4]{ACountryCode, AAddressLayoutCode, AAddressLineNumber, AAddressLineCode}, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
         }
 
         /// auto generated
@@ -3189,10 +3104,10 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data.Access
         /// this method is called by all overloads
         public static void LoadUsingTemplate(DataSet ADataSet, PAddressLayoutRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClause(AFieldList, new string[] {
-                            "p_country_code_c", "p_address_layout_code_c", "p_address_line_number_i", "p_address_line_code_c"}) + " FROM PUB_p_address_layout")
-                            + GenerateWhereClause(PAddressLayoutTable.GetColumnStringList(), ATemplateRow, ATemplateOperators))
-                            + GenerateOrderByClause(AOrderBy)), PAddressLayoutTable.GetTableName(), ATransaction, GetParametersForWhereClause(ATemplateRow), AStartRecord, AMaxRecords);
+            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClause(AFieldList, PAddressLayoutTable.TableId) + " FROM PUB_p_address_layout") +
+                            GenerateWhereClause(TTypedDataTable.GetColumnStringList(PAddressLayoutTable.TableId), ATemplateRow, ATemplateOperators)) +
+                            GenerateOrderByClause(AOrderBy)), TTypedDataTable.GetTableName(PAddressLayoutTable.TableId), ATransaction,
+                            GetParametersForWhereClause(PAddressLayoutTable.TableId, ATemplateRow), AStartRecord, AMaxRecords);
         }
 
         /// auto generated
@@ -3238,11 +3153,10 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data.Access
         /// this method is called by all overloads
         public static void LoadUsingTemplate(DataSet ADataSet, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClause(AFieldList, new string[] {
-                            "p_country_code_c", "p_address_layout_code_c", "p_address_line_number_i", "p_address_line_code_c"}) + " FROM PUB_p_address_layout")
-                            + GenerateWhereClause(PAddressLayoutTable.GetColumnStringList(), ASearchCriteria))
-                            + GenerateOrderByClause(AOrderBy)), PAddressLayoutTable.GetTableName(), ATransaction,
-                            GetParametersForWhereClause(new PAddressLayoutTable(), ASearchCriteria), AStartRecord, AMaxRecords);
+            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClause(AFieldList, PAddressLayoutTable.TableId) + " FROM PUB_p_address_layout") +
+                            GenerateWhereClause(TTypedDataTable.GetColumnStringList(PAddressLayoutTable.TableId), ASearchCriteria)) +
+                            GenerateOrderByClause(AOrderBy)), TTypedDataTable.GetTableName(PAddressLayoutTable.TableId), ATransaction,
+                            GetParametersForWhereClause(PAddressLayoutTable.TableId, ASearchCriteria), AStartRecord, AMaxRecords);
         }
 
         /// auto generated
@@ -3285,32 +3199,24 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data.Access
             return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar("SELECT COUNT(*) FROM PUB_p_address_layout", ATransaction, false));
         }
 
-        /// this method is called by all overloads
-        public static int CountByPrimaryKey(String ACountryCode, String AAddressLayoutCode, Int32 AAddressLineNumber, String AAddressLineCode, TDBTransaction ATransaction)
+        /// check if a row exists by using the primary key
+        public static bool Exists(String ACountryCode, String AAddressLayoutCode, Int32 AAddressLineNumber, String AAddressLineCode, TDBTransaction ATransaction)
         {
-            OdbcParameter[] ParametersArray = new OdbcParameter[4];
-            ParametersArray[0] = new OdbcParameter("", OdbcType.VarChar, 8);
-            ParametersArray[0].Value = ((object)(ACountryCode));
-            ParametersArray[1] = new OdbcParameter("", OdbcType.VarChar, 32);
-            ParametersArray[1].Value = ((object)(AAddressLayoutCode));
-            ParametersArray[2] = new OdbcParameter("", OdbcType.Int);
-            ParametersArray[2].Value = ((object)(AAddressLineNumber));
-            ParametersArray[3] = new OdbcParameter("", OdbcType.VarChar, 16);
-            ParametersArray[3].Value = ((object)(AAddressLineCode));
-            return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar("SELECT COUNT(*) FROM PUB_p_address_layout WHERE p_country_code_c = ? AND p_address_layout_code_c = ? AND p_address_line_number_i = ? AND p_address_line_code_c = ?", ATransaction, false, ParametersArray));
+            return Exists(PAddressLayoutTable.TableId, new System.Object[4]{ACountryCode, AAddressLayoutCode, AAddressLineNumber, AAddressLineCode}, ATransaction);
         }
 
         /// this method is called by all overloads
         public static int CountUsingTemplate(PAddressLayoutRow ATemplateRow, StringCollection ATemplateOperators, TDBTransaction ATransaction)
         {
-            return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_p_address_layout" + GenerateWhereClause(PAddressLayoutTable.GetColumnStringList(), ATemplateRow, ATemplateOperators)), ATransaction, false, GetParametersForWhereClause(ATemplateRow)));
+            return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_p_address_layout" + GenerateWhereClause(TTypedDataTable.GetColumnStringList(PAddressLayoutTable.TableId), ATemplateRow, ATemplateOperators)), ATransaction, false,
+                   GetParametersForWhereClause(PAddressLayoutTable.TableId, ATemplateRow)));
         }
 
         /// this method is called by all overloads
         public static int CountUsingTemplate(TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
         {
-            return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_p_address_layout" + GenerateWhereClause(PAddressLayoutTable.GetColumnStringList(), ASearchCriteria)), ATransaction, false,
-            GetParametersForWhereClause(new PAddressLayoutTable(), ASearchCriteria)));
+            return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_p_address_layout" + GenerateWhereClause(TTypedDataTable.GetColumnStringList(PAddressLayoutTable.TableId), ASearchCriteria)), ATransaction, false,
+            GetParametersForWhereClause(PAddressLayoutTable.TableId, ASearchCriteria)));
         }
 
         /// auto generated
@@ -3319,9 +3225,9 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data.Access
             OdbcParameter[] ParametersArray = new OdbcParameter[1];
             ParametersArray[0] = new OdbcParameter("", OdbcType.VarChar, 8);
             ParametersArray[0].Value = ((object)(ACountryCode));
-            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, ((GenerateSelectClause(AFieldList, new string[] {
-                            "p_country_code_c", "p_address_layout_code_c", "p_address_line_number_i", "p_address_line_code_c"}) + " FROM PUB_p_address_layout WHERE p_country_code_c = ?")
-                            + GenerateOrderByClause(AOrderBy)), PAddressLayoutTable.GetTableName(), ATransaction, ParametersArray, AStartRecord, AMaxRecords);
+            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, ((GenerateSelectClause(AFieldList, PAddressLayoutTable.TableId) +
+                            " FROM PUB_p_address_layout WHERE p_country_code_c = ?") +
+                            GenerateOrderByClause(AOrderBy)), TTypedDataTable.GetTableName(PAddressLayoutTable.TableId), ATransaction, ParametersArray, AStartRecord, AMaxRecords);
         }
 
         /// auto generated
@@ -3361,11 +3267,12 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data.Access
         /// auto generated
         public static void LoadViaPCountryTemplate(DataSet ADataSet, PCountryRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClauseLong("PUB_p_address_layout", AFieldList, new string[] {
-                            "p_country_code_c", "p_address_layout_code_c", "p_address_line_number_i", "p_address_line_code_c"}) + " FROM PUB_p_address_layout, PUB_p_country WHERE " +
-                            "PUB_p_address_layout.p_country_code_c = PUB_p_country.p_country_code_c")
-                            + GenerateWhereClauseLong("PUB_p_country", PCountryTable.GetColumnStringList(), ATemplateRow, ATemplateOperators))
-                            + GenerateOrderByClause(AOrderBy)), PAddressLayoutTable.GetTableName(), ATransaction, GetParametersForWhereClause(ATemplateRow), AStartRecord, AMaxRecords);
+            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClauseLong("PUB_p_address_layout", AFieldList, PAddressLayoutTable.TableId) +
+                            " FROM PUB_p_address_layout, PUB_p_country WHERE " +
+                            "PUB_p_address_layout.p_country_code_c = PUB_p_country.p_country_code_c") +
+                            GenerateWhereClauseLong("PUB_p_country", PCountryTable.TableId, ATemplateRow, ATemplateOperators)) +
+                            GenerateOrderByClause(AOrderBy)), TTypedDataTable.GetTableName(PAddressLayoutTable.TableId), ATransaction,
+                            GetParametersForWhereClause(PCountryTable.TableId, ATemplateRow), AStartRecord, AMaxRecords);
         }
 
         /// auto generated
@@ -3411,12 +3318,12 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data.Access
         /// auto generated
         public static void LoadViaPCountryTemplate(DataSet ADataSet, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClauseLong("PUB_p_address_layout", AFieldList, new string[] {
-                            "p_country_code_c", "p_address_layout_code_c", "p_address_line_number_i", "p_address_line_code_c"}) + " FROM PUB_p_address_layout, PUB_p_country WHERE " +
-                            "PUB_p_address_layout.p_country_code_c = PUB_p_country.p_country_code_c")
-                            + GenerateWhereClauseLong("PUB_p_country", PCountryTable.GetColumnStringList(), ASearchCriteria))
-                            + GenerateOrderByClause(AOrderBy)), PAddressLayoutTable.GetTableName(), ATransaction,
-                            GetParametersForWhereClause(new PAddressLayoutTable(), ASearchCriteria), AStartRecord, AMaxRecords);
+            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClauseLong("PUB_p_address_layout", AFieldList, PAddressLayoutTable.TableId) +
+                            " FROM PUB_p_address_layout, PUB_p_country WHERE " +
+                            "PUB_p_address_layout.p_country_code_c = PUB_p_country.p_country_code_c") +
+                            GenerateWhereClauseLong("PUB_p_country", ASearchCriteria)) +
+                            GenerateOrderByClause(AOrderBy)), TTypedDataTable.GetTableName(PAddressLayoutTable.TableId), ATransaction,
+                            GetParametersForWhereClause(PAddressLayoutTable.TableId, ASearchCriteria), AStartRecord, AMaxRecords);
         }
 
         /// auto generated
@@ -3466,7 +3373,10 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data.Access
         public static int CountViaPCountryTemplate(PCountryRow ATemplateRow, StringCollection ATemplateOperators, TDBTransaction ATransaction)
         {
             return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_p_address_layout, PUB_p_country WHERE " +
-                "PUB_p_address_layout.p_country_code_c = PUB_p_country.p_country_code_c" + GenerateWhereClauseLong("PUB_p_country", PCountryTable.GetColumnStringList(), ATemplateRow, ATemplateOperators)), ATransaction, false, GetParametersForWhereClause(ATemplateRow, PCountryTable.GetPrimKeyColumnOrdList())));
+                "PUB_p_address_layout.p_country_code_c = PUB_p_country.p_country_code_c" + GenerateWhereClauseLong("PUB_p_country",
+                PCountryTable.TableId, ATemplateRow, ATemplateOperators)),
+                ATransaction, false,
+                GetParametersForWhereClauseWithPrimaryKey(PCountryTable.TableId, ATemplateRow)));
         }
 
         /// auto generated
@@ -3474,8 +3384,8 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data.Access
         {
             return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_p_address_layout, PUB_p_country WHERE " +
                 "PUB_p_address_layout.p_country_code_c = PUB_p_country.p_country_code_c" +
-                GenerateWhereClauseLong("PUB_p_country", PCountryTable.GetColumnStringList(), ASearchCriteria)), ATransaction, false,
-                GetParametersForWhereClause(new PCountryTable(), ASearchCriteria)));
+                GenerateWhereClauseLong("PUB_p_country", ASearchCriteria)), ATransaction, false,
+                GetParametersForWhereClause(PCountryTable.TableId, ASearchCriteria)));
         }
 
         /// auto generated
@@ -3484,9 +3394,9 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data.Access
             OdbcParameter[] ParametersArray = new OdbcParameter[1];
             ParametersArray[0] = new OdbcParameter("", OdbcType.VarChar, 32);
             ParametersArray[0].Value = ((object)(ACode));
-            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, ((GenerateSelectClause(AFieldList, new string[] {
-                            "p_country_code_c", "p_address_layout_code_c", "p_address_line_number_i", "p_address_line_code_c"}) + " FROM PUB_p_address_layout WHERE p_address_layout_code_c = ?")
-                            + GenerateOrderByClause(AOrderBy)), PAddressLayoutTable.GetTableName(), ATransaction, ParametersArray, AStartRecord, AMaxRecords);
+            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, ((GenerateSelectClause(AFieldList, PAddressLayoutTable.TableId) +
+                            " FROM PUB_p_address_layout WHERE p_address_layout_code_c = ?") +
+                            GenerateOrderByClause(AOrderBy)), TTypedDataTable.GetTableName(PAddressLayoutTable.TableId), ATransaction, ParametersArray, AStartRecord, AMaxRecords);
         }
 
         /// auto generated
@@ -3526,11 +3436,12 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data.Access
         /// auto generated
         public static void LoadViaPAddressLayoutCodeTemplate(DataSet ADataSet, PAddressLayoutCodeRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClauseLong("PUB_p_address_layout", AFieldList, new string[] {
-                            "p_country_code_c", "p_address_layout_code_c", "p_address_line_number_i", "p_address_line_code_c"}) + " FROM PUB_p_address_layout, PUB_p_address_layout_code WHERE " +
-                            "PUB_p_address_layout.p_address_layout_code_c = PUB_p_address_layout_code.p_code_c")
-                            + GenerateWhereClauseLong("PUB_p_address_layout_code", PAddressLayoutCodeTable.GetColumnStringList(), ATemplateRow, ATemplateOperators))
-                            + GenerateOrderByClause(AOrderBy)), PAddressLayoutTable.GetTableName(), ATransaction, GetParametersForWhereClause(ATemplateRow), AStartRecord, AMaxRecords);
+            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClauseLong("PUB_p_address_layout", AFieldList, PAddressLayoutTable.TableId) +
+                            " FROM PUB_p_address_layout, PUB_p_address_layout_code WHERE " +
+                            "PUB_p_address_layout.p_address_layout_code_c = PUB_p_address_layout_code.p_code_c") +
+                            GenerateWhereClauseLong("PUB_p_address_layout_code", PAddressLayoutCodeTable.TableId, ATemplateRow, ATemplateOperators)) +
+                            GenerateOrderByClause(AOrderBy)), TTypedDataTable.GetTableName(PAddressLayoutTable.TableId), ATransaction,
+                            GetParametersForWhereClause(PAddressLayoutCodeTable.TableId, ATemplateRow), AStartRecord, AMaxRecords);
         }
 
         /// auto generated
@@ -3576,12 +3487,12 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data.Access
         /// auto generated
         public static void LoadViaPAddressLayoutCodeTemplate(DataSet ADataSet, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClauseLong("PUB_p_address_layout", AFieldList, new string[] {
-                            "p_country_code_c", "p_address_layout_code_c", "p_address_line_number_i", "p_address_line_code_c"}) + " FROM PUB_p_address_layout, PUB_p_address_layout_code WHERE " +
-                            "PUB_p_address_layout.p_address_layout_code_c = PUB_p_address_layout_code.p_code_c")
-                            + GenerateWhereClauseLong("PUB_p_address_layout_code", PAddressLayoutCodeTable.GetColumnStringList(), ASearchCriteria))
-                            + GenerateOrderByClause(AOrderBy)), PAddressLayoutTable.GetTableName(), ATransaction,
-                            GetParametersForWhereClause(new PAddressLayoutTable(), ASearchCriteria), AStartRecord, AMaxRecords);
+            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClauseLong("PUB_p_address_layout", AFieldList, PAddressLayoutTable.TableId) +
+                            " FROM PUB_p_address_layout, PUB_p_address_layout_code WHERE " +
+                            "PUB_p_address_layout.p_address_layout_code_c = PUB_p_address_layout_code.p_code_c") +
+                            GenerateWhereClauseLong("PUB_p_address_layout_code", ASearchCriteria)) +
+                            GenerateOrderByClause(AOrderBy)), TTypedDataTable.GetTableName(PAddressLayoutTable.TableId), ATransaction,
+                            GetParametersForWhereClause(PAddressLayoutTable.TableId, ASearchCriteria), AStartRecord, AMaxRecords);
         }
 
         /// auto generated
@@ -3631,7 +3542,10 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data.Access
         public static int CountViaPAddressLayoutCodeTemplate(PAddressLayoutCodeRow ATemplateRow, StringCollection ATemplateOperators, TDBTransaction ATransaction)
         {
             return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_p_address_layout, PUB_p_address_layout_code WHERE " +
-                "PUB_p_address_layout.p_address_layout_code_c = PUB_p_address_layout_code.p_code_c" + GenerateWhereClauseLong("PUB_p_address_layout_code", PAddressLayoutCodeTable.GetColumnStringList(), ATemplateRow, ATemplateOperators)), ATransaction, false, GetParametersForWhereClause(ATemplateRow, PAddressLayoutCodeTable.GetPrimKeyColumnOrdList())));
+                "PUB_p_address_layout.p_address_layout_code_c = PUB_p_address_layout_code.p_code_c" + GenerateWhereClauseLong("PUB_p_address_layout_code",
+                PAddressLayoutCodeTable.TableId, ATemplateRow, ATemplateOperators)),
+                ATransaction, false,
+                GetParametersForWhereClauseWithPrimaryKey(PAddressLayoutCodeTable.TableId, ATemplateRow)));
         }
 
         /// auto generated
@@ -3639,37 +3553,26 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data.Access
         {
             return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_p_address_layout, PUB_p_address_layout_code WHERE " +
                 "PUB_p_address_layout.p_address_layout_code_c = PUB_p_address_layout_code.p_code_c" +
-                GenerateWhereClauseLong("PUB_p_address_layout_code", PAddressLayoutCodeTable.GetColumnStringList(), ASearchCriteria)), ATransaction, false,
-                GetParametersForWhereClause(new PAddressLayoutCodeTable(), ASearchCriteria)));
+                GenerateWhereClauseLong("PUB_p_address_layout_code", ASearchCriteria)), ATransaction, false,
+                GetParametersForWhereClause(PAddressLayoutCodeTable.TableId, ASearchCriteria)));
         }
 
         /// auto generated
         public static void DeleteByPrimaryKey(String ACountryCode, String AAddressLayoutCode, Int32 AAddressLineNumber, String AAddressLineCode, TDBTransaction ATransaction)
         {
-            OdbcParameter[] ParametersArray = new OdbcParameter[4];
-            ParametersArray[0] = new OdbcParameter("", OdbcType.VarChar, 8);
-            ParametersArray[0].Value = ((object)(ACountryCode));
-            ParametersArray[1] = new OdbcParameter("", OdbcType.VarChar, 32);
-            ParametersArray[1].Value = ((object)(AAddressLayoutCode));
-            ParametersArray[2] = new OdbcParameter("", OdbcType.Int);
-            ParametersArray[2].Value = ((object)(AAddressLineNumber));
-            ParametersArray[3] = new OdbcParameter("", OdbcType.VarChar, 16);
-            ParametersArray[3].Value = ((object)(AAddressLineCode));
-            DBAccess.GDBAccessObj.ExecuteNonQuery("DELETE FROM PUB_p_address_layout WHERE p_country_code_c = ? AND p_address_layout_code_c = ? AND p_address_line_number_i = ? AND p_address_line_code_c = ?", ATransaction, false, ParametersArray);
+            DeleteByPrimaryKey(PAddressLayoutTable.TableId, new System.Object[4]{ACountryCode, AAddressLayoutCode, AAddressLineNumber, AAddressLineCode}, ATransaction);
         }
 
         /// auto generated
         public static void DeleteUsingTemplate(PAddressLayoutRow ATemplateRow, StringCollection ATemplateOperators, TDBTransaction ATransaction)
         {
-            DBAccess.GDBAccessObj.ExecuteNonQuery(("DELETE FROM PUB_p_address_layout" + GenerateWhereClause(PAddressLayoutTable.GetColumnStringList(), ATemplateRow, ATemplateOperators)), ATransaction, false, GetParametersForWhereClause(ATemplateRow));
+            DeleteUsingTemplate(PAddressLayoutTable.TableId, ATemplateRow, ATemplateOperators, ATransaction);
         }
 
         /// auto generated
         public static void DeleteUsingTemplate(TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
         {
-            DBAccess.GDBAccessObj.ExecuteNonQuery(("DELETE FROM PUB_p_address_layout" +
-                GenerateWhereClause(PAddressLayoutTable.GetColumnStringList(), ASearchCriteria)), ATransaction, false,
-                GetParametersForWhereClause(new PAddressLayoutTable(), ASearchCriteria));
+            DeleteUsingTemplate(PAddressLayoutTable.TableId, ASearchCriteria, ATransaction);
         }
 
         /// auto generated
@@ -3686,15 +3589,15 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data.Access
                 {
                     if ((TheRow.RowState == DataRowState.Added))
                     {
-                        TTypedDataAccess.InsertRow("p_address_layout", PAddressLayoutTable.GetColumnStringList(), ref TheRow, ATransaction, UserInfo.GUserInfo.UserID);
+                        TTypedDataAccess.InsertRow(PAddressLayoutTable.TableId, ref TheRow, ATransaction, UserInfo.GUserInfo.UserID);
                     }
                     if ((TheRow.RowState == DataRowState.Modified))
                     {
-                        TTypedDataAccess.UpdateRow("p_address_layout", PAddressLayoutTable.GetColumnStringList(), PAddressLayoutTable.GetPrimKeyColumnOrdList(), ref TheRow, ATransaction, UserInfo.GUserInfo.UserID);
+                        TTypedDataAccess.UpdateRow(PAddressLayoutTable.TableId, ref TheRow, ATransaction, UserInfo.GUserInfo.UserID);
                     }
                     if ((TheRow.RowState == DataRowState.Deleted))
                     {
-                        TTypedDataAccess.DeleteRow("p_address_layout", PAddressLayoutTable.GetColumnStringList(), PAddressLayoutTable.GetPrimKeyColumnOrdList(), TheRow, ATransaction);
+                        TTypedDataAccess.DeleteRow(PAddressLayoutTable.TableId, TheRow, ATransaction);
                     }
                 }
                 catch (OdbcException ex)
@@ -3724,9 +3627,8 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data.Access
         /// this method is called by all overloads
         public static void LoadAll(DataSet ADataSet, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, ((GenerateSelectClause(AFieldList, new string[] {
-                            "p_address_element_code_c"}) + " FROM PUB_p_address_element")
-                            + GenerateOrderByClause(AOrderBy)), PAddressElementTable.GetTableName(), ATransaction, AStartRecord, AMaxRecords);
+            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, ((GenerateSelectClause(AFieldList, PAddressElementTable.TableId) + " FROM PUB_p_address_element") +
+                            GenerateOrderByClause(AOrderBy)), TTypedDataTable.GetTableName(PAddressElementTable.TableId), ATransaction, AStartRecord, AMaxRecords);
         }
 
         /// auto generated
@@ -3766,12 +3668,8 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data.Access
         /// this method is called by all overloads
         public static void LoadByPrimaryKey(DataSet ADataSet, String AAddressElementCode, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            OdbcParameter[] ParametersArray = new OdbcParameter[1];
-            ParametersArray[0] = new OdbcParameter("", OdbcType.VarChar, 24);
-            ParametersArray[0].Value = ((object)(AAddressElementCode));
-            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, ((GenerateSelectClause(AFieldList, new string[] {
-                            "p_address_element_code_c"}) + " FROM PUB_p_address_element WHERE p_address_element_code_c = ?")
-                            + GenerateOrderByClause(AOrderBy)), PAddressElementTable.GetTableName(), ATransaction, ParametersArray, AStartRecord, AMaxRecords);
+            ADataSet = LoadByPrimaryKey(PAddressElementTable.TableId,
+                ADataSet, new System.Object[1]{AAddressElementCode}, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
         }
 
         /// auto generated
@@ -3811,10 +3709,10 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data.Access
         /// this method is called by all overloads
         public static void LoadUsingTemplate(DataSet ADataSet, PAddressElementRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClause(AFieldList, new string[] {
-                            "p_address_element_code_c"}) + " FROM PUB_p_address_element")
-                            + GenerateWhereClause(PAddressElementTable.GetColumnStringList(), ATemplateRow, ATemplateOperators))
-                            + GenerateOrderByClause(AOrderBy)), PAddressElementTable.GetTableName(), ATransaction, GetParametersForWhereClause(ATemplateRow), AStartRecord, AMaxRecords);
+            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClause(AFieldList, PAddressElementTable.TableId) + " FROM PUB_p_address_element") +
+                            GenerateWhereClause(TTypedDataTable.GetColumnStringList(PAddressElementTable.TableId), ATemplateRow, ATemplateOperators)) +
+                            GenerateOrderByClause(AOrderBy)), TTypedDataTable.GetTableName(PAddressElementTable.TableId), ATransaction,
+                            GetParametersForWhereClause(PAddressElementTable.TableId, ATemplateRow), AStartRecord, AMaxRecords);
         }
 
         /// auto generated
@@ -3860,11 +3758,10 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data.Access
         /// this method is called by all overloads
         public static void LoadUsingTemplate(DataSet ADataSet, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClause(AFieldList, new string[] {
-                            "p_address_element_code_c"}) + " FROM PUB_p_address_element")
-                            + GenerateWhereClause(PAddressElementTable.GetColumnStringList(), ASearchCriteria))
-                            + GenerateOrderByClause(AOrderBy)), PAddressElementTable.GetTableName(), ATransaction,
-                            GetParametersForWhereClause(new PAddressElementTable(), ASearchCriteria), AStartRecord, AMaxRecords);
+            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClause(AFieldList, PAddressElementTable.TableId) + " FROM PUB_p_address_element") +
+                            GenerateWhereClause(TTypedDataTable.GetColumnStringList(PAddressElementTable.TableId), ASearchCriteria)) +
+                            GenerateOrderByClause(AOrderBy)), TTypedDataTable.GetTableName(PAddressElementTable.TableId), ATransaction,
+                            GetParametersForWhereClause(PAddressElementTable.TableId, ASearchCriteria), AStartRecord, AMaxRecords);
         }
 
         /// auto generated
@@ -3907,49 +3804,42 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data.Access
             return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar("SELECT COUNT(*) FROM PUB_p_address_element", ATransaction, false));
         }
 
-        /// this method is called by all overloads
-        public static int CountByPrimaryKey(String AAddressElementCode, TDBTransaction ATransaction)
+        /// check if a row exists by using the primary key
+        public static bool Exists(String AAddressElementCode, TDBTransaction ATransaction)
         {
-            OdbcParameter[] ParametersArray = new OdbcParameter[1];
-            ParametersArray[0] = new OdbcParameter("", OdbcType.VarChar, 24);
-            ParametersArray[0].Value = ((object)(AAddressElementCode));
-            return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar("SELECT COUNT(*) FROM PUB_p_address_element WHERE p_address_element_code_c = ?", ATransaction, false, ParametersArray));
+            return Exists(PAddressElementTable.TableId, new System.Object[1]{AAddressElementCode}, ATransaction);
         }
 
         /// this method is called by all overloads
         public static int CountUsingTemplate(PAddressElementRow ATemplateRow, StringCollection ATemplateOperators, TDBTransaction ATransaction)
         {
-            return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_p_address_element" + GenerateWhereClause(PAddressElementTable.GetColumnStringList(), ATemplateRow, ATemplateOperators)), ATransaction, false, GetParametersForWhereClause(ATemplateRow)));
+            return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_p_address_element" + GenerateWhereClause(TTypedDataTable.GetColumnStringList(PAddressElementTable.TableId), ATemplateRow, ATemplateOperators)), ATransaction, false,
+                   GetParametersForWhereClause(PAddressElementTable.TableId, ATemplateRow)));
         }
 
         /// this method is called by all overloads
         public static int CountUsingTemplate(TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
         {
-            return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_p_address_element" + GenerateWhereClause(PAddressElementTable.GetColumnStringList(), ASearchCriteria)), ATransaction, false,
-            GetParametersForWhereClause(new PAddressElementTable(), ASearchCriteria)));
+            return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_p_address_element" + GenerateWhereClause(TTypedDataTable.GetColumnStringList(PAddressElementTable.TableId), ASearchCriteria)), ATransaction, false,
+            GetParametersForWhereClause(PAddressElementTable.TableId, ASearchCriteria)));
         }
 
         /// auto generated
         public static void DeleteByPrimaryKey(String AAddressElementCode, TDBTransaction ATransaction)
         {
-            OdbcParameter[] ParametersArray = new OdbcParameter[1];
-            ParametersArray[0] = new OdbcParameter("", OdbcType.VarChar, 24);
-            ParametersArray[0].Value = ((object)(AAddressElementCode));
-            DBAccess.GDBAccessObj.ExecuteNonQuery("DELETE FROM PUB_p_address_element WHERE p_address_element_code_c = ?", ATransaction, false, ParametersArray);
+            DeleteByPrimaryKey(PAddressElementTable.TableId, new System.Object[1]{AAddressElementCode}, ATransaction);
         }
 
         /// auto generated
         public static void DeleteUsingTemplate(PAddressElementRow ATemplateRow, StringCollection ATemplateOperators, TDBTransaction ATransaction)
         {
-            DBAccess.GDBAccessObj.ExecuteNonQuery(("DELETE FROM PUB_p_address_element" + GenerateWhereClause(PAddressElementTable.GetColumnStringList(), ATemplateRow, ATemplateOperators)), ATransaction, false, GetParametersForWhereClause(ATemplateRow));
+            DeleteUsingTemplate(PAddressElementTable.TableId, ATemplateRow, ATemplateOperators, ATransaction);
         }
 
         /// auto generated
         public static void DeleteUsingTemplate(TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
         {
-            DBAccess.GDBAccessObj.ExecuteNonQuery(("DELETE FROM PUB_p_address_element" +
-                GenerateWhereClause(PAddressElementTable.GetColumnStringList(), ASearchCriteria)), ATransaction, false,
-                GetParametersForWhereClause(new PAddressElementTable(), ASearchCriteria));
+            DeleteUsingTemplate(PAddressElementTable.TableId, ASearchCriteria, ATransaction);
         }
 
         /// auto generated
@@ -3966,15 +3856,15 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data.Access
                 {
                     if ((TheRow.RowState == DataRowState.Added))
                     {
-                        TTypedDataAccess.InsertRow("p_address_element", PAddressElementTable.GetColumnStringList(), ref TheRow, ATransaction, UserInfo.GUserInfo.UserID);
+                        TTypedDataAccess.InsertRow(PAddressElementTable.TableId, ref TheRow, ATransaction, UserInfo.GUserInfo.UserID);
                     }
                     if ((TheRow.RowState == DataRowState.Modified))
                     {
-                        TTypedDataAccess.UpdateRow("p_address_element", PAddressElementTable.GetColumnStringList(), PAddressElementTable.GetPrimKeyColumnOrdList(), ref TheRow, ATransaction, UserInfo.GUserInfo.UserID);
+                        TTypedDataAccess.UpdateRow(PAddressElementTable.TableId, ref TheRow, ATransaction, UserInfo.GUserInfo.UserID);
                     }
                     if ((TheRow.RowState == DataRowState.Deleted))
                     {
-                        TTypedDataAccess.DeleteRow("p_address_element", PAddressElementTable.GetColumnStringList(), PAddressElementTable.GetPrimKeyColumnOrdList(), TheRow, ATransaction);
+                        TTypedDataAccess.DeleteRow(PAddressElementTable.TableId, TheRow, ATransaction);
                     }
                 }
                 catch (OdbcException ex)
@@ -4004,9 +3894,8 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data.Access
         /// this method is called by all overloads
         public static void LoadAll(DataSet ADataSet, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, ((GenerateSelectClause(AFieldList, new string[] {
-                            "p_address_line_code_c", "p_address_element_position_i"}) + " FROM PUB_p_address_line")
-                            + GenerateOrderByClause(AOrderBy)), PAddressLineTable.GetTableName(), ATransaction, AStartRecord, AMaxRecords);
+            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, ((GenerateSelectClause(AFieldList, PAddressLineTable.TableId) + " FROM PUB_p_address_line") +
+                            GenerateOrderByClause(AOrderBy)), TTypedDataTable.GetTableName(PAddressLineTable.TableId), ATransaction, AStartRecord, AMaxRecords);
         }
 
         /// auto generated
@@ -4046,14 +3935,8 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data.Access
         /// this method is called by all overloads
         public static void LoadByPrimaryKey(DataSet ADataSet, String AAddressLineCode, Int32 AAddressElementPosition, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            OdbcParameter[] ParametersArray = new OdbcParameter[2];
-            ParametersArray[0] = new OdbcParameter("", OdbcType.VarChar, 16);
-            ParametersArray[0].Value = ((object)(AAddressLineCode));
-            ParametersArray[1] = new OdbcParameter("", OdbcType.Int);
-            ParametersArray[1].Value = ((object)(AAddressElementPosition));
-            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, ((GenerateSelectClause(AFieldList, new string[] {
-                            "p_address_line_code_c", "p_address_element_position_i"}) + " FROM PUB_p_address_line WHERE p_address_line_code_c = ? AND p_address_element_position_i = ?")
-                            + GenerateOrderByClause(AOrderBy)), PAddressLineTable.GetTableName(), ATransaction, ParametersArray, AStartRecord, AMaxRecords);
+            ADataSet = LoadByPrimaryKey(PAddressLineTable.TableId,
+                ADataSet, new System.Object[2]{AAddressLineCode, AAddressElementPosition}, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
         }
 
         /// auto generated
@@ -4093,10 +3976,10 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data.Access
         /// this method is called by all overloads
         public static void LoadUsingTemplate(DataSet ADataSet, PAddressLineRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClause(AFieldList, new string[] {
-                            "p_address_line_code_c", "p_address_element_position_i"}) + " FROM PUB_p_address_line")
-                            + GenerateWhereClause(PAddressLineTable.GetColumnStringList(), ATemplateRow, ATemplateOperators))
-                            + GenerateOrderByClause(AOrderBy)), PAddressLineTable.GetTableName(), ATransaction, GetParametersForWhereClause(ATemplateRow), AStartRecord, AMaxRecords);
+            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClause(AFieldList, PAddressLineTable.TableId) + " FROM PUB_p_address_line") +
+                            GenerateWhereClause(TTypedDataTable.GetColumnStringList(PAddressLineTable.TableId), ATemplateRow, ATemplateOperators)) +
+                            GenerateOrderByClause(AOrderBy)), TTypedDataTable.GetTableName(PAddressLineTable.TableId), ATransaction,
+                            GetParametersForWhereClause(PAddressLineTable.TableId, ATemplateRow), AStartRecord, AMaxRecords);
         }
 
         /// auto generated
@@ -4142,11 +4025,10 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data.Access
         /// this method is called by all overloads
         public static void LoadUsingTemplate(DataSet ADataSet, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClause(AFieldList, new string[] {
-                            "p_address_line_code_c", "p_address_element_position_i"}) + " FROM PUB_p_address_line")
-                            + GenerateWhereClause(PAddressLineTable.GetColumnStringList(), ASearchCriteria))
-                            + GenerateOrderByClause(AOrderBy)), PAddressLineTable.GetTableName(), ATransaction,
-                            GetParametersForWhereClause(new PAddressLineTable(), ASearchCriteria), AStartRecord, AMaxRecords);
+            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClause(AFieldList, PAddressLineTable.TableId) + " FROM PUB_p_address_line") +
+                            GenerateWhereClause(TTypedDataTable.GetColumnStringList(PAddressLineTable.TableId), ASearchCriteria)) +
+                            GenerateOrderByClause(AOrderBy)), TTypedDataTable.GetTableName(PAddressLineTable.TableId), ATransaction,
+                            GetParametersForWhereClause(PAddressLineTable.TableId, ASearchCriteria), AStartRecord, AMaxRecords);
         }
 
         /// auto generated
@@ -4189,28 +4071,24 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data.Access
             return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar("SELECT COUNT(*) FROM PUB_p_address_line", ATransaction, false));
         }
 
-        /// this method is called by all overloads
-        public static int CountByPrimaryKey(String AAddressLineCode, Int32 AAddressElementPosition, TDBTransaction ATransaction)
+        /// check if a row exists by using the primary key
+        public static bool Exists(String AAddressLineCode, Int32 AAddressElementPosition, TDBTransaction ATransaction)
         {
-            OdbcParameter[] ParametersArray = new OdbcParameter[2];
-            ParametersArray[0] = new OdbcParameter("", OdbcType.VarChar, 16);
-            ParametersArray[0].Value = ((object)(AAddressLineCode));
-            ParametersArray[1] = new OdbcParameter("", OdbcType.Int);
-            ParametersArray[1].Value = ((object)(AAddressElementPosition));
-            return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar("SELECT COUNT(*) FROM PUB_p_address_line WHERE p_address_line_code_c = ? AND p_address_element_position_i = ?", ATransaction, false, ParametersArray));
+            return Exists(PAddressLineTable.TableId, new System.Object[2]{AAddressLineCode, AAddressElementPosition}, ATransaction);
         }
 
         /// this method is called by all overloads
         public static int CountUsingTemplate(PAddressLineRow ATemplateRow, StringCollection ATemplateOperators, TDBTransaction ATransaction)
         {
-            return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_p_address_line" + GenerateWhereClause(PAddressLineTable.GetColumnStringList(), ATemplateRow, ATemplateOperators)), ATransaction, false, GetParametersForWhereClause(ATemplateRow)));
+            return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_p_address_line" + GenerateWhereClause(TTypedDataTable.GetColumnStringList(PAddressLineTable.TableId), ATemplateRow, ATemplateOperators)), ATransaction, false,
+                   GetParametersForWhereClause(PAddressLineTable.TableId, ATemplateRow)));
         }
 
         /// this method is called by all overloads
         public static int CountUsingTemplate(TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
         {
-            return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_p_address_line" + GenerateWhereClause(PAddressLineTable.GetColumnStringList(), ASearchCriteria)), ATransaction, false,
-            GetParametersForWhereClause(new PAddressLineTable(), ASearchCriteria)));
+            return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_p_address_line" + GenerateWhereClause(TTypedDataTable.GetColumnStringList(PAddressLineTable.TableId), ASearchCriteria)), ATransaction, false,
+            GetParametersForWhereClause(PAddressLineTable.TableId, ASearchCriteria)));
         }
 
         /// auto generated
@@ -4219,9 +4097,9 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data.Access
             OdbcParameter[] ParametersArray = new OdbcParameter[1];
             ParametersArray[0] = new OdbcParameter("", OdbcType.VarChar, 24);
             ParametersArray[0].Value = ((object)(AAddressElementCode));
-            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, ((GenerateSelectClause(AFieldList, new string[] {
-                            "p_address_line_code_c", "p_address_element_position_i"}) + " FROM PUB_p_address_line WHERE p_address_element_code_c = ?")
-                            + GenerateOrderByClause(AOrderBy)), PAddressLineTable.GetTableName(), ATransaction, ParametersArray, AStartRecord, AMaxRecords);
+            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, ((GenerateSelectClause(AFieldList, PAddressLineTable.TableId) +
+                            " FROM PUB_p_address_line WHERE p_address_element_code_c = ?") +
+                            GenerateOrderByClause(AOrderBy)), TTypedDataTable.GetTableName(PAddressLineTable.TableId), ATransaction, ParametersArray, AStartRecord, AMaxRecords);
         }
 
         /// auto generated
@@ -4261,11 +4139,12 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data.Access
         /// auto generated
         public static void LoadViaPAddressElementTemplate(DataSet ADataSet, PAddressElementRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClauseLong("PUB_p_address_line", AFieldList, new string[] {
-                            "p_address_line_code_c", "p_address_element_position_i"}) + " FROM PUB_p_address_line, PUB_p_address_element WHERE " +
-                            "PUB_p_address_line.p_address_element_code_c = PUB_p_address_element.p_address_element_code_c")
-                            + GenerateWhereClauseLong("PUB_p_address_element", PAddressElementTable.GetColumnStringList(), ATemplateRow, ATemplateOperators))
-                            + GenerateOrderByClause(AOrderBy)), PAddressLineTable.GetTableName(), ATransaction, GetParametersForWhereClause(ATemplateRow), AStartRecord, AMaxRecords);
+            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClauseLong("PUB_p_address_line", AFieldList, PAddressLineTable.TableId) +
+                            " FROM PUB_p_address_line, PUB_p_address_element WHERE " +
+                            "PUB_p_address_line.p_address_element_code_c = PUB_p_address_element.p_address_element_code_c") +
+                            GenerateWhereClauseLong("PUB_p_address_element", PAddressElementTable.TableId, ATemplateRow, ATemplateOperators)) +
+                            GenerateOrderByClause(AOrderBy)), TTypedDataTable.GetTableName(PAddressLineTable.TableId), ATransaction,
+                            GetParametersForWhereClause(PAddressElementTable.TableId, ATemplateRow), AStartRecord, AMaxRecords);
         }
 
         /// auto generated
@@ -4311,12 +4190,12 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data.Access
         /// auto generated
         public static void LoadViaPAddressElementTemplate(DataSet ADataSet, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClauseLong("PUB_p_address_line", AFieldList, new string[] {
-                            "p_address_line_code_c", "p_address_element_position_i"}) + " FROM PUB_p_address_line, PUB_p_address_element WHERE " +
-                            "PUB_p_address_line.p_address_element_code_c = PUB_p_address_element.p_address_element_code_c")
-                            + GenerateWhereClauseLong("PUB_p_address_element", PAddressElementTable.GetColumnStringList(), ASearchCriteria))
-                            + GenerateOrderByClause(AOrderBy)), PAddressLineTable.GetTableName(), ATransaction,
-                            GetParametersForWhereClause(new PAddressLineTable(), ASearchCriteria), AStartRecord, AMaxRecords);
+            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClauseLong("PUB_p_address_line", AFieldList, PAddressLineTable.TableId) +
+                            " FROM PUB_p_address_line, PUB_p_address_element WHERE " +
+                            "PUB_p_address_line.p_address_element_code_c = PUB_p_address_element.p_address_element_code_c") +
+                            GenerateWhereClauseLong("PUB_p_address_element", ASearchCriteria)) +
+                            GenerateOrderByClause(AOrderBy)), TTypedDataTable.GetTableName(PAddressLineTable.TableId), ATransaction,
+                            GetParametersForWhereClause(PAddressLineTable.TableId, ASearchCriteria), AStartRecord, AMaxRecords);
         }
 
         /// auto generated
@@ -4366,7 +4245,10 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data.Access
         public static int CountViaPAddressElementTemplate(PAddressElementRow ATemplateRow, StringCollection ATemplateOperators, TDBTransaction ATransaction)
         {
             return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_p_address_line, PUB_p_address_element WHERE " +
-                "PUB_p_address_line.p_address_element_code_c = PUB_p_address_element.p_address_element_code_c" + GenerateWhereClauseLong("PUB_p_address_element", PAddressElementTable.GetColumnStringList(), ATemplateRow, ATemplateOperators)), ATransaction, false, GetParametersForWhereClause(ATemplateRow, PAddressElementTable.GetPrimKeyColumnOrdList())));
+                "PUB_p_address_line.p_address_element_code_c = PUB_p_address_element.p_address_element_code_c" + GenerateWhereClauseLong("PUB_p_address_element",
+                PAddressElementTable.TableId, ATemplateRow, ATemplateOperators)),
+                ATransaction, false,
+                GetParametersForWhereClauseWithPrimaryKey(PAddressElementTable.TableId, ATemplateRow)));
         }
 
         /// auto generated
@@ -4374,33 +4256,26 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data.Access
         {
             return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_p_address_line, PUB_p_address_element WHERE " +
                 "PUB_p_address_line.p_address_element_code_c = PUB_p_address_element.p_address_element_code_c" +
-                GenerateWhereClauseLong("PUB_p_address_element", PAddressElementTable.GetColumnStringList(), ASearchCriteria)), ATransaction, false,
-                GetParametersForWhereClause(new PAddressElementTable(), ASearchCriteria)));
+                GenerateWhereClauseLong("PUB_p_address_element", ASearchCriteria)), ATransaction, false,
+                GetParametersForWhereClause(PAddressElementTable.TableId, ASearchCriteria)));
         }
 
         /// auto generated
         public static void DeleteByPrimaryKey(String AAddressLineCode, Int32 AAddressElementPosition, TDBTransaction ATransaction)
         {
-            OdbcParameter[] ParametersArray = new OdbcParameter[2];
-            ParametersArray[0] = new OdbcParameter("", OdbcType.VarChar, 16);
-            ParametersArray[0].Value = ((object)(AAddressLineCode));
-            ParametersArray[1] = new OdbcParameter("", OdbcType.Int);
-            ParametersArray[1].Value = ((object)(AAddressElementPosition));
-            DBAccess.GDBAccessObj.ExecuteNonQuery("DELETE FROM PUB_p_address_line WHERE p_address_line_code_c = ? AND p_address_element_position_i = ?", ATransaction, false, ParametersArray);
+            DeleteByPrimaryKey(PAddressLineTable.TableId, new System.Object[2]{AAddressLineCode, AAddressElementPosition}, ATransaction);
         }
 
         /// auto generated
         public static void DeleteUsingTemplate(PAddressLineRow ATemplateRow, StringCollection ATemplateOperators, TDBTransaction ATransaction)
         {
-            DBAccess.GDBAccessObj.ExecuteNonQuery(("DELETE FROM PUB_p_address_line" + GenerateWhereClause(PAddressLineTable.GetColumnStringList(), ATemplateRow, ATemplateOperators)), ATransaction, false, GetParametersForWhereClause(ATemplateRow));
+            DeleteUsingTemplate(PAddressLineTable.TableId, ATemplateRow, ATemplateOperators, ATransaction);
         }
 
         /// auto generated
         public static void DeleteUsingTemplate(TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
         {
-            DBAccess.GDBAccessObj.ExecuteNonQuery(("DELETE FROM PUB_p_address_line" +
-                GenerateWhereClause(PAddressLineTable.GetColumnStringList(), ASearchCriteria)), ATransaction, false,
-                GetParametersForWhereClause(new PAddressLineTable(), ASearchCriteria));
+            DeleteUsingTemplate(PAddressLineTable.TableId, ASearchCriteria, ATransaction);
         }
 
         /// auto generated
@@ -4417,15 +4292,15 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data.Access
                 {
                     if ((TheRow.RowState == DataRowState.Added))
                     {
-                        TTypedDataAccess.InsertRow("p_address_line", PAddressLineTable.GetColumnStringList(), ref TheRow, ATransaction, UserInfo.GUserInfo.UserID);
+                        TTypedDataAccess.InsertRow(PAddressLineTable.TableId, ref TheRow, ATransaction, UserInfo.GUserInfo.UserID);
                     }
                     if ((TheRow.RowState == DataRowState.Modified))
                     {
-                        TTypedDataAccess.UpdateRow("p_address_line", PAddressLineTable.GetColumnStringList(), PAddressLineTable.GetPrimKeyColumnOrdList(), ref TheRow, ATransaction, UserInfo.GUserInfo.UserID);
+                        TTypedDataAccess.UpdateRow(PAddressLineTable.TableId, ref TheRow, ATransaction, UserInfo.GUserInfo.UserID);
                     }
                     if ((TheRow.RowState == DataRowState.Deleted))
                     {
-                        TTypedDataAccess.DeleteRow("p_address_line", PAddressLineTable.GetColumnStringList(), PAddressLineTable.GetPrimKeyColumnOrdList(), TheRow, ATransaction);
+                        TTypedDataAccess.DeleteRow(PAddressLineTable.TableId, TheRow, ATransaction);
                     }
                 }
                 catch (OdbcException ex)
@@ -4457,9 +4332,8 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data.Access
         /// this method is called by all overloads
         public static void LoadAll(DataSet ADataSet, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, ((GenerateSelectClause(AFieldList, new string[] {
-                            "p_language_code_c", "p_title_c"}) + " FROM PUB_p_addressee_title_override")
-                            + GenerateOrderByClause(AOrderBy)), PAddresseeTitleOverrideTable.GetTableName(), ATransaction, AStartRecord, AMaxRecords);
+            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, ((GenerateSelectClause(AFieldList, PAddresseeTitleOverrideTable.TableId) + " FROM PUB_p_addressee_title_override") +
+                            GenerateOrderByClause(AOrderBy)), TTypedDataTable.GetTableName(PAddresseeTitleOverrideTable.TableId), ATransaction, AStartRecord, AMaxRecords);
         }
 
         /// auto generated
@@ -4499,14 +4373,8 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data.Access
         /// this method is called by all overloads
         public static void LoadByPrimaryKey(DataSet ADataSet, String ALanguageCode, String ATitle, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            OdbcParameter[] ParametersArray = new OdbcParameter[2];
-            ParametersArray[0] = new OdbcParameter("", OdbcType.VarChar, 20);
-            ParametersArray[0].Value = ((object)(ALanguageCode));
-            ParametersArray[1] = new OdbcParameter("", OdbcType.VarChar, 64);
-            ParametersArray[1].Value = ((object)(ATitle));
-            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, ((GenerateSelectClause(AFieldList, new string[] {
-                            "p_language_code_c", "p_title_c"}) + " FROM PUB_p_addressee_title_override WHERE p_language_code_c = ? AND p_title_c = ?")
-                            + GenerateOrderByClause(AOrderBy)), PAddresseeTitleOverrideTable.GetTableName(), ATransaction, ParametersArray, AStartRecord, AMaxRecords);
+            ADataSet = LoadByPrimaryKey(PAddresseeTitleOverrideTable.TableId,
+                ADataSet, new System.Object[2]{ALanguageCode, ATitle}, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
         }
 
         /// auto generated
@@ -4546,10 +4414,10 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data.Access
         /// this method is called by all overloads
         public static void LoadUsingTemplate(DataSet ADataSet, PAddresseeTitleOverrideRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClause(AFieldList, new string[] {
-                            "p_language_code_c", "p_title_c"}) + " FROM PUB_p_addressee_title_override")
-                            + GenerateWhereClause(PAddresseeTitleOverrideTable.GetColumnStringList(), ATemplateRow, ATemplateOperators))
-                            + GenerateOrderByClause(AOrderBy)), PAddresseeTitleOverrideTable.GetTableName(), ATransaction, GetParametersForWhereClause(ATemplateRow), AStartRecord, AMaxRecords);
+            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClause(AFieldList, PAddresseeTitleOverrideTable.TableId) + " FROM PUB_p_addressee_title_override") +
+                            GenerateWhereClause(TTypedDataTable.GetColumnStringList(PAddresseeTitleOverrideTable.TableId), ATemplateRow, ATemplateOperators)) +
+                            GenerateOrderByClause(AOrderBy)), TTypedDataTable.GetTableName(PAddresseeTitleOverrideTable.TableId), ATransaction,
+                            GetParametersForWhereClause(PAddresseeTitleOverrideTable.TableId, ATemplateRow), AStartRecord, AMaxRecords);
         }
 
         /// auto generated
@@ -4595,11 +4463,10 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data.Access
         /// this method is called by all overloads
         public static void LoadUsingTemplate(DataSet ADataSet, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClause(AFieldList, new string[] {
-                            "p_language_code_c", "p_title_c"}) + " FROM PUB_p_addressee_title_override")
-                            + GenerateWhereClause(PAddresseeTitleOverrideTable.GetColumnStringList(), ASearchCriteria))
-                            + GenerateOrderByClause(AOrderBy)), PAddresseeTitleOverrideTable.GetTableName(), ATransaction,
-                            GetParametersForWhereClause(new PAddresseeTitleOverrideTable(), ASearchCriteria), AStartRecord, AMaxRecords);
+            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClause(AFieldList, PAddresseeTitleOverrideTable.TableId) + " FROM PUB_p_addressee_title_override") +
+                            GenerateWhereClause(TTypedDataTable.GetColumnStringList(PAddresseeTitleOverrideTable.TableId), ASearchCriteria)) +
+                            GenerateOrderByClause(AOrderBy)), TTypedDataTable.GetTableName(PAddresseeTitleOverrideTable.TableId), ATransaction,
+                            GetParametersForWhereClause(PAddresseeTitleOverrideTable.TableId, ASearchCriteria), AStartRecord, AMaxRecords);
         }
 
         /// auto generated
@@ -4642,28 +4509,24 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data.Access
             return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar("SELECT COUNT(*) FROM PUB_p_addressee_title_override", ATransaction, false));
         }
 
-        /// this method is called by all overloads
-        public static int CountByPrimaryKey(String ALanguageCode, String ATitle, TDBTransaction ATransaction)
+        /// check if a row exists by using the primary key
+        public static bool Exists(String ALanguageCode, String ATitle, TDBTransaction ATransaction)
         {
-            OdbcParameter[] ParametersArray = new OdbcParameter[2];
-            ParametersArray[0] = new OdbcParameter("", OdbcType.VarChar, 20);
-            ParametersArray[0].Value = ((object)(ALanguageCode));
-            ParametersArray[1] = new OdbcParameter("", OdbcType.VarChar, 64);
-            ParametersArray[1].Value = ((object)(ATitle));
-            return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar("SELECT COUNT(*) FROM PUB_p_addressee_title_override WHERE p_language_code_c = ? AND p_title_c = ?", ATransaction, false, ParametersArray));
+            return Exists(PAddresseeTitleOverrideTable.TableId, new System.Object[2]{ALanguageCode, ATitle}, ATransaction);
         }
 
         /// this method is called by all overloads
         public static int CountUsingTemplate(PAddresseeTitleOverrideRow ATemplateRow, StringCollection ATemplateOperators, TDBTransaction ATransaction)
         {
-            return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_p_addressee_title_override" + GenerateWhereClause(PAddresseeTitleOverrideTable.GetColumnStringList(), ATemplateRow, ATemplateOperators)), ATransaction, false, GetParametersForWhereClause(ATemplateRow)));
+            return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_p_addressee_title_override" + GenerateWhereClause(TTypedDataTable.GetColumnStringList(PAddresseeTitleOverrideTable.TableId), ATemplateRow, ATemplateOperators)), ATransaction, false,
+                   GetParametersForWhereClause(PAddresseeTitleOverrideTable.TableId, ATemplateRow)));
         }
 
         /// this method is called by all overloads
         public static int CountUsingTemplate(TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
         {
-            return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_p_addressee_title_override" + GenerateWhereClause(PAddresseeTitleOverrideTable.GetColumnStringList(), ASearchCriteria)), ATransaction, false,
-            GetParametersForWhereClause(new PAddresseeTitleOverrideTable(), ASearchCriteria)));
+            return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_p_addressee_title_override" + GenerateWhereClause(TTypedDataTable.GetColumnStringList(PAddresseeTitleOverrideTable.TableId), ASearchCriteria)), ATransaction, false,
+            GetParametersForWhereClause(PAddresseeTitleOverrideTable.TableId, ASearchCriteria)));
         }
 
         /// auto generated
@@ -4672,9 +4535,9 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data.Access
             OdbcParameter[] ParametersArray = new OdbcParameter[1];
             ParametersArray[0] = new OdbcParameter("", OdbcType.VarChar, 20);
             ParametersArray[0].Value = ((object)(ALanguageCode));
-            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, ((GenerateSelectClause(AFieldList, new string[] {
-                            "p_language_code_c", "p_title_c"}) + " FROM PUB_p_addressee_title_override WHERE p_language_code_c = ?")
-                            + GenerateOrderByClause(AOrderBy)), PAddresseeTitleOverrideTable.GetTableName(), ATransaction, ParametersArray, AStartRecord, AMaxRecords);
+            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, ((GenerateSelectClause(AFieldList, PAddresseeTitleOverrideTable.TableId) +
+                            " FROM PUB_p_addressee_title_override WHERE p_language_code_c = ?") +
+                            GenerateOrderByClause(AOrderBy)), TTypedDataTable.GetTableName(PAddresseeTitleOverrideTable.TableId), ATransaction, ParametersArray, AStartRecord, AMaxRecords);
         }
 
         /// auto generated
@@ -4714,11 +4577,12 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data.Access
         /// auto generated
         public static void LoadViaPLanguageTemplate(DataSet ADataSet, PLanguageRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClauseLong("PUB_p_addressee_title_override", AFieldList, new string[] {
-                            "p_language_code_c", "p_title_c"}) + " FROM PUB_p_addressee_title_override, PUB_p_language WHERE " +
-                            "PUB_p_addressee_title_override.p_language_code_c = PUB_p_language.p_language_code_c")
-                            + GenerateWhereClauseLong("PUB_p_language", PLanguageTable.GetColumnStringList(), ATemplateRow, ATemplateOperators))
-                            + GenerateOrderByClause(AOrderBy)), PAddresseeTitleOverrideTable.GetTableName(), ATransaction, GetParametersForWhereClause(ATemplateRow), AStartRecord, AMaxRecords);
+            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClauseLong("PUB_p_addressee_title_override", AFieldList, PAddresseeTitleOverrideTable.TableId) +
+                            " FROM PUB_p_addressee_title_override, PUB_p_language WHERE " +
+                            "PUB_p_addressee_title_override.p_language_code_c = PUB_p_language.p_language_code_c") +
+                            GenerateWhereClauseLong("PUB_p_language", PLanguageTable.TableId, ATemplateRow, ATemplateOperators)) +
+                            GenerateOrderByClause(AOrderBy)), TTypedDataTable.GetTableName(PAddresseeTitleOverrideTable.TableId), ATransaction,
+                            GetParametersForWhereClause(PLanguageTable.TableId, ATemplateRow), AStartRecord, AMaxRecords);
         }
 
         /// auto generated
@@ -4764,12 +4628,12 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data.Access
         /// auto generated
         public static void LoadViaPLanguageTemplate(DataSet ADataSet, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClauseLong("PUB_p_addressee_title_override", AFieldList, new string[] {
-                            "p_language_code_c", "p_title_c"}) + " FROM PUB_p_addressee_title_override, PUB_p_language WHERE " +
-                            "PUB_p_addressee_title_override.p_language_code_c = PUB_p_language.p_language_code_c")
-                            + GenerateWhereClauseLong("PUB_p_language", PLanguageTable.GetColumnStringList(), ASearchCriteria))
-                            + GenerateOrderByClause(AOrderBy)), PAddresseeTitleOverrideTable.GetTableName(), ATransaction,
-                            GetParametersForWhereClause(new PAddresseeTitleOverrideTable(), ASearchCriteria), AStartRecord, AMaxRecords);
+            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClauseLong("PUB_p_addressee_title_override", AFieldList, PAddresseeTitleOverrideTable.TableId) +
+                            " FROM PUB_p_addressee_title_override, PUB_p_language WHERE " +
+                            "PUB_p_addressee_title_override.p_language_code_c = PUB_p_language.p_language_code_c") +
+                            GenerateWhereClauseLong("PUB_p_language", ASearchCriteria)) +
+                            GenerateOrderByClause(AOrderBy)), TTypedDataTable.GetTableName(PAddresseeTitleOverrideTable.TableId), ATransaction,
+                            GetParametersForWhereClause(PAddresseeTitleOverrideTable.TableId, ASearchCriteria), AStartRecord, AMaxRecords);
         }
 
         /// auto generated
@@ -4819,7 +4683,10 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data.Access
         public static int CountViaPLanguageTemplate(PLanguageRow ATemplateRow, StringCollection ATemplateOperators, TDBTransaction ATransaction)
         {
             return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_p_addressee_title_override, PUB_p_language WHERE " +
-                "PUB_p_addressee_title_override.p_language_code_c = PUB_p_language.p_language_code_c" + GenerateWhereClauseLong("PUB_p_language", PLanguageTable.GetColumnStringList(), ATemplateRow, ATemplateOperators)), ATransaction, false, GetParametersForWhereClause(ATemplateRow, PLanguageTable.GetPrimKeyColumnOrdList())));
+                "PUB_p_addressee_title_override.p_language_code_c = PUB_p_language.p_language_code_c" + GenerateWhereClauseLong("PUB_p_language",
+                PLanguageTable.TableId, ATemplateRow, ATemplateOperators)),
+                ATransaction, false,
+                GetParametersForWhereClauseWithPrimaryKey(PLanguageTable.TableId, ATemplateRow)));
         }
 
         /// auto generated
@@ -4827,33 +4694,26 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data.Access
         {
             return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_p_addressee_title_override, PUB_p_language WHERE " +
                 "PUB_p_addressee_title_override.p_language_code_c = PUB_p_language.p_language_code_c" +
-                GenerateWhereClauseLong("PUB_p_language", PLanguageTable.GetColumnStringList(), ASearchCriteria)), ATransaction, false,
-                GetParametersForWhereClause(new PLanguageTable(), ASearchCriteria)));
+                GenerateWhereClauseLong("PUB_p_language", ASearchCriteria)), ATransaction, false,
+                GetParametersForWhereClause(PLanguageTable.TableId, ASearchCriteria)));
         }
 
         /// auto generated
         public static void DeleteByPrimaryKey(String ALanguageCode, String ATitle, TDBTransaction ATransaction)
         {
-            OdbcParameter[] ParametersArray = new OdbcParameter[2];
-            ParametersArray[0] = new OdbcParameter("", OdbcType.VarChar, 20);
-            ParametersArray[0].Value = ((object)(ALanguageCode));
-            ParametersArray[1] = new OdbcParameter("", OdbcType.VarChar, 64);
-            ParametersArray[1].Value = ((object)(ATitle));
-            DBAccess.GDBAccessObj.ExecuteNonQuery("DELETE FROM PUB_p_addressee_title_override WHERE p_language_code_c = ? AND p_title_c = ?", ATransaction, false, ParametersArray);
+            DeleteByPrimaryKey(PAddresseeTitleOverrideTable.TableId, new System.Object[2]{ALanguageCode, ATitle}, ATransaction);
         }
 
         /// auto generated
         public static void DeleteUsingTemplate(PAddresseeTitleOverrideRow ATemplateRow, StringCollection ATemplateOperators, TDBTransaction ATransaction)
         {
-            DBAccess.GDBAccessObj.ExecuteNonQuery(("DELETE FROM PUB_p_addressee_title_override" + GenerateWhereClause(PAddresseeTitleOverrideTable.GetColumnStringList(), ATemplateRow, ATemplateOperators)), ATransaction, false, GetParametersForWhereClause(ATemplateRow));
+            DeleteUsingTemplate(PAddresseeTitleOverrideTable.TableId, ATemplateRow, ATemplateOperators, ATransaction);
         }
 
         /// auto generated
         public static void DeleteUsingTemplate(TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
         {
-            DBAccess.GDBAccessObj.ExecuteNonQuery(("DELETE FROM PUB_p_addressee_title_override" +
-                GenerateWhereClause(PAddresseeTitleOverrideTable.GetColumnStringList(), ASearchCriteria)), ATransaction, false,
-                GetParametersForWhereClause(new PAddresseeTitleOverrideTable(), ASearchCriteria));
+            DeleteUsingTemplate(PAddresseeTitleOverrideTable.TableId, ASearchCriteria, ATransaction);
         }
 
         /// auto generated
@@ -4870,15 +4730,15 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data.Access
                 {
                     if ((TheRow.RowState == DataRowState.Added))
                     {
-                        TTypedDataAccess.InsertRow("p_addressee_title_override", PAddresseeTitleOverrideTable.GetColumnStringList(), ref TheRow, ATransaction, UserInfo.GUserInfo.UserID);
+                        TTypedDataAccess.InsertRow(PAddresseeTitleOverrideTable.TableId, ref TheRow, ATransaction, UserInfo.GUserInfo.UserID);
                     }
                     if ((TheRow.RowState == DataRowState.Modified))
                     {
-                        TTypedDataAccess.UpdateRow("p_addressee_title_override", PAddresseeTitleOverrideTable.GetColumnStringList(), PAddresseeTitleOverrideTable.GetPrimKeyColumnOrdList(), ref TheRow, ATransaction, UserInfo.GUserInfo.UserID);
+                        TTypedDataAccess.UpdateRow(PAddresseeTitleOverrideTable.TableId, ref TheRow, ATransaction, UserInfo.GUserInfo.UserID);
                     }
                     if ((TheRow.RowState == DataRowState.Deleted))
                     {
-                        TTypedDataAccess.DeleteRow("p_addressee_title_override", PAddresseeTitleOverrideTable.GetColumnStringList(), PAddresseeTitleOverrideTable.GetPrimKeyColumnOrdList(), TheRow, ATransaction);
+                        TTypedDataAccess.DeleteRow(PAddresseeTitleOverrideTable.TableId, TheRow, ATransaction);
                     }
                 }
                 catch (OdbcException ex)
@@ -4908,9 +4768,8 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data.Access
         /// this method is called by all overloads
         public static void LoadAll(DataSet ADataSet, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, ((GenerateSelectClause(AFieldList, new string[] {
-                            "p_partner_key_n", "s_user_id_c"}) + " FROM PUB_p_customised_greeting")
-                            + GenerateOrderByClause(AOrderBy)), PCustomisedGreetingTable.GetTableName(), ATransaction, AStartRecord, AMaxRecords);
+            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, ((GenerateSelectClause(AFieldList, PCustomisedGreetingTable.TableId) + " FROM PUB_p_customised_greeting") +
+                            GenerateOrderByClause(AOrderBy)), TTypedDataTable.GetTableName(PCustomisedGreetingTable.TableId), ATransaction, AStartRecord, AMaxRecords);
         }
 
         /// auto generated
@@ -4950,14 +4809,8 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data.Access
         /// this method is called by all overloads
         public static void LoadByPrimaryKey(DataSet ADataSet, Int64 APartnerKey, String AUserId, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            OdbcParameter[] ParametersArray = new OdbcParameter[2];
-            ParametersArray[0] = new OdbcParameter("", OdbcType.Decimal, 10);
-            ParametersArray[0].Value = ((object)(APartnerKey));
-            ParametersArray[1] = new OdbcParameter("", OdbcType.VarChar, 20);
-            ParametersArray[1].Value = ((object)(AUserId));
-            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, ((GenerateSelectClause(AFieldList, new string[] {
-                            "p_partner_key_n", "s_user_id_c"}) + " FROM PUB_p_customised_greeting WHERE p_partner_key_n = ? AND s_user_id_c = ?")
-                            + GenerateOrderByClause(AOrderBy)), PCustomisedGreetingTable.GetTableName(), ATransaction, ParametersArray, AStartRecord, AMaxRecords);
+            ADataSet = LoadByPrimaryKey(PCustomisedGreetingTable.TableId,
+                ADataSet, new System.Object[2]{APartnerKey, AUserId}, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
         }
 
         /// auto generated
@@ -4997,10 +4850,10 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data.Access
         /// this method is called by all overloads
         public static void LoadUsingTemplate(DataSet ADataSet, PCustomisedGreetingRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClause(AFieldList, new string[] {
-                            "p_partner_key_n", "s_user_id_c"}) + " FROM PUB_p_customised_greeting")
-                            + GenerateWhereClause(PCustomisedGreetingTable.GetColumnStringList(), ATemplateRow, ATemplateOperators))
-                            + GenerateOrderByClause(AOrderBy)), PCustomisedGreetingTable.GetTableName(), ATransaction, GetParametersForWhereClause(ATemplateRow), AStartRecord, AMaxRecords);
+            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClause(AFieldList, PCustomisedGreetingTable.TableId) + " FROM PUB_p_customised_greeting") +
+                            GenerateWhereClause(TTypedDataTable.GetColumnStringList(PCustomisedGreetingTable.TableId), ATemplateRow, ATemplateOperators)) +
+                            GenerateOrderByClause(AOrderBy)), TTypedDataTable.GetTableName(PCustomisedGreetingTable.TableId), ATransaction,
+                            GetParametersForWhereClause(PCustomisedGreetingTable.TableId, ATemplateRow), AStartRecord, AMaxRecords);
         }
 
         /// auto generated
@@ -5046,11 +4899,10 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data.Access
         /// this method is called by all overloads
         public static void LoadUsingTemplate(DataSet ADataSet, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClause(AFieldList, new string[] {
-                            "p_partner_key_n", "s_user_id_c"}) + " FROM PUB_p_customised_greeting")
-                            + GenerateWhereClause(PCustomisedGreetingTable.GetColumnStringList(), ASearchCriteria))
-                            + GenerateOrderByClause(AOrderBy)), PCustomisedGreetingTable.GetTableName(), ATransaction,
-                            GetParametersForWhereClause(new PCustomisedGreetingTable(), ASearchCriteria), AStartRecord, AMaxRecords);
+            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClause(AFieldList, PCustomisedGreetingTable.TableId) + " FROM PUB_p_customised_greeting") +
+                            GenerateWhereClause(TTypedDataTable.GetColumnStringList(PCustomisedGreetingTable.TableId), ASearchCriteria)) +
+                            GenerateOrderByClause(AOrderBy)), TTypedDataTable.GetTableName(PCustomisedGreetingTable.TableId), ATransaction,
+                            GetParametersForWhereClause(PCustomisedGreetingTable.TableId, ASearchCriteria), AStartRecord, AMaxRecords);
         }
 
         /// auto generated
@@ -5093,28 +4945,24 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data.Access
             return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar("SELECT COUNT(*) FROM PUB_p_customised_greeting", ATransaction, false));
         }
 
-        /// this method is called by all overloads
-        public static int CountByPrimaryKey(Int64 APartnerKey, String AUserId, TDBTransaction ATransaction)
+        /// check if a row exists by using the primary key
+        public static bool Exists(Int64 APartnerKey, String AUserId, TDBTransaction ATransaction)
         {
-            OdbcParameter[] ParametersArray = new OdbcParameter[2];
-            ParametersArray[0] = new OdbcParameter("", OdbcType.Decimal, 10);
-            ParametersArray[0].Value = ((object)(APartnerKey));
-            ParametersArray[1] = new OdbcParameter("", OdbcType.VarChar, 20);
-            ParametersArray[1].Value = ((object)(AUserId));
-            return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar("SELECT COUNT(*) FROM PUB_p_customised_greeting WHERE p_partner_key_n = ? AND s_user_id_c = ?", ATransaction, false, ParametersArray));
+            return Exists(PCustomisedGreetingTable.TableId, new System.Object[2]{APartnerKey, AUserId}, ATransaction);
         }
 
         /// this method is called by all overloads
         public static int CountUsingTemplate(PCustomisedGreetingRow ATemplateRow, StringCollection ATemplateOperators, TDBTransaction ATransaction)
         {
-            return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_p_customised_greeting" + GenerateWhereClause(PCustomisedGreetingTable.GetColumnStringList(), ATemplateRow, ATemplateOperators)), ATransaction, false, GetParametersForWhereClause(ATemplateRow)));
+            return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_p_customised_greeting" + GenerateWhereClause(TTypedDataTable.GetColumnStringList(PCustomisedGreetingTable.TableId), ATemplateRow, ATemplateOperators)), ATransaction, false,
+                   GetParametersForWhereClause(PCustomisedGreetingTable.TableId, ATemplateRow)));
         }
 
         /// this method is called by all overloads
         public static int CountUsingTemplate(TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
         {
-            return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_p_customised_greeting" + GenerateWhereClause(PCustomisedGreetingTable.GetColumnStringList(), ASearchCriteria)), ATransaction, false,
-            GetParametersForWhereClause(new PCustomisedGreetingTable(), ASearchCriteria)));
+            return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_p_customised_greeting" + GenerateWhereClause(TTypedDataTable.GetColumnStringList(PCustomisedGreetingTable.TableId), ASearchCriteria)), ATransaction, false,
+            GetParametersForWhereClause(PCustomisedGreetingTable.TableId, ASearchCriteria)));
         }
 
         /// auto generated
@@ -5123,9 +4971,9 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data.Access
             OdbcParameter[] ParametersArray = new OdbcParameter[1];
             ParametersArray[0] = new OdbcParameter("", OdbcType.Decimal, 10);
             ParametersArray[0].Value = ((object)(APartnerKey));
-            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, ((GenerateSelectClause(AFieldList, new string[] {
-                            "p_partner_key_n", "s_user_id_c"}) + " FROM PUB_p_customised_greeting WHERE p_partner_key_n = ?")
-                            + GenerateOrderByClause(AOrderBy)), PCustomisedGreetingTable.GetTableName(), ATransaction, ParametersArray, AStartRecord, AMaxRecords);
+            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, ((GenerateSelectClause(AFieldList, PCustomisedGreetingTable.TableId) +
+                            " FROM PUB_p_customised_greeting WHERE p_partner_key_n = ?") +
+                            GenerateOrderByClause(AOrderBy)), TTypedDataTable.GetTableName(PCustomisedGreetingTable.TableId), ATransaction, ParametersArray, AStartRecord, AMaxRecords);
         }
 
         /// auto generated
@@ -5165,11 +5013,12 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data.Access
         /// auto generated
         public static void LoadViaPPartnerTemplate(DataSet ADataSet, PPartnerRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClauseLong("PUB_p_customised_greeting", AFieldList, new string[] {
-                            "p_partner_key_n", "s_user_id_c"}) + " FROM PUB_p_customised_greeting, PUB_p_partner WHERE " +
-                            "PUB_p_customised_greeting.p_partner_key_n = PUB_p_partner.p_partner_key_n")
-                            + GenerateWhereClauseLong("PUB_p_partner", PPartnerTable.GetColumnStringList(), ATemplateRow, ATemplateOperators))
-                            + GenerateOrderByClause(AOrderBy)), PCustomisedGreetingTable.GetTableName(), ATransaction, GetParametersForWhereClause(ATemplateRow), AStartRecord, AMaxRecords);
+            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClauseLong("PUB_p_customised_greeting", AFieldList, PCustomisedGreetingTable.TableId) +
+                            " FROM PUB_p_customised_greeting, PUB_p_partner WHERE " +
+                            "PUB_p_customised_greeting.p_partner_key_n = PUB_p_partner.p_partner_key_n") +
+                            GenerateWhereClauseLong("PUB_p_partner", PPartnerTable.TableId, ATemplateRow, ATemplateOperators)) +
+                            GenerateOrderByClause(AOrderBy)), TTypedDataTable.GetTableName(PCustomisedGreetingTable.TableId), ATransaction,
+                            GetParametersForWhereClause(PPartnerTable.TableId, ATemplateRow), AStartRecord, AMaxRecords);
         }
 
         /// auto generated
@@ -5215,12 +5064,12 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data.Access
         /// auto generated
         public static void LoadViaPPartnerTemplate(DataSet ADataSet, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClauseLong("PUB_p_customised_greeting", AFieldList, new string[] {
-                            "p_partner_key_n", "s_user_id_c"}) + " FROM PUB_p_customised_greeting, PUB_p_partner WHERE " +
-                            "PUB_p_customised_greeting.p_partner_key_n = PUB_p_partner.p_partner_key_n")
-                            + GenerateWhereClauseLong("PUB_p_partner", PPartnerTable.GetColumnStringList(), ASearchCriteria))
-                            + GenerateOrderByClause(AOrderBy)), PCustomisedGreetingTable.GetTableName(), ATransaction,
-                            GetParametersForWhereClause(new PCustomisedGreetingTable(), ASearchCriteria), AStartRecord, AMaxRecords);
+            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClauseLong("PUB_p_customised_greeting", AFieldList, PCustomisedGreetingTable.TableId) +
+                            " FROM PUB_p_customised_greeting, PUB_p_partner WHERE " +
+                            "PUB_p_customised_greeting.p_partner_key_n = PUB_p_partner.p_partner_key_n") +
+                            GenerateWhereClauseLong("PUB_p_partner", ASearchCriteria)) +
+                            GenerateOrderByClause(AOrderBy)), TTypedDataTable.GetTableName(PCustomisedGreetingTable.TableId), ATransaction,
+                            GetParametersForWhereClause(PCustomisedGreetingTable.TableId, ASearchCriteria), AStartRecord, AMaxRecords);
         }
 
         /// auto generated
@@ -5270,7 +5119,10 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data.Access
         public static int CountViaPPartnerTemplate(PPartnerRow ATemplateRow, StringCollection ATemplateOperators, TDBTransaction ATransaction)
         {
             return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_p_customised_greeting, PUB_p_partner WHERE " +
-                "PUB_p_customised_greeting.p_partner_key_n = PUB_p_partner.p_partner_key_n" + GenerateWhereClauseLong("PUB_p_partner", PPartnerTable.GetColumnStringList(), ATemplateRow, ATemplateOperators)), ATransaction, false, GetParametersForWhereClause(ATemplateRow, PPartnerTable.GetPrimKeyColumnOrdList())));
+                "PUB_p_customised_greeting.p_partner_key_n = PUB_p_partner.p_partner_key_n" + GenerateWhereClauseLong("PUB_p_partner",
+                PPartnerTable.TableId, ATemplateRow, ATemplateOperators)),
+                ATransaction, false,
+                GetParametersForWhereClauseWithPrimaryKey(PPartnerTable.TableId, ATemplateRow)));
         }
 
         /// auto generated
@@ -5278,8 +5130,8 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data.Access
         {
             return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_p_customised_greeting, PUB_p_partner WHERE " +
                 "PUB_p_customised_greeting.p_partner_key_n = PUB_p_partner.p_partner_key_n" +
-                GenerateWhereClauseLong("PUB_p_partner", PPartnerTable.GetColumnStringList(), ASearchCriteria)), ATransaction, false,
-                GetParametersForWhereClause(new PPartnerTable(), ASearchCriteria)));
+                GenerateWhereClauseLong("PUB_p_partner", ASearchCriteria)), ATransaction, false,
+                GetParametersForWhereClause(PPartnerTable.TableId, ASearchCriteria)));
         }
 
         /// auto generated
@@ -5288,9 +5140,9 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data.Access
             OdbcParameter[] ParametersArray = new OdbcParameter[1];
             ParametersArray[0] = new OdbcParameter("", OdbcType.VarChar, 20);
             ParametersArray[0].Value = ((object)(AUserId));
-            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, ((GenerateSelectClause(AFieldList, new string[] {
-                            "p_partner_key_n", "s_user_id_c"}) + " FROM PUB_p_customised_greeting WHERE s_user_id_c = ?")
-                            + GenerateOrderByClause(AOrderBy)), PCustomisedGreetingTable.GetTableName(), ATransaction, ParametersArray, AStartRecord, AMaxRecords);
+            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, ((GenerateSelectClause(AFieldList, PCustomisedGreetingTable.TableId) +
+                            " FROM PUB_p_customised_greeting WHERE s_user_id_c = ?") +
+                            GenerateOrderByClause(AOrderBy)), TTypedDataTable.GetTableName(PCustomisedGreetingTable.TableId), ATransaction, ParametersArray, AStartRecord, AMaxRecords);
         }
 
         /// auto generated
@@ -5330,11 +5182,12 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data.Access
         /// auto generated
         public static void LoadViaSUserTemplate(DataSet ADataSet, SUserRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClauseLong("PUB_p_customised_greeting", AFieldList, new string[] {
-                            "p_partner_key_n", "s_user_id_c"}) + " FROM PUB_p_customised_greeting, PUB_s_user WHERE " +
-                            "PUB_p_customised_greeting.s_user_id_c = PUB_s_user.s_user_id_c")
-                            + GenerateWhereClauseLong("PUB_s_user", SUserTable.GetColumnStringList(), ATemplateRow, ATemplateOperators))
-                            + GenerateOrderByClause(AOrderBy)), PCustomisedGreetingTable.GetTableName(), ATransaction, GetParametersForWhereClause(ATemplateRow), AStartRecord, AMaxRecords);
+            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClauseLong("PUB_p_customised_greeting", AFieldList, PCustomisedGreetingTable.TableId) +
+                            " FROM PUB_p_customised_greeting, PUB_s_user WHERE " +
+                            "PUB_p_customised_greeting.s_user_id_c = PUB_s_user.s_user_id_c") +
+                            GenerateWhereClauseLong("PUB_s_user", SUserTable.TableId, ATemplateRow, ATemplateOperators)) +
+                            GenerateOrderByClause(AOrderBy)), TTypedDataTable.GetTableName(PCustomisedGreetingTable.TableId), ATransaction,
+                            GetParametersForWhereClause(SUserTable.TableId, ATemplateRow), AStartRecord, AMaxRecords);
         }
 
         /// auto generated
@@ -5380,12 +5233,12 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data.Access
         /// auto generated
         public static void LoadViaSUserTemplate(DataSet ADataSet, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClauseLong("PUB_p_customised_greeting", AFieldList, new string[] {
-                            "p_partner_key_n", "s_user_id_c"}) + " FROM PUB_p_customised_greeting, PUB_s_user WHERE " +
-                            "PUB_p_customised_greeting.s_user_id_c = PUB_s_user.s_user_id_c")
-                            + GenerateWhereClauseLong("PUB_s_user", SUserTable.GetColumnStringList(), ASearchCriteria))
-                            + GenerateOrderByClause(AOrderBy)), PCustomisedGreetingTable.GetTableName(), ATransaction,
-                            GetParametersForWhereClause(new PCustomisedGreetingTable(), ASearchCriteria), AStartRecord, AMaxRecords);
+            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClauseLong("PUB_p_customised_greeting", AFieldList, PCustomisedGreetingTable.TableId) +
+                            " FROM PUB_p_customised_greeting, PUB_s_user WHERE " +
+                            "PUB_p_customised_greeting.s_user_id_c = PUB_s_user.s_user_id_c") +
+                            GenerateWhereClauseLong("PUB_s_user", ASearchCriteria)) +
+                            GenerateOrderByClause(AOrderBy)), TTypedDataTable.GetTableName(PCustomisedGreetingTable.TableId), ATransaction,
+                            GetParametersForWhereClause(PCustomisedGreetingTable.TableId, ASearchCriteria), AStartRecord, AMaxRecords);
         }
 
         /// auto generated
@@ -5435,7 +5288,10 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data.Access
         public static int CountViaSUserTemplate(SUserRow ATemplateRow, StringCollection ATemplateOperators, TDBTransaction ATransaction)
         {
             return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_p_customised_greeting, PUB_s_user WHERE " +
-                "PUB_p_customised_greeting.s_user_id_c = PUB_s_user.s_user_id_c" + GenerateWhereClauseLong("PUB_s_user", SUserTable.GetColumnStringList(), ATemplateRow, ATemplateOperators)), ATransaction, false, GetParametersForWhereClause(ATemplateRow, SUserTable.GetPrimKeyColumnOrdList())));
+                "PUB_p_customised_greeting.s_user_id_c = PUB_s_user.s_user_id_c" + GenerateWhereClauseLong("PUB_s_user",
+                SUserTable.TableId, ATemplateRow, ATemplateOperators)),
+                ATransaction, false,
+                GetParametersForWhereClauseWithPrimaryKey(SUserTable.TableId, ATemplateRow)));
         }
 
         /// auto generated
@@ -5443,33 +5299,26 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data.Access
         {
             return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_p_customised_greeting, PUB_s_user WHERE " +
                 "PUB_p_customised_greeting.s_user_id_c = PUB_s_user.s_user_id_c" +
-                GenerateWhereClauseLong("PUB_s_user", SUserTable.GetColumnStringList(), ASearchCriteria)), ATransaction, false,
-                GetParametersForWhereClause(new SUserTable(), ASearchCriteria)));
+                GenerateWhereClauseLong("PUB_s_user", ASearchCriteria)), ATransaction, false,
+                GetParametersForWhereClause(SUserTable.TableId, ASearchCriteria)));
         }
 
         /// auto generated
         public static void DeleteByPrimaryKey(Int64 APartnerKey, String AUserId, TDBTransaction ATransaction)
         {
-            OdbcParameter[] ParametersArray = new OdbcParameter[2];
-            ParametersArray[0] = new OdbcParameter("", OdbcType.Decimal, 10);
-            ParametersArray[0].Value = ((object)(APartnerKey));
-            ParametersArray[1] = new OdbcParameter("", OdbcType.VarChar, 20);
-            ParametersArray[1].Value = ((object)(AUserId));
-            DBAccess.GDBAccessObj.ExecuteNonQuery("DELETE FROM PUB_p_customised_greeting WHERE p_partner_key_n = ? AND s_user_id_c = ?", ATransaction, false, ParametersArray);
+            DeleteByPrimaryKey(PCustomisedGreetingTable.TableId, new System.Object[2]{APartnerKey, AUserId}, ATransaction);
         }
 
         /// auto generated
         public static void DeleteUsingTemplate(PCustomisedGreetingRow ATemplateRow, StringCollection ATemplateOperators, TDBTransaction ATransaction)
         {
-            DBAccess.GDBAccessObj.ExecuteNonQuery(("DELETE FROM PUB_p_customised_greeting" + GenerateWhereClause(PCustomisedGreetingTable.GetColumnStringList(), ATemplateRow, ATemplateOperators)), ATransaction, false, GetParametersForWhereClause(ATemplateRow));
+            DeleteUsingTemplate(PCustomisedGreetingTable.TableId, ATemplateRow, ATemplateOperators, ATransaction);
         }
 
         /// auto generated
         public static void DeleteUsingTemplate(TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
         {
-            DBAccess.GDBAccessObj.ExecuteNonQuery(("DELETE FROM PUB_p_customised_greeting" +
-                GenerateWhereClause(PCustomisedGreetingTable.GetColumnStringList(), ASearchCriteria)), ATransaction, false,
-                GetParametersForWhereClause(new PCustomisedGreetingTable(), ASearchCriteria));
+            DeleteUsingTemplate(PCustomisedGreetingTable.TableId, ASearchCriteria, ATransaction);
         }
 
         /// auto generated
@@ -5486,15 +5335,15 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data.Access
                 {
                     if ((TheRow.RowState == DataRowState.Added))
                     {
-                        TTypedDataAccess.InsertRow("p_customised_greeting", PCustomisedGreetingTable.GetColumnStringList(), ref TheRow, ATransaction, UserInfo.GUserInfo.UserID);
+                        TTypedDataAccess.InsertRow(PCustomisedGreetingTable.TableId, ref TheRow, ATransaction, UserInfo.GUserInfo.UserID);
                     }
                     if ((TheRow.RowState == DataRowState.Modified))
                     {
-                        TTypedDataAccess.UpdateRow("p_customised_greeting", PCustomisedGreetingTable.GetColumnStringList(), PCustomisedGreetingTable.GetPrimKeyColumnOrdList(), ref TheRow, ATransaction, UserInfo.GUserInfo.UserID);
+                        TTypedDataAccess.UpdateRow(PCustomisedGreetingTable.TableId, ref TheRow, ATransaction, UserInfo.GUserInfo.UserID);
                     }
                     if ((TheRow.RowState == DataRowState.Deleted))
                     {
-                        TTypedDataAccess.DeleteRow("p_customised_greeting", PCustomisedGreetingTable.GetColumnStringList(), PCustomisedGreetingTable.GetPrimKeyColumnOrdList(), TheRow, ATransaction);
+                        TTypedDataAccess.DeleteRow(PCustomisedGreetingTable.TableId, TheRow, ATransaction);
                     }
                 }
                 catch (OdbcException ex)
@@ -5524,9 +5373,8 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data.Access
         /// this method is called by all overloads
         public static void LoadAll(DataSet ADataSet, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, ((GenerateSelectClause(AFieldList, new string[] {
-                            "p_language_code_c", "p_country_code_c", "p_addressee_type_code_c", "p_formality_level_i"}) + " FROM PUB_p_formality")
-                            + GenerateOrderByClause(AOrderBy)), PFormalityTable.GetTableName(), ATransaction, AStartRecord, AMaxRecords);
+            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, ((GenerateSelectClause(AFieldList, PFormalityTable.TableId) + " FROM PUB_p_formality") +
+                            GenerateOrderByClause(AOrderBy)), TTypedDataTable.GetTableName(PFormalityTable.TableId), ATransaction, AStartRecord, AMaxRecords);
         }
 
         /// auto generated
@@ -5566,18 +5414,8 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data.Access
         /// this method is called by all overloads
         public static void LoadByPrimaryKey(DataSet ADataSet, String ALanguageCode, String ACountryCode, String AAddresseeTypeCode, Int32 AFormalityLevel, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            OdbcParameter[] ParametersArray = new OdbcParameter[4];
-            ParametersArray[0] = new OdbcParameter("", OdbcType.VarChar, 20);
-            ParametersArray[0].Value = ((object)(ALanguageCode));
-            ParametersArray[1] = new OdbcParameter("", OdbcType.VarChar, 8);
-            ParametersArray[1].Value = ((object)(ACountryCode));
-            ParametersArray[2] = new OdbcParameter("", OdbcType.VarChar, 24);
-            ParametersArray[2].Value = ((object)(AAddresseeTypeCode));
-            ParametersArray[3] = new OdbcParameter("", OdbcType.Int);
-            ParametersArray[3].Value = ((object)(AFormalityLevel));
-            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, ((GenerateSelectClause(AFieldList, new string[] {
-                            "p_language_code_c", "p_country_code_c", "p_addressee_type_code_c", "p_formality_level_i"}) + " FROM PUB_p_formality WHERE p_language_code_c = ? AND p_country_code_c = ? AND p_addressee_type_code_c = ? AND p_formality_level_i = ?")
-                            + GenerateOrderByClause(AOrderBy)), PFormalityTable.GetTableName(), ATransaction, ParametersArray, AStartRecord, AMaxRecords);
+            ADataSet = LoadByPrimaryKey(PFormalityTable.TableId,
+                ADataSet, new System.Object[4]{ALanguageCode, ACountryCode, AAddresseeTypeCode, AFormalityLevel}, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
         }
 
         /// auto generated
@@ -5617,10 +5455,10 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data.Access
         /// this method is called by all overloads
         public static void LoadUsingTemplate(DataSet ADataSet, PFormalityRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClause(AFieldList, new string[] {
-                            "p_language_code_c", "p_country_code_c", "p_addressee_type_code_c", "p_formality_level_i"}) + " FROM PUB_p_formality")
-                            + GenerateWhereClause(PFormalityTable.GetColumnStringList(), ATemplateRow, ATemplateOperators))
-                            + GenerateOrderByClause(AOrderBy)), PFormalityTable.GetTableName(), ATransaction, GetParametersForWhereClause(ATemplateRow), AStartRecord, AMaxRecords);
+            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClause(AFieldList, PFormalityTable.TableId) + " FROM PUB_p_formality") +
+                            GenerateWhereClause(TTypedDataTable.GetColumnStringList(PFormalityTable.TableId), ATemplateRow, ATemplateOperators)) +
+                            GenerateOrderByClause(AOrderBy)), TTypedDataTable.GetTableName(PFormalityTable.TableId), ATransaction,
+                            GetParametersForWhereClause(PFormalityTable.TableId, ATemplateRow), AStartRecord, AMaxRecords);
         }
 
         /// auto generated
@@ -5666,11 +5504,10 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data.Access
         /// this method is called by all overloads
         public static void LoadUsingTemplate(DataSet ADataSet, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClause(AFieldList, new string[] {
-                            "p_language_code_c", "p_country_code_c", "p_addressee_type_code_c", "p_formality_level_i"}) + " FROM PUB_p_formality")
-                            + GenerateWhereClause(PFormalityTable.GetColumnStringList(), ASearchCriteria))
-                            + GenerateOrderByClause(AOrderBy)), PFormalityTable.GetTableName(), ATransaction,
-                            GetParametersForWhereClause(new PFormalityTable(), ASearchCriteria), AStartRecord, AMaxRecords);
+            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClause(AFieldList, PFormalityTable.TableId) + " FROM PUB_p_formality") +
+                            GenerateWhereClause(TTypedDataTable.GetColumnStringList(PFormalityTable.TableId), ASearchCriteria)) +
+                            GenerateOrderByClause(AOrderBy)), TTypedDataTable.GetTableName(PFormalityTable.TableId), ATransaction,
+                            GetParametersForWhereClause(PFormalityTable.TableId, ASearchCriteria), AStartRecord, AMaxRecords);
         }
 
         /// auto generated
@@ -5713,32 +5550,24 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data.Access
             return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar("SELECT COUNT(*) FROM PUB_p_formality", ATransaction, false));
         }
 
-        /// this method is called by all overloads
-        public static int CountByPrimaryKey(String ALanguageCode, String ACountryCode, String AAddresseeTypeCode, Int32 AFormalityLevel, TDBTransaction ATransaction)
+        /// check if a row exists by using the primary key
+        public static bool Exists(String ALanguageCode, String ACountryCode, String AAddresseeTypeCode, Int32 AFormalityLevel, TDBTransaction ATransaction)
         {
-            OdbcParameter[] ParametersArray = new OdbcParameter[4];
-            ParametersArray[0] = new OdbcParameter("", OdbcType.VarChar, 20);
-            ParametersArray[0].Value = ((object)(ALanguageCode));
-            ParametersArray[1] = new OdbcParameter("", OdbcType.VarChar, 8);
-            ParametersArray[1].Value = ((object)(ACountryCode));
-            ParametersArray[2] = new OdbcParameter("", OdbcType.VarChar, 24);
-            ParametersArray[2].Value = ((object)(AAddresseeTypeCode));
-            ParametersArray[3] = new OdbcParameter("", OdbcType.Int);
-            ParametersArray[3].Value = ((object)(AFormalityLevel));
-            return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar("SELECT COUNT(*) FROM PUB_p_formality WHERE p_language_code_c = ? AND p_country_code_c = ? AND p_addressee_type_code_c = ? AND p_formality_level_i = ?", ATransaction, false, ParametersArray));
+            return Exists(PFormalityTable.TableId, new System.Object[4]{ALanguageCode, ACountryCode, AAddresseeTypeCode, AFormalityLevel}, ATransaction);
         }
 
         /// this method is called by all overloads
         public static int CountUsingTemplate(PFormalityRow ATemplateRow, StringCollection ATemplateOperators, TDBTransaction ATransaction)
         {
-            return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_p_formality" + GenerateWhereClause(PFormalityTable.GetColumnStringList(), ATemplateRow, ATemplateOperators)), ATransaction, false, GetParametersForWhereClause(ATemplateRow)));
+            return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_p_formality" + GenerateWhereClause(TTypedDataTable.GetColumnStringList(PFormalityTable.TableId), ATemplateRow, ATemplateOperators)), ATransaction, false,
+                   GetParametersForWhereClause(PFormalityTable.TableId, ATemplateRow)));
         }
 
         /// this method is called by all overloads
         public static int CountUsingTemplate(TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
         {
-            return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_p_formality" + GenerateWhereClause(PFormalityTable.GetColumnStringList(), ASearchCriteria)), ATransaction, false,
-            GetParametersForWhereClause(new PFormalityTable(), ASearchCriteria)));
+            return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_p_formality" + GenerateWhereClause(TTypedDataTable.GetColumnStringList(PFormalityTable.TableId), ASearchCriteria)), ATransaction, false,
+            GetParametersForWhereClause(PFormalityTable.TableId, ASearchCriteria)));
         }
 
         /// auto generated
@@ -5747,9 +5576,9 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data.Access
             OdbcParameter[] ParametersArray = new OdbcParameter[1];
             ParametersArray[0] = new OdbcParameter("", OdbcType.VarChar, 20);
             ParametersArray[0].Value = ((object)(ALanguageCode));
-            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, ((GenerateSelectClause(AFieldList, new string[] {
-                            "p_language_code_c", "p_country_code_c", "p_addressee_type_code_c", "p_formality_level_i"}) + " FROM PUB_p_formality WHERE p_language_code_c = ?")
-                            + GenerateOrderByClause(AOrderBy)), PFormalityTable.GetTableName(), ATransaction, ParametersArray, AStartRecord, AMaxRecords);
+            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, ((GenerateSelectClause(AFieldList, PFormalityTable.TableId) +
+                            " FROM PUB_p_formality WHERE p_language_code_c = ?") +
+                            GenerateOrderByClause(AOrderBy)), TTypedDataTable.GetTableName(PFormalityTable.TableId), ATransaction, ParametersArray, AStartRecord, AMaxRecords);
         }
 
         /// auto generated
@@ -5789,11 +5618,12 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data.Access
         /// auto generated
         public static void LoadViaPLanguageTemplate(DataSet ADataSet, PLanguageRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClauseLong("PUB_p_formality", AFieldList, new string[] {
-                            "p_language_code_c", "p_country_code_c", "p_addressee_type_code_c", "p_formality_level_i"}) + " FROM PUB_p_formality, PUB_p_language WHERE " +
-                            "PUB_p_formality.p_language_code_c = PUB_p_language.p_language_code_c")
-                            + GenerateWhereClauseLong("PUB_p_language", PLanguageTable.GetColumnStringList(), ATemplateRow, ATemplateOperators))
-                            + GenerateOrderByClause(AOrderBy)), PFormalityTable.GetTableName(), ATransaction, GetParametersForWhereClause(ATemplateRow), AStartRecord, AMaxRecords);
+            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClauseLong("PUB_p_formality", AFieldList, PFormalityTable.TableId) +
+                            " FROM PUB_p_formality, PUB_p_language WHERE " +
+                            "PUB_p_formality.p_language_code_c = PUB_p_language.p_language_code_c") +
+                            GenerateWhereClauseLong("PUB_p_language", PLanguageTable.TableId, ATemplateRow, ATemplateOperators)) +
+                            GenerateOrderByClause(AOrderBy)), TTypedDataTable.GetTableName(PFormalityTable.TableId), ATransaction,
+                            GetParametersForWhereClause(PLanguageTable.TableId, ATemplateRow), AStartRecord, AMaxRecords);
         }
 
         /// auto generated
@@ -5839,12 +5669,12 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data.Access
         /// auto generated
         public static void LoadViaPLanguageTemplate(DataSet ADataSet, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClauseLong("PUB_p_formality", AFieldList, new string[] {
-                            "p_language_code_c", "p_country_code_c", "p_addressee_type_code_c", "p_formality_level_i"}) + " FROM PUB_p_formality, PUB_p_language WHERE " +
-                            "PUB_p_formality.p_language_code_c = PUB_p_language.p_language_code_c")
-                            + GenerateWhereClauseLong("PUB_p_language", PLanguageTable.GetColumnStringList(), ASearchCriteria))
-                            + GenerateOrderByClause(AOrderBy)), PFormalityTable.GetTableName(), ATransaction,
-                            GetParametersForWhereClause(new PFormalityTable(), ASearchCriteria), AStartRecord, AMaxRecords);
+            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClauseLong("PUB_p_formality", AFieldList, PFormalityTable.TableId) +
+                            " FROM PUB_p_formality, PUB_p_language WHERE " +
+                            "PUB_p_formality.p_language_code_c = PUB_p_language.p_language_code_c") +
+                            GenerateWhereClauseLong("PUB_p_language", ASearchCriteria)) +
+                            GenerateOrderByClause(AOrderBy)), TTypedDataTable.GetTableName(PFormalityTable.TableId), ATransaction,
+                            GetParametersForWhereClause(PFormalityTable.TableId, ASearchCriteria), AStartRecord, AMaxRecords);
         }
 
         /// auto generated
@@ -5894,7 +5724,10 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data.Access
         public static int CountViaPLanguageTemplate(PLanguageRow ATemplateRow, StringCollection ATemplateOperators, TDBTransaction ATransaction)
         {
             return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_p_formality, PUB_p_language WHERE " +
-                "PUB_p_formality.p_language_code_c = PUB_p_language.p_language_code_c" + GenerateWhereClauseLong("PUB_p_language", PLanguageTable.GetColumnStringList(), ATemplateRow, ATemplateOperators)), ATransaction, false, GetParametersForWhereClause(ATemplateRow, PLanguageTable.GetPrimKeyColumnOrdList())));
+                "PUB_p_formality.p_language_code_c = PUB_p_language.p_language_code_c" + GenerateWhereClauseLong("PUB_p_language",
+                PLanguageTable.TableId, ATemplateRow, ATemplateOperators)),
+                ATransaction, false,
+                GetParametersForWhereClauseWithPrimaryKey(PLanguageTable.TableId, ATemplateRow)));
         }
 
         /// auto generated
@@ -5902,8 +5735,8 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data.Access
         {
             return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_p_formality, PUB_p_language WHERE " +
                 "PUB_p_formality.p_language_code_c = PUB_p_language.p_language_code_c" +
-                GenerateWhereClauseLong("PUB_p_language", PLanguageTable.GetColumnStringList(), ASearchCriteria)), ATransaction, false,
-                GetParametersForWhereClause(new PLanguageTable(), ASearchCriteria)));
+                GenerateWhereClauseLong("PUB_p_language", ASearchCriteria)), ATransaction, false,
+                GetParametersForWhereClause(PLanguageTable.TableId, ASearchCriteria)));
         }
 
         /// auto generated
@@ -5912,9 +5745,9 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data.Access
             OdbcParameter[] ParametersArray = new OdbcParameter[1];
             ParametersArray[0] = new OdbcParameter("", OdbcType.VarChar, 8);
             ParametersArray[0].Value = ((object)(ACountryCode));
-            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, ((GenerateSelectClause(AFieldList, new string[] {
-                            "p_language_code_c", "p_country_code_c", "p_addressee_type_code_c", "p_formality_level_i"}) + " FROM PUB_p_formality WHERE p_country_code_c = ?")
-                            + GenerateOrderByClause(AOrderBy)), PFormalityTable.GetTableName(), ATransaction, ParametersArray, AStartRecord, AMaxRecords);
+            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, ((GenerateSelectClause(AFieldList, PFormalityTable.TableId) +
+                            " FROM PUB_p_formality WHERE p_country_code_c = ?") +
+                            GenerateOrderByClause(AOrderBy)), TTypedDataTable.GetTableName(PFormalityTable.TableId), ATransaction, ParametersArray, AStartRecord, AMaxRecords);
         }
 
         /// auto generated
@@ -5954,11 +5787,12 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data.Access
         /// auto generated
         public static void LoadViaPCountryTemplate(DataSet ADataSet, PCountryRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClauseLong("PUB_p_formality", AFieldList, new string[] {
-                            "p_language_code_c", "p_country_code_c", "p_addressee_type_code_c", "p_formality_level_i"}) + " FROM PUB_p_formality, PUB_p_country WHERE " +
-                            "PUB_p_formality.p_country_code_c = PUB_p_country.p_country_code_c")
-                            + GenerateWhereClauseLong("PUB_p_country", PCountryTable.GetColumnStringList(), ATemplateRow, ATemplateOperators))
-                            + GenerateOrderByClause(AOrderBy)), PFormalityTable.GetTableName(), ATransaction, GetParametersForWhereClause(ATemplateRow), AStartRecord, AMaxRecords);
+            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClauseLong("PUB_p_formality", AFieldList, PFormalityTable.TableId) +
+                            " FROM PUB_p_formality, PUB_p_country WHERE " +
+                            "PUB_p_formality.p_country_code_c = PUB_p_country.p_country_code_c") +
+                            GenerateWhereClauseLong("PUB_p_country", PCountryTable.TableId, ATemplateRow, ATemplateOperators)) +
+                            GenerateOrderByClause(AOrderBy)), TTypedDataTable.GetTableName(PFormalityTable.TableId), ATransaction,
+                            GetParametersForWhereClause(PCountryTable.TableId, ATemplateRow), AStartRecord, AMaxRecords);
         }
 
         /// auto generated
@@ -6004,12 +5838,12 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data.Access
         /// auto generated
         public static void LoadViaPCountryTemplate(DataSet ADataSet, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClauseLong("PUB_p_formality", AFieldList, new string[] {
-                            "p_language_code_c", "p_country_code_c", "p_addressee_type_code_c", "p_formality_level_i"}) + " FROM PUB_p_formality, PUB_p_country WHERE " +
-                            "PUB_p_formality.p_country_code_c = PUB_p_country.p_country_code_c")
-                            + GenerateWhereClauseLong("PUB_p_country", PCountryTable.GetColumnStringList(), ASearchCriteria))
-                            + GenerateOrderByClause(AOrderBy)), PFormalityTable.GetTableName(), ATransaction,
-                            GetParametersForWhereClause(new PFormalityTable(), ASearchCriteria), AStartRecord, AMaxRecords);
+            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClauseLong("PUB_p_formality", AFieldList, PFormalityTable.TableId) +
+                            " FROM PUB_p_formality, PUB_p_country WHERE " +
+                            "PUB_p_formality.p_country_code_c = PUB_p_country.p_country_code_c") +
+                            GenerateWhereClauseLong("PUB_p_country", ASearchCriteria)) +
+                            GenerateOrderByClause(AOrderBy)), TTypedDataTable.GetTableName(PFormalityTable.TableId), ATransaction,
+                            GetParametersForWhereClause(PFormalityTable.TableId, ASearchCriteria), AStartRecord, AMaxRecords);
         }
 
         /// auto generated
@@ -6059,7 +5893,10 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data.Access
         public static int CountViaPCountryTemplate(PCountryRow ATemplateRow, StringCollection ATemplateOperators, TDBTransaction ATransaction)
         {
             return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_p_formality, PUB_p_country WHERE " +
-                "PUB_p_formality.p_country_code_c = PUB_p_country.p_country_code_c" + GenerateWhereClauseLong("PUB_p_country", PCountryTable.GetColumnStringList(), ATemplateRow, ATemplateOperators)), ATransaction, false, GetParametersForWhereClause(ATemplateRow, PCountryTable.GetPrimKeyColumnOrdList())));
+                "PUB_p_formality.p_country_code_c = PUB_p_country.p_country_code_c" + GenerateWhereClauseLong("PUB_p_country",
+                PCountryTable.TableId, ATemplateRow, ATemplateOperators)),
+                ATransaction, false,
+                GetParametersForWhereClauseWithPrimaryKey(PCountryTable.TableId, ATemplateRow)));
         }
 
         /// auto generated
@@ -6067,8 +5904,8 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data.Access
         {
             return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_p_formality, PUB_p_country WHERE " +
                 "PUB_p_formality.p_country_code_c = PUB_p_country.p_country_code_c" +
-                GenerateWhereClauseLong("PUB_p_country", PCountryTable.GetColumnStringList(), ASearchCriteria)), ATransaction, false,
-                GetParametersForWhereClause(new PCountryTable(), ASearchCriteria)));
+                GenerateWhereClauseLong("PUB_p_country", ASearchCriteria)), ATransaction, false,
+                GetParametersForWhereClause(PCountryTable.TableId, ASearchCriteria)));
         }
 
         /// auto generated
@@ -6077,9 +5914,9 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data.Access
             OdbcParameter[] ParametersArray = new OdbcParameter[1];
             ParametersArray[0] = new OdbcParameter("", OdbcType.VarChar, 24);
             ParametersArray[0].Value = ((object)(AAddresseeTypeCode));
-            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, ((GenerateSelectClause(AFieldList, new string[] {
-                            "p_language_code_c", "p_country_code_c", "p_addressee_type_code_c", "p_formality_level_i"}) + " FROM PUB_p_formality WHERE p_addressee_type_code_c = ?")
-                            + GenerateOrderByClause(AOrderBy)), PFormalityTable.GetTableName(), ATransaction, ParametersArray, AStartRecord, AMaxRecords);
+            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, ((GenerateSelectClause(AFieldList, PFormalityTable.TableId) +
+                            " FROM PUB_p_formality WHERE p_addressee_type_code_c = ?") +
+                            GenerateOrderByClause(AOrderBy)), TTypedDataTable.GetTableName(PFormalityTable.TableId), ATransaction, ParametersArray, AStartRecord, AMaxRecords);
         }
 
         /// auto generated
@@ -6119,11 +5956,12 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data.Access
         /// auto generated
         public static void LoadViaPAddresseeTypeTemplate(DataSet ADataSet, PAddresseeTypeRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClauseLong("PUB_p_formality", AFieldList, new string[] {
-                            "p_language_code_c", "p_country_code_c", "p_addressee_type_code_c", "p_formality_level_i"}) + " FROM PUB_p_formality, PUB_p_addressee_type WHERE " +
-                            "PUB_p_formality.p_addressee_type_code_c = PUB_p_addressee_type.p_addressee_type_code_c")
-                            + GenerateWhereClauseLong("PUB_p_addressee_type", PAddresseeTypeTable.GetColumnStringList(), ATemplateRow, ATemplateOperators))
-                            + GenerateOrderByClause(AOrderBy)), PFormalityTable.GetTableName(), ATransaction, GetParametersForWhereClause(ATemplateRow), AStartRecord, AMaxRecords);
+            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClauseLong("PUB_p_formality", AFieldList, PFormalityTable.TableId) +
+                            " FROM PUB_p_formality, PUB_p_addressee_type WHERE " +
+                            "PUB_p_formality.p_addressee_type_code_c = PUB_p_addressee_type.p_addressee_type_code_c") +
+                            GenerateWhereClauseLong("PUB_p_addressee_type", PAddresseeTypeTable.TableId, ATemplateRow, ATemplateOperators)) +
+                            GenerateOrderByClause(AOrderBy)), TTypedDataTable.GetTableName(PFormalityTable.TableId), ATransaction,
+                            GetParametersForWhereClause(PAddresseeTypeTable.TableId, ATemplateRow), AStartRecord, AMaxRecords);
         }
 
         /// auto generated
@@ -6169,12 +6007,12 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data.Access
         /// auto generated
         public static void LoadViaPAddresseeTypeTemplate(DataSet ADataSet, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClauseLong("PUB_p_formality", AFieldList, new string[] {
-                            "p_language_code_c", "p_country_code_c", "p_addressee_type_code_c", "p_formality_level_i"}) + " FROM PUB_p_formality, PUB_p_addressee_type WHERE " +
-                            "PUB_p_formality.p_addressee_type_code_c = PUB_p_addressee_type.p_addressee_type_code_c")
-                            + GenerateWhereClauseLong("PUB_p_addressee_type", PAddresseeTypeTable.GetColumnStringList(), ASearchCriteria))
-                            + GenerateOrderByClause(AOrderBy)), PFormalityTable.GetTableName(), ATransaction,
-                            GetParametersForWhereClause(new PFormalityTable(), ASearchCriteria), AStartRecord, AMaxRecords);
+            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClauseLong("PUB_p_formality", AFieldList, PFormalityTable.TableId) +
+                            " FROM PUB_p_formality, PUB_p_addressee_type WHERE " +
+                            "PUB_p_formality.p_addressee_type_code_c = PUB_p_addressee_type.p_addressee_type_code_c") +
+                            GenerateWhereClauseLong("PUB_p_addressee_type", ASearchCriteria)) +
+                            GenerateOrderByClause(AOrderBy)), TTypedDataTable.GetTableName(PFormalityTable.TableId), ATransaction,
+                            GetParametersForWhereClause(PFormalityTable.TableId, ASearchCriteria), AStartRecord, AMaxRecords);
         }
 
         /// auto generated
@@ -6224,7 +6062,10 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data.Access
         public static int CountViaPAddresseeTypeTemplate(PAddresseeTypeRow ATemplateRow, StringCollection ATemplateOperators, TDBTransaction ATransaction)
         {
             return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_p_formality, PUB_p_addressee_type WHERE " +
-                "PUB_p_formality.p_addressee_type_code_c = PUB_p_addressee_type.p_addressee_type_code_c" + GenerateWhereClauseLong("PUB_p_addressee_type", PAddresseeTypeTable.GetColumnStringList(), ATemplateRow, ATemplateOperators)), ATransaction, false, GetParametersForWhereClause(ATemplateRow, PAddresseeTypeTable.GetPrimKeyColumnOrdList())));
+                "PUB_p_formality.p_addressee_type_code_c = PUB_p_addressee_type.p_addressee_type_code_c" + GenerateWhereClauseLong("PUB_p_addressee_type",
+                PAddresseeTypeTable.TableId, ATemplateRow, ATemplateOperators)),
+                ATransaction, false,
+                GetParametersForWhereClauseWithPrimaryKey(PAddresseeTypeTable.TableId, ATemplateRow)));
         }
 
         /// auto generated
@@ -6232,37 +6073,26 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data.Access
         {
             return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_p_formality, PUB_p_addressee_type WHERE " +
                 "PUB_p_formality.p_addressee_type_code_c = PUB_p_addressee_type.p_addressee_type_code_c" +
-                GenerateWhereClauseLong("PUB_p_addressee_type", PAddresseeTypeTable.GetColumnStringList(), ASearchCriteria)), ATransaction, false,
-                GetParametersForWhereClause(new PAddresseeTypeTable(), ASearchCriteria)));
+                GenerateWhereClauseLong("PUB_p_addressee_type", ASearchCriteria)), ATransaction, false,
+                GetParametersForWhereClause(PAddresseeTypeTable.TableId, ASearchCriteria)));
         }
 
         /// auto generated
         public static void DeleteByPrimaryKey(String ALanguageCode, String ACountryCode, String AAddresseeTypeCode, Int32 AFormalityLevel, TDBTransaction ATransaction)
         {
-            OdbcParameter[] ParametersArray = new OdbcParameter[4];
-            ParametersArray[0] = new OdbcParameter("", OdbcType.VarChar, 20);
-            ParametersArray[0].Value = ((object)(ALanguageCode));
-            ParametersArray[1] = new OdbcParameter("", OdbcType.VarChar, 8);
-            ParametersArray[1].Value = ((object)(ACountryCode));
-            ParametersArray[2] = new OdbcParameter("", OdbcType.VarChar, 24);
-            ParametersArray[2].Value = ((object)(AAddresseeTypeCode));
-            ParametersArray[3] = new OdbcParameter("", OdbcType.Int);
-            ParametersArray[3].Value = ((object)(AFormalityLevel));
-            DBAccess.GDBAccessObj.ExecuteNonQuery("DELETE FROM PUB_p_formality WHERE p_language_code_c = ? AND p_country_code_c = ? AND p_addressee_type_code_c = ? AND p_formality_level_i = ?", ATransaction, false, ParametersArray);
+            DeleteByPrimaryKey(PFormalityTable.TableId, new System.Object[4]{ALanguageCode, ACountryCode, AAddresseeTypeCode, AFormalityLevel}, ATransaction);
         }
 
         /// auto generated
         public static void DeleteUsingTemplate(PFormalityRow ATemplateRow, StringCollection ATemplateOperators, TDBTransaction ATransaction)
         {
-            DBAccess.GDBAccessObj.ExecuteNonQuery(("DELETE FROM PUB_p_formality" + GenerateWhereClause(PFormalityTable.GetColumnStringList(), ATemplateRow, ATemplateOperators)), ATransaction, false, GetParametersForWhereClause(ATemplateRow));
+            DeleteUsingTemplate(PFormalityTable.TableId, ATemplateRow, ATemplateOperators, ATransaction);
         }
 
         /// auto generated
         public static void DeleteUsingTemplate(TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
         {
-            DBAccess.GDBAccessObj.ExecuteNonQuery(("DELETE FROM PUB_p_formality" +
-                GenerateWhereClause(PFormalityTable.GetColumnStringList(), ASearchCriteria)), ATransaction, false,
-                GetParametersForWhereClause(new PFormalityTable(), ASearchCriteria));
+            DeleteUsingTemplate(PFormalityTable.TableId, ASearchCriteria, ATransaction);
         }
 
         /// auto generated
@@ -6279,15 +6109,15 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data.Access
                 {
                     if ((TheRow.RowState == DataRowState.Added))
                     {
-                        TTypedDataAccess.InsertRow("p_formality", PFormalityTable.GetColumnStringList(), ref TheRow, ATransaction, UserInfo.GUserInfo.UserID);
+                        TTypedDataAccess.InsertRow(PFormalityTable.TableId, ref TheRow, ATransaction, UserInfo.GUserInfo.UserID);
                     }
                     if ((TheRow.RowState == DataRowState.Modified))
                     {
-                        TTypedDataAccess.UpdateRow("p_formality", PFormalityTable.GetColumnStringList(), PFormalityTable.GetPrimKeyColumnOrdList(), ref TheRow, ATransaction, UserInfo.GUserInfo.UserID);
+                        TTypedDataAccess.UpdateRow(PFormalityTable.TableId, ref TheRow, ATransaction, UserInfo.GUserInfo.UserID);
                     }
                     if ((TheRow.RowState == DataRowState.Deleted))
                     {
-                        TTypedDataAccess.DeleteRow("p_formality", PFormalityTable.GetColumnStringList(), PFormalityTable.GetPrimKeyColumnOrdList(), TheRow, ATransaction);
+                        TTypedDataAccess.DeleteRow(PFormalityTable.TableId, TheRow, ATransaction);
                     }
                 }
                 catch (OdbcException ex)
@@ -6317,9 +6147,8 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data.Access
         /// this method is called by all overloads
         public static void LoadAll(DataSet ADataSet, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, ((GenerateSelectClause(AFieldList, new string[] {
-                            "p_body_name_c"}) + " FROM PUB_p_form_letter_body")
-                            + GenerateOrderByClause(AOrderBy)), PFormLetterBodyTable.GetTableName(), ATransaction, AStartRecord, AMaxRecords);
+            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, ((GenerateSelectClause(AFieldList, PFormLetterBodyTable.TableId) + " FROM PUB_p_form_letter_body") +
+                            GenerateOrderByClause(AOrderBy)), TTypedDataTable.GetTableName(PFormLetterBodyTable.TableId), ATransaction, AStartRecord, AMaxRecords);
         }
 
         /// auto generated
@@ -6359,12 +6188,8 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data.Access
         /// this method is called by all overloads
         public static void LoadByPrimaryKey(DataSet ADataSet, String ABodyName, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            OdbcParameter[] ParametersArray = new OdbcParameter[1];
-            ParametersArray[0] = new OdbcParameter("", OdbcType.VarChar, 40);
-            ParametersArray[0].Value = ((object)(ABodyName));
-            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, ((GenerateSelectClause(AFieldList, new string[] {
-                            "p_body_name_c"}) + " FROM PUB_p_form_letter_body WHERE p_body_name_c = ?")
-                            + GenerateOrderByClause(AOrderBy)), PFormLetterBodyTable.GetTableName(), ATransaction, ParametersArray, AStartRecord, AMaxRecords);
+            ADataSet = LoadByPrimaryKey(PFormLetterBodyTable.TableId,
+                ADataSet, new System.Object[1]{ABodyName}, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
         }
 
         /// auto generated
@@ -6404,10 +6229,10 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data.Access
         /// this method is called by all overloads
         public static void LoadUsingTemplate(DataSet ADataSet, PFormLetterBodyRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClause(AFieldList, new string[] {
-                            "p_body_name_c"}) + " FROM PUB_p_form_letter_body")
-                            + GenerateWhereClause(PFormLetterBodyTable.GetColumnStringList(), ATemplateRow, ATemplateOperators))
-                            + GenerateOrderByClause(AOrderBy)), PFormLetterBodyTable.GetTableName(), ATransaction, GetParametersForWhereClause(ATemplateRow), AStartRecord, AMaxRecords);
+            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClause(AFieldList, PFormLetterBodyTable.TableId) + " FROM PUB_p_form_letter_body") +
+                            GenerateWhereClause(TTypedDataTable.GetColumnStringList(PFormLetterBodyTable.TableId), ATemplateRow, ATemplateOperators)) +
+                            GenerateOrderByClause(AOrderBy)), TTypedDataTable.GetTableName(PFormLetterBodyTable.TableId), ATransaction,
+                            GetParametersForWhereClause(PFormLetterBodyTable.TableId, ATemplateRow), AStartRecord, AMaxRecords);
         }
 
         /// auto generated
@@ -6453,11 +6278,10 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data.Access
         /// this method is called by all overloads
         public static void LoadUsingTemplate(DataSet ADataSet, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClause(AFieldList, new string[] {
-                            "p_body_name_c"}) + " FROM PUB_p_form_letter_body")
-                            + GenerateWhereClause(PFormLetterBodyTable.GetColumnStringList(), ASearchCriteria))
-                            + GenerateOrderByClause(AOrderBy)), PFormLetterBodyTable.GetTableName(), ATransaction,
-                            GetParametersForWhereClause(new PFormLetterBodyTable(), ASearchCriteria), AStartRecord, AMaxRecords);
+            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClause(AFieldList, PFormLetterBodyTable.TableId) + " FROM PUB_p_form_letter_body") +
+                            GenerateWhereClause(TTypedDataTable.GetColumnStringList(PFormLetterBodyTable.TableId), ASearchCriteria)) +
+                            GenerateOrderByClause(AOrderBy)), TTypedDataTable.GetTableName(PFormLetterBodyTable.TableId), ATransaction,
+                            GetParametersForWhereClause(PFormLetterBodyTable.TableId, ASearchCriteria), AStartRecord, AMaxRecords);
         }
 
         /// auto generated
@@ -6500,26 +6324,24 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data.Access
             return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar("SELECT COUNT(*) FROM PUB_p_form_letter_body", ATransaction, false));
         }
 
-        /// this method is called by all overloads
-        public static int CountByPrimaryKey(String ABodyName, TDBTransaction ATransaction)
+        /// check if a row exists by using the primary key
+        public static bool Exists(String ABodyName, TDBTransaction ATransaction)
         {
-            OdbcParameter[] ParametersArray = new OdbcParameter[1];
-            ParametersArray[0] = new OdbcParameter("", OdbcType.VarChar, 40);
-            ParametersArray[0].Value = ((object)(ABodyName));
-            return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar("SELECT COUNT(*) FROM PUB_p_form_letter_body WHERE p_body_name_c = ?", ATransaction, false, ParametersArray));
+            return Exists(PFormLetterBodyTable.TableId, new System.Object[1]{ABodyName}, ATransaction);
         }
 
         /// this method is called by all overloads
         public static int CountUsingTemplate(PFormLetterBodyRow ATemplateRow, StringCollection ATemplateOperators, TDBTransaction ATransaction)
         {
-            return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_p_form_letter_body" + GenerateWhereClause(PFormLetterBodyTable.GetColumnStringList(), ATemplateRow, ATemplateOperators)), ATransaction, false, GetParametersForWhereClause(ATemplateRow)));
+            return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_p_form_letter_body" + GenerateWhereClause(TTypedDataTable.GetColumnStringList(PFormLetterBodyTable.TableId), ATemplateRow, ATemplateOperators)), ATransaction, false,
+                   GetParametersForWhereClause(PFormLetterBodyTable.TableId, ATemplateRow)));
         }
 
         /// this method is called by all overloads
         public static int CountUsingTemplate(TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
         {
-            return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_p_form_letter_body" + GenerateWhereClause(PFormLetterBodyTable.GetColumnStringList(), ASearchCriteria)), ATransaction, false,
-            GetParametersForWhereClause(new PFormLetterBodyTable(), ASearchCriteria)));
+            return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_p_form_letter_body" + GenerateWhereClause(TTypedDataTable.GetColumnStringList(PFormLetterBodyTable.TableId), ASearchCriteria)), ATransaction, false,
+            GetParametersForWhereClause(PFormLetterBodyTable.TableId, ASearchCriteria)));
         }
 
         /// auto generated
@@ -6528,9 +6350,9 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data.Access
             OdbcParameter[] ParametersArray = new OdbcParameter[1];
             ParametersArray[0] = new OdbcParameter("", OdbcType.VarChar, 20);
             ParametersArray[0].Value = ((object)(AUserId));
-            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, ((GenerateSelectClause(AFieldList, new string[] {
-                            "p_body_name_c"}) + " FROM PUB_p_form_letter_body WHERE p_owner_c = ?")
-                            + GenerateOrderByClause(AOrderBy)), PFormLetterBodyTable.GetTableName(), ATransaction, ParametersArray, AStartRecord, AMaxRecords);
+            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, ((GenerateSelectClause(AFieldList, PFormLetterBodyTable.TableId) +
+                            " FROM PUB_p_form_letter_body WHERE p_owner_c = ?") +
+                            GenerateOrderByClause(AOrderBy)), TTypedDataTable.GetTableName(PFormLetterBodyTable.TableId), ATransaction, ParametersArray, AStartRecord, AMaxRecords);
         }
 
         /// auto generated
@@ -6570,11 +6392,12 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data.Access
         /// auto generated
         public static void LoadViaSUserTemplate(DataSet ADataSet, SUserRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClauseLong("PUB_p_form_letter_body", AFieldList, new string[] {
-                            "p_body_name_c"}) + " FROM PUB_p_form_letter_body, PUB_s_user WHERE " +
-                            "PUB_p_form_letter_body.p_owner_c = PUB_s_user.s_user_id_c")
-                            + GenerateWhereClauseLong("PUB_s_user", SUserTable.GetColumnStringList(), ATemplateRow, ATemplateOperators))
-                            + GenerateOrderByClause(AOrderBy)), PFormLetterBodyTable.GetTableName(), ATransaction, GetParametersForWhereClause(ATemplateRow), AStartRecord, AMaxRecords);
+            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClauseLong("PUB_p_form_letter_body", AFieldList, PFormLetterBodyTable.TableId) +
+                            " FROM PUB_p_form_letter_body, PUB_s_user WHERE " +
+                            "PUB_p_form_letter_body.p_owner_c = PUB_s_user.s_user_id_c") +
+                            GenerateWhereClauseLong("PUB_s_user", SUserTable.TableId, ATemplateRow, ATemplateOperators)) +
+                            GenerateOrderByClause(AOrderBy)), TTypedDataTable.GetTableName(PFormLetterBodyTable.TableId), ATransaction,
+                            GetParametersForWhereClause(SUserTable.TableId, ATemplateRow), AStartRecord, AMaxRecords);
         }
 
         /// auto generated
@@ -6620,12 +6443,12 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data.Access
         /// auto generated
         public static void LoadViaSUserTemplate(DataSet ADataSet, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClauseLong("PUB_p_form_letter_body", AFieldList, new string[] {
-                            "p_body_name_c"}) + " FROM PUB_p_form_letter_body, PUB_s_user WHERE " +
-                            "PUB_p_form_letter_body.p_owner_c = PUB_s_user.s_user_id_c")
-                            + GenerateWhereClauseLong("PUB_s_user", SUserTable.GetColumnStringList(), ASearchCriteria))
-                            + GenerateOrderByClause(AOrderBy)), PFormLetterBodyTable.GetTableName(), ATransaction,
-                            GetParametersForWhereClause(new PFormLetterBodyTable(), ASearchCriteria), AStartRecord, AMaxRecords);
+            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClauseLong("PUB_p_form_letter_body", AFieldList, PFormLetterBodyTable.TableId) +
+                            " FROM PUB_p_form_letter_body, PUB_s_user WHERE " +
+                            "PUB_p_form_letter_body.p_owner_c = PUB_s_user.s_user_id_c") +
+                            GenerateWhereClauseLong("PUB_s_user", ASearchCriteria)) +
+                            GenerateOrderByClause(AOrderBy)), TTypedDataTable.GetTableName(PFormLetterBodyTable.TableId), ATransaction,
+                            GetParametersForWhereClause(PFormLetterBodyTable.TableId, ASearchCriteria), AStartRecord, AMaxRecords);
         }
 
         /// auto generated
@@ -6675,7 +6498,10 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data.Access
         public static int CountViaSUserTemplate(SUserRow ATemplateRow, StringCollection ATemplateOperators, TDBTransaction ATransaction)
         {
             return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_p_form_letter_body, PUB_s_user WHERE " +
-                "PUB_p_form_letter_body.p_owner_c = PUB_s_user.s_user_id_c" + GenerateWhereClauseLong("PUB_s_user", SUserTable.GetColumnStringList(), ATemplateRow, ATemplateOperators)), ATransaction, false, GetParametersForWhereClause(ATemplateRow, SUserTable.GetPrimKeyColumnOrdList())));
+                "PUB_p_form_letter_body.p_owner_c = PUB_s_user.s_user_id_c" + GenerateWhereClauseLong("PUB_s_user",
+                SUserTable.TableId, ATemplateRow, ATemplateOperators)),
+                ATransaction, false,
+                GetParametersForWhereClauseWithPrimaryKey(SUserTable.TableId, ATemplateRow)));
         }
 
         /// auto generated
@@ -6683,31 +6509,26 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data.Access
         {
             return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_p_form_letter_body, PUB_s_user WHERE " +
                 "PUB_p_form_letter_body.p_owner_c = PUB_s_user.s_user_id_c" +
-                GenerateWhereClauseLong("PUB_s_user", SUserTable.GetColumnStringList(), ASearchCriteria)), ATransaction, false,
-                GetParametersForWhereClause(new SUserTable(), ASearchCriteria)));
+                GenerateWhereClauseLong("PUB_s_user", ASearchCriteria)), ATransaction, false,
+                GetParametersForWhereClause(SUserTable.TableId, ASearchCriteria)));
         }
 
         /// auto generated
         public static void DeleteByPrimaryKey(String ABodyName, TDBTransaction ATransaction)
         {
-            OdbcParameter[] ParametersArray = new OdbcParameter[1];
-            ParametersArray[0] = new OdbcParameter("", OdbcType.VarChar, 40);
-            ParametersArray[0].Value = ((object)(ABodyName));
-            DBAccess.GDBAccessObj.ExecuteNonQuery("DELETE FROM PUB_p_form_letter_body WHERE p_body_name_c = ?", ATransaction, false, ParametersArray);
+            DeleteByPrimaryKey(PFormLetterBodyTable.TableId, new System.Object[1]{ABodyName}, ATransaction);
         }
 
         /// auto generated
         public static void DeleteUsingTemplate(PFormLetterBodyRow ATemplateRow, StringCollection ATemplateOperators, TDBTransaction ATransaction)
         {
-            DBAccess.GDBAccessObj.ExecuteNonQuery(("DELETE FROM PUB_p_form_letter_body" + GenerateWhereClause(PFormLetterBodyTable.GetColumnStringList(), ATemplateRow, ATemplateOperators)), ATransaction, false, GetParametersForWhereClause(ATemplateRow));
+            DeleteUsingTemplate(PFormLetterBodyTable.TableId, ATemplateRow, ATemplateOperators, ATransaction);
         }
 
         /// auto generated
         public static void DeleteUsingTemplate(TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
         {
-            DBAccess.GDBAccessObj.ExecuteNonQuery(("DELETE FROM PUB_p_form_letter_body" +
-                GenerateWhereClause(PFormLetterBodyTable.GetColumnStringList(), ASearchCriteria)), ATransaction, false,
-                GetParametersForWhereClause(new PFormLetterBodyTable(), ASearchCriteria));
+            DeleteUsingTemplate(PFormLetterBodyTable.TableId, ASearchCriteria, ATransaction);
         }
 
         /// auto generated
@@ -6724,15 +6545,15 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data.Access
                 {
                     if ((TheRow.RowState == DataRowState.Added))
                     {
-                        TTypedDataAccess.InsertRow("p_form_letter_body", PFormLetterBodyTable.GetColumnStringList(), ref TheRow, ATransaction, UserInfo.GUserInfo.UserID);
+                        TTypedDataAccess.InsertRow(PFormLetterBodyTable.TableId, ref TheRow, ATransaction, UserInfo.GUserInfo.UserID);
                     }
                     if ((TheRow.RowState == DataRowState.Modified))
                     {
-                        TTypedDataAccess.UpdateRow("p_form_letter_body", PFormLetterBodyTable.GetColumnStringList(), PFormLetterBodyTable.GetPrimKeyColumnOrdList(), ref TheRow, ATransaction, UserInfo.GUserInfo.UserID);
+                        TTypedDataAccess.UpdateRow(PFormLetterBodyTable.TableId, ref TheRow, ATransaction, UserInfo.GUserInfo.UserID);
                     }
                     if ((TheRow.RowState == DataRowState.Deleted))
                     {
-                        TTypedDataAccess.DeleteRow("p_form_letter_body", PFormLetterBodyTable.GetColumnStringList(), PFormLetterBodyTable.GetPrimKeyColumnOrdList(), TheRow, ATransaction);
+                        TTypedDataAccess.DeleteRow(PFormLetterBodyTable.TableId, TheRow, ATransaction);
                     }
                 }
                 catch (OdbcException ex)
@@ -6762,9 +6583,8 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data.Access
         /// this method is called by all overloads
         public static void LoadAll(DataSet ADataSet, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, ((GenerateSelectClause(AFieldList, new string[] {
-                            "p_design_name_c"}) + " FROM PUB_p_form_letter_design")
-                            + GenerateOrderByClause(AOrderBy)), PFormLetterDesignTable.GetTableName(), ATransaction, AStartRecord, AMaxRecords);
+            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, ((GenerateSelectClause(AFieldList, PFormLetterDesignTable.TableId) + " FROM PUB_p_form_letter_design") +
+                            GenerateOrderByClause(AOrderBy)), TTypedDataTable.GetTableName(PFormLetterDesignTable.TableId), ATransaction, AStartRecord, AMaxRecords);
         }
 
         /// auto generated
@@ -6804,12 +6624,8 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data.Access
         /// this method is called by all overloads
         public static void LoadByPrimaryKey(DataSet ADataSet, String ADesignName, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            OdbcParameter[] ParametersArray = new OdbcParameter[1];
-            ParametersArray[0] = new OdbcParameter("", OdbcType.VarChar, 40);
-            ParametersArray[0].Value = ((object)(ADesignName));
-            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, ((GenerateSelectClause(AFieldList, new string[] {
-                            "p_design_name_c"}) + " FROM PUB_p_form_letter_design WHERE p_design_name_c = ?")
-                            + GenerateOrderByClause(AOrderBy)), PFormLetterDesignTable.GetTableName(), ATransaction, ParametersArray, AStartRecord, AMaxRecords);
+            ADataSet = LoadByPrimaryKey(PFormLetterDesignTable.TableId,
+                ADataSet, new System.Object[1]{ADesignName}, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
         }
 
         /// auto generated
@@ -6849,10 +6665,10 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data.Access
         /// this method is called by all overloads
         public static void LoadUsingTemplate(DataSet ADataSet, PFormLetterDesignRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClause(AFieldList, new string[] {
-                            "p_design_name_c"}) + " FROM PUB_p_form_letter_design")
-                            + GenerateWhereClause(PFormLetterDesignTable.GetColumnStringList(), ATemplateRow, ATemplateOperators))
-                            + GenerateOrderByClause(AOrderBy)), PFormLetterDesignTable.GetTableName(), ATransaction, GetParametersForWhereClause(ATemplateRow), AStartRecord, AMaxRecords);
+            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClause(AFieldList, PFormLetterDesignTable.TableId) + " FROM PUB_p_form_letter_design") +
+                            GenerateWhereClause(TTypedDataTable.GetColumnStringList(PFormLetterDesignTable.TableId), ATemplateRow, ATemplateOperators)) +
+                            GenerateOrderByClause(AOrderBy)), TTypedDataTable.GetTableName(PFormLetterDesignTable.TableId), ATransaction,
+                            GetParametersForWhereClause(PFormLetterDesignTable.TableId, ATemplateRow), AStartRecord, AMaxRecords);
         }
 
         /// auto generated
@@ -6898,11 +6714,10 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data.Access
         /// this method is called by all overloads
         public static void LoadUsingTemplate(DataSet ADataSet, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClause(AFieldList, new string[] {
-                            "p_design_name_c"}) + " FROM PUB_p_form_letter_design")
-                            + GenerateWhereClause(PFormLetterDesignTable.GetColumnStringList(), ASearchCriteria))
-                            + GenerateOrderByClause(AOrderBy)), PFormLetterDesignTable.GetTableName(), ATransaction,
-                            GetParametersForWhereClause(new PFormLetterDesignTable(), ASearchCriteria), AStartRecord, AMaxRecords);
+            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClause(AFieldList, PFormLetterDesignTable.TableId) + " FROM PUB_p_form_letter_design") +
+                            GenerateWhereClause(TTypedDataTable.GetColumnStringList(PFormLetterDesignTable.TableId), ASearchCriteria)) +
+                            GenerateOrderByClause(AOrderBy)), TTypedDataTable.GetTableName(PFormLetterDesignTable.TableId), ATransaction,
+                            GetParametersForWhereClause(PFormLetterDesignTable.TableId, ASearchCriteria), AStartRecord, AMaxRecords);
         }
 
         /// auto generated
@@ -6945,26 +6760,24 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data.Access
             return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar("SELECT COUNT(*) FROM PUB_p_form_letter_design", ATransaction, false));
         }
 
-        /// this method is called by all overloads
-        public static int CountByPrimaryKey(String ADesignName, TDBTransaction ATransaction)
+        /// check if a row exists by using the primary key
+        public static bool Exists(String ADesignName, TDBTransaction ATransaction)
         {
-            OdbcParameter[] ParametersArray = new OdbcParameter[1];
-            ParametersArray[0] = new OdbcParameter("", OdbcType.VarChar, 40);
-            ParametersArray[0].Value = ((object)(ADesignName));
-            return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar("SELECT COUNT(*) FROM PUB_p_form_letter_design WHERE p_design_name_c = ?", ATransaction, false, ParametersArray));
+            return Exists(PFormLetterDesignTable.TableId, new System.Object[1]{ADesignName}, ATransaction);
         }
 
         /// this method is called by all overloads
         public static int CountUsingTemplate(PFormLetterDesignRow ATemplateRow, StringCollection ATemplateOperators, TDBTransaction ATransaction)
         {
-            return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_p_form_letter_design" + GenerateWhereClause(PFormLetterDesignTable.GetColumnStringList(), ATemplateRow, ATemplateOperators)), ATransaction, false, GetParametersForWhereClause(ATemplateRow)));
+            return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_p_form_letter_design" + GenerateWhereClause(TTypedDataTable.GetColumnStringList(PFormLetterDesignTable.TableId), ATemplateRow, ATemplateOperators)), ATransaction, false,
+                   GetParametersForWhereClause(PFormLetterDesignTable.TableId, ATemplateRow)));
         }
 
         /// this method is called by all overloads
         public static int CountUsingTemplate(TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
         {
-            return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_p_form_letter_design" + GenerateWhereClause(PFormLetterDesignTable.GetColumnStringList(), ASearchCriteria)), ATransaction, false,
-            GetParametersForWhereClause(new PFormLetterDesignTable(), ASearchCriteria)));
+            return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_p_form_letter_design" + GenerateWhereClause(TTypedDataTable.GetColumnStringList(PFormLetterDesignTable.TableId), ASearchCriteria)), ATransaction, false,
+            GetParametersForWhereClause(PFormLetterDesignTable.TableId, ASearchCriteria)));
         }
 
         /// auto generated
@@ -6973,9 +6786,9 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data.Access
             OdbcParameter[] ParametersArray = new OdbcParameter[1];
             ParametersArray[0] = new OdbcParameter("", OdbcType.VarChar, 40);
             ParametersArray[0].Value = ((object)(ABodyName));
-            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, ((GenerateSelectClause(AFieldList, new string[] {
-                            "p_design_name_c"}) + " FROM PUB_p_form_letter_design WHERE p_body_name_c = ?")
-                            + GenerateOrderByClause(AOrderBy)), PFormLetterDesignTable.GetTableName(), ATransaction, ParametersArray, AStartRecord, AMaxRecords);
+            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, ((GenerateSelectClause(AFieldList, PFormLetterDesignTable.TableId) +
+                            " FROM PUB_p_form_letter_design WHERE p_body_name_c = ?") +
+                            GenerateOrderByClause(AOrderBy)), TTypedDataTable.GetTableName(PFormLetterDesignTable.TableId), ATransaction, ParametersArray, AStartRecord, AMaxRecords);
         }
 
         /// auto generated
@@ -7015,11 +6828,12 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data.Access
         /// auto generated
         public static void LoadViaPFormLetterBodyTemplate(DataSet ADataSet, PFormLetterBodyRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClauseLong("PUB_p_form_letter_design", AFieldList, new string[] {
-                            "p_design_name_c"}) + " FROM PUB_p_form_letter_design, PUB_p_form_letter_body WHERE " +
-                            "PUB_p_form_letter_design.p_body_name_c = PUB_p_form_letter_body.p_body_name_c")
-                            + GenerateWhereClauseLong("PUB_p_form_letter_body", PFormLetterBodyTable.GetColumnStringList(), ATemplateRow, ATemplateOperators))
-                            + GenerateOrderByClause(AOrderBy)), PFormLetterDesignTable.GetTableName(), ATransaction, GetParametersForWhereClause(ATemplateRow), AStartRecord, AMaxRecords);
+            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClauseLong("PUB_p_form_letter_design", AFieldList, PFormLetterDesignTable.TableId) +
+                            " FROM PUB_p_form_letter_design, PUB_p_form_letter_body WHERE " +
+                            "PUB_p_form_letter_design.p_body_name_c = PUB_p_form_letter_body.p_body_name_c") +
+                            GenerateWhereClauseLong("PUB_p_form_letter_body", PFormLetterBodyTable.TableId, ATemplateRow, ATemplateOperators)) +
+                            GenerateOrderByClause(AOrderBy)), TTypedDataTable.GetTableName(PFormLetterDesignTable.TableId), ATransaction,
+                            GetParametersForWhereClause(PFormLetterBodyTable.TableId, ATemplateRow), AStartRecord, AMaxRecords);
         }
 
         /// auto generated
@@ -7065,12 +6879,12 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data.Access
         /// auto generated
         public static void LoadViaPFormLetterBodyTemplate(DataSet ADataSet, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClauseLong("PUB_p_form_letter_design", AFieldList, new string[] {
-                            "p_design_name_c"}) + " FROM PUB_p_form_letter_design, PUB_p_form_letter_body WHERE " +
-                            "PUB_p_form_letter_design.p_body_name_c = PUB_p_form_letter_body.p_body_name_c")
-                            + GenerateWhereClauseLong("PUB_p_form_letter_body", PFormLetterBodyTable.GetColumnStringList(), ASearchCriteria))
-                            + GenerateOrderByClause(AOrderBy)), PFormLetterDesignTable.GetTableName(), ATransaction,
-                            GetParametersForWhereClause(new PFormLetterDesignTable(), ASearchCriteria), AStartRecord, AMaxRecords);
+            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClauseLong("PUB_p_form_letter_design", AFieldList, PFormLetterDesignTable.TableId) +
+                            " FROM PUB_p_form_letter_design, PUB_p_form_letter_body WHERE " +
+                            "PUB_p_form_letter_design.p_body_name_c = PUB_p_form_letter_body.p_body_name_c") +
+                            GenerateWhereClauseLong("PUB_p_form_letter_body", ASearchCriteria)) +
+                            GenerateOrderByClause(AOrderBy)), TTypedDataTable.GetTableName(PFormLetterDesignTable.TableId), ATransaction,
+                            GetParametersForWhereClause(PFormLetterDesignTable.TableId, ASearchCriteria), AStartRecord, AMaxRecords);
         }
 
         /// auto generated
@@ -7120,7 +6934,10 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data.Access
         public static int CountViaPFormLetterBodyTemplate(PFormLetterBodyRow ATemplateRow, StringCollection ATemplateOperators, TDBTransaction ATransaction)
         {
             return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_p_form_letter_design, PUB_p_form_letter_body WHERE " +
-                "PUB_p_form_letter_design.p_body_name_c = PUB_p_form_letter_body.p_body_name_c" + GenerateWhereClauseLong("PUB_p_form_letter_body", PFormLetterBodyTable.GetColumnStringList(), ATemplateRow, ATemplateOperators)), ATransaction, false, GetParametersForWhereClause(ATemplateRow, PFormLetterBodyTable.GetPrimKeyColumnOrdList())));
+                "PUB_p_form_letter_design.p_body_name_c = PUB_p_form_letter_body.p_body_name_c" + GenerateWhereClauseLong("PUB_p_form_letter_body",
+                PFormLetterBodyTable.TableId, ATemplateRow, ATemplateOperators)),
+                ATransaction, false,
+                GetParametersForWhereClauseWithPrimaryKey(PFormLetterBodyTable.TableId, ATemplateRow)));
         }
 
         /// auto generated
@@ -7128,8 +6945,8 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data.Access
         {
             return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_p_form_letter_design, PUB_p_form_letter_body WHERE " +
                 "PUB_p_form_letter_design.p_body_name_c = PUB_p_form_letter_body.p_body_name_c" +
-                GenerateWhereClauseLong("PUB_p_form_letter_body", PFormLetterBodyTable.GetColumnStringList(), ASearchCriteria)), ATransaction, false,
-                GetParametersForWhereClause(new PFormLetterBodyTable(), ASearchCriteria)));
+                GenerateWhereClauseLong("PUB_p_form_letter_body", ASearchCriteria)), ATransaction, false,
+                GetParametersForWhereClause(PFormLetterBodyTable.TableId, ASearchCriteria)));
         }
 
         /// auto generated
@@ -7138,9 +6955,9 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data.Access
             OdbcParameter[] ParametersArray = new OdbcParameter[1];
             ParametersArray[0] = new OdbcParameter("", OdbcType.VarChar, 32);
             ParametersArray[0].Value = ((object)(ACode));
-            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, ((GenerateSelectClause(AFieldList, new string[] {
-                            "p_design_name_c"}) + " FROM PUB_p_form_letter_design WHERE p_address_layout_code_c = ?")
-                            + GenerateOrderByClause(AOrderBy)), PFormLetterDesignTable.GetTableName(), ATransaction, ParametersArray, AStartRecord, AMaxRecords);
+            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, ((GenerateSelectClause(AFieldList, PFormLetterDesignTable.TableId) +
+                            " FROM PUB_p_form_letter_design WHERE p_address_layout_code_c = ?") +
+                            GenerateOrderByClause(AOrderBy)), TTypedDataTable.GetTableName(PFormLetterDesignTable.TableId), ATransaction, ParametersArray, AStartRecord, AMaxRecords);
         }
 
         /// auto generated
@@ -7180,11 +6997,12 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data.Access
         /// auto generated
         public static void LoadViaPAddressLayoutCodeTemplate(DataSet ADataSet, PAddressLayoutCodeRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClauseLong("PUB_p_form_letter_design", AFieldList, new string[] {
-                            "p_design_name_c"}) + " FROM PUB_p_form_letter_design, PUB_p_address_layout_code WHERE " +
-                            "PUB_p_form_letter_design.p_address_layout_code_c = PUB_p_address_layout_code.p_code_c")
-                            + GenerateWhereClauseLong("PUB_p_address_layout_code", PAddressLayoutCodeTable.GetColumnStringList(), ATemplateRow, ATemplateOperators))
-                            + GenerateOrderByClause(AOrderBy)), PFormLetterDesignTable.GetTableName(), ATransaction, GetParametersForWhereClause(ATemplateRow), AStartRecord, AMaxRecords);
+            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClauseLong("PUB_p_form_letter_design", AFieldList, PFormLetterDesignTable.TableId) +
+                            " FROM PUB_p_form_letter_design, PUB_p_address_layout_code WHERE " +
+                            "PUB_p_form_letter_design.p_address_layout_code_c = PUB_p_address_layout_code.p_code_c") +
+                            GenerateWhereClauseLong("PUB_p_address_layout_code", PAddressLayoutCodeTable.TableId, ATemplateRow, ATemplateOperators)) +
+                            GenerateOrderByClause(AOrderBy)), TTypedDataTable.GetTableName(PFormLetterDesignTable.TableId), ATransaction,
+                            GetParametersForWhereClause(PAddressLayoutCodeTable.TableId, ATemplateRow), AStartRecord, AMaxRecords);
         }
 
         /// auto generated
@@ -7230,12 +7048,12 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data.Access
         /// auto generated
         public static void LoadViaPAddressLayoutCodeTemplate(DataSet ADataSet, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClauseLong("PUB_p_form_letter_design", AFieldList, new string[] {
-                            "p_design_name_c"}) + " FROM PUB_p_form_letter_design, PUB_p_address_layout_code WHERE " +
-                            "PUB_p_form_letter_design.p_address_layout_code_c = PUB_p_address_layout_code.p_code_c")
-                            + GenerateWhereClauseLong("PUB_p_address_layout_code", PAddressLayoutCodeTable.GetColumnStringList(), ASearchCriteria))
-                            + GenerateOrderByClause(AOrderBy)), PFormLetterDesignTable.GetTableName(), ATransaction,
-                            GetParametersForWhereClause(new PFormLetterDesignTable(), ASearchCriteria), AStartRecord, AMaxRecords);
+            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClauseLong("PUB_p_form_letter_design", AFieldList, PFormLetterDesignTable.TableId) +
+                            " FROM PUB_p_form_letter_design, PUB_p_address_layout_code WHERE " +
+                            "PUB_p_form_letter_design.p_address_layout_code_c = PUB_p_address_layout_code.p_code_c") +
+                            GenerateWhereClauseLong("PUB_p_address_layout_code", ASearchCriteria)) +
+                            GenerateOrderByClause(AOrderBy)), TTypedDataTable.GetTableName(PFormLetterDesignTable.TableId), ATransaction,
+                            GetParametersForWhereClause(PFormLetterDesignTable.TableId, ASearchCriteria), AStartRecord, AMaxRecords);
         }
 
         /// auto generated
@@ -7285,7 +7103,10 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data.Access
         public static int CountViaPAddressLayoutCodeTemplate(PAddressLayoutCodeRow ATemplateRow, StringCollection ATemplateOperators, TDBTransaction ATransaction)
         {
             return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_p_form_letter_design, PUB_p_address_layout_code WHERE " +
-                "PUB_p_form_letter_design.p_address_layout_code_c = PUB_p_address_layout_code.p_code_c" + GenerateWhereClauseLong("PUB_p_address_layout_code", PAddressLayoutCodeTable.GetColumnStringList(), ATemplateRow, ATemplateOperators)), ATransaction, false, GetParametersForWhereClause(ATemplateRow, PAddressLayoutCodeTable.GetPrimKeyColumnOrdList())));
+                "PUB_p_form_letter_design.p_address_layout_code_c = PUB_p_address_layout_code.p_code_c" + GenerateWhereClauseLong("PUB_p_address_layout_code",
+                PAddressLayoutCodeTable.TableId, ATemplateRow, ATemplateOperators)),
+                ATransaction, false,
+                GetParametersForWhereClauseWithPrimaryKey(PAddressLayoutCodeTable.TableId, ATemplateRow)));
         }
 
         /// auto generated
@@ -7293,31 +7114,26 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data.Access
         {
             return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_p_form_letter_design, PUB_p_address_layout_code WHERE " +
                 "PUB_p_form_letter_design.p_address_layout_code_c = PUB_p_address_layout_code.p_code_c" +
-                GenerateWhereClauseLong("PUB_p_address_layout_code", PAddressLayoutCodeTable.GetColumnStringList(), ASearchCriteria)), ATransaction, false,
-                GetParametersForWhereClause(new PAddressLayoutCodeTable(), ASearchCriteria)));
+                GenerateWhereClauseLong("PUB_p_address_layout_code", ASearchCriteria)), ATransaction, false,
+                GetParametersForWhereClause(PAddressLayoutCodeTable.TableId, ASearchCriteria)));
         }
 
         /// auto generated
         public static void DeleteByPrimaryKey(String ADesignName, TDBTransaction ATransaction)
         {
-            OdbcParameter[] ParametersArray = new OdbcParameter[1];
-            ParametersArray[0] = new OdbcParameter("", OdbcType.VarChar, 40);
-            ParametersArray[0].Value = ((object)(ADesignName));
-            DBAccess.GDBAccessObj.ExecuteNonQuery("DELETE FROM PUB_p_form_letter_design WHERE p_design_name_c = ?", ATransaction, false, ParametersArray);
+            DeleteByPrimaryKey(PFormLetterDesignTable.TableId, new System.Object[1]{ADesignName}, ATransaction);
         }
 
         /// auto generated
         public static void DeleteUsingTemplate(PFormLetterDesignRow ATemplateRow, StringCollection ATemplateOperators, TDBTransaction ATransaction)
         {
-            DBAccess.GDBAccessObj.ExecuteNonQuery(("DELETE FROM PUB_p_form_letter_design" + GenerateWhereClause(PFormLetterDesignTable.GetColumnStringList(), ATemplateRow, ATemplateOperators)), ATransaction, false, GetParametersForWhereClause(ATemplateRow));
+            DeleteUsingTemplate(PFormLetterDesignTable.TableId, ATemplateRow, ATemplateOperators, ATransaction);
         }
 
         /// auto generated
         public static void DeleteUsingTemplate(TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
         {
-            DBAccess.GDBAccessObj.ExecuteNonQuery(("DELETE FROM PUB_p_form_letter_design" +
-                GenerateWhereClause(PFormLetterDesignTable.GetColumnStringList(), ASearchCriteria)), ATransaction, false,
-                GetParametersForWhereClause(new PFormLetterDesignTable(), ASearchCriteria));
+            DeleteUsingTemplate(PFormLetterDesignTable.TableId, ASearchCriteria, ATransaction);
         }
 
         /// auto generated
@@ -7334,15 +7150,15 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data.Access
                 {
                     if ((TheRow.RowState == DataRowState.Added))
                     {
-                        TTypedDataAccess.InsertRow("p_form_letter_design", PFormLetterDesignTable.GetColumnStringList(), ref TheRow, ATransaction, UserInfo.GUserInfo.UserID);
+                        TTypedDataAccess.InsertRow(PFormLetterDesignTable.TableId, ref TheRow, ATransaction, UserInfo.GUserInfo.UserID);
                     }
                     if ((TheRow.RowState == DataRowState.Modified))
                     {
-                        TTypedDataAccess.UpdateRow("p_form_letter_design", PFormLetterDesignTable.GetColumnStringList(), PFormLetterDesignTable.GetPrimKeyColumnOrdList(), ref TheRow, ATransaction, UserInfo.GUserInfo.UserID);
+                        TTypedDataAccess.UpdateRow(PFormLetterDesignTable.TableId, ref TheRow, ATransaction, UserInfo.GUserInfo.UserID);
                     }
                     if ((TheRow.RowState == DataRowState.Deleted))
                     {
-                        TTypedDataAccess.DeleteRow("p_form_letter_design", PFormLetterDesignTable.GetColumnStringList(), PFormLetterDesignTable.GetPrimKeyColumnOrdList(), TheRow, ATransaction);
+                        TTypedDataAccess.DeleteRow(PFormLetterDesignTable.TableId, TheRow, ATransaction);
                     }
                 }
                 catch (OdbcException ex)
@@ -7372,9 +7188,8 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data.Access
         /// this method is called by all overloads
         public static void LoadAll(DataSet ADataSet, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, ((GenerateSelectClause(AFieldList, new string[] {
-                            "p_sequence_i"}) + " FROM PUB_p_form_letter_insert")
-                            + GenerateOrderByClause(AOrderBy)), PFormLetterInsertTable.GetTableName(), ATransaction, AStartRecord, AMaxRecords);
+            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, ((GenerateSelectClause(AFieldList, PFormLetterInsertTable.TableId) + " FROM PUB_p_form_letter_insert") +
+                            GenerateOrderByClause(AOrderBy)), TTypedDataTable.GetTableName(PFormLetterInsertTable.TableId), ATransaction, AStartRecord, AMaxRecords);
         }
 
         /// auto generated
@@ -7414,12 +7229,8 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data.Access
         /// this method is called by all overloads
         public static void LoadByPrimaryKey(DataSet ADataSet, Int32 ASequence, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            OdbcParameter[] ParametersArray = new OdbcParameter[1];
-            ParametersArray[0] = new OdbcParameter("", OdbcType.Int);
-            ParametersArray[0].Value = ((object)(ASequence));
-            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, ((GenerateSelectClause(AFieldList, new string[] {
-                            "p_sequence_i"}) + " FROM PUB_p_form_letter_insert WHERE p_sequence_i = ?")
-                            + GenerateOrderByClause(AOrderBy)), PFormLetterInsertTable.GetTableName(), ATransaction, ParametersArray, AStartRecord, AMaxRecords);
+            ADataSet = LoadByPrimaryKey(PFormLetterInsertTable.TableId,
+                ADataSet, new System.Object[1]{ASequence}, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
         }
 
         /// auto generated
@@ -7459,10 +7270,10 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data.Access
         /// this method is called by all overloads
         public static void LoadUsingTemplate(DataSet ADataSet, PFormLetterInsertRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClause(AFieldList, new string[] {
-                            "p_sequence_i"}) + " FROM PUB_p_form_letter_insert")
-                            + GenerateWhereClause(PFormLetterInsertTable.GetColumnStringList(), ATemplateRow, ATemplateOperators))
-                            + GenerateOrderByClause(AOrderBy)), PFormLetterInsertTable.GetTableName(), ATransaction, GetParametersForWhereClause(ATemplateRow), AStartRecord, AMaxRecords);
+            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClause(AFieldList, PFormLetterInsertTable.TableId) + " FROM PUB_p_form_letter_insert") +
+                            GenerateWhereClause(TTypedDataTable.GetColumnStringList(PFormLetterInsertTable.TableId), ATemplateRow, ATemplateOperators)) +
+                            GenerateOrderByClause(AOrderBy)), TTypedDataTable.GetTableName(PFormLetterInsertTable.TableId), ATransaction,
+                            GetParametersForWhereClause(PFormLetterInsertTable.TableId, ATemplateRow), AStartRecord, AMaxRecords);
         }
 
         /// auto generated
@@ -7508,11 +7319,10 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data.Access
         /// this method is called by all overloads
         public static void LoadUsingTemplate(DataSet ADataSet, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClause(AFieldList, new string[] {
-                            "p_sequence_i"}) + " FROM PUB_p_form_letter_insert")
-                            + GenerateWhereClause(PFormLetterInsertTable.GetColumnStringList(), ASearchCriteria))
-                            + GenerateOrderByClause(AOrderBy)), PFormLetterInsertTable.GetTableName(), ATransaction,
-                            GetParametersForWhereClause(new PFormLetterInsertTable(), ASearchCriteria), AStartRecord, AMaxRecords);
+            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClause(AFieldList, PFormLetterInsertTable.TableId) + " FROM PUB_p_form_letter_insert") +
+                            GenerateWhereClause(TTypedDataTable.GetColumnStringList(PFormLetterInsertTable.TableId), ASearchCriteria)) +
+                            GenerateOrderByClause(AOrderBy)), TTypedDataTable.GetTableName(PFormLetterInsertTable.TableId), ATransaction,
+                            GetParametersForWhereClause(PFormLetterInsertTable.TableId, ASearchCriteria), AStartRecord, AMaxRecords);
         }
 
         /// auto generated
@@ -7555,26 +7365,24 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data.Access
             return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar("SELECT COUNT(*) FROM PUB_p_form_letter_insert", ATransaction, false));
         }
 
-        /// this method is called by all overloads
-        public static int CountByPrimaryKey(Int32 ASequence, TDBTransaction ATransaction)
+        /// check if a row exists by using the primary key
+        public static bool Exists(Int32 ASequence, TDBTransaction ATransaction)
         {
-            OdbcParameter[] ParametersArray = new OdbcParameter[1];
-            ParametersArray[0] = new OdbcParameter("", OdbcType.Int);
-            ParametersArray[0].Value = ((object)(ASequence));
-            return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar("SELECT COUNT(*) FROM PUB_p_form_letter_insert WHERE p_sequence_i = ?", ATransaction, false, ParametersArray));
+            return Exists(PFormLetterInsertTable.TableId, new System.Object[1]{ASequence}, ATransaction);
         }
 
         /// this method is called by all overloads
         public static int CountUsingTemplate(PFormLetterInsertRow ATemplateRow, StringCollection ATemplateOperators, TDBTransaction ATransaction)
         {
-            return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_p_form_letter_insert" + GenerateWhereClause(PFormLetterInsertTable.GetColumnStringList(), ATemplateRow, ATemplateOperators)), ATransaction, false, GetParametersForWhereClause(ATemplateRow)));
+            return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_p_form_letter_insert" + GenerateWhereClause(TTypedDataTable.GetColumnStringList(PFormLetterInsertTable.TableId), ATemplateRow, ATemplateOperators)), ATransaction, false,
+                   GetParametersForWhereClause(PFormLetterInsertTable.TableId, ATemplateRow)));
         }
 
         /// this method is called by all overloads
         public static int CountUsingTemplate(TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
         {
-            return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_p_form_letter_insert" + GenerateWhereClause(PFormLetterInsertTable.GetColumnStringList(), ASearchCriteria)), ATransaction, false,
-            GetParametersForWhereClause(new PFormLetterInsertTable(), ASearchCriteria)));
+            return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_p_form_letter_insert" + GenerateWhereClause(TTypedDataTable.GetColumnStringList(PFormLetterInsertTable.TableId), ASearchCriteria)), ATransaction, false,
+            GetParametersForWhereClause(PFormLetterInsertTable.TableId, ASearchCriteria)));
         }
 
         /// auto generated
@@ -7583,9 +7391,9 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data.Access
             OdbcParameter[] ParametersArray = new OdbcParameter[1];
             ParametersArray[0] = new OdbcParameter("", OdbcType.VarChar, 40);
             ParametersArray[0].Value = ((object)(ABodyName));
-            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, ((GenerateSelectClause(AFieldList, new string[] {
-                            "p_sequence_i"}) + " FROM PUB_p_form_letter_insert WHERE p_body_name_c = ?")
-                            + GenerateOrderByClause(AOrderBy)), PFormLetterInsertTable.GetTableName(), ATransaction, ParametersArray, AStartRecord, AMaxRecords);
+            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, ((GenerateSelectClause(AFieldList, PFormLetterInsertTable.TableId) +
+                            " FROM PUB_p_form_letter_insert WHERE p_body_name_c = ?") +
+                            GenerateOrderByClause(AOrderBy)), TTypedDataTable.GetTableName(PFormLetterInsertTable.TableId), ATransaction, ParametersArray, AStartRecord, AMaxRecords);
         }
 
         /// auto generated
@@ -7625,11 +7433,12 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data.Access
         /// auto generated
         public static void LoadViaPFormLetterBodyTemplate(DataSet ADataSet, PFormLetterBodyRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClauseLong("PUB_p_form_letter_insert", AFieldList, new string[] {
-                            "p_sequence_i"}) + " FROM PUB_p_form_letter_insert, PUB_p_form_letter_body WHERE " +
-                            "PUB_p_form_letter_insert.p_body_name_c = PUB_p_form_letter_body.p_body_name_c")
-                            + GenerateWhereClauseLong("PUB_p_form_letter_body", PFormLetterBodyTable.GetColumnStringList(), ATemplateRow, ATemplateOperators))
-                            + GenerateOrderByClause(AOrderBy)), PFormLetterInsertTable.GetTableName(), ATransaction, GetParametersForWhereClause(ATemplateRow), AStartRecord, AMaxRecords);
+            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClauseLong("PUB_p_form_letter_insert", AFieldList, PFormLetterInsertTable.TableId) +
+                            " FROM PUB_p_form_letter_insert, PUB_p_form_letter_body WHERE " +
+                            "PUB_p_form_letter_insert.p_body_name_c = PUB_p_form_letter_body.p_body_name_c") +
+                            GenerateWhereClauseLong("PUB_p_form_letter_body", PFormLetterBodyTable.TableId, ATemplateRow, ATemplateOperators)) +
+                            GenerateOrderByClause(AOrderBy)), TTypedDataTable.GetTableName(PFormLetterInsertTable.TableId), ATransaction,
+                            GetParametersForWhereClause(PFormLetterBodyTable.TableId, ATemplateRow), AStartRecord, AMaxRecords);
         }
 
         /// auto generated
@@ -7675,12 +7484,12 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data.Access
         /// auto generated
         public static void LoadViaPFormLetterBodyTemplate(DataSet ADataSet, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClauseLong("PUB_p_form_letter_insert", AFieldList, new string[] {
-                            "p_sequence_i"}) + " FROM PUB_p_form_letter_insert, PUB_p_form_letter_body WHERE " +
-                            "PUB_p_form_letter_insert.p_body_name_c = PUB_p_form_letter_body.p_body_name_c")
-                            + GenerateWhereClauseLong("PUB_p_form_letter_body", PFormLetterBodyTable.GetColumnStringList(), ASearchCriteria))
-                            + GenerateOrderByClause(AOrderBy)), PFormLetterInsertTable.GetTableName(), ATransaction,
-                            GetParametersForWhereClause(new PFormLetterInsertTable(), ASearchCriteria), AStartRecord, AMaxRecords);
+            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClauseLong("PUB_p_form_letter_insert", AFieldList, PFormLetterInsertTable.TableId) +
+                            " FROM PUB_p_form_letter_insert, PUB_p_form_letter_body WHERE " +
+                            "PUB_p_form_letter_insert.p_body_name_c = PUB_p_form_letter_body.p_body_name_c") +
+                            GenerateWhereClauseLong("PUB_p_form_letter_body", ASearchCriteria)) +
+                            GenerateOrderByClause(AOrderBy)), TTypedDataTable.GetTableName(PFormLetterInsertTable.TableId), ATransaction,
+                            GetParametersForWhereClause(PFormLetterInsertTable.TableId, ASearchCriteria), AStartRecord, AMaxRecords);
         }
 
         /// auto generated
@@ -7730,7 +7539,10 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data.Access
         public static int CountViaPFormLetterBodyTemplate(PFormLetterBodyRow ATemplateRow, StringCollection ATemplateOperators, TDBTransaction ATransaction)
         {
             return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_p_form_letter_insert, PUB_p_form_letter_body WHERE " +
-                "PUB_p_form_letter_insert.p_body_name_c = PUB_p_form_letter_body.p_body_name_c" + GenerateWhereClauseLong("PUB_p_form_letter_body", PFormLetterBodyTable.GetColumnStringList(), ATemplateRow, ATemplateOperators)), ATransaction, false, GetParametersForWhereClause(ATemplateRow, PFormLetterBodyTable.GetPrimKeyColumnOrdList())));
+                "PUB_p_form_letter_insert.p_body_name_c = PUB_p_form_letter_body.p_body_name_c" + GenerateWhereClauseLong("PUB_p_form_letter_body",
+                PFormLetterBodyTable.TableId, ATemplateRow, ATemplateOperators)),
+                ATransaction, false,
+                GetParametersForWhereClauseWithPrimaryKey(PFormLetterBodyTable.TableId, ATemplateRow)));
         }
 
         /// auto generated
@@ -7738,8 +7550,8 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data.Access
         {
             return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_p_form_letter_insert, PUB_p_form_letter_body WHERE " +
                 "PUB_p_form_letter_insert.p_body_name_c = PUB_p_form_letter_body.p_body_name_c" +
-                GenerateWhereClauseLong("PUB_p_form_letter_body", PFormLetterBodyTable.GetColumnStringList(), ASearchCriteria)), ATransaction, false,
-                GetParametersForWhereClause(new PFormLetterBodyTable(), ASearchCriteria)));
+                GenerateWhereClauseLong("PUB_p_form_letter_body", ASearchCriteria)), ATransaction, false,
+                GetParametersForWhereClause(PFormLetterBodyTable.TableId, ASearchCriteria)));
         }
 
         /// auto generated
@@ -7748,9 +7560,9 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data.Access
             OdbcParameter[] ParametersArray = new OdbcParameter[1];
             ParametersArray[0] = new OdbcParameter("", OdbcType.Decimal, 10);
             ParametersArray[0].Value = ((object)(APartnerKey));
-            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, ((GenerateSelectClause(AFieldList, new string[] {
-                            "p_sequence_i"}) + " FROM PUB_p_form_letter_insert WHERE p_partner_key_n = ?")
-                            + GenerateOrderByClause(AOrderBy)), PFormLetterInsertTable.GetTableName(), ATransaction, ParametersArray, AStartRecord, AMaxRecords);
+            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, ((GenerateSelectClause(AFieldList, PFormLetterInsertTable.TableId) +
+                            " FROM PUB_p_form_letter_insert WHERE p_partner_key_n = ?") +
+                            GenerateOrderByClause(AOrderBy)), TTypedDataTable.GetTableName(PFormLetterInsertTable.TableId), ATransaction, ParametersArray, AStartRecord, AMaxRecords);
         }
 
         /// auto generated
@@ -7790,11 +7602,12 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data.Access
         /// auto generated
         public static void LoadViaPPartnerTemplate(DataSet ADataSet, PPartnerRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClauseLong("PUB_p_form_letter_insert", AFieldList, new string[] {
-                            "p_sequence_i"}) + " FROM PUB_p_form_letter_insert, PUB_p_partner WHERE " +
-                            "PUB_p_form_letter_insert.p_partner_key_n = PUB_p_partner.p_partner_key_n")
-                            + GenerateWhereClauseLong("PUB_p_partner", PPartnerTable.GetColumnStringList(), ATemplateRow, ATemplateOperators))
-                            + GenerateOrderByClause(AOrderBy)), PFormLetterInsertTable.GetTableName(), ATransaction, GetParametersForWhereClause(ATemplateRow), AStartRecord, AMaxRecords);
+            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClauseLong("PUB_p_form_letter_insert", AFieldList, PFormLetterInsertTable.TableId) +
+                            " FROM PUB_p_form_letter_insert, PUB_p_partner WHERE " +
+                            "PUB_p_form_letter_insert.p_partner_key_n = PUB_p_partner.p_partner_key_n") +
+                            GenerateWhereClauseLong("PUB_p_partner", PPartnerTable.TableId, ATemplateRow, ATemplateOperators)) +
+                            GenerateOrderByClause(AOrderBy)), TTypedDataTable.GetTableName(PFormLetterInsertTable.TableId), ATransaction,
+                            GetParametersForWhereClause(PPartnerTable.TableId, ATemplateRow), AStartRecord, AMaxRecords);
         }
 
         /// auto generated
@@ -7840,12 +7653,12 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data.Access
         /// auto generated
         public static void LoadViaPPartnerTemplate(DataSet ADataSet, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClauseLong("PUB_p_form_letter_insert", AFieldList, new string[] {
-                            "p_sequence_i"}) + " FROM PUB_p_form_letter_insert, PUB_p_partner WHERE " +
-                            "PUB_p_form_letter_insert.p_partner_key_n = PUB_p_partner.p_partner_key_n")
-                            + GenerateWhereClauseLong("PUB_p_partner", PPartnerTable.GetColumnStringList(), ASearchCriteria))
-                            + GenerateOrderByClause(AOrderBy)), PFormLetterInsertTable.GetTableName(), ATransaction,
-                            GetParametersForWhereClause(new PFormLetterInsertTable(), ASearchCriteria), AStartRecord, AMaxRecords);
+            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClauseLong("PUB_p_form_letter_insert", AFieldList, PFormLetterInsertTable.TableId) +
+                            " FROM PUB_p_form_letter_insert, PUB_p_partner WHERE " +
+                            "PUB_p_form_letter_insert.p_partner_key_n = PUB_p_partner.p_partner_key_n") +
+                            GenerateWhereClauseLong("PUB_p_partner", ASearchCriteria)) +
+                            GenerateOrderByClause(AOrderBy)), TTypedDataTable.GetTableName(PFormLetterInsertTable.TableId), ATransaction,
+                            GetParametersForWhereClause(PFormLetterInsertTable.TableId, ASearchCriteria), AStartRecord, AMaxRecords);
         }
 
         /// auto generated
@@ -7895,7 +7708,10 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data.Access
         public static int CountViaPPartnerTemplate(PPartnerRow ATemplateRow, StringCollection ATemplateOperators, TDBTransaction ATransaction)
         {
             return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_p_form_letter_insert, PUB_p_partner WHERE " +
-                "PUB_p_form_letter_insert.p_partner_key_n = PUB_p_partner.p_partner_key_n" + GenerateWhereClauseLong("PUB_p_partner", PPartnerTable.GetColumnStringList(), ATemplateRow, ATemplateOperators)), ATransaction, false, GetParametersForWhereClause(ATemplateRow, PPartnerTable.GetPrimKeyColumnOrdList())));
+                "PUB_p_form_letter_insert.p_partner_key_n = PUB_p_partner.p_partner_key_n" + GenerateWhereClauseLong("PUB_p_partner",
+                PPartnerTable.TableId, ATemplateRow, ATemplateOperators)),
+                ATransaction, false,
+                GetParametersForWhereClauseWithPrimaryKey(PPartnerTable.TableId, ATemplateRow)));
         }
 
         /// auto generated
@@ -7903,8 +7719,8 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data.Access
         {
             return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_p_form_letter_insert, PUB_p_partner WHERE " +
                 "PUB_p_form_letter_insert.p_partner_key_n = PUB_p_partner.p_partner_key_n" +
-                GenerateWhereClauseLong("PUB_p_partner", PPartnerTable.GetColumnStringList(), ASearchCriteria)), ATransaction, false,
-                GetParametersForWhereClause(new PPartnerTable(), ASearchCriteria)));
+                GenerateWhereClauseLong("PUB_p_partner", ASearchCriteria)), ATransaction, false,
+                GetParametersForWhereClause(PPartnerTable.TableId, ASearchCriteria)));
         }
 
         /// auto generated
@@ -7913,9 +7729,9 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data.Access
             OdbcParameter[] ParametersArray = new OdbcParameter[1];
             ParametersArray[0] = new OdbcParameter("", OdbcType.Int);
             ParametersArray[0].Value = ((object)(AExtractId));
-            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, ((GenerateSelectClause(AFieldList, new string[] {
-                            "p_sequence_i"}) + " FROM PUB_p_form_letter_insert WHERE m_extract_id_i = ?")
-                            + GenerateOrderByClause(AOrderBy)), PFormLetterInsertTable.GetTableName(), ATransaction, ParametersArray, AStartRecord, AMaxRecords);
+            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, ((GenerateSelectClause(AFieldList, PFormLetterInsertTable.TableId) +
+                            " FROM PUB_p_form_letter_insert WHERE m_extract_id_i = ?") +
+                            GenerateOrderByClause(AOrderBy)), TTypedDataTable.GetTableName(PFormLetterInsertTable.TableId), ATransaction, ParametersArray, AStartRecord, AMaxRecords);
         }
 
         /// auto generated
@@ -7955,11 +7771,12 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data.Access
         /// auto generated
         public static void LoadViaMExtractMasterTemplate(DataSet ADataSet, MExtractMasterRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClauseLong("PUB_p_form_letter_insert", AFieldList, new string[] {
-                            "p_sequence_i"}) + " FROM PUB_p_form_letter_insert, PUB_m_extract_master WHERE " +
-                            "PUB_p_form_letter_insert.m_extract_id_i = PUB_m_extract_master.m_extract_id_i")
-                            + GenerateWhereClauseLong("PUB_m_extract_master", MExtractMasterTable.GetColumnStringList(), ATemplateRow, ATemplateOperators))
-                            + GenerateOrderByClause(AOrderBy)), PFormLetterInsertTable.GetTableName(), ATransaction, GetParametersForWhereClause(ATemplateRow), AStartRecord, AMaxRecords);
+            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClauseLong("PUB_p_form_letter_insert", AFieldList, PFormLetterInsertTable.TableId) +
+                            " FROM PUB_p_form_letter_insert, PUB_m_extract_master WHERE " +
+                            "PUB_p_form_letter_insert.m_extract_id_i = PUB_m_extract_master.m_extract_id_i") +
+                            GenerateWhereClauseLong("PUB_m_extract_master", MExtractMasterTable.TableId, ATemplateRow, ATemplateOperators)) +
+                            GenerateOrderByClause(AOrderBy)), TTypedDataTable.GetTableName(PFormLetterInsertTable.TableId), ATransaction,
+                            GetParametersForWhereClause(MExtractMasterTable.TableId, ATemplateRow), AStartRecord, AMaxRecords);
         }
 
         /// auto generated
@@ -8005,12 +7822,12 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data.Access
         /// auto generated
         public static void LoadViaMExtractMasterTemplate(DataSet ADataSet, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClauseLong("PUB_p_form_letter_insert", AFieldList, new string[] {
-                            "p_sequence_i"}) + " FROM PUB_p_form_letter_insert, PUB_m_extract_master WHERE " +
-                            "PUB_p_form_letter_insert.m_extract_id_i = PUB_m_extract_master.m_extract_id_i")
-                            + GenerateWhereClauseLong("PUB_m_extract_master", MExtractMasterTable.GetColumnStringList(), ASearchCriteria))
-                            + GenerateOrderByClause(AOrderBy)), PFormLetterInsertTable.GetTableName(), ATransaction,
-                            GetParametersForWhereClause(new PFormLetterInsertTable(), ASearchCriteria), AStartRecord, AMaxRecords);
+            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClauseLong("PUB_p_form_letter_insert", AFieldList, PFormLetterInsertTable.TableId) +
+                            " FROM PUB_p_form_letter_insert, PUB_m_extract_master WHERE " +
+                            "PUB_p_form_letter_insert.m_extract_id_i = PUB_m_extract_master.m_extract_id_i") +
+                            GenerateWhereClauseLong("PUB_m_extract_master", ASearchCriteria)) +
+                            GenerateOrderByClause(AOrderBy)), TTypedDataTable.GetTableName(PFormLetterInsertTable.TableId), ATransaction,
+                            GetParametersForWhereClause(PFormLetterInsertTable.TableId, ASearchCriteria), AStartRecord, AMaxRecords);
         }
 
         /// auto generated
@@ -8060,7 +7877,10 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data.Access
         public static int CountViaMExtractMasterTemplate(MExtractMasterRow ATemplateRow, StringCollection ATemplateOperators, TDBTransaction ATransaction)
         {
             return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_p_form_letter_insert, PUB_m_extract_master WHERE " +
-                "PUB_p_form_letter_insert.m_extract_id_i = PUB_m_extract_master.m_extract_id_i" + GenerateWhereClauseLong("PUB_m_extract_master", MExtractMasterTable.GetColumnStringList(), ATemplateRow, ATemplateOperators)), ATransaction, false, GetParametersForWhereClause(ATemplateRow, MExtractMasterTable.GetPrimKeyColumnOrdList())));
+                "PUB_p_form_letter_insert.m_extract_id_i = PUB_m_extract_master.m_extract_id_i" + GenerateWhereClauseLong("PUB_m_extract_master",
+                MExtractMasterTable.TableId, ATemplateRow, ATemplateOperators)),
+                ATransaction, false,
+                GetParametersForWhereClauseWithPrimaryKey(MExtractMasterTable.TableId, ATemplateRow)));
         }
 
         /// auto generated
@@ -8068,31 +7888,26 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data.Access
         {
             return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_p_form_letter_insert, PUB_m_extract_master WHERE " +
                 "PUB_p_form_letter_insert.m_extract_id_i = PUB_m_extract_master.m_extract_id_i" +
-                GenerateWhereClauseLong("PUB_m_extract_master", MExtractMasterTable.GetColumnStringList(), ASearchCriteria)), ATransaction, false,
-                GetParametersForWhereClause(new MExtractMasterTable(), ASearchCriteria)));
+                GenerateWhereClauseLong("PUB_m_extract_master", ASearchCriteria)), ATransaction, false,
+                GetParametersForWhereClause(MExtractMasterTable.TableId, ASearchCriteria)));
         }
 
         /// auto generated
         public static void DeleteByPrimaryKey(Int32 ASequence, TDBTransaction ATransaction)
         {
-            OdbcParameter[] ParametersArray = new OdbcParameter[1];
-            ParametersArray[0] = new OdbcParameter("", OdbcType.Int);
-            ParametersArray[0].Value = ((object)(ASequence));
-            DBAccess.GDBAccessObj.ExecuteNonQuery("DELETE FROM PUB_p_form_letter_insert WHERE p_sequence_i = ?", ATransaction, false, ParametersArray);
+            DeleteByPrimaryKey(PFormLetterInsertTable.TableId, new System.Object[1]{ASequence}, ATransaction);
         }
 
         /// auto generated
         public static void DeleteUsingTemplate(PFormLetterInsertRow ATemplateRow, StringCollection ATemplateOperators, TDBTransaction ATransaction)
         {
-            DBAccess.GDBAccessObj.ExecuteNonQuery(("DELETE FROM PUB_p_form_letter_insert" + GenerateWhereClause(PFormLetterInsertTable.GetColumnStringList(), ATemplateRow, ATemplateOperators)), ATransaction, false, GetParametersForWhereClause(ATemplateRow));
+            DeleteUsingTemplate(PFormLetterInsertTable.TableId, ATemplateRow, ATemplateOperators, ATransaction);
         }
 
         /// auto generated
         public static void DeleteUsingTemplate(TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
         {
-            DBAccess.GDBAccessObj.ExecuteNonQuery(("DELETE FROM PUB_p_form_letter_insert" +
-                GenerateWhereClause(PFormLetterInsertTable.GetColumnStringList(), ASearchCriteria)), ATransaction, false,
-                GetParametersForWhereClause(new PFormLetterInsertTable(), ASearchCriteria));
+            DeleteUsingTemplate(PFormLetterInsertTable.TableId, ASearchCriteria, ATransaction);
         }
 
         /// auto generated
@@ -8109,15 +7924,15 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data.Access
                 {
                     if ((TheRow.RowState == DataRowState.Added))
                     {
-                        TTypedDataAccess.InsertRow("p_form_letter_insert", PFormLetterInsertTable.GetColumnStringList(), ref TheRow, ATransaction, UserInfo.GUserInfo.UserID);
+                        TTypedDataAccess.InsertRow(PFormLetterInsertTable.TableId, ref TheRow, ATransaction, UserInfo.GUserInfo.UserID);
                     }
                     if ((TheRow.RowState == DataRowState.Modified))
                     {
-                        TTypedDataAccess.UpdateRow("p_form_letter_insert", PFormLetterInsertTable.GetColumnStringList(), PFormLetterInsertTable.GetPrimKeyColumnOrdList(), ref TheRow, ATransaction, UserInfo.GUserInfo.UserID);
+                        TTypedDataAccess.UpdateRow(PFormLetterInsertTable.TableId, ref TheRow, ATransaction, UserInfo.GUserInfo.UserID);
                     }
                     if ((TheRow.RowState == DataRowState.Deleted))
                     {
-                        TTypedDataAccess.DeleteRow("p_form_letter_insert", PFormLetterInsertTable.GetColumnStringList(), PFormLetterInsertTable.GetPrimKeyColumnOrdList(), TheRow, ATransaction);
+                        TTypedDataAccess.DeleteRow(PFormLetterInsertTable.TableId, TheRow, ATransaction);
                     }
                 }
                 catch (OdbcException ex)
@@ -8147,9 +7962,8 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data.Access
         /// this method is called by all overloads
         public static void LoadAll(DataSet ADataSet, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, ((GenerateSelectClause(AFieldList, new string[] {
-                            "p_code_c"}) + " FROM PUB_p_label")
-                            + GenerateOrderByClause(AOrderBy)), PLabelTable.GetTableName(), ATransaction, AStartRecord, AMaxRecords);
+            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, ((GenerateSelectClause(AFieldList, PLabelTable.TableId) + " FROM PUB_p_label") +
+                            GenerateOrderByClause(AOrderBy)), TTypedDataTable.GetTableName(PLabelTable.TableId), ATransaction, AStartRecord, AMaxRecords);
         }
 
         /// auto generated
@@ -8189,12 +8003,8 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data.Access
         /// this method is called by all overloads
         public static void LoadByPrimaryKey(DataSet ADataSet, String ACode, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            OdbcParameter[] ParametersArray = new OdbcParameter[1];
-            ParametersArray[0] = new OdbcParameter("", OdbcType.VarChar, 16);
-            ParametersArray[0].Value = ((object)(ACode));
-            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, ((GenerateSelectClause(AFieldList, new string[] {
-                            "p_code_c"}) + " FROM PUB_p_label WHERE p_code_c = ?")
-                            + GenerateOrderByClause(AOrderBy)), PLabelTable.GetTableName(), ATransaction, ParametersArray, AStartRecord, AMaxRecords);
+            ADataSet = LoadByPrimaryKey(PLabelTable.TableId,
+                ADataSet, new System.Object[1]{ACode}, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
         }
 
         /// auto generated
@@ -8234,10 +8044,10 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data.Access
         /// this method is called by all overloads
         public static void LoadUsingTemplate(DataSet ADataSet, PLabelRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClause(AFieldList, new string[] {
-                            "p_code_c"}) + " FROM PUB_p_label")
-                            + GenerateWhereClause(PLabelTable.GetColumnStringList(), ATemplateRow, ATemplateOperators))
-                            + GenerateOrderByClause(AOrderBy)), PLabelTable.GetTableName(), ATransaction, GetParametersForWhereClause(ATemplateRow), AStartRecord, AMaxRecords);
+            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClause(AFieldList, PLabelTable.TableId) + " FROM PUB_p_label") +
+                            GenerateWhereClause(TTypedDataTable.GetColumnStringList(PLabelTable.TableId), ATemplateRow, ATemplateOperators)) +
+                            GenerateOrderByClause(AOrderBy)), TTypedDataTable.GetTableName(PLabelTable.TableId), ATransaction,
+                            GetParametersForWhereClause(PLabelTable.TableId, ATemplateRow), AStartRecord, AMaxRecords);
         }
 
         /// auto generated
@@ -8283,11 +8093,10 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data.Access
         /// this method is called by all overloads
         public static void LoadUsingTemplate(DataSet ADataSet, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClause(AFieldList, new string[] {
-                            "p_code_c"}) + " FROM PUB_p_label")
-                            + GenerateWhereClause(PLabelTable.GetColumnStringList(), ASearchCriteria))
-                            + GenerateOrderByClause(AOrderBy)), PLabelTable.GetTableName(), ATransaction,
-                            GetParametersForWhereClause(new PLabelTable(), ASearchCriteria), AStartRecord, AMaxRecords);
+            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClause(AFieldList, PLabelTable.TableId) + " FROM PUB_p_label") +
+                            GenerateWhereClause(TTypedDataTable.GetColumnStringList(PLabelTable.TableId), ASearchCriteria)) +
+                            GenerateOrderByClause(AOrderBy)), TTypedDataTable.GetTableName(PLabelTable.TableId), ATransaction,
+                            GetParametersForWhereClause(PLabelTable.TableId, ASearchCriteria), AStartRecord, AMaxRecords);
         }
 
         /// auto generated
@@ -8330,26 +8139,24 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data.Access
             return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar("SELECT COUNT(*) FROM PUB_p_label", ATransaction, false));
         }
 
-        /// this method is called by all overloads
-        public static int CountByPrimaryKey(String ACode, TDBTransaction ATransaction)
+        /// check if a row exists by using the primary key
+        public static bool Exists(String ACode, TDBTransaction ATransaction)
         {
-            OdbcParameter[] ParametersArray = new OdbcParameter[1];
-            ParametersArray[0] = new OdbcParameter("", OdbcType.VarChar, 16);
-            ParametersArray[0].Value = ((object)(ACode));
-            return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar("SELECT COUNT(*) FROM PUB_p_label WHERE p_code_c = ?", ATransaction, false, ParametersArray));
+            return Exists(PLabelTable.TableId, new System.Object[1]{ACode}, ATransaction);
         }
 
         /// this method is called by all overloads
         public static int CountUsingTemplate(PLabelRow ATemplateRow, StringCollection ATemplateOperators, TDBTransaction ATransaction)
         {
-            return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_p_label" + GenerateWhereClause(PLabelTable.GetColumnStringList(), ATemplateRow, ATemplateOperators)), ATransaction, false, GetParametersForWhereClause(ATemplateRow)));
+            return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_p_label" + GenerateWhereClause(TTypedDataTable.GetColumnStringList(PLabelTable.TableId), ATemplateRow, ATemplateOperators)), ATransaction, false,
+                   GetParametersForWhereClause(PLabelTable.TableId, ATemplateRow)));
         }
 
         /// this method is called by all overloads
         public static int CountUsingTemplate(TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
         {
-            return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_p_label" + GenerateWhereClause(PLabelTable.GetColumnStringList(), ASearchCriteria)), ATransaction, false,
-            GetParametersForWhereClause(new PLabelTable(), ASearchCriteria)));
+            return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_p_label" + GenerateWhereClause(TTypedDataTable.GetColumnStringList(PLabelTable.TableId), ASearchCriteria)), ATransaction, false,
+            GetParametersForWhereClause(PLabelTable.TableId, ASearchCriteria)));
         }
 
         /// auto generated
@@ -8358,9 +8165,9 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data.Access
             OdbcParameter[] ParametersArray = new OdbcParameter[1];
             ParametersArray[0] = new OdbcParameter("", OdbcType.VarChar, 20);
             ParametersArray[0].Value = ((object)(AFormName));
-            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, ((GenerateSelectClause(AFieldList, new string[] {
-                            "p_code_c"}) + " FROM PUB_p_label WHERE s_form_name_c = ?")
-                            + GenerateOrderByClause(AOrderBy)), PLabelTable.GetTableName(), ATransaction, ParametersArray, AStartRecord, AMaxRecords);
+            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, ((GenerateSelectClause(AFieldList, PLabelTable.TableId) +
+                            " FROM PUB_p_label WHERE s_form_name_c = ?") +
+                            GenerateOrderByClause(AOrderBy)), TTypedDataTable.GetTableName(PLabelTable.TableId), ATransaction, ParametersArray, AStartRecord, AMaxRecords);
         }
 
         /// auto generated
@@ -8400,11 +8207,12 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data.Access
         /// auto generated
         public static void LoadViaSFormTemplate(DataSet ADataSet, SFormRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClauseLong("PUB_p_label", AFieldList, new string[] {
-                            "p_code_c"}) + " FROM PUB_p_label, PUB_s_form WHERE " +
-                            "PUB_p_label.s_form_name_c = PUB_s_form.s_form_name_c")
-                            + GenerateWhereClauseLong("PUB_s_form", SFormTable.GetColumnStringList(), ATemplateRow, ATemplateOperators))
-                            + GenerateOrderByClause(AOrderBy)), PLabelTable.GetTableName(), ATransaction, GetParametersForWhereClause(ATemplateRow), AStartRecord, AMaxRecords);
+            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClauseLong("PUB_p_label", AFieldList, PLabelTable.TableId) +
+                            " FROM PUB_p_label, PUB_s_form WHERE " +
+                            "PUB_p_label.s_form_name_c = PUB_s_form.s_form_name_c") +
+                            GenerateWhereClauseLong("PUB_s_form", SFormTable.TableId, ATemplateRow, ATemplateOperators)) +
+                            GenerateOrderByClause(AOrderBy)), TTypedDataTable.GetTableName(PLabelTable.TableId), ATransaction,
+                            GetParametersForWhereClause(SFormTable.TableId, ATemplateRow), AStartRecord, AMaxRecords);
         }
 
         /// auto generated
@@ -8450,12 +8258,12 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data.Access
         /// auto generated
         public static void LoadViaSFormTemplate(DataSet ADataSet, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClauseLong("PUB_p_label", AFieldList, new string[] {
-                            "p_code_c"}) + " FROM PUB_p_label, PUB_s_form WHERE " +
-                            "PUB_p_label.s_form_name_c = PUB_s_form.s_form_name_c")
-                            + GenerateWhereClauseLong("PUB_s_form", SFormTable.GetColumnStringList(), ASearchCriteria))
-                            + GenerateOrderByClause(AOrderBy)), PLabelTable.GetTableName(), ATransaction,
-                            GetParametersForWhereClause(new PLabelTable(), ASearchCriteria), AStartRecord, AMaxRecords);
+            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClauseLong("PUB_p_label", AFieldList, PLabelTable.TableId) +
+                            " FROM PUB_p_label, PUB_s_form WHERE " +
+                            "PUB_p_label.s_form_name_c = PUB_s_form.s_form_name_c") +
+                            GenerateWhereClauseLong("PUB_s_form", ASearchCriteria)) +
+                            GenerateOrderByClause(AOrderBy)), TTypedDataTable.GetTableName(PLabelTable.TableId), ATransaction,
+                            GetParametersForWhereClause(PLabelTable.TableId, ASearchCriteria), AStartRecord, AMaxRecords);
         }
 
         /// auto generated
@@ -8505,7 +8313,10 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data.Access
         public static int CountViaSFormTemplate(SFormRow ATemplateRow, StringCollection ATemplateOperators, TDBTransaction ATransaction)
         {
             return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_p_label, PUB_s_form WHERE " +
-                "PUB_p_label.s_form_name_c = PUB_s_form.s_form_name_c" + GenerateWhereClauseLong("PUB_s_form", SFormTable.GetColumnStringList(), ATemplateRow, ATemplateOperators)), ATransaction, false, GetParametersForWhereClause(ATemplateRow, SFormTable.GetPrimKeyColumnOrdList())));
+                "PUB_p_label.s_form_name_c = PUB_s_form.s_form_name_c" + GenerateWhereClauseLong("PUB_s_form",
+                SFormTable.TableId, ATemplateRow, ATemplateOperators)),
+                ATransaction, false,
+                GetParametersForWhereClauseWithPrimaryKey(SFormTable.TableId, ATemplateRow)));
         }
 
         /// auto generated
@@ -8513,31 +8324,26 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data.Access
         {
             return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_p_label, PUB_s_form WHERE " +
                 "PUB_p_label.s_form_name_c = PUB_s_form.s_form_name_c" +
-                GenerateWhereClauseLong("PUB_s_form", SFormTable.GetColumnStringList(), ASearchCriteria)), ATransaction, false,
-                GetParametersForWhereClause(new SFormTable(), ASearchCriteria)));
+                GenerateWhereClauseLong("PUB_s_form", ASearchCriteria)), ATransaction, false,
+                GetParametersForWhereClause(SFormTable.TableId, ASearchCriteria)));
         }
 
         /// auto generated
         public static void DeleteByPrimaryKey(String ACode, TDBTransaction ATransaction)
         {
-            OdbcParameter[] ParametersArray = new OdbcParameter[1];
-            ParametersArray[0] = new OdbcParameter("", OdbcType.VarChar, 16);
-            ParametersArray[0].Value = ((object)(ACode));
-            DBAccess.GDBAccessObj.ExecuteNonQuery("DELETE FROM PUB_p_label WHERE p_code_c = ?", ATransaction, false, ParametersArray);
+            DeleteByPrimaryKey(PLabelTable.TableId, new System.Object[1]{ACode}, ATransaction);
         }
 
         /// auto generated
         public static void DeleteUsingTemplate(PLabelRow ATemplateRow, StringCollection ATemplateOperators, TDBTransaction ATransaction)
         {
-            DBAccess.GDBAccessObj.ExecuteNonQuery(("DELETE FROM PUB_p_label" + GenerateWhereClause(PLabelTable.GetColumnStringList(), ATemplateRow, ATemplateOperators)), ATransaction, false, GetParametersForWhereClause(ATemplateRow));
+            DeleteUsingTemplate(PLabelTable.TableId, ATemplateRow, ATemplateOperators, ATransaction);
         }
 
         /// auto generated
         public static void DeleteUsingTemplate(TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
         {
-            DBAccess.GDBAccessObj.ExecuteNonQuery(("DELETE FROM PUB_p_label" +
-                GenerateWhereClause(PLabelTable.GetColumnStringList(), ASearchCriteria)), ATransaction, false,
-                GetParametersForWhereClause(new PLabelTable(), ASearchCriteria));
+            DeleteUsingTemplate(PLabelTable.TableId, ASearchCriteria, ATransaction);
         }
 
         /// auto generated
@@ -8554,15 +8360,15 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data.Access
                 {
                     if ((TheRow.RowState == DataRowState.Added))
                     {
-                        TTypedDataAccess.InsertRow("p_label", PLabelTable.GetColumnStringList(), ref TheRow, ATransaction, UserInfo.GUserInfo.UserID);
+                        TTypedDataAccess.InsertRow(PLabelTable.TableId, ref TheRow, ATransaction, UserInfo.GUserInfo.UserID);
                     }
                     if ((TheRow.RowState == DataRowState.Modified))
                     {
-                        TTypedDataAccess.UpdateRow("p_label", PLabelTable.GetColumnStringList(), PLabelTable.GetPrimKeyColumnOrdList(), ref TheRow, ATransaction, UserInfo.GUserInfo.UserID);
+                        TTypedDataAccess.UpdateRow(PLabelTable.TableId, ref TheRow, ATransaction, UserInfo.GUserInfo.UserID);
                     }
                     if ((TheRow.RowState == DataRowState.Deleted))
                     {
-                        TTypedDataAccess.DeleteRow("p_label", PLabelTable.GetColumnStringList(), PLabelTable.GetPrimKeyColumnOrdList(), TheRow, ATransaction);
+                        TTypedDataAccess.DeleteRow(PLabelTable.TableId, TheRow, ATransaction);
                     }
                 }
                 catch (OdbcException ex)
@@ -8592,9 +8398,8 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data.Access
         /// this method is called by all overloads
         public static void LoadAll(DataSet ADataSet, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, ((GenerateSelectClause(AFieldList, new string[] {
-                            "p_merge_form_name_c"}) + " FROM PUB_p_merge_form")
-                            + GenerateOrderByClause(AOrderBy)), PMergeFormTable.GetTableName(), ATransaction, AStartRecord, AMaxRecords);
+            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, ((GenerateSelectClause(AFieldList, PMergeFormTable.TableId) + " FROM PUB_p_merge_form") +
+                            GenerateOrderByClause(AOrderBy)), TTypedDataTable.GetTableName(PMergeFormTable.TableId), ATransaction, AStartRecord, AMaxRecords);
         }
 
         /// auto generated
@@ -8634,12 +8439,8 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data.Access
         /// this method is called by all overloads
         public static void LoadByPrimaryKey(DataSet ADataSet, String AMergeFormName, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            OdbcParameter[] ParametersArray = new OdbcParameter[1];
-            ParametersArray[0] = new OdbcParameter("", OdbcType.VarChar, 16);
-            ParametersArray[0].Value = ((object)(AMergeFormName));
-            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, ((GenerateSelectClause(AFieldList, new string[] {
-                            "p_merge_form_name_c"}) + " FROM PUB_p_merge_form WHERE p_merge_form_name_c = ?")
-                            + GenerateOrderByClause(AOrderBy)), PMergeFormTable.GetTableName(), ATransaction, ParametersArray, AStartRecord, AMaxRecords);
+            ADataSet = LoadByPrimaryKey(PMergeFormTable.TableId,
+                ADataSet, new System.Object[1]{AMergeFormName}, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
         }
 
         /// auto generated
@@ -8679,10 +8480,10 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data.Access
         /// this method is called by all overloads
         public static void LoadUsingTemplate(DataSet ADataSet, PMergeFormRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClause(AFieldList, new string[] {
-                            "p_merge_form_name_c"}) + " FROM PUB_p_merge_form")
-                            + GenerateWhereClause(PMergeFormTable.GetColumnStringList(), ATemplateRow, ATemplateOperators))
-                            + GenerateOrderByClause(AOrderBy)), PMergeFormTable.GetTableName(), ATransaction, GetParametersForWhereClause(ATemplateRow), AStartRecord, AMaxRecords);
+            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClause(AFieldList, PMergeFormTable.TableId) + " FROM PUB_p_merge_form") +
+                            GenerateWhereClause(TTypedDataTable.GetColumnStringList(PMergeFormTable.TableId), ATemplateRow, ATemplateOperators)) +
+                            GenerateOrderByClause(AOrderBy)), TTypedDataTable.GetTableName(PMergeFormTable.TableId), ATransaction,
+                            GetParametersForWhereClause(PMergeFormTable.TableId, ATemplateRow), AStartRecord, AMaxRecords);
         }
 
         /// auto generated
@@ -8728,11 +8529,10 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data.Access
         /// this method is called by all overloads
         public static void LoadUsingTemplate(DataSet ADataSet, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClause(AFieldList, new string[] {
-                            "p_merge_form_name_c"}) + " FROM PUB_p_merge_form")
-                            + GenerateWhereClause(PMergeFormTable.GetColumnStringList(), ASearchCriteria))
-                            + GenerateOrderByClause(AOrderBy)), PMergeFormTable.GetTableName(), ATransaction,
-                            GetParametersForWhereClause(new PMergeFormTable(), ASearchCriteria), AStartRecord, AMaxRecords);
+            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClause(AFieldList, PMergeFormTable.TableId) + " FROM PUB_p_merge_form") +
+                            GenerateWhereClause(TTypedDataTable.GetColumnStringList(PMergeFormTable.TableId), ASearchCriteria)) +
+                            GenerateOrderByClause(AOrderBy)), TTypedDataTable.GetTableName(PMergeFormTable.TableId), ATransaction,
+                            GetParametersForWhereClause(PMergeFormTable.TableId, ASearchCriteria), AStartRecord, AMaxRecords);
         }
 
         /// auto generated
@@ -8775,49 +8575,42 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data.Access
             return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar("SELECT COUNT(*) FROM PUB_p_merge_form", ATransaction, false));
         }
 
-        /// this method is called by all overloads
-        public static int CountByPrimaryKey(String AMergeFormName, TDBTransaction ATransaction)
+        /// check if a row exists by using the primary key
+        public static bool Exists(String AMergeFormName, TDBTransaction ATransaction)
         {
-            OdbcParameter[] ParametersArray = new OdbcParameter[1];
-            ParametersArray[0] = new OdbcParameter("", OdbcType.VarChar, 16);
-            ParametersArray[0].Value = ((object)(AMergeFormName));
-            return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar("SELECT COUNT(*) FROM PUB_p_merge_form WHERE p_merge_form_name_c = ?", ATransaction, false, ParametersArray));
+            return Exists(PMergeFormTable.TableId, new System.Object[1]{AMergeFormName}, ATransaction);
         }
 
         /// this method is called by all overloads
         public static int CountUsingTemplate(PMergeFormRow ATemplateRow, StringCollection ATemplateOperators, TDBTransaction ATransaction)
         {
-            return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_p_merge_form" + GenerateWhereClause(PMergeFormTable.GetColumnStringList(), ATemplateRow, ATemplateOperators)), ATransaction, false, GetParametersForWhereClause(ATemplateRow)));
+            return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_p_merge_form" + GenerateWhereClause(TTypedDataTable.GetColumnStringList(PMergeFormTable.TableId), ATemplateRow, ATemplateOperators)), ATransaction, false,
+                   GetParametersForWhereClause(PMergeFormTable.TableId, ATemplateRow)));
         }
 
         /// this method is called by all overloads
         public static int CountUsingTemplate(TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
         {
-            return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_p_merge_form" + GenerateWhereClause(PMergeFormTable.GetColumnStringList(), ASearchCriteria)), ATransaction, false,
-            GetParametersForWhereClause(new PMergeFormTable(), ASearchCriteria)));
+            return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_p_merge_form" + GenerateWhereClause(TTypedDataTable.GetColumnStringList(PMergeFormTable.TableId), ASearchCriteria)), ATransaction, false,
+            GetParametersForWhereClause(PMergeFormTable.TableId, ASearchCriteria)));
         }
 
         /// auto generated
         public static void DeleteByPrimaryKey(String AMergeFormName, TDBTransaction ATransaction)
         {
-            OdbcParameter[] ParametersArray = new OdbcParameter[1];
-            ParametersArray[0] = new OdbcParameter("", OdbcType.VarChar, 16);
-            ParametersArray[0].Value = ((object)(AMergeFormName));
-            DBAccess.GDBAccessObj.ExecuteNonQuery("DELETE FROM PUB_p_merge_form WHERE p_merge_form_name_c = ?", ATransaction, false, ParametersArray);
+            DeleteByPrimaryKey(PMergeFormTable.TableId, new System.Object[1]{AMergeFormName}, ATransaction);
         }
 
         /// auto generated
         public static void DeleteUsingTemplate(PMergeFormRow ATemplateRow, StringCollection ATemplateOperators, TDBTransaction ATransaction)
         {
-            DBAccess.GDBAccessObj.ExecuteNonQuery(("DELETE FROM PUB_p_merge_form" + GenerateWhereClause(PMergeFormTable.GetColumnStringList(), ATemplateRow, ATemplateOperators)), ATransaction, false, GetParametersForWhereClause(ATemplateRow));
+            DeleteUsingTemplate(PMergeFormTable.TableId, ATemplateRow, ATemplateOperators, ATransaction);
         }
 
         /// auto generated
         public static void DeleteUsingTemplate(TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
         {
-            DBAccess.GDBAccessObj.ExecuteNonQuery(("DELETE FROM PUB_p_merge_form" +
-                GenerateWhereClause(PMergeFormTable.GetColumnStringList(), ASearchCriteria)), ATransaction, false,
-                GetParametersForWhereClause(new PMergeFormTable(), ASearchCriteria));
+            DeleteUsingTemplate(PMergeFormTable.TableId, ASearchCriteria, ATransaction);
         }
 
         /// auto generated
@@ -8834,15 +8627,15 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data.Access
                 {
                     if ((TheRow.RowState == DataRowState.Added))
                     {
-                        TTypedDataAccess.InsertRow("p_merge_form", PMergeFormTable.GetColumnStringList(), ref TheRow, ATransaction, UserInfo.GUserInfo.UserID);
+                        TTypedDataAccess.InsertRow(PMergeFormTable.TableId, ref TheRow, ATransaction, UserInfo.GUserInfo.UserID);
                     }
                     if ((TheRow.RowState == DataRowState.Modified))
                     {
-                        TTypedDataAccess.UpdateRow("p_merge_form", PMergeFormTable.GetColumnStringList(), PMergeFormTable.GetPrimKeyColumnOrdList(), ref TheRow, ATransaction, UserInfo.GUserInfo.UserID);
+                        TTypedDataAccess.UpdateRow(PMergeFormTable.TableId, ref TheRow, ATransaction, UserInfo.GUserInfo.UserID);
                     }
                     if ((TheRow.RowState == DataRowState.Deleted))
                     {
-                        TTypedDataAccess.DeleteRow("p_merge_form", PMergeFormTable.GetColumnStringList(), PMergeFormTable.GetPrimKeyColumnOrdList(), TheRow, ATransaction);
+                        TTypedDataAccess.DeleteRow(PMergeFormTable.TableId, TheRow, ATransaction);
                     }
                 }
                 catch (OdbcException ex)
@@ -8872,9 +8665,8 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data.Access
         /// this method is called by all overloads
         public static void LoadAll(DataSet ADataSet, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, ((GenerateSelectClause(AFieldList, new string[] {
-                            "p_merge_form_name_c", "p_merge_field_name_c"}) + " FROM PUB_p_merge_field")
-                            + GenerateOrderByClause(AOrderBy)), PMergeFieldTable.GetTableName(), ATransaction, AStartRecord, AMaxRecords);
+            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, ((GenerateSelectClause(AFieldList, PMergeFieldTable.TableId) + " FROM PUB_p_merge_field") +
+                            GenerateOrderByClause(AOrderBy)), TTypedDataTable.GetTableName(PMergeFieldTable.TableId), ATransaction, AStartRecord, AMaxRecords);
         }
 
         /// auto generated
@@ -8914,14 +8706,8 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data.Access
         /// this method is called by all overloads
         public static void LoadByPrimaryKey(DataSet ADataSet, String AMergeFormName, String AMergeFieldName, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            OdbcParameter[] ParametersArray = new OdbcParameter[2];
-            ParametersArray[0] = new OdbcParameter("", OdbcType.VarChar, 16);
-            ParametersArray[0].Value = ((object)(AMergeFormName));
-            ParametersArray[1] = new OdbcParameter("", OdbcType.VarChar, 32);
-            ParametersArray[1].Value = ((object)(AMergeFieldName));
-            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, ((GenerateSelectClause(AFieldList, new string[] {
-                            "p_merge_form_name_c", "p_merge_field_name_c"}) + " FROM PUB_p_merge_field WHERE p_merge_form_name_c = ? AND p_merge_field_name_c = ?")
-                            + GenerateOrderByClause(AOrderBy)), PMergeFieldTable.GetTableName(), ATransaction, ParametersArray, AStartRecord, AMaxRecords);
+            ADataSet = LoadByPrimaryKey(PMergeFieldTable.TableId,
+                ADataSet, new System.Object[2]{AMergeFormName, AMergeFieldName}, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
         }
 
         /// auto generated
@@ -8961,10 +8747,10 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data.Access
         /// this method is called by all overloads
         public static void LoadUsingTemplate(DataSet ADataSet, PMergeFieldRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClause(AFieldList, new string[] {
-                            "p_merge_form_name_c", "p_merge_field_name_c"}) + " FROM PUB_p_merge_field")
-                            + GenerateWhereClause(PMergeFieldTable.GetColumnStringList(), ATemplateRow, ATemplateOperators))
-                            + GenerateOrderByClause(AOrderBy)), PMergeFieldTable.GetTableName(), ATransaction, GetParametersForWhereClause(ATemplateRow), AStartRecord, AMaxRecords);
+            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClause(AFieldList, PMergeFieldTable.TableId) + " FROM PUB_p_merge_field") +
+                            GenerateWhereClause(TTypedDataTable.GetColumnStringList(PMergeFieldTable.TableId), ATemplateRow, ATemplateOperators)) +
+                            GenerateOrderByClause(AOrderBy)), TTypedDataTable.GetTableName(PMergeFieldTable.TableId), ATransaction,
+                            GetParametersForWhereClause(PMergeFieldTable.TableId, ATemplateRow), AStartRecord, AMaxRecords);
         }
 
         /// auto generated
@@ -9010,11 +8796,10 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data.Access
         /// this method is called by all overloads
         public static void LoadUsingTemplate(DataSet ADataSet, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClause(AFieldList, new string[] {
-                            "p_merge_form_name_c", "p_merge_field_name_c"}) + " FROM PUB_p_merge_field")
-                            + GenerateWhereClause(PMergeFieldTable.GetColumnStringList(), ASearchCriteria))
-                            + GenerateOrderByClause(AOrderBy)), PMergeFieldTable.GetTableName(), ATransaction,
-                            GetParametersForWhereClause(new PMergeFieldTable(), ASearchCriteria), AStartRecord, AMaxRecords);
+            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClause(AFieldList, PMergeFieldTable.TableId) + " FROM PUB_p_merge_field") +
+                            GenerateWhereClause(TTypedDataTable.GetColumnStringList(PMergeFieldTable.TableId), ASearchCriteria)) +
+                            GenerateOrderByClause(AOrderBy)), TTypedDataTable.GetTableName(PMergeFieldTable.TableId), ATransaction,
+                            GetParametersForWhereClause(PMergeFieldTable.TableId, ASearchCriteria), AStartRecord, AMaxRecords);
         }
 
         /// auto generated
@@ -9057,28 +8842,24 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data.Access
             return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar("SELECT COUNT(*) FROM PUB_p_merge_field", ATransaction, false));
         }
 
-        /// this method is called by all overloads
-        public static int CountByPrimaryKey(String AMergeFormName, String AMergeFieldName, TDBTransaction ATransaction)
+        /// check if a row exists by using the primary key
+        public static bool Exists(String AMergeFormName, String AMergeFieldName, TDBTransaction ATransaction)
         {
-            OdbcParameter[] ParametersArray = new OdbcParameter[2];
-            ParametersArray[0] = new OdbcParameter("", OdbcType.VarChar, 16);
-            ParametersArray[0].Value = ((object)(AMergeFormName));
-            ParametersArray[1] = new OdbcParameter("", OdbcType.VarChar, 32);
-            ParametersArray[1].Value = ((object)(AMergeFieldName));
-            return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar("SELECT COUNT(*) FROM PUB_p_merge_field WHERE p_merge_form_name_c = ? AND p_merge_field_name_c = ?", ATransaction, false, ParametersArray));
+            return Exists(PMergeFieldTable.TableId, new System.Object[2]{AMergeFormName, AMergeFieldName}, ATransaction);
         }
 
         /// this method is called by all overloads
         public static int CountUsingTemplate(PMergeFieldRow ATemplateRow, StringCollection ATemplateOperators, TDBTransaction ATransaction)
         {
-            return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_p_merge_field" + GenerateWhereClause(PMergeFieldTable.GetColumnStringList(), ATemplateRow, ATemplateOperators)), ATransaction, false, GetParametersForWhereClause(ATemplateRow)));
+            return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_p_merge_field" + GenerateWhereClause(TTypedDataTable.GetColumnStringList(PMergeFieldTable.TableId), ATemplateRow, ATemplateOperators)), ATransaction, false,
+                   GetParametersForWhereClause(PMergeFieldTable.TableId, ATemplateRow)));
         }
 
         /// this method is called by all overloads
         public static int CountUsingTemplate(TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
         {
-            return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_p_merge_field" + GenerateWhereClause(PMergeFieldTable.GetColumnStringList(), ASearchCriteria)), ATransaction, false,
-            GetParametersForWhereClause(new PMergeFieldTable(), ASearchCriteria)));
+            return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_p_merge_field" + GenerateWhereClause(TTypedDataTable.GetColumnStringList(PMergeFieldTable.TableId), ASearchCriteria)), ATransaction, false,
+            GetParametersForWhereClause(PMergeFieldTable.TableId, ASearchCriteria)));
         }
 
         /// auto generated
@@ -9087,9 +8868,9 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data.Access
             OdbcParameter[] ParametersArray = new OdbcParameter[1];
             ParametersArray[0] = new OdbcParameter("", OdbcType.VarChar, 16);
             ParametersArray[0].Value = ((object)(AMergeFormName));
-            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, ((GenerateSelectClause(AFieldList, new string[] {
-                            "p_merge_form_name_c", "p_merge_field_name_c"}) + " FROM PUB_p_merge_field WHERE p_merge_form_name_c = ?")
-                            + GenerateOrderByClause(AOrderBy)), PMergeFieldTable.GetTableName(), ATransaction, ParametersArray, AStartRecord, AMaxRecords);
+            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, ((GenerateSelectClause(AFieldList, PMergeFieldTable.TableId) +
+                            " FROM PUB_p_merge_field WHERE p_merge_form_name_c = ?") +
+                            GenerateOrderByClause(AOrderBy)), TTypedDataTable.GetTableName(PMergeFieldTable.TableId), ATransaction, ParametersArray, AStartRecord, AMaxRecords);
         }
 
         /// auto generated
@@ -9129,11 +8910,12 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data.Access
         /// auto generated
         public static void LoadViaPMergeFormTemplate(DataSet ADataSet, PMergeFormRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClauseLong("PUB_p_merge_field", AFieldList, new string[] {
-                            "p_merge_form_name_c", "p_merge_field_name_c"}) + " FROM PUB_p_merge_field, PUB_p_merge_form WHERE " +
-                            "PUB_p_merge_field.p_merge_form_name_c = PUB_p_merge_form.p_merge_form_name_c")
-                            + GenerateWhereClauseLong("PUB_p_merge_form", PMergeFormTable.GetColumnStringList(), ATemplateRow, ATemplateOperators))
-                            + GenerateOrderByClause(AOrderBy)), PMergeFieldTable.GetTableName(), ATransaction, GetParametersForWhereClause(ATemplateRow), AStartRecord, AMaxRecords);
+            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClauseLong("PUB_p_merge_field", AFieldList, PMergeFieldTable.TableId) +
+                            " FROM PUB_p_merge_field, PUB_p_merge_form WHERE " +
+                            "PUB_p_merge_field.p_merge_form_name_c = PUB_p_merge_form.p_merge_form_name_c") +
+                            GenerateWhereClauseLong("PUB_p_merge_form", PMergeFormTable.TableId, ATemplateRow, ATemplateOperators)) +
+                            GenerateOrderByClause(AOrderBy)), TTypedDataTable.GetTableName(PMergeFieldTable.TableId), ATransaction,
+                            GetParametersForWhereClause(PMergeFormTable.TableId, ATemplateRow), AStartRecord, AMaxRecords);
         }
 
         /// auto generated
@@ -9179,12 +8961,12 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data.Access
         /// auto generated
         public static void LoadViaPMergeFormTemplate(DataSet ADataSet, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClauseLong("PUB_p_merge_field", AFieldList, new string[] {
-                            "p_merge_form_name_c", "p_merge_field_name_c"}) + " FROM PUB_p_merge_field, PUB_p_merge_form WHERE " +
-                            "PUB_p_merge_field.p_merge_form_name_c = PUB_p_merge_form.p_merge_form_name_c")
-                            + GenerateWhereClauseLong("PUB_p_merge_form", PMergeFormTable.GetColumnStringList(), ASearchCriteria))
-                            + GenerateOrderByClause(AOrderBy)), PMergeFieldTable.GetTableName(), ATransaction,
-                            GetParametersForWhereClause(new PMergeFieldTable(), ASearchCriteria), AStartRecord, AMaxRecords);
+            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClauseLong("PUB_p_merge_field", AFieldList, PMergeFieldTable.TableId) +
+                            " FROM PUB_p_merge_field, PUB_p_merge_form WHERE " +
+                            "PUB_p_merge_field.p_merge_form_name_c = PUB_p_merge_form.p_merge_form_name_c") +
+                            GenerateWhereClauseLong("PUB_p_merge_form", ASearchCriteria)) +
+                            GenerateOrderByClause(AOrderBy)), TTypedDataTable.GetTableName(PMergeFieldTable.TableId), ATransaction,
+                            GetParametersForWhereClause(PMergeFieldTable.TableId, ASearchCriteria), AStartRecord, AMaxRecords);
         }
 
         /// auto generated
@@ -9234,7 +9016,10 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data.Access
         public static int CountViaPMergeFormTemplate(PMergeFormRow ATemplateRow, StringCollection ATemplateOperators, TDBTransaction ATransaction)
         {
             return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_p_merge_field, PUB_p_merge_form WHERE " +
-                "PUB_p_merge_field.p_merge_form_name_c = PUB_p_merge_form.p_merge_form_name_c" + GenerateWhereClauseLong("PUB_p_merge_form", PMergeFormTable.GetColumnStringList(), ATemplateRow, ATemplateOperators)), ATransaction, false, GetParametersForWhereClause(ATemplateRow, PMergeFormTable.GetPrimKeyColumnOrdList())));
+                "PUB_p_merge_field.p_merge_form_name_c = PUB_p_merge_form.p_merge_form_name_c" + GenerateWhereClauseLong("PUB_p_merge_form",
+                PMergeFormTable.TableId, ATemplateRow, ATemplateOperators)),
+                ATransaction, false,
+                GetParametersForWhereClauseWithPrimaryKey(PMergeFormTable.TableId, ATemplateRow)));
         }
 
         /// auto generated
@@ -9242,33 +9027,26 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data.Access
         {
             return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_p_merge_field, PUB_p_merge_form WHERE " +
                 "PUB_p_merge_field.p_merge_form_name_c = PUB_p_merge_form.p_merge_form_name_c" +
-                GenerateWhereClauseLong("PUB_p_merge_form", PMergeFormTable.GetColumnStringList(), ASearchCriteria)), ATransaction, false,
-                GetParametersForWhereClause(new PMergeFormTable(), ASearchCriteria)));
+                GenerateWhereClauseLong("PUB_p_merge_form", ASearchCriteria)), ATransaction, false,
+                GetParametersForWhereClause(PMergeFormTable.TableId, ASearchCriteria)));
         }
 
         /// auto generated
         public static void DeleteByPrimaryKey(String AMergeFormName, String AMergeFieldName, TDBTransaction ATransaction)
         {
-            OdbcParameter[] ParametersArray = new OdbcParameter[2];
-            ParametersArray[0] = new OdbcParameter("", OdbcType.VarChar, 16);
-            ParametersArray[0].Value = ((object)(AMergeFormName));
-            ParametersArray[1] = new OdbcParameter("", OdbcType.VarChar, 32);
-            ParametersArray[1].Value = ((object)(AMergeFieldName));
-            DBAccess.GDBAccessObj.ExecuteNonQuery("DELETE FROM PUB_p_merge_field WHERE p_merge_form_name_c = ? AND p_merge_field_name_c = ?", ATransaction, false, ParametersArray);
+            DeleteByPrimaryKey(PMergeFieldTable.TableId, new System.Object[2]{AMergeFormName, AMergeFieldName}, ATransaction);
         }
 
         /// auto generated
         public static void DeleteUsingTemplate(PMergeFieldRow ATemplateRow, StringCollection ATemplateOperators, TDBTransaction ATransaction)
         {
-            DBAccess.GDBAccessObj.ExecuteNonQuery(("DELETE FROM PUB_p_merge_field" + GenerateWhereClause(PMergeFieldTable.GetColumnStringList(), ATemplateRow, ATemplateOperators)), ATransaction, false, GetParametersForWhereClause(ATemplateRow));
+            DeleteUsingTemplate(PMergeFieldTable.TableId, ATemplateRow, ATemplateOperators, ATransaction);
         }
 
         /// auto generated
         public static void DeleteUsingTemplate(TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
         {
-            DBAccess.GDBAccessObj.ExecuteNonQuery(("DELETE FROM PUB_p_merge_field" +
-                GenerateWhereClause(PMergeFieldTable.GetColumnStringList(), ASearchCriteria)), ATransaction, false,
-                GetParametersForWhereClause(new PMergeFieldTable(), ASearchCriteria));
+            DeleteUsingTemplate(PMergeFieldTable.TableId, ASearchCriteria, ATransaction);
         }
 
         /// auto generated
@@ -9285,15 +9063,15 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data.Access
                 {
                     if ((TheRow.RowState == DataRowState.Added))
                     {
-                        TTypedDataAccess.InsertRow("p_merge_field", PMergeFieldTable.GetColumnStringList(), ref TheRow, ATransaction, UserInfo.GUserInfo.UserID);
+                        TTypedDataAccess.InsertRow(PMergeFieldTable.TableId, ref TheRow, ATransaction, UserInfo.GUserInfo.UserID);
                     }
                     if ((TheRow.RowState == DataRowState.Modified))
                     {
-                        TTypedDataAccess.UpdateRow("p_merge_field", PMergeFieldTable.GetColumnStringList(), PMergeFieldTable.GetPrimKeyColumnOrdList(), ref TheRow, ATransaction, UserInfo.GUserInfo.UserID);
+                        TTypedDataAccess.UpdateRow(PMergeFieldTable.TableId, ref TheRow, ATransaction, UserInfo.GUserInfo.UserID);
                     }
                     if ((TheRow.RowState == DataRowState.Deleted))
                     {
-                        TTypedDataAccess.DeleteRow("p_merge_field", PMergeFieldTable.GetColumnStringList(), PMergeFieldTable.GetPrimKeyColumnOrdList(), TheRow, ATransaction);
+                        TTypedDataAccess.DeleteRow(PMergeFieldTable.TableId, TheRow, ATransaction);
                     }
                 }
                 catch (OdbcException ex)
@@ -9323,9 +9101,8 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data.Access
         /// this method is called by all overloads
         public static void LoadAll(DataSet ADataSet, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, ((GenerateSelectClause(AFieldList, new string[] {
-                            "p_range_c"}) + " FROM PUB_p_postcode_range")
-                            + GenerateOrderByClause(AOrderBy)), PPostcodeRangeTable.GetTableName(), ATransaction, AStartRecord, AMaxRecords);
+            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, ((GenerateSelectClause(AFieldList, PPostcodeRangeTable.TableId) + " FROM PUB_p_postcode_range") +
+                            GenerateOrderByClause(AOrderBy)), TTypedDataTable.GetTableName(PPostcodeRangeTable.TableId), ATransaction, AStartRecord, AMaxRecords);
         }
 
         /// auto generated
@@ -9365,12 +9142,8 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data.Access
         /// this method is called by all overloads
         public static void LoadByPrimaryKey(DataSet ADataSet, String ARange, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            OdbcParameter[] ParametersArray = new OdbcParameter[1];
-            ParametersArray[0] = new OdbcParameter("", OdbcType.VarChar, 64);
-            ParametersArray[0].Value = ((object)(ARange));
-            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, ((GenerateSelectClause(AFieldList, new string[] {
-                            "p_range_c"}) + " FROM PUB_p_postcode_range WHERE p_range_c = ?")
-                            + GenerateOrderByClause(AOrderBy)), PPostcodeRangeTable.GetTableName(), ATransaction, ParametersArray, AStartRecord, AMaxRecords);
+            ADataSet = LoadByPrimaryKey(PPostcodeRangeTable.TableId,
+                ADataSet, new System.Object[1]{ARange}, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
         }
 
         /// auto generated
@@ -9410,10 +9183,10 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data.Access
         /// this method is called by all overloads
         public static void LoadUsingTemplate(DataSet ADataSet, PPostcodeRangeRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClause(AFieldList, new string[] {
-                            "p_range_c"}) + " FROM PUB_p_postcode_range")
-                            + GenerateWhereClause(PPostcodeRangeTable.GetColumnStringList(), ATemplateRow, ATemplateOperators))
-                            + GenerateOrderByClause(AOrderBy)), PPostcodeRangeTable.GetTableName(), ATransaction, GetParametersForWhereClause(ATemplateRow), AStartRecord, AMaxRecords);
+            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClause(AFieldList, PPostcodeRangeTable.TableId) + " FROM PUB_p_postcode_range") +
+                            GenerateWhereClause(TTypedDataTable.GetColumnStringList(PPostcodeRangeTable.TableId), ATemplateRow, ATemplateOperators)) +
+                            GenerateOrderByClause(AOrderBy)), TTypedDataTable.GetTableName(PPostcodeRangeTable.TableId), ATransaction,
+                            GetParametersForWhereClause(PPostcodeRangeTable.TableId, ATemplateRow), AStartRecord, AMaxRecords);
         }
 
         /// auto generated
@@ -9459,11 +9232,10 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data.Access
         /// this method is called by all overloads
         public static void LoadUsingTemplate(DataSet ADataSet, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClause(AFieldList, new string[] {
-                            "p_range_c"}) + " FROM PUB_p_postcode_range")
-                            + GenerateWhereClause(PPostcodeRangeTable.GetColumnStringList(), ASearchCriteria))
-                            + GenerateOrderByClause(AOrderBy)), PPostcodeRangeTable.GetTableName(), ATransaction,
-                            GetParametersForWhereClause(new PPostcodeRangeTable(), ASearchCriteria), AStartRecord, AMaxRecords);
+            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClause(AFieldList, PPostcodeRangeTable.TableId) + " FROM PUB_p_postcode_range") +
+                            GenerateWhereClause(TTypedDataTable.GetColumnStringList(PPostcodeRangeTable.TableId), ASearchCriteria)) +
+                            GenerateOrderByClause(AOrderBy)), TTypedDataTable.GetTableName(PPostcodeRangeTable.TableId), ATransaction,
+                            GetParametersForWhereClause(PPostcodeRangeTable.TableId, ASearchCriteria), AStartRecord, AMaxRecords);
         }
 
         /// auto generated
@@ -9506,49 +9278,42 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data.Access
             return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar("SELECT COUNT(*) FROM PUB_p_postcode_range", ATransaction, false));
         }
 
-        /// this method is called by all overloads
-        public static int CountByPrimaryKey(String ARange, TDBTransaction ATransaction)
+        /// check if a row exists by using the primary key
+        public static bool Exists(String ARange, TDBTransaction ATransaction)
         {
-            OdbcParameter[] ParametersArray = new OdbcParameter[1];
-            ParametersArray[0] = new OdbcParameter("", OdbcType.VarChar, 64);
-            ParametersArray[0].Value = ((object)(ARange));
-            return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar("SELECT COUNT(*) FROM PUB_p_postcode_range WHERE p_range_c = ?", ATransaction, false, ParametersArray));
+            return Exists(PPostcodeRangeTable.TableId, new System.Object[1]{ARange}, ATransaction);
         }
 
         /// this method is called by all overloads
         public static int CountUsingTemplate(PPostcodeRangeRow ATemplateRow, StringCollection ATemplateOperators, TDBTransaction ATransaction)
         {
-            return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_p_postcode_range" + GenerateWhereClause(PPostcodeRangeTable.GetColumnStringList(), ATemplateRow, ATemplateOperators)), ATransaction, false, GetParametersForWhereClause(ATemplateRow)));
+            return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_p_postcode_range" + GenerateWhereClause(TTypedDataTable.GetColumnStringList(PPostcodeRangeTable.TableId), ATemplateRow, ATemplateOperators)), ATransaction, false,
+                   GetParametersForWhereClause(PPostcodeRangeTable.TableId, ATemplateRow)));
         }
 
         /// this method is called by all overloads
         public static int CountUsingTemplate(TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
         {
-            return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_p_postcode_range" + GenerateWhereClause(PPostcodeRangeTable.GetColumnStringList(), ASearchCriteria)), ATransaction, false,
-            GetParametersForWhereClause(new PPostcodeRangeTable(), ASearchCriteria)));
+            return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_p_postcode_range" + GenerateWhereClause(TTypedDataTable.GetColumnStringList(PPostcodeRangeTable.TableId), ASearchCriteria)), ATransaction, false,
+            GetParametersForWhereClause(PPostcodeRangeTable.TableId, ASearchCriteria)));
         }
 
         /// auto generated
         public static void DeleteByPrimaryKey(String ARange, TDBTransaction ATransaction)
         {
-            OdbcParameter[] ParametersArray = new OdbcParameter[1];
-            ParametersArray[0] = new OdbcParameter("", OdbcType.VarChar, 64);
-            ParametersArray[0].Value = ((object)(ARange));
-            DBAccess.GDBAccessObj.ExecuteNonQuery("DELETE FROM PUB_p_postcode_range WHERE p_range_c = ?", ATransaction, false, ParametersArray);
+            DeleteByPrimaryKey(PPostcodeRangeTable.TableId, new System.Object[1]{ARange}, ATransaction);
         }
 
         /// auto generated
         public static void DeleteUsingTemplate(PPostcodeRangeRow ATemplateRow, StringCollection ATemplateOperators, TDBTransaction ATransaction)
         {
-            DBAccess.GDBAccessObj.ExecuteNonQuery(("DELETE FROM PUB_p_postcode_range" + GenerateWhereClause(PPostcodeRangeTable.GetColumnStringList(), ATemplateRow, ATemplateOperators)), ATransaction, false, GetParametersForWhereClause(ATemplateRow));
+            DeleteUsingTemplate(PPostcodeRangeTable.TableId, ATemplateRow, ATemplateOperators, ATransaction);
         }
 
         /// auto generated
         public static void DeleteUsingTemplate(TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
         {
-            DBAccess.GDBAccessObj.ExecuteNonQuery(("DELETE FROM PUB_p_postcode_range" +
-                GenerateWhereClause(PPostcodeRangeTable.GetColumnStringList(), ASearchCriteria)), ATransaction, false,
-                GetParametersForWhereClause(new PPostcodeRangeTable(), ASearchCriteria));
+            DeleteUsingTemplate(PPostcodeRangeTable.TableId, ASearchCriteria, ATransaction);
         }
 
         /// auto generated
@@ -9565,15 +9330,15 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data.Access
                 {
                     if ((TheRow.RowState == DataRowState.Added))
                     {
-                        TTypedDataAccess.InsertRow("p_postcode_range", PPostcodeRangeTable.GetColumnStringList(), ref TheRow, ATransaction, UserInfo.GUserInfo.UserID);
+                        TTypedDataAccess.InsertRow(PPostcodeRangeTable.TableId, ref TheRow, ATransaction, UserInfo.GUserInfo.UserID);
                     }
                     if ((TheRow.RowState == DataRowState.Modified))
                     {
-                        TTypedDataAccess.UpdateRow("p_postcode_range", PPostcodeRangeTable.GetColumnStringList(), PPostcodeRangeTable.GetPrimKeyColumnOrdList(), ref TheRow, ATransaction, UserInfo.GUserInfo.UserID);
+                        TTypedDataAccess.UpdateRow(PPostcodeRangeTable.TableId, ref TheRow, ATransaction, UserInfo.GUserInfo.UserID);
                     }
                     if ((TheRow.RowState == DataRowState.Deleted))
                     {
-                        TTypedDataAccess.DeleteRow("p_postcode_range", PPostcodeRangeTable.GetColumnStringList(), PPostcodeRangeTable.GetPrimKeyColumnOrdList(), TheRow, ATransaction);
+                        TTypedDataAccess.DeleteRow(PPostcodeRangeTable.TableId, TheRow, ATransaction);
                     }
                 }
                 catch (OdbcException ex)
@@ -9603,9 +9368,8 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data.Access
         /// this method is called by all overloads
         public static void LoadAll(DataSet ADataSet, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, ((GenerateSelectClause(AFieldList, new string[] {
-                            "p_region_c", "p_range_c"}) + " FROM PUB_p_postcode_region")
-                            + GenerateOrderByClause(AOrderBy)), PPostcodeRegionTable.GetTableName(), ATransaction, AStartRecord, AMaxRecords);
+            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, ((GenerateSelectClause(AFieldList, PPostcodeRegionTable.TableId) + " FROM PUB_p_postcode_region") +
+                            GenerateOrderByClause(AOrderBy)), TTypedDataTable.GetTableName(PPostcodeRegionTable.TableId), ATransaction, AStartRecord, AMaxRecords);
         }
 
         /// auto generated
@@ -9645,14 +9409,8 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data.Access
         /// this method is called by all overloads
         public static void LoadByPrimaryKey(DataSet ADataSet, String ARegion, String ARange, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            OdbcParameter[] ParametersArray = new OdbcParameter[2];
-            ParametersArray[0] = new OdbcParameter("", OdbcType.VarChar, 64);
-            ParametersArray[0].Value = ((object)(ARegion));
-            ParametersArray[1] = new OdbcParameter("", OdbcType.VarChar, 64);
-            ParametersArray[1].Value = ((object)(ARange));
-            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, ((GenerateSelectClause(AFieldList, new string[] {
-                            "p_region_c", "p_range_c"}) + " FROM PUB_p_postcode_region WHERE p_region_c = ? AND p_range_c = ?")
-                            + GenerateOrderByClause(AOrderBy)), PPostcodeRegionTable.GetTableName(), ATransaction, ParametersArray, AStartRecord, AMaxRecords);
+            ADataSet = LoadByPrimaryKey(PPostcodeRegionTable.TableId,
+                ADataSet, new System.Object[2]{ARegion, ARange}, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
         }
 
         /// auto generated
@@ -9692,10 +9450,10 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data.Access
         /// this method is called by all overloads
         public static void LoadUsingTemplate(DataSet ADataSet, PPostcodeRegionRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClause(AFieldList, new string[] {
-                            "p_region_c", "p_range_c"}) + " FROM PUB_p_postcode_region")
-                            + GenerateWhereClause(PPostcodeRegionTable.GetColumnStringList(), ATemplateRow, ATemplateOperators))
-                            + GenerateOrderByClause(AOrderBy)), PPostcodeRegionTable.GetTableName(), ATransaction, GetParametersForWhereClause(ATemplateRow), AStartRecord, AMaxRecords);
+            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClause(AFieldList, PPostcodeRegionTable.TableId) + " FROM PUB_p_postcode_region") +
+                            GenerateWhereClause(TTypedDataTable.GetColumnStringList(PPostcodeRegionTable.TableId), ATemplateRow, ATemplateOperators)) +
+                            GenerateOrderByClause(AOrderBy)), TTypedDataTable.GetTableName(PPostcodeRegionTable.TableId), ATransaction,
+                            GetParametersForWhereClause(PPostcodeRegionTable.TableId, ATemplateRow), AStartRecord, AMaxRecords);
         }
 
         /// auto generated
@@ -9741,11 +9499,10 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data.Access
         /// this method is called by all overloads
         public static void LoadUsingTemplate(DataSet ADataSet, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClause(AFieldList, new string[] {
-                            "p_region_c", "p_range_c"}) + " FROM PUB_p_postcode_region")
-                            + GenerateWhereClause(PPostcodeRegionTable.GetColumnStringList(), ASearchCriteria))
-                            + GenerateOrderByClause(AOrderBy)), PPostcodeRegionTable.GetTableName(), ATransaction,
-                            GetParametersForWhereClause(new PPostcodeRegionTable(), ASearchCriteria), AStartRecord, AMaxRecords);
+            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClause(AFieldList, PPostcodeRegionTable.TableId) + " FROM PUB_p_postcode_region") +
+                            GenerateWhereClause(TTypedDataTable.GetColumnStringList(PPostcodeRegionTable.TableId), ASearchCriteria)) +
+                            GenerateOrderByClause(AOrderBy)), TTypedDataTable.GetTableName(PPostcodeRegionTable.TableId), ATransaction,
+                            GetParametersForWhereClause(PPostcodeRegionTable.TableId, ASearchCriteria), AStartRecord, AMaxRecords);
         }
 
         /// auto generated
@@ -9788,28 +9545,24 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data.Access
             return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar("SELECT COUNT(*) FROM PUB_p_postcode_region", ATransaction, false));
         }
 
-        /// this method is called by all overloads
-        public static int CountByPrimaryKey(String ARegion, String ARange, TDBTransaction ATransaction)
+        /// check if a row exists by using the primary key
+        public static bool Exists(String ARegion, String ARange, TDBTransaction ATransaction)
         {
-            OdbcParameter[] ParametersArray = new OdbcParameter[2];
-            ParametersArray[0] = new OdbcParameter("", OdbcType.VarChar, 64);
-            ParametersArray[0].Value = ((object)(ARegion));
-            ParametersArray[1] = new OdbcParameter("", OdbcType.VarChar, 64);
-            ParametersArray[1].Value = ((object)(ARange));
-            return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar("SELECT COUNT(*) FROM PUB_p_postcode_region WHERE p_region_c = ? AND p_range_c = ?", ATransaction, false, ParametersArray));
+            return Exists(PPostcodeRegionTable.TableId, new System.Object[2]{ARegion, ARange}, ATransaction);
         }
 
         /// this method is called by all overloads
         public static int CountUsingTemplate(PPostcodeRegionRow ATemplateRow, StringCollection ATemplateOperators, TDBTransaction ATransaction)
         {
-            return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_p_postcode_region" + GenerateWhereClause(PPostcodeRegionTable.GetColumnStringList(), ATemplateRow, ATemplateOperators)), ATransaction, false, GetParametersForWhereClause(ATemplateRow)));
+            return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_p_postcode_region" + GenerateWhereClause(TTypedDataTable.GetColumnStringList(PPostcodeRegionTable.TableId), ATemplateRow, ATemplateOperators)), ATransaction, false,
+                   GetParametersForWhereClause(PPostcodeRegionTable.TableId, ATemplateRow)));
         }
 
         /// this method is called by all overloads
         public static int CountUsingTemplate(TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
         {
-            return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_p_postcode_region" + GenerateWhereClause(PPostcodeRegionTable.GetColumnStringList(), ASearchCriteria)), ATransaction, false,
-            GetParametersForWhereClause(new PPostcodeRegionTable(), ASearchCriteria)));
+            return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_p_postcode_region" + GenerateWhereClause(TTypedDataTable.GetColumnStringList(PPostcodeRegionTable.TableId), ASearchCriteria)), ATransaction, false,
+            GetParametersForWhereClause(PPostcodeRegionTable.TableId, ASearchCriteria)));
         }
 
         /// auto generated
@@ -9818,9 +9571,9 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data.Access
             OdbcParameter[] ParametersArray = new OdbcParameter[1];
             ParametersArray[0] = new OdbcParameter("", OdbcType.VarChar, 64);
             ParametersArray[0].Value = ((object)(ARange));
-            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, ((GenerateSelectClause(AFieldList, new string[] {
-                            "p_region_c", "p_range_c"}) + " FROM PUB_p_postcode_region WHERE p_range_c = ?")
-                            + GenerateOrderByClause(AOrderBy)), PPostcodeRegionTable.GetTableName(), ATransaction, ParametersArray, AStartRecord, AMaxRecords);
+            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, ((GenerateSelectClause(AFieldList, PPostcodeRegionTable.TableId) +
+                            " FROM PUB_p_postcode_region WHERE p_range_c = ?") +
+                            GenerateOrderByClause(AOrderBy)), TTypedDataTable.GetTableName(PPostcodeRegionTable.TableId), ATransaction, ParametersArray, AStartRecord, AMaxRecords);
         }
 
         /// auto generated
@@ -9860,11 +9613,12 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data.Access
         /// auto generated
         public static void LoadViaPPostcodeRangeTemplate(DataSet ADataSet, PPostcodeRangeRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClauseLong("PUB_p_postcode_region", AFieldList, new string[] {
-                            "p_region_c", "p_range_c"}) + " FROM PUB_p_postcode_region, PUB_p_postcode_range WHERE " +
-                            "PUB_p_postcode_region.p_range_c = PUB_p_postcode_range.p_range_c")
-                            + GenerateWhereClauseLong("PUB_p_postcode_range", PPostcodeRangeTable.GetColumnStringList(), ATemplateRow, ATemplateOperators))
-                            + GenerateOrderByClause(AOrderBy)), PPostcodeRegionTable.GetTableName(), ATransaction, GetParametersForWhereClause(ATemplateRow), AStartRecord, AMaxRecords);
+            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClauseLong("PUB_p_postcode_region", AFieldList, PPostcodeRegionTable.TableId) +
+                            " FROM PUB_p_postcode_region, PUB_p_postcode_range WHERE " +
+                            "PUB_p_postcode_region.p_range_c = PUB_p_postcode_range.p_range_c") +
+                            GenerateWhereClauseLong("PUB_p_postcode_range", PPostcodeRangeTable.TableId, ATemplateRow, ATemplateOperators)) +
+                            GenerateOrderByClause(AOrderBy)), TTypedDataTable.GetTableName(PPostcodeRegionTable.TableId), ATransaction,
+                            GetParametersForWhereClause(PPostcodeRangeTable.TableId, ATemplateRow), AStartRecord, AMaxRecords);
         }
 
         /// auto generated
@@ -9910,12 +9664,12 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data.Access
         /// auto generated
         public static void LoadViaPPostcodeRangeTemplate(DataSet ADataSet, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClauseLong("PUB_p_postcode_region", AFieldList, new string[] {
-                            "p_region_c", "p_range_c"}) + " FROM PUB_p_postcode_region, PUB_p_postcode_range WHERE " +
-                            "PUB_p_postcode_region.p_range_c = PUB_p_postcode_range.p_range_c")
-                            + GenerateWhereClauseLong("PUB_p_postcode_range", PPostcodeRangeTable.GetColumnStringList(), ASearchCriteria))
-                            + GenerateOrderByClause(AOrderBy)), PPostcodeRegionTable.GetTableName(), ATransaction,
-                            GetParametersForWhereClause(new PPostcodeRegionTable(), ASearchCriteria), AStartRecord, AMaxRecords);
+            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClauseLong("PUB_p_postcode_region", AFieldList, PPostcodeRegionTable.TableId) +
+                            " FROM PUB_p_postcode_region, PUB_p_postcode_range WHERE " +
+                            "PUB_p_postcode_region.p_range_c = PUB_p_postcode_range.p_range_c") +
+                            GenerateWhereClauseLong("PUB_p_postcode_range", ASearchCriteria)) +
+                            GenerateOrderByClause(AOrderBy)), TTypedDataTable.GetTableName(PPostcodeRegionTable.TableId), ATransaction,
+                            GetParametersForWhereClause(PPostcodeRegionTable.TableId, ASearchCriteria), AStartRecord, AMaxRecords);
         }
 
         /// auto generated
@@ -9965,7 +9719,10 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data.Access
         public static int CountViaPPostcodeRangeTemplate(PPostcodeRangeRow ATemplateRow, StringCollection ATemplateOperators, TDBTransaction ATransaction)
         {
             return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_p_postcode_region, PUB_p_postcode_range WHERE " +
-                "PUB_p_postcode_region.p_range_c = PUB_p_postcode_range.p_range_c" + GenerateWhereClauseLong("PUB_p_postcode_range", PPostcodeRangeTable.GetColumnStringList(), ATemplateRow, ATemplateOperators)), ATransaction, false, GetParametersForWhereClause(ATemplateRow, PPostcodeRangeTable.GetPrimKeyColumnOrdList())));
+                "PUB_p_postcode_region.p_range_c = PUB_p_postcode_range.p_range_c" + GenerateWhereClauseLong("PUB_p_postcode_range",
+                PPostcodeRangeTable.TableId, ATemplateRow, ATemplateOperators)),
+                ATransaction, false,
+                GetParametersForWhereClauseWithPrimaryKey(PPostcodeRangeTable.TableId, ATemplateRow)));
         }
 
         /// auto generated
@@ -9973,33 +9730,26 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data.Access
         {
             return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_p_postcode_region, PUB_p_postcode_range WHERE " +
                 "PUB_p_postcode_region.p_range_c = PUB_p_postcode_range.p_range_c" +
-                GenerateWhereClauseLong("PUB_p_postcode_range", PPostcodeRangeTable.GetColumnStringList(), ASearchCriteria)), ATransaction, false,
-                GetParametersForWhereClause(new PPostcodeRangeTable(), ASearchCriteria)));
+                GenerateWhereClauseLong("PUB_p_postcode_range", ASearchCriteria)), ATransaction, false,
+                GetParametersForWhereClause(PPostcodeRangeTable.TableId, ASearchCriteria)));
         }
 
         /// auto generated
         public static void DeleteByPrimaryKey(String ARegion, String ARange, TDBTransaction ATransaction)
         {
-            OdbcParameter[] ParametersArray = new OdbcParameter[2];
-            ParametersArray[0] = new OdbcParameter("", OdbcType.VarChar, 64);
-            ParametersArray[0].Value = ((object)(ARegion));
-            ParametersArray[1] = new OdbcParameter("", OdbcType.VarChar, 64);
-            ParametersArray[1].Value = ((object)(ARange));
-            DBAccess.GDBAccessObj.ExecuteNonQuery("DELETE FROM PUB_p_postcode_region WHERE p_region_c = ? AND p_range_c = ?", ATransaction, false, ParametersArray);
+            DeleteByPrimaryKey(PPostcodeRegionTable.TableId, new System.Object[2]{ARegion, ARange}, ATransaction);
         }
 
         /// auto generated
         public static void DeleteUsingTemplate(PPostcodeRegionRow ATemplateRow, StringCollection ATemplateOperators, TDBTransaction ATransaction)
         {
-            DBAccess.GDBAccessObj.ExecuteNonQuery(("DELETE FROM PUB_p_postcode_region" + GenerateWhereClause(PPostcodeRegionTable.GetColumnStringList(), ATemplateRow, ATemplateOperators)), ATransaction, false, GetParametersForWhereClause(ATemplateRow));
+            DeleteUsingTemplate(PPostcodeRegionTable.TableId, ATemplateRow, ATemplateOperators, ATransaction);
         }
 
         /// auto generated
         public static void DeleteUsingTemplate(TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
         {
-            DBAccess.GDBAccessObj.ExecuteNonQuery(("DELETE FROM PUB_p_postcode_region" +
-                GenerateWhereClause(PPostcodeRegionTable.GetColumnStringList(), ASearchCriteria)), ATransaction, false,
-                GetParametersForWhereClause(new PPostcodeRegionTable(), ASearchCriteria));
+            DeleteUsingTemplate(PPostcodeRegionTable.TableId, ASearchCriteria, ATransaction);
         }
 
         /// auto generated
@@ -10016,15 +9766,15 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data.Access
                 {
                     if ((TheRow.RowState == DataRowState.Added))
                     {
-                        TTypedDataAccess.InsertRow("p_postcode_region", PPostcodeRegionTable.GetColumnStringList(), ref TheRow, ATransaction, UserInfo.GUserInfo.UserID);
+                        TTypedDataAccess.InsertRow(PPostcodeRegionTable.TableId, ref TheRow, ATransaction, UserInfo.GUserInfo.UserID);
                     }
                     if ((TheRow.RowState == DataRowState.Modified))
                     {
-                        TTypedDataAccess.UpdateRow("p_postcode_region", PPostcodeRegionTable.GetColumnStringList(), PPostcodeRegionTable.GetPrimKeyColumnOrdList(), ref TheRow, ATransaction, UserInfo.GUserInfo.UserID);
+                        TTypedDataAccess.UpdateRow(PPostcodeRegionTable.TableId, ref TheRow, ATransaction, UserInfo.GUserInfo.UserID);
                     }
                     if ((TheRow.RowState == DataRowState.Deleted))
                     {
-                        TTypedDataAccess.DeleteRow("p_postcode_region", PPostcodeRegionTable.GetColumnStringList(), PPostcodeRegionTable.GetPrimKeyColumnOrdList(), TheRow, ATransaction);
+                        TTypedDataAccess.DeleteRow(PPostcodeRegionTable.TableId, TheRow, ATransaction);
                     }
                 }
                 catch (OdbcException ex)
@@ -10054,9 +9804,8 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data.Access
         /// this method is called by all overloads
         public static void LoadAll(DataSet ADataSet, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, ((GenerateSelectClause(AFieldList, new string[] {
-                            "p_publication_code_c"}) + " FROM PUB_p_publication")
-                            + GenerateOrderByClause(AOrderBy)), PPublicationTable.GetTableName(), ATransaction, AStartRecord, AMaxRecords);
+            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, ((GenerateSelectClause(AFieldList, PPublicationTable.TableId) + " FROM PUB_p_publication") +
+                            GenerateOrderByClause(AOrderBy)), TTypedDataTable.GetTableName(PPublicationTable.TableId), ATransaction, AStartRecord, AMaxRecords);
         }
 
         /// auto generated
@@ -10096,12 +9845,8 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data.Access
         /// this method is called by all overloads
         public static void LoadByPrimaryKey(DataSet ADataSet, String APublicationCode, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            OdbcParameter[] ParametersArray = new OdbcParameter[1];
-            ParametersArray[0] = new OdbcParameter("", OdbcType.VarChar, 20);
-            ParametersArray[0].Value = ((object)(APublicationCode));
-            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, ((GenerateSelectClause(AFieldList, new string[] {
-                            "p_publication_code_c"}) + " FROM PUB_p_publication WHERE p_publication_code_c = ?")
-                            + GenerateOrderByClause(AOrderBy)), PPublicationTable.GetTableName(), ATransaction, ParametersArray, AStartRecord, AMaxRecords);
+            ADataSet = LoadByPrimaryKey(PPublicationTable.TableId,
+                ADataSet, new System.Object[1]{APublicationCode}, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
         }
 
         /// auto generated
@@ -10141,10 +9886,10 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data.Access
         /// this method is called by all overloads
         public static void LoadUsingTemplate(DataSet ADataSet, PPublicationRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClause(AFieldList, new string[] {
-                            "p_publication_code_c"}) + " FROM PUB_p_publication")
-                            + GenerateWhereClause(PPublicationTable.GetColumnStringList(), ATemplateRow, ATemplateOperators))
-                            + GenerateOrderByClause(AOrderBy)), PPublicationTable.GetTableName(), ATransaction, GetParametersForWhereClause(ATemplateRow), AStartRecord, AMaxRecords);
+            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClause(AFieldList, PPublicationTable.TableId) + " FROM PUB_p_publication") +
+                            GenerateWhereClause(TTypedDataTable.GetColumnStringList(PPublicationTable.TableId), ATemplateRow, ATemplateOperators)) +
+                            GenerateOrderByClause(AOrderBy)), TTypedDataTable.GetTableName(PPublicationTable.TableId), ATransaction,
+                            GetParametersForWhereClause(PPublicationTable.TableId, ATemplateRow), AStartRecord, AMaxRecords);
         }
 
         /// auto generated
@@ -10190,11 +9935,10 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data.Access
         /// this method is called by all overloads
         public static void LoadUsingTemplate(DataSet ADataSet, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClause(AFieldList, new string[] {
-                            "p_publication_code_c"}) + " FROM PUB_p_publication")
-                            + GenerateWhereClause(PPublicationTable.GetColumnStringList(), ASearchCriteria))
-                            + GenerateOrderByClause(AOrderBy)), PPublicationTable.GetTableName(), ATransaction,
-                            GetParametersForWhereClause(new PPublicationTable(), ASearchCriteria), AStartRecord, AMaxRecords);
+            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClause(AFieldList, PPublicationTable.TableId) + " FROM PUB_p_publication") +
+                            GenerateWhereClause(TTypedDataTable.GetColumnStringList(PPublicationTable.TableId), ASearchCriteria)) +
+                            GenerateOrderByClause(AOrderBy)), TTypedDataTable.GetTableName(PPublicationTable.TableId), ATransaction,
+                            GetParametersForWhereClause(PPublicationTable.TableId, ASearchCriteria), AStartRecord, AMaxRecords);
         }
 
         /// auto generated
@@ -10237,26 +9981,24 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data.Access
             return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar("SELECT COUNT(*) FROM PUB_p_publication", ATransaction, false));
         }
 
-        /// this method is called by all overloads
-        public static int CountByPrimaryKey(String APublicationCode, TDBTransaction ATransaction)
+        /// check if a row exists by using the primary key
+        public static bool Exists(String APublicationCode, TDBTransaction ATransaction)
         {
-            OdbcParameter[] ParametersArray = new OdbcParameter[1];
-            ParametersArray[0] = new OdbcParameter("", OdbcType.VarChar, 20);
-            ParametersArray[0].Value = ((object)(APublicationCode));
-            return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar("SELECT COUNT(*) FROM PUB_p_publication WHERE p_publication_code_c = ?", ATransaction, false, ParametersArray));
+            return Exists(PPublicationTable.TableId, new System.Object[1]{APublicationCode}, ATransaction);
         }
 
         /// this method is called by all overloads
         public static int CountUsingTemplate(PPublicationRow ATemplateRow, StringCollection ATemplateOperators, TDBTransaction ATransaction)
         {
-            return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_p_publication" + GenerateWhereClause(PPublicationTable.GetColumnStringList(), ATemplateRow, ATemplateOperators)), ATransaction, false, GetParametersForWhereClause(ATemplateRow)));
+            return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_p_publication" + GenerateWhereClause(TTypedDataTable.GetColumnStringList(PPublicationTable.TableId), ATemplateRow, ATemplateOperators)), ATransaction, false,
+                   GetParametersForWhereClause(PPublicationTable.TableId, ATemplateRow)));
         }
 
         /// this method is called by all overloads
         public static int CountUsingTemplate(TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
         {
-            return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_p_publication" + GenerateWhereClause(PPublicationTable.GetColumnStringList(), ASearchCriteria)), ATransaction, false,
-            GetParametersForWhereClause(new PPublicationTable(), ASearchCriteria)));
+            return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_p_publication" + GenerateWhereClause(TTypedDataTable.GetColumnStringList(PPublicationTable.TableId), ASearchCriteria)), ATransaction, false,
+            GetParametersForWhereClause(PPublicationTable.TableId, ASearchCriteria)));
         }
 
         /// auto generated
@@ -10265,9 +10007,9 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data.Access
             OdbcParameter[] ParametersArray = new OdbcParameter[1];
             ParametersArray[0] = new OdbcParameter("", OdbcType.VarChar, 24);
             ParametersArray[0].Value = ((object)(AFrequencyCode));
-            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, ((GenerateSelectClause(AFieldList, new string[] {
-                            "p_publication_code_c"}) + " FROM PUB_p_publication WHERE a_frequency_code_c = ?")
-                            + GenerateOrderByClause(AOrderBy)), PPublicationTable.GetTableName(), ATransaction, ParametersArray, AStartRecord, AMaxRecords);
+            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, ((GenerateSelectClause(AFieldList, PPublicationTable.TableId) +
+                            " FROM PUB_p_publication WHERE a_frequency_code_c = ?") +
+                            GenerateOrderByClause(AOrderBy)), TTypedDataTable.GetTableName(PPublicationTable.TableId), ATransaction, ParametersArray, AStartRecord, AMaxRecords);
         }
 
         /// auto generated
@@ -10307,11 +10049,12 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data.Access
         /// auto generated
         public static void LoadViaAFrequencyTemplate(DataSet ADataSet, AFrequencyRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClauseLong("PUB_p_publication", AFieldList, new string[] {
-                            "p_publication_code_c"}) + " FROM PUB_p_publication, PUB_a_frequency WHERE " +
-                            "PUB_p_publication.a_frequency_code_c = PUB_a_frequency.a_frequency_code_c")
-                            + GenerateWhereClauseLong("PUB_a_frequency", AFrequencyTable.GetColumnStringList(), ATemplateRow, ATemplateOperators))
-                            + GenerateOrderByClause(AOrderBy)), PPublicationTable.GetTableName(), ATransaction, GetParametersForWhereClause(ATemplateRow), AStartRecord, AMaxRecords);
+            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClauseLong("PUB_p_publication", AFieldList, PPublicationTable.TableId) +
+                            " FROM PUB_p_publication, PUB_a_frequency WHERE " +
+                            "PUB_p_publication.a_frequency_code_c = PUB_a_frequency.a_frequency_code_c") +
+                            GenerateWhereClauseLong("PUB_a_frequency", AFrequencyTable.TableId, ATemplateRow, ATemplateOperators)) +
+                            GenerateOrderByClause(AOrderBy)), TTypedDataTable.GetTableName(PPublicationTable.TableId), ATransaction,
+                            GetParametersForWhereClause(AFrequencyTable.TableId, ATemplateRow), AStartRecord, AMaxRecords);
         }
 
         /// auto generated
@@ -10357,12 +10100,12 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data.Access
         /// auto generated
         public static void LoadViaAFrequencyTemplate(DataSet ADataSet, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClauseLong("PUB_p_publication", AFieldList, new string[] {
-                            "p_publication_code_c"}) + " FROM PUB_p_publication, PUB_a_frequency WHERE " +
-                            "PUB_p_publication.a_frequency_code_c = PUB_a_frequency.a_frequency_code_c")
-                            + GenerateWhereClauseLong("PUB_a_frequency", AFrequencyTable.GetColumnStringList(), ASearchCriteria))
-                            + GenerateOrderByClause(AOrderBy)), PPublicationTable.GetTableName(), ATransaction,
-                            GetParametersForWhereClause(new PPublicationTable(), ASearchCriteria), AStartRecord, AMaxRecords);
+            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClauseLong("PUB_p_publication", AFieldList, PPublicationTable.TableId) +
+                            " FROM PUB_p_publication, PUB_a_frequency WHERE " +
+                            "PUB_p_publication.a_frequency_code_c = PUB_a_frequency.a_frequency_code_c") +
+                            GenerateWhereClauseLong("PUB_a_frequency", ASearchCriteria)) +
+                            GenerateOrderByClause(AOrderBy)), TTypedDataTable.GetTableName(PPublicationTable.TableId), ATransaction,
+                            GetParametersForWhereClause(PPublicationTable.TableId, ASearchCriteria), AStartRecord, AMaxRecords);
         }
 
         /// auto generated
@@ -10412,7 +10155,10 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data.Access
         public static int CountViaAFrequencyTemplate(AFrequencyRow ATemplateRow, StringCollection ATemplateOperators, TDBTransaction ATransaction)
         {
             return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_p_publication, PUB_a_frequency WHERE " +
-                "PUB_p_publication.a_frequency_code_c = PUB_a_frequency.a_frequency_code_c" + GenerateWhereClauseLong("PUB_a_frequency", AFrequencyTable.GetColumnStringList(), ATemplateRow, ATemplateOperators)), ATransaction, false, GetParametersForWhereClause(ATemplateRow, AFrequencyTable.GetPrimKeyColumnOrdList())));
+                "PUB_p_publication.a_frequency_code_c = PUB_a_frequency.a_frequency_code_c" + GenerateWhereClauseLong("PUB_a_frequency",
+                AFrequencyTable.TableId, ATemplateRow, ATemplateOperators)),
+                ATransaction, false,
+                GetParametersForWhereClauseWithPrimaryKey(AFrequencyTable.TableId, ATemplateRow)));
         }
 
         /// auto generated
@@ -10420,8 +10166,8 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data.Access
         {
             return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_p_publication, PUB_a_frequency WHERE " +
                 "PUB_p_publication.a_frequency_code_c = PUB_a_frequency.a_frequency_code_c" +
-                GenerateWhereClauseLong("PUB_a_frequency", AFrequencyTable.GetColumnStringList(), ASearchCriteria)), ATransaction, false,
-                GetParametersForWhereClause(new AFrequencyTable(), ASearchCriteria)));
+                GenerateWhereClauseLong("PUB_a_frequency", ASearchCriteria)), ATransaction, false,
+                GetParametersForWhereClause(AFrequencyTable.TableId, ASearchCriteria)));
         }
 
         /// auto generated
@@ -10430,9 +10176,9 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data.Access
             OdbcParameter[] ParametersArray = new OdbcParameter[1];
             ParametersArray[0] = new OdbcParameter("", OdbcType.VarChar, 20);
             ParametersArray[0].Value = ((object)(ALanguageCode));
-            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, ((GenerateSelectClause(AFieldList, new string[] {
-                            "p_publication_code_c"}) + " FROM PUB_p_publication WHERE p_publication_language_c = ?")
-                            + GenerateOrderByClause(AOrderBy)), PPublicationTable.GetTableName(), ATransaction, ParametersArray, AStartRecord, AMaxRecords);
+            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, ((GenerateSelectClause(AFieldList, PPublicationTable.TableId) +
+                            " FROM PUB_p_publication WHERE p_publication_language_c = ?") +
+                            GenerateOrderByClause(AOrderBy)), TTypedDataTable.GetTableName(PPublicationTable.TableId), ATransaction, ParametersArray, AStartRecord, AMaxRecords);
         }
 
         /// auto generated
@@ -10472,11 +10218,12 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data.Access
         /// auto generated
         public static void LoadViaPLanguageTemplate(DataSet ADataSet, PLanguageRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClauseLong("PUB_p_publication", AFieldList, new string[] {
-                            "p_publication_code_c"}) + " FROM PUB_p_publication, PUB_p_language WHERE " +
-                            "PUB_p_publication.p_publication_language_c = PUB_p_language.p_language_code_c")
-                            + GenerateWhereClauseLong("PUB_p_language", PLanguageTable.GetColumnStringList(), ATemplateRow, ATemplateOperators))
-                            + GenerateOrderByClause(AOrderBy)), PPublicationTable.GetTableName(), ATransaction, GetParametersForWhereClause(ATemplateRow), AStartRecord, AMaxRecords);
+            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClauseLong("PUB_p_publication", AFieldList, PPublicationTable.TableId) +
+                            " FROM PUB_p_publication, PUB_p_language WHERE " +
+                            "PUB_p_publication.p_publication_language_c = PUB_p_language.p_language_code_c") +
+                            GenerateWhereClauseLong("PUB_p_language", PLanguageTable.TableId, ATemplateRow, ATemplateOperators)) +
+                            GenerateOrderByClause(AOrderBy)), TTypedDataTable.GetTableName(PPublicationTable.TableId), ATransaction,
+                            GetParametersForWhereClause(PLanguageTable.TableId, ATemplateRow), AStartRecord, AMaxRecords);
         }
 
         /// auto generated
@@ -10522,12 +10269,12 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data.Access
         /// auto generated
         public static void LoadViaPLanguageTemplate(DataSet ADataSet, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClauseLong("PUB_p_publication", AFieldList, new string[] {
-                            "p_publication_code_c"}) + " FROM PUB_p_publication, PUB_p_language WHERE " +
-                            "PUB_p_publication.p_publication_language_c = PUB_p_language.p_language_code_c")
-                            + GenerateWhereClauseLong("PUB_p_language", PLanguageTable.GetColumnStringList(), ASearchCriteria))
-                            + GenerateOrderByClause(AOrderBy)), PPublicationTable.GetTableName(), ATransaction,
-                            GetParametersForWhereClause(new PPublicationTable(), ASearchCriteria), AStartRecord, AMaxRecords);
+            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClauseLong("PUB_p_publication", AFieldList, PPublicationTable.TableId) +
+                            " FROM PUB_p_publication, PUB_p_language WHERE " +
+                            "PUB_p_publication.p_publication_language_c = PUB_p_language.p_language_code_c") +
+                            GenerateWhereClauseLong("PUB_p_language", ASearchCriteria)) +
+                            GenerateOrderByClause(AOrderBy)), TTypedDataTable.GetTableName(PPublicationTable.TableId), ATransaction,
+                            GetParametersForWhereClause(PPublicationTable.TableId, ASearchCriteria), AStartRecord, AMaxRecords);
         }
 
         /// auto generated
@@ -10577,7 +10324,10 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data.Access
         public static int CountViaPLanguageTemplate(PLanguageRow ATemplateRow, StringCollection ATemplateOperators, TDBTransaction ATransaction)
         {
             return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_p_publication, PUB_p_language WHERE " +
-                "PUB_p_publication.p_publication_language_c = PUB_p_language.p_language_code_c" + GenerateWhereClauseLong("PUB_p_language", PLanguageTable.GetColumnStringList(), ATemplateRow, ATemplateOperators)), ATransaction, false, GetParametersForWhereClause(ATemplateRow, PLanguageTable.GetPrimKeyColumnOrdList())));
+                "PUB_p_publication.p_publication_language_c = PUB_p_language.p_language_code_c" + GenerateWhereClauseLong("PUB_p_language",
+                PLanguageTable.TableId, ATemplateRow, ATemplateOperators)),
+                ATransaction, false,
+                GetParametersForWhereClauseWithPrimaryKey(PLanguageTable.TableId, ATemplateRow)));
         }
 
         /// auto generated
@@ -10585,8 +10335,8 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data.Access
         {
             return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_p_publication, PUB_p_language WHERE " +
                 "PUB_p_publication.p_publication_language_c = PUB_p_language.p_language_code_c" +
-                GenerateWhereClauseLong("PUB_p_language", PLanguageTable.GetColumnStringList(), ASearchCriteria)), ATransaction, false,
-                GetParametersForWhereClause(new PLanguageTable(), ASearchCriteria)));
+                GenerateWhereClauseLong("PUB_p_language", ASearchCriteria)), ATransaction, false,
+                GetParametersForWhereClause(PLanguageTable.TableId, ASearchCriteria)));
         }
 
         /// auto generated LoadViaLinkTable
@@ -10595,10 +10345,10 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data.Access
             OdbcParameter[] ParametersArray = new OdbcParameter[1];
             ParametersArray[0] = new OdbcParameter("", OdbcType.Decimal, 10);
             ParametersArray[0].Value = ((object)(APartnerKey));
-            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, ((GenerateSelectClauseLong("PUB_p_publication", AFieldList, new string[] {
-                            "p_publication_code_c"}) + " FROM PUB_p_publication, PUB_p_subscription WHERE " +
-                            "PUB_p_subscription.p_publication_code_c = PUB_p_publication.p_publication_code_c AND PUB_p_subscription.p_partner_key_n = ?")
-                            + GenerateOrderByClause(AOrderBy)), PPublicationTable.GetTableName(), ATransaction, ParametersArray, AStartRecord, AMaxRecords);
+            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, ((GenerateSelectClauseLong("PUB_p_publication", AFieldList, PPublicationTable.TableId) +
+                            " FROM PUB_p_publication, PUB_p_subscription WHERE " +
+                            "PUB_p_subscription.p_publication_code_c = PUB_p_publication.p_publication_code_c AND PUB_p_subscription.p_partner_key_n = ?") +
+                            GenerateOrderByClause(AOrderBy)), TTypedDataTable.GetTableName(PPublicationTable.TableId), ATransaction, ParametersArray, AStartRecord, AMaxRecords);
         }
 
         /// auto generated
@@ -10638,11 +10388,12 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data.Access
         /// auto generated
         public static void LoadViaPPartnerTemplate(DataSet ADataSet, PPartnerRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClauseLong("PUB_p_publication", AFieldList, new string[] {
-                            "p_publication_code_c"}) + " FROM PUB_p_publication, PUB_p_subscription, PUB_p_partner WHERE " +
-                            "PUB_p_subscription.p_publication_code_c = PUB_p_publication.p_publication_code_c AND PUB_p_subscription.p_partner_key_n = PUB_p_partner.p_partner_key_n")
-                            + GenerateWhereClauseLong("PUB_p_partner", PPartnerTable.GetColumnStringList(), ATemplateRow, ATemplateOperators))
-                            + GenerateOrderByClause(AOrderBy)), PPublicationTable.GetTableName(), ATransaction, GetParametersForWhereClause(ATemplateRow), AStartRecord, AMaxRecords);
+            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClauseLong("PUB_p_publication", AFieldList, PPublicationTable.TableId) +
+                            " FROM PUB_p_publication, PUB_p_subscription, PUB_p_partner WHERE " +
+                            "PUB_p_subscription.p_publication_code_c = PUB_p_publication.p_publication_code_c AND PUB_p_subscription.p_partner_key_n = PUB_p_partner.p_partner_key_n") +
+                            GenerateWhereClauseLong("PUB_p_partner", PPartnerTable.TableId, ATemplateRow, ATemplateOperators)) +
+                            GenerateOrderByClause(AOrderBy)), TTypedDataTable.GetTableName(PPublicationTable.TableId), ATransaction,
+                            GetParametersForWhereClause(PPartnerTable.TableId, ATemplateRow), AStartRecord, AMaxRecords);
         }
 
         /// auto generated
@@ -10688,12 +10439,12 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data.Access
         /// auto generated
         public static void LoadViaPPartnerTemplate(DataSet ADataSet, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClauseLong("PUB_p_publication", AFieldList, new string[] {
-                            "p_publication_code_c"}) + " FROM PUB_p_publication, PUB_p_subscription, PUB_p_partner WHERE " +
-                            "PUB_p_subscription.p_publication_code_c = PUB_p_publication.p_publication_code_c AND PUB_p_subscription.p_partner_key_n = PUB_p_partner.p_partner_key_n")
-                            + GenerateWhereClauseLong("PUB_p_partner", PPartnerTable.GetColumnStringList(), ASearchCriteria))
-                            + GenerateOrderByClause(AOrderBy)), PPublicationTable.GetTableName(), ATransaction,
-                            GetParametersForWhereClause(new PPublicationTable(), ASearchCriteria), AStartRecord, AMaxRecords);
+            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClauseLong("PUB_p_publication", AFieldList, PPublicationTable.TableId) +
+                            " FROM PUB_p_publication, PUB_p_subscription, PUB_p_partner WHERE " +
+                            "PUB_p_subscription.p_publication_code_c = PUB_p_publication.p_publication_code_c AND PUB_p_subscription.p_partner_key_n = PUB_p_partner.p_partner_key_n") +
+                            GenerateWhereClauseLong("PUB_p_partner", ASearchCriteria)) +
+                            GenerateOrderByClause(AOrderBy)), TTypedDataTable.GetTableName(PPublicationTable.TableId), ATransaction,
+                            GetParametersForWhereClause(PPublicationTable.TableId, ASearchCriteria), AStartRecord, AMaxRecords);
         }
 
         /// auto generated
@@ -10746,7 +10497,8 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data.Access
         {
             return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_p_publication, PUB_p_subscription, PUB_p_partner WHERE " +
                         "PUB_p_subscription.p_publication_code_c = PUB_p_publication.p_publication_code_c AND PUB_p_subscription.p_partner_key_n = PUB_p_partner.p_partner_key_n" +
-                        GenerateWhereClauseLong("PUB_p_subscription", PPublicationTable.GetColumnStringList(), ATemplateRow, ATemplateOperators)), ATransaction, false, GetParametersForWhereClause(ATemplateRow, PPartnerTable.GetPrimKeyColumnOrdList())));
+                        GenerateWhereClauseLong("PUB_p_subscription", PPublicationTable.TableId, ATemplateRow, ATemplateOperators)), ATransaction, false,
+                        GetParametersForWhereClauseWithPrimaryKey(PPartnerTable.TableId, ATemplateRow)));
         }
 
         /// auto generated
@@ -10754,31 +10506,26 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data.Access
         {
             return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_p_publication, PUB_p_subscription, PUB_p_partner WHERE " +
                         "PUB_p_subscription.p_publication_code_c = PUB_p_publication.p_publication_code_c AND PUB_p_subscription.p_partner_key_n = PUB_p_partner.p_partner_key_n" +
-                        GenerateWhereClauseLong("PUB_p_subscription", PPublicationTable.GetColumnStringList(), ASearchCriteria)), ATransaction, false,
-                        GetParametersForWhereClause(new PPublicationTable(), ASearchCriteria)));
+                        GenerateWhereClauseLong("PUB_p_subscription", ASearchCriteria)), ATransaction, false,
+                        GetParametersForWhereClause(PPublicationTable.TableId, ASearchCriteria)));
         }
 
         /// auto generated
         public static void DeleteByPrimaryKey(String APublicationCode, TDBTransaction ATransaction)
         {
-            OdbcParameter[] ParametersArray = new OdbcParameter[1];
-            ParametersArray[0] = new OdbcParameter("", OdbcType.VarChar, 20);
-            ParametersArray[0].Value = ((object)(APublicationCode));
-            DBAccess.GDBAccessObj.ExecuteNonQuery("DELETE FROM PUB_p_publication WHERE p_publication_code_c = ?", ATransaction, false, ParametersArray);
+            DeleteByPrimaryKey(PPublicationTable.TableId, new System.Object[1]{APublicationCode}, ATransaction);
         }
 
         /// auto generated
         public static void DeleteUsingTemplate(PPublicationRow ATemplateRow, StringCollection ATemplateOperators, TDBTransaction ATransaction)
         {
-            DBAccess.GDBAccessObj.ExecuteNonQuery(("DELETE FROM PUB_p_publication" + GenerateWhereClause(PPublicationTable.GetColumnStringList(), ATemplateRow, ATemplateOperators)), ATransaction, false, GetParametersForWhereClause(ATemplateRow));
+            DeleteUsingTemplate(PPublicationTable.TableId, ATemplateRow, ATemplateOperators, ATransaction);
         }
 
         /// auto generated
         public static void DeleteUsingTemplate(TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
         {
-            DBAccess.GDBAccessObj.ExecuteNonQuery(("DELETE FROM PUB_p_publication" +
-                GenerateWhereClause(PPublicationTable.GetColumnStringList(), ASearchCriteria)), ATransaction, false,
-                GetParametersForWhereClause(new PPublicationTable(), ASearchCriteria));
+            DeleteUsingTemplate(PPublicationTable.TableId, ASearchCriteria, ATransaction);
         }
 
         /// auto generated
@@ -10795,15 +10542,15 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data.Access
                 {
                     if ((TheRow.RowState == DataRowState.Added))
                     {
-                        TTypedDataAccess.InsertRow("p_publication", PPublicationTable.GetColumnStringList(), ref TheRow, ATransaction, UserInfo.GUserInfo.UserID);
+                        TTypedDataAccess.InsertRow(PPublicationTable.TableId, ref TheRow, ATransaction, UserInfo.GUserInfo.UserID);
                     }
                     if ((TheRow.RowState == DataRowState.Modified))
                     {
-                        TTypedDataAccess.UpdateRow("p_publication", PPublicationTable.GetColumnStringList(), PPublicationTable.GetPrimKeyColumnOrdList(), ref TheRow, ATransaction, UserInfo.GUserInfo.UserID);
+                        TTypedDataAccess.UpdateRow(PPublicationTable.TableId, ref TheRow, ATransaction, UserInfo.GUserInfo.UserID);
                     }
                     if ((TheRow.RowState == DataRowState.Deleted))
                     {
-                        TTypedDataAccess.DeleteRow("p_publication", PPublicationTable.GetColumnStringList(), PPublicationTable.GetPrimKeyColumnOrdList(), TheRow, ATransaction);
+                        TTypedDataAccess.DeleteRow(PPublicationTable.TableId, TheRow, ATransaction);
                     }
                 }
                 catch (OdbcException ex)
@@ -10833,9 +10580,8 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data.Access
         /// this method is called by all overloads
         public static void LoadAll(DataSet ADataSet, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, ((GenerateSelectClause(AFieldList, new string[] {
-                            "p_publication_code_c", "p_date_effective_d"}) + " FROM PUB_p_publication_cost")
-                            + GenerateOrderByClause(AOrderBy)), PPublicationCostTable.GetTableName(), ATransaction, AStartRecord, AMaxRecords);
+            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, ((GenerateSelectClause(AFieldList, PPublicationCostTable.TableId) + " FROM PUB_p_publication_cost") +
+                            GenerateOrderByClause(AOrderBy)), TTypedDataTable.GetTableName(PPublicationCostTable.TableId), ATransaction, AStartRecord, AMaxRecords);
         }
 
         /// auto generated
@@ -10875,14 +10621,8 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data.Access
         /// this method is called by all overloads
         public static void LoadByPrimaryKey(DataSet ADataSet, String APublicationCode, System.DateTime ADateEffective, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            OdbcParameter[] ParametersArray = new OdbcParameter[2];
-            ParametersArray[0] = new OdbcParameter("", OdbcType.VarChar, 20);
-            ParametersArray[0].Value = ((object)(APublicationCode));
-            ParametersArray[1] = new OdbcParameter("", OdbcType.Date);
-            ParametersArray[1].Value = ((object)(ADateEffective));
-            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, ((GenerateSelectClause(AFieldList, new string[] {
-                            "p_publication_code_c", "p_date_effective_d"}) + " FROM PUB_p_publication_cost WHERE p_publication_code_c = ? AND p_date_effective_d = ?")
-                            + GenerateOrderByClause(AOrderBy)), PPublicationCostTable.GetTableName(), ATransaction, ParametersArray, AStartRecord, AMaxRecords);
+            ADataSet = LoadByPrimaryKey(PPublicationCostTable.TableId,
+                ADataSet, new System.Object[2]{APublicationCode, ADateEffective}, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
         }
 
         /// auto generated
@@ -10922,10 +10662,10 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data.Access
         /// this method is called by all overloads
         public static void LoadUsingTemplate(DataSet ADataSet, PPublicationCostRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClause(AFieldList, new string[] {
-                            "p_publication_code_c", "p_date_effective_d"}) + " FROM PUB_p_publication_cost")
-                            + GenerateWhereClause(PPublicationCostTable.GetColumnStringList(), ATemplateRow, ATemplateOperators))
-                            + GenerateOrderByClause(AOrderBy)), PPublicationCostTable.GetTableName(), ATransaction, GetParametersForWhereClause(ATemplateRow), AStartRecord, AMaxRecords);
+            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClause(AFieldList, PPublicationCostTable.TableId) + " FROM PUB_p_publication_cost") +
+                            GenerateWhereClause(TTypedDataTable.GetColumnStringList(PPublicationCostTable.TableId), ATemplateRow, ATemplateOperators)) +
+                            GenerateOrderByClause(AOrderBy)), TTypedDataTable.GetTableName(PPublicationCostTable.TableId), ATransaction,
+                            GetParametersForWhereClause(PPublicationCostTable.TableId, ATemplateRow), AStartRecord, AMaxRecords);
         }
 
         /// auto generated
@@ -10971,11 +10711,10 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data.Access
         /// this method is called by all overloads
         public static void LoadUsingTemplate(DataSet ADataSet, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClause(AFieldList, new string[] {
-                            "p_publication_code_c", "p_date_effective_d"}) + " FROM PUB_p_publication_cost")
-                            + GenerateWhereClause(PPublicationCostTable.GetColumnStringList(), ASearchCriteria))
-                            + GenerateOrderByClause(AOrderBy)), PPublicationCostTable.GetTableName(), ATransaction,
-                            GetParametersForWhereClause(new PPublicationCostTable(), ASearchCriteria), AStartRecord, AMaxRecords);
+            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClause(AFieldList, PPublicationCostTable.TableId) + " FROM PUB_p_publication_cost") +
+                            GenerateWhereClause(TTypedDataTable.GetColumnStringList(PPublicationCostTable.TableId), ASearchCriteria)) +
+                            GenerateOrderByClause(AOrderBy)), TTypedDataTable.GetTableName(PPublicationCostTable.TableId), ATransaction,
+                            GetParametersForWhereClause(PPublicationCostTable.TableId, ASearchCriteria), AStartRecord, AMaxRecords);
         }
 
         /// auto generated
@@ -11018,28 +10757,24 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data.Access
             return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar("SELECT COUNT(*) FROM PUB_p_publication_cost", ATransaction, false));
         }
 
-        /// this method is called by all overloads
-        public static int CountByPrimaryKey(String APublicationCode, System.DateTime ADateEffective, TDBTransaction ATransaction)
+        /// check if a row exists by using the primary key
+        public static bool Exists(String APublicationCode, System.DateTime ADateEffective, TDBTransaction ATransaction)
         {
-            OdbcParameter[] ParametersArray = new OdbcParameter[2];
-            ParametersArray[0] = new OdbcParameter("", OdbcType.VarChar, 20);
-            ParametersArray[0].Value = ((object)(APublicationCode));
-            ParametersArray[1] = new OdbcParameter("", OdbcType.Date);
-            ParametersArray[1].Value = ((object)(ADateEffective));
-            return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar("SELECT COUNT(*) FROM PUB_p_publication_cost WHERE p_publication_code_c = ? AND p_date_effective_d = ?", ATransaction, false, ParametersArray));
+            return Exists(PPublicationCostTable.TableId, new System.Object[2]{APublicationCode, ADateEffective}, ATransaction);
         }
 
         /// this method is called by all overloads
         public static int CountUsingTemplate(PPublicationCostRow ATemplateRow, StringCollection ATemplateOperators, TDBTransaction ATransaction)
         {
-            return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_p_publication_cost" + GenerateWhereClause(PPublicationCostTable.GetColumnStringList(), ATemplateRow, ATemplateOperators)), ATransaction, false, GetParametersForWhereClause(ATemplateRow)));
+            return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_p_publication_cost" + GenerateWhereClause(TTypedDataTable.GetColumnStringList(PPublicationCostTable.TableId), ATemplateRow, ATemplateOperators)), ATransaction, false,
+                   GetParametersForWhereClause(PPublicationCostTable.TableId, ATemplateRow)));
         }
 
         /// this method is called by all overloads
         public static int CountUsingTemplate(TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
         {
-            return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_p_publication_cost" + GenerateWhereClause(PPublicationCostTable.GetColumnStringList(), ASearchCriteria)), ATransaction, false,
-            GetParametersForWhereClause(new PPublicationCostTable(), ASearchCriteria)));
+            return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_p_publication_cost" + GenerateWhereClause(TTypedDataTable.GetColumnStringList(PPublicationCostTable.TableId), ASearchCriteria)), ATransaction, false,
+            GetParametersForWhereClause(PPublicationCostTable.TableId, ASearchCriteria)));
         }
 
         /// auto generated
@@ -11048,9 +10783,9 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data.Access
             OdbcParameter[] ParametersArray = new OdbcParameter[1];
             ParametersArray[0] = new OdbcParameter("", OdbcType.VarChar, 20);
             ParametersArray[0].Value = ((object)(APublicationCode));
-            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, ((GenerateSelectClause(AFieldList, new string[] {
-                            "p_publication_code_c", "p_date_effective_d"}) + " FROM PUB_p_publication_cost WHERE p_publication_code_c = ?")
-                            + GenerateOrderByClause(AOrderBy)), PPublicationCostTable.GetTableName(), ATransaction, ParametersArray, AStartRecord, AMaxRecords);
+            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, ((GenerateSelectClause(AFieldList, PPublicationCostTable.TableId) +
+                            " FROM PUB_p_publication_cost WHERE p_publication_code_c = ?") +
+                            GenerateOrderByClause(AOrderBy)), TTypedDataTable.GetTableName(PPublicationCostTable.TableId), ATransaction, ParametersArray, AStartRecord, AMaxRecords);
         }
 
         /// auto generated
@@ -11090,11 +10825,12 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data.Access
         /// auto generated
         public static void LoadViaPPublicationTemplate(DataSet ADataSet, PPublicationRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClauseLong("PUB_p_publication_cost", AFieldList, new string[] {
-                            "p_publication_code_c", "p_date_effective_d"}) + " FROM PUB_p_publication_cost, PUB_p_publication WHERE " +
-                            "PUB_p_publication_cost.p_publication_code_c = PUB_p_publication.p_publication_code_c")
-                            + GenerateWhereClauseLong("PUB_p_publication", PPublicationTable.GetColumnStringList(), ATemplateRow, ATemplateOperators))
-                            + GenerateOrderByClause(AOrderBy)), PPublicationCostTable.GetTableName(), ATransaction, GetParametersForWhereClause(ATemplateRow), AStartRecord, AMaxRecords);
+            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClauseLong("PUB_p_publication_cost", AFieldList, PPublicationCostTable.TableId) +
+                            " FROM PUB_p_publication_cost, PUB_p_publication WHERE " +
+                            "PUB_p_publication_cost.p_publication_code_c = PUB_p_publication.p_publication_code_c") +
+                            GenerateWhereClauseLong("PUB_p_publication", PPublicationTable.TableId, ATemplateRow, ATemplateOperators)) +
+                            GenerateOrderByClause(AOrderBy)), TTypedDataTable.GetTableName(PPublicationCostTable.TableId), ATransaction,
+                            GetParametersForWhereClause(PPublicationTable.TableId, ATemplateRow), AStartRecord, AMaxRecords);
         }
 
         /// auto generated
@@ -11140,12 +10876,12 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data.Access
         /// auto generated
         public static void LoadViaPPublicationTemplate(DataSet ADataSet, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClauseLong("PUB_p_publication_cost", AFieldList, new string[] {
-                            "p_publication_code_c", "p_date_effective_d"}) + " FROM PUB_p_publication_cost, PUB_p_publication WHERE " +
-                            "PUB_p_publication_cost.p_publication_code_c = PUB_p_publication.p_publication_code_c")
-                            + GenerateWhereClauseLong("PUB_p_publication", PPublicationTable.GetColumnStringList(), ASearchCriteria))
-                            + GenerateOrderByClause(AOrderBy)), PPublicationCostTable.GetTableName(), ATransaction,
-                            GetParametersForWhereClause(new PPublicationCostTable(), ASearchCriteria), AStartRecord, AMaxRecords);
+            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClauseLong("PUB_p_publication_cost", AFieldList, PPublicationCostTable.TableId) +
+                            " FROM PUB_p_publication_cost, PUB_p_publication WHERE " +
+                            "PUB_p_publication_cost.p_publication_code_c = PUB_p_publication.p_publication_code_c") +
+                            GenerateWhereClauseLong("PUB_p_publication", ASearchCriteria)) +
+                            GenerateOrderByClause(AOrderBy)), TTypedDataTable.GetTableName(PPublicationCostTable.TableId), ATransaction,
+                            GetParametersForWhereClause(PPublicationCostTable.TableId, ASearchCriteria), AStartRecord, AMaxRecords);
         }
 
         /// auto generated
@@ -11195,7 +10931,10 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data.Access
         public static int CountViaPPublicationTemplate(PPublicationRow ATemplateRow, StringCollection ATemplateOperators, TDBTransaction ATransaction)
         {
             return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_p_publication_cost, PUB_p_publication WHERE " +
-                "PUB_p_publication_cost.p_publication_code_c = PUB_p_publication.p_publication_code_c" + GenerateWhereClauseLong("PUB_p_publication", PPublicationTable.GetColumnStringList(), ATemplateRow, ATemplateOperators)), ATransaction, false, GetParametersForWhereClause(ATemplateRow, PPublicationTable.GetPrimKeyColumnOrdList())));
+                "PUB_p_publication_cost.p_publication_code_c = PUB_p_publication.p_publication_code_c" + GenerateWhereClauseLong("PUB_p_publication",
+                PPublicationTable.TableId, ATemplateRow, ATemplateOperators)),
+                ATransaction, false,
+                GetParametersForWhereClauseWithPrimaryKey(PPublicationTable.TableId, ATemplateRow)));
         }
 
         /// auto generated
@@ -11203,8 +10942,8 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data.Access
         {
             return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_p_publication_cost, PUB_p_publication WHERE " +
                 "PUB_p_publication_cost.p_publication_code_c = PUB_p_publication.p_publication_code_c" +
-                GenerateWhereClauseLong("PUB_p_publication", PPublicationTable.GetColumnStringList(), ASearchCriteria)), ATransaction, false,
-                GetParametersForWhereClause(new PPublicationTable(), ASearchCriteria)));
+                GenerateWhereClauseLong("PUB_p_publication", ASearchCriteria)), ATransaction, false,
+                GetParametersForWhereClause(PPublicationTable.TableId, ASearchCriteria)));
         }
 
         /// auto generated
@@ -11213,9 +10952,9 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data.Access
             OdbcParameter[] ParametersArray = new OdbcParameter[1];
             ParametersArray[0] = new OdbcParameter("", OdbcType.VarChar, 16);
             ParametersArray[0].Value = ((object)(ACurrencyCode));
-            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, ((GenerateSelectClause(AFieldList, new string[] {
-                            "p_publication_code_c", "p_date_effective_d"}) + " FROM PUB_p_publication_cost WHERE p_currency_code_c = ?")
-                            + GenerateOrderByClause(AOrderBy)), PPublicationCostTable.GetTableName(), ATransaction, ParametersArray, AStartRecord, AMaxRecords);
+            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, ((GenerateSelectClause(AFieldList, PPublicationCostTable.TableId) +
+                            " FROM PUB_p_publication_cost WHERE p_currency_code_c = ?") +
+                            GenerateOrderByClause(AOrderBy)), TTypedDataTable.GetTableName(PPublicationCostTable.TableId), ATransaction, ParametersArray, AStartRecord, AMaxRecords);
         }
 
         /// auto generated
@@ -11255,11 +10994,12 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data.Access
         /// auto generated
         public static void LoadViaACurrencyTemplate(DataSet ADataSet, ACurrencyRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClauseLong("PUB_p_publication_cost", AFieldList, new string[] {
-                            "p_publication_code_c", "p_date_effective_d"}) + " FROM PUB_p_publication_cost, PUB_a_currency WHERE " +
-                            "PUB_p_publication_cost.p_currency_code_c = PUB_a_currency.a_currency_code_c")
-                            + GenerateWhereClauseLong("PUB_a_currency", ACurrencyTable.GetColumnStringList(), ATemplateRow, ATemplateOperators))
-                            + GenerateOrderByClause(AOrderBy)), PPublicationCostTable.GetTableName(), ATransaction, GetParametersForWhereClause(ATemplateRow), AStartRecord, AMaxRecords);
+            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClauseLong("PUB_p_publication_cost", AFieldList, PPublicationCostTable.TableId) +
+                            " FROM PUB_p_publication_cost, PUB_a_currency WHERE " +
+                            "PUB_p_publication_cost.p_currency_code_c = PUB_a_currency.a_currency_code_c") +
+                            GenerateWhereClauseLong("PUB_a_currency", ACurrencyTable.TableId, ATemplateRow, ATemplateOperators)) +
+                            GenerateOrderByClause(AOrderBy)), TTypedDataTable.GetTableName(PPublicationCostTable.TableId), ATransaction,
+                            GetParametersForWhereClause(ACurrencyTable.TableId, ATemplateRow), AStartRecord, AMaxRecords);
         }
 
         /// auto generated
@@ -11305,12 +11045,12 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data.Access
         /// auto generated
         public static void LoadViaACurrencyTemplate(DataSet ADataSet, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClauseLong("PUB_p_publication_cost", AFieldList, new string[] {
-                            "p_publication_code_c", "p_date_effective_d"}) + " FROM PUB_p_publication_cost, PUB_a_currency WHERE " +
-                            "PUB_p_publication_cost.p_currency_code_c = PUB_a_currency.a_currency_code_c")
-                            + GenerateWhereClauseLong("PUB_a_currency", ACurrencyTable.GetColumnStringList(), ASearchCriteria))
-                            + GenerateOrderByClause(AOrderBy)), PPublicationCostTable.GetTableName(), ATransaction,
-                            GetParametersForWhereClause(new PPublicationCostTable(), ASearchCriteria), AStartRecord, AMaxRecords);
+            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClauseLong("PUB_p_publication_cost", AFieldList, PPublicationCostTable.TableId) +
+                            " FROM PUB_p_publication_cost, PUB_a_currency WHERE " +
+                            "PUB_p_publication_cost.p_currency_code_c = PUB_a_currency.a_currency_code_c") +
+                            GenerateWhereClauseLong("PUB_a_currency", ASearchCriteria)) +
+                            GenerateOrderByClause(AOrderBy)), TTypedDataTable.GetTableName(PPublicationCostTable.TableId), ATransaction,
+                            GetParametersForWhereClause(PPublicationCostTable.TableId, ASearchCriteria), AStartRecord, AMaxRecords);
         }
 
         /// auto generated
@@ -11360,7 +11100,10 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data.Access
         public static int CountViaACurrencyTemplate(ACurrencyRow ATemplateRow, StringCollection ATemplateOperators, TDBTransaction ATransaction)
         {
             return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_p_publication_cost, PUB_a_currency WHERE " +
-                "PUB_p_publication_cost.p_currency_code_c = PUB_a_currency.a_currency_code_c" + GenerateWhereClauseLong("PUB_a_currency", ACurrencyTable.GetColumnStringList(), ATemplateRow, ATemplateOperators)), ATransaction, false, GetParametersForWhereClause(ATemplateRow, ACurrencyTable.GetPrimKeyColumnOrdList())));
+                "PUB_p_publication_cost.p_currency_code_c = PUB_a_currency.a_currency_code_c" + GenerateWhereClauseLong("PUB_a_currency",
+                ACurrencyTable.TableId, ATemplateRow, ATemplateOperators)),
+                ATransaction, false,
+                GetParametersForWhereClauseWithPrimaryKey(ACurrencyTable.TableId, ATemplateRow)));
         }
 
         /// auto generated
@@ -11368,33 +11111,26 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data.Access
         {
             return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_p_publication_cost, PUB_a_currency WHERE " +
                 "PUB_p_publication_cost.p_currency_code_c = PUB_a_currency.a_currency_code_c" +
-                GenerateWhereClauseLong("PUB_a_currency", ACurrencyTable.GetColumnStringList(), ASearchCriteria)), ATransaction, false,
-                GetParametersForWhereClause(new ACurrencyTable(), ASearchCriteria)));
+                GenerateWhereClauseLong("PUB_a_currency", ASearchCriteria)), ATransaction, false,
+                GetParametersForWhereClause(ACurrencyTable.TableId, ASearchCriteria)));
         }
 
         /// auto generated
         public static void DeleteByPrimaryKey(String APublicationCode, System.DateTime ADateEffective, TDBTransaction ATransaction)
         {
-            OdbcParameter[] ParametersArray = new OdbcParameter[2];
-            ParametersArray[0] = new OdbcParameter("", OdbcType.VarChar, 20);
-            ParametersArray[0].Value = ((object)(APublicationCode));
-            ParametersArray[1] = new OdbcParameter("", OdbcType.Date);
-            ParametersArray[1].Value = ((object)(ADateEffective));
-            DBAccess.GDBAccessObj.ExecuteNonQuery("DELETE FROM PUB_p_publication_cost WHERE p_publication_code_c = ? AND p_date_effective_d = ?", ATransaction, false, ParametersArray);
+            DeleteByPrimaryKey(PPublicationCostTable.TableId, new System.Object[2]{APublicationCode, ADateEffective}, ATransaction);
         }
 
         /// auto generated
         public static void DeleteUsingTemplate(PPublicationCostRow ATemplateRow, StringCollection ATemplateOperators, TDBTransaction ATransaction)
         {
-            DBAccess.GDBAccessObj.ExecuteNonQuery(("DELETE FROM PUB_p_publication_cost" + GenerateWhereClause(PPublicationCostTable.GetColumnStringList(), ATemplateRow, ATemplateOperators)), ATransaction, false, GetParametersForWhereClause(ATemplateRow));
+            DeleteUsingTemplate(PPublicationCostTable.TableId, ATemplateRow, ATemplateOperators, ATransaction);
         }
 
         /// auto generated
         public static void DeleteUsingTemplate(TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
         {
-            DBAccess.GDBAccessObj.ExecuteNonQuery(("DELETE FROM PUB_p_publication_cost" +
-                GenerateWhereClause(PPublicationCostTable.GetColumnStringList(), ASearchCriteria)), ATransaction, false,
-                GetParametersForWhereClause(new PPublicationCostTable(), ASearchCriteria));
+            DeleteUsingTemplate(PPublicationCostTable.TableId, ASearchCriteria, ATransaction);
         }
 
         /// auto generated
@@ -11411,15 +11147,15 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data.Access
                 {
                     if ((TheRow.RowState == DataRowState.Added))
                     {
-                        TTypedDataAccess.InsertRow("p_publication_cost", PPublicationCostTable.GetColumnStringList(), ref TheRow, ATransaction, UserInfo.GUserInfo.UserID);
+                        TTypedDataAccess.InsertRow(PPublicationCostTable.TableId, ref TheRow, ATransaction, UserInfo.GUserInfo.UserID);
                     }
                     if ((TheRow.RowState == DataRowState.Modified))
                     {
-                        TTypedDataAccess.UpdateRow("p_publication_cost", PPublicationCostTable.GetColumnStringList(), PPublicationCostTable.GetPrimKeyColumnOrdList(), ref TheRow, ATransaction, UserInfo.GUserInfo.UserID);
+                        TTypedDataAccess.UpdateRow(PPublicationCostTable.TableId, ref TheRow, ATransaction, UserInfo.GUserInfo.UserID);
                     }
                     if ((TheRow.RowState == DataRowState.Deleted))
                     {
-                        TTypedDataAccess.DeleteRow("p_publication_cost", PPublicationCostTable.GetColumnStringList(), PPublicationCostTable.GetPrimKeyColumnOrdList(), TheRow, ATransaction);
+                        TTypedDataAccess.DeleteRow(PPublicationCostTable.TableId, TheRow, ATransaction);
                     }
                 }
                 catch (OdbcException ex)
@@ -11449,9 +11185,8 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data.Access
         /// this method is called by all overloads
         public static void LoadAll(DataSet ADataSet, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, ((GenerateSelectClause(AFieldList, new string[] {
-                            "p_code_c"}) + " FROM PUB_p_reason_subscription_given")
-                            + GenerateOrderByClause(AOrderBy)), PReasonSubscriptionGivenTable.GetTableName(), ATransaction, AStartRecord, AMaxRecords);
+            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, ((GenerateSelectClause(AFieldList, PReasonSubscriptionGivenTable.TableId) + " FROM PUB_p_reason_subscription_given") +
+                            GenerateOrderByClause(AOrderBy)), TTypedDataTable.GetTableName(PReasonSubscriptionGivenTable.TableId), ATransaction, AStartRecord, AMaxRecords);
         }
 
         /// auto generated
@@ -11491,12 +11226,8 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data.Access
         /// this method is called by all overloads
         public static void LoadByPrimaryKey(DataSet ADataSet, String ACode, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            OdbcParameter[] ParametersArray = new OdbcParameter[1];
-            ParametersArray[0] = new OdbcParameter("", OdbcType.VarChar, 24);
-            ParametersArray[0].Value = ((object)(ACode));
-            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, ((GenerateSelectClause(AFieldList, new string[] {
-                            "p_code_c"}) + " FROM PUB_p_reason_subscription_given WHERE p_code_c = ?")
-                            + GenerateOrderByClause(AOrderBy)), PReasonSubscriptionGivenTable.GetTableName(), ATransaction, ParametersArray, AStartRecord, AMaxRecords);
+            ADataSet = LoadByPrimaryKey(PReasonSubscriptionGivenTable.TableId,
+                ADataSet, new System.Object[1]{ACode}, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
         }
 
         /// auto generated
@@ -11536,10 +11267,10 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data.Access
         /// this method is called by all overloads
         public static void LoadUsingTemplate(DataSet ADataSet, PReasonSubscriptionGivenRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClause(AFieldList, new string[] {
-                            "p_code_c"}) + " FROM PUB_p_reason_subscription_given")
-                            + GenerateWhereClause(PReasonSubscriptionGivenTable.GetColumnStringList(), ATemplateRow, ATemplateOperators))
-                            + GenerateOrderByClause(AOrderBy)), PReasonSubscriptionGivenTable.GetTableName(), ATransaction, GetParametersForWhereClause(ATemplateRow), AStartRecord, AMaxRecords);
+            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClause(AFieldList, PReasonSubscriptionGivenTable.TableId) + " FROM PUB_p_reason_subscription_given") +
+                            GenerateWhereClause(TTypedDataTable.GetColumnStringList(PReasonSubscriptionGivenTable.TableId), ATemplateRow, ATemplateOperators)) +
+                            GenerateOrderByClause(AOrderBy)), TTypedDataTable.GetTableName(PReasonSubscriptionGivenTable.TableId), ATransaction,
+                            GetParametersForWhereClause(PReasonSubscriptionGivenTable.TableId, ATemplateRow), AStartRecord, AMaxRecords);
         }
 
         /// auto generated
@@ -11585,11 +11316,10 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data.Access
         /// this method is called by all overloads
         public static void LoadUsingTemplate(DataSet ADataSet, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClause(AFieldList, new string[] {
-                            "p_code_c"}) + " FROM PUB_p_reason_subscription_given")
-                            + GenerateWhereClause(PReasonSubscriptionGivenTable.GetColumnStringList(), ASearchCriteria))
-                            + GenerateOrderByClause(AOrderBy)), PReasonSubscriptionGivenTable.GetTableName(), ATransaction,
-                            GetParametersForWhereClause(new PReasonSubscriptionGivenTable(), ASearchCriteria), AStartRecord, AMaxRecords);
+            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClause(AFieldList, PReasonSubscriptionGivenTable.TableId) + " FROM PUB_p_reason_subscription_given") +
+                            GenerateWhereClause(TTypedDataTable.GetColumnStringList(PReasonSubscriptionGivenTable.TableId), ASearchCriteria)) +
+                            GenerateOrderByClause(AOrderBy)), TTypedDataTable.GetTableName(PReasonSubscriptionGivenTable.TableId), ATransaction,
+                            GetParametersForWhereClause(PReasonSubscriptionGivenTable.TableId, ASearchCriteria), AStartRecord, AMaxRecords);
         }
 
         /// auto generated
@@ -11632,49 +11362,42 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data.Access
             return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar("SELECT COUNT(*) FROM PUB_p_reason_subscription_given", ATransaction, false));
         }
 
-        /// this method is called by all overloads
-        public static int CountByPrimaryKey(String ACode, TDBTransaction ATransaction)
+        /// check if a row exists by using the primary key
+        public static bool Exists(String ACode, TDBTransaction ATransaction)
         {
-            OdbcParameter[] ParametersArray = new OdbcParameter[1];
-            ParametersArray[0] = new OdbcParameter("", OdbcType.VarChar, 24);
-            ParametersArray[0].Value = ((object)(ACode));
-            return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar("SELECT COUNT(*) FROM PUB_p_reason_subscription_given WHERE p_code_c = ?", ATransaction, false, ParametersArray));
+            return Exists(PReasonSubscriptionGivenTable.TableId, new System.Object[1]{ACode}, ATransaction);
         }
 
         /// this method is called by all overloads
         public static int CountUsingTemplate(PReasonSubscriptionGivenRow ATemplateRow, StringCollection ATemplateOperators, TDBTransaction ATransaction)
         {
-            return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_p_reason_subscription_given" + GenerateWhereClause(PReasonSubscriptionGivenTable.GetColumnStringList(), ATemplateRow, ATemplateOperators)), ATransaction, false, GetParametersForWhereClause(ATemplateRow)));
+            return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_p_reason_subscription_given" + GenerateWhereClause(TTypedDataTable.GetColumnStringList(PReasonSubscriptionGivenTable.TableId), ATemplateRow, ATemplateOperators)), ATransaction, false,
+                   GetParametersForWhereClause(PReasonSubscriptionGivenTable.TableId, ATemplateRow)));
         }
 
         /// this method is called by all overloads
         public static int CountUsingTemplate(TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
         {
-            return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_p_reason_subscription_given" + GenerateWhereClause(PReasonSubscriptionGivenTable.GetColumnStringList(), ASearchCriteria)), ATransaction, false,
-            GetParametersForWhereClause(new PReasonSubscriptionGivenTable(), ASearchCriteria)));
+            return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_p_reason_subscription_given" + GenerateWhereClause(TTypedDataTable.GetColumnStringList(PReasonSubscriptionGivenTable.TableId), ASearchCriteria)), ATransaction, false,
+            GetParametersForWhereClause(PReasonSubscriptionGivenTable.TableId, ASearchCriteria)));
         }
 
         /// auto generated
         public static void DeleteByPrimaryKey(String ACode, TDBTransaction ATransaction)
         {
-            OdbcParameter[] ParametersArray = new OdbcParameter[1];
-            ParametersArray[0] = new OdbcParameter("", OdbcType.VarChar, 24);
-            ParametersArray[0].Value = ((object)(ACode));
-            DBAccess.GDBAccessObj.ExecuteNonQuery("DELETE FROM PUB_p_reason_subscription_given WHERE p_code_c = ?", ATransaction, false, ParametersArray);
+            DeleteByPrimaryKey(PReasonSubscriptionGivenTable.TableId, new System.Object[1]{ACode}, ATransaction);
         }
 
         /// auto generated
         public static void DeleteUsingTemplate(PReasonSubscriptionGivenRow ATemplateRow, StringCollection ATemplateOperators, TDBTransaction ATransaction)
         {
-            DBAccess.GDBAccessObj.ExecuteNonQuery(("DELETE FROM PUB_p_reason_subscription_given" + GenerateWhereClause(PReasonSubscriptionGivenTable.GetColumnStringList(), ATemplateRow, ATemplateOperators)), ATransaction, false, GetParametersForWhereClause(ATemplateRow));
+            DeleteUsingTemplate(PReasonSubscriptionGivenTable.TableId, ATemplateRow, ATemplateOperators, ATransaction);
         }
 
         /// auto generated
         public static void DeleteUsingTemplate(TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
         {
-            DBAccess.GDBAccessObj.ExecuteNonQuery(("DELETE FROM PUB_p_reason_subscription_given" +
-                GenerateWhereClause(PReasonSubscriptionGivenTable.GetColumnStringList(), ASearchCriteria)), ATransaction, false,
-                GetParametersForWhereClause(new PReasonSubscriptionGivenTable(), ASearchCriteria));
+            DeleteUsingTemplate(PReasonSubscriptionGivenTable.TableId, ASearchCriteria, ATransaction);
         }
 
         /// auto generated
@@ -11691,15 +11414,15 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data.Access
                 {
                     if ((TheRow.RowState == DataRowState.Added))
                     {
-                        TTypedDataAccess.InsertRow("p_reason_subscription_given", PReasonSubscriptionGivenTable.GetColumnStringList(), ref TheRow, ATransaction, UserInfo.GUserInfo.UserID);
+                        TTypedDataAccess.InsertRow(PReasonSubscriptionGivenTable.TableId, ref TheRow, ATransaction, UserInfo.GUserInfo.UserID);
                     }
                     if ((TheRow.RowState == DataRowState.Modified))
                     {
-                        TTypedDataAccess.UpdateRow("p_reason_subscription_given", PReasonSubscriptionGivenTable.GetColumnStringList(), PReasonSubscriptionGivenTable.GetPrimKeyColumnOrdList(), ref TheRow, ATransaction, UserInfo.GUserInfo.UserID);
+                        TTypedDataAccess.UpdateRow(PReasonSubscriptionGivenTable.TableId, ref TheRow, ATransaction, UserInfo.GUserInfo.UserID);
                     }
                     if ((TheRow.RowState == DataRowState.Deleted))
                     {
-                        TTypedDataAccess.DeleteRow("p_reason_subscription_given", PReasonSubscriptionGivenTable.GetColumnStringList(), PReasonSubscriptionGivenTable.GetPrimKeyColumnOrdList(), TheRow, ATransaction);
+                        TTypedDataAccess.DeleteRow(PReasonSubscriptionGivenTable.TableId, TheRow, ATransaction);
                     }
                 }
                 catch (OdbcException ex)
@@ -11729,9 +11452,8 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data.Access
         /// this method is called by all overloads
         public static void LoadAll(DataSet ADataSet, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, ((GenerateSelectClause(AFieldList, new string[] {
-                            "p_code_c"}) + " FROM PUB_p_reason_subscription_cancelled")
-                            + GenerateOrderByClause(AOrderBy)), PReasonSubscriptionCancelledTable.GetTableName(), ATransaction, AStartRecord, AMaxRecords);
+            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, ((GenerateSelectClause(AFieldList, PReasonSubscriptionCancelledTable.TableId) + " FROM PUB_p_reason_subscription_cancelled") +
+                            GenerateOrderByClause(AOrderBy)), TTypedDataTable.GetTableName(PReasonSubscriptionCancelledTable.TableId), ATransaction, AStartRecord, AMaxRecords);
         }
 
         /// auto generated
@@ -11771,12 +11493,8 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data.Access
         /// this method is called by all overloads
         public static void LoadByPrimaryKey(DataSet ADataSet, String ACode, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            OdbcParameter[] ParametersArray = new OdbcParameter[1];
-            ParametersArray[0] = new OdbcParameter("", OdbcType.VarChar, 24);
-            ParametersArray[0].Value = ((object)(ACode));
-            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, ((GenerateSelectClause(AFieldList, new string[] {
-                            "p_code_c"}) + " FROM PUB_p_reason_subscription_cancelled WHERE p_code_c = ?")
-                            + GenerateOrderByClause(AOrderBy)), PReasonSubscriptionCancelledTable.GetTableName(), ATransaction, ParametersArray, AStartRecord, AMaxRecords);
+            ADataSet = LoadByPrimaryKey(PReasonSubscriptionCancelledTable.TableId,
+                ADataSet, new System.Object[1]{ACode}, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
         }
 
         /// auto generated
@@ -11816,10 +11534,10 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data.Access
         /// this method is called by all overloads
         public static void LoadUsingTemplate(DataSet ADataSet, PReasonSubscriptionCancelledRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClause(AFieldList, new string[] {
-                            "p_code_c"}) + " FROM PUB_p_reason_subscription_cancelled")
-                            + GenerateWhereClause(PReasonSubscriptionCancelledTable.GetColumnStringList(), ATemplateRow, ATemplateOperators))
-                            + GenerateOrderByClause(AOrderBy)), PReasonSubscriptionCancelledTable.GetTableName(), ATransaction, GetParametersForWhereClause(ATemplateRow), AStartRecord, AMaxRecords);
+            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClause(AFieldList, PReasonSubscriptionCancelledTable.TableId) + " FROM PUB_p_reason_subscription_cancelled") +
+                            GenerateWhereClause(TTypedDataTable.GetColumnStringList(PReasonSubscriptionCancelledTable.TableId), ATemplateRow, ATemplateOperators)) +
+                            GenerateOrderByClause(AOrderBy)), TTypedDataTable.GetTableName(PReasonSubscriptionCancelledTable.TableId), ATransaction,
+                            GetParametersForWhereClause(PReasonSubscriptionCancelledTable.TableId, ATemplateRow), AStartRecord, AMaxRecords);
         }
 
         /// auto generated
@@ -11865,11 +11583,10 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data.Access
         /// this method is called by all overloads
         public static void LoadUsingTemplate(DataSet ADataSet, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClause(AFieldList, new string[] {
-                            "p_code_c"}) + " FROM PUB_p_reason_subscription_cancelled")
-                            + GenerateWhereClause(PReasonSubscriptionCancelledTable.GetColumnStringList(), ASearchCriteria))
-                            + GenerateOrderByClause(AOrderBy)), PReasonSubscriptionCancelledTable.GetTableName(), ATransaction,
-                            GetParametersForWhereClause(new PReasonSubscriptionCancelledTable(), ASearchCriteria), AStartRecord, AMaxRecords);
+            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClause(AFieldList, PReasonSubscriptionCancelledTable.TableId) + " FROM PUB_p_reason_subscription_cancelled") +
+                            GenerateWhereClause(TTypedDataTable.GetColumnStringList(PReasonSubscriptionCancelledTable.TableId), ASearchCriteria)) +
+                            GenerateOrderByClause(AOrderBy)), TTypedDataTable.GetTableName(PReasonSubscriptionCancelledTable.TableId), ATransaction,
+                            GetParametersForWhereClause(PReasonSubscriptionCancelledTable.TableId, ASearchCriteria), AStartRecord, AMaxRecords);
         }
 
         /// auto generated
@@ -11912,49 +11629,42 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data.Access
             return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar("SELECT COUNT(*) FROM PUB_p_reason_subscription_cancelled", ATransaction, false));
         }
 
-        /// this method is called by all overloads
-        public static int CountByPrimaryKey(String ACode, TDBTransaction ATransaction)
+        /// check if a row exists by using the primary key
+        public static bool Exists(String ACode, TDBTransaction ATransaction)
         {
-            OdbcParameter[] ParametersArray = new OdbcParameter[1];
-            ParametersArray[0] = new OdbcParameter("", OdbcType.VarChar, 24);
-            ParametersArray[0].Value = ((object)(ACode));
-            return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar("SELECT COUNT(*) FROM PUB_p_reason_subscription_cancelled WHERE p_code_c = ?", ATransaction, false, ParametersArray));
+            return Exists(PReasonSubscriptionCancelledTable.TableId, new System.Object[1]{ACode}, ATransaction);
         }
 
         /// this method is called by all overloads
         public static int CountUsingTemplate(PReasonSubscriptionCancelledRow ATemplateRow, StringCollection ATemplateOperators, TDBTransaction ATransaction)
         {
-            return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_p_reason_subscription_cancelled" + GenerateWhereClause(PReasonSubscriptionCancelledTable.GetColumnStringList(), ATemplateRow, ATemplateOperators)), ATransaction, false, GetParametersForWhereClause(ATemplateRow)));
+            return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_p_reason_subscription_cancelled" + GenerateWhereClause(TTypedDataTable.GetColumnStringList(PReasonSubscriptionCancelledTable.TableId), ATemplateRow, ATemplateOperators)), ATransaction, false,
+                   GetParametersForWhereClause(PReasonSubscriptionCancelledTable.TableId, ATemplateRow)));
         }
 
         /// this method is called by all overloads
         public static int CountUsingTemplate(TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
         {
-            return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_p_reason_subscription_cancelled" + GenerateWhereClause(PReasonSubscriptionCancelledTable.GetColumnStringList(), ASearchCriteria)), ATransaction, false,
-            GetParametersForWhereClause(new PReasonSubscriptionCancelledTable(), ASearchCriteria)));
+            return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_p_reason_subscription_cancelled" + GenerateWhereClause(TTypedDataTable.GetColumnStringList(PReasonSubscriptionCancelledTable.TableId), ASearchCriteria)), ATransaction, false,
+            GetParametersForWhereClause(PReasonSubscriptionCancelledTable.TableId, ASearchCriteria)));
         }
 
         /// auto generated
         public static void DeleteByPrimaryKey(String ACode, TDBTransaction ATransaction)
         {
-            OdbcParameter[] ParametersArray = new OdbcParameter[1];
-            ParametersArray[0] = new OdbcParameter("", OdbcType.VarChar, 24);
-            ParametersArray[0].Value = ((object)(ACode));
-            DBAccess.GDBAccessObj.ExecuteNonQuery("DELETE FROM PUB_p_reason_subscription_cancelled WHERE p_code_c = ?", ATransaction, false, ParametersArray);
+            DeleteByPrimaryKey(PReasonSubscriptionCancelledTable.TableId, new System.Object[1]{ACode}, ATransaction);
         }
 
         /// auto generated
         public static void DeleteUsingTemplate(PReasonSubscriptionCancelledRow ATemplateRow, StringCollection ATemplateOperators, TDBTransaction ATransaction)
         {
-            DBAccess.GDBAccessObj.ExecuteNonQuery(("DELETE FROM PUB_p_reason_subscription_cancelled" + GenerateWhereClause(PReasonSubscriptionCancelledTable.GetColumnStringList(), ATemplateRow, ATemplateOperators)), ATransaction, false, GetParametersForWhereClause(ATemplateRow));
+            DeleteUsingTemplate(PReasonSubscriptionCancelledTable.TableId, ATemplateRow, ATemplateOperators, ATransaction);
         }
 
         /// auto generated
         public static void DeleteUsingTemplate(TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
         {
-            DBAccess.GDBAccessObj.ExecuteNonQuery(("DELETE FROM PUB_p_reason_subscription_cancelled" +
-                GenerateWhereClause(PReasonSubscriptionCancelledTable.GetColumnStringList(), ASearchCriteria)), ATransaction, false,
-                GetParametersForWhereClause(new PReasonSubscriptionCancelledTable(), ASearchCriteria));
+            DeleteUsingTemplate(PReasonSubscriptionCancelledTable.TableId, ASearchCriteria, ATransaction);
         }
 
         /// auto generated
@@ -11971,15 +11681,15 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data.Access
                 {
                     if ((TheRow.RowState == DataRowState.Added))
                     {
-                        TTypedDataAccess.InsertRow("p_reason_subscription_cancelled", PReasonSubscriptionCancelledTable.GetColumnStringList(), ref TheRow, ATransaction, UserInfo.GUserInfo.UserID);
+                        TTypedDataAccess.InsertRow(PReasonSubscriptionCancelledTable.TableId, ref TheRow, ATransaction, UserInfo.GUserInfo.UserID);
                     }
                     if ((TheRow.RowState == DataRowState.Modified))
                     {
-                        TTypedDataAccess.UpdateRow("p_reason_subscription_cancelled", PReasonSubscriptionCancelledTable.GetColumnStringList(), PReasonSubscriptionCancelledTable.GetPrimKeyColumnOrdList(), ref TheRow, ATransaction, UserInfo.GUserInfo.UserID);
+                        TTypedDataAccess.UpdateRow(PReasonSubscriptionCancelledTable.TableId, ref TheRow, ATransaction, UserInfo.GUserInfo.UserID);
                     }
                     if ((TheRow.RowState == DataRowState.Deleted))
                     {
-                        TTypedDataAccess.DeleteRow("p_reason_subscription_cancelled", PReasonSubscriptionCancelledTable.GetColumnStringList(), PReasonSubscriptionCancelledTable.GetPrimKeyColumnOrdList(), TheRow, ATransaction);
+                        TTypedDataAccess.DeleteRow(PReasonSubscriptionCancelledTable.TableId, TheRow, ATransaction);
                     }
                 }
                 catch (OdbcException ex)
@@ -12009,9 +11719,8 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data.Access
         /// this method is called by all overloads
         public static void LoadAll(DataSet ADataSet, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, ((GenerateSelectClause(AFieldList, new string[] {
-                            "p_publication_code_c", "p_partner_key_n"}) + " FROM PUB_p_subscription")
-                            + GenerateOrderByClause(AOrderBy)), PSubscriptionTable.GetTableName(), ATransaction, AStartRecord, AMaxRecords);
+            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, ((GenerateSelectClause(AFieldList, PSubscriptionTable.TableId) + " FROM PUB_p_subscription") +
+                            GenerateOrderByClause(AOrderBy)), TTypedDataTable.GetTableName(PSubscriptionTable.TableId), ATransaction, AStartRecord, AMaxRecords);
         }
 
         /// auto generated
@@ -12051,14 +11760,8 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data.Access
         /// this method is called by all overloads
         public static void LoadByPrimaryKey(DataSet ADataSet, String APublicationCode, Int64 APartnerKey, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            OdbcParameter[] ParametersArray = new OdbcParameter[2];
-            ParametersArray[0] = new OdbcParameter("", OdbcType.VarChar, 20);
-            ParametersArray[0].Value = ((object)(APublicationCode));
-            ParametersArray[1] = new OdbcParameter("", OdbcType.Decimal, 10);
-            ParametersArray[1].Value = ((object)(APartnerKey));
-            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, ((GenerateSelectClause(AFieldList, new string[] {
-                            "p_publication_code_c", "p_partner_key_n"}) + " FROM PUB_p_subscription WHERE p_publication_code_c = ? AND p_partner_key_n = ?")
-                            + GenerateOrderByClause(AOrderBy)), PSubscriptionTable.GetTableName(), ATransaction, ParametersArray, AStartRecord, AMaxRecords);
+            ADataSet = LoadByPrimaryKey(PSubscriptionTable.TableId,
+                ADataSet, new System.Object[2]{APublicationCode, APartnerKey}, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
         }
 
         /// auto generated
@@ -12098,10 +11801,10 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data.Access
         /// this method is called by all overloads
         public static void LoadUsingTemplate(DataSet ADataSet, PSubscriptionRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClause(AFieldList, new string[] {
-                            "p_publication_code_c", "p_partner_key_n"}) + " FROM PUB_p_subscription")
-                            + GenerateWhereClause(PSubscriptionTable.GetColumnStringList(), ATemplateRow, ATemplateOperators))
-                            + GenerateOrderByClause(AOrderBy)), PSubscriptionTable.GetTableName(), ATransaction, GetParametersForWhereClause(ATemplateRow), AStartRecord, AMaxRecords);
+            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClause(AFieldList, PSubscriptionTable.TableId) + " FROM PUB_p_subscription") +
+                            GenerateWhereClause(TTypedDataTable.GetColumnStringList(PSubscriptionTable.TableId), ATemplateRow, ATemplateOperators)) +
+                            GenerateOrderByClause(AOrderBy)), TTypedDataTable.GetTableName(PSubscriptionTable.TableId), ATransaction,
+                            GetParametersForWhereClause(PSubscriptionTable.TableId, ATemplateRow), AStartRecord, AMaxRecords);
         }
 
         /// auto generated
@@ -12147,11 +11850,10 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data.Access
         /// this method is called by all overloads
         public static void LoadUsingTemplate(DataSet ADataSet, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClause(AFieldList, new string[] {
-                            "p_publication_code_c", "p_partner_key_n"}) + " FROM PUB_p_subscription")
-                            + GenerateWhereClause(PSubscriptionTable.GetColumnStringList(), ASearchCriteria))
-                            + GenerateOrderByClause(AOrderBy)), PSubscriptionTable.GetTableName(), ATransaction,
-                            GetParametersForWhereClause(new PSubscriptionTable(), ASearchCriteria), AStartRecord, AMaxRecords);
+            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClause(AFieldList, PSubscriptionTable.TableId) + " FROM PUB_p_subscription") +
+                            GenerateWhereClause(TTypedDataTable.GetColumnStringList(PSubscriptionTable.TableId), ASearchCriteria)) +
+                            GenerateOrderByClause(AOrderBy)), TTypedDataTable.GetTableName(PSubscriptionTable.TableId), ATransaction,
+                            GetParametersForWhereClause(PSubscriptionTable.TableId, ASearchCriteria), AStartRecord, AMaxRecords);
         }
 
         /// auto generated
@@ -12194,28 +11896,24 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data.Access
             return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar("SELECT COUNT(*) FROM PUB_p_subscription", ATransaction, false));
         }
 
-        /// this method is called by all overloads
-        public static int CountByPrimaryKey(String APublicationCode, Int64 APartnerKey, TDBTransaction ATransaction)
+        /// check if a row exists by using the primary key
+        public static bool Exists(String APublicationCode, Int64 APartnerKey, TDBTransaction ATransaction)
         {
-            OdbcParameter[] ParametersArray = new OdbcParameter[2];
-            ParametersArray[0] = new OdbcParameter("", OdbcType.VarChar, 20);
-            ParametersArray[0].Value = ((object)(APublicationCode));
-            ParametersArray[1] = new OdbcParameter("", OdbcType.Decimal, 10);
-            ParametersArray[1].Value = ((object)(APartnerKey));
-            return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar("SELECT COUNT(*) FROM PUB_p_subscription WHERE p_publication_code_c = ? AND p_partner_key_n = ?", ATransaction, false, ParametersArray));
+            return Exists(PSubscriptionTable.TableId, new System.Object[2]{APublicationCode, APartnerKey}, ATransaction);
         }
 
         /// this method is called by all overloads
         public static int CountUsingTemplate(PSubscriptionRow ATemplateRow, StringCollection ATemplateOperators, TDBTransaction ATransaction)
         {
-            return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_p_subscription" + GenerateWhereClause(PSubscriptionTable.GetColumnStringList(), ATemplateRow, ATemplateOperators)), ATransaction, false, GetParametersForWhereClause(ATemplateRow)));
+            return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_p_subscription" + GenerateWhereClause(TTypedDataTable.GetColumnStringList(PSubscriptionTable.TableId), ATemplateRow, ATemplateOperators)), ATransaction, false,
+                   GetParametersForWhereClause(PSubscriptionTable.TableId, ATemplateRow)));
         }
 
         /// this method is called by all overloads
         public static int CountUsingTemplate(TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
         {
-            return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_p_subscription" + GenerateWhereClause(PSubscriptionTable.GetColumnStringList(), ASearchCriteria)), ATransaction, false,
-            GetParametersForWhereClause(new PSubscriptionTable(), ASearchCriteria)));
+            return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_p_subscription" + GenerateWhereClause(TTypedDataTable.GetColumnStringList(PSubscriptionTable.TableId), ASearchCriteria)), ATransaction, false,
+            GetParametersForWhereClause(PSubscriptionTable.TableId, ASearchCriteria)));
         }
 
         /// auto generated
@@ -12224,9 +11922,9 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data.Access
             OdbcParameter[] ParametersArray = new OdbcParameter[1];
             ParametersArray[0] = new OdbcParameter("", OdbcType.VarChar, 20);
             ParametersArray[0].Value = ((object)(APublicationCode));
-            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, ((GenerateSelectClause(AFieldList, new string[] {
-                            "p_publication_code_c", "p_partner_key_n"}) + " FROM PUB_p_subscription WHERE p_publication_code_c = ?")
-                            + GenerateOrderByClause(AOrderBy)), PSubscriptionTable.GetTableName(), ATransaction, ParametersArray, AStartRecord, AMaxRecords);
+            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, ((GenerateSelectClause(AFieldList, PSubscriptionTable.TableId) +
+                            " FROM PUB_p_subscription WHERE p_publication_code_c = ?") +
+                            GenerateOrderByClause(AOrderBy)), TTypedDataTable.GetTableName(PSubscriptionTable.TableId), ATransaction, ParametersArray, AStartRecord, AMaxRecords);
         }
 
         /// auto generated
@@ -12266,11 +11964,12 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data.Access
         /// auto generated
         public static void LoadViaPPublicationTemplate(DataSet ADataSet, PPublicationRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClauseLong("PUB_p_subscription", AFieldList, new string[] {
-                            "p_publication_code_c", "p_partner_key_n"}) + " FROM PUB_p_subscription, PUB_p_publication WHERE " +
-                            "PUB_p_subscription.p_publication_code_c = PUB_p_publication.p_publication_code_c")
-                            + GenerateWhereClauseLong("PUB_p_publication", PPublicationTable.GetColumnStringList(), ATemplateRow, ATemplateOperators))
-                            + GenerateOrderByClause(AOrderBy)), PSubscriptionTable.GetTableName(), ATransaction, GetParametersForWhereClause(ATemplateRow), AStartRecord, AMaxRecords);
+            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClauseLong("PUB_p_subscription", AFieldList, PSubscriptionTable.TableId) +
+                            " FROM PUB_p_subscription, PUB_p_publication WHERE " +
+                            "PUB_p_subscription.p_publication_code_c = PUB_p_publication.p_publication_code_c") +
+                            GenerateWhereClauseLong("PUB_p_publication", PPublicationTable.TableId, ATemplateRow, ATemplateOperators)) +
+                            GenerateOrderByClause(AOrderBy)), TTypedDataTable.GetTableName(PSubscriptionTable.TableId), ATransaction,
+                            GetParametersForWhereClause(PPublicationTable.TableId, ATemplateRow), AStartRecord, AMaxRecords);
         }
 
         /// auto generated
@@ -12316,12 +12015,12 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data.Access
         /// auto generated
         public static void LoadViaPPublicationTemplate(DataSet ADataSet, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClauseLong("PUB_p_subscription", AFieldList, new string[] {
-                            "p_publication_code_c", "p_partner_key_n"}) + " FROM PUB_p_subscription, PUB_p_publication WHERE " +
-                            "PUB_p_subscription.p_publication_code_c = PUB_p_publication.p_publication_code_c")
-                            + GenerateWhereClauseLong("PUB_p_publication", PPublicationTable.GetColumnStringList(), ASearchCriteria))
-                            + GenerateOrderByClause(AOrderBy)), PSubscriptionTable.GetTableName(), ATransaction,
-                            GetParametersForWhereClause(new PSubscriptionTable(), ASearchCriteria), AStartRecord, AMaxRecords);
+            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClauseLong("PUB_p_subscription", AFieldList, PSubscriptionTable.TableId) +
+                            " FROM PUB_p_subscription, PUB_p_publication WHERE " +
+                            "PUB_p_subscription.p_publication_code_c = PUB_p_publication.p_publication_code_c") +
+                            GenerateWhereClauseLong("PUB_p_publication", ASearchCriteria)) +
+                            GenerateOrderByClause(AOrderBy)), TTypedDataTable.GetTableName(PSubscriptionTable.TableId), ATransaction,
+                            GetParametersForWhereClause(PSubscriptionTable.TableId, ASearchCriteria), AStartRecord, AMaxRecords);
         }
 
         /// auto generated
@@ -12371,7 +12070,10 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data.Access
         public static int CountViaPPublicationTemplate(PPublicationRow ATemplateRow, StringCollection ATemplateOperators, TDBTransaction ATransaction)
         {
             return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_p_subscription, PUB_p_publication WHERE " +
-                "PUB_p_subscription.p_publication_code_c = PUB_p_publication.p_publication_code_c" + GenerateWhereClauseLong("PUB_p_publication", PPublicationTable.GetColumnStringList(), ATemplateRow, ATemplateOperators)), ATransaction, false, GetParametersForWhereClause(ATemplateRow, PPublicationTable.GetPrimKeyColumnOrdList())));
+                "PUB_p_subscription.p_publication_code_c = PUB_p_publication.p_publication_code_c" + GenerateWhereClauseLong("PUB_p_publication",
+                PPublicationTable.TableId, ATemplateRow, ATemplateOperators)),
+                ATransaction, false,
+                GetParametersForWhereClauseWithPrimaryKey(PPublicationTable.TableId, ATemplateRow)));
         }
 
         /// auto generated
@@ -12379,8 +12081,8 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data.Access
         {
             return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_p_subscription, PUB_p_publication WHERE " +
                 "PUB_p_subscription.p_publication_code_c = PUB_p_publication.p_publication_code_c" +
-                GenerateWhereClauseLong("PUB_p_publication", PPublicationTable.GetColumnStringList(), ASearchCriteria)), ATransaction, false,
-                GetParametersForWhereClause(new PPublicationTable(), ASearchCriteria)));
+                GenerateWhereClauseLong("PUB_p_publication", ASearchCriteria)), ATransaction, false,
+                GetParametersForWhereClause(PPublicationTable.TableId, ASearchCriteria)));
         }
 
         /// auto generated
@@ -12389,9 +12091,9 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data.Access
             OdbcParameter[] ParametersArray = new OdbcParameter[1];
             ParametersArray[0] = new OdbcParameter("", OdbcType.Decimal, 10);
             ParametersArray[0].Value = ((object)(APartnerKey));
-            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, ((GenerateSelectClause(AFieldList, new string[] {
-                            "p_publication_code_c", "p_partner_key_n"}) + " FROM PUB_p_subscription WHERE p_partner_key_n = ?")
-                            + GenerateOrderByClause(AOrderBy)), PSubscriptionTable.GetTableName(), ATransaction, ParametersArray, AStartRecord, AMaxRecords);
+            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, ((GenerateSelectClause(AFieldList, PSubscriptionTable.TableId) +
+                            " FROM PUB_p_subscription WHERE p_partner_key_n = ?") +
+                            GenerateOrderByClause(AOrderBy)), TTypedDataTable.GetTableName(PSubscriptionTable.TableId), ATransaction, ParametersArray, AStartRecord, AMaxRecords);
         }
 
         /// auto generated
@@ -12431,11 +12133,12 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data.Access
         /// auto generated
         public static void LoadViaPPartnerPartnerKeyTemplate(DataSet ADataSet, PPartnerRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClauseLong("PUB_p_subscription", AFieldList, new string[] {
-                            "p_publication_code_c", "p_partner_key_n"}) + " FROM PUB_p_subscription, PUB_p_partner WHERE " +
-                            "PUB_p_subscription.p_partner_key_n = PUB_p_partner.p_partner_key_n")
-                            + GenerateWhereClauseLong("PUB_p_partner", PPartnerTable.GetColumnStringList(), ATemplateRow, ATemplateOperators))
-                            + GenerateOrderByClause(AOrderBy)), PSubscriptionTable.GetTableName(), ATransaction, GetParametersForWhereClause(ATemplateRow), AStartRecord, AMaxRecords);
+            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClauseLong("PUB_p_subscription", AFieldList, PSubscriptionTable.TableId) +
+                            " FROM PUB_p_subscription, PUB_p_partner WHERE " +
+                            "PUB_p_subscription.p_partner_key_n = PUB_p_partner.p_partner_key_n") +
+                            GenerateWhereClauseLong("PUB_p_partner", PPartnerTable.TableId, ATemplateRow, ATemplateOperators)) +
+                            GenerateOrderByClause(AOrderBy)), TTypedDataTable.GetTableName(PSubscriptionTable.TableId), ATransaction,
+                            GetParametersForWhereClause(PPartnerTable.TableId, ATemplateRow), AStartRecord, AMaxRecords);
         }
 
         /// auto generated
@@ -12481,12 +12184,12 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data.Access
         /// auto generated
         public static void LoadViaPPartnerPartnerKeyTemplate(DataSet ADataSet, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClauseLong("PUB_p_subscription", AFieldList, new string[] {
-                            "p_publication_code_c", "p_partner_key_n"}) + " FROM PUB_p_subscription, PUB_p_partner WHERE " +
-                            "PUB_p_subscription.p_partner_key_n = PUB_p_partner.p_partner_key_n")
-                            + GenerateWhereClauseLong("PUB_p_partner", PPartnerTable.GetColumnStringList(), ASearchCriteria))
-                            + GenerateOrderByClause(AOrderBy)), PSubscriptionTable.GetTableName(), ATransaction,
-                            GetParametersForWhereClause(new PSubscriptionTable(), ASearchCriteria), AStartRecord, AMaxRecords);
+            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClauseLong("PUB_p_subscription", AFieldList, PSubscriptionTable.TableId) +
+                            " FROM PUB_p_subscription, PUB_p_partner WHERE " +
+                            "PUB_p_subscription.p_partner_key_n = PUB_p_partner.p_partner_key_n") +
+                            GenerateWhereClauseLong("PUB_p_partner", ASearchCriteria)) +
+                            GenerateOrderByClause(AOrderBy)), TTypedDataTable.GetTableName(PSubscriptionTable.TableId), ATransaction,
+                            GetParametersForWhereClause(PSubscriptionTable.TableId, ASearchCriteria), AStartRecord, AMaxRecords);
         }
 
         /// auto generated
@@ -12536,7 +12239,10 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data.Access
         public static int CountViaPPartnerPartnerKeyTemplate(PPartnerRow ATemplateRow, StringCollection ATemplateOperators, TDBTransaction ATransaction)
         {
             return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_p_subscription, PUB_p_partner WHERE " +
-                "PUB_p_subscription.p_partner_key_n = PUB_p_partner.p_partner_key_n" + GenerateWhereClauseLong("PUB_p_partner", PPartnerTable.GetColumnStringList(), ATemplateRow, ATemplateOperators)), ATransaction, false, GetParametersForWhereClause(ATemplateRow, PPartnerTable.GetPrimKeyColumnOrdList())));
+                "PUB_p_subscription.p_partner_key_n = PUB_p_partner.p_partner_key_n" + GenerateWhereClauseLong("PUB_p_partner",
+                PPartnerTable.TableId, ATemplateRow, ATemplateOperators)),
+                ATransaction, false,
+                GetParametersForWhereClauseWithPrimaryKey(PPartnerTable.TableId, ATemplateRow)));
         }
 
         /// auto generated
@@ -12544,8 +12250,177 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data.Access
         {
             return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_p_subscription, PUB_p_partner WHERE " +
                 "PUB_p_subscription.p_partner_key_n = PUB_p_partner.p_partner_key_n" +
-                GenerateWhereClauseLong("PUB_p_partner", PPartnerTable.GetColumnStringList(), ASearchCriteria)), ATransaction, false,
-                GetParametersForWhereClause(new PPartnerTable(), ASearchCriteria)));
+                GenerateWhereClauseLong("PUB_p_partner", ASearchCriteria)), ATransaction, false,
+                GetParametersForWhereClause(PPartnerTable.TableId, ASearchCriteria)));
+        }
+
+        /// auto generated
+        public static void LoadViaPPartnerGiftFromKey(DataSet ADataSet, Int64 APartnerKey, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        {
+            OdbcParameter[] ParametersArray = new OdbcParameter[1];
+            ParametersArray[0] = new OdbcParameter("", OdbcType.Decimal, 10);
+            ParametersArray[0].Value = ((object)(APartnerKey));
+            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, ((GenerateSelectClause(AFieldList, PSubscriptionTable.TableId) +
+                            " FROM PUB_p_subscription WHERE p_gift_from_key_n = ?") +
+                            GenerateOrderByClause(AOrderBy)), TTypedDataTable.GetTableName(PSubscriptionTable.TableId), ATransaction, ParametersArray, AStartRecord, AMaxRecords);
+        }
+
+        /// auto generated
+        public static void LoadViaPPartnerGiftFromKey(DataSet AData, Int64 APartnerKey, TDBTransaction ATransaction)
+        {
+            LoadViaPPartnerGiftFromKey(AData, APartnerKey, null, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static void LoadViaPPartnerGiftFromKey(DataSet AData, Int64 APartnerKey, StringCollection AFieldList, TDBTransaction ATransaction)
+        {
+            LoadViaPPartnerGiftFromKey(AData, APartnerKey, AFieldList, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static void LoadViaPPartnerGiftFromKey(out PSubscriptionTable AData, Int64 APartnerKey, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        {
+            DataSet FillDataSet = new DataSet();
+            AData = new PSubscriptionTable();
+            FillDataSet.Tables.Add(AData);
+            LoadViaPPartnerGiftFromKey(FillDataSet, APartnerKey, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            FillDataSet.Tables.Remove(AData);
+        }
+
+        /// auto generated
+        public static void LoadViaPPartnerGiftFromKey(out PSubscriptionTable AData, Int64 APartnerKey, TDBTransaction ATransaction)
+        {
+            LoadViaPPartnerGiftFromKey(out AData, APartnerKey, null, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static void LoadViaPPartnerGiftFromKey(out PSubscriptionTable AData, Int64 APartnerKey, StringCollection AFieldList, TDBTransaction ATransaction)
+        {
+            LoadViaPPartnerGiftFromKey(out AData, APartnerKey, AFieldList, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static void LoadViaPPartnerGiftFromKeyTemplate(DataSet ADataSet, PPartnerRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        {
+            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClauseLong("PUB_p_subscription", AFieldList, PSubscriptionTable.TableId) +
+                            " FROM PUB_p_subscription, PUB_p_partner WHERE " +
+                            "PUB_p_subscription.p_gift_from_key_n = PUB_p_partner.p_partner_key_n") +
+                            GenerateWhereClauseLong("PUB_p_partner", PPartnerTable.TableId, ATemplateRow, ATemplateOperators)) +
+                            GenerateOrderByClause(AOrderBy)), TTypedDataTable.GetTableName(PSubscriptionTable.TableId), ATransaction,
+                            GetParametersForWhereClause(PPartnerTable.TableId, ATemplateRow), AStartRecord, AMaxRecords);
+        }
+
+        /// auto generated
+        public static void LoadViaPPartnerGiftFromKeyTemplate(DataSet AData, PPartnerRow ATemplateRow, TDBTransaction ATransaction)
+        {
+            LoadViaPPartnerGiftFromKeyTemplate(AData, ATemplateRow, null, null, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static void LoadViaPPartnerGiftFromKeyTemplate(DataSet AData, PPartnerRow ATemplateRow, StringCollection AFieldList, TDBTransaction ATransaction)
+        {
+            LoadViaPPartnerGiftFromKeyTemplate(AData, ATemplateRow, null, AFieldList, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static void LoadViaPPartnerGiftFromKeyTemplate(out PSubscriptionTable AData, PPartnerRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        {
+            DataSet FillDataSet = new DataSet();
+            AData = new PSubscriptionTable();
+            FillDataSet.Tables.Add(AData);
+            LoadViaPPartnerGiftFromKeyTemplate(FillDataSet, ATemplateRow, ATemplateOperators, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            FillDataSet.Tables.Remove(AData);
+        }
+
+        /// auto generated
+        public static void LoadViaPPartnerGiftFromKeyTemplate(out PSubscriptionTable AData, PPartnerRow ATemplateRow, TDBTransaction ATransaction)
+        {
+            LoadViaPPartnerGiftFromKeyTemplate(out AData, ATemplateRow, null, null, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static void LoadViaPPartnerGiftFromKeyTemplate(out PSubscriptionTable AData, PPartnerRow ATemplateRow, StringCollection AFieldList, TDBTransaction ATransaction)
+        {
+            LoadViaPPartnerGiftFromKeyTemplate(out AData, ATemplateRow, null, AFieldList, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static void LoadViaPPartnerGiftFromKeyTemplate(out PSubscriptionTable AData, PPartnerRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction)
+        {
+            LoadViaPPartnerGiftFromKeyTemplate(out AData, ATemplateRow, ATemplateOperators, AFieldList, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static void LoadViaPPartnerGiftFromKeyTemplate(DataSet ADataSet, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        {
+            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClauseLong("PUB_p_subscription", AFieldList, PSubscriptionTable.TableId) +
+                            " FROM PUB_p_subscription, PUB_p_partner WHERE " +
+                            "PUB_p_subscription.p_gift_from_key_n = PUB_p_partner.p_partner_key_n") +
+                            GenerateWhereClauseLong("PUB_p_partner", ASearchCriteria)) +
+                            GenerateOrderByClause(AOrderBy)), TTypedDataTable.GetTableName(PSubscriptionTable.TableId), ATransaction,
+                            GetParametersForWhereClause(PSubscriptionTable.TableId, ASearchCriteria), AStartRecord, AMaxRecords);
+        }
+
+        /// auto generated
+        public static void LoadViaPPartnerGiftFromKeyTemplate(DataSet AData, TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        {
+            LoadViaPPartnerGiftFromKeyTemplate(AData, ASearchCriteria, null, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static void LoadViaPPartnerGiftFromKeyTemplate(DataSet AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
+        {
+            LoadViaPPartnerGiftFromKeyTemplate(AData, ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static void LoadViaPPartnerGiftFromKeyTemplate(out PSubscriptionTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        {
+            DataSet FillDataSet = new DataSet();
+            AData = new PSubscriptionTable();
+            FillDataSet.Tables.Add(AData);
+            LoadViaPPartnerGiftFromKeyTemplate(FillDataSet, ASearchCriteria, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            FillDataSet.Tables.Remove(AData);
+        }
+
+        /// auto generated
+        public static void LoadViaPPartnerGiftFromKeyTemplate(out PSubscriptionTable AData, TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        {
+            LoadViaPPartnerGiftFromKeyTemplate(out AData, ASearchCriteria, null, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static void LoadViaPPartnerGiftFromKeyTemplate(out PSubscriptionTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
+        {
+            LoadViaPPartnerGiftFromKeyTemplate(out AData, ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static int CountViaPPartnerGiftFromKey(Int64 APartnerKey, TDBTransaction ATransaction)
+        {
+            OdbcParameter[] ParametersArray = new OdbcParameter[1];
+            ParametersArray[0] = new OdbcParameter("", OdbcType.Decimal, 10);
+            ParametersArray[0].Value = ((object)(APartnerKey));
+            return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar("SELECT COUNT(*) FROM PUB_p_subscription WHERE p_gift_from_key_n = ?", ATransaction, false, ParametersArray));
+        }
+
+        /// auto generated
+        public static int CountViaPPartnerGiftFromKeyTemplate(PPartnerRow ATemplateRow, StringCollection ATemplateOperators, TDBTransaction ATransaction)
+        {
+            return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_p_subscription, PUB_p_partner WHERE " +
+                "PUB_p_subscription.p_gift_from_key_n = PUB_p_partner.p_partner_key_n" + GenerateWhereClauseLong("PUB_p_partner",
+                PPartnerTable.TableId, ATemplateRow, ATemplateOperators)),
+                ATransaction, false,
+                GetParametersForWhereClauseWithPrimaryKey(PPartnerTable.TableId, ATemplateRow)));
+        }
+
+        /// auto generated
+        public static int CountViaPPartnerGiftFromKeyTemplate(TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        {
+            return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_p_subscription, PUB_p_partner WHERE " +
+                "PUB_p_subscription.p_gift_from_key_n = PUB_p_partner.p_partner_key_n" +
+                GenerateWhereClauseLong("PUB_p_partner", ASearchCriteria)), ATransaction, false,
+                GetParametersForWhereClause(PPartnerTable.TableId, ASearchCriteria)));
         }
 
         /// auto generated
@@ -12554,9 +12429,9 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data.Access
             OdbcParameter[] ParametersArray = new OdbcParameter[1];
             ParametersArray[0] = new OdbcParameter("", OdbcType.VarChar, 24);
             ParametersArray[0].Value = ((object)(ACode));
-            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, ((GenerateSelectClause(AFieldList, new string[] {
-                            "p_publication_code_c", "p_partner_key_n"}) + " FROM PUB_p_subscription WHERE p_reason_subs_given_code_c = ?")
-                            + GenerateOrderByClause(AOrderBy)), PSubscriptionTable.GetTableName(), ATransaction, ParametersArray, AStartRecord, AMaxRecords);
+            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, ((GenerateSelectClause(AFieldList, PSubscriptionTable.TableId) +
+                            " FROM PUB_p_subscription WHERE p_reason_subs_given_code_c = ?") +
+                            GenerateOrderByClause(AOrderBy)), TTypedDataTable.GetTableName(PSubscriptionTable.TableId), ATransaction, ParametersArray, AStartRecord, AMaxRecords);
         }
 
         /// auto generated
@@ -12596,11 +12471,12 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data.Access
         /// auto generated
         public static void LoadViaPReasonSubscriptionGivenTemplate(DataSet ADataSet, PReasonSubscriptionGivenRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClauseLong("PUB_p_subscription", AFieldList, new string[] {
-                            "p_publication_code_c", "p_partner_key_n"}) + " FROM PUB_p_subscription, PUB_p_reason_subscription_given WHERE " +
-                            "PUB_p_subscription.p_reason_subs_given_code_c = PUB_p_reason_subscription_given.p_code_c")
-                            + GenerateWhereClauseLong("PUB_p_reason_subscription_given", PReasonSubscriptionGivenTable.GetColumnStringList(), ATemplateRow, ATemplateOperators))
-                            + GenerateOrderByClause(AOrderBy)), PSubscriptionTable.GetTableName(), ATransaction, GetParametersForWhereClause(ATemplateRow), AStartRecord, AMaxRecords);
+            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClauseLong("PUB_p_subscription", AFieldList, PSubscriptionTable.TableId) +
+                            " FROM PUB_p_subscription, PUB_p_reason_subscription_given WHERE " +
+                            "PUB_p_subscription.p_reason_subs_given_code_c = PUB_p_reason_subscription_given.p_code_c") +
+                            GenerateWhereClauseLong("PUB_p_reason_subscription_given", PReasonSubscriptionGivenTable.TableId, ATemplateRow, ATemplateOperators)) +
+                            GenerateOrderByClause(AOrderBy)), TTypedDataTable.GetTableName(PSubscriptionTable.TableId), ATransaction,
+                            GetParametersForWhereClause(PReasonSubscriptionGivenTable.TableId, ATemplateRow), AStartRecord, AMaxRecords);
         }
 
         /// auto generated
@@ -12646,12 +12522,12 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data.Access
         /// auto generated
         public static void LoadViaPReasonSubscriptionGivenTemplate(DataSet ADataSet, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClauseLong("PUB_p_subscription", AFieldList, new string[] {
-                            "p_publication_code_c", "p_partner_key_n"}) + " FROM PUB_p_subscription, PUB_p_reason_subscription_given WHERE " +
-                            "PUB_p_subscription.p_reason_subs_given_code_c = PUB_p_reason_subscription_given.p_code_c")
-                            + GenerateWhereClauseLong("PUB_p_reason_subscription_given", PReasonSubscriptionGivenTable.GetColumnStringList(), ASearchCriteria))
-                            + GenerateOrderByClause(AOrderBy)), PSubscriptionTable.GetTableName(), ATransaction,
-                            GetParametersForWhereClause(new PSubscriptionTable(), ASearchCriteria), AStartRecord, AMaxRecords);
+            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClauseLong("PUB_p_subscription", AFieldList, PSubscriptionTable.TableId) +
+                            " FROM PUB_p_subscription, PUB_p_reason_subscription_given WHERE " +
+                            "PUB_p_subscription.p_reason_subs_given_code_c = PUB_p_reason_subscription_given.p_code_c") +
+                            GenerateWhereClauseLong("PUB_p_reason_subscription_given", ASearchCriteria)) +
+                            GenerateOrderByClause(AOrderBy)), TTypedDataTable.GetTableName(PSubscriptionTable.TableId), ATransaction,
+                            GetParametersForWhereClause(PSubscriptionTable.TableId, ASearchCriteria), AStartRecord, AMaxRecords);
         }
 
         /// auto generated
@@ -12701,7 +12577,10 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data.Access
         public static int CountViaPReasonSubscriptionGivenTemplate(PReasonSubscriptionGivenRow ATemplateRow, StringCollection ATemplateOperators, TDBTransaction ATransaction)
         {
             return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_p_subscription, PUB_p_reason_subscription_given WHERE " +
-                "PUB_p_subscription.p_reason_subs_given_code_c = PUB_p_reason_subscription_given.p_code_c" + GenerateWhereClauseLong("PUB_p_reason_subscription_given", PReasonSubscriptionGivenTable.GetColumnStringList(), ATemplateRow, ATemplateOperators)), ATransaction, false, GetParametersForWhereClause(ATemplateRow, PReasonSubscriptionGivenTable.GetPrimKeyColumnOrdList())));
+                "PUB_p_subscription.p_reason_subs_given_code_c = PUB_p_reason_subscription_given.p_code_c" + GenerateWhereClauseLong("PUB_p_reason_subscription_given",
+                PReasonSubscriptionGivenTable.TableId, ATemplateRow, ATemplateOperators)),
+                ATransaction, false,
+                GetParametersForWhereClauseWithPrimaryKey(PReasonSubscriptionGivenTable.TableId, ATemplateRow)));
         }
 
         /// auto generated
@@ -12709,8 +12588,8 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data.Access
         {
             return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_p_subscription, PUB_p_reason_subscription_given WHERE " +
                 "PUB_p_subscription.p_reason_subs_given_code_c = PUB_p_reason_subscription_given.p_code_c" +
-                GenerateWhereClauseLong("PUB_p_reason_subscription_given", PReasonSubscriptionGivenTable.GetColumnStringList(), ASearchCriteria)), ATransaction, false,
-                GetParametersForWhereClause(new PReasonSubscriptionGivenTable(), ASearchCriteria)));
+                GenerateWhereClauseLong("PUB_p_reason_subscription_given", ASearchCriteria)), ATransaction, false,
+                GetParametersForWhereClause(PReasonSubscriptionGivenTable.TableId, ASearchCriteria)));
         }
 
         /// auto generated
@@ -12719,9 +12598,9 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data.Access
             OdbcParameter[] ParametersArray = new OdbcParameter[1];
             ParametersArray[0] = new OdbcParameter("", OdbcType.VarChar, 24);
             ParametersArray[0].Value = ((object)(ACode));
-            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, ((GenerateSelectClause(AFieldList, new string[] {
-                            "p_publication_code_c", "p_partner_key_n"}) + " FROM PUB_p_subscription WHERE p_reason_subs_cancelled_code_c = ?")
-                            + GenerateOrderByClause(AOrderBy)), PSubscriptionTable.GetTableName(), ATransaction, ParametersArray, AStartRecord, AMaxRecords);
+            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, ((GenerateSelectClause(AFieldList, PSubscriptionTable.TableId) +
+                            " FROM PUB_p_subscription WHERE p_reason_subs_cancelled_code_c = ?") +
+                            GenerateOrderByClause(AOrderBy)), TTypedDataTable.GetTableName(PSubscriptionTable.TableId), ATransaction, ParametersArray, AStartRecord, AMaxRecords);
         }
 
         /// auto generated
@@ -12761,11 +12640,12 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data.Access
         /// auto generated
         public static void LoadViaPReasonSubscriptionCancelledTemplate(DataSet ADataSet, PReasonSubscriptionCancelledRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClauseLong("PUB_p_subscription", AFieldList, new string[] {
-                            "p_publication_code_c", "p_partner_key_n"}) + " FROM PUB_p_subscription, PUB_p_reason_subscription_cancelled WHERE " +
-                            "PUB_p_subscription.p_reason_subs_cancelled_code_c = PUB_p_reason_subscription_cancelled.p_code_c")
-                            + GenerateWhereClauseLong("PUB_p_reason_subscription_cancelled", PReasonSubscriptionCancelledTable.GetColumnStringList(), ATemplateRow, ATemplateOperators))
-                            + GenerateOrderByClause(AOrderBy)), PSubscriptionTable.GetTableName(), ATransaction, GetParametersForWhereClause(ATemplateRow), AStartRecord, AMaxRecords);
+            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClauseLong("PUB_p_subscription", AFieldList, PSubscriptionTable.TableId) +
+                            " FROM PUB_p_subscription, PUB_p_reason_subscription_cancelled WHERE " +
+                            "PUB_p_subscription.p_reason_subs_cancelled_code_c = PUB_p_reason_subscription_cancelled.p_code_c") +
+                            GenerateWhereClauseLong("PUB_p_reason_subscription_cancelled", PReasonSubscriptionCancelledTable.TableId, ATemplateRow, ATemplateOperators)) +
+                            GenerateOrderByClause(AOrderBy)), TTypedDataTable.GetTableName(PSubscriptionTable.TableId), ATransaction,
+                            GetParametersForWhereClause(PReasonSubscriptionCancelledTable.TableId, ATemplateRow), AStartRecord, AMaxRecords);
         }
 
         /// auto generated
@@ -12811,12 +12691,12 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data.Access
         /// auto generated
         public static void LoadViaPReasonSubscriptionCancelledTemplate(DataSet ADataSet, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClauseLong("PUB_p_subscription", AFieldList, new string[] {
-                            "p_publication_code_c", "p_partner_key_n"}) + " FROM PUB_p_subscription, PUB_p_reason_subscription_cancelled WHERE " +
-                            "PUB_p_subscription.p_reason_subs_cancelled_code_c = PUB_p_reason_subscription_cancelled.p_code_c")
-                            + GenerateWhereClauseLong("PUB_p_reason_subscription_cancelled", PReasonSubscriptionCancelledTable.GetColumnStringList(), ASearchCriteria))
-                            + GenerateOrderByClause(AOrderBy)), PSubscriptionTable.GetTableName(), ATransaction,
-                            GetParametersForWhereClause(new PSubscriptionTable(), ASearchCriteria), AStartRecord, AMaxRecords);
+            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClauseLong("PUB_p_subscription", AFieldList, PSubscriptionTable.TableId) +
+                            " FROM PUB_p_subscription, PUB_p_reason_subscription_cancelled WHERE " +
+                            "PUB_p_subscription.p_reason_subs_cancelled_code_c = PUB_p_reason_subscription_cancelled.p_code_c") +
+                            GenerateWhereClauseLong("PUB_p_reason_subscription_cancelled", ASearchCriteria)) +
+                            GenerateOrderByClause(AOrderBy)), TTypedDataTable.GetTableName(PSubscriptionTable.TableId), ATransaction,
+                            GetParametersForWhereClause(PSubscriptionTable.TableId, ASearchCriteria), AStartRecord, AMaxRecords);
         }
 
         /// auto generated
@@ -12866,7 +12746,10 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data.Access
         public static int CountViaPReasonSubscriptionCancelledTemplate(PReasonSubscriptionCancelledRow ATemplateRow, StringCollection ATemplateOperators, TDBTransaction ATransaction)
         {
             return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_p_subscription, PUB_p_reason_subscription_cancelled WHERE " +
-                "PUB_p_subscription.p_reason_subs_cancelled_code_c = PUB_p_reason_subscription_cancelled.p_code_c" + GenerateWhereClauseLong("PUB_p_reason_subscription_cancelled", PReasonSubscriptionCancelledTable.GetColumnStringList(), ATemplateRow, ATemplateOperators)), ATransaction, false, GetParametersForWhereClause(ATemplateRow, PReasonSubscriptionCancelledTable.GetPrimKeyColumnOrdList())));
+                "PUB_p_subscription.p_reason_subs_cancelled_code_c = PUB_p_reason_subscription_cancelled.p_code_c" + GenerateWhereClauseLong("PUB_p_reason_subscription_cancelled",
+                PReasonSubscriptionCancelledTable.TableId, ATemplateRow, ATemplateOperators)),
+                ATransaction, false,
+                GetParametersForWhereClauseWithPrimaryKey(PReasonSubscriptionCancelledTable.TableId, ATemplateRow)));
         }
 
         /// auto generated
@@ -12874,33 +12757,26 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data.Access
         {
             return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_p_subscription, PUB_p_reason_subscription_cancelled WHERE " +
                 "PUB_p_subscription.p_reason_subs_cancelled_code_c = PUB_p_reason_subscription_cancelled.p_code_c" +
-                GenerateWhereClauseLong("PUB_p_reason_subscription_cancelled", PReasonSubscriptionCancelledTable.GetColumnStringList(), ASearchCriteria)), ATransaction, false,
-                GetParametersForWhereClause(new PReasonSubscriptionCancelledTable(), ASearchCriteria)));
+                GenerateWhereClauseLong("PUB_p_reason_subscription_cancelled", ASearchCriteria)), ATransaction, false,
+                GetParametersForWhereClause(PReasonSubscriptionCancelledTable.TableId, ASearchCriteria)));
         }
 
         /// auto generated
         public static void DeleteByPrimaryKey(String APublicationCode, Int64 APartnerKey, TDBTransaction ATransaction)
         {
-            OdbcParameter[] ParametersArray = new OdbcParameter[2];
-            ParametersArray[0] = new OdbcParameter("", OdbcType.VarChar, 20);
-            ParametersArray[0].Value = ((object)(APublicationCode));
-            ParametersArray[1] = new OdbcParameter("", OdbcType.Decimal, 10);
-            ParametersArray[1].Value = ((object)(APartnerKey));
-            DBAccess.GDBAccessObj.ExecuteNonQuery("DELETE FROM PUB_p_subscription WHERE p_publication_code_c = ? AND p_partner_key_n = ?", ATransaction, false, ParametersArray);
+            DeleteByPrimaryKey(PSubscriptionTable.TableId, new System.Object[2]{APublicationCode, APartnerKey}, ATransaction);
         }
 
         /// auto generated
         public static void DeleteUsingTemplate(PSubscriptionRow ATemplateRow, StringCollection ATemplateOperators, TDBTransaction ATransaction)
         {
-            DBAccess.GDBAccessObj.ExecuteNonQuery(("DELETE FROM PUB_p_subscription" + GenerateWhereClause(PSubscriptionTable.GetColumnStringList(), ATemplateRow, ATemplateOperators)), ATransaction, false, GetParametersForWhereClause(ATemplateRow));
+            DeleteUsingTemplate(PSubscriptionTable.TableId, ATemplateRow, ATemplateOperators, ATransaction);
         }
 
         /// auto generated
         public static void DeleteUsingTemplate(TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
         {
-            DBAccess.GDBAccessObj.ExecuteNonQuery(("DELETE FROM PUB_p_subscription" +
-                GenerateWhereClause(PSubscriptionTable.GetColumnStringList(), ASearchCriteria)), ATransaction, false,
-                GetParametersForWhereClause(new PSubscriptionTable(), ASearchCriteria));
+            DeleteUsingTemplate(PSubscriptionTable.TableId, ASearchCriteria, ATransaction);
         }
 
         /// auto generated
@@ -12917,15 +12793,15 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data.Access
                 {
                     if ((TheRow.RowState == DataRowState.Added))
                     {
-                        TTypedDataAccess.InsertRow("p_subscription", PSubscriptionTable.GetColumnStringList(), ref TheRow, ATransaction, UserInfo.GUserInfo.UserID);
+                        TTypedDataAccess.InsertRow(PSubscriptionTable.TableId, ref TheRow, ATransaction, UserInfo.GUserInfo.UserID);
                     }
                     if ((TheRow.RowState == DataRowState.Modified))
                     {
-                        TTypedDataAccess.UpdateRow("p_subscription", PSubscriptionTable.GetColumnStringList(), PSubscriptionTable.GetPrimKeyColumnOrdList(), ref TheRow, ATransaction, UserInfo.GUserInfo.UserID);
+                        TTypedDataAccess.UpdateRow(PSubscriptionTable.TableId, ref TheRow, ATransaction, UserInfo.GUserInfo.UserID);
                     }
                     if ((TheRow.RowState == DataRowState.Deleted))
                     {
-                        TTypedDataAccess.DeleteRow("p_subscription", PSubscriptionTable.GetColumnStringList(), PSubscriptionTable.GetPrimKeyColumnOrdList(), TheRow, ATransaction);
+                        TTypedDataAccess.DeleteRow(PSubscriptionTable.TableId, TheRow, ATransaction);
                     }
                 }
                 catch (OdbcException ex)
@@ -12955,9 +12831,8 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data.Access
         /// this method is called by all overloads
         public static void LoadAll(DataSet ADataSet, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, ((GenerateSelectClause(AFieldList, new string[] {
-                            "p_contact_attribute_code_c"}) + " FROM PUB_p_contact_attribute")
-                            + GenerateOrderByClause(AOrderBy)), PContactAttributeTable.GetTableName(), ATransaction, AStartRecord, AMaxRecords);
+            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, ((GenerateSelectClause(AFieldList, PContactAttributeTable.TableId) + " FROM PUB_p_contact_attribute") +
+                            GenerateOrderByClause(AOrderBy)), TTypedDataTable.GetTableName(PContactAttributeTable.TableId), ATransaction, AStartRecord, AMaxRecords);
         }
 
         /// auto generated
@@ -12997,12 +12872,8 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data.Access
         /// this method is called by all overloads
         public static void LoadByPrimaryKey(DataSet ADataSet, String AContactAttributeCode, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            OdbcParameter[] ParametersArray = new OdbcParameter[1];
-            ParametersArray[0] = new OdbcParameter("", OdbcType.VarChar, 32);
-            ParametersArray[0].Value = ((object)(AContactAttributeCode));
-            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, ((GenerateSelectClause(AFieldList, new string[] {
-                            "p_contact_attribute_code_c"}) + " FROM PUB_p_contact_attribute WHERE p_contact_attribute_code_c = ?")
-                            + GenerateOrderByClause(AOrderBy)), PContactAttributeTable.GetTableName(), ATransaction, ParametersArray, AStartRecord, AMaxRecords);
+            ADataSet = LoadByPrimaryKey(PContactAttributeTable.TableId,
+                ADataSet, new System.Object[1]{AContactAttributeCode}, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
         }
 
         /// auto generated
@@ -13042,10 +12913,10 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data.Access
         /// this method is called by all overloads
         public static void LoadUsingTemplate(DataSet ADataSet, PContactAttributeRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClause(AFieldList, new string[] {
-                            "p_contact_attribute_code_c"}) + " FROM PUB_p_contact_attribute")
-                            + GenerateWhereClause(PContactAttributeTable.GetColumnStringList(), ATemplateRow, ATemplateOperators))
-                            + GenerateOrderByClause(AOrderBy)), PContactAttributeTable.GetTableName(), ATransaction, GetParametersForWhereClause(ATemplateRow), AStartRecord, AMaxRecords);
+            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClause(AFieldList, PContactAttributeTable.TableId) + " FROM PUB_p_contact_attribute") +
+                            GenerateWhereClause(TTypedDataTable.GetColumnStringList(PContactAttributeTable.TableId), ATemplateRow, ATemplateOperators)) +
+                            GenerateOrderByClause(AOrderBy)), TTypedDataTable.GetTableName(PContactAttributeTable.TableId), ATransaction,
+                            GetParametersForWhereClause(PContactAttributeTable.TableId, ATemplateRow), AStartRecord, AMaxRecords);
         }
 
         /// auto generated
@@ -13091,11 +12962,10 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data.Access
         /// this method is called by all overloads
         public static void LoadUsingTemplate(DataSet ADataSet, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClause(AFieldList, new string[] {
-                            "p_contact_attribute_code_c"}) + " FROM PUB_p_contact_attribute")
-                            + GenerateWhereClause(PContactAttributeTable.GetColumnStringList(), ASearchCriteria))
-                            + GenerateOrderByClause(AOrderBy)), PContactAttributeTable.GetTableName(), ATransaction,
-                            GetParametersForWhereClause(new PContactAttributeTable(), ASearchCriteria), AStartRecord, AMaxRecords);
+            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClause(AFieldList, PContactAttributeTable.TableId) + " FROM PUB_p_contact_attribute") +
+                            GenerateWhereClause(TTypedDataTable.GetColumnStringList(PContactAttributeTable.TableId), ASearchCriteria)) +
+                            GenerateOrderByClause(AOrderBy)), TTypedDataTable.GetTableName(PContactAttributeTable.TableId), ATransaction,
+                            GetParametersForWhereClause(PContactAttributeTable.TableId, ASearchCriteria), AStartRecord, AMaxRecords);
         }
 
         /// auto generated
@@ -13138,49 +13008,42 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data.Access
             return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar("SELECT COUNT(*) FROM PUB_p_contact_attribute", ATransaction, false));
         }
 
-        /// this method is called by all overloads
-        public static int CountByPrimaryKey(String AContactAttributeCode, TDBTransaction ATransaction)
+        /// check if a row exists by using the primary key
+        public static bool Exists(String AContactAttributeCode, TDBTransaction ATransaction)
         {
-            OdbcParameter[] ParametersArray = new OdbcParameter[1];
-            ParametersArray[0] = new OdbcParameter("", OdbcType.VarChar, 32);
-            ParametersArray[0].Value = ((object)(AContactAttributeCode));
-            return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar("SELECT COUNT(*) FROM PUB_p_contact_attribute WHERE p_contact_attribute_code_c = ?", ATransaction, false, ParametersArray));
+            return Exists(PContactAttributeTable.TableId, new System.Object[1]{AContactAttributeCode}, ATransaction);
         }
 
         /// this method is called by all overloads
         public static int CountUsingTemplate(PContactAttributeRow ATemplateRow, StringCollection ATemplateOperators, TDBTransaction ATransaction)
         {
-            return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_p_contact_attribute" + GenerateWhereClause(PContactAttributeTable.GetColumnStringList(), ATemplateRow, ATemplateOperators)), ATransaction, false, GetParametersForWhereClause(ATemplateRow)));
+            return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_p_contact_attribute" + GenerateWhereClause(TTypedDataTable.GetColumnStringList(PContactAttributeTable.TableId), ATemplateRow, ATemplateOperators)), ATransaction, false,
+                   GetParametersForWhereClause(PContactAttributeTable.TableId, ATemplateRow)));
         }
 
         /// this method is called by all overloads
         public static int CountUsingTemplate(TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
         {
-            return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_p_contact_attribute" + GenerateWhereClause(PContactAttributeTable.GetColumnStringList(), ASearchCriteria)), ATransaction, false,
-            GetParametersForWhereClause(new PContactAttributeTable(), ASearchCriteria)));
+            return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_p_contact_attribute" + GenerateWhereClause(TTypedDataTable.GetColumnStringList(PContactAttributeTable.TableId), ASearchCriteria)), ATransaction, false,
+            GetParametersForWhereClause(PContactAttributeTable.TableId, ASearchCriteria)));
         }
 
         /// auto generated
         public static void DeleteByPrimaryKey(String AContactAttributeCode, TDBTransaction ATransaction)
         {
-            OdbcParameter[] ParametersArray = new OdbcParameter[1];
-            ParametersArray[0] = new OdbcParameter("", OdbcType.VarChar, 32);
-            ParametersArray[0].Value = ((object)(AContactAttributeCode));
-            DBAccess.GDBAccessObj.ExecuteNonQuery("DELETE FROM PUB_p_contact_attribute WHERE p_contact_attribute_code_c = ?", ATransaction, false, ParametersArray);
+            DeleteByPrimaryKey(PContactAttributeTable.TableId, new System.Object[1]{AContactAttributeCode}, ATransaction);
         }
 
         /// auto generated
         public static void DeleteUsingTemplate(PContactAttributeRow ATemplateRow, StringCollection ATemplateOperators, TDBTransaction ATransaction)
         {
-            DBAccess.GDBAccessObj.ExecuteNonQuery(("DELETE FROM PUB_p_contact_attribute" + GenerateWhereClause(PContactAttributeTable.GetColumnStringList(), ATemplateRow, ATemplateOperators)), ATransaction, false, GetParametersForWhereClause(ATemplateRow));
+            DeleteUsingTemplate(PContactAttributeTable.TableId, ATemplateRow, ATemplateOperators, ATransaction);
         }
 
         /// auto generated
         public static void DeleteUsingTemplate(TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
         {
-            DBAccess.GDBAccessObj.ExecuteNonQuery(("DELETE FROM PUB_p_contact_attribute" +
-                GenerateWhereClause(PContactAttributeTable.GetColumnStringList(), ASearchCriteria)), ATransaction, false,
-                GetParametersForWhereClause(new PContactAttributeTable(), ASearchCriteria));
+            DeleteUsingTemplate(PContactAttributeTable.TableId, ASearchCriteria, ATransaction);
         }
 
         /// auto generated
@@ -13197,15 +13060,15 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data.Access
                 {
                     if ((TheRow.RowState == DataRowState.Added))
                     {
-                        TTypedDataAccess.InsertRow("p_contact_attribute", PContactAttributeTable.GetColumnStringList(), ref TheRow, ATransaction, UserInfo.GUserInfo.UserID);
+                        TTypedDataAccess.InsertRow(PContactAttributeTable.TableId, ref TheRow, ATransaction, UserInfo.GUserInfo.UserID);
                     }
                     if ((TheRow.RowState == DataRowState.Modified))
                     {
-                        TTypedDataAccess.UpdateRow("p_contact_attribute", PContactAttributeTable.GetColumnStringList(), PContactAttributeTable.GetPrimKeyColumnOrdList(), ref TheRow, ATransaction, UserInfo.GUserInfo.UserID);
+                        TTypedDataAccess.UpdateRow(PContactAttributeTable.TableId, ref TheRow, ATransaction, UserInfo.GUserInfo.UserID);
                     }
                     if ((TheRow.RowState == DataRowState.Deleted))
                     {
-                        TTypedDataAccess.DeleteRow("p_contact_attribute", PContactAttributeTable.GetColumnStringList(), PContactAttributeTable.GetPrimKeyColumnOrdList(), TheRow, ATransaction);
+                        TTypedDataAccess.DeleteRow(PContactAttributeTable.TableId, TheRow, ATransaction);
                     }
                 }
                 catch (OdbcException ex)
@@ -13235,9 +13098,8 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data.Access
         /// this method is called by all overloads
         public static void LoadAll(DataSet ADataSet, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, ((GenerateSelectClause(AFieldList, new string[] {
-                            "p_contact_attribute_code_c", "p_contact_attr_detail_code_c"}) + " FROM PUB_p_contact_attribute_detail")
-                            + GenerateOrderByClause(AOrderBy)), PContactAttributeDetailTable.GetTableName(), ATransaction, AStartRecord, AMaxRecords);
+            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, ((GenerateSelectClause(AFieldList, PContactAttributeDetailTable.TableId) + " FROM PUB_p_contact_attribute_detail") +
+                            GenerateOrderByClause(AOrderBy)), TTypedDataTable.GetTableName(PContactAttributeDetailTable.TableId), ATransaction, AStartRecord, AMaxRecords);
         }
 
         /// auto generated
@@ -13277,14 +13139,8 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data.Access
         /// this method is called by all overloads
         public static void LoadByPrimaryKey(DataSet ADataSet, String AContactAttributeCode, String AContactAttrDetailCode, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            OdbcParameter[] ParametersArray = new OdbcParameter[2];
-            ParametersArray[0] = new OdbcParameter("", OdbcType.VarChar, 32);
-            ParametersArray[0].Value = ((object)(AContactAttributeCode));
-            ParametersArray[1] = new OdbcParameter("", OdbcType.VarChar, 32);
-            ParametersArray[1].Value = ((object)(AContactAttrDetailCode));
-            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, ((GenerateSelectClause(AFieldList, new string[] {
-                            "p_contact_attribute_code_c", "p_contact_attr_detail_code_c"}) + " FROM PUB_p_contact_attribute_detail WHERE p_contact_attribute_code_c = ? AND p_contact_attr_detail_code_c = ?")
-                            + GenerateOrderByClause(AOrderBy)), PContactAttributeDetailTable.GetTableName(), ATransaction, ParametersArray, AStartRecord, AMaxRecords);
+            ADataSet = LoadByPrimaryKey(PContactAttributeDetailTable.TableId,
+                ADataSet, new System.Object[2]{AContactAttributeCode, AContactAttrDetailCode}, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
         }
 
         /// auto generated
@@ -13324,10 +13180,10 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data.Access
         /// this method is called by all overloads
         public static void LoadUsingTemplate(DataSet ADataSet, PContactAttributeDetailRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClause(AFieldList, new string[] {
-                            "p_contact_attribute_code_c", "p_contact_attr_detail_code_c"}) + " FROM PUB_p_contact_attribute_detail")
-                            + GenerateWhereClause(PContactAttributeDetailTable.GetColumnStringList(), ATemplateRow, ATemplateOperators))
-                            + GenerateOrderByClause(AOrderBy)), PContactAttributeDetailTable.GetTableName(), ATransaction, GetParametersForWhereClause(ATemplateRow), AStartRecord, AMaxRecords);
+            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClause(AFieldList, PContactAttributeDetailTable.TableId) + " FROM PUB_p_contact_attribute_detail") +
+                            GenerateWhereClause(TTypedDataTable.GetColumnStringList(PContactAttributeDetailTable.TableId), ATemplateRow, ATemplateOperators)) +
+                            GenerateOrderByClause(AOrderBy)), TTypedDataTable.GetTableName(PContactAttributeDetailTable.TableId), ATransaction,
+                            GetParametersForWhereClause(PContactAttributeDetailTable.TableId, ATemplateRow), AStartRecord, AMaxRecords);
         }
 
         /// auto generated
@@ -13373,11 +13229,10 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data.Access
         /// this method is called by all overloads
         public static void LoadUsingTemplate(DataSet ADataSet, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClause(AFieldList, new string[] {
-                            "p_contact_attribute_code_c", "p_contact_attr_detail_code_c"}) + " FROM PUB_p_contact_attribute_detail")
-                            + GenerateWhereClause(PContactAttributeDetailTable.GetColumnStringList(), ASearchCriteria))
-                            + GenerateOrderByClause(AOrderBy)), PContactAttributeDetailTable.GetTableName(), ATransaction,
-                            GetParametersForWhereClause(new PContactAttributeDetailTable(), ASearchCriteria), AStartRecord, AMaxRecords);
+            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClause(AFieldList, PContactAttributeDetailTable.TableId) + " FROM PUB_p_contact_attribute_detail") +
+                            GenerateWhereClause(TTypedDataTable.GetColumnStringList(PContactAttributeDetailTable.TableId), ASearchCriteria)) +
+                            GenerateOrderByClause(AOrderBy)), TTypedDataTable.GetTableName(PContactAttributeDetailTable.TableId), ATransaction,
+                            GetParametersForWhereClause(PContactAttributeDetailTable.TableId, ASearchCriteria), AStartRecord, AMaxRecords);
         }
 
         /// auto generated
@@ -13420,28 +13275,24 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data.Access
             return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar("SELECT COUNT(*) FROM PUB_p_contact_attribute_detail", ATransaction, false));
         }
 
-        /// this method is called by all overloads
-        public static int CountByPrimaryKey(String AContactAttributeCode, String AContactAttrDetailCode, TDBTransaction ATransaction)
+        /// check if a row exists by using the primary key
+        public static bool Exists(String AContactAttributeCode, String AContactAttrDetailCode, TDBTransaction ATransaction)
         {
-            OdbcParameter[] ParametersArray = new OdbcParameter[2];
-            ParametersArray[0] = new OdbcParameter("", OdbcType.VarChar, 32);
-            ParametersArray[0].Value = ((object)(AContactAttributeCode));
-            ParametersArray[1] = new OdbcParameter("", OdbcType.VarChar, 32);
-            ParametersArray[1].Value = ((object)(AContactAttrDetailCode));
-            return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar("SELECT COUNT(*) FROM PUB_p_contact_attribute_detail WHERE p_contact_attribute_code_c = ? AND p_contact_attr_detail_code_c = ?", ATransaction, false, ParametersArray));
+            return Exists(PContactAttributeDetailTable.TableId, new System.Object[2]{AContactAttributeCode, AContactAttrDetailCode}, ATransaction);
         }
 
         /// this method is called by all overloads
         public static int CountUsingTemplate(PContactAttributeDetailRow ATemplateRow, StringCollection ATemplateOperators, TDBTransaction ATransaction)
         {
-            return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_p_contact_attribute_detail" + GenerateWhereClause(PContactAttributeDetailTable.GetColumnStringList(), ATemplateRow, ATemplateOperators)), ATransaction, false, GetParametersForWhereClause(ATemplateRow)));
+            return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_p_contact_attribute_detail" + GenerateWhereClause(TTypedDataTable.GetColumnStringList(PContactAttributeDetailTable.TableId), ATemplateRow, ATemplateOperators)), ATransaction, false,
+                   GetParametersForWhereClause(PContactAttributeDetailTable.TableId, ATemplateRow)));
         }
 
         /// this method is called by all overloads
         public static int CountUsingTemplate(TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
         {
-            return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_p_contact_attribute_detail" + GenerateWhereClause(PContactAttributeDetailTable.GetColumnStringList(), ASearchCriteria)), ATransaction, false,
-            GetParametersForWhereClause(new PContactAttributeDetailTable(), ASearchCriteria)));
+            return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_p_contact_attribute_detail" + GenerateWhereClause(TTypedDataTable.GetColumnStringList(PContactAttributeDetailTable.TableId), ASearchCriteria)), ATransaction, false,
+            GetParametersForWhereClause(PContactAttributeDetailTable.TableId, ASearchCriteria)));
         }
 
         /// auto generated
@@ -13450,9 +13301,9 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data.Access
             OdbcParameter[] ParametersArray = new OdbcParameter[1];
             ParametersArray[0] = new OdbcParameter("", OdbcType.VarChar, 32);
             ParametersArray[0].Value = ((object)(AContactAttributeCode));
-            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, ((GenerateSelectClause(AFieldList, new string[] {
-                            "p_contact_attribute_code_c", "p_contact_attr_detail_code_c"}) + " FROM PUB_p_contact_attribute_detail WHERE p_contact_attribute_code_c = ?")
-                            + GenerateOrderByClause(AOrderBy)), PContactAttributeDetailTable.GetTableName(), ATransaction, ParametersArray, AStartRecord, AMaxRecords);
+            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, ((GenerateSelectClause(AFieldList, PContactAttributeDetailTable.TableId) +
+                            " FROM PUB_p_contact_attribute_detail WHERE p_contact_attribute_code_c = ?") +
+                            GenerateOrderByClause(AOrderBy)), TTypedDataTable.GetTableName(PContactAttributeDetailTable.TableId), ATransaction, ParametersArray, AStartRecord, AMaxRecords);
         }
 
         /// auto generated
@@ -13492,11 +13343,12 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data.Access
         /// auto generated
         public static void LoadViaPContactAttributeTemplate(DataSet ADataSet, PContactAttributeRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClauseLong("PUB_p_contact_attribute_detail", AFieldList, new string[] {
-                            "p_contact_attribute_code_c", "p_contact_attr_detail_code_c"}) + " FROM PUB_p_contact_attribute_detail, PUB_p_contact_attribute WHERE " +
-                            "PUB_p_contact_attribute_detail.p_contact_attribute_code_c = PUB_p_contact_attribute.p_contact_attribute_code_c")
-                            + GenerateWhereClauseLong("PUB_p_contact_attribute", PContactAttributeTable.GetColumnStringList(), ATemplateRow, ATemplateOperators))
-                            + GenerateOrderByClause(AOrderBy)), PContactAttributeDetailTable.GetTableName(), ATransaction, GetParametersForWhereClause(ATemplateRow), AStartRecord, AMaxRecords);
+            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClauseLong("PUB_p_contact_attribute_detail", AFieldList, PContactAttributeDetailTable.TableId) +
+                            " FROM PUB_p_contact_attribute_detail, PUB_p_contact_attribute WHERE " +
+                            "PUB_p_contact_attribute_detail.p_contact_attribute_code_c = PUB_p_contact_attribute.p_contact_attribute_code_c") +
+                            GenerateWhereClauseLong("PUB_p_contact_attribute", PContactAttributeTable.TableId, ATemplateRow, ATemplateOperators)) +
+                            GenerateOrderByClause(AOrderBy)), TTypedDataTable.GetTableName(PContactAttributeDetailTable.TableId), ATransaction,
+                            GetParametersForWhereClause(PContactAttributeTable.TableId, ATemplateRow), AStartRecord, AMaxRecords);
         }
 
         /// auto generated
@@ -13542,12 +13394,12 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data.Access
         /// auto generated
         public static void LoadViaPContactAttributeTemplate(DataSet ADataSet, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClauseLong("PUB_p_contact_attribute_detail", AFieldList, new string[] {
-                            "p_contact_attribute_code_c", "p_contact_attr_detail_code_c"}) + " FROM PUB_p_contact_attribute_detail, PUB_p_contact_attribute WHERE " +
-                            "PUB_p_contact_attribute_detail.p_contact_attribute_code_c = PUB_p_contact_attribute.p_contact_attribute_code_c")
-                            + GenerateWhereClauseLong("PUB_p_contact_attribute", PContactAttributeTable.GetColumnStringList(), ASearchCriteria))
-                            + GenerateOrderByClause(AOrderBy)), PContactAttributeDetailTable.GetTableName(), ATransaction,
-                            GetParametersForWhereClause(new PContactAttributeDetailTable(), ASearchCriteria), AStartRecord, AMaxRecords);
+            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClauseLong("PUB_p_contact_attribute_detail", AFieldList, PContactAttributeDetailTable.TableId) +
+                            " FROM PUB_p_contact_attribute_detail, PUB_p_contact_attribute WHERE " +
+                            "PUB_p_contact_attribute_detail.p_contact_attribute_code_c = PUB_p_contact_attribute.p_contact_attribute_code_c") +
+                            GenerateWhereClauseLong("PUB_p_contact_attribute", ASearchCriteria)) +
+                            GenerateOrderByClause(AOrderBy)), TTypedDataTable.GetTableName(PContactAttributeDetailTable.TableId), ATransaction,
+                            GetParametersForWhereClause(PContactAttributeDetailTable.TableId, ASearchCriteria), AStartRecord, AMaxRecords);
         }
 
         /// auto generated
@@ -13597,7 +13449,10 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data.Access
         public static int CountViaPContactAttributeTemplate(PContactAttributeRow ATemplateRow, StringCollection ATemplateOperators, TDBTransaction ATransaction)
         {
             return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_p_contact_attribute_detail, PUB_p_contact_attribute WHERE " +
-                "PUB_p_contact_attribute_detail.p_contact_attribute_code_c = PUB_p_contact_attribute.p_contact_attribute_code_c" + GenerateWhereClauseLong("PUB_p_contact_attribute", PContactAttributeTable.GetColumnStringList(), ATemplateRow, ATemplateOperators)), ATransaction, false, GetParametersForWhereClause(ATemplateRow, PContactAttributeTable.GetPrimKeyColumnOrdList())));
+                "PUB_p_contact_attribute_detail.p_contact_attribute_code_c = PUB_p_contact_attribute.p_contact_attribute_code_c" + GenerateWhereClauseLong("PUB_p_contact_attribute",
+                PContactAttributeTable.TableId, ATemplateRow, ATemplateOperators)),
+                ATransaction, false,
+                GetParametersForWhereClauseWithPrimaryKey(PContactAttributeTable.TableId, ATemplateRow)));
         }
 
         /// auto generated
@@ -13605,8 +13460,8 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data.Access
         {
             return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_p_contact_attribute_detail, PUB_p_contact_attribute WHERE " +
                 "PUB_p_contact_attribute_detail.p_contact_attribute_code_c = PUB_p_contact_attribute.p_contact_attribute_code_c" +
-                GenerateWhereClauseLong("PUB_p_contact_attribute", PContactAttributeTable.GetColumnStringList(), ASearchCriteria)), ATransaction, false,
-                GetParametersForWhereClause(new PContactAttributeTable(), ASearchCriteria)));
+                GenerateWhereClauseLong("PUB_p_contact_attribute", ASearchCriteria)), ATransaction, false,
+                GetParametersForWhereClause(PContactAttributeTable.TableId, ASearchCriteria)));
         }
 
         /// auto generated LoadViaLinkTable
@@ -13615,10 +13470,10 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data.Access
             OdbcParameter[] ParametersArray = new OdbcParameter[1];
             ParametersArray[0] = new OdbcParameter("", OdbcType.Int);
             ParametersArray[0].Value = ((object)(AContactId));
-            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, ((GenerateSelectClauseLong("PUB_p_contact_attribute_detail", AFieldList, new string[] {
-                            "p_contact_attribute_code_c", "p_contact_attr_detail_code_c"}) + " FROM PUB_p_contact_attribute_detail, PUB_p_partner_contact_attribute WHERE " +
-                            "PUB_p_partner_contact_attribute.p_contact_attribute_code_c = PUB_p_contact_attribute_detail.p_contact_attribute_code_c AND PUB_p_partner_contact_attribute.p_contact_attr_detail_code_c = PUB_p_contact_attribute_detail.p_contact_attr_detail_code_c AND PUB_p_partner_contact_attribute.p_contact_id_i = ?")
-                            + GenerateOrderByClause(AOrderBy)), PContactAttributeDetailTable.GetTableName(), ATransaction, ParametersArray, AStartRecord, AMaxRecords);
+            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, ((GenerateSelectClauseLong("PUB_p_contact_attribute_detail", AFieldList, PContactAttributeDetailTable.TableId) +
+                            " FROM PUB_p_contact_attribute_detail, PUB_p_partner_contact_attribute WHERE " +
+                            "PUB_p_partner_contact_attribute.p_contact_attribute_code_c = PUB_p_contact_attribute_detail.p_contact_attribute_code_c AND PUB_p_partner_contact_attribute.p_contact_attr_detail_code_c = PUB_p_contact_attribute_detail.p_contact_attr_detail_code_c AND PUB_p_partner_contact_attribute.p_contact_id_i = ?") +
+                            GenerateOrderByClause(AOrderBy)), TTypedDataTable.GetTableName(PContactAttributeDetailTable.TableId), ATransaction, ParametersArray, AStartRecord, AMaxRecords);
         }
 
         /// auto generated
@@ -13658,11 +13513,12 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data.Access
         /// auto generated
         public static void LoadViaPPartnerContactTemplate(DataSet ADataSet, PPartnerContactRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClauseLong("PUB_p_contact_attribute_detail", AFieldList, new string[] {
-                            "p_contact_attribute_code_c", "p_contact_attr_detail_code_c"}) + " FROM PUB_p_contact_attribute_detail, PUB_p_partner_contact_attribute, PUB_p_partner_contact WHERE " +
-                            "PUB_p_partner_contact_attribute.p_contact_attribute_code_c = PUB_p_contact_attribute_detail.p_contact_attribute_code_c AND PUB_p_partner_contact_attribute.p_contact_attr_detail_code_c = PUB_p_contact_attribute_detail.p_contact_attr_detail_code_c AND PUB_p_partner_contact_attribute.p_contact_id_i = PUB_p_partner_contact.p_contact_id_i")
-                            + GenerateWhereClauseLong("PUB_p_partner_contact", PPartnerContactTable.GetColumnStringList(), ATemplateRow, ATemplateOperators))
-                            + GenerateOrderByClause(AOrderBy)), PContactAttributeDetailTable.GetTableName(), ATransaction, GetParametersForWhereClause(ATemplateRow), AStartRecord, AMaxRecords);
+            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClauseLong("PUB_p_contact_attribute_detail", AFieldList, PContactAttributeDetailTable.TableId) +
+                            " FROM PUB_p_contact_attribute_detail, PUB_p_partner_contact_attribute, PUB_p_partner_contact WHERE " +
+                            "PUB_p_partner_contact_attribute.p_contact_attribute_code_c = PUB_p_contact_attribute_detail.p_contact_attribute_code_c AND PUB_p_partner_contact_attribute.p_contact_attr_detail_code_c = PUB_p_contact_attribute_detail.p_contact_attr_detail_code_c AND PUB_p_partner_contact_attribute.p_contact_id_i = PUB_p_partner_contact.p_contact_id_i") +
+                            GenerateWhereClauseLong("PUB_p_partner_contact", PPartnerContactTable.TableId, ATemplateRow, ATemplateOperators)) +
+                            GenerateOrderByClause(AOrderBy)), TTypedDataTable.GetTableName(PContactAttributeDetailTable.TableId), ATransaction,
+                            GetParametersForWhereClause(PPartnerContactTable.TableId, ATemplateRow), AStartRecord, AMaxRecords);
         }
 
         /// auto generated
@@ -13708,12 +13564,12 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data.Access
         /// auto generated
         public static void LoadViaPPartnerContactTemplate(DataSet ADataSet, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClauseLong("PUB_p_contact_attribute_detail", AFieldList, new string[] {
-                            "p_contact_attribute_code_c", "p_contact_attr_detail_code_c"}) + " FROM PUB_p_contact_attribute_detail, PUB_p_partner_contact_attribute, PUB_p_partner_contact WHERE " +
-                            "PUB_p_partner_contact_attribute.p_contact_attribute_code_c = PUB_p_contact_attribute_detail.p_contact_attribute_code_c AND PUB_p_partner_contact_attribute.p_contact_attr_detail_code_c = PUB_p_contact_attribute_detail.p_contact_attr_detail_code_c AND PUB_p_partner_contact_attribute.p_contact_id_i = PUB_p_partner_contact.p_contact_id_i")
-                            + GenerateWhereClauseLong("PUB_p_partner_contact", PPartnerContactTable.GetColumnStringList(), ASearchCriteria))
-                            + GenerateOrderByClause(AOrderBy)), PContactAttributeDetailTable.GetTableName(), ATransaction,
-                            GetParametersForWhereClause(new PContactAttributeDetailTable(), ASearchCriteria), AStartRecord, AMaxRecords);
+            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClauseLong("PUB_p_contact_attribute_detail", AFieldList, PContactAttributeDetailTable.TableId) +
+                            " FROM PUB_p_contact_attribute_detail, PUB_p_partner_contact_attribute, PUB_p_partner_contact WHERE " +
+                            "PUB_p_partner_contact_attribute.p_contact_attribute_code_c = PUB_p_contact_attribute_detail.p_contact_attribute_code_c AND PUB_p_partner_contact_attribute.p_contact_attr_detail_code_c = PUB_p_contact_attribute_detail.p_contact_attr_detail_code_c AND PUB_p_partner_contact_attribute.p_contact_id_i = PUB_p_partner_contact.p_contact_id_i") +
+                            GenerateWhereClauseLong("PUB_p_partner_contact", ASearchCriteria)) +
+                            GenerateOrderByClause(AOrderBy)), TTypedDataTable.GetTableName(PContactAttributeDetailTable.TableId), ATransaction,
+                            GetParametersForWhereClause(PContactAttributeDetailTable.TableId, ASearchCriteria), AStartRecord, AMaxRecords);
         }
 
         /// auto generated
@@ -13766,7 +13622,8 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data.Access
         {
             return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_p_contact_attribute_detail, PUB_p_partner_contact_attribute, PUB_p_partner_contact WHERE " +
                         "PUB_p_partner_contact_attribute.p_contact_attribute_code_c = PUB_p_contact_attribute_detail.p_contact_attribute_code_c AND PUB_p_partner_contact_attribute.p_contact_attr_detail_code_c = PUB_p_contact_attribute_detail.p_contact_attr_detail_code_c AND PUB_p_partner_contact_attribute.p_contact_id_i = PUB_p_partner_contact.p_contact_id_i" +
-                        GenerateWhereClauseLong("PUB_p_partner_contact_attribute", PContactAttributeDetailTable.GetColumnStringList(), ATemplateRow, ATemplateOperators)), ATransaction, false, GetParametersForWhereClause(ATemplateRow, PPartnerContactTable.GetPrimKeyColumnOrdList())));
+                        GenerateWhereClauseLong("PUB_p_partner_contact_attribute", PContactAttributeDetailTable.TableId, ATemplateRow, ATemplateOperators)), ATransaction, false,
+                        GetParametersForWhereClauseWithPrimaryKey(PPartnerContactTable.TableId, ATemplateRow)));
         }
 
         /// auto generated
@@ -13774,33 +13631,26 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data.Access
         {
             return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_p_contact_attribute_detail, PUB_p_partner_contact_attribute, PUB_p_partner_contact WHERE " +
                         "PUB_p_partner_contact_attribute.p_contact_attribute_code_c = PUB_p_contact_attribute_detail.p_contact_attribute_code_c AND PUB_p_partner_contact_attribute.p_contact_attr_detail_code_c = PUB_p_contact_attribute_detail.p_contact_attr_detail_code_c AND PUB_p_partner_contact_attribute.p_contact_id_i = PUB_p_partner_contact.p_contact_id_i" +
-                        GenerateWhereClauseLong("PUB_p_partner_contact_attribute", PContactAttributeDetailTable.GetColumnStringList(), ASearchCriteria)), ATransaction, false,
-                        GetParametersForWhereClause(new PContactAttributeDetailTable(), ASearchCriteria)));
+                        GenerateWhereClauseLong("PUB_p_partner_contact_attribute", ASearchCriteria)), ATransaction, false,
+                        GetParametersForWhereClause(PContactAttributeDetailTable.TableId, ASearchCriteria)));
         }
 
         /// auto generated
         public static void DeleteByPrimaryKey(String AContactAttributeCode, String AContactAttrDetailCode, TDBTransaction ATransaction)
         {
-            OdbcParameter[] ParametersArray = new OdbcParameter[2];
-            ParametersArray[0] = new OdbcParameter("", OdbcType.VarChar, 32);
-            ParametersArray[0].Value = ((object)(AContactAttributeCode));
-            ParametersArray[1] = new OdbcParameter("", OdbcType.VarChar, 32);
-            ParametersArray[1].Value = ((object)(AContactAttrDetailCode));
-            DBAccess.GDBAccessObj.ExecuteNonQuery("DELETE FROM PUB_p_contact_attribute_detail WHERE p_contact_attribute_code_c = ? AND p_contact_attr_detail_code_c = ?", ATransaction, false, ParametersArray);
+            DeleteByPrimaryKey(PContactAttributeDetailTable.TableId, new System.Object[2]{AContactAttributeCode, AContactAttrDetailCode}, ATransaction);
         }
 
         /// auto generated
         public static void DeleteUsingTemplate(PContactAttributeDetailRow ATemplateRow, StringCollection ATemplateOperators, TDBTransaction ATransaction)
         {
-            DBAccess.GDBAccessObj.ExecuteNonQuery(("DELETE FROM PUB_p_contact_attribute_detail" + GenerateWhereClause(PContactAttributeDetailTable.GetColumnStringList(), ATemplateRow, ATemplateOperators)), ATransaction, false, GetParametersForWhereClause(ATemplateRow));
+            DeleteUsingTemplate(PContactAttributeDetailTable.TableId, ATemplateRow, ATemplateOperators, ATransaction);
         }
 
         /// auto generated
         public static void DeleteUsingTemplate(TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
         {
-            DBAccess.GDBAccessObj.ExecuteNonQuery(("DELETE FROM PUB_p_contact_attribute_detail" +
-                GenerateWhereClause(PContactAttributeDetailTable.GetColumnStringList(), ASearchCriteria)), ATransaction, false,
-                GetParametersForWhereClause(new PContactAttributeDetailTable(), ASearchCriteria));
+            DeleteUsingTemplate(PContactAttributeDetailTable.TableId, ASearchCriteria, ATransaction);
         }
 
         /// auto generated
@@ -13817,15 +13667,15 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data.Access
                 {
                     if ((TheRow.RowState == DataRowState.Added))
                     {
-                        TTypedDataAccess.InsertRow("p_contact_attribute_detail", PContactAttributeDetailTable.GetColumnStringList(), ref TheRow, ATransaction, UserInfo.GUserInfo.UserID);
+                        TTypedDataAccess.InsertRow(PContactAttributeDetailTable.TableId, ref TheRow, ATransaction, UserInfo.GUserInfo.UserID);
                     }
                     if ((TheRow.RowState == DataRowState.Modified))
                     {
-                        TTypedDataAccess.UpdateRow("p_contact_attribute_detail", PContactAttributeDetailTable.GetColumnStringList(), PContactAttributeDetailTable.GetPrimKeyColumnOrdList(), ref TheRow, ATransaction, UserInfo.GUserInfo.UserID);
+                        TTypedDataAccess.UpdateRow(PContactAttributeDetailTable.TableId, ref TheRow, ATransaction, UserInfo.GUserInfo.UserID);
                     }
                     if ((TheRow.RowState == DataRowState.Deleted))
                     {
-                        TTypedDataAccess.DeleteRow("p_contact_attribute_detail", PContactAttributeDetailTable.GetColumnStringList(), PContactAttributeDetailTable.GetPrimKeyColumnOrdList(), TheRow, ATransaction);
+                        TTypedDataAccess.DeleteRow(PContactAttributeDetailTable.TableId, TheRow, ATransaction);
                     }
                 }
                 catch (OdbcException ex)
@@ -13855,9 +13705,8 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data.Access
         /// this method is called by all overloads
         public static void LoadAll(DataSet ADataSet, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, ((GenerateSelectClause(AFieldList, new string[] {
-                            "p_method_of_contact_code_c"}) + " FROM PUB_p_method_of_contact")
-                            + GenerateOrderByClause(AOrderBy)), PMethodOfContactTable.GetTableName(), ATransaction, AStartRecord, AMaxRecords);
+            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, ((GenerateSelectClause(AFieldList, PMethodOfContactTable.TableId) + " FROM PUB_p_method_of_contact") +
+                            GenerateOrderByClause(AOrderBy)), TTypedDataTable.GetTableName(PMethodOfContactTable.TableId), ATransaction, AStartRecord, AMaxRecords);
         }
 
         /// auto generated
@@ -13897,12 +13746,8 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data.Access
         /// this method is called by all overloads
         public static void LoadByPrimaryKey(DataSet ADataSet, String AMethodOfContactCode, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            OdbcParameter[] ParametersArray = new OdbcParameter[1];
-            ParametersArray[0] = new OdbcParameter("", OdbcType.VarChar, 16);
-            ParametersArray[0].Value = ((object)(AMethodOfContactCode));
-            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, ((GenerateSelectClause(AFieldList, new string[] {
-                            "p_method_of_contact_code_c"}) + " FROM PUB_p_method_of_contact WHERE p_method_of_contact_code_c = ?")
-                            + GenerateOrderByClause(AOrderBy)), PMethodOfContactTable.GetTableName(), ATransaction, ParametersArray, AStartRecord, AMaxRecords);
+            ADataSet = LoadByPrimaryKey(PMethodOfContactTable.TableId,
+                ADataSet, new System.Object[1]{AMethodOfContactCode}, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
         }
 
         /// auto generated
@@ -13942,10 +13787,10 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data.Access
         /// this method is called by all overloads
         public static void LoadUsingTemplate(DataSet ADataSet, PMethodOfContactRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClause(AFieldList, new string[] {
-                            "p_method_of_contact_code_c"}) + " FROM PUB_p_method_of_contact")
-                            + GenerateWhereClause(PMethodOfContactTable.GetColumnStringList(), ATemplateRow, ATemplateOperators))
-                            + GenerateOrderByClause(AOrderBy)), PMethodOfContactTable.GetTableName(), ATransaction, GetParametersForWhereClause(ATemplateRow), AStartRecord, AMaxRecords);
+            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClause(AFieldList, PMethodOfContactTable.TableId) + " FROM PUB_p_method_of_contact") +
+                            GenerateWhereClause(TTypedDataTable.GetColumnStringList(PMethodOfContactTable.TableId), ATemplateRow, ATemplateOperators)) +
+                            GenerateOrderByClause(AOrderBy)), TTypedDataTable.GetTableName(PMethodOfContactTable.TableId), ATransaction,
+                            GetParametersForWhereClause(PMethodOfContactTable.TableId, ATemplateRow), AStartRecord, AMaxRecords);
         }
 
         /// auto generated
@@ -13991,11 +13836,10 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data.Access
         /// this method is called by all overloads
         public static void LoadUsingTemplate(DataSet ADataSet, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClause(AFieldList, new string[] {
-                            "p_method_of_contact_code_c"}) + " FROM PUB_p_method_of_contact")
-                            + GenerateWhereClause(PMethodOfContactTable.GetColumnStringList(), ASearchCriteria))
-                            + GenerateOrderByClause(AOrderBy)), PMethodOfContactTable.GetTableName(), ATransaction,
-                            GetParametersForWhereClause(new PMethodOfContactTable(), ASearchCriteria), AStartRecord, AMaxRecords);
+            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClause(AFieldList, PMethodOfContactTable.TableId) + " FROM PUB_p_method_of_contact") +
+                            GenerateWhereClause(TTypedDataTable.GetColumnStringList(PMethodOfContactTable.TableId), ASearchCriteria)) +
+                            GenerateOrderByClause(AOrderBy)), TTypedDataTable.GetTableName(PMethodOfContactTable.TableId), ATransaction,
+                            GetParametersForWhereClause(PMethodOfContactTable.TableId, ASearchCriteria), AStartRecord, AMaxRecords);
         }
 
         /// auto generated
@@ -14038,49 +13882,42 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data.Access
             return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar("SELECT COUNT(*) FROM PUB_p_method_of_contact", ATransaction, false));
         }
 
-        /// this method is called by all overloads
-        public static int CountByPrimaryKey(String AMethodOfContactCode, TDBTransaction ATransaction)
+        /// check if a row exists by using the primary key
+        public static bool Exists(String AMethodOfContactCode, TDBTransaction ATransaction)
         {
-            OdbcParameter[] ParametersArray = new OdbcParameter[1];
-            ParametersArray[0] = new OdbcParameter("", OdbcType.VarChar, 16);
-            ParametersArray[0].Value = ((object)(AMethodOfContactCode));
-            return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar("SELECT COUNT(*) FROM PUB_p_method_of_contact WHERE p_method_of_contact_code_c = ?", ATransaction, false, ParametersArray));
+            return Exists(PMethodOfContactTable.TableId, new System.Object[1]{AMethodOfContactCode}, ATransaction);
         }
 
         /// this method is called by all overloads
         public static int CountUsingTemplate(PMethodOfContactRow ATemplateRow, StringCollection ATemplateOperators, TDBTransaction ATransaction)
         {
-            return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_p_method_of_contact" + GenerateWhereClause(PMethodOfContactTable.GetColumnStringList(), ATemplateRow, ATemplateOperators)), ATransaction, false, GetParametersForWhereClause(ATemplateRow)));
+            return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_p_method_of_contact" + GenerateWhereClause(TTypedDataTable.GetColumnStringList(PMethodOfContactTable.TableId), ATemplateRow, ATemplateOperators)), ATransaction, false,
+                   GetParametersForWhereClause(PMethodOfContactTable.TableId, ATemplateRow)));
         }
 
         /// this method is called by all overloads
         public static int CountUsingTemplate(TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
         {
-            return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_p_method_of_contact" + GenerateWhereClause(PMethodOfContactTable.GetColumnStringList(), ASearchCriteria)), ATransaction, false,
-            GetParametersForWhereClause(new PMethodOfContactTable(), ASearchCriteria)));
+            return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_p_method_of_contact" + GenerateWhereClause(TTypedDataTable.GetColumnStringList(PMethodOfContactTable.TableId), ASearchCriteria)), ATransaction, false,
+            GetParametersForWhereClause(PMethodOfContactTable.TableId, ASearchCriteria)));
         }
 
         /// auto generated
         public static void DeleteByPrimaryKey(String AMethodOfContactCode, TDBTransaction ATransaction)
         {
-            OdbcParameter[] ParametersArray = new OdbcParameter[1];
-            ParametersArray[0] = new OdbcParameter("", OdbcType.VarChar, 16);
-            ParametersArray[0].Value = ((object)(AMethodOfContactCode));
-            DBAccess.GDBAccessObj.ExecuteNonQuery("DELETE FROM PUB_p_method_of_contact WHERE p_method_of_contact_code_c = ?", ATransaction, false, ParametersArray);
+            DeleteByPrimaryKey(PMethodOfContactTable.TableId, new System.Object[1]{AMethodOfContactCode}, ATransaction);
         }
 
         /// auto generated
         public static void DeleteUsingTemplate(PMethodOfContactRow ATemplateRow, StringCollection ATemplateOperators, TDBTransaction ATransaction)
         {
-            DBAccess.GDBAccessObj.ExecuteNonQuery(("DELETE FROM PUB_p_method_of_contact" + GenerateWhereClause(PMethodOfContactTable.GetColumnStringList(), ATemplateRow, ATemplateOperators)), ATransaction, false, GetParametersForWhereClause(ATemplateRow));
+            DeleteUsingTemplate(PMethodOfContactTable.TableId, ATemplateRow, ATemplateOperators, ATransaction);
         }
 
         /// auto generated
         public static void DeleteUsingTemplate(TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
         {
-            DBAccess.GDBAccessObj.ExecuteNonQuery(("DELETE FROM PUB_p_method_of_contact" +
-                GenerateWhereClause(PMethodOfContactTable.GetColumnStringList(), ASearchCriteria)), ATransaction, false,
-                GetParametersForWhereClause(new PMethodOfContactTable(), ASearchCriteria));
+            DeleteUsingTemplate(PMethodOfContactTable.TableId, ASearchCriteria, ATransaction);
         }
 
         /// auto generated
@@ -14097,15 +13934,15 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data.Access
                 {
                     if ((TheRow.RowState == DataRowState.Added))
                     {
-                        TTypedDataAccess.InsertRow("p_method_of_contact", PMethodOfContactTable.GetColumnStringList(), ref TheRow, ATransaction, UserInfo.GUserInfo.UserID);
+                        TTypedDataAccess.InsertRow(PMethodOfContactTable.TableId, ref TheRow, ATransaction, UserInfo.GUserInfo.UserID);
                     }
                     if ((TheRow.RowState == DataRowState.Modified))
                     {
-                        TTypedDataAccess.UpdateRow("p_method_of_contact", PMethodOfContactTable.GetColumnStringList(), PMethodOfContactTable.GetPrimKeyColumnOrdList(), ref TheRow, ATransaction, UserInfo.GUserInfo.UserID);
+                        TTypedDataAccess.UpdateRow(PMethodOfContactTable.TableId, ref TheRow, ATransaction, UserInfo.GUserInfo.UserID);
                     }
                     if ((TheRow.RowState == DataRowState.Deleted))
                     {
-                        TTypedDataAccess.DeleteRow("p_method_of_contact", PMethodOfContactTable.GetColumnStringList(), PMethodOfContactTable.GetPrimKeyColumnOrdList(), TheRow, ATransaction);
+                        TTypedDataAccess.DeleteRow(PMethodOfContactTable.TableId, TheRow, ATransaction);
                     }
                 }
                 catch (OdbcException ex)
@@ -14135,9 +13972,8 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data.Access
         /// this method is called by all overloads
         public static void LoadAll(DataSet ADataSet, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, ((GenerateSelectClause(AFieldList, new string[] {
-                            "p_contact_id_i"}) + " FROM PUB_p_partner_contact")
-                            + GenerateOrderByClause(AOrderBy)), PPartnerContactTable.GetTableName(), ATransaction, AStartRecord, AMaxRecords);
+            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, ((GenerateSelectClause(AFieldList, PPartnerContactTable.TableId) + " FROM PUB_p_partner_contact") +
+                            GenerateOrderByClause(AOrderBy)), TTypedDataTable.GetTableName(PPartnerContactTable.TableId), ATransaction, AStartRecord, AMaxRecords);
         }
 
         /// auto generated
@@ -14177,12 +14013,8 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data.Access
         /// this method is called by all overloads
         public static void LoadByPrimaryKey(DataSet ADataSet, Int32 AContactId, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            OdbcParameter[] ParametersArray = new OdbcParameter[1];
-            ParametersArray[0] = new OdbcParameter("", OdbcType.Int);
-            ParametersArray[0].Value = ((object)(AContactId));
-            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, ((GenerateSelectClause(AFieldList, new string[] {
-                            "p_contact_id_i"}) + " FROM PUB_p_partner_contact WHERE p_contact_id_i = ?")
-                            + GenerateOrderByClause(AOrderBy)), PPartnerContactTable.GetTableName(), ATransaction, ParametersArray, AStartRecord, AMaxRecords);
+            ADataSet = LoadByPrimaryKey(PPartnerContactTable.TableId,
+                ADataSet, new System.Object[1]{AContactId}, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
         }
 
         /// auto generated
@@ -14222,10 +14054,10 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data.Access
         /// this method is called by all overloads
         public static void LoadUsingTemplate(DataSet ADataSet, PPartnerContactRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClause(AFieldList, new string[] {
-                            "p_contact_id_i"}) + " FROM PUB_p_partner_contact")
-                            + GenerateWhereClause(PPartnerContactTable.GetColumnStringList(), ATemplateRow, ATemplateOperators))
-                            + GenerateOrderByClause(AOrderBy)), PPartnerContactTable.GetTableName(), ATransaction, GetParametersForWhereClause(ATemplateRow), AStartRecord, AMaxRecords);
+            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClause(AFieldList, PPartnerContactTable.TableId) + " FROM PUB_p_partner_contact") +
+                            GenerateWhereClause(TTypedDataTable.GetColumnStringList(PPartnerContactTable.TableId), ATemplateRow, ATemplateOperators)) +
+                            GenerateOrderByClause(AOrderBy)), TTypedDataTable.GetTableName(PPartnerContactTable.TableId), ATransaction,
+                            GetParametersForWhereClause(PPartnerContactTable.TableId, ATemplateRow), AStartRecord, AMaxRecords);
         }
 
         /// auto generated
@@ -14271,11 +14103,10 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data.Access
         /// this method is called by all overloads
         public static void LoadUsingTemplate(DataSet ADataSet, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClause(AFieldList, new string[] {
-                            "p_contact_id_i"}) + " FROM PUB_p_partner_contact")
-                            + GenerateWhereClause(PPartnerContactTable.GetColumnStringList(), ASearchCriteria))
-                            + GenerateOrderByClause(AOrderBy)), PPartnerContactTable.GetTableName(), ATransaction,
-                            GetParametersForWhereClause(new PPartnerContactTable(), ASearchCriteria), AStartRecord, AMaxRecords);
+            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClause(AFieldList, PPartnerContactTable.TableId) + " FROM PUB_p_partner_contact") +
+                            GenerateWhereClause(TTypedDataTable.GetColumnStringList(PPartnerContactTable.TableId), ASearchCriteria)) +
+                            GenerateOrderByClause(AOrderBy)), TTypedDataTable.GetTableName(PPartnerContactTable.TableId), ATransaction,
+                            GetParametersForWhereClause(PPartnerContactTable.TableId, ASearchCriteria), AStartRecord, AMaxRecords);
         }
 
         /// auto generated
@@ -14318,26 +14149,24 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data.Access
             return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar("SELECT COUNT(*) FROM PUB_p_partner_contact", ATransaction, false));
         }
 
-        /// this method is called by all overloads
-        public static int CountByPrimaryKey(Int32 AContactId, TDBTransaction ATransaction)
+        /// check if a row exists by using the primary key
+        public static bool Exists(Int32 AContactId, TDBTransaction ATransaction)
         {
-            OdbcParameter[] ParametersArray = new OdbcParameter[1];
-            ParametersArray[0] = new OdbcParameter("", OdbcType.Int);
-            ParametersArray[0].Value = ((object)(AContactId));
-            return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar("SELECT COUNT(*) FROM PUB_p_partner_contact WHERE p_contact_id_i = ?", ATransaction, false, ParametersArray));
+            return Exists(PPartnerContactTable.TableId, new System.Object[1]{AContactId}, ATransaction);
         }
 
         /// this method is called by all overloads
         public static int CountUsingTemplate(PPartnerContactRow ATemplateRow, StringCollection ATemplateOperators, TDBTransaction ATransaction)
         {
-            return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_p_partner_contact" + GenerateWhereClause(PPartnerContactTable.GetColumnStringList(), ATemplateRow, ATemplateOperators)), ATransaction, false, GetParametersForWhereClause(ATemplateRow)));
+            return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_p_partner_contact" + GenerateWhereClause(TTypedDataTable.GetColumnStringList(PPartnerContactTable.TableId), ATemplateRow, ATemplateOperators)), ATransaction, false,
+                   GetParametersForWhereClause(PPartnerContactTable.TableId, ATemplateRow)));
         }
 
         /// this method is called by all overloads
         public static int CountUsingTemplate(TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
         {
-            return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_p_partner_contact" + GenerateWhereClause(PPartnerContactTable.GetColumnStringList(), ASearchCriteria)), ATransaction, false,
-            GetParametersForWhereClause(new PPartnerContactTable(), ASearchCriteria)));
+            return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_p_partner_contact" + GenerateWhereClause(TTypedDataTable.GetColumnStringList(PPartnerContactTable.TableId), ASearchCriteria)), ATransaction, false,
+            GetParametersForWhereClause(PPartnerContactTable.TableId, ASearchCriteria)));
         }
 
         /// auto generated
@@ -14346,9 +14175,9 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data.Access
             OdbcParameter[] ParametersArray = new OdbcParameter[1];
             ParametersArray[0] = new OdbcParameter("", OdbcType.Decimal, 10);
             ParametersArray[0].Value = ((object)(APartnerKey));
-            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, ((GenerateSelectClause(AFieldList, new string[] {
-                            "p_contact_id_i"}) + " FROM PUB_p_partner_contact WHERE p_partner_key_n = ?")
-                            + GenerateOrderByClause(AOrderBy)), PPartnerContactTable.GetTableName(), ATransaction, ParametersArray, AStartRecord, AMaxRecords);
+            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, ((GenerateSelectClause(AFieldList, PPartnerContactTable.TableId) +
+                            " FROM PUB_p_partner_contact WHERE p_partner_key_n = ?") +
+                            GenerateOrderByClause(AOrderBy)), TTypedDataTable.GetTableName(PPartnerContactTable.TableId), ATransaction, ParametersArray, AStartRecord, AMaxRecords);
         }
 
         /// auto generated
@@ -14388,11 +14217,12 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data.Access
         /// auto generated
         public static void LoadViaPPartnerTemplate(DataSet ADataSet, PPartnerRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClauseLong("PUB_p_partner_contact", AFieldList, new string[] {
-                            "p_contact_id_i"}) + " FROM PUB_p_partner_contact, PUB_p_partner WHERE " +
-                            "PUB_p_partner_contact.p_partner_key_n = PUB_p_partner.p_partner_key_n")
-                            + GenerateWhereClauseLong("PUB_p_partner", PPartnerTable.GetColumnStringList(), ATemplateRow, ATemplateOperators))
-                            + GenerateOrderByClause(AOrderBy)), PPartnerContactTable.GetTableName(), ATransaction, GetParametersForWhereClause(ATemplateRow), AStartRecord, AMaxRecords);
+            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClauseLong("PUB_p_partner_contact", AFieldList, PPartnerContactTable.TableId) +
+                            " FROM PUB_p_partner_contact, PUB_p_partner WHERE " +
+                            "PUB_p_partner_contact.p_partner_key_n = PUB_p_partner.p_partner_key_n") +
+                            GenerateWhereClauseLong("PUB_p_partner", PPartnerTable.TableId, ATemplateRow, ATemplateOperators)) +
+                            GenerateOrderByClause(AOrderBy)), TTypedDataTable.GetTableName(PPartnerContactTable.TableId), ATransaction,
+                            GetParametersForWhereClause(PPartnerTable.TableId, ATemplateRow), AStartRecord, AMaxRecords);
         }
 
         /// auto generated
@@ -14438,12 +14268,12 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data.Access
         /// auto generated
         public static void LoadViaPPartnerTemplate(DataSet ADataSet, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClauseLong("PUB_p_partner_contact", AFieldList, new string[] {
-                            "p_contact_id_i"}) + " FROM PUB_p_partner_contact, PUB_p_partner WHERE " +
-                            "PUB_p_partner_contact.p_partner_key_n = PUB_p_partner.p_partner_key_n")
-                            + GenerateWhereClauseLong("PUB_p_partner", PPartnerTable.GetColumnStringList(), ASearchCriteria))
-                            + GenerateOrderByClause(AOrderBy)), PPartnerContactTable.GetTableName(), ATransaction,
-                            GetParametersForWhereClause(new PPartnerContactTable(), ASearchCriteria), AStartRecord, AMaxRecords);
+            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClauseLong("PUB_p_partner_contact", AFieldList, PPartnerContactTable.TableId) +
+                            " FROM PUB_p_partner_contact, PUB_p_partner WHERE " +
+                            "PUB_p_partner_contact.p_partner_key_n = PUB_p_partner.p_partner_key_n") +
+                            GenerateWhereClauseLong("PUB_p_partner", ASearchCriteria)) +
+                            GenerateOrderByClause(AOrderBy)), TTypedDataTable.GetTableName(PPartnerContactTable.TableId), ATransaction,
+                            GetParametersForWhereClause(PPartnerContactTable.TableId, ASearchCriteria), AStartRecord, AMaxRecords);
         }
 
         /// auto generated
@@ -14493,7 +14323,10 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data.Access
         public static int CountViaPPartnerTemplate(PPartnerRow ATemplateRow, StringCollection ATemplateOperators, TDBTransaction ATransaction)
         {
             return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_p_partner_contact, PUB_p_partner WHERE " +
-                "PUB_p_partner_contact.p_partner_key_n = PUB_p_partner.p_partner_key_n" + GenerateWhereClauseLong("PUB_p_partner", PPartnerTable.GetColumnStringList(), ATemplateRow, ATemplateOperators)), ATransaction, false, GetParametersForWhereClause(ATemplateRow, PPartnerTable.GetPrimKeyColumnOrdList())));
+                "PUB_p_partner_contact.p_partner_key_n = PUB_p_partner.p_partner_key_n" + GenerateWhereClauseLong("PUB_p_partner",
+                PPartnerTable.TableId, ATemplateRow, ATemplateOperators)),
+                ATransaction, false,
+                GetParametersForWhereClauseWithPrimaryKey(PPartnerTable.TableId, ATemplateRow)));
         }
 
         /// auto generated
@@ -14501,8 +14334,8 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data.Access
         {
             return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_p_partner_contact, PUB_p_partner WHERE " +
                 "PUB_p_partner_contact.p_partner_key_n = PUB_p_partner.p_partner_key_n" +
-                GenerateWhereClauseLong("PUB_p_partner", PPartnerTable.GetColumnStringList(), ASearchCriteria)), ATransaction, false,
-                GetParametersForWhereClause(new PPartnerTable(), ASearchCriteria)));
+                GenerateWhereClauseLong("PUB_p_partner", ASearchCriteria)), ATransaction, false,
+                GetParametersForWhereClause(PPartnerTable.TableId, ASearchCriteria)));
         }
 
         /// auto generated
@@ -14511,9 +14344,9 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data.Access
             OdbcParameter[] ParametersArray = new OdbcParameter[1];
             ParametersArray[0] = new OdbcParameter("", OdbcType.VarChar, 50);
             ParametersArray[0].Value = ((object)(AMailingCode));
-            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, ((GenerateSelectClause(AFieldList, new string[] {
-                            "p_contact_id_i"}) + " FROM PUB_p_partner_contact WHERE p_mailing_code_c = ?")
-                            + GenerateOrderByClause(AOrderBy)), PPartnerContactTable.GetTableName(), ATransaction, ParametersArray, AStartRecord, AMaxRecords);
+            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, ((GenerateSelectClause(AFieldList, PPartnerContactTable.TableId) +
+                            " FROM PUB_p_partner_contact WHERE p_mailing_code_c = ?") +
+                            GenerateOrderByClause(AOrderBy)), TTypedDataTable.GetTableName(PPartnerContactTable.TableId), ATransaction, ParametersArray, AStartRecord, AMaxRecords);
         }
 
         /// auto generated
@@ -14553,11 +14386,12 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data.Access
         /// auto generated
         public static void LoadViaPMailingTemplate(DataSet ADataSet, PMailingRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClauseLong("PUB_p_partner_contact", AFieldList, new string[] {
-                            "p_contact_id_i"}) + " FROM PUB_p_partner_contact, PUB_p_mailing WHERE " +
-                            "PUB_p_partner_contact.p_mailing_code_c = PUB_p_mailing.p_mailing_code_c")
-                            + GenerateWhereClauseLong("PUB_p_mailing", PMailingTable.GetColumnStringList(), ATemplateRow, ATemplateOperators))
-                            + GenerateOrderByClause(AOrderBy)), PPartnerContactTable.GetTableName(), ATransaction, GetParametersForWhereClause(ATemplateRow), AStartRecord, AMaxRecords);
+            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClauseLong("PUB_p_partner_contact", AFieldList, PPartnerContactTable.TableId) +
+                            " FROM PUB_p_partner_contact, PUB_p_mailing WHERE " +
+                            "PUB_p_partner_contact.p_mailing_code_c = PUB_p_mailing.p_mailing_code_c") +
+                            GenerateWhereClauseLong("PUB_p_mailing", PMailingTable.TableId, ATemplateRow, ATemplateOperators)) +
+                            GenerateOrderByClause(AOrderBy)), TTypedDataTable.GetTableName(PPartnerContactTable.TableId), ATransaction,
+                            GetParametersForWhereClause(PMailingTable.TableId, ATemplateRow), AStartRecord, AMaxRecords);
         }
 
         /// auto generated
@@ -14603,12 +14437,12 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data.Access
         /// auto generated
         public static void LoadViaPMailingTemplate(DataSet ADataSet, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClauseLong("PUB_p_partner_contact", AFieldList, new string[] {
-                            "p_contact_id_i"}) + " FROM PUB_p_partner_contact, PUB_p_mailing WHERE " +
-                            "PUB_p_partner_contact.p_mailing_code_c = PUB_p_mailing.p_mailing_code_c")
-                            + GenerateWhereClauseLong("PUB_p_mailing", PMailingTable.GetColumnStringList(), ASearchCriteria))
-                            + GenerateOrderByClause(AOrderBy)), PPartnerContactTable.GetTableName(), ATransaction,
-                            GetParametersForWhereClause(new PPartnerContactTable(), ASearchCriteria), AStartRecord, AMaxRecords);
+            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClauseLong("PUB_p_partner_contact", AFieldList, PPartnerContactTable.TableId) +
+                            " FROM PUB_p_partner_contact, PUB_p_mailing WHERE " +
+                            "PUB_p_partner_contact.p_mailing_code_c = PUB_p_mailing.p_mailing_code_c") +
+                            GenerateWhereClauseLong("PUB_p_mailing", ASearchCriteria)) +
+                            GenerateOrderByClause(AOrderBy)), TTypedDataTable.GetTableName(PPartnerContactTable.TableId), ATransaction,
+                            GetParametersForWhereClause(PPartnerContactTable.TableId, ASearchCriteria), AStartRecord, AMaxRecords);
         }
 
         /// auto generated
@@ -14658,7 +14492,10 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data.Access
         public static int CountViaPMailingTemplate(PMailingRow ATemplateRow, StringCollection ATemplateOperators, TDBTransaction ATransaction)
         {
             return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_p_partner_contact, PUB_p_mailing WHERE " +
-                "PUB_p_partner_contact.p_mailing_code_c = PUB_p_mailing.p_mailing_code_c" + GenerateWhereClauseLong("PUB_p_mailing", PMailingTable.GetColumnStringList(), ATemplateRow, ATemplateOperators)), ATransaction, false, GetParametersForWhereClause(ATemplateRow, PMailingTable.GetPrimKeyColumnOrdList())));
+                "PUB_p_partner_contact.p_mailing_code_c = PUB_p_mailing.p_mailing_code_c" + GenerateWhereClauseLong("PUB_p_mailing",
+                PMailingTable.TableId, ATemplateRow, ATemplateOperators)),
+                ATransaction, false,
+                GetParametersForWhereClauseWithPrimaryKey(PMailingTable.TableId, ATemplateRow)));
         }
 
         /// auto generated
@@ -14666,8 +14503,8 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data.Access
         {
             return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_p_partner_contact, PUB_p_mailing WHERE " +
                 "PUB_p_partner_contact.p_mailing_code_c = PUB_p_mailing.p_mailing_code_c" +
-                GenerateWhereClauseLong("PUB_p_mailing", PMailingTable.GetColumnStringList(), ASearchCriteria)), ATransaction, false,
-                GetParametersForWhereClause(new PMailingTable(), ASearchCriteria)));
+                GenerateWhereClauseLong("PUB_p_mailing", ASearchCriteria)), ATransaction, false,
+                GetParametersForWhereClause(PMailingTable.TableId, ASearchCriteria)));
         }
 
         /// auto generated
@@ -14676,9 +14513,9 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data.Access
             OdbcParameter[] ParametersArray = new OdbcParameter[1];
             ParametersArray[0] = new OdbcParameter("", OdbcType.VarChar, 16);
             ParametersArray[0].Value = ((object)(AMethodOfContactCode));
-            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, ((GenerateSelectClause(AFieldList, new string[] {
-                            "p_contact_id_i"}) + " FROM PUB_p_partner_contact WHERE p_contact_code_c = ?")
-                            + GenerateOrderByClause(AOrderBy)), PPartnerContactTable.GetTableName(), ATransaction, ParametersArray, AStartRecord, AMaxRecords);
+            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, ((GenerateSelectClause(AFieldList, PPartnerContactTable.TableId) +
+                            " FROM PUB_p_partner_contact WHERE p_contact_code_c = ?") +
+                            GenerateOrderByClause(AOrderBy)), TTypedDataTable.GetTableName(PPartnerContactTable.TableId), ATransaction, ParametersArray, AStartRecord, AMaxRecords);
         }
 
         /// auto generated
@@ -14718,11 +14555,12 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data.Access
         /// auto generated
         public static void LoadViaPMethodOfContactTemplate(DataSet ADataSet, PMethodOfContactRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClauseLong("PUB_p_partner_contact", AFieldList, new string[] {
-                            "p_contact_id_i"}) + " FROM PUB_p_partner_contact, PUB_p_method_of_contact WHERE " +
-                            "PUB_p_partner_contact.p_contact_code_c = PUB_p_method_of_contact.p_method_of_contact_code_c")
-                            + GenerateWhereClauseLong("PUB_p_method_of_contact", PMethodOfContactTable.GetColumnStringList(), ATemplateRow, ATemplateOperators))
-                            + GenerateOrderByClause(AOrderBy)), PPartnerContactTable.GetTableName(), ATransaction, GetParametersForWhereClause(ATemplateRow), AStartRecord, AMaxRecords);
+            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClauseLong("PUB_p_partner_contact", AFieldList, PPartnerContactTable.TableId) +
+                            " FROM PUB_p_partner_contact, PUB_p_method_of_contact WHERE " +
+                            "PUB_p_partner_contact.p_contact_code_c = PUB_p_method_of_contact.p_method_of_contact_code_c") +
+                            GenerateWhereClauseLong("PUB_p_method_of_contact", PMethodOfContactTable.TableId, ATemplateRow, ATemplateOperators)) +
+                            GenerateOrderByClause(AOrderBy)), TTypedDataTable.GetTableName(PPartnerContactTable.TableId), ATransaction,
+                            GetParametersForWhereClause(PMethodOfContactTable.TableId, ATemplateRow), AStartRecord, AMaxRecords);
         }
 
         /// auto generated
@@ -14768,12 +14606,12 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data.Access
         /// auto generated
         public static void LoadViaPMethodOfContactTemplate(DataSet ADataSet, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClauseLong("PUB_p_partner_contact", AFieldList, new string[] {
-                            "p_contact_id_i"}) + " FROM PUB_p_partner_contact, PUB_p_method_of_contact WHERE " +
-                            "PUB_p_partner_contact.p_contact_code_c = PUB_p_method_of_contact.p_method_of_contact_code_c")
-                            + GenerateWhereClauseLong("PUB_p_method_of_contact", PMethodOfContactTable.GetColumnStringList(), ASearchCriteria))
-                            + GenerateOrderByClause(AOrderBy)), PPartnerContactTable.GetTableName(), ATransaction,
-                            GetParametersForWhereClause(new PPartnerContactTable(), ASearchCriteria), AStartRecord, AMaxRecords);
+            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClauseLong("PUB_p_partner_contact", AFieldList, PPartnerContactTable.TableId) +
+                            " FROM PUB_p_partner_contact, PUB_p_method_of_contact WHERE " +
+                            "PUB_p_partner_contact.p_contact_code_c = PUB_p_method_of_contact.p_method_of_contact_code_c") +
+                            GenerateWhereClauseLong("PUB_p_method_of_contact", ASearchCriteria)) +
+                            GenerateOrderByClause(AOrderBy)), TTypedDataTable.GetTableName(PPartnerContactTable.TableId), ATransaction,
+                            GetParametersForWhereClause(PPartnerContactTable.TableId, ASearchCriteria), AStartRecord, AMaxRecords);
         }
 
         /// auto generated
@@ -14823,7 +14661,10 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data.Access
         public static int CountViaPMethodOfContactTemplate(PMethodOfContactRow ATemplateRow, StringCollection ATemplateOperators, TDBTransaction ATransaction)
         {
             return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_p_partner_contact, PUB_p_method_of_contact WHERE " +
-                "PUB_p_partner_contact.p_contact_code_c = PUB_p_method_of_contact.p_method_of_contact_code_c" + GenerateWhereClauseLong("PUB_p_method_of_contact", PMethodOfContactTable.GetColumnStringList(), ATemplateRow, ATemplateOperators)), ATransaction, false, GetParametersForWhereClause(ATemplateRow, PMethodOfContactTable.GetPrimKeyColumnOrdList())));
+                "PUB_p_partner_contact.p_contact_code_c = PUB_p_method_of_contact.p_method_of_contact_code_c" + GenerateWhereClauseLong("PUB_p_method_of_contact",
+                PMethodOfContactTable.TableId, ATemplateRow, ATemplateOperators)),
+                ATransaction, false,
+                GetParametersForWhereClauseWithPrimaryKey(PMethodOfContactTable.TableId, ATemplateRow)));
         }
 
         /// auto generated
@@ -14831,8 +14672,8 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data.Access
         {
             return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_p_partner_contact, PUB_p_method_of_contact WHERE " +
                 "PUB_p_partner_contact.p_contact_code_c = PUB_p_method_of_contact.p_method_of_contact_code_c" +
-                GenerateWhereClauseLong("PUB_p_method_of_contact", PMethodOfContactTable.GetColumnStringList(), ASearchCriteria)), ATransaction, false,
-                GetParametersForWhereClause(new PMethodOfContactTable(), ASearchCriteria)));
+                GenerateWhereClauseLong("PUB_p_method_of_contact", ASearchCriteria)), ATransaction, false,
+                GetParametersForWhereClause(PMethodOfContactTable.TableId, ASearchCriteria)));
         }
 
         /// auto generated
@@ -14841,9 +14682,9 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data.Access
             OdbcParameter[] ParametersArray = new OdbcParameter[1];
             ParametersArray[0] = new OdbcParameter("", OdbcType.VarChar, 20);
             ParametersArray[0].Value = ((object)(AModuleId));
-            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, ((GenerateSelectClause(AFieldList, new string[] {
-                            "p_contact_id_i"}) + " FROM PUB_p_partner_contact WHERE s_module_id_c = ?")
-                            + GenerateOrderByClause(AOrderBy)), PPartnerContactTable.GetTableName(), ATransaction, ParametersArray, AStartRecord, AMaxRecords);
+            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, ((GenerateSelectClause(AFieldList, PPartnerContactTable.TableId) +
+                            " FROM PUB_p_partner_contact WHERE s_module_id_c = ?") +
+                            GenerateOrderByClause(AOrderBy)), TTypedDataTable.GetTableName(PPartnerContactTable.TableId), ATransaction, ParametersArray, AStartRecord, AMaxRecords);
         }
 
         /// auto generated
@@ -14883,11 +14724,12 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data.Access
         /// auto generated
         public static void LoadViaSModuleTemplate(DataSet ADataSet, SModuleRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClauseLong("PUB_p_partner_contact", AFieldList, new string[] {
-                            "p_contact_id_i"}) + " FROM PUB_p_partner_contact, PUB_s_module WHERE " +
-                            "PUB_p_partner_contact.s_module_id_c = PUB_s_module.s_module_id_c")
-                            + GenerateWhereClauseLong("PUB_s_module", SModuleTable.GetColumnStringList(), ATemplateRow, ATemplateOperators))
-                            + GenerateOrderByClause(AOrderBy)), PPartnerContactTable.GetTableName(), ATransaction, GetParametersForWhereClause(ATemplateRow), AStartRecord, AMaxRecords);
+            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClauseLong("PUB_p_partner_contact", AFieldList, PPartnerContactTable.TableId) +
+                            " FROM PUB_p_partner_contact, PUB_s_module WHERE " +
+                            "PUB_p_partner_contact.s_module_id_c = PUB_s_module.s_module_id_c") +
+                            GenerateWhereClauseLong("PUB_s_module", SModuleTable.TableId, ATemplateRow, ATemplateOperators)) +
+                            GenerateOrderByClause(AOrderBy)), TTypedDataTable.GetTableName(PPartnerContactTable.TableId), ATransaction,
+                            GetParametersForWhereClause(SModuleTable.TableId, ATemplateRow), AStartRecord, AMaxRecords);
         }
 
         /// auto generated
@@ -14933,12 +14775,12 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data.Access
         /// auto generated
         public static void LoadViaSModuleTemplate(DataSet ADataSet, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClauseLong("PUB_p_partner_contact", AFieldList, new string[] {
-                            "p_contact_id_i"}) + " FROM PUB_p_partner_contact, PUB_s_module WHERE " +
-                            "PUB_p_partner_contact.s_module_id_c = PUB_s_module.s_module_id_c")
-                            + GenerateWhereClauseLong("PUB_s_module", SModuleTable.GetColumnStringList(), ASearchCriteria))
-                            + GenerateOrderByClause(AOrderBy)), PPartnerContactTable.GetTableName(), ATransaction,
-                            GetParametersForWhereClause(new PPartnerContactTable(), ASearchCriteria), AStartRecord, AMaxRecords);
+            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClauseLong("PUB_p_partner_contact", AFieldList, PPartnerContactTable.TableId) +
+                            " FROM PUB_p_partner_contact, PUB_s_module WHERE " +
+                            "PUB_p_partner_contact.s_module_id_c = PUB_s_module.s_module_id_c") +
+                            GenerateWhereClauseLong("PUB_s_module", ASearchCriteria)) +
+                            GenerateOrderByClause(AOrderBy)), TTypedDataTable.GetTableName(PPartnerContactTable.TableId), ATransaction,
+                            GetParametersForWhereClause(PPartnerContactTable.TableId, ASearchCriteria), AStartRecord, AMaxRecords);
         }
 
         /// auto generated
@@ -14988,7 +14830,10 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data.Access
         public static int CountViaSModuleTemplate(SModuleRow ATemplateRow, StringCollection ATemplateOperators, TDBTransaction ATransaction)
         {
             return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_p_partner_contact, PUB_s_module WHERE " +
-                "PUB_p_partner_contact.s_module_id_c = PUB_s_module.s_module_id_c" + GenerateWhereClauseLong("PUB_s_module", SModuleTable.GetColumnStringList(), ATemplateRow, ATemplateOperators)), ATransaction, false, GetParametersForWhereClause(ATemplateRow, SModuleTable.GetPrimKeyColumnOrdList())));
+                "PUB_p_partner_contact.s_module_id_c = PUB_s_module.s_module_id_c" + GenerateWhereClauseLong("PUB_s_module",
+                SModuleTable.TableId, ATemplateRow, ATemplateOperators)),
+                ATransaction, false,
+                GetParametersForWhereClauseWithPrimaryKey(SModuleTable.TableId, ATemplateRow)));
         }
 
         /// auto generated
@@ -14996,8 +14841,8 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data.Access
         {
             return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_p_partner_contact, PUB_s_module WHERE " +
                 "PUB_p_partner_contact.s_module_id_c = PUB_s_module.s_module_id_c" +
-                GenerateWhereClauseLong("PUB_s_module", SModuleTable.GetColumnStringList(), ASearchCriteria)), ATransaction, false,
-                GetParametersForWhereClause(new SModuleTable(), ASearchCriteria)));
+                GenerateWhereClauseLong("PUB_s_module", ASearchCriteria)), ATransaction, false,
+                GetParametersForWhereClause(SModuleTable.TableId, ASearchCriteria)));
         }
 
         /// auto generated
@@ -15006,9 +14851,9 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data.Access
             OdbcParameter[] ParametersArray = new OdbcParameter[1];
             ParametersArray[0] = new OdbcParameter("", OdbcType.VarChar, 20);
             ParametersArray[0].Value = ((object)(AUserId));
-            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, ((GenerateSelectClause(AFieldList, new string[] {
-                            "p_contact_id_i"}) + " FROM PUB_p_partner_contact WHERE s_user_id_c = ?")
-                            + GenerateOrderByClause(AOrderBy)), PPartnerContactTable.GetTableName(), ATransaction, ParametersArray, AStartRecord, AMaxRecords);
+            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, ((GenerateSelectClause(AFieldList, PPartnerContactTable.TableId) +
+                            " FROM PUB_p_partner_contact WHERE s_user_id_c = ?") +
+                            GenerateOrderByClause(AOrderBy)), TTypedDataTable.GetTableName(PPartnerContactTable.TableId), ATransaction, ParametersArray, AStartRecord, AMaxRecords);
         }
 
         /// auto generated
@@ -15048,11 +14893,12 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data.Access
         /// auto generated
         public static void LoadViaSUserTemplate(DataSet ADataSet, SUserRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClauseLong("PUB_p_partner_contact", AFieldList, new string[] {
-                            "p_contact_id_i"}) + " FROM PUB_p_partner_contact, PUB_s_user WHERE " +
-                            "PUB_p_partner_contact.s_user_id_c = PUB_s_user.s_user_id_c")
-                            + GenerateWhereClauseLong("PUB_s_user", SUserTable.GetColumnStringList(), ATemplateRow, ATemplateOperators))
-                            + GenerateOrderByClause(AOrderBy)), PPartnerContactTable.GetTableName(), ATransaction, GetParametersForWhereClause(ATemplateRow), AStartRecord, AMaxRecords);
+            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClauseLong("PUB_p_partner_contact", AFieldList, PPartnerContactTable.TableId) +
+                            " FROM PUB_p_partner_contact, PUB_s_user WHERE " +
+                            "PUB_p_partner_contact.s_user_id_c = PUB_s_user.s_user_id_c") +
+                            GenerateWhereClauseLong("PUB_s_user", SUserTable.TableId, ATemplateRow, ATemplateOperators)) +
+                            GenerateOrderByClause(AOrderBy)), TTypedDataTable.GetTableName(PPartnerContactTable.TableId), ATransaction,
+                            GetParametersForWhereClause(SUserTable.TableId, ATemplateRow), AStartRecord, AMaxRecords);
         }
 
         /// auto generated
@@ -15098,12 +14944,12 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data.Access
         /// auto generated
         public static void LoadViaSUserTemplate(DataSet ADataSet, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClauseLong("PUB_p_partner_contact", AFieldList, new string[] {
-                            "p_contact_id_i"}) + " FROM PUB_p_partner_contact, PUB_s_user WHERE " +
-                            "PUB_p_partner_contact.s_user_id_c = PUB_s_user.s_user_id_c")
-                            + GenerateWhereClauseLong("PUB_s_user", SUserTable.GetColumnStringList(), ASearchCriteria))
-                            + GenerateOrderByClause(AOrderBy)), PPartnerContactTable.GetTableName(), ATransaction,
-                            GetParametersForWhereClause(new PPartnerContactTable(), ASearchCriteria), AStartRecord, AMaxRecords);
+            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClauseLong("PUB_p_partner_contact", AFieldList, PPartnerContactTable.TableId) +
+                            " FROM PUB_p_partner_contact, PUB_s_user WHERE " +
+                            "PUB_p_partner_contact.s_user_id_c = PUB_s_user.s_user_id_c") +
+                            GenerateWhereClauseLong("PUB_s_user", ASearchCriteria)) +
+                            GenerateOrderByClause(AOrderBy)), TTypedDataTable.GetTableName(PPartnerContactTable.TableId), ATransaction,
+                            GetParametersForWhereClause(PPartnerContactTable.TableId, ASearchCriteria), AStartRecord, AMaxRecords);
         }
 
         /// auto generated
@@ -15153,7 +14999,10 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data.Access
         public static int CountViaSUserTemplate(SUserRow ATemplateRow, StringCollection ATemplateOperators, TDBTransaction ATransaction)
         {
             return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_p_partner_contact, PUB_s_user WHERE " +
-                "PUB_p_partner_contact.s_user_id_c = PUB_s_user.s_user_id_c" + GenerateWhereClauseLong("PUB_s_user", SUserTable.GetColumnStringList(), ATemplateRow, ATemplateOperators)), ATransaction, false, GetParametersForWhereClause(ATemplateRow, SUserTable.GetPrimKeyColumnOrdList())));
+                "PUB_p_partner_contact.s_user_id_c = PUB_s_user.s_user_id_c" + GenerateWhereClauseLong("PUB_s_user",
+                SUserTable.TableId, ATemplateRow, ATemplateOperators)),
+                ATransaction, false,
+                GetParametersForWhereClauseWithPrimaryKey(SUserTable.TableId, ATemplateRow)));
         }
 
         /// auto generated
@@ -15161,8 +15010,8 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data.Access
         {
             return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_p_partner_contact, PUB_s_user WHERE " +
                 "PUB_p_partner_contact.s_user_id_c = PUB_s_user.s_user_id_c" +
-                GenerateWhereClauseLong("PUB_s_user", SUserTable.GetColumnStringList(), ASearchCriteria)), ATransaction, false,
-                GetParametersForWhereClause(new SUserTable(), ASearchCriteria)));
+                GenerateWhereClauseLong("PUB_s_user", ASearchCriteria)), ATransaction, false,
+                GetParametersForWhereClause(SUserTable.TableId, ASearchCriteria)));
         }
 
         /// auto generated LoadViaLinkTable
@@ -15173,10 +15022,10 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data.Access
             ParametersArray[0].Value = ((object)(AContactAttributeCode));
             ParametersArray[1] = new OdbcParameter("", OdbcType.VarChar, 32);
             ParametersArray[1].Value = ((object)(AContactAttrDetailCode));
-            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, ((GenerateSelectClauseLong("PUB_p_partner_contact", AFieldList, new string[] {
-                            "p_contact_id_i"}) + " FROM PUB_p_partner_contact, PUB_p_partner_contact_attribute WHERE " +
-                            "PUB_p_partner_contact_attribute.p_contact_id_i = PUB_p_partner_contact.p_contact_id_i AND PUB_p_partner_contact_attribute.p_contact_attribute_code_c = ? AND PUB_p_partner_contact_attribute.p_contact_attr_detail_code_c = ?")
-                            + GenerateOrderByClause(AOrderBy)), PPartnerContactTable.GetTableName(), ATransaction, ParametersArray, AStartRecord, AMaxRecords);
+            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, ((GenerateSelectClauseLong("PUB_p_partner_contact", AFieldList, PPartnerContactTable.TableId) +
+                            " FROM PUB_p_partner_contact, PUB_p_partner_contact_attribute WHERE " +
+                            "PUB_p_partner_contact_attribute.p_contact_id_i = PUB_p_partner_contact.p_contact_id_i AND PUB_p_partner_contact_attribute.p_contact_attribute_code_c = ? AND PUB_p_partner_contact_attribute.p_contact_attr_detail_code_c = ?") +
+                            GenerateOrderByClause(AOrderBy)), TTypedDataTable.GetTableName(PPartnerContactTable.TableId), ATransaction, ParametersArray, AStartRecord, AMaxRecords);
         }
 
         /// auto generated
@@ -15216,11 +15065,12 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data.Access
         /// auto generated
         public static void LoadViaPContactAttributeDetailTemplate(DataSet ADataSet, PContactAttributeDetailRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClauseLong("PUB_p_partner_contact", AFieldList, new string[] {
-                            "p_contact_id_i"}) + " FROM PUB_p_partner_contact, PUB_p_partner_contact_attribute, PUB_p_contact_attribute_detail WHERE " +
-                            "PUB_p_partner_contact_attribute.p_contact_id_i = PUB_p_partner_contact.p_contact_id_i AND PUB_p_partner_contact_attribute.p_contact_attribute_code_c = PUB_p_contact_attribute_detail.p_contact_attribute_code_c AND PUB_p_partner_contact_attribute.p_contact_attr_detail_code_c = PUB_p_contact_attribute_detail.p_contact_attr_detail_code_c")
-                            + GenerateWhereClauseLong("PUB_p_contact_attribute_detail", PContactAttributeDetailTable.GetColumnStringList(), ATemplateRow, ATemplateOperators))
-                            + GenerateOrderByClause(AOrderBy)), PPartnerContactTable.GetTableName(), ATransaction, GetParametersForWhereClause(ATemplateRow), AStartRecord, AMaxRecords);
+            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClauseLong("PUB_p_partner_contact", AFieldList, PPartnerContactTable.TableId) +
+                            " FROM PUB_p_partner_contact, PUB_p_partner_contact_attribute, PUB_p_contact_attribute_detail WHERE " +
+                            "PUB_p_partner_contact_attribute.p_contact_id_i = PUB_p_partner_contact.p_contact_id_i AND PUB_p_partner_contact_attribute.p_contact_attribute_code_c = PUB_p_contact_attribute_detail.p_contact_attribute_code_c AND PUB_p_partner_contact_attribute.p_contact_attr_detail_code_c = PUB_p_contact_attribute_detail.p_contact_attr_detail_code_c") +
+                            GenerateWhereClauseLong("PUB_p_contact_attribute_detail", PContactAttributeDetailTable.TableId, ATemplateRow, ATemplateOperators)) +
+                            GenerateOrderByClause(AOrderBy)), TTypedDataTable.GetTableName(PPartnerContactTable.TableId), ATransaction,
+                            GetParametersForWhereClause(PContactAttributeDetailTable.TableId, ATemplateRow), AStartRecord, AMaxRecords);
         }
 
         /// auto generated
@@ -15266,12 +15116,12 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data.Access
         /// auto generated
         public static void LoadViaPContactAttributeDetailTemplate(DataSet ADataSet, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClauseLong("PUB_p_partner_contact", AFieldList, new string[] {
-                            "p_contact_id_i"}) + " FROM PUB_p_partner_contact, PUB_p_partner_contact_attribute, PUB_p_contact_attribute_detail WHERE " +
-                            "PUB_p_partner_contact_attribute.p_contact_id_i = PUB_p_partner_contact.p_contact_id_i AND PUB_p_partner_contact_attribute.p_contact_attribute_code_c = PUB_p_contact_attribute_detail.p_contact_attribute_code_c AND PUB_p_partner_contact_attribute.p_contact_attr_detail_code_c = PUB_p_contact_attribute_detail.p_contact_attr_detail_code_c")
-                            + GenerateWhereClauseLong("PUB_p_contact_attribute_detail", PContactAttributeDetailTable.GetColumnStringList(), ASearchCriteria))
-                            + GenerateOrderByClause(AOrderBy)), PPartnerContactTable.GetTableName(), ATransaction,
-                            GetParametersForWhereClause(new PPartnerContactTable(), ASearchCriteria), AStartRecord, AMaxRecords);
+            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClauseLong("PUB_p_partner_contact", AFieldList, PPartnerContactTable.TableId) +
+                            " FROM PUB_p_partner_contact, PUB_p_partner_contact_attribute, PUB_p_contact_attribute_detail WHERE " +
+                            "PUB_p_partner_contact_attribute.p_contact_id_i = PUB_p_partner_contact.p_contact_id_i AND PUB_p_partner_contact_attribute.p_contact_attribute_code_c = PUB_p_contact_attribute_detail.p_contact_attribute_code_c AND PUB_p_partner_contact_attribute.p_contact_attr_detail_code_c = PUB_p_contact_attribute_detail.p_contact_attr_detail_code_c") +
+                            GenerateWhereClauseLong("PUB_p_contact_attribute_detail", ASearchCriteria)) +
+                            GenerateOrderByClause(AOrderBy)), TTypedDataTable.GetTableName(PPartnerContactTable.TableId), ATransaction,
+                            GetParametersForWhereClause(PPartnerContactTable.TableId, ASearchCriteria), AStartRecord, AMaxRecords);
         }
 
         /// auto generated
@@ -15326,7 +15176,8 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data.Access
         {
             return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_p_partner_contact, PUB_p_partner_contact_attribute, PUB_p_contact_attribute_detail WHERE " +
                         "PUB_p_partner_contact_attribute.p_contact_id_i = PUB_p_partner_contact.p_contact_id_i AND PUB_p_partner_contact_attribute.p_contact_attribute_code_c = PUB_p_contact_attribute_detail.p_contact_attribute_code_c AND PUB_p_partner_contact_attribute.p_contact_attr_detail_code_c = PUB_p_contact_attribute_detail.p_contact_attr_detail_code_c" +
-                        GenerateWhereClauseLong("PUB_p_partner_contact_attribute", PPartnerContactTable.GetColumnStringList(), ATemplateRow, ATemplateOperators)), ATransaction, false, GetParametersForWhereClause(ATemplateRow, PContactAttributeDetailTable.GetPrimKeyColumnOrdList())));
+                        GenerateWhereClauseLong("PUB_p_partner_contact_attribute", PPartnerContactTable.TableId, ATemplateRow, ATemplateOperators)), ATransaction, false,
+                        GetParametersForWhereClauseWithPrimaryKey(PContactAttributeDetailTable.TableId, ATemplateRow)));
         }
 
         /// auto generated
@@ -15334,8 +15185,8 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data.Access
         {
             return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_p_partner_contact, PUB_p_partner_contact_attribute, PUB_p_contact_attribute_detail WHERE " +
                         "PUB_p_partner_contact_attribute.p_contact_id_i = PUB_p_partner_contact.p_contact_id_i AND PUB_p_partner_contact_attribute.p_contact_attribute_code_c = PUB_p_contact_attribute_detail.p_contact_attribute_code_c AND PUB_p_partner_contact_attribute.p_contact_attr_detail_code_c = PUB_p_contact_attribute_detail.p_contact_attr_detail_code_c" +
-                        GenerateWhereClauseLong("PUB_p_partner_contact_attribute", PPartnerContactTable.GetColumnStringList(), ASearchCriteria)), ATransaction, false,
-                        GetParametersForWhereClause(new PPartnerContactTable(), ASearchCriteria)));
+                        GenerateWhereClauseLong("PUB_p_partner_contact_attribute", ASearchCriteria)), ATransaction, false,
+                        GetParametersForWhereClause(PPartnerContactTable.TableId, ASearchCriteria)));
         }
 
         /// auto generated LoadViaLinkTable
@@ -15344,10 +15195,10 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data.Access
             OdbcParameter[] ParametersArray = new OdbcParameter[1];
             ParametersArray[0] = new OdbcParameter("", OdbcType.Decimal, 10);
             ParametersArray[0].Value = ((object)(APartnerKey));
-            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, ((GenerateSelectClauseLong("PUB_p_partner_contact", AFieldList, new string[] {
-                            "p_contact_id_i"}) + " FROM PUB_p_partner_contact, PUB_p_partner_reminder WHERE " +
-                            "PUB_p_partner_reminder.p_contact_id_i = PUB_p_partner_contact.p_contact_id_i AND PUB_p_partner_reminder.p_partner_key_n = ?")
-                            + GenerateOrderByClause(AOrderBy)), PPartnerContactTable.GetTableName(), ATransaction, ParametersArray, AStartRecord, AMaxRecords);
+            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, ((GenerateSelectClauseLong("PUB_p_partner_contact", AFieldList, PPartnerContactTable.TableId) +
+                            " FROM PUB_p_partner_contact, PUB_p_partner_reminder WHERE " +
+                            "PUB_p_partner_reminder.p_contact_id_i = PUB_p_partner_contact.p_contact_id_i AND PUB_p_partner_reminder.p_partner_key_n = ?") +
+                            GenerateOrderByClause(AOrderBy)), TTypedDataTable.GetTableName(PPartnerContactTable.TableId), ATransaction, ParametersArray, AStartRecord, AMaxRecords);
         }
 
         /// auto generated
@@ -15387,11 +15238,12 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data.Access
         /// auto generated
         public static void LoadViaPPartnerPPartnerReminderTemplate(DataSet ADataSet, PPartnerRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClauseLong("PUB_p_partner_contact", AFieldList, new string[] {
-                            "p_contact_id_i"}) + " FROM PUB_p_partner_contact, PUB_p_partner_reminder, PUB_p_partner WHERE " +
-                            "PUB_p_partner_reminder.p_contact_id_i = PUB_p_partner_contact.p_contact_id_i AND PUB_p_partner_reminder.p_partner_key_n = PUB_p_partner.p_partner_key_n")
-                            + GenerateWhereClauseLong("PUB_p_partner", PPartnerTable.GetColumnStringList(), ATemplateRow, ATemplateOperators))
-                            + GenerateOrderByClause(AOrderBy)), PPartnerContactTable.GetTableName(), ATransaction, GetParametersForWhereClause(ATemplateRow), AStartRecord, AMaxRecords);
+            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClauseLong("PUB_p_partner_contact", AFieldList, PPartnerContactTable.TableId) +
+                            " FROM PUB_p_partner_contact, PUB_p_partner_reminder, PUB_p_partner WHERE " +
+                            "PUB_p_partner_reminder.p_contact_id_i = PUB_p_partner_contact.p_contact_id_i AND PUB_p_partner_reminder.p_partner_key_n = PUB_p_partner.p_partner_key_n") +
+                            GenerateWhereClauseLong("PUB_p_partner", PPartnerTable.TableId, ATemplateRow, ATemplateOperators)) +
+                            GenerateOrderByClause(AOrderBy)), TTypedDataTable.GetTableName(PPartnerContactTable.TableId), ATransaction,
+                            GetParametersForWhereClause(PPartnerTable.TableId, ATemplateRow), AStartRecord, AMaxRecords);
         }
 
         /// auto generated
@@ -15437,12 +15289,12 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data.Access
         /// auto generated
         public static void LoadViaPPartnerPPartnerReminderTemplate(DataSet ADataSet, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClauseLong("PUB_p_partner_contact", AFieldList, new string[] {
-                            "p_contact_id_i"}) + " FROM PUB_p_partner_contact, PUB_p_partner_reminder, PUB_p_partner WHERE " +
-                            "PUB_p_partner_reminder.p_contact_id_i = PUB_p_partner_contact.p_contact_id_i AND PUB_p_partner_reminder.p_partner_key_n = PUB_p_partner.p_partner_key_n")
-                            + GenerateWhereClauseLong("PUB_p_partner", PPartnerTable.GetColumnStringList(), ASearchCriteria))
-                            + GenerateOrderByClause(AOrderBy)), PPartnerContactTable.GetTableName(), ATransaction,
-                            GetParametersForWhereClause(new PPartnerContactTable(), ASearchCriteria), AStartRecord, AMaxRecords);
+            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClauseLong("PUB_p_partner_contact", AFieldList, PPartnerContactTable.TableId) +
+                            " FROM PUB_p_partner_contact, PUB_p_partner_reminder, PUB_p_partner WHERE " +
+                            "PUB_p_partner_reminder.p_contact_id_i = PUB_p_partner_contact.p_contact_id_i AND PUB_p_partner_reminder.p_partner_key_n = PUB_p_partner.p_partner_key_n") +
+                            GenerateWhereClauseLong("PUB_p_partner", ASearchCriteria)) +
+                            GenerateOrderByClause(AOrderBy)), TTypedDataTable.GetTableName(PPartnerContactTable.TableId), ATransaction,
+                            GetParametersForWhereClause(PPartnerContactTable.TableId, ASearchCriteria), AStartRecord, AMaxRecords);
         }
 
         /// auto generated
@@ -15495,7 +15347,8 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data.Access
         {
             return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_p_partner_contact, PUB_p_partner_reminder, PUB_p_partner WHERE " +
                         "PUB_p_partner_reminder.p_contact_id_i = PUB_p_partner_contact.p_contact_id_i AND PUB_p_partner_reminder.p_partner_key_n = PUB_p_partner.p_partner_key_n" +
-                        GenerateWhereClauseLong("PUB_p_partner_reminder", PPartnerContactTable.GetColumnStringList(), ATemplateRow, ATemplateOperators)), ATransaction, false, GetParametersForWhereClause(ATemplateRow, PPartnerTable.GetPrimKeyColumnOrdList())));
+                        GenerateWhereClauseLong("PUB_p_partner_reminder", PPartnerContactTable.TableId, ATemplateRow, ATemplateOperators)), ATransaction, false,
+                        GetParametersForWhereClauseWithPrimaryKey(PPartnerTable.TableId, ATemplateRow)));
         }
 
         /// auto generated
@@ -15503,8 +15356,8 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data.Access
         {
             return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_p_partner_contact, PUB_p_partner_reminder, PUB_p_partner WHERE " +
                         "PUB_p_partner_reminder.p_contact_id_i = PUB_p_partner_contact.p_contact_id_i AND PUB_p_partner_reminder.p_partner_key_n = PUB_p_partner.p_partner_key_n" +
-                        GenerateWhereClauseLong("PUB_p_partner_reminder", PPartnerContactTable.GetColumnStringList(), ASearchCriteria)), ATransaction, false,
-                        GetParametersForWhereClause(new PPartnerContactTable(), ASearchCriteria)));
+                        GenerateWhereClauseLong("PUB_p_partner_reminder", ASearchCriteria)), ATransaction, false,
+                        GetParametersForWhereClause(PPartnerContactTable.TableId, ASearchCriteria)));
         }
 
         /// auto generated LoadViaLinkTable
@@ -15515,10 +15368,10 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data.Access
             ParametersArray[0].Value = ((object)(AGroupId));
             ParametersArray[1] = new OdbcParameter("", OdbcType.Decimal, 10);
             ParametersArray[1].Value = ((object)(AUnitKey));
-            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, ((GenerateSelectClauseLong("PUB_p_partner_contact", AFieldList, new string[] {
-                            "p_contact_id_i"}) + " FROM PUB_p_partner_contact, PUB_s_group_partner_contact WHERE " +
-                            "PUB_s_group_partner_contact.p_contact_id_i = PUB_p_partner_contact.p_contact_id_i AND PUB_s_group_partner_contact.s_group_id_c = ? AND PUB_s_group_partner_contact.s_group_unit_key_n = ?")
-                            + GenerateOrderByClause(AOrderBy)), PPartnerContactTable.GetTableName(), ATransaction, ParametersArray, AStartRecord, AMaxRecords);
+            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, ((GenerateSelectClauseLong("PUB_p_partner_contact", AFieldList, PPartnerContactTable.TableId) +
+                            " FROM PUB_p_partner_contact, PUB_s_group_partner_contact WHERE " +
+                            "PUB_s_group_partner_contact.p_contact_id_i = PUB_p_partner_contact.p_contact_id_i AND PUB_s_group_partner_contact.s_group_id_c = ? AND PUB_s_group_partner_contact.s_group_unit_key_n = ?") +
+                            GenerateOrderByClause(AOrderBy)), TTypedDataTable.GetTableName(PPartnerContactTable.TableId), ATransaction, ParametersArray, AStartRecord, AMaxRecords);
         }
 
         /// auto generated
@@ -15558,11 +15411,12 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data.Access
         /// auto generated
         public static void LoadViaSGroupTemplate(DataSet ADataSet, SGroupRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClauseLong("PUB_p_partner_contact", AFieldList, new string[] {
-                            "p_contact_id_i"}) + " FROM PUB_p_partner_contact, PUB_s_group_partner_contact, PUB_s_group WHERE " +
-                            "PUB_s_group_partner_contact.p_contact_id_i = PUB_p_partner_contact.p_contact_id_i AND PUB_s_group_partner_contact.s_group_id_c = PUB_s_group.s_group_id_c AND PUB_s_group_partner_contact.s_group_unit_key_n = PUB_s_group.s_unit_key_n")
-                            + GenerateWhereClauseLong("PUB_s_group", SGroupTable.GetColumnStringList(), ATemplateRow, ATemplateOperators))
-                            + GenerateOrderByClause(AOrderBy)), PPartnerContactTable.GetTableName(), ATransaction, GetParametersForWhereClause(ATemplateRow), AStartRecord, AMaxRecords);
+            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClauseLong("PUB_p_partner_contact", AFieldList, PPartnerContactTable.TableId) +
+                            " FROM PUB_p_partner_contact, PUB_s_group_partner_contact, PUB_s_group WHERE " +
+                            "PUB_s_group_partner_contact.p_contact_id_i = PUB_p_partner_contact.p_contact_id_i AND PUB_s_group_partner_contact.s_group_id_c = PUB_s_group.s_group_id_c AND PUB_s_group_partner_contact.s_group_unit_key_n = PUB_s_group.s_unit_key_n") +
+                            GenerateWhereClauseLong("PUB_s_group", SGroupTable.TableId, ATemplateRow, ATemplateOperators)) +
+                            GenerateOrderByClause(AOrderBy)), TTypedDataTable.GetTableName(PPartnerContactTable.TableId), ATransaction,
+                            GetParametersForWhereClause(SGroupTable.TableId, ATemplateRow), AStartRecord, AMaxRecords);
         }
 
         /// auto generated
@@ -15608,12 +15462,12 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data.Access
         /// auto generated
         public static void LoadViaSGroupTemplate(DataSet ADataSet, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClauseLong("PUB_p_partner_contact", AFieldList, new string[] {
-                            "p_contact_id_i"}) + " FROM PUB_p_partner_contact, PUB_s_group_partner_contact, PUB_s_group WHERE " +
-                            "PUB_s_group_partner_contact.p_contact_id_i = PUB_p_partner_contact.p_contact_id_i AND PUB_s_group_partner_contact.s_group_id_c = PUB_s_group.s_group_id_c AND PUB_s_group_partner_contact.s_group_unit_key_n = PUB_s_group.s_unit_key_n")
-                            + GenerateWhereClauseLong("PUB_s_group", SGroupTable.GetColumnStringList(), ASearchCriteria))
-                            + GenerateOrderByClause(AOrderBy)), PPartnerContactTable.GetTableName(), ATransaction,
-                            GetParametersForWhereClause(new PPartnerContactTable(), ASearchCriteria), AStartRecord, AMaxRecords);
+            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClauseLong("PUB_p_partner_contact", AFieldList, PPartnerContactTable.TableId) +
+                            " FROM PUB_p_partner_contact, PUB_s_group_partner_contact, PUB_s_group WHERE " +
+                            "PUB_s_group_partner_contact.p_contact_id_i = PUB_p_partner_contact.p_contact_id_i AND PUB_s_group_partner_contact.s_group_id_c = PUB_s_group.s_group_id_c AND PUB_s_group_partner_contact.s_group_unit_key_n = PUB_s_group.s_unit_key_n") +
+                            GenerateWhereClauseLong("PUB_s_group", ASearchCriteria)) +
+                            GenerateOrderByClause(AOrderBy)), TTypedDataTable.GetTableName(PPartnerContactTable.TableId), ATransaction,
+                            GetParametersForWhereClause(PPartnerContactTable.TableId, ASearchCriteria), AStartRecord, AMaxRecords);
         }
 
         /// auto generated
@@ -15668,7 +15522,8 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data.Access
         {
             return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_p_partner_contact, PUB_s_group_partner_contact, PUB_s_group WHERE " +
                         "PUB_s_group_partner_contact.p_contact_id_i = PUB_p_partner_contact.p_contact_id_i AND PUB_s_group_partner_contact.s_group_id_c = PUB_s_group.s_group_id_c AND PUB_s_group_partner_contact.s_group_unit_key_n = PUB_s_group.s_unit_key_n" +
-                        GenerateWhereClauseLong("PUB_s_group_partner_contact", PPartnerContactTable.GetColumnStringList(), ATemplateRow, ATemplateOperators)), ATransaction, false, GetParametersForWhereClause(ATemplateRow, SGroupTable.GetPrimKeyColumnOrdList())));
+                        GenerateWhereClauseLong("PUB_s_group_partner_contact", PPartnerContactTable.TableId, ATemplateRow, ATemplateOperators)), ATransaction, false,
+                        GetParametersForWhereClauseWithPrimaryKey(SGroupTable.TableId, ATemplateRow)));
         }
 
         /// auto generated
@@ -15676,31 +15531,26 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data.Access
         {
             return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_p_partner_contact, PUB_s_group_partner_contact, PUB_s_group WHERE " +
                         "PUB_s_group_partner_contact.p_contact_id_i = PUB_p_partner_contact.p_contact_id_i AND PUB_s_group_partner_contact.s_group_id_c = PUB_s_group.s_group_id_c AND PUB_s_group_partner_contact.s_group_unit_key_n = PUB_s_group.s_unit_key_n" +
-                        GenerateWhereClauseLong("PUB_s_group_partner_contact", PPartnerContactTable.GetColumnStringList(), ASearchCriteria)), ATransaction, false,
-                        GetParametersForWhereClause(new PPartnerContactTable(), ASearchCriteria)));
+                        GenerateWhereClauseLong("PUB_s_group_partner_contact", ASearchCriteria)), ATransaction, false,
+                        GetParametersForWhereClause(PPartnerContactTable.TableId, ASearchCriteria)));
         }
 
         /// auto generated
         public static void DeleteByPrimaryKey(Int32 AContactId, TDBTransaction ATransaction)
         {
-            OdbcParameter[] ParametersArray = new OdbcParameter[1];
-            ParametersArray[0] = new OdbcParameter("", OdbcType.Int);
-            ParametersArray[0].Value = ((object)(AContactId));
-            DBAccess.GDBAccessObj.ExecuteNonQuery("DELETE FROM PUB_p_partner_contact WHERE p_contact_id_i = ?", ATransaction, false, ParametersArray);
+            DeleteByPrimaryKey(PPartnerContactTable.TableId, new System.Object[1]{AContactId}, ATransaction);
         }
 
         /// auto generated
         public static void DeleteUsingTemplate(PPartnerContactRow ATemplateRow, StringCollection ATemplateOperators, TDBTransaction ATransaction)
         {
-            DBAccess.GDBAccessObj.ExecuteNonQuery(("DELETE FROM PUB_p_partner_contact" + GenerateWhereClause(PPartnerContactTable.GetColumnStringList(), ATemplateRow, ATemplateOperators)), ATransaction, false, GetParametersForWhereClause(ATemplateRow));
+            DeleteUsingTemplate(PPartnerContactTable.TableId, ATemplateRow, ATemplateOperators, ATransaction);
         }
 
         /// auto generated
         public static void DeleteUsingTemplate(TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
         {
-            DBAccess.GDBAccessObj.ExecuteNonQuery(("DELETE FROM PUB_p_partner_contact" +
-                GenerateWhereClause(PPartnerContactTable.GetColumnStringList(), ASearchCriteria)), ATransaction, false,
-                GetParametersForWhereClause(new PPartnerContactTable(), ASearchCriteria));
+            DeleteUsingTemplate(PPartnerContactTable.TableId, ASearchCriteria, ATransaction);
         }
 
         /// auto generated
@@ -15718,15 +15568,15 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data.Access
                     if ((TheRow.RowState == DataRowState.Added))
                     {
                         ((PPartnerContactRow)(TheRow)).ContactId = ((Int32)(DBAccess.GDBAccessObj.GetNextSequenceValue("seq_contact", ATransaction)));
-                        TTypedDataAccess.InsertRow("p_partner_contact", PPartnerContactTable.GetColumnStringList(), ref TheRow, ATransaction, UserInfo.GUserInfo.UserID);
+                        TTypedDataAccess.InsertRow(PPartnerContactTable.TableId, ref TheRow, ATransaction, UserInfo.GUserInfo.UserID);
                     }
                     if ((TheRow.RowState == DataRowState.Modified))
                     {
-                        TTypedDataAccess.UpdateRow("p_partner_contact", PPartnerContactTable.GetColumnStringList(), PPartnerContactTable.GetPrimKeyColumnOrdList(), ref TheRow, ATransaction, UserInfo.GUserInfo.UserID);
+                        TTypedDataAccess.UpdateRow(PPartnerContactTable.TableId, ref TheRow, ATransaction, UserInfo.GUserInfo.UserID);
                     }
                     if ((TheRow.RowState == DataRowState.Deleted))
                     {
-                        TTypedDataAccess.DeleteRow("p_partner_contact", PPartnerContactTable.GetColumnStringList(), PPartnerContactTable.GetPrimKeyColumnOrdList(), TheRow, ATransaction);
+                        TTypedDataAccess.DeleteRow(PPartnerContactTable.TableId, TheRow, ATransaction);
                     }
                 }
                 catch (OdbcException ex)
@@ -15756,9 +15606,8 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data.Access
         /// this method is called by all overloads
         public static void LoadAll(DataSet ADataSet, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, ((GenerateSelectClause(AFieldList, new string[] {
-                            "p_contact_id_i", "p_contact_attribute_code_c", "p_contact_attr_detail_code_c"}) + " FROM PUB_p_partner_contact_attribute")
-                            + GenerateOrderByClause(AOrderBy)), PPartnerContactAttributeTable.GetTableName(), ATransaction, AStartRecord, AMaxRecords);
+            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, ((GenerateSelectClause(AFieldList, PPartnerContactAttributeTable.TableId) + " FROM PUB_p_partner_contact_attribute") +
+                            GenerateOrderByClause(AOrderBy)), TTypedDataTable.GetTableName(PPartnerContactAttributeTable.TableId), ATransaction, AStartRecord, AMaxRecords);
         }
 
         /// auto generated
@@ -15798,16 +15647,8 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data.Access
         /// this method is called by all overloads
         public static void LoadByPrimaryKey(DataSet ADataSet, Int32 AContactId, String AContactAttributeCode, String AContactAttrDetailCode, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            OdbcParameter[] ParametersArray = new OdbcParameter[3];
-            ParametersArray[0] = new OdbcParameter("", OdbcType.Int);
-            ParametersArray[0].Value = ((object)(AContactId));
-            ParametersArray[1] = new OdbcParameter("", OdbcType.VarChar, 32);
-            ParametersArray[1].Value = ((object)(AContactAttributeCode));
-            ParametersArray[2] = new OdbcParameter("", OdbcType.VarChar, 32);
-            ParametersArray[2].Value = ((object)(AContactAttrDetailCode));
-            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, ((GenerateSelectClause(AFieldList, new string[] {
-                            "p_contact_id_i", "p_contact_attribute_code_c", "p_contact_attr_detail_code_c"}) + " FROM PUB_p_partner_contact_attribute WHERE p_contact_id_i = ? AND p_contact_attribute_code_c = ? AND p_contact_attr_detail_code_c = ?")
-                            + GenerateOrderByClause(AOrderBy)), PPartnerContactAttributeTable.GetTableName(), ATransaction, ParametersArray, AStartRecord, AMaxRecords);
+            ADataSet = LoadByPrimaryKey(PPartnerContactAttributeTable.TableId,
+                ADataSet, new System.Object[3]{AContactId, AContactAttributeCode, AContactAttrDetailCode}, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
         }
 
         /// auto generated
@@ -15847,10 +15688,10 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data.Access
         /// this method is called by all overloads
         public static void LoadUsingTemplate(DataSet ADataSet, PPartnerContactAttributeRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClause(AFieldList, new string[] {
-                            "p_contact_id_i", "p_contact_attribute_code_c", "p_contact_attr_detail_code_c"}) + " FROM PUB_p_partner_contact_attribute")
-                            + GenerateWhereClause(PPartnerContactAttributeTable.GetColumnStringList(), ATemplateRow, ATemplateOperators))
-                            + GenerateOrderByClause(AOrderBy)), PPartnerContactAttributeTable.GetTableName(), ATransaction, GetParametersForWhereClause(ATemplateRow), AStartRecord, AMaxRecords);
+            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClause(AFieldList, PPartnerContactAttributeTable.TableId) + " FROM PUB_p_partner_contact_attribute") +
+                            GenerateWhereClause(TTypedDataTable.GetColumnStringList(PPartnerContactAttributeTable.TableId), ATemplateRow, ATemplateOperators)) +
+                            GenerateOrderByClause(AOrderBy)), TTypedDataTable.GetTableName(PPartnerContactAttributeTable.TableId), ATransaction,
+                            GetParametersForWhereClause(PPartnerContactAttributeTable.TableId, ATemplateRow), AStartRecord, AMaxRecords);
         }
 
         /// auto generated
@@ -15896,11 +15737,10 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data.Access
         /// this method is called by all overloads
         public static void LoadUsingTemplate(DataSet ADataSet, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClause(AFieldList, new string[] {
-                            "p_contact_id_i", "p_contact_attribute_code_c", "p_contact_attr_detail_code_c"}) + " FROM PUB_p_partner_contact_attribute")
-                            + GenerateWhereClause(PPartnerContactAttributeTable.GetColumnStringList(), ASearchCriteria))
-                            + GenerateOrderByClause(AOrderBy)), PPartnerContactAttributeTable.GetTableName(), ATransaction,
-                            GetParametersForWhereClause(new PPartnerContactAttributeTable(), ASearchCriteria), AStartRecord, AMaxRecords);
+            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClause(AFieldList, PPartnerContactAttributeTable.TableId) + " FROM PUB_p_partner_contact_attribute") +
+                            GenerateWhereClause(TTypedDataTable.GetColumnStringList(PPartnerContactAttributeTable.TableId), ASearchCriteria)) +
+                            GenerateOrderByClause(AOrderBy)), TTypedDataTable.GetTableName(PPartnerContactAttributeTable.TableId), ATransaction,
+                            GetParametersForWhereClause(PPartnerContactAttributeTable.TableId, ASearchCriteria), AStartRecord, AMaxRecords);
         }
 
         /// auto generated
@@ -15943,30 +15783,24 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data.Access
             return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar("SELECT COUNT(*) FROM PUB_p_partner_contact_attribute", ATransaction, false));
         }
 
-        /// this method is called by all overloads
-        public static int CountByPrimaryKey(Int32 AContactId, String AContactAttributeCode, String AContactAttrDetailCode, TDBTransaction ATransaction)
+        /// check if a row exists by using the primary key
+        public static bool Exists(Int32 AContactId, String AContactAttributeCode, String AContactAttrDetailCode, TDBTransaction ATransaction)
         {
-            OdbcParameter[] ParametersArray = new OdbcParameter[3];
-            ParametersArray[0] = new OdbcParameter("", OdbcType.Int);
-            ParametersArray[0].Value = ((object)(AContactId));
-            ParametersArray[1] = new OdbcParameter("", OdbcType.VarChar, 32);
-            ParametersArray[1].Value = ((object)(AContactAttributeCode));
-            ParametersArray[2] = new OdbcParameter("", OdbcType.VarChar, 32);
-            ParametersArray[2].Value = ((object)(AContactAttrDetailCode));
-            return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar("SELECT COUNT(*) FROM PUB_p_partner_contact_attribute WHERE p_contact_id_i = ? AND p_contact_attribute_code_c = ? AND p_contact_attr_detail_code_c = ?", ATransaction, false, ParametersArray));
+            return Exists(PPartnerContactAttributeTable.TableId, new System.Object[3]{AContactId, AContactAttributeCode, AContactAttrDetailCode}, ATransaction);
         }
 
         /// this method is called by all overloads
         public static int CountUsingTemplate(PPartnerContactAttributeRow ATemplateRow, StringCollection ATemplateOperators, TDBTransaction ATransaction)
         {
-            return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_p_partner_contact_attribute" + GenerateWhereClause(PPartnerContactAttributeTable.GetColumnStringList(), ATemplateRow, ATemplateOperators)), ATransaction, false, GetParametersForWhereClause(ATemplateRow)));
+            return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_p_partner_contact_attribute" + GenerateWhereClause(TTypedDataTable.GetColumnStringList(PPartnerContactAttributeTable.TableId), ATemplateRow, ATemplateOperators)), ATransaction, false,
+                   GetParametersForWhereClause(PPartnerContactAttributeTable.TableId, ATemplateRow)));
         }
 
         /// this method is called by all overloads
         public static int CountUsingTemplate(TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
         {
-            return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_p_partner_contact_attribute" + GenerateWhereClause(PPartnerContactAttributeTable.GetColumnStringList(), ASearchCriteria)), ATransaction, false,
-            GetParametersForWhereClause(new PPartnerContactAttributeTable(), ASearchCriteria)));
+            return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_p_partner_contact_attribute" + GenerateWhereClause(TTypedDataTable.GetColumnStringList(PPartnerContactAttributeTable.TableId), ASearchCriteria)), ATransaction, false,
+            GetParametersForWhereClause(PPartnerContactAttributeTable.TableId, ASearchCriteria)));
         }
 
         /// auto generated
@@ -15977,9 +15811,9 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data.Access
             ParametersArray[0].Value = ((object)(AContactAttributeCode));
             ParametersArray[1] = new OdbcParameter("", OdbcType.VarChar, 32);
             ParametersArray[1].Value = ((object)(AContactAttrDetailCode));
-            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, ((GenerateSelectClause(AFieldList, new string[] {
-                            "p_contact_id_i", "p_contact_attribute_code_c", "p_contact_attr_detail_code_c"}) + " FROM PUB_p_partner_contact_attribute WHERE p_contact_attribute_code_c = ? AND p_contact_attr_detail_code_c = ?")
-                            + GenerateOrderByClause(AOrderBy)), PPartnerContactAttributeTable.GetTableName(), ATransaction, ParametersArray, AStartRecord, AMaxRecords);
+            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, ((GenerateSelectClause(AFieldList, PPartnerContactAttributeTable.TableId) +
+                            " FROM PUB_p_partner_contact_attribute WHERE p_contact_attribute_code_c = ? AND p_contact_attr_detail_code_c = ?") +
+                            GenerateOrderByClause(AOrderBy)), TTypedDataTable.GetTableName(PPartnerContactAttributeTable.TableId), ATransaction, ParametersArray, AStartRecord, AMaxRecords);
         }
 
         /// auto generated
@@ -16019,11 +15853,12 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data.Access
         /// auto generated
         public static void LoadViaPContactAttributeDetailTemplate(DataSet ADataSet, PContactAttributeDetailRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClauseLong("PUB_p_partner_contact_attribute", AFieldList, new string[] {
-                            "p_contact_id_i", "p_contact_attribute_code_c", "p_contact_attr_detail_code_c"}) + " FROM PUB_p_partner_contact_attribute, PUB_p_contact_attribute_detail WHERE " +
-                            "PUB_p_partner_contact_attribute.p_contact_attribute_code_c = PUB_p_contact_attribute_detail.p_contact_attribute_code_c AND PUB_p_partner_contact_attribute.p_contact_attr_detail_code_c = PUB_p_contact_attribute_detail.p_contact_attr_detail_code_c")
-                            + GenerateWhereClauseLong("PUB_p_contact_attribute_detail", PContactAttributeDetailTable.GetColumnStringList(), ATemplateRow, ATemplateOperators))
-                            + GenerateOrderByClause(AOrderBy)), PPartnerContactAttributeTable.GetTableName(), ATransaction, GetParametersForWhereClause(ATemplateRow), AStartRecord, AMaxRecords);
+            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClauseLong("PUB_p_partner_contact_attribute", AFieldList, PPartnerContactAttributeTable.TableId) +
+                            " FROM PUB_p_partner_contact_attribute, PUB_p_contact_attribute_detail WHERE " +
+                            "PUB_p_partner_contact_attribute.p_contact_attribute_code_c = PUB_p_contact_attribute_detail.p_contact_attribute_code_c AND PUB_p_partner_contact_attribute.p_contact_attr_detail_code_c = PUB_p_contact_attribute_detail.p_contact_attr_detail_code_c") +
+                            GenerateWhereClauseLong("PUB_p_contact_attribute_detail", PContactAttributeDetailTable.TableId, ATemplateRow, ATemplateOperators)) +
+                            GenerateOrderByClause(AOrderBy)), TTypedDataTable.GetTableName(PPartnerContactAttributeTable.TableId), ATransaction,
+                            GetParametersForWhereClause(PContactAttributeDetailTable.TableId, ATemplateRow), AStartRecord, AMaxRecords);
         }
 
         /// auto generated
@@ -16069,12 +15904,12 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data.Access
         /// auto generated
         public static void LoadViaPContactAttributeDetailTemplate(DataSet ADataSet, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClauseLong("PUB_p_partner_contact_attribute", AFieldList, new string[] {
-                            "p_contact_id_i", "p_contact_attribute_code_c", "p_contact_attr_detail_code_c"}) + " FROM PUB_p_partner_contact_attribute, PUB_p_contact_attribute_detail WHERE " +
-                            "PUB_p_partner_contact_attribute.p_contact_attribute_code_c = PUB_p_contact_attribute_detail.p_contact_attribute_code_c AND PUB_p_partner_contact_attribute.p_contact_attr_detail_code_c = PUB_p_contact_attribute_detail.p_contact_attr_detail_code_c")
-                            + GenerateWhereClauseLong("PUB_p_contact_attribute_detail", PContactAttributeDetailTable.GetColumnStringList(), ASearchCriteria))
-                            + GenerateOrderByClause(AOrderBy)), PPartnerContactAttributeTable.GetTableName(), ATransaction,
-                            GetParametersForWhereClause(new PPartnerContactAttributeTable(), ASearchCriteria), AStartRecord, AMaxRecords);
+            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClauseLong("PUB_p_partner_contact_attribute", AFieldList, PPartnerContactAttributeTable.TableId) +
+                            " FROM PUB_p_partner_contact_attribute, PUB_p_contact_attribute_detail WHERE " +
+                            "PUB_p_partner_contact_attribute.p_contact_attribute_code_c = PUB_p_contact_attribute_detail.p_contact_attribute_code_c AND PUB_p_partner_contact_attribute.p_contact_attr_detail_code_c = PUB_p_contact_attribute_detail.p_contact_attr_detail_code_c") +
+                            GenerateWhereClauseLong("PUB_p_contact_attribute_detail", ASearchCriteria)) +
+                            GenerateOrderByClause(AOrderBy)), TTypedDataTable.GetTableName(PPartnerContactAttributeTable.TableId), ATransaction,
+                            GetParametersForWhereClause(PPartnerContactAttributeTable.TableId, ASearchCriteria), AStartRecord, AMaxRecords);
         }
 
         /// auto generated
@@ -16126,7 +15961,10 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data.Access
         public static int CountViaPContactAttributeDetailTemplate(PContactAttributeDetailRow ATemplateRow, StringCollection ATemplateOperators, TDBTransaction ATransaction)
         {
             return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_p_partner_contact_attribute, PUB_p_contact_attribute_detail WHERE " +
-                "PUB_p_partner_contact_attribute.p_contact_attribute_code_c = PUB_p_contact_attribute_detail.p_contact_attribute_code_c AND PUB_p_partner_contact_attribute.p_contact_attr_detail_code_c = PUB_p_contact_attribute_detail.p_contact_attr_detail_code_c" + GenerateWhereClauseLong("PUB_p_contact_attribute_detail", PContactAttributeDetailTable.GetColumnStringList(), ATemplateRow, ATemplateOperators)), ATransaction, false, GetParametersForWhereClause(ATemplateRow, PContactAttributeDetailTable.GetPrimKeyColumnOrdList())));
+                "PUB_p_partner_contact_attribute.p_contact_attribute_code_c = PUB_p_contact_attribute_detail.p_contact_attribute_code_c AND PUB_p_partner_contact_attribute.p_contact_attr_detail_code_c = PUB_p_contact_attribute_detail.p_contact_attr_detail_code_c" + GenerateWhereClauseLong("PUB_p_contact_attribute_detail",
+                PContactAttributeDetailTable.TableId, ATemplateRow, ATemplateOperators)),
+                ATransaction, false,
+                GetParametersForWhereClauseWithPrimaryKey(PContactAttributeDetailTable.TableId, ATemplateRow)));
         }
 
         /// auto generated
@@ -16134,8 +15972,8 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data.Access
         {
             return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_p_partner_contact_attribute, PUB_p_contact_attribute_detail WHERE " +
                 "PUB_p_partner_contact_attribute.p_contact_attribute_code_c = PUB_p_contact_attribute_detail.p_contact_attribute_code_c AND PUB_p_partner_contact_attribute.p_contact_attr_detail_code_c = PUB_p_contact_attribute_detail.p_contact_attr_detail_code_c" +
-                GenerateWhereClauseLong("PUB_p_contact_attribute_detail", PContactAttributeDetailTable.GetColumnStringList(), ASearchCriteria)), ATransaction, false,
-                GetParametersForWhereClause(new PContactAttributeDetailTable(), ASearchCriteria)));
+                GenerateWhereClauseLong("PUB_p_contact_attribute_detail", ASearchCriteria)), ATransaction, false,
+                GetParametersForWhereClause(PContactAttributeDetailTable.TableId, ASearchCriteria)));
         }
 
         /// auto generated
@@ -16144,9 +15982,9 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data.Access
             OdbcParameter[] ParametersArray = new OdbcParameter[1];
             ParametersArray[0] = new OdbcParameter("", OdbcType.VarChar, 32);
             ParametersArray[0].Value = ((object)(AContactAttributeCode));
-            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, ((GenerateSelectClause(AFieldList, new string[] {
-                            "p_contact_id_i", "p_contact_attribute_code_c", "p_contact_attr_detail_code_c"}) + " FROM PUB_p_partner_contact_attribute WHERE p_contact_attribute_code_c = ?")
-                            + GenerateOrderByClause(AOrderBy)), PPartnerContactAttributeTable.GetTableName(), ATransaction, ParametersArray, AStartRecord, AMaxRecords);
+            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, ((GenerateSelectClause(AFieldList, PPartnerContactAttributeTable.TableId) +
+                            " FROM PUB_p_partner_contact_attribute WHERE p_contact_attribute_code_c = ?") +
+                            GenerateOrderByClause(AOrderBy)), TTypedDataTable.GetTableName(PPartnerContactAttributeTable.TableId), ATransaction, ParametersArray, AStartRecord, AMaxRecords);
         }
 
         /// auto generated
@@ -16186,11 +16024,12 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data.Access
         /// auto generated
         public static void LoadViaPContactAttributeTemplate(DataSet ADataSet, PContactAttributeRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClauseLong("PUB_p_partner_contact_attribute", AFieldList, new string[] {
-                            "p_contact_id_i", "p_contact_attribute_code_c", "p_contact_attr_detail_code_c"}) + " FROM PUB_p_partner_contact_attribute, PUB_p_contact_attribute WHERE " +
-                            "PUB_p_partner_contact_attribute.p_contact_attribute_code_c = PUB_p_contact_attribute.p_contact_attribute_code_c")
-                            + GenerateWhereClauseLong("PUB_p_contact_attribute", PContactAttributeTable.GetColumnStringList(), ATemplateRow, ATemplateOperators))
-                            + GenerateOrderByClause(AOrderBy)), PPartnerContactAttributeTable.GetTableName(), ATransaction, GetParametersForWhereClause(ATemplateRow), AStartRecord, AMaxRecords);
+            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClauseLong("PUB_p_partner_contact_attribute", AFieldList, PPartnerContactAttributeTable.TableId) +
+                            " FROM PUB_p_partner_contact_attribute, PUB_p_contact_attribute WHERE " +
+                            "PUB_p_partner_contact_attribute.p_contact_attribute_code_c = PUB_p_contact_attribute.p_contact_attribute_code_c") +
+                            GenerateWhereClauseLong("PUB_p_contact_attribute", PContactAttributeTable.TableId, ATemplateRow, ATemplateOperators)) +
+                            GenerateOrderByClause(AOrderBy)), TTypedDataTable.GetTableName(PPartnerContactAttributeTable.TableId), ATransaction,
+                            GetParametersForWhereClause(PContactAttributeTable.TableId, ATemplateRow), AStartRecord, AMaxRecords);
         }
 
         /// auto generated
@@ -16236,12 +16075,12 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data.Access
         /// auto generated
         public static void LoadViaPContactAttributeTemplate(DataSet ADataSet, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClauseLong("PUB_p_partner_contact_attribute", AFieldList, new string[] {
-                            "p_contact_id_i", "p_contact_attribute_code_c", "p_contact_attr_detail_code_c"}) + " FROM PUB_p_partner_contact_attribute, PUB_p_contact_attribute WHERE " +
-                            "PUB_p_partner_contact_attribute.p_contact_attribute_code_c = PUB_p_contact_attribute.p_contact_attribute_code_c")
-                            + GenerateWhereClauseLong("PUB_p_contact_attribute", PContactAttributeTable.GetColumnStringList(), ASearchCriteria))
-                            + GenerateOrderByClause(AOrderBy)), PPartnerContactAttributeTable.GetTableName(), ATransaction,
-                            GetParametersForWhereClause(new PPartnerContactAttributeTable(), ASearchCriteria), AStartRecord, AMaxRecords);
+            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClauseLong("PUB_p_partner_contact_attribute", AFieldList, PPartnerContactAttributeTable.TableId) +
+                            " FROM PUB_p_partner_contact_attribute, PUB_p_contact_attribute WHERE " +
+                            "PUB_p_partner_contact_attribute.p_contact_attribute_code_c = PUB_p_contact_attribute.p_contact_attribute_code_c") +
+                            GenerateWhereClauseLong("PUB_p_contact_attribute", ASearchCriteria)) +
+                            GenerateOrderByClause(AOrderBy)), TTypedDataTable.GetTableName(PPartnerContactAttributeTable.TableId), ATransaction,
+                            GetParametersForWhereClause(PPartnerContactAttributeTable.TableId, ASearchCriteria), AStartRecord, AMaxRecords);
         }
 
         /// auto generated
@@ -16291,7 +16130,10 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data.Access
         public static int CountViaPContactAttributeTemplate(PContactAttributeRow ATemplateRow, StringCollection ATemplateOperators, TDBTransaction ATransaction)
         {
             return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_p_partner_contact_attribute, PUB_p_contact_attribute WHERE " +
-                "PUB_p_partner_contact_attribute.p_contact_attribute_code_c = PUB_p_contact_attribute.p_contact_attribute_code_c" + GenerateWhereClauseLong("PUB_p_contact_attribute", PContactAttributeTable.GetColumnStringList(), ATemplateRow, ATemplateOperators)), ATransaction, false, GetParametersForWhereClause(ATemplateRow, PContactAttributeTable.GetPrimKeyColumnOrdList())));
+                "PUB_p_partner_contact_attribute.p_contact_attribute_code_c = PUB_p_contact_attribute.p_contact_attribute_code_c" + GenerateWhereClauseLong("PUB_p_contact_attribute",
+                PContactAttributeTable.TableId, ATemplateRow, ATemplateOperators)),
+                ATransaction, false,
+                GetParametersForWhereClauseWithPrimaryKey(PContactAttributeTable.TableId, ATemplateRow)));
         }
 
         /// auto generated
@@ -16299,8 +16141,8 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data.Access
         {
             return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_p_partner_contact_attribute, PUB_p_contact_attribute WHERE " +
                 "PUB_p_partner_contact_attribute.p_contact_attribute_code_c = PUB_p_contact_attribute.p_contact_attribute_code_c" +
-                GenerateWhereClauseLong("PUB_p_contact_attribute", PContactAttributeTable.GetColumnStringList(), ASearchCriteria)), ATransaction, false,
-                GetParametersForWhereClause(new PContactAttributeTable(), ASearchCriteria)));
+                GenerateWhereClauseLong("PUB_p_contact_attribute", ASearchCriteria)), ATransaction, false,
+                GetParametersForWhereClause(PContactAttributeTable.TableId, ASearchCriteria)));
         }
 
         /// auto generated
@@ -16309,9 +16151,9 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data.Access
             OdbcParameter[] ParametersArray = new OdbcParameter[1];
             ParametersArray[0] = new OdbcParameter("", OdbcType.Int);
             ParametersArray[0].Value = ((object)(AContactId));
-            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, ((GenerateSelectClause(AFieldList, new string[] {
-                            "p_contact_id_i", "p_contact_attribute_code_c", "p_contact_attr_detail_code_c"}) + " FROM PUB_p_partner_contact_attribute WHERE p_contact_id_i = ?")
-                            + GenerateOrderByClause(AOrderBy)), PPartnerContactAttributeTable.GetTableName(), ATransaction, ParametersArray, AStartRecord, AMaxRecords);
+            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, ((GenerateSelectClause(AFieldList, PPartnerContactAttributeTable.TableId) +
+                            " FROM PUB_p_partner_contact_attribute WHERE p_contact_id_i = ?") +
+                            GenerateOrderByClause(AOrderBy)), TTypedDataTable.GetTableName(PPartnerContactAttributeTable.TableId), ATransaction, ParametersArray, AStartRecord, AMaxRecords);
         }
 
         /// auto generated
@@ -16351,11 +16193,12 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data.Access
         /// auto generated
         public static void LoadViaPPartnerContactTemplate(DataSet ADataSet, PPartnerContactRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClauseLong("PUB_p_partner_contact_attribute", AFieldList, new string[] {
-                            "p_contact_id_i", "p_contact_attribute_code_c", "p_contact_attr_detail_code_c"}) + " FROM PUB_p_partner_contact_attribute, PUB_p_partner_contact WHERE " +
-                            "PUB_p_partner_contact_attribute.p_contact_id_i = PUB_p_partner_contact.p_contact_id_i")
-                            + GenerateWhereClauseLong("PUB_p_partner_contact", PPartnerContactTable.GetColumnStringList(), ATemplateRow, ATemplateOperators))
-                            + GenerateOrderByClause(AOrderBy)), PPartnerContactAttributeTable.GetTableName(), ATransaction, GetParametersForWhereClause(ATemplateRow), AStartRecord, AMaxRecords);
+            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClauseLong("PUB_p_partner_contact_attribute", AFieldList, PPartnerContactAttributeTable.TableId) +
+                            " FROM PUB_p_partner_contact_attribute, PUB_p_partner_contact WHERE " +
+                            "PUB_p_partner_contact_attribute.p_contact_id_i = PUB_p_partner_contact.p_contact_id_i") +
+                            GenerateWhereClauseLong("PUB_p_partner_contact", PPartnerContactTable.TableId, ATemplateRow, ATemplateOperators)) +
+                            GenerateOrderByClause(AOrderBy)), TTypedDataTable.GetTableName(PPartnerContactAttributeTable.TableId), ATransaction,
+                            GetParametersForWhereClause(PPartnerContactTable.TableId, ATemplateRow), AStartRecord, AMaxRecords);
         }
 
         /// auto generated
@@ -16401,12 +16244,12 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data.Access
         /// auto generated
         public static void LoadViaPPartnerContactTemplate(DataSet ADataSet, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClauseLong("PUB_p_partner_contact_attribute", AFieldList, new string[] {
-                            "p_contact_id_i", "p_contact_attribute_code_c", "p_contact_attr_detail_code_c"}) + " FROM PUB_p_partner_contact_attribute, PUB_p_partner_contact WHERE " +
-                            "PUB_p_partner_contact_attribute.p_contact_id_i = PUB_p_partner_contact.p_contact_id_i")
-                            + GenerateWhereClauseLong("PUB_p_partner_contact", PPartnerContactTable.GetColumnStringList(), ASearchCriteria))
-                            + GenerateOrderByClause(AOrderBy)), PPartnerContactAttributeTable.GetTableName(), ATransaction,
-                            GetParametersForWhereClause(new PPartnerContactAttributeTable(), ASearchCriteria), AStartRecord, AMaxRecords);
+            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClauseLong("PUB_p_partner_contact_attribute", AFieldList, PPartnerContactAttributeTable.TableId) +
+                            " FROM PUB_p_partner_contact_attribute, PUB_p_partner_contact WHERE " +
+                            "PUB_p_partner_contact_attribute.p_contact_id_i = PUB_p_partner_contact.p_contact_id_i") +
+                            GenerateWhereClauseLong("PUB_p_partner_contact", ASearchCriteria)) +
+                            GenerateOrderByClause(AOrderBy)), TTypedDataTable.GetTableName(PPartnerContactAttributeTable.TableId), ATransaction,
+                            GetParametersForWhereClause(PPartnerContactAttributeTable.TableId, ASearchCriteria), AStartRecord, AMaxRecords);
         }
 
         /// auto generated
@@ -16456,7 +16299,10 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data.Access
         public static int CountViaPPartnerContactTemplate(PPartnerContactRow ATemplateRow, StringCollection ATemplateOperators, TDBTransaction ATransaction)
         {
             return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_p_partner_contact_attribute, PUB_p_partner_contact WHERE " +
-                "PUB_p_partner_contact_attribute.p_contact_id_i = PUB_p_partner_contact.p_contact_id_i" + GenerateWhereClauseLong("PUB_p_partner_contact", PPartnerContactTable.GetColumnStringList(), ATemplateRow, ATemplateOperators)), ATransaction, false, GetParametersForWhereClause(ATemplateRow, PPartnerContactTable.GetPrimKeyColumnOrdList())));
+                "PUB_p_partner_contact_attribute.p_contact_id_i = PUB_p_partner_contact.p_contact_id_i" + GenerateWhereClauseLong("PUB_p_partner_contact",
+                PPartnerContactTable.TableId, ATemplateRow, ATemplateOperators)),
+                ATransaction, false,
+                GetParametersForWhereClauseWithPrimaryKey(PPartnerContactTable.TableId, ATemplateRow)));
         }
 
         /// auto generated
@@ -16464,35 +16310,26 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data.Access
         {
             return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_p_partner_contact_attribute, PUB_p_partner_contact WHERE " +
                 "PUB_p_partner_contact_attribute.p_contact_id_i = PUB_p_partner_contact.p_contact_id_i" +
-                GenerateWhereClauseLong("PUB_p_partner_contact", PPartnerContactTable.GetColumnStringList(), ASearchCriteria)), ATransaction, false,
-                GetParametersForWhereClause(new PPartnerContactTable(), ASearchCriteria)));
+                GenerateWhereClauseLong("PUB_p_partner_contact", ASearchCriteria)), ATransaction, false,
+                GetParametersForWhereClause(PPartnerContactTable.TableId, ASearchCriteria)));
         }
 
         /// auto generated
         public static void DeleteByPrimaryKey(Int32 AContactId, String AContactAttributeCode, String AContactAttrDetailCode, TDBTransaction ATransaction)
         {
-            OdbcParameter[] ParametersArray = new OdbcParameter[3];
-            ParametersArray[0] = new OdbcParameter("", OdbcType.Int);
-            ParametersArray[0].Value = ((object)(AContactId));
-            ParametersArray[1] = new OdbcParameter("", OdbcType.VarChar, 32);
-            ParametersArray[1].Value = ((object)(AContactAttributeCode));
-            ParametersArray[2] = new OdbcParameter("", OdbcType.VarChar, 32);
-            ParametersArray[2].Value = ((object)(AContactAttrDetailCode));
-            DBAccess.GDBAccessObj.ExecuteNonQuery("DELETE FROM PUB_p_partner_contact_attribute WHERE p_contact_id_i = ? AND p_contact_attribute_code_c = ? AND p_contact_attr_detail_code_c = ?", ATransaction, false, ParametersArray);
+            DeleteByPrimaryKey(PPartnerContactAttributeTable.TableId, new System.Object[3]{AContactId, AContactAttributeCode, AContactAttrDetailCode}, ATransaction);
         }
 
         /// auto generated
         public static void DeleteUsingTemplate(PPartnerContactAttributeRow ATemplateRow, StringCollection ATemplateOperators, TDBTransaction ATransaction)
         {
-            DBAccess.GDBAccessObj.ExecuteNonQuery(("DELETE FROM PUB_p_partner_contact_attribute" + GenerateWhereClause(PPartnerContactAttributeTable.GetColumnStringList(), ATemplateRow, ATemplateOperators)), ATransaction, false, GetParametersForWhereClause(ATemplateRow));
+            DeleteUsingTemplate(PPartnerContactAttributeTable.TableId, ATemplateRow, ATemplateOperators, ATransaction);
         }
 
         /// auto generated
         public static void DeleteUsingTemplate(TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
         {
-            DBAccess.GDBAccessObj.ExecuteNonQuery(("DELETE FROM PUB_p_partner_contact_attribute" +
-                GenerateWhereClause(PPartnerContactAttributeTable.GetColumnStringList(), ASearchCriteria)), ATransaction, false,
-                GetParametersForWhereClause(new PPartnerContactAttributeTable(), ASearchCriteria));
+            DeleteUsingTemplate(PPartnerContactAttributeTable.TableId, ASearchCriteria, ATransaction);
         }
 
         /// auto generated
@@ -16509,15 +16346,15 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data.Access
                 {
                     if ((TheRow.RowState == DataRowState.Added))
                     {
-                        TTypedDataAccess.InsertRow("p_partner_contact_attribute", PPartnerContactAttributeTable.GetColumnStringList(), ref TheRow, ATransaction, UserInfo.GUserInfo.UserID);
+                        TTypedDataAccess.InsertRow(PPartnerContactAttributeTable.TableId, ref TheRow, ATransaction, UserInfo.GUserInfo.UserID);
                     }
                     if ((TheRow.RowState == DataRowState.Modified))
                     {
-                        TTypedDataAccess.UpdateRow("p_partner_contact_attribute", PPartnerContactAttributeTable.GetColumnStringList(), PPartnerContactAttributeTable.GetPrimKeyColumnOrdList(), ref TheRow, ATransaction, UserInfo.GUserInfo.UserID);
+                        TTypedDataAccess.UpdateRow(PPartnerContactAttributeTable.TableId, ref TheRow, ATransaction, UserInfo.GUserInfo.UserID);
                     }
                     if ((TheRow.RowState == DataRowState.Deleted))
                     {
-                        TTypedDataAccess.DeleteRow("p_partner_contact_attribute", PPartnerContactAttributeTable.GetColumnStringList(), PPartnerContactAttributeTable.GetPrimKeyColumnOrdList(), TheRow, ATransaction);
+                        TTypedDataAccess.DeleteRow(PPartnerContactAttributeTable.TableId, TheRow, ATransaction);
                     }
                 }
                 catch (OdbcException ex)

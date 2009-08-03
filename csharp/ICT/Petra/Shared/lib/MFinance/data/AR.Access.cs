@@ -55,9 +55,8 @@ namespace Ict.Petra.Shared.MFinance.AR.Data.Access
         /// this method is called by all overloads
         public static void LoadAll(DataSet ADataSet, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, ((GenerateSelectClause(AFieldList, new string[] {
-                            "a_tax_type_code_c"}) + " FROM PUB_a_tax_type")
-                            + GenerateOrderByClause(AOrderBy)), ATaxTypeTable.GetTableName(), ATransaction, AStartRecord, AMaxRecords);
+            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, ((GenerateSelectClause(AFieldList, ATaxTypeTable.TableId) + " FROM PUB_a_tax_type") +
+                            GenerateOrderByClause(AOrderBy)), TTypedDataTable.GetTableName(ATaxTypeTable.TableId), ATransaction, AStartRecord, AMaxRecords);
         }
 
         /// auto generated
@@ -97,12 +96,8 @@ namespace Ict.Petra.Shared.MFinance.AR.Data.Access
         /// this method is called by all overloads
         public static void LoadByPrimaryKey(DataSet ADataSet, String ATaxTypeCode, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            OdbcParameter[] ParametersArray = new OdbcParameter[1];
-            ParametersArray[0] = new OdbcParameter("", OdbcType.VarChar, 16);
-            ParametersArray[0].Value = ((object)(ATaxTypeCode));
-            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, ((GenerateSelectClause(AFieldList, new string[] {
-                            "a_tax_type_code_c"}) + " FROM PUB_a_tax_type WHERE a_tax_type_code_c = ?")
-                            + GenerateOrderByClause(AOrderBy)), ATaxTypeTable.GetTableName(), ATransaction, ParametersArray, AStartRecord, AMaxRecords);
+            ADataSet = LoadByPrimaryKey(ATaxTypeTable.TableId,
+                ADataSet, new System.Object[1]{ATaxTypeCode}, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
         }
 
         /// auto generated
@@ -142,10 +137,10 @@ namespace Ict.Petra.Shared.MFinance.AR.Data.Access
         /// this method is called by all overloads
         public static void LoadUsingTemplate(DataSet ADataSet, ATaxTypeRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClause(AFieldList, new string[] {
-                            "a_tax_type_code_c"}) + " FROM PUB_a_tax_type")
-                            + GenerateWhereClause(ATaxTypeTable.GetColumnStringList(), ATemplateRow, ATemplateOperators))
-                            + GenerateOrderByClause(AOrderBy)), ATaxTypeTable.GetTableName(), ATransaction, GetParametersForWhereClause(ATemplateRow), AStartRecord, AMaxRecords);
+            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClause(AFieldList, ATaxTypeTable.TableId) + " FROM PUB_a_tax_type") +
+                            GenerateWhereClause(TTypedDataTable.GetColumnStringList(ATaxTypeTable.TableId), ATemplateRow, ATemplateOperators)) +
+                            GenerateOrderByClause(AOrderBy)), TTypedDataTable.GetTableName(ATaxTypeTable.TableId), ATransaction,
+                            GetParametersForWhereClause(ATaxTypeTable.TableId, ATemplateRow), AStartRecord, AMaxRecords);
         }
 
         /// auto generated
@@ -191,11 +186,10 @@ namespace Ict.Petra.Shared.MFinance.AR.Data.Access
         /// this method is called by all overloads
         public static void LoadUsingTemplate(DataSet ADataSet, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClause(AFieldList, new string[] {
-                            "a_tax_type_code_c"}) + " FROM PUB_a_tax_type")
-                            + GenerateWhereClause(ATaxTypeTable.GetColumnStringList(), ASearchCriteria))
-                            + GenerateOrderByClause(AOrderBy)), ATaxTypeTable.GetTableName(), ATransaction,
-                            GetParametersForWhereClause(new ATaxTypeTable(), ASearchCriteria), AStartRecord, AMaxRecords);
+            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClause(AFieldList, ATaxTypeTable.TableId) + " FROM PUB_a_tax_type") +
+                            GenerateWhereClause(TTypedDataTable.GetColumnStringList(ATaxTypeTable.TableId), ASearchCriteria)) +
+                            GenerateOrderByClause(AOrderBy)), TTypedDataTable.GetTableName(ATaxTypeTable.TableId), ATransaction,
+                            GetParametersForWhereClause(ATaxTypeTable.TableId, ASearchCriteria), AStartRecord, AMaxRecords);
         }
 
         /// auto generated
@@ -238,26 +232,24 @@ namespace Ict.Petra.Shared.MFinance.AR.Data.Access
             return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar("SELECT COUNT(*) FROM PUB_a_tax_type", ATransaction, false));
         }
 
-        /// this method is called by all overloads
-        public static int CountByPrimaryKey(String ATaxTypeCode, TDBTransaction ATransaction)
+        /// check if a row exists by using the primary key
+        public static bool Exists(String ATaxTypeCode, TDBTransaction ATransaction)
         {
-            OdbcParameter[] ParametersArray = new OdbcParameter[1];
-            ParametersArray[0] = new OdbcParameter("", OdbcType.VarChar, 16);
-            ParametersArray[0].Value = ((object)(ATaxTypeCode));
-            return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar("SELECT COUNT(*) FROM PUB_a_tax_type WHERE a_tax_type_code_c = ?", ATransaction, false, ParametersArray));
+            return Exists(ATaxTypeTable.TableId, new System.Object[1]{ATaxTypeCode}, ATransaction);
         }
 
         /// this method is called by all overloads
         public static int CountUsingTemplate(ATaxTypeRow ATemplateRow, StringCollection ATemplateOperators, TDBTransaction ATransaction)
         {
-            return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_a_tax_type" + GenerateWhereClause(ATaxTypeTable.GetColumnStringList(), ATemplateRow, ATemplateOperators)), ATransaction, false, GetParametersForWhereClause(ATemplateRow)));
+            return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_a_tax_type" + GenerateWhereClause(TTypedDataTable.GetColumnStringList(ATaxTypeTable.TableId), ATemplateRow, ATemplateOperators)), ATransaction, false,
+                   GetParametersForWhereClause(ATaxTypeTable.TableId, ATemplateRow)));
         }
 
         /// this method is called by all overloads
         public static int CountUsingTemplate(TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
         {
-            return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_a_tax_type" + GenerateWhereClause(ATaxTypeTable.GetColumnStringList(), ASearchCriteria)), ATransaction, false,
-            GetParametersForWhereClause(new ATaxTypeTable(), ASearchCriteria)));
+            return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_a_tax_type" + GenerateWhereClause(TTypedDataTable.GetColumnStringList(ATaxTypeTable.TableId), ASearchCriteria)), ATransaction, false,
+            GetParametersForWhereClause(ATaxTypeTable.TableId, ASearchCriteria)));
         }
 
         /// auto generated LoadViaLinkTable
@@ -266,10 +258,10 @@ namespace Ict.Petra.Shared.MFinance.AR.Data.Access
             OdbcParameter[] ParametersArray = new OdbcParameter[1];
             ParametersArray[0] = new OdbcParameter("", OdbcType.Int);
             ParametersArray[0].Value = ((object)(ALedgerNumber));
-            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, ((GenerateSelectClauseLong("PUB_a_tax_type", AFieldList, new string[] {
-                            "a_tax_type_code_c"}) + " FROM PUB_a_tax_type, PUB_a_tax_table WHERE " +
-                            "PUB_a_tax_table.a_tax_type_code_c = PUB_a_tax_type.a_tax_type_code_c AND PUB_a_tax_table.a_ledger_number_i = ?")
-                            + GenerateOrderByClause(AOrderBy)), ATaxTypeTable.GetTableName(), ATransaction, ParametersArray, AStartRecord, AMaxRecords);
+            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, ((GenerateSelectClauseLong("PUB_a_tax_type", AFieldList, ATaxTypeTable.TableId) +
+                            " FROM PUB_a_tax_type, PUB_a_tax_table WHERE " +
+                            "PUB_a_tax_table.a_tax_type_code_c = PUB_a_tax_type.a_tax_type_code_c AND PUB_a_tax_table.a_ledger_number_i = ?") +
+                            GenerateOrderByClause(AOrderBy)), TTypedDataTable.GetTableName(ATaxTypeTable.TableId), ATransaction, ParametersArray, AStartRecord, AMaxRecords);
         }
 
         /// auto generated
@@ -309,11 +301,12 @@ namespace Ict.Petra.Shared.MFinance.AR.Data.Access
         /// auto generated
         public static void LoadViaALedgerTemplate(DataSet ADataSet, ALedgerRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClauseLong("PUB_a_tax_type", AFieldList, new string[] {
-                            "a_tax_type_code_c"}) + " FROM PUB_a_tax_type, PUB_a_tax_table, PUB_a_ledger WHERE " +
-                            "PUB_a_tax_table.a_tax_type_code_c = PUB_a_tax_type.a_tax_type_code_c AND PUB_a_tax_table.a_ledger_number_i = PUB_a_ledger.a_ledger_number_i")
-                            + GenerateWhereClauseLong("PUB_a_ledger", ALedgerTable.GetColumnStringList(), ATemplateRow, ATemplateOperators))
-                            + GenerateOrderByClause(AOrderBy)), ATaxTypeTable.GetTableName(), ATransaction, GetParametersForWhereClause(ATemplateRow), AStartRecord, AMaxRecords);
+            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClauseLong("PUB_a_tax_type", AFieldList, ATaxTypeTable.TableId) +
+                            " FROM PUB_a_tax_type, PUB_a_tax_table, PUB_a_ledger WHERE " +
+                            "PUB_a_tax_table.a_tax_type_code_c = PUB_a_tax_type.a_tax_type_code_c AND PUB_a_tax_table.a_ledger_number_i = PUB_a_ledger.a_ledger_number_i") +
+                            GenerateWhereClauseLong("PUB_a_ledger", ALedgerTable.TableId, ATemplateRow, ATemplateOperators)) +
+                            GenerateOrderByClause(AOrderBy)), TTypedDataTable.GetTableName(ATaxTypeTable.TableId), ATransaction,
+                            GetParametersForWhereClause(ALedgerTable.TableId, ATemplateRow), AStartRecord, AMaxRecords);
         }
 
         /// auto generated
@@ -359,12 +352,12 @@ namespace Ict.Petra.Shared.MFinance.AR.Data.Access
         /// auto generated
         public static void LoadViaALedgerTemplate(DataSet ADataSet, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClauseLong("PUB_a_tax_type", AFieldList, new string[] {
-                            "a_tax_type_code_c"}) + " FROM PUB_a_tax_type, PUB_a_tax_table, PUB_a_ledger WHERE " +
-                            "PUB_a_tax_table.a_tax_type_code_c = PUB_a_tax_type.a_tax_type_code_c AND PUB_a_tax_table.a_ledger_number_i = PUB_a_ledger.a_ledger_number_i")
-                            + GenerateWhereClauseLong("PUB_a_ledger", ALedgerTable.GetColumnStringList(), ASearchCriteria))
-                            + GenerateOrderByClause(AOrderBy)), ATaxTypeTable.GetTableName(), ATransaction,
-                            GetParametersForWhereClause(new ATaxTypeTable(), ASearchCriteria), AStartRecord, AMaxRecords);
+            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClauseLong("PUB_a_tax_type", AFieldList, ATaxTypeTable.TableId) +
+                            " FROM PUB_a_tax_type, PUB_a_tax_table, PUB_a_ledger WHERE " +
+                            "PUB_a_tax_table.a_tax_type_code_c = PUB_a_tax_type.a_tax_type_code_c AND PUB_a_tax_table.a_ledger_number_i = PUB_a_ledger.a_ledger_number_i") +
+                            GenerateWhereClauseLong("PUB_a_ledger", ASearchCriteria)) +
+                            GenerateOrderByClause(AOrderBy)), TTypedDataTable.GetTableName(ATaxTypeTable.TableId), ATransaction,
+                            GetParametersForWhereClause(ATaxTypeTable.TableId, ASearchCriteria), AStartRecord, AMaxRecords);
         }
 
         /// auto generated
@@ -417,7 +410,8 @@ namespace Ict.Petra.Shared.MFinance.AR.Data.Access
         {
             return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_a_tax_type, PUB_a_tax_table, PUB_a_ledger WHERE " +
                         "PUB_a_tax_table.a_tax_type_code_c = PUB_a_tax_type.a_tax_type_code_c AND PUB_a_tax_table.a_ledger_number_i = PUB_a_ledger.a_ledger_number_i" +
-                        GenerateWhereClauseLong("PUB_a_tax_table", ATaxTypeTable.GetColumnStringList(), ATemplateRow, ATemplateOperators)), ATransaction, false, GetParametersForWhereClause(ATemplateRow, ALedgerTable.GetPrimKeyColumnOrdList())));
+                        GenerateWhereClauseLong("PUB_a_tax_table", ATaxTypeTable.TableId, ATemplateRow, ATemplateOperators)), ATransaction, false,
+                        GetParametersForWhereClauseWithPrimaryKey(ALedgerTable.TableId, ATemplateRow)));
         }
 
         /// auto generated
@@ -425,31 +419,26 @@ namespace Ict.Petra.Shared.MFinance.AR.Data.Access
         {
             return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_a_tax_type, PUB_a_tax_table, PUB_a_ledger WHERE " +
                         "PUB_a_tax_table.a_tax_type_code_c = PUB_a_tax_type.a_tax_type_code_c AND PUB_a_tax_table.a_ledger_number_i = PUB_a_ledger.a_ledger_number_i" +
-                        GenerateWhereClauseLong("PUB_a_tax_table", ATaxTypeTable.GetColumnStringList(), ASearchCriteria)), ATransaction, false,
-                        GetParametersForWhereClause(new ATaxTypeTable(), ASearchCriteria)));
+                        GenerateWhereClauseLong("PUB_a_tax_table", ASearchCriteria)), ATransaction, false,
+                        GetParametersForWhereClause(ATaxTypeTable.TableId, ASearchCriteria)));
         }
 
         /// auto generated
         public static void DeleteByPrimaryKey(String ATaxTypeCode, TDBTransaction ATransaction)
         {
-            OdbcParameter[] ParametersArray = new OdbcParameter[1];
-            ParametersArray[0] = new OdbcParameter("", OdbcType.VarChar, 16);
-            ParametersArray[0].Value = ((object)(ATaxTypeCode));
-            DBAccess.GDBAccessObj.ExecuteNonQuery("DELETE FROM PUB_a_tax_type WHERE a_tax_type_code_c = ?", ATransaction, false, ParametersArray);
+            DeleteByPrimaryKey(ATaxTypeTable.TableId, new System.Object[1]{ATaxTypeCode}, ATransaction);
         }
 
         /// auto generated
         public static void DeleteUsingTemplate(ATaxTypeRow ATemplateRow, StringCollection ATemplateOperators, TDBTransaction ATransaction)
         {
-            DBAccess.GDBAccessObj.ExecuteNonQuery(("DELETE FROM PUB_a_tax_type" + GenerateWhereClause(ATaxTypeTable.GetColumnStringList(), ATemplateRow, ATemplateOperators)), ATransaction, false, GetParametersForWhereClause(ATemplateRow));
+            DeleteUsingTemplate(ATaxTypeTable.TableId, ATemplateRow, ATemplateOperators, ATransaction);
         }
 
         /// auto generated
         public static void DeleteUsingTemplate(TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
         {
-            DBAccess.GDBAccessObj.ExecuteNonQuery(("DELETE FROM PUB_a_tax_type" +
-                GenerateWhereClause(ATaxTypeTable.GetColumnStringList(), ASearchCriteria)), ATransaction, false,
-                GetParametersForWhereClause(new ATaxTypeTable(), ASearchCriteria));
+            DeleteUsingTemplate(ATaxTypeTable.TableId, ASearchCriteria, ATransaction);
         }
 
         /// auto generated
@@ -466,15 +455,15 @@ namespace Ict.Petra.Shared.MFinance.AR.Data.Access
                 {
                     if ((TheRow.RowState == DataRowState.Added))
                     {
-                        TTypedDataAccess.InsertRow("a_tax_type", ATaxTypeTable.GetColumnStringList(), ref TheRow, ATransaction, UserInfo.GUserInfo.UserID);
+                        TTypedDataAccess.InsertRow(ATaxTypeTable.TableId, ref TheRow, ATransaction, UserInfo.GUserInfo.UserID);
                     }
                     if ((TheRow.RowState == DataRowState.Modified))
                     {
-                        TTypedDataAccess.UpdateRow("a_tax_type", ATaxTypeTable.GetColumnStringList(), ATaxTypeTable.GetPrimKeyColumnOrdList(), ref TheRow, ATransaction, UserInfo.GUserInfo.UserID);
+                        TTypedDataAccess.UpdateRow(ATaxTypeTable.TableId, ref TheRow, ATransaction, UserInfo.GUserInfo.UserID);
                     }
                     if ((TheRow.RowState == DataRowState.Deleted))
                     {
-                        TTypedDataAccess.DeleteRow("a_tax_type", ATaxTypeTable.GetColumnStringList(), ATaxTypeTable.GetPrimKeyColumnOrdList(), TheRow, ATransaction);
+                        TTypedDataAccess.DeleteRow(ATaxTypeTable.TableId, TheRow, ATransaction);
                     }
                 }
                 catch (OdbcException ex)
@@ -504,9 +493,8 @@ namespace Ict.Petra.Shared.MFinance.AR.Data.Access
         /// this method is called by all overloads
         public static void LoadAll(DataSet ADataSet, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, ((GenerateSelectClause(AFieldList, new string[] {
-                            "a_ledger_number_i", "a_tax_type_code_c", "a_tax_rate_code_c", "a_tax_valid_from_d"}) + " FROM PUB_a_tax_table")
-                            + GenerateOrderByClause(AOrderBy)), ATaxTableTable.GetTableName(), ATransaction, AStartRecord, AMaxRecords);
+            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, ((GenerateSelectClause(AFieldList, ATaxTableTable.TableId) + " FROM PUB_a_tax_table") +
+                            GenerateOrderByClause(AOrderBy)), TTypedDataTable.GetTableName(ATaxTableTable.TableId), ATransaction, AStartRecord, AMaxRecords);
         }
 
         /// auto generated
@@ -546,18 +534,8 @@ namespace Ict.Petra.Shared.MFinance.AR.Data.Access
         /// this method is called by all overloads
         public static void LoadByPrimaryKey(DataSet ADataSet, Int32 ALedgerNumber, String ATaxTypeCode, String ATaxRateCode, System.DateTime ATaxValidFrom, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            OdbcParameter[] ParametersArray = new OdbcParameter[4];
-            ParametersArray[0] = new OdbcParameter("", OdbcType.Int);
-            ParametersArray[0].Value = ((object)(ALedgerNumber));
-            ParametersArray[1] = new OdbcParameter("", OdbcType.VarChar, 16);
-            ParametersArray[1].Value = ((object)(ATaxTypeCode));
-            ParametersArray[2] = new OdbcParameter("", OdbcType.VarChar, 16);
-            ParametersArray[2].Value = ((object)(ATaxRateCode));
-            ParametersArray[3] = new OdbcParameter("", OdbcType.Date);
-            ParametersArray[3].Value = ((object)(ATaxValidFrom));
-            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, ((GenerateSelectClause(AFieldList, new string[] {
-                            "a_ledger_number_i", "a_tax_type_code_c", "a_tax_rate_code_c", "a_tax_valid_from_d"}) + " FROM PUB_a_tax_table WHERE a_ledger_number_i = ? AND a_tax_type_code_c = ? AND a_tax_rate_code_c = ? AND a_tax_valid_from_d = ?")
-                            + GenerateOrderByClause(AOrderBy)), ATaxTableTable.GetTableName(), ATransaction, ParametersArray, AStartRecord, AMaxRecords);
+            ADataSet = LoadByPrimaryKey(ATaxTableTable.TableId,
+                ADataSet, new System.Object[4]{ALedgerNumber, ATaxTypeCode, ATaxRateCode, ATaxValidFrom}, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
         }
 
         /// auto generated
@@ -597,10 +575,10 @@ namespace Ict.Petra.Shared.MFinance.AR.Data.Access
         /// this method is called by all overloads
         public static void LoadUsingTemplate(DataSet ADataSet, ATaxTableRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClause(AFieldList, new string[] {
-                            "a_ledger_number_i", "a_tax_type_code_c", "a_tax_rate_code_c", "a_tax_valid_from_d"}) + " FROM PUB_a_tax_table")
-                            + GenerateWhereClause(ATaxTableTable.GetColumnStringList(), ATemplateRow, ATemplateOperators))
-                            + GenerateOrderByClause(AOrderBy)), ATaxTableTable.GetTableName(), ATransaction, GetParametersForWhereClause(ATemplateRow), AStartRecord, AMaxRecords);
+            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClause(AFieldList, ATaxTableTable.TableId) + " FROM PUB_a_tax_table") +
+                            GenerateWhereClause(TTypedDataTable.GetColumnStringList(ATaxTableTable.TableId), ATemplateRow, ATemplateOperators)) +
+                            GenerateOrderByClause(AOrderBy)), TTypedDataTable.GetTableName(ATaxTableTable.TableId), ATransaction,
+                            GetParametersForWhereClause(ATaxTableTable.TableId, ATemplateRow), AStartRecord, AMaxRecords);
         }
 
         /// auto generated
@@ -646,11 +624,10 @@ namespace Ict.Petra.Shared.MFinance.AR.Data.Access
         /// this method is called by all overloads
         public static void LoadUsingTemplate(DataSet ADataSet, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClause(AFieldList, new string[] {
-                            "a_ledger_number_i", "a_tax_type_code_c", "a_tax_rate_code_c", "a_tax_valid_from_d"}) + " FROM PUB_a_tax_table")
-                            + GenerateWhereClause(ATaxTableTable.GetColumnStringList(), ASearchCriteria))
-                            + GenerateOrderByClause(AOrderBy)), ATaxTableTable.GetTableName(), ATransaction,
-                            GetParametersForWhereClause(new ATaxTableTable(), ASearchCriteria), AStartRecord, AMaxRecords);
+            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClause(AFieldList, ATaxTableTable.TableId) + " FROM PUB_a_tax_table") +
+                            GenerateWhereClause(TTypedDataTable.GetColumnStringList(ATaxTableTable.TableId), ASearchCriteria)) +
+                            GenerateOrderByClause(AOrderBy)), TTypedDataTable.GetTableName(ATaxTableTable.TableId), ATransaction,
+                            GetParametersForWhereClause(ATaxTableTable.TableId, ASearchCriteria), AStartRecord, AMaxRecords);
         }
 
         /// auto generated
@@ -693,32 +670,24 @@ namespace Ict.Petra.Shared.MFinance.AR.Data.Access
             return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar("SELECT COUNT(*) FROM PUB_a_tax_table", ATransaction, false));
         }
 
-        /// this method is called by all overloads
-        public static int CountByPrimaryKey(Int32 ALedgerNumber, String ATaxTypeCode, String ATaxRateCode, System.DateTime ATaxValidFrom, TDBTransaction ATransaction)
+        /// check if a row exists by using the primary key
+        public static bool Exists(Int32 ALedgerNumber, String ATaxTypeCode, String ATaxRateCode, System.DateTime ATaxValidFrom, TDBTransaction ATransaction)
         {
-            OdbcParameter[] ParametersArray = new OdbcParameter[4];
-            ParametersArray[0] = new OdbcParameter("", OdbcType.Int);
-            ParametersArray[0].Value = ((object)(ALedgerNumber));
-            ParametersArray[1] = new OdbcParameter("", OdbcType.VarChar, 16);
-            ParametersArray[1].Value = ((object)(ATaxTypeCode));
-            ParametersArray[2] = new OdbcParameter("", OdbcType.VarChar, 16);
-            ParametersArray[2].Value = ((object)(ATaxRateCode));
-            ParametersArray[3] = new OdbcParameter("", OdbcType.Date);
-            ParametersArray[3].Value = ((object)(ATaxValidFrom));
-            return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar("SELECT COUNT(*) FROM PUB_a_tax_table WHERE a_ledger_number_i = ? AND a_tax_type_code_c = ? AND a_tax_rate_code_c = ? AND a_tax_valid_from_d = ?", ATransaction, false, ParametersArray));
+            return Exists(ATaxTableTable.TableId, new System.Object[4]{ALedgerNumber, ATaxTypeCode, ATaxRateCode, ATaxValidFrom}, ATransaction);
         }
 
         /// this method is called by all overloads
         public static int CountUsingTemplate(ATaxTableRow ATemplateRow, StringCollection ATemplateOperators, TDBTransaction ATransaction)
         {
-            return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_a_tax_table" + GenerateWhereClause(ATaxTableTable.GetColumnStringList(), ATemplateRow, ATemplateOperators)), ATransaction, false, GetParametersForWhereClause(ATemplateRow)));
+            return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_a_tax_table" + GenerateWhereClause(TTypedDataTable.GetColumnStringList(ATaxTableTable.TableId), ATemplateRow, ATemplateOperators)), ATransaction, false,
+                   GetParametersForWhereClause(ATaxTableTable.TableId, ATemplateRow)));
         }
 
         /// this method is called by all overloads
         public static int CountUsingTemplate(TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
         {
-            return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_a_tax_table" + GenerateWhereClause(ATaxTableTable.GetColumnStringList(), ASearchCriteria)), ATransaction, false,
-            GetParametersForWhereClause(new ATaxTableTable(), ASearchCriteria)));
+            return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_a_tax_table" + GenerateWhereClause(TTypedDataTable.GetColumnStringList(ATaxTableTable.TableId), ASearchCriteria)), ATransaction, false,
+            GetParametersForWhereClause(ATaxTableTable.TableId, ASearchCriteria)));
         }
 
         /// auto generated
@@ -727,9 +696,9 @@ namespace Ict.Petra.Shared.MFinance.AR.Data.Access
             OdbcParameter[] ParametersArray = new OdbcParameter[1];
             ParametersArray[0] = new OdbcParameter("", OdbcType.Int);
             ParametersArray[0].Value = ((object)(ALedgerNumber));
-            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, ((GenerateSelectClause(AFieldList, new string[] {
-                            "a_ledger_number_i", "a_tax_type_code_c", "a_tax_rate_code_c", "a_tax_valid_from_d"}) + " FROM PUB_a_tax_table WHERE a_ledger_number_i = ?")
-                            + GenerateOrderByClause(AOrderBy)), ATaxTableTable.GetTableName(), ATransaction, ParametersArray, AStartRecord, AMaxRecords);
+            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, ((GenerateSelectClause(AFieldList, ATaxTableTable.TableId) +
+                            " FROM PUB_a_tax_table WHERE a_ledger_number_i = ?") +
+                            GenerateOrderByClause(AOrderBy)), TTypedDataTable.GetTableName(ATaxTableTable.TableId), ATransaction, ParametersArray, AStartRecord, AMaxRecords);
         }
 
         /// auto generated
@@ -769,11 +738,12 @@ namespace Ict.Petra.Shared.MFinance.AR.Data.Access
         /// auto generated
         public static void LoadViaALedgerTemplate(DataSet ADataSet, ALedgerRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClauseLong("PUB_a_tax_table", AFieldList, new string[] {
-                            "a_ledger_number_i", "a_tax_type_code_c", "a_tax_rate_code_c", "a_tax_valid_from_d"}) + " FROM PUB_a_tax_table, PUB_a_ledger WHERE " +
-                            "PUB_a_tax_table.a_ledger_number_i = PUB_a_ledger.a_ledger_number_i")
-                            + GenerateWhereClauseLong("PUB_a_ledger", ALedgerTable.GetColumnStringList(), ATemplateRow, ATemplateOperators))
-                            + GenerateOrderByClause(AOrderBy)), ATaxTableTable.GetTableName(), ATransaction, GetParametersForWhereClause(ATemplateRow), AStartRecord, AMaxRecords);
+            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClauseLong("PUB_a_tax_table", AFieldList, ATaxTableTable.TableId) +
+                            " FROM PUB_a_tax_table, PUB_a_ledger WHERE " +
+                            "PUB_a_tax_table.a_ledger_number_i = PUB_a_ledger.a_ledger_number_i") +
+                            GenerateWhereClauseLong("PUB_a_ledger", ALedgerTable.TableId, ATemplateRow, ATemplateOperators)) +
+                            GenerateOrderByClause(AOrderBy)), TTypedDataTable.GetTableName(ATaxTableTable.TableId), ATransaction,
+                            GetParametersForWhereClause(ALedgerTable.TableId, ATemplateRow), AStartRecord, AMaxRecords);
         }
 
         /// auto generated
@@ -819,12 +789,12 @@ namespace Ict.Petra.Shared.MFinance.AR.Data.Access
         /// auto generated
         public static void LoadViaALedgerTemplate(DataSet ADataSet, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClauseLong("PUB_a_tax_table", AFieldList, new string[] {
-                            "a_ledger_number_i", "a_tax_type_code_c", "a_tax_rate_code_c", "a_tax_valid_from_d"}) + " FROM PUB_a_tax_table, PUB_a_ledger WHERE " +
-                            "PUB_a_tax_table.a_ledger_number_i = PUB_a_ledger.a_ledger_number_i")
-                            + GenerateWhereClauseLong("PUB_a_ledger", ALedgerTable.GetColumnStringList(), ASearchCriteria))
-                            + GenerateOrderByClause(AOrderBy)), ATaxTableTable.GetTableName(), ATransaction,
-                            GetParametersForWhereClause(new ATaxTableTable(), ASearchCriteria), AStartRecord, AMaxRecords);
+            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClauseLong("PUB_a_tax_table", AFieldList, ATaxTableTable.TableId) +
+                            " FROM PUB_a_tax_table, PUB_a_ledger WHERE " +
+                            "PUB_a_tax_table.a_ledger_number_i = PUB_a_ledger.a_ledger_number_i") +
+                            GenerateWhereClauseLong("PUB_a_ledger", ASearchCriteria)) +
+                            GenerateOrderByClause(AOrderBy)), TTypedDataTable.GetTableName(ATaxTableTable.TableId), ATransaction,
+                            GetParametersForWhereClause(ATaxTableTable.TableId, ASearchCriteria), AStartRecord, AMaxRecords);
         }
 
         /// auto generated
@@ -874,7 +844,10 @@ namespace Ict.Petra.Shared.MFinance.AR.Data.Access
         public static int CountViaALedgerTemplate(ALedgerRow ATemplateRow, StringCollection ATemplateOperators, TDBTransaction ATransaction)
         {
             return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_a_tax_table, PUB_a_ledger WHERE " +
-                "PUB_a_tax_table.a_ledger_number_i = PUB_a_ledger.a_ledger_number_i" + GenerateWhereClauseLong("PUB_a_ledger", ALedgerTable.GetColumnStringList(), ATemplateRow, ATemplateOperators)), ATransaction, false, GetParametersForWhereClause(ATemplateRow, ALedgerTable.GetPrimKeyColumnOrdList())));
+                "PUB_a_tax_table.a_ledger_number_i = PUB_a_ledger.a_ledger_number_i" + GenerateWhereClauseLong("PUB_a_ledger",
+                ALedgerTable.TableId, ATemplateRow, ATemplateOperators)),
+                ATransaction, false,
+                GetParametersForWhereClauseWithPrimaryKey(ALedgerTable.TableId, ATemplateRow)));
         }
 
         /// auto generated
@@ -882,8 +855,8 @@ namespace Ict.Petra.Shared.MFinance.AR.Data.Access
         {
             return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_a_tax_table, PUB_a_ledger WHERE " +
                 "PUB_a_tax_table.a_ledger_number_i = PUB_a_ledger.a_ledger_number_i" +
-                GenerateWhereClauseLong("PUB_a_ledger", ALedgerTable.GetColumnStringList(), ASearchCriteria)), ATransaction, false,
-                GetParametersForWhereClause(new ALedgerTable(), ASearchCriteria)));
+                GenerateWhereClauseLong("PUB_a_ledger", ASearchCriteria)), ATransaction, false,
+                GetParametersForWhereClause(ALedgerTable.TableId, ASearchCriteria)));
         }
 
         /// auto generated
@@ -892,9 +865,9 @@ namespace Ict.Petra.Shared.MFinance.AR.Data.Access
             OdbcParameter[] ParametersArray = new OdbcParameter[1];
             ParametersArray[0] = new OdbcParameter("", OdbcType.VarChar, 16);
             ParametersArray[0].Value = ((object)(ATaxTypeCode));
-            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, ((GenerateSelectClause(AFieldList, new string[] {
-                            "a_ledger_number_i", "a_tax_type_code_c", "a_tax_rate_code_c", "a_tax_valid_from_d"}) + " FROM PUB_a_tax_table WHERE a_tax_type_code_c = ?")
-                            + GenerateOrderByClause(AOrderBy)), ATaxTableTable.GetTableName(), ATransaction, ParametersArray, AStartRecord, AMaxRecords);
+            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, ((GenerateSelectClause(AFieldList, ATaxTableTable.TableId) +
+                            " FROM PUB_a_tax_table WHERE a_tax_type_code_c = ?") +
+                            GenerateOrderByClause(AOrderBy)), TTypedDataTable.GetTableName(ATaxTableTable.TableId), ATransaction, ParametersArray, AStartRecord, AMaxRecords);
         }
 
         /// auto generated
@@ -934,11 +907,12 @@ namespace Ict.Petra.Shared.MFinance.AR.Data.Access
         /// auto generated
         public static void LoadViaATaxTypeTemplate(DataSet ADataSet, ATaxTypeRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClauseLong("PUB_a_tax_table", AFieldList, new string[] {
-                            "a_ledger_number_i", "a_tax_type_code_c", "a_tax_rate_code_c", "a_tax_valid_from_d"}) + " FROM PUB_a_tax_table, PUB_a_tax_type WHERE " +
-                            "PUB_a_tax_table.a_tax_type_code_c = PUB_a_tax_type.a_tax_type_code_c")
-                            + GenerateWhereClauseLong("PUB_a_tax_type", ATaxTypeTable.GetColumnStringList(), ATemplateRow, ATemplateOperators))
-                            + GenerateOrderByClause(AOrderBy)), ATaxTableTable.GetTableName(), ATransaction, GetParametersForWhereClause(ATemplateRow), AStartRecord, AMaxRecords);
+            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClauseLong("PUB_a_tax_table", AFieldList, ATaxTableTable.TableId) +
+                            " FROM PUB_a_tax_table, PUB_a_tax_type WHERE " +
+                            "PUB_a_tax_table.a_tax_type_code_c = PUB_a_tax_type.a_tax_type_code_c") +
+                            GenerateWhereClauseLong("PUB_a_tax_type", ATaxTypeTable.TableId, ATemplateRow, ATemplateOperators)) +
+                            GenerateOrderByClause(AOrderBy)), TTypedDataTable.GetTableName(ATaxTableTable.TableId), ATransaction,
+                            GetParametersForWhereClause(ATaxTypeTable.TableId, ATemplateRow), AStartRecord, AMaxRecords);
         }
 
         /// auto generated
@@ -984,12 +958,12 @@ namespace Ict.Petra.Shared.MFinance.AR.Data.Access
         /// auto generated
         public static void LoadViaATaxTypeTemplate(DataSet ADataSet, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClauseLong("PUB_a_tax_table", AFieldList, new string[] {
-                            "a_ledger_number_i", "a_tax_type_code_c", "a_tax_rate_code_c", "a_tax_valid_from_d"}) + " FROM PUB_a_tax_table, PUB_a_tax_type WHERE " +
-                            "PUB_a_tax_table.a_tax_type_code_c = PUB_a_tax_type.a_tax_type_code_c")
-                            + GenerateWhereClauseLong("PUB_a_tax_type", ATaxTypeTable.GetColumnStringList(), ASearchCriteria))
-                            + GenerateOrderByClause(AOrderBy)), ATaxTableTable.GetTableName(), ATransaction,
-                            GetParametersForWhereClause(new ATaxTableTable(), ASearchCriteria), AStartRecord, AMaxRecords);
+            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClauseLong("PUB_a_tax_table", AFieldList, ATaxTableTable.TableId) +
+                            " FROM PUB_a_tax_table, PUB_a_tax_type WHERE " +
+                            "PUB_a_tax_table.a_tax_type_code_c = PUB_a_tax_type.a_tax_type_code_c") +
+                            GenerateWhereClauseLong("PUB_a_tax_type", ASearchCriteria)) +
+                            GenerateOrderByClause(AOrderBy)), TTypedDataTable.GetTableName(ATaxTableTable.TableId), ATransaction,
+                            GetParametersForWhereClause(ATaxTableTable.TableId, ASearchCriteria), AStartRecord, AMaxRecords);
         }
 
         /// auto generated
@@ -1039,7 +1013,10 @@ namespace Ict.Petra.Shared.MFinance.AR.Data.Access
         public static int CountViaATaxTypeTemplate(ATaxTypeRow ATemplateRow, StringCollection ATemplateOperators, TDBTransaction ATransaction)
         {
             return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_a_tax_table, PUB_a_tax_type WHERE " +
-                "PUB_a_tax_table.a_tax_type_code_c = PUB_a_tax_type.a_tax_type_code_c" + GenerateWhereClauseLong("PUB_a_tax_type", ATaxTypeTable.GetColumnStringList(), ATemplateRow, ATemplateOperators)), ATransaction, false, GetParametersForWhereClause(ATemplateRow, ATaxTypeTable.GetPrimKeyColumnOrdList())));
+                "PUB_a_tax_table.a_tax_type_code_c = PUB_a_tax_type.a_tax_type_code_c" + GenerateWhereClauseLong("PUB_a_tax_type",
+                ATaxTypeTable.TableId, ATemplateRow, ATemplateOperators)),
+                ATransaction, false,
+                GetParametersForWhereClauseWithPrimaryKey(ATaxTypeTable.TableId, ATemplateRow)));
         }
 
         /// auto generated
@@ -1047,37 +1024,26 @@ namespace Ict.Petra.Shared.MFinance.AR.Data.Access
         {
             return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_a_tax_table, PUB_a_tax_type WHERE " +
                 "PUB_a_tax_table.a_tax_type_code_c = PUB_a_tax_type.a_tax_type_code_c" +
-                GenerateWhereClauseLong("PUB_a_tax_type", ATaxTypeTable.GetColumnStringList(), ASearchCriteria)), ATransaction, false,
-                GetParametersForWhereClause(new ATaxTypeTable(), ASearchCriteria)));
+                GenerateWhereClauseLong("PUB_a_tax_type", ASearchCriteria)), ATransaction, false,
+                GetParametersForWhereClause(ATaxTypeTable.TableId, ASearchCriteria)));
         }
 
         /// auto generated
         public static void DeleteByPrimaryKey(Int32 ALedgerNumber, String ATaxTypeCode, String ATaxRateCode, System.DateTime ATaxValidFrom, TDBTransaction ATransaction)
         {
-            OdbcParameter[] ParametersArray = new OdbcParameter[4];
-            ParametersArray[0] = new OdbcParameter("", OdbcType.Int);
-            ParametersArray[0].Value = ((object)(ALedgerNumber));
-            ParametersArray[1] = new OdbcParameter("", OdbcType.VarChar, 16);
-            ParametersArray[1].Value = ((object)(ATaxTypeCode));
-            ParametersArray[2] = new OdbcParameter("", OdbcType.VarChar, 16);
-            ParametersArray[2].Value = ((object)(ATaxRateCode));
-            ParametersArray[3] = new OdbcParameter("", OdbcType.Date);
-            ParametersArray[3].Value = ((object)(ATaxValidFrom));
-            DBAccess.GDBAccessObj.ExecuteNonQuery("DELETE FROM PUB_a_tax_table WHERE a_ledger_number_i = ? AND a_tax_type_code_c = ? AND a_tax_rate_code_c = ? AND a_tax_valid_from_d = ?", ATransaction, false, ParametersArray);
+            DeleteByPrimaryKey(ATaxTableTable.TableId, new System.Object[4]{ALedgerNumber, ATaxTypeCode, ATaxRateCode, ATaxValidFrom}, ATransaction);
         }
 
         /// auto generated
         public static void DeleteUsingTemplate(ATaxTableRow ATemplateRow, StringCollection ATemplateOperators, TDBTransaction ATransaction)
         {
-            DBAccess.GDBAccessObj.ExecuteNonQuery(("DELETE FROM PUB_a_tax_table" + GenerateWhereClause(ATaxTableTable.GetColumnStringList(), ATemplateRow, ATemplateOperators)), ATransaction, false, GetParametersForWhereClause(ATemplateRow));
+            DeleteUsingTemplate(ATaxTableTable.TableId, ATemplateRow, ATemplateOperators, ATransaction);
         }
 
         /// auto generated
         public static void DeleteUsingTemplate(TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
         {
-            DBAccess.GDBAccessObj.ExecuteNonQuery(("DELETE FROM PUB_a_tax_table" +
-                GenerateWhereClause(ATaxTableTable.GetColumnStringList(), ASearchCriteria)), ATransaction, false,
-                GetParametersForWhereClause(new ATaxTableTable(), ASearchCriteria));
+            DeleteUsingTemplate(ATaxTableTable.TableId, ASearchCriteria, ATransaction);
         }
 
         /// auto generated
@@ -1094,15 +1060,15 @@ namespace Ict.Petra.Shared.MFinance.AR.Data.Access
                 {
                     if ((TheRow.RowState == DataRowState.Added))
                     {
-                        TTypedDataAccess.InsertRow("a_tax_table", ATaxTableTable.GetColumnStringList(), ref TheRow, ATransaction, UserInfo.GUserInfo.UserID);
+                        TTypedDataAccess.InsertRow(ATaxTableTable.TableId, ref TheRow, ATransaction, UserInfo.GUserInfo.UserID);
                     }
                     if ((TheRow.RowState == DataRowState.Modified))
                     {
-                        TTypedDataAccess.UpdateRow("a_tax_table", ATaxTableTable.GetColumnStringList(), ATaxTableTable.GetPrimKeyColumnOrdList(), ref TheRow, ATransaction, UserInfo.GUserInfo.UserID);
+                        TTypedDataAccess.UpdateRow(ATaxTableTable.TableId, ref TheRow, ATransaction, UserInfo.GUserInfo.UserID);
                     }
                     if ((TheRow.RowState == DataRowState.Deleted))
                     {
-                        TTypedDataAccess.DeleteRow("a_tax_table", ATaxTableTable.GetColumnStringList(), ATaxTableTable.GetPrimKeyColumnOrdList(), TheRow, ATransaction);
+                        TTypedDataAccess.DeleteRow(ATaxTableTable.TableId, TheRow, ATransaction);
                     }
                 }
                 catch (OdbcException ex)
@@ -1132,9 +1098,8 @@ namespace Ict.Petra.Shared.MFinance.AR.Data.Access
         /// this method is called by all overloads
         public static void LoadAll(DataSet ADataSet, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, ((GenerateSelectClause(AFieldList, new string[] {
-                            "a_ar_category_code_c"}) + " FROM PUB_a_ar_category")
-                            + GenerateOrderByClause(AOrderBy)), AArCategoryTable.GetTableName(), ATransaction, AStartRecord, AMaxRecords);
+            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, ((GenerateSelectClause(AFieldList, AArCategoryTable.TableId) + " FROM PUB_a_ar_category") +
+                            GenerateOrderByClause(AOrderBy)), TTypedDataTable.GetTableName(AArCategoryTable.TableId), ATransaction, AStartRecord, AMaxRecords);
         }
 
         /// auto generated
@@ -1174,12 +1139,8 @@ namespace Ict.Petra.Shared.MFinance.AR.Data.Access
         /// this method is called by all overloads
         public static void LoadByPrimaryKey(DataSet ADataSet, String AArCategoryCode, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            OdbcParameter[] ParametersArray = new OdbcParameter[1];
-            ParametersArray[0] = new OdbcParameter("", OdbcType.VarChar, 100);
-            ParametersArray[0].Value = ((object)(AArCategoryCode));
-            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, ((GenerateSelectClause(AFieldList, new string[] {
-                            "a_ar_category_code_c"}) + " FROM PUB_a_ar_category WHERE a_ar_category_code_c = ?")
-                            + GenerateOrderByClause(AOrderBy)), AArCategoryTable.GetTableName(), ATransaction, ParametersArray, AStartRecord, AMaxRecords);
+            ADataSet = LoadByPrimaryKey(AArCategoryTable.TableId,
+                ADataSet, new System.Object[1]{AArCategoryCode}, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
         }
 
         /// auto generated
@@ -1219,10 +1180,10 @@ namespace Ict.Petra.Shared.MFinance.AR.Data.Access
         /// this method is called by all overloads
         public static void LoadUsingTemplate(DataSet ADataSet, AArCategoryRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClause(AFieldList, new string[] {
-                            "a_ar_category_code_c"}) + " FROM PUB_a_ar_category")
-                            + GenerateWhereClause(AArCategoryTable.GetColumnStringList(), ATemplateRow, ATemplateOperators))
-                            + GenerateOrderByClause(AOrderBy)), AArCategoryTable.GetTableName(), ATransaction, GetParametersForWhereClause(ATemplateRow), AStartRecord, AMaxRecords);
+            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClause(AFieldList, AArCategoryTable.TableId) + " FROM PUB_a_ar_category") +
+                            GenerateWhereClause(TTypedDataTable.GetColumnStringList(AArCategoryTable.TableId), ATemplateRow, ATemplateOperators)) +
+                            GenerateOrderByClause(AOrderBy)), TTypedDataTable.GetTableName(AArCategoryTable.TableId), ATransaction,
+                            GetParametersForWhereClause(AArCategoryTable.TableId, ATemplateRow), AStartRecord, AMaxRecords);
         }
 
         /// auto generated
@@ -1268,11 +1229,10 @@ namespace Ict.Petra.Shared.MFinance.AR.Data.Access
         /// this method is called by all overloads
         public static void LoadUsingTemplate(DataSet ADataSet, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClause(AFieldList, new string[] {
-                            "a_ar_category_code_c"}) + " FROM PUB_a_ar_category")
-                            + GenerateWhereClause(AArCategoryTable.GetColumnStringList(), ASearchCriteria))
-                            + GenerateOrderByClause(AOrderBy)), AArCategoryTable.GetTableName(), ATransaction,
-                            GetParametersForWhereClause(new AArCategoryTable(), ASearchCriteria), AStartRecord, AMaxRecords);
+            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClause(AFieldList, AArCategoryTable.TableId) + " FROM PUB_a_ar_category") +
+                            GenerateWhereClause(TTypedDataTable.GetColumnStringList(AArCategoryTable.TableId), ASearchCriteria)) +
+                            GenerateOrderByClause(AOrderBy)), TTypedDataTable.GetTableName(AArCategoryTable.TableId), ATransaction,
+                            GetParametersForWhereClause(AArCategoryTable.TableId, ASearchCriteria), AStartRecord, AMaxRecords);
         }
 
         /// auto generated
@@ -1315,26 +1275,24 @@ namespace Ict.Petra.Shared.MFinance.AR.Data.Access
             return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar("SELECT COUNT(*) FROM PUB_a_ar_category", ATransaction, false));
         }
 
-        /// this method is called by all overloads
-        public static int CountByPrimaryKey(String AArCategoryCode, TDBTransaction ATransaction)
+        /// check if a row exists by using the primary key
+        public static bool Exists(String AArCategoryCode, TDBTransaction ATransaction)
         {
-            OdbcParameter[] ParametersArray = new OdbcParameter[1];
-            ParametersArray[0] = new OdbcParameter("", OdbcType.VarChar, 100);
-            ParametersArray[0].Value = ((object)(AArCategoryCode));
-            return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar("SELECT COUNT(*) FROM PUB_a_ar_category WHERE a_ar_category_code_c = ?", ATransaction, false, ParametersArray));
+            return Exists(AArCategoryTable.TableId, new System.Object[1]{AArCategoryCode}, ATransaction);
         }
 
         /// this method is called by all overloads
         public static int CountUsingTemplate(AArCategoryRow ATemplateRow, StringCollection ATemplateOperators, TDBTransaction ATransaction)
         {
-            return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_a_ar_category" + GenerateWhereClause(AArCategoryTable.GetColumnStringList(), ATemplateRow, ATemplateOperators)), ATransaction, false, GetParametersForWhereClause(ATemplateRow)));
+            return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_a_ar_category" + GenerateWhereClause(TTypedDataTable.GetColumnStringList(AArCategoryTable.TableId), ATemplateRow, ATemplateOperators)), ATransaction, false,
+                   GetParametersForWhereClause(AArCategoryTable.TableId, ATemplateRow)));
         }
 
         /// this method is called by all overloads
         public static int CountUsingTemplate(TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
         {
-            return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_a_ar_category" + GenerateWhereClause(AArCategoryTable.GetColumnStringList(), ASearchCriteria)), ATransaction, false,
-            GetParametersForWhereClause(new AArCategoryTable(), ASearchCriteria)));
+            return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_a_ar_category" + GenerateWhereClause(TTypedDataTable.GetColumnStringList(AArCategoryTable.TableId), ASearchCriteria)), ATransaction, false,
+            GetParametersForWhereClause(AArCategoryTable.TableId, ASearchCriteria)));
         }
 
         /// auto generated LoadViaLinkTable
@@ -1345,10 +1303,10 @@ namespace Ict.Petra.Shared.MFinance.AR.Data.Access
             ParametersArray[0].Value = ((object)(AArDiscountCode));
             ParametersArray[1] = new OdbcParameter("", OdbcType.Date);
             ParametersArray[1].Value = ((object)(AArDateValidFrom));
-            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, ((GenerateSelectClauseLong("PUB_a_ar_category", AFieldList, new string[] {
-                            "a_ar_category_code_c"}) + " FROM PUB_a_ar_category, PUB_a_ar_default_discount WHERE " +
-                            "PUB_a_ar_default_discount.a_ar_category_code_c = PUB_a_ar_category.a_ar_category_code_c AND PUB_a_ar_default_discount.a_ar_discount_code_c = ? AND PUB_a_ar_default_discount.a_ar_date_valid_from_d = ?")
-                            + GenerateOrderByClause(AOrderBy)), AArCategoryTable.GetTableName(), ATransaction, ParametersArray, AStartRecord, AMaxRecords);
+            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, ((GenerateSelectClauseLong("PUB_a_ar_category", AFieldList, AArCategoryTable.TableId) +
+                            " FROM PUB_a_ar_category, PUB_a_ar_default_discount WHERE " +
+                            "PUB_a_ar_default_discount.a_ar_category_code_c = PUB_a_ar_category.a_ar_category_code_c AND PUB_a_ar_default_discount.a_ar_discount_code_c = ? AND PUB_a_ar_default_discount.a_ar_date_valid_from_d = ?") +
+                            GenerateOrderByClause(AOrderBy)), TTypedDataTable.GetTableName(AArCategoryTable.TableId), ATransaction, ParametersArray, AStartRecord, AMaxRecords);
         }
 
         /// auto generated
@@ -1388,11 +1346,12 @@ namespace Ict.Petra.Shared.MFinance.AR.Data.Access
         /// auto generated
         public static void LoadViaAArDiscountTemplate(DataSet ADataSet, AArDiscountRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClauseLong("PUB_a_ar_category", AFieldList, new string[] {
-                            "a_ar_category_code_c"}) + " FROM PUB_a_ar_category, PUB_a_ar_default_discount, PUB_a_ar_discount WHERE " +
-                            "PUB_a_ar_default_discount.a_ar_category_code_c = PUB_a_ar_category.a_ar_category_code_c AND PUB_a_ar_default_discount.a_ar_discount_code_c = PUB_a_ar_discount.a_ar_discount_code_c AND PUB_a_ar_default_discount.a_ar_date_valid_from_d = PUB_a_ar_discount.a_ar_date_valid_from_d")
-                            + GenerateWhereClauseLong("PUB_a_ar_discount", AArDiscountTable.GetColumnStringList(), ATemplateRow, ATemplateOperators))
-                            + GenerateOrderByClause(AOrderBy)), AArCategoryTable.GetTableName(), ATransaction, GetParametersForWhereClause(ATemplateRow), AStartRecord, AMaxRecords);
+            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClauseLong("PUB_a_ar_category", AFieldList, AArCategoryTable.TableId) +
+                            " FROM PUB_a_ar_category, PUB_a_ar_default_discount, PUB_a_ar_discount WHERE " +
+                            "PUB_a_ar_default_discount.a_ar_category_code_c = PUB_a_ar_category.a_ar_category_code_c AND PUB_a_ar_default_discount.a_ar_discount_code_c = PUB_a_ar_discount.a_ar_discount_code_c AND PUB_a_ar_default_discount.a_ar_date_valid_from_d = PUB_a_ar_discount.a_ar_date_valid_from_d") +
+                            GenerateWhereClauseLong("PUB_a_ar_discount", AArDiscountTable.TableId, ATemplateRow, ATemplateOperators)) +
+                            GenerateOrderByClause(AOrderBy)), TTypedDataTable.GetTableName(AArCategoryTable.TableId), ATransaction,
+                            GetParametersForWhereClause(AArDiscountTable.TableId, ATemplateRow), AStartRecord, AMaxRecords);
         }
 
         /// auto generated
@@ -1438,12 +1397,12 @@ namespace Ict.Petra.Shared.MFinance.AR.Data.Access
         /// auto generated
         public static void LoadViaAArDiscountTemplate(DataSet ADataSet, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClauseLong("PUB_a_ar_category", AFieldList, new string[] {
-                            "a_ar_category_code_c"}) + " FROM PUB_a_ar_category, PUB_a_ar_default_discount, PUB_a_ar_discount WHERE " +
-                            "PUB_a_ar_default_discount.a_ar_category_code_c = PUB_a_ar_category.a_ar_category_code_c AND PUB_a_ar_default_discount.a_ar_discount_code_c = PUB_a_ar_discount.a_ar_discount_code_c AND PUB_a_ar_default_discount.a_ar_date_valid_from_d = PUB_a_ar_discount.a_ar_date_valid_from_d")
-                            + GenerateWhereClauseLong("PUB_a_ar_discount", AArDiscountTable.GetColumnStringList(), ASearchCriteria))
-                            + GenerateOrderByClause(AOrderBy)), AArCategoryTable.GetTableName(), ATransaction,
-                            GetParametersForWhereClause(new AArCategoryTable(), ASearchCriteria), AStartRecord, AMaxRecords);
+            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClauseLong("PUB_a_ar_category", AFieldList, AArCategoryTable.TableId) +
+                            " FROM PUB_a_ar_category, PUB_a_ar_default_discount, PUB_a_ar_discount WHERE " +
+                            "PUB_a_ar_default_discount.a_ar_category_code_c = PUB_a_ar_category.a_ar_category_code_c AND PUB_a_ar_default_discount.a_ar_discount_code_c = PUB_a_ar_discount.a_ar_discount_code_c AND PUB_a_ar_default_discount.a_ar_date_valid_from_d = PUB_a_ar_discount.a_ar_date_valid_from_d") +
+                            GenerateWhereClauseLong("PUB_a_ar_discount", ASearchCriteria)) +
+                            GenerateOrderByClause(AOrderBy)), TTypedDataTable.GetTableName(AArCategoryTable.TableId), ATransaction,
+                            GetParametersForWhereClause(AArCategoryTable.TableId, ASearchCriteria), AStartRecord, AMaxRecords);
         }
 
         /// auto generated
@@ -1498,7 +1457,8 @@ namespace Ict.Petra.Shared.MFinance.AR.Data.Access
         {
             return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_a_ar_category, PUB_a_ar_default_discount, PUB_a_ar_discount WHERE " +
                         "PUB_a_ar_default_discount.a_ar_category_code_c = PUB_a_ar_category.a_ar_category_code_c AND PUB_a_ar_default_discount.a_ar_discount_code_c = PUB_a_ar_discount.a_ar_discount_code_c AND PUB_a_ar_default_discount.a_ar_date_valid_from_d = PUB_a_ar_discount.a_ar_date_valid_from_d" +
-                        GenerateWhereClauseLong("PUB_a_ar_default_discount", AArCategoryTable.GetColumnStringList(), ATemplateRow, ATemplateOperators)), ATransaction, false, GetParametersForWhereClause(ATemplateRow, AArDiscountTable.GetPrimKeyColumnOrdList())));
+                        GenerateWhereClauseLong("PUB_a_ar_default_discount", AArCategoryTable.TableId, ATemplateRow, ATemplateOperators)), ATransaction, false,
+                        GetParametersForWhereClauseWithPrimaryKey(AArDiscountTable.TableId, ATemplateRow)));
         }
 
         /// auto generated
@@ -1506,31 +1466,26 @@ namespace Ict.Petra.Shared.MFinance.AR.Data.Access
         {
             return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_a_ar_category, PUB_a_ar_default_discount, PUB_a_ar_discount WHERE " +
                         "PUB_a_ar_default_discount.a_ar_category_code_c = PUB_a_ar_category.a_ar_category_code_c AND PUB_a_ar_default_discount.a_ar_discount_code_c = PUB_a_ar_discount.a_ar_discount_code_c AND PUB_a_ar_default_discount.a_ar_date_valid_from_d = PUB_a_ar_discount.a_ar_date_valid_from_d" +
-                        GenerateWhereClauseLong("PUB_a_ar_default_discount", AArCategoryTable.GetColumnStringList(), ASearchCriteria)), ATransaction, false,
-                        GetParametersForWhereClause(new AArCategoryTable(), ASearchCriteria)));
+                        GenerateWhereClauseLong("PUB_a_ar_default_discount", ASearchCriteria)), ATransaction, false,
+                        GetParametersForWhereClause(AArCategoryTable.TableId, ASearchCriteria)));
         }
 
         /// auto generated
         public static void DeleteByPrimaryKey(String AArCategoryCode, TDBTransaction ATransaction)
         {
-            OdbcParameter[] ParametersArray = new OdbcParameter[1];
-            ParametersArray[0] = new OdbcParameter("", OdbcType.VarChar, 100);
-            ParametersArray[0].Value = ((object)(AArCategoryCode));
-            DBAccess.GDBAccessObj.ExecuteNonQuery("DELETE FROM PUB_a_ar_category WHERE a_ar_category_code_c = ?", ATransaction, false, ParametersArray);
+            DeleteByPrimaryKey(AArCategoryTable.TableId, new System.Object[1]{AArCategoryCode}, ATransaction);
         }
 
         /// auto generated
         public static void DeleteUsingTemplate(AArCategoryRow ATemplateRow, StringCollection ATemplateOperators, TDBTransaction ATransaction)
         {
-            DBAccess.GDBAccessObj.ExecuteNonQuery(("DELETE FROM PUB_a_ar_category" + GenerateWhereClause(AArCategoryTable.GetColumnStringList(), ATemplateRow, ATemplateOperators)), ATransaction, false, GetParametersForWhereClause(ATemplateRow));
+            DeleteUsingTemplate(AArCategoryTable.TableId, ATemplateRow, ATemplateOperators, ATransaction);
         }
 
         /// auto generated
         public static void DeleteUsingTemplate(TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
         {
-            DBAccess.GDBAccessObj.ExecuteNonQuery(("DELETE FROM PUB_a_ar_category" +
-                GenerateWhereClause(AArCategoryTable.GetColumnStringList(), ASearchCriteria)), ATransaction, false,
-                GetParametersForWhereClause(new AArCategoryTable(), ASearchCriteria));
+            DeleteUsingTemplate(AArCategoryTable.TableId, ASearchCriteria, ATransaction);
         }
 
         /// auto generated
@@ -1547,15 +1502,15 @@ namespace Ict.Petra.Shared.MFinance.AR.Data.Access
                 {
                     if ((TheRow.RowState == DataRowState.Added))
                     {
-                        TTypedDataAccess.InsertRow("a_ar_category", AArCategoryTable.GetColumnStringList(), ref TheRow, ATransaction, UserInfo.GUserInfo.UserID);
+                        TTypedDataAccess.InsertRow(AArCategoryTable.TableId, ref TheRow, ATransaction, UserInfo.GUserInfo.UserID);
                     }
                     if ((TheRow.RowState == DataRowState.Modified))
                     {
-                        TTypedDataAccess.UpdateRow("a_ar_category", AArCategoryTable.GetColumnStringList(), AArCategoryTable.GetPrimKeyColumnOrdList(), ref TheRow, ATransaction, UserInfo.GUserInfo.UserID);
+                        TTypedDataAccess.UpdateRow(AArCategoryTable.TableId, ref TheRow, ATransaction, UserInfo.GUserInfo.UserID);
                     }
                     if ((TheRow.RowState == DataRowState.Deleted))
                     {
-                        TTypedDataAccess.DeleteRow("a_ar_category", AArCategoryTable.GetColumnStringList(), AArCategoryTable.GetPrimKeyColumnOrdList(), TheRow, ATransaction);
+                        TTypedDataAccess.DeleteRow(AArCategoryTable.TableId, TheRow, ATransaction);
                     }
                 }
                 catch (OdbcException ex)
@@ -1585,9 +1540,8 @@ namespace Ict.Petra.Shared.MFinance.AR.Data.Access
         /// this method is called by all overloads
         public static void LoadAll(DataSet ADataSet, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, ((GenerateSelectClause(AFieldList, new string[] {
-                            "a_ar_article_code_c"}) + " FROM PUB_a_ar_article")
-                            + GenerateOrderByClause(AOrderBy)), AArArticleTable.GetTableName(), ATransaction, AStartRecord, AMaxRecords);
+            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, ((GenerateSelectClause(AFieldList, AArArticleTable.TableId) + " FROM PUB_a_ar_article") +
+                            GenerateOrderByClause(AOrderBy)), TTypedDataTable.GetTableName(AArArticleTable.TableId), ATransaction, AStartRecord, AMaxRecords);
         }
 
         /// auto generated
@@ -1627,12 +1581,8 @@ namespace Ict.Petra.Shared.MFinance.AR.Data.Access
         /// this method is called by all overloads
         public static void LoadByPrimaryKey(DataSet ADataSet, String AArArticleCode, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            OdbcParameter[] ParametersArray = new OdbcParameter[1];
-            ParametersArray[0] = new OdbcParameter("", OdbcType.VarChar, 100);
-            ParametersArray[0].Value = ((object)(AArArticleCode));
-            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, ((GenerateSelectClause(AFieldList, new string[] {
-                            "a_ar_article_code_c"}) + " FROM PUB_a_ar_article WHERE a_ar_article_code_c = ?")
-                            + GenerateOrderByClause(AOrderBy)), AArArticleTable.GetTableName(), ATransaction, ParametersArray, AStartRecord, AMaxRecords);
+            ADataSet = LoadByPrimaryKey(AArArticleTable.TableId,
+                ADataSet, new System.Object[1]{AArArticleCode}, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
         }
 
         /// auto generated
@@ -1672,10 +1622,10 @@ namespace Ict.Petra.Shared.MFinance.AR.Data.Access
         /// this method is called by all overloads
         public static void LoadUsingTemplate(DataSet ADataSet, AArArticleRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClause(AFieldList, new string[] {
-                            "a_ar_article_code_c"}) + " FROM PUB_a_ar_article")
-                            + GenerateWhereClause(AArArticleTable.GetColumnStringList(), ATemplateRow, ATemplateOperators))
-                            + GenerateOrderByClause(AOrderBy)), AArArticleTable.GetTableName(), ATransaction, GetParametersForWhereClause(ATemplateRow), AStartRecord, AMaxRecords);
+            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClause(AFieldList, AArArticleTable.TableId) + " FROM PUB_a_ar_article") +
+                            GenerateWhereClause(TTypedDataTable.GetColumnStringList(AArArticleTable.TableId), ATemplateRow, ATemplateOperators)) +
+                            GenerateOrderByClause(AOrderBy)), TTypedDataTable.GetTableName(AArArticleTable.TableId), ATransaction,
+                            GetParametersForWhereClause(AArArticleTable.TableId, ATemplateRow), AStartRecord, AMaxRecords);
         }
 
         /// auto generated
@@ -1721,11 +1671,10 @@ namespace Ict.Petra.Shared.MFinance.AR.Data.Access
         /// this method is called by all overloads
         public static void LoadUsingTemplate(DataSet ADataSet, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClause(AFieldList, new string[] {
-                            "a_ar_article_code_c"}) + " FROM PUB_a_ar_article")
-                            + GenerateWhereClause(AArArticleTable.GetColumnStringList(), ASearchCriteria))
-                            + GenerateOrderByClause(AOrderBy)), AArArticleTable.GetTableName(), ATransaction,
-                            GetParametersForWhereClause(new AArArticleTable(), ASearchCriteria), AStartRecord, AMaxRecords);
+            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClause(AFieldList, AArArticleTable.TableId) + " FROM PUB_a_ar_article") +
+                            GenerateWhereClause(TTypedDataTable.GetColumnStringList(AArArticleTable.TableId), ASearchCriteria)) +
+                            GenerateOrderByClause(AOrderBy)), TTypedDataTable.GetTableName(AArArticleTable.TableId), ATransaction,
+                            GetParametersForWhereClause(AArArticleTable.TableId, ASearchCriteria), AStartRecord, AMaxRecords);
         }
 
         /// auto generated
@@ -1768,26 +1717,24 @@ namespace Ict.Petra.Shared.MFinance.AR.Data.Access
             return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar("SELECT COUNT(*) FROM PUB_a_ar_article", ATransaction, false));
         }
 
-        /// this method is called by all overloads
-        public static int CountByPrimaryKey(String AArArticleCode, TDBTransaction ATransaction)
+        /// check if a row exists by using the primary key
+        public static bool Exists(String AArArticleCode, TDBTransaction ATransaction)
         {
-            OdbcParameter[] ParametersArray = new OdbcParameter[1];
-            ParametersArray[0] = new OdbcParameter("", OdbcType.VarChar, 100);
-            ParametersArray[0].Value = ((object)(AArArticleCode));
-            return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar("SELECT COUNT(*) FROM PUB_a_ar_article WHERE a_ar_article_code_c = ?", ATransaction, false, ParametersArray));
+            return Exists(AArArticleTable.TableId, new System.Object[1]{AArArticleCode}, ATransaction);
         }
 
         /// this method is called by all overloads
         public static int CountUsingTemplate(AArArticleRow ATemplateRow, StringCollection ATemplateOperators, TDBTransaction ATransaction)
         {
-            return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_a_ar_article" + GenerateWhereClause(AArArticleTable.GetColumnStringList(), ATemplateRow, ATemplateOperators)), ATransaction, false, GetParametersForWhereClause(ATemplateRow)));
+            return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_a_ar_article" + GenerateWhereClause(TTypedDataTable.GetColumnStringList(AArArticleTable.TableId), ATemplateRow, ATemplateOperators)), ATransaction, false,
+                   GetParametersForWhereClause(AArArticleTable.TableId, ATemplateRow)));
         }
 
         /// this method is called by all overloads
         public static int CountUsingTemplate(TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
         {
-            return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_a_ar_article" + GenerateWhereClause(AArArticleTable.GetColumnStringList(), ASearchCriteria)), ATransaction, false,
-            GetParametersForWhereClause(new AArArticleTable(), ASearchCriteria)));
+            return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_a_ar_article" + GenerateWhereClause(TTypedDataTable.GetColumnStringList(AArArticleTable.TableId), ASearchCriteria)), ATransaction, false,
+            GetParametersForWhereClause(AArArticleTable.TableId, ASearchCriteria)));
         }
 
         /// auto generated
@@ -1796,9 +1743,9 @@ namespace Ict.Petra.Shared.MFinance.AR.Data.Access
             OdbcParameter[] ParametersArray = new OdbcParameter[1];
             ParametersArray[0] = new OdbcParameter("", OdbcType.VarChar, 100);
             ParametersArray[0].Value = ((object)(AArCategoryCode));
-            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, ((GenerateSelectClause(AFieldList, new string[] {
-                            "a_ar_article_code_c"}) + " FROM PUB_a_ar_article WHERE a_ar_category_code_c = ?")
-                            + GenerateOrderByClause(AOrderBy)), AArArticleTable.GetTableName(), ATransaction, ParametersArray, AStartRecord, AMaxRecords);
+            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, ((GenerateSelectClause(AFieldList, AArArticleTable.TableId) +
+                            " FROM PUB_a_ar_article WHERE a_ar_category_code_c = ?") +
+                            GenerateOrderByClause(AOrderBy)), TTypedDataTable.GetTableName(AArArticleTable.TableId), ATransaction, ParametersArray, AStartRecord, AMaxRecords);
         }
 
         /// auto generated
@@ -1838,11 +1785,12 @@ namespace Ict.Petra.Shared.MFinance.AR.Data.Access
         /// auto generated
         public static void LoadViaAArCategoryTemplate(DataSet ADataSet, AArCategoryRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClauseLong("PUB_a_ar_article", AFieldList, new string[] {
-                            "a_ar_article_code_c"}) + " FROM PUB_a_ar_article, PUB_a_ar_category WHERE " +
-                            "PUB_a_ar_article.a_ar_category_code_c = PUB_a_ar_category.a_ar_category_code_c")
-                            + GenerateWhereClauseLong("PUB_a_ar_category", AArCategoryTable.GetColumnStringList(), ATemplateRow, ATemplateOperators))
-                            + GenerateOrderByClause(AOrderBy)), AArArticleTable.GetTableName(), ATransaction, GetParametersForWhereClause(ATemplateRow), AStartRecord, AMaxRecords);
+            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClauseLong("PUB_a_ar_article", AFieldList, AArArticleTable.TableId) +
+                            " FROM PUB_a_ar_article, PUB_a_ar_category WHERE " +
+                            "PUB_a_ar_article.a_ar_category_code_c = PUB_a_ar_category.a_ar_category_code_c") +
+                            GenerateWhereClauseLong("PUB_a_ar_category", AArCategoryTable.TableId, ATemplateRow, ATemplateOperators)) +
+                            GenerateOrderByClause(AOrderBy)), TTypedDataTable.GetTableName(AArArticleTable.TableId), ATransaction,
+                            GetParametersForWhereClause(AArCategoryTable.TableId, ATemplateRow), AStartRecord, AMaxRecords);
         }
 
         /// auto generated
@@ -1888,12 +1836,12 @@ namespace Ict.Petra.Shared.MFinance.AR.Data.Access
         /// auto generated
         public static void LoadViaAArCategoryTemplate(DataSet ADataSet, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClauseLong("PUB_a_ar_article", AFieldList, new string[] {
-                            "a_ar_article_code_c"}) + " FROM PUB_a_ar_article, PUB_a_ar_category WHERE " +
-                            "PUB_a_ar_article.a_ar_category_code_c = PUB_a_ar_category.a_ar_category_code_c")
-                            + GenerateWhereClauseLong("PUB_a_ar_category", AArCategoryTable.GetColumnStringList(), ASearchCriteria))
-                            + GenerateOrderByClause(AOrderBy)), AArArticleTable.GetTableName(), ATransaction,
-                            GetParametersForWhereClause(new AArArticleTable(), ASearchCriteria), AStartRecord, AMaxRecords);
+            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClauseLong("PUB_a_ar_article", AFieldList, AArArticleTable.TableId) +
+                            " FROM PUB_a_ar_article, PUB_a_ar_category WHERE " +
+                            "PUB_a_ar_article.a_ar_category_code_c = PUB_a_ar_category.a_ar_category_code_c") +
+                            GenerateWhereClauseLong("PUB_a_ar_category", ASearchCriteria)) +
+                            GenerateOrderByClause(AOrderBy)), TTypedDataTable.GetTableName(AArArticleTable.TableId), ATransaction,
+                            GetParametersForWhereClause(AArArticleTable.TableId, ASearchCriteria), AStartRecord, AMaxRecords);
         }
 
         /// auto generated
@@ -1943,7 +1891,10 @@ namespace Ict.Petra.Shared.MFinance.AR.Data.Access
         public static int CountViaAArCategoryTemplate(AArCategoryRow ATemplateRow, StringCollection ATemplateOperators, TDBTransaction ATransaction)
         {
             return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_a_ar_article, PUB_a_ar_category WHERE " +
-                "PUB_a_ar_article.a_ar_category_code_c = PUB_a_ar_category.a_ar_category_code_c" + GenerateWhereClauseLong("PUB_a_ar_category", AArCategoryTable.GetColumnStringList(), ATemplateRow, ATemplateOperators)), ATransaction, false, GetParametersForWhereClause(ATemplateRow, AArCategoryTable.GetPrimKeyColumnOrdList())));
+                "PUB_a_ar_article.a_ar_category_code_c = PUB_a_ar_category.a_ar_category_code_c" + GenerateWhereClauseLong("PUB_a_ar_category",
+                AArCategoryTable.TableId, ATemplateRow, ATemplateOperators)),
+                ATransaction, false,
+                GetParametersForWhereClauseWithPrimaryKey(AArCategoryTable.TableId, ATemplateRow)));
         }
 
         /// auto generated
@@ -1951,8 +1902,8 @@ namespace Ict.Petra.Shared.MFinance.AR.Data.Access
         {
             return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_a_ar_article, PUB_a_ar_category WHERE " +
                 "PUB_a_ar_article.a_ar_category_code_c = PUB_a_ar_category.a_ar_category_code_c" +
-                GenerateWhereClauseLong("PUB_a_ar_category", AArCategoryTable.GetColumnStringList(), ASearchCriteria)), ATransaction, false,
-                GetParametersForWhereClause(new AArCategoryTable(), ASearchCriteria)));
+                GenerateWhereClauseLong("PUB_a_ar_category", ASearchCriteria)), ATransaction, false,
+                GetParametersForWhereClause(AArCategoryTable.TableId, ASearchCriteria)));
         }
 
         /// auto generated
@@ -1961,9 +1912,9 @@ namespace Ict.Petra.Shared.MFinance.AR.Data.Access
             OdbcParameter[] ParametersArray = new OdbcParameter[1];
             ParametersArray[0] = new OdbcParameter("", OdbcType.VarChar, 16);
             ParametersArray[0].Value = ((object)(ATaxTypeCode));
-            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, ((GenerateSelectClause(AFieldList, new string[] {
-                            "a_ar_article_code_c"}) + " FROM PUB_a_ar_article WHERE a_tax_type_code_c = ?")
-                            + GenerateOrderByClause(AOrderBy)), AArArticleTable.GetTableName(), ATransaction, ParametersArray, AStartRecord, AMaxRecords);
+            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, ((GenerateSelectClause(AFieldList, AArArticleTable.TableId) +
+                            " FROM PUB_a_ar_article WHERE a_tax_type_code_c = ?") +
+                            GenerateOrderByClause(AOrderBy)), TTypedDataTable.GetTableName(AArArticleTable.TableId), ATransaction, ParametersArray, AStartRecord, AMaxRecords);
         }
 
         /// auto generated
@@ -2003,11 +1954,12 @@ namespace Ict.Petra.Shared.MFinance.AR.Data.Access
         /// auto generated
         public static void LoadViaATaxTypeTemplate(DataSet ADataSet, ATaxTypeRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClauseLong("PUB_a_ar_article", AFieldList, new string[] {
-                            "a_ar_article_code_c"}) + " FROM PUB_a_ar_article, PUB_a_tax_type WHERE " +
-                            "PUB_a_ar_article.a_tax_type_code_c = PUB_a_tax_type.a_tax_type_code_c")
-                            + GenerateWhereClauseLong("PUB_a_tax_type", ATaxTypeTable.GetColumnStringList(), ATemplateRow, ATemplateOperators))
-                            + GenerateOrderByClause(AOrderBy)), AArArticleTable.GetTableName(), ATransaction, GetParametersForWhereClause(ATemplateRow), AStartRecord, AMaxRecords);
+            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClauseLong("PUB_a_ar_article", AFieldList, AArArticleTable.TableId) +
+                            " FROM PUB_a_ar_article, PUB_a_tax_type WHERE " +
+                            "PUB_a_ar_article.a_tax_type_code_c = PUB_a_tax_type.a_tax_type_code_c") +
+                            GenerateWhereClauseLong("PUB_a_tax_type", ATaxTypeTable.TableId, ATemplateRow, ATemplateOperators)) +
+                            GenerateOrderByClause(AOrderBy)), TTypedDataTable.GetTableName(AArArticleTable.TableId), ATransaction,
+                            GetParametersForWhereClause(ATaxTypeTable.TableId, ATemplateRow), AStartRecord, AMaxRecords);
         }
 
         /// auto generated
@@ -2053,12 +2005,12 @@ namespace Ict.Petra.Shared.MFinance.AR.Data.Access
         /// auto generated
         public static void LoadViaATaxTypeTemplate(DataSet ADataSet, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClauseLong("PUB_a_ar_article", AFieldList, new string[] {
-                            "a_ar_article_code_c"}) + " FROM PUB_a_ar_article, PUB_a_tax_type WHERE " +
-                            "PUB_a_ar_article.a_tax_type_code_c = PUB_a_tax_type.a_tax_type_code_c")
-                            + GenerateWhereClauseLong("PUB_a_tax_type", ATaxTypeTable.GetColumnStringList(), ASearchCriteria))
-                            + GenerateOrderByClause(AOrderBy)), AArArticleTable.GetTableName(), ATransaction,
-                            GetParametersForWhereClause(new AArArticleTable(), ASearchCriteria), AStartRecord, AMaxRecords);
+            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClauseLong("PUB_a_ar_article", AFieldList, AArArticleTable.TableId) +
+                            " FROM PUB_a_ar_article, PUB_a_tax_type WHERE " +
+                            "PUB_a_ar_article.a_tax_type_code_c = PUB_a_tax_type.a_tax_type_code_c") +
+                            GenerateWhereClauseLong("PUB_a_tax_type", ASearchCriteria)) +
+                            GenerateOrderByClause(AOrderBy)), TTypedDataTable.GetTableName(AArArticleTable.TableId), ATransaction,
+                            GetParametersForWhereClause(AArArticleTable.TableId, ASearchCriteria), AStartRecord, AMaxRecords);
         }
 
         /// auto generated
@@ -2108,7 +2060,10 @@ namespace Ict.Petra.Shared.MFinance.AR.Data.Access
         public static int CountViaATaxTypeTemplate(ATaxTypeRow ATemplateRow, StringCollection ATemplateOperators, TDBTransaction ATransaction)
         {
             return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_a_ar_article, PUB_a_tax_type WHERE " +
-                "PUB_a_ar_article.a_tax_type_code_c = PUB_a_tax_type.a_tax_type_code_c" + GenerateWhereClauseLong("PUB_a_tax_type", ATaxTypeTable.GetColumnStringList(), ATemplateRow, ATemplateOperators)), ATransaction, false, GetParametersForWhereClause(ATemplateRow, ATaxTypeTable.GetPrimKeyColumnOrdList())));
+                "PUB_a_ar_article.a_tax_type_code_c = PUB_a_tax_type.a_tax_type_code_c" + GenerateWhereClauseLong("PUB_a_tax_type",
+                ATaxTypeTable.TableId, ATemplateRow, ATemplateOperators)),
+                ATransaction, false,
+                GetParametersForWhereClauseWithPrimaryKey(ATaxTypeTable.TableId, ATemplateRow)));
         }
 
         /// auto generated
@@ -2116,31 +2071,26 @@ namespace Ict.Petra.Shared.MFinance.AR.Data.Access
         {
             return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_a_ar_article, PUB_a_tax_type WHERE " +
                 "PUB_a_ar_article.a_tax_type_code_c = PUB_a_tax_type.a_tax_type_code_c" +
-                GenerateWhereClauseLong("PUB_a_tax_type", ATaxTypeTable.GetColumnStringList(), ASearchCriteria)), ATransaction, false,
-                GetParametersForWhereClause(new ATaxTypeTable(), ASearchCriteria)));
+                GenerateWhereClauseLong("PUB_a_tax_type", ASearchCriteria)), ATransaction, false,
+                GetParametersForWhereClause(ATaxTypeTable.TableId, ASearchCriteria)));
         }
 
         /// auto generated
         public static void DeleteByPrimaryKey(String AArArticleCode, TDBTransaction ATransaction)
         {
-            OdbcParameter[] ParametersArray = new OdbcParameter[1];
-            ParametersArray[0] = new OdbcParameter("", OdbcType.VarChar, 100);
-            ParametersArray[0].Value = ((object)(AArArticleCode));
-            DBAccess.GDBAccessObj.ExecuteNonQuery("DELETE FROM PUB_a_ar_article WHERE a_ar_article_code_c = ?", ATransaction, false, ParametersArray);
+            DeleteByPrimaryKey(AArArticleTable.TableId, new System.Object[1]{AArArticleCode}, ATransaction);
         }
 
         /// auto generated
         public static void DeleteUsingTemplate(AArArticleRow ATemplateRow, StringCollection ATemplateOperators, TDBTransaction ATransaction)
         {
-            DBAccess.GDBAccessObj.ExecuteNonQuery(("DELETE FROM PUB_a_ar_article" + GenerateWhereClause(AArArticleTable.GetColumnStringList(), ATemplateRow, ATemplateOperators)), ATransaction, false, GetParametersForWhereClause(ATemplateRow));
+            DeleteUsingTemplate(AArArticleTable.TableId, ATemplateRow, ATemplateOperators, ATransaction);
         }
 
         /// auto generated
         public static void DeleteUsingTemplate(TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
         {
-            DBAccess.GDBAccessObj.ExecuteNonQuery(("DELETE FROM PUB_a_ar_article" +
-                GenerateWhereClause(AArArticleTable.GetColumnStringList(), ASearchCriteria)), ATransaction, false,
-                GetParametersForWhereClause(new AArArticleTable(), ASearchCriteria));
+            DeleteUsingTemplate(AArArticleTable.TableId, ASearchCriteria, ATransaction);
         }
 
         /// auto generated
@@ -2157,15 +2107,15 @@ namespace Ict.Petra.Shared.MFinance.AR.Data.Access
                 {
                     if ((TheRow.RowState == DataRowState.Added))
                     {
-                        TTypedDataAccess.InsertRow("a_ar_article", AArArticleTable.GetColumnStringList(), ref TheRow, ATransaction, UserInfo.GUserInfo.UserID);
+                        TTypedDataAccess.InsertRow(AArArticleTable.TableId, ref TheRow, ATransaction, UserInfo.GUserInfo.UserID);
                     }
                     if ((TheRow.RowState == DataRowState.Modified))
                     {
-                        TTypedDataAccess.UpdateRow("a_ar_article", AArArticleTable.GetColumnStringList(), AArArticleTable.GetPrimKeyColumnOrdList(), ref TheRow, ATransaction, UserInfo.GUserInfo.UserID);
+                        TTypedDataAccess.UpdateRow(AArArticleTable.TableId, ref TheRow, ATransaction, UserInfo.GUserInfo.UserID);
                     }
                     if ((TheRow.RowState == DataRowState.Deleted))
                     {
-                        TTypedDataAccess.DeleteRow("a_ar_article", AArArticleTable.GetColumnStringList(), AArArticleTable.GetPrimKeyColumnOrdList(), TheRow, ATransaction);
+                        TTypedDataAccess.DeleteRow(AArArticleTable.TableId, TheRow, ATransaction);
                     }
                 }
                 catch (OdbcException ex)
@@ -2195,9 +2145,8 @@ namespace Ict.Petra.Shared.MFinance.AR.Data.Access
         /// this method is called by all overloads
         public static void LoadAll(DataSet ADataSet, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, ((GenerateSelectClause(AFieldList, new string[] {
-                            "a_ar_article_code_c", "a_ar_date_valid_from_d"}) + " FROM PUB_a_ar_article_price")
-                            + GenerateOrderByClause(AOrderBy)), AArArticlePriceTable.GetTableName(), ATransaction, AStartRecord, AMaxRecords);
+            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, ((GenerateSelectClause(AFieldList, AArArticlePriceTable.TableId) + " FROM PUB_a_ar_article_price") +
+                            GenerateOrderByClause(AOrderBy)), TTypedDataTable.GetTableName(AArArticlePriceTable.TableId), ATransaction, AStartRecord, AMaxRecords);
         }
 
         /// auto generated
@@ -2237,14 +2186,8 @@ namespace Ict.Petra.Shared.MFinance.AR.Data.Access
         /// this method is called by all overloads
         public static void LoadByPrimaryKey(DataSet ADataSet, String AArArticleCode, System.DateTime AArDateValidFrom, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            OdbcParameter[] ParametersArray = new OdbcParameter[2];
-            ParametersArray[0] = new OdbcParameter("", OdbcType.VarChar, 100);
-            ParametersArray[0].Value = ((object)(AArArticleCode));
-            ParametersArray[1] = new OdbcParameter("", OdbcType.Date);
-            ParametersArray[1].Value = ((object)(AArDateValidFrom));
-            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, ((GenerateSelectClause(AFieldList, new string[] {
-                            "a_ar_article_code_c", "a_ar_date_valid_from_d"}) + " FROM PUB_a_ar_article_price WHERE a_ar_article_code_c = ? AND a_ar_date_valid_from_d = ?")
-                            + GenerateOrderByClause(AOrderBy)), AArArticlePriceTable.GetTableName(), ATransaction, ParametersArray, AStartRecord, AMaxRecords);
+            ADataSet = LoadByPrimaryKey(AArArticlePriceTable.TableId,
+                ADataSet, new System.Object[2]{AArArticleCode, AArDateValidFrom}, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
         }
 
         /// auto generated
@@ -2284,10 +2227,10 @@ namespace Ict.Petra.Shared.MFinance.AR.Data.Access
         /// this method is called by all overloads
         public static void LoadUsingTemplate(DataSet ADataSet, AArArticlePriceRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClause(AFieldList, new string[] {
-                            "a_ar_article_code_c", "a_ar_date_valid_from_d"}) + " FROM PUB_a_ar_article_price")
-                            + GenerateWhereClause(AArArticlePriceTable.GetColumnStringList(), ATemplateRow, ATemplateOperators))
-                            + GenerateOrderByClause(AOrderBy)), AArArticlePriceTable.GetTableName(), ATransaction, GetParametersForWhereClause(ATemplateRow), AStartRecord, AMaxRecords);
+            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClause(AFieldList, AArArticlePriceTable.TableId) + " FROM PUB_a_ar_article_price") +
+                            GenerateWhereClause(TTypedDataTable.GetColumnStringList(AArArticlePriceTable.TableId), ATemplateRow, ATemplateOperators)) +
+                            GenerateOrderByClause(AOrderBy)), TTypedDataTable.GetTableName(AArArticlePriceTable.TableId), ATransaction,
+                            GetParametersForWhereClause(AArArticlePriceTable.TableId, ATemplateRow), AStartRecord, AMaxRecords);
         }
 
         /// auto generated
@@ -2333,11 +2276,10 @@ namespace Ict.Petra.Shared.MFinance.AR.Data.Access
         /// this method is called by all overloads
         public static void LoadUsingTemplate(DataSet ADataSet, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClause(AFieldList, new string[] {
-                            "a_ar_article_code_c", "a_ar_date_valid_from_d"}) + " FROM PUB_a_ar_article_price")
-                            + GenerateWhereClause(AArArticlePriceTable.GetColumnStringList(), ASearchCriteria))
-                            + GenerateOrderByClause(AOrderBy)), AArArticlePriceTable.GetTableName(), ATransaction,
-                            GetParametersForWhereClause(new AArArticlePriceTable(), ASearchCriteria), AStartRecord, AMaxRecords);
+            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClause(AFieldList, AArArticlePriceTable.TableId) + " FROM PUB_a_ar_article_price") +
+                            GenerateWhereClause(TTypedDataTable.GetColumnStringList(AArArticlePriceTable.TableId), ASearchCriteria)) +
+                            GenerateOrderByClause(AOrderBy)), TTypedDataTable.GetTableName(AArArticlePriceTable.TableId), ATransaction,
+                            GetParametersForWhereClause(AArArticlePriceTable.TableId, ASearchCriteria), AStartRecord, AMaxRecords);
         }
 
         /// auto generated
@@ -2380,28 +2322,24 @@ namespace Ict.Petra.Shared.MFinance.AR.Data.Access
             return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar("SELECT COUNT(*) FROM PUB_a_ar_article_price", ATransaction, false));
         }
 
-        /// this method is called by all overloads
-        public static int CountByPrimaryKey(String AArArticleCode, System.DateTime AArDateValidFrom, TDBTransaction ATransaction)
+        /// check if a row exists by using the primary key
+        public static bool Exists(String AArArticleCode, System.DateTime AArDateValidFrom, TDBTransaction ATransaction)
         {
-            OdbcParameter[] ParametersArray = new OdbcParameter[2];
-            ParametersArray[0] = new OdbcParameter("", OdbcType.VarChar, 100);
-            ParametersArray[0].Value = ((object)(AArArticleCode));
-            ParametersArray[1] = new OdbcParameter("", OdbcType.Date);
-            ParametersArray[1].Value = ((object)(AArDateValidFrom));
-            return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar("SELECT COUNT(*) FROM PUB_a_ar_article_price WHERE a_ar_article_code_c = ? AND a_ar_date_valid_from_d = ?", ATransaction, false, ParametersArray));
+            return Exists(AArArticlePriceTable.TableId, new System.Object[2]{AArArticleCode, AArDateValidFrom}, ATransaction);
         }
 
         /// this method is called by all overloads
         public static int CountUsingTemplate(AArArticlePriceRow ATemplateRow, StringCollection ATemplateOperators, TDBTransaction ATransaction)
         {
-            return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_a_ar_article_price" + GenerateWhereClause(AArArticlePriceTable.GetColumnStringList(), ATemplateRow, ATemplateOperators)), ATransaction, false, GetParametersForWhereClause(ATemplateRow)));
+            return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_a_ar_article_price" + GenerateWhereClause(TTypedDataTable.GetColumnStringList(AArArticlePriceTable.TableId), ATemplateRow, ATemplateOperators)), ATransaction, false,
+                   GetParametersForWhereClause(AArArticlePriceTable.TableId, ATemplateRow)));
         }
 
         /// this method is called by all overloads
         public static int CountUsingTemplate(TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
         {
-            return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_a_ar_article_price" + GenerateWhereClause(AArArticlePriceTable.GetColumnStringList(), ASearchCriteria)), ATransaction, false,
-            GetParametersForWhereClause(new AArArticlePriceTable(), ASearchCriteria)));
+            return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_a_ar_article_price" + GenerateWhereClause(TTypedDataTable.GetColumnStringList(AArArticlePriceTable.TableId), ASearchCriteria)), ATransaction, false,
+            GetParametersForWhereClause(AArArticlePriceTable.TableId, ASearchCriteria)));
         }
 
         /// auto generated
@@ -2410,9 +2348,9 @@ namespace Ict.Petra.Shared.MFinance.AR.Data.Access
             OdbcParameter[] ParametersArray = new OdbcParameter[1];
             ParametersArray[0] = new OdbcParameter("", OdbcType.VarChar, 100);
             ParametersArray[0].Value = ((object)(AArArticleCode));
-            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, ((GenerateSelectClause(AFieldList, new string[] {
-                            "a_ar_article_code_c", "a_ar_date_valid_from_d"}) + " FROM PUB_a_ar_article_price WHERE a_ar_article_code_c = ?")
-                            + GenerateOrderByClause(AOrderBy)), AArArticlePriceTable.GetTableName(), ATransaction, ParametersArray, AStartRecord, AMaxRecords);
+            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, ((GenerateSelectClause(AFieldList, AArArticlePriceTable.TableId) +
+                            " FROM PUB_a_ar_article_price WHERE a_ar_article_code_c = ?") +
+                            GenerateOrderByClause(AOrderBy)), TTypedDataTable.GetTableName(AArArticlePriceTable.TableId), ATransaction, ParametersArray, AStartRecord, AMaxRecords);
         }
 
         /// auto generated
@@ -2452,11 +2390,12 @@ namespace Ict.Petra.Shared.MFinance.AR.Data.Access
         /// auto generated
         public static void LoadViaAArArticleTemplate(DataSet ADataSet, AArArticleRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClauseLong("PUB_a_ar_article_price", AFieldList, new string[] {
-                            "a_ar_article_code_c", "a_ar_date_valid_from_d"}) + " FROM PUB_a_ar_article_price, PUB_a_ar_article WHERE " +
-                            "PUB_a_ar_article_price.a_ar_article_code_c = PUB_a_ar_article.a_ar_article_code_c")
-                            + GenerateWhereClauseLong("PUB_a_ar_article", AArArticleTable.GetColumnStringList(), ATemplateRow, ATemplateOperators))
-                            + GenerateOrderByClause(AOrderBy)), AArArticlePriceTable.GetTableName(), ATransaction, GetParametersForWhereClause(ATemplateRow), AStartRecord, AMaxRecords);
+            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClauseLong("PUB_a_ar_article_price", AFieldList, AArArticlePriceTable.TableId) +
+                            " FROM PUB_a_ar_article_price, PUB_a_ar_article WHERE " +
+                            "PUB_a_ar_article_price.a_ar_article_code_c = PUB_a_ar_article.a_ar_article_code_c") +
+                            GenerateWhereClauseLong("PUB_a_ar_article", AArArticleTable.TableId, ATemplateRow, ATemplateOperators)) +
+                            GenerateOrderByClause(AOrderBy)), TTypedDataTable.GetTableName(AArArticlePriceTable.TableId), ATransaction,
+                            GetParametersForWhereClause(AArArticleTable.TableId, ATemplateRow), AStartRecord, AMaxRecords);
         }
 
         /// auto generated
@@ -2502,12 +2441,12 @@ namespace Ict.Petra.Shared.MFinance.AR.Data.Access
         /// auto generated
         public static void LoadViaAArArticleTemplate(DataSet ADataSet, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClauseLong("PUB_a_ar_article_price", AFieldList, new string[] {
-                            "a_ar_article_code_c", "a_ar_date_valid_from_d"}) + " FROM PUB_a_ar_article_price, PUB_a_ar_article WHERE " +
-                            "PUB_a_ar_article_price.a_ar_article_code_c = PUB_a_ar_article.a_ar_article_code_c")
-                            + GenerateWhereClauseLong("PUB_a_ar_article", AArArticleTable.GetColumnStringList(), ASearchCriteria))
-                            + GenerateOrderByClause(AOrderBy)), AArArticlePriceTable.GetTableName(), ATransaction,
-                            GetParametersForWhereClause(new AArArticlePriceTable(), ASearchCriteria), AStartRecord, AMaxRecords);
+            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClauseLong("PUB_a_ar_article_price", AFieldList, AArArticlePriceTable.TableId) +
+                            " FROM PUB_a_ar_article_price, PUB_a_ar_article WHERE " +
+                            "PUB_a_ar_article_price.a_ar_article_code_c = PUB_a_ar_article.a_ar_article_code_c") +
+                            GenerateWhereClauseLong("PUB_a_ar_article", ASearchCriteria)) +
+                            GenerateOrderByClause(AOrderBy)), TTypedDataTable.GetTableName(AArArticlePriceTable.TableId), ATransaction,
+                            GetParametersForWhereClause(AArArticlePriceTable.TableId, ASearchCriteria), AStartRecord, AMaxRecords);
         }
 
         /// auto generated
@@ -2557,7 +2496,10 @@ namespace Ict.Petra.Shared.MFinance.AR.Data.Access
         public static int CountViaAArArticleTemplate(AArArticleRow ATemplateRow, StringCollection ATemplateOperators, TDBTransaction ATransaction)
         {
             return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_a_ar_article_price, PUB_a_ar_article WHERE " +
-                "PUB_a_ar_article_price.a_ar_article_code_c = PUB_a_ar_article.a_ar_article_code_c" + GenerateWhereClauseLong("PUB_a_ar_article", AArArticleTable.GetColumnStringList(), ATemplateRow, ATemplateOperators)), ATransaction, false, GetParametersForWhereClause(ATemplateRow, AArArticleTable.GetPrimKeyColumnOrdList())));
+                "PUB_a_ar_article_price.a_ar_article_code_c = PUB_a_ar_article.a_ar_article_code_c" + GenerateWhereClauseLong("PUB_a_ar_article",
+                AArArticleTable.TableId, ATemplateRow, ATemplateOperators)),
+                ATransaction, false,
+                GetParametersForWhereClauseWithPrimaryKey(AArArticleTable.TableId, ATemplateRow)));
         }
 
         /// auto generated
@@ -2565,8 +2507,8 @@ namespace Ict.Petra.Shared.MFinance.AR.Data.Access
         {
             return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_a_ar_article_price, PUB_a_ar_article WHERE " +
                 "PUB_a_ar_article_price.a_ar_article_code_c = PUB_a_ar_article.a_ar_article_code_c" +
-                GenerateWhereClauseLong("PUB_a_ar_article", AArArticleTable.GetColumnStringList(), ASearchCriteria)), ATransaction, false,
-                GetParametersForWhereClause(new AArArticleTable(), ASearchCriteria)));
+                GenerateWhereClauseLong("PUB_a_ar_article", ASearchCriteria)), ATransaction, false,
+                GetParametersForWhereClause(AArArticleTable.TableId, ASearchCriteria)));
         }
 
         /// auto generated
@@ -2575,9 +2517,9 @@ namespace Ict.Petra.Shared.MFinance.AR.Data.Access
             OdbcParameter[] ParametersArray = new OdbcParameter[1];
             ParametersArray[0] = new OdbcParameter("", OdbcType.VarChar, 16);
             ParametersArray[0].Value = ((object)(ACurrencyCode));
-            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, ((GenerateSelectClause(AFieldList, new string[] {
-                            "a_ar_article_code_c", "a_ar_date_valid_from_d"}) + " FROM PUB_a_ar_article_price WHERE a_currency_code_c = ?")
-                            + GenerateOrderByClause(AOrderBy)), AArArticlePriceTable.GetTableName(), ATransaction, ParametersArray, AStartRecord, AMaxRecords);
+            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, ((GenerateSelectClause(AFieldList, AArArticlePriceTable.TableId) +
+                            " FROM PUB_a_ar_article_price WHERE a_currency_code_c = ?") +
+                            GenerateOrderByClause(AOrderBy)), TTypedDataTable.GetTableName(AArArticlePriceTable.TableId), ATransaction, ParametersArray, AStartRecord, AMaxRecords);
         }
 
         /// auto generated
@@ -2617,11 +2559,12 @@ namespace Ict.Petra.Shared.MFinance.AR.Data.Access
         /// auto generated
         public static void LoadViaACurrencyTemplate(DataSet ADataSet, ACurrencyRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClauseLong("PUB_a_ar_article_price", AFieldList, new string[] {
-                            "a_ar_article_code_c", "a_ar_date_valid_from_d"}) + " FROM PUB_a_ar_article_price, PUB_a_currency WHERE " +
-                            "PUB_a_ar_article_price.a_currency_code_c = PUB_a_currency.a_currency_code_c")
-                            + GenerateWhereClauseLong("PUB_a_currency", ACurrencyTable.GetColumnStringList(), ATemplateRow, ATemplateOperators))
-                            + GenerateOrderByClause(AOrderBy)), AArArticlePriceTable.GetTableName(), ATransaction, GetParametersForWhereClause(ATemplateRow), AStartRecord, AMaxRecords);
+            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClauseLong("PUB_a_ar_article_price", AFieldList, AArArticlePriceTable.TableId) +
+                            " FROM PUB_a_ar_article_price, PUB_a_currency WHERE " +
+                            "PUB_a_ar_article_price.a_currency_code_c = PUB_a_currency.a_currency_code_c") +
+                            GenerateWhereClauseLong("PUB_a_currency", ACurrencyTable.TableId, ATemplateRow, ATemplateOperators)) +
+                            GenerateOrderByClause(AOrderBy)), TTypedDataTable.GetTableName(AArArticlePriceTable.TableId), ATransaction,
+                            GetParametersForWhereClause(ACurrencyTable.TableId, ATemplateRow), AStartRecord, AMaxRecords);
         }
 
         /// auto generated
@@ -2667,12 +2610,12 @@ namespace Ict.Petra.Shared.MFinance.AR.Data.Access
         /// auto generated
         public static void LoadViaACurrencyTemplate(DataSet ADataSet, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClauseLong("PUB_a_ar_article_price", AFieldList, new string[] {
-                            "a_ar_article_code_c", "a_ar_date_valid_from_d"}) + " FROM PUB_a_ar_article_price, PUB_a_currency WHERE " +
-                            "PUB_a_ar_article_price.a_currency_code_c = PUB_a_currency.a_currency_code_c")
-                            + GenerateWhereClauseLong("PUB_a_currency", ACurrencyTable.GetColumnStringList(), ASearchCriteria))
-                            + GenerateOrderByClause(AOrderBy)), AArArticlePriceTable.GetTableName(), ATransaction,
-                            GetParametersForWhereClause(new AArArticlePriceTable(), ASearchCriteria), AStartRecord, AMaxRecords);
+            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClauseLong("PUB_a_ar_article_price", AFieldList, AArArticlePriceTable.TableId) +
+                            " FROM PUB_a_ar_article_price, PUB_a_currency WHERE " +
+                            "PUB_a_ar_article_price.a_currency_code_c = PUB_a_currency.a_currency_code_c") +
+                            GenerateWhereClauseLong("PUB_a_currency", ASearchCriteria)) +
+                            GenerateOrderByClause(AOrderBy)), TTypedDataTable.GetTableName(AArArticlePriceTable.TableId), ATransaction,
+                            GetParametersForWhereClause(AArArticlePriceTable.TableId, ASearchCriteria), AStartRecord, AMaxRecords);
         }
 
         /// auto generated
@@ -2722,7 +2665,10 @@ namespace Ict.Petra.Shared.MFinance.AR.Data.Access
         public static int CountViaACurrencyTemplate(ACurrencyRow ATemplateRow, StringCollection ATemplateOperators, TDBTransaction ATransaction)
         {
             return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_a_ar_article_price, PUB_a_currency WHERE " +
-                "PUB_a_ar_article_price.a_currency_code_c = PUB_a_currency.a_currency_code_c" + GenerateWhereClauseLong("PUB_a_currency", ACurrencyTable.GetColumnStringList(), ATemplateRow, ATemplateOperators)), ATransaction, false, GetParametersForWhereClause(ATemplateRow, ACurrencyTable.GetPrimKeyColumnOrdList())));
+                "PUB_a_ar_article_price.a_currency_code_c = PUB_a_currency.a_currency_code_c" + GenerateWhereClauseLong("PUB_a_currency",
+                ACurrencyTable.TableId, ATemplateRow, ATemplateOperators)),
+                ATransaction, false,
+                GetParametersForWhereClauseWithPrimaryKey(ACurrencyTable.TableId, ATemplateRow)));
         }
 
         /// auto generated
@@ -2730,33 +2676,26 @@ namespace Ict.Petra.Shared.MFinance.AR.Data.Access
         {
             return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_a_ar_article_price, PUB_a_currency WHERE " +
                 "PUB_a_ar_article_price.a_currency_code_c = PUB_a_currency.a_currency_code_c" +
-                GenerateWhereClauseLong("PUB_a_currency", ACurrencyTable.GetColumnStringList(), ASearchCriteria)), ATransaction, false,
-                GetParametersForWhereClause(new ACurrencyTable(), ASearchCriteria)));
+                GenerateWhereClauseLong("PUB_a_currency", ASearchCriteria)), ATransaction, false,
+                GetParametersForWhereClause(ACurrencyTable.TableId, ASearchCriteria)));
         }
 
         /// auto generated
         public static void DeleteByPrimaryKey(String AArArticleCode, System.DateTime AArDateValidFrom, TDBTransaction ATransaction)
         {
-            OdbcParameter[] ParametersArray = new OdbcParameter[2];
-            ParametersArray[0] = new OdbcParameter("", OdbcType.VarChar, 100);
-            ParametersArray[0].Value = ((object)(AArArticleCode));
-            ParametersArray[1] = new OdbcParameter("", OdbcType.Date);
-            ParametersArray[1].Value = ((object)(AArDateValidFrom));
-            DBAccess.GDBAccessObj.ExecuteNonQuery("DELETE FROM PUB_a_ar_article_price WHERE a_ar_article_code_c = ? AND a_ar_date_valid_from_d = ?", ATransaction, false, ParametersArray);
+            DeleteByPrimaryKey(AArArticlePriceTable.TableId, new System.Object[2]{AArArticleCode, AArDateValidFrom}, ATransaction);
         }
 
         /// auto generated
         public static void DeleteUsingTemplate(AArArticlePriceRow ATemplateRow, StringCollection ATemplateOperators, TDBTransaction ATransaction)
         {
-            DBAccess.GDBAccessObj.ExecuteNonQuery(("DELETE FROM PUB_a_ar_article_price" + GenerateWhereClause(AArArticlePriceTable.GetColumnStringList(), ATemplateRow, ATemplateOperators)), ATransaction, false, GetParametersForWhereClause(ATemplateRow));
+            DeleteUsingTemplate(AArArticlePriceTable.TableId, ATemplateRow, ATemplateOperators, ATransaction);
         }
 
         /// auto generated
         public static void DeleteUsingTemplate(TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
         {
-            DBAccess.GDBAccessObj.ExecuteNonQuery(("DELETE FROM PUB_a_ar_article_price" +
-                GenerateWhereClause(AArArticlePriceTable.GetColumnStringList(), ASearchCriteria)), ATransaction, false,
-                GetParametersForWhereClause(new AArArticlePriceTable(), ASearchCriteria));
+            DeleteUsingTemplate(AArArticlePriceTable.TableId, ASearchCriteria, ATransaction);
         }
 
         /// auto generated
@@ -2773,15 +2712,15 @@ namespace Ict.Petra.Shared.MFinance.AR.Data.Access
                 {
                     if ((TheRow.RowState == DataRowState.Added))
                     {
-                        TTypedDataAccess.InsertRow("a_ar_article_price", AArArticlePriceTable.GetColumnStringList(), ref TheRow, ATransaction, UserInfo.GUserInfo.UserID);
+                        TTypedDataAccess.InsertRow(AArArticlePriceTable.TableId, ref TheRow, ATransaction, UserInfo.GUserInfo.UserID);
                     }
                     if ((TheRow.RowState == DataRowState.Modified))
                     {
-                        TTypedDataAccess.UpdateRow("a_ar_article_price", AArArticlePriceTable.GetColumnStringList(), AArArticlePriceTable.GetPrimKeyColumnOrdList(), ref TheRow, ATransaction, UserInfo.GUserInfo.UserID);
+                        TTypedDataAccess.UpdateRow(AArArticlePriceTable.TableId, ref TheRow, ATransaction, UserInfo.GUserInfo.UserID);
                     }
                     if ((TheRow.RowState == DataRowState.Deleted))
                     {
-                        TTypedDataAccess.DeleteRow("a_ar_article_price", AArArticlePriceTable.GetColumnStringList(), AArArticlePriceTable.GetPrimKeyColumnOrdList(), TheRow, ATransaction);
+                        TTypedDataAccess.DeleteRow(AArArticlePriceTable.TableId, TheRow, ATransaction);
                     }
                 }
                 catch (OdbcException ex)
@@ -2811,9 +2750,8 @@ namespace Ict.Petra.Shared.MFinance.AR.Data.Access
         /// this method is called by all overloads
         public static void LoadAll(DataSet ADataSet, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, ((GenerateSelectClause(AFieldList, new string[] {
-                            "a_ar_discount_code_c", "a_ar_date_valid_from_d"}) + " FROM PUB_a_ar_discount")
-                            + GenerateOrderByClause(AOrderBy)), AArDiscountTable.GetTableName(), ATransaction, AStartRecord, AMaxRecords);
+            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, ((GenerateSelectClause(AFieldList, AArDiscountTable.TableId) + " FROM PUB_a_ar_discount") +
+                            GenerateOrderByClause(AOrderBy)), TTypedDataTable.GetTableName(AArDiscountTable.TableId), ATransaction, AStartRecord, AMaxRecords);
         }
 
         /// auto generated
@@ -2853,14 +2791,8 @@ namespace Ict.Petra.Shared.MFinance.AR.Data.Access
         /// this method is called by all overloads
         public static void LoadByPrimaryKey(DataSet ADataSet, String AArDiscountCode, System.DateTime AArDateValidFrom, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            OdbcParameter[] ParametersArray = new OdbcParameter[2];
-            ParametersArray[0] = new OdbcParameter("", OdbcType.VarChar, 100);
-            ParametersArray[0].Value = ((object)(AArDiscountCode));
-            ParametersArray[1] = new OdbcParameter("", OdbcType.Date);
-            ParametersArray[1].Value = ((object)(AArDateValidFrom));
-            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, ((GenerateSelectClause(AFieldList, new string[] {
-                            "a_ar_discount_code_c", "a_ar_date_valid_from_d"}) + " FROM PUB_a_ar_discount WHERE a_ar_discount_code_c = ? AND a_ar_date_valid_from_d = ?")
-                            + GenerateOrderByClause(AOrderBy)), AArDiscountTable.GetTableName(), ATransaction, ParametersArray, AStartRecord, AMaxRecords);
+            ADataSet = LoadByPrimaryKey(AArDiscountTable.TableId,
+                ADataSet, new System.Object[2]{AArDiscountCode, AArDateValidFrom}, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
         }
 
         /// auto generated
@@ -2900,10 +2832,10 @@ namespace Ict.Petra.Shared.MFinance.AR.Data.Access
         /// this method is called by all overloads
         public static void LoadUsingTemplate(DataSet ADataSet, AArDiscountRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClause(AFieldList, new string[] {
-                            "a_ar_discount_code_c", "a_ar_date_valid_from_d"}) + " FROM PUB_a_ar_discount")
-                            + GenerateWhereClause(AArDiscountTable.GetColumnStringList(), ATemplateRow, ATemplateOperators))
-                            + GenerateOrderByClause(AOrderBy)), AArDiscountTable.GetTableName(), ATransaction, GetParametersForWhereClause(ATemplateRow), AStartRecord, AMaxRecords);
+            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClause(AFieldList, AArDiscountTable.TableId) + " FROM PUB_a_ar_discount") +
+                            GenerateWhereClause(TTypedDataTable.GetColumnStringList(AArDiscountTable.TableId), ATemplateRow, ATemplateOperators)) +
+                            GenerateOrderByClause(AOrderBy)), TTypedDataTable.GetTableName(AArDiscountTable.TableId), ATransaction,
+                            GetParametersForWhereClause(AArDiscountTable.TableId, ATemplateRow), AStartRecord, AMaxRecords);
         }
 
         /// auto generated
@@ -2949,11 +2881,10 @@ namespace Ict.Petra.Shared.MFinance.AR.Data.Access
         /// this method is called by all overloads
         public static void LoadUsingTemplate(DataSet ADataSet, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClause(AFieldList, new string[] {
-                            "a_ar_discount_code_c", "a_ar_date_valid_from_d"}) + " FROM PUB_a_ar_discount")
-                            + GenerateWhereClause(AArDiscountTable.GetColumnStringList(), ASearchCriteria))
-                            + GenerateOrderByClause(AOrderBy)), AArDiscountTable.GetTableName(), ATransaction,
-                            GetParametersForWhereClause(new AArDiscountTable(), ASearchCriteria), AStartRecord, AMaxRecords);
+            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClause(AFieldList, AArDiscountTable.TableId) + " FROM PUB_a_ar_discount") +
+                            GenerateWhereClause(TTypedDataTable.GetColumnStringList(AArDiscountTable.TableId), ASearchCriteria)) +
+                            GenerateOrderByClause(AOrderBy)), TTypedDataTable.GetTableName(AArDiscountTable.TableId), ATransaction,
+                            GetParametersForWhereClause(AArDiscountTable.TableId, ASearchCriteria), AStartRecord, AMaxRecords);
         }
 
         /// auto generated
@@ -2996,28 +2927,24 @@ namespace Ict.Petra.Shared.MFinance.AR.Data.Access
             return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar("SELECT COUNT(*) FROM PUB_a_ar_discount", ATransaction, false));
         }
 
-        /// this method is called by all overloads
-        public static int CountByPrimaryKey(String AArDiscountCode, System.DateTime AArDateValidFrom, TDBTransaction ATransaction)
+        /// check if a row exists by using the primary key
+        public static bool Exists(String AArDiscountCode, System.DateTime AArDateValidFrom, TDBTransaction ATransaction)
         {
-            OdbcParameter[] ParametersArray = new OdbcParameter[2];
-            ParametersArray[0] = new OdbcParameter("", OdbcType.VarChar, 100);
-            ParametersArray[0].Value = ((object)(AArDiscountCode));
-            ParametersArray[1] = new OdbcParameter("", OdbcType.Date);
-            ParametersArray[1].Value = ((object)(AArDateValidFrom));
-            return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar("SELECT COUNT(*) FROM PUB_a_ar_discount WHERE a_ar_discount_code_c = ? AND a_ar_date_valid_from_d = ?", ATransaction, false, ParametersArray));
+            return Exists(AArDiscountTable.TableId, new System.Object[2]{AArDiscountCode, AArDateValidFrom}, ATransaction);
         }
 
         /// this method is called by all overloads
         public static int CountUsingTemplate(AArDiscountRow ATemplateRow, StringCollection ATemplateOperators, TDBTransaction ATransaction)
         {
-            return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_a_ar_discount" + GenerateWhereClause(AArDiscountTable.GetColumnStringList(), ATemplateRow, ATemplateOperators)), ATransaction, false, GetParametersForWhereClause(ATemplateRow)));
+            return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_a_ar_discount" + GenerateWhereClause(TTypedDataTable.GetColumnStringList(AArDiscountTable.TableId), ATemplateRow, ATemplateOperators)), ATransaction, false,
+                   GetParametersForWhereClause(AArDiscountTable.TableId, ATemplateRow)));
         }
 
         /// this method is called by all overloads
         public static int CountUsingTemplate(TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
         {
-            return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_a_ar_discount" + GenerateWhereClause(AArDiscountTable.GetColumnStringList(), ASearchCriteria)), ATransaction, false,
-            GetParametersForWhereClause(new AArDiscountTable(), ASearchCriteria)));
+            return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_a_ar_discount" + GenerateWhereClause(TTypedDataTable.GetColumnStringList(AArDiscountTable.TableId), ASearchCriteria)), ATransaction, false,
+            GetParametersForWhereClause(AArDiscountTable.TableId, ASearchCriteria)));
         }
 
         /// auto generated
@@ -3026,9 +2953,9 @@ namespace Ict.Petra.Shared.MFinance.AR.Data.Access
             OdbcParameter[] ParametersArray = new OdbcParameter[1];
             ParametersArray[0] = new OdbcParameter("", OdbcType.VarChar, 16);
             ParametersArray[0].Value = ((object)(ACurrencyCode));
-            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, ((GenerateSelectClause(AFieldList, new string[] {
-                            "a_ar_discount_code_c", "a_ar_date_valid_from_d"}) + " FROM PUB_a_ar_discount WHERE a_currency_code_c = ?")
-                            + GenerateOrderByClause(AOrderBy)), AArDiscountTable.GetTableName(), ATransaction, ParametersArray, AStartRecord, AMaxRecords);
+            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, ((GenerateSelectClause(AFieldList, AArDiscountTable.TableId) +
+                            " FROM PUB_a_ar_discount WHERE a_currency_code_c = ?") +
+                            GenerateOrderByClause(AOrderBy)), TTypedDataTable.GetTableName(AArDiscountTable.TableId), ATransaction, ParametersArray, AStartRecord, AMaxRecords);
         }
 
         /// auto generated
@@ -3068,11 +2995,12 @@ namespace Ict.Petra.Shared.MFinance.AR.Data.Access
         /// auto generated
         public static void LoadViaACurrencyTemplate(DataSet ADataSet, ACurrencyRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClauseLong("PUB_a_ar_discount", AFieldList, new string[] {
-                            "a_ar_discount_code_c", "a_ar_date_valid_from_d"}) + " FROM PUB_a_ar_discount, PUB_a_currency WHERE " +
-                            "PUB_a_ar_discount.a_currency_code_c = PUB_a_currency.a_currency_code_c")
-                            + GenerateWhereClauseLong("PUB_a_currency", ACurrencyTable.GetColumnStringList(), ATemplateRow, ATemplateOperators))
-                            + GenerateOrderByClause(AOrderBy)), AArDiscountTable.GetTableName(), ATransaction, GetParametersForWhereClause(ATemplateRow), AStartRecord, AMaxRecords);
+            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClauseLong("PUB_a_ar_discount", AFieldList, AArDiscountTable.TableId) +
+                            " FROM PUB_a_ar_discount, PUB_a_currency WHERE " +
+                            "PUB_a_ar_discount.a_currency_code_c = PUB_a_currency.a_currency_code_c") +
+                            GenerateWhereClauseLong("PUB_a_currency", ACurrencyTable.TableId, ATemplateRow, ATemplateOperators)) +
+                            GenerateOrderByClause(AOrderBy)), TTypedDataTable.GetTableName(AArDiscountTable.TableId), ATransaction,
+                            GetParametersForWhereClause(ACurrencyTable.TableId, ATemplateRow), AStartRecord, AMaxRecords);
         }
 
         /// auto generated
@@ -3118,12 +3046,12 @@ namespace Ict.Petra.Shared.MFinance.AR.Data.Access
         /// auto generated
         public static void LoadViaACurrencyTemplate(DataSet ADataSet, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClauseLong("PUB_a_ar_discount", AFieldList, new string[] {
-                            "a_ar_discount_code_c", "a_ar_date_valid_from_d"}) + " FROM PUB_a_ar_discount, PUB_a_currency WHERE " +
-                            "PUB_a_ar_discount.a_currency_code_c = PUB_a_currency.a_currency_code_c")
-                            + GenerateWhereClauseLong("PUB_a_currency", ACurrencyTable.GetColumnStringList(), ASearchCriteria))
-                            + GenerateOrderByClause(AOrderBy)), AArDiscountTable.GetTableName(), ATransaction,
-                            GetParametersForWhereClause(new AArDiscountTable(), ASearchCriteria), AStartRecord, AMaxRecords);
+            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClauseLong("PUB_a_ar_discount", AFieldList, AArDiscountTable.TableId) +
+                            " FROM PUB_a_ar_discount, PUB_a_currency WHERE " +
+                            "PUB_a_ar_discount.a_currency_code_c = PUB_a_currency.a_currency_code_c") +
+                            GenerateWhereClauseLong("PUB_a_currency", ASearchCriteria)) +
+                            GenerateOrderByClause(AOrderBy)), TTypedDataTable.GetTableName(AArDiscountTable.TableId), ATransaction,
+                            GetParametersForWhereClause(AArDiscountTable.TableId, ASearchCriteria), AStartRecord, AMaxRecords);
         }
 
         /// auto generated
@@ -3173,7 +3101,10 @@ namespace Ict.Petra.Shared.MFinance.AR.Data.Access
         public static int CountViaACurrencyTemplate(ACurrencyRow ATemplateRow, StringCollection ATemplateOperators, TDBTransaction ATransaction)
         {
             return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_a_ar_discount, PUB_a_currency WHERE " +
-                "PUB_a_ar_discount.a_currency_code_c = PUB_a_currency.a_currency_code_c" + GenerateWhereClauseLong("PUB_a_currency", ACurrencyTable.GetColumnStringList(), ATemplateRow, ATemplateOperators)), ATransaction, false, GetParametersForWhereClause(ATemplateRow, ACurrencyTable.GetPrimKeyColumnOrdList())));
+                "PUB_a_ar_discount.a_currency_code_c = PUB_a_currency.a_currency_code_c" + GenerateWhereClauseLong("PUB_a_currency",
+                ACurrencyTable.TableId, ATemplateRow, ATemplateOperators)),
+                ATransaction, false,
+                GetParametersForWhereClauseWithPrimaryKey(ACurrencyTable.TableId, ATemplateRow)));
         }
 
         /// auto generated
@@ -3181,8 +3112,8 @@ namespace Ict.Petra.Shared.MFinance.AR.Data.Access
         {
             return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_a_ar_discount, PUB_a_currency WHERE " +
                 "PUB_a_ar_discount.a_currency_code_c = PUB_a_currency.a_currency_code_c" +
-                GenerateWhereClauseLong("PUB_a_currency", ACurrencyTable.GetColumnStringList(), ASearchCriteria)), ATransaction, false,
-                GetParametersForWhereClause(new ACurrencyTable(), ASearchCriteria)));
+                GenerateWhereClauseLong("PUB_a_currency", ASearchCriteria)), ATransaction, false,
+                GetParametersForWhereClause(ACurrencyTable.TableId, ASearchCriteria)));
         }
 
         /// auto generated
@@ -3191,9 +3122,9 @@ namespace Ict.Petra.Shared.MFinance.AR.Data.Access
             OdbcParameter[] ParametersArray = new OdbcParameter[1];
             ParametersArray[0] = new OdbcParameter("", OdbcType.VarChar, 20);
             ParametersArray[0].Value = ((object)(ATypeCode));
-            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, ((GenerateSelectClause(AFieldList, new string[] {
-                            "a_ar_discount_code_c", "a_ar_date_valid_from_d"}) + " FROM PUB_a_ar_discount WHERE p_partner_type_code_c = ?")
-                            + GenerateOrderByClause(AOrderBy)), AArDiscountTable.GetTableName(), ATransaction, ParametersArray, AStartRecord, AMaxRecords);
+            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, ((GenerateSelectClause(AFieldList, AArDiscountTable.TableId) +
+                            " FROM PUB_a_ar_discount WHERE p_partner_type_code_c = ?") +
+                            GenerateOrderByClause(AOrderBy)), TTypedDataTable.GetTableName(AArDiscountTable.TableId), ATransaction, ParametersArray, AStartRecord, AMaxRecords);
         }
 
         /// auto generated
@@ -3233,11 +3164,12 @@ namespace Ict.Petra.Shared.MFinance.AR.Data.Access
         /// auto generated
         public static void LoadViaPTypeTemplate(DataSet ADataSet, PTypeRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClauseLong("PUB_a_ar_discount", AFieldList, new string[] {
-                            "a_ar_discount_code_c", "a_ar_date_valid_from_d"}) + " FROM PUB_a_ar_discount, PUB_p_type WHERE " +
-                            "PUB_a_ar_discount.p_partner_type_code_c = PUB_p_type.p_type_code_c")
-                            + GenerateWhereClauseLong("PUB_p_type", PTypeTable.GetColumnStringList(), ATemplateRow, ATemplateOperators))
-                            + GenerateOrderByClause(AOrderBy)), AArDiscountTable.GetTableName(), ATransaction, GetParametersForWhereClause(ATemplateRow), AStartRecord, AMaxRecords);
+            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClauseLong("PUB_a_ar_discount", AFieldList, AArDiscountTable.TableId) +
+                            " FROM PUB_a_ar_discount, PUB_p_type WHERE " +
+                            "PUB_a_ar_discount.p_partner_type_code_c = PUB_p_type.p_type_code_c") +
+                            GenerateWhereClauseLong("PUB_p_type", PTypeTable.TableId, ATemplateRow, ATemplateOperators)) +
+                            GenerateOrderByClause(AOrderBy)), TTypedDataTable.GetTableName(AArDiscountTable.TableId), ATransaction,
+                            GetParametersForWhereClause(PTypeTable.TableId, ATemplateRow), AStartRecord, AMaxRecords);
         }
 
         /// auto generated
@@ -3283,12 +3215,12 @@ namespace Ict.Petra.Shared.MFinance.AR.Data.Access
         /// auto generated
         public static void LoadViaPTypeTemplate(DataSet ADataSet, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClauseLong("PUB_a_ar_discount", AFieldList, new string[] {
-                            "a_ar_discount_code_c", "a_ar_date_valid_from_d"}) + " FROM PUB_a_ar_discount, PUB_p_type WHERE " +
-                            "PUB_a_ar_discount.p_partner_type_code_c = PUB_p_type.p_type_code_c")
-                            + GenerateWhereClauseLong("PUB_p_type", PTypeTable.GetColumnStringList(), ASearchCriteria))
-                            + GenerateOrderByClause(AOrderBy)), AArDiscountTable.GetTableName(), ATransaction,
-                            GetParametersForWhereClause(new AArDiscountTable(), ASearchCriteria), AStartRecord, AMaxRecords);
+            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClauseLong("PUB_a_ar_discount", AFieldList, AArDiscountTable.TableId) +
+                            " FROM PUB_a_ar_discount, PUB_p_type WHERE " +
+                            "PUB_a_ar_discount.p_partner_type_code_c = PUB_p_type.p_type_code_c") +
+                            GenerateWhereClauseLong("PUB_p_type", ASearchCriteria)) +
+                            GenerateOrderByClause(AOrderBy)), TTypedDataTable.GetTableName(AArDiscountTable.TableId), ATransaction,
+                            GetParametersForWhereClause(AArDiscountTable.TableId, ASearchCriteria), AStartRecord, AMaxRecords);
         }
 
         /// auto generated
@@ -3338,7 +3270,10 @@ namespace Ict.Petra.Shared.MFinance.AR.Data.Access
         public static int CountViaPTypeTemplate(PTypeRow ATemplateRow, StringCollection ATemplateOperators, TDBTransaction ATransaction)
         {
             return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_a_ar_discount, PUB_p_type WHERE " +
-                "PUB_a_ar_discount.p_partner_type_code_c = PUB_p_type.p_type_code_c" + GenerateWhereClauseLong("PUB_p_type", PTypeTable.GetColumnStringList(), ATemplateRow, ATemplateOperators)), ATransaction, false, GetParametersForWhereClause(ATemplateRow, PTypeTable.GetPrimKeyColumnOrdList())));
+                "PUB_a_ar_discount.p_partner_type_code_c = PUB_p_type.p_type_code_c" + GenerateWhereClauseLong("PUB_p_type",
+                PTypeTable.TableId, ATemplateRow, ATemplateOperators)),
+                ATransaction, false,
+                GetParametersForWhereClauseWithPrimaryKey(PTypeTable.TableId, ATemplateRow)));
         }
 
         /// auto generated
@@ -3346,8 +3281,8 @@ namespace Ict.Petra.Shared.MFinance.AR.Data.Access
         {
             return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_a_ar_discount, PUB_p_type WHERE " +
                 "PUB_a_ar_discount.p_partner_type_code_c = PUB_p_type.p_type_code_c" +
-                GenerateWhereClauseLong("PUB_p_type", PTypeTable.GetColumnStringList(), ASearchCriteria)), ATransaction, false,
-                GetParametersForWhereClause(new PTypeTable(), ASearchCriteria)));
+                GenerateWhereClauseLong("PUB_p_type", ASearchCriteria)), ATransaction, false,
+                GetParametersForWhereClause(PTypeTable.TableId, ASearchCriteria)));
         }
 
         /// auto generated
@@ -3356,9 +3291,9 @@ namespace Ict.Petra.Shared.MFinance.AR.Data.Access
             OdbcParameter[] ParametersArray = new OdbcParameter[1];
             ParametersArray[0] = new OdbcParameter("", OdbcType.VarChar, 100);
             ParametersArray[0].Value = ((object)(AArArticleCode));
-            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, ((GenerateSelectClause(AFieldList, new string[] {
-                            "a_ar_discount_code_c", "a_ar_date_valid_from_d"}) + " FROM PUB_a_ar_discount WHERE a_ar_article_code_c = ?")
-                            + GenerateOrderByClause(AOrderBy)), AArDiscountTable.GetTableName(), ATransaction, ParametersArray, AStartRecord, AMaxRecords);
+            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, ((GenerateSelectClause(AFieldList, AArDiscountTable.TableId) +
+                            " FROM PUB_a_ar_discount WHERE a_ar_article_code_c = ?") +
+                            GenerateOrderByClause(AOrderBy)), TTypedDataTable.GetTableName(AArDiscountTable.TableId), ATransaction, ParametersArray, AStartRecord, AMaxRecords);
         }
 
         /// auto generated
@@ -3398,11 +3333,12 @@ namespace Ict.Petra.Shared.MFinance.AR.Data.Access
         /// auto generated
         public static void LoadViaAArArticleTemplate(DataSet ADataSet, AArArticleRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClauseLong("PUB_a_ar_discount", AFieldList, new string[] {
-                            "a_ar_discount_code_c", "a_ar_date_valid_from_d"}) + " FROM PUB_a_ar_discount, PUB_a_ar_article WHERE " +
-                            "PUB_a_ar_discount.a_ar_article_code_c = PUB_a_ar_article.a_ar_article_code_c")
-                            + GenerateWhereClauseLong("PUB_a_ar_article", AArArticleTable.GetColumnStringList(), ATemplateRow, ATemplateOperators))
-                            + GenerateOrderByClause(AOrderBy)), AArDiscountTable.GetTableName(), ATransaction, GetParametersForWhereClause(ATemplateRow), AStartRecord, AMaxRecords);
+            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClauseLong("PUB_a_ar_discount", AFieldList, AArDiscountTable.TableId) +
+                            " FROM PUB_a_ar_discount, PUB_a_ar_article WHERE " +
+                            "PUB_a_ar_discount.a_ar_article_code_c = PUB_a_ar_article.a_ar_article_code_c") +
+                            GenerateWhereClauseLong("PUB_a_ar_article", AArArticleTable.TableId, ATemplateRow, ATemplateOperators)) +
+                            GenerateOrderByClause(AOrderBy)), TTypedDataTable.GetTableName(AArDiscountTable.TableId), ATransaction,
+                            GetParametersForWhereClause(AArArticleTable.TableId, ATemplateRow), AStartRecord, AMaxRecords);
         }
 
         /// auto generated
@@ -3448,12 +3384,12 @@ namespace Ict.Petra.Shared.MFinance.AR.Data.Access
         /// auto generated
         public static void LoadViaAArArticleTemplate(DataSet ADataSet, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClauseLong("PUB_a_ar_discount", AFieldList, new string[] {
-                            "a_ar_discount_code_c", "a_ar_date_valid_from_d"}) + " FROM PUB_a_ar_discount, PUB_a_ar_article WHERE " +
-                            "PUB_a_ar_discount.a_ar_article_code_c = PUB_a_ar_article.a_ar_article_code_c")
-                            + GenerateWhereClauseLong("PUB_a_ar_article", AArArticleTable.GetColumnStringList(), ASearchCriteria))
-                            + GenerateOrderByClause(AOrderBy)), AArDiscountTable.GetTableName(), ATransaction,
-                            GetParametersForWhereClause(new AArDiscountTable(), ASearchCriteria), AStartRecord, AMaxRecords);
+            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClauseLong("PUB_a_ar_discount", AFieldList, AArDiscountTable.TableId) +
+                            " FROM PUB_a_ar_discount, PUB_a_ar_article WHERE " +
+                            "PUB_a_ar_discount.a_ar_article_code_c = PUB_a_ar_article.a_ar_article_code_c") +
+                            GenerateWhereClauseLong("PUB_a_ar_article", ASearchCriteria)) +
+                            GenerateOrderByClause(AOrderBy)), TTypedDataTable.GetTableName(AArDiscountTable.TableId), ATransaction,
+                            GetParametersForWhereClause(AArDiscountTable.TableId, ASearchCriteria), AStartRecord, AMaxRecords);
         }
 
         /// auto generated
@@ -3503,7 +3439,10 @@ namespace Ict.Petra.Shared.MFinance.AR.Data.Access
         public static int CountViaAArArticleTemplate(AArArticleRow ATemplateRow, StringCollection ATemplateOperators, TDBTransaction ATransaction)
         {
             return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_a_ar_discount, PUB_a_ar_article WHERE " +
-                "PUB_a_ar_discount.a_ar_article_code_c = PUB_a_ar_article.a_ar_article_code_c" + GenerateWhereClauseLong("PUB_a_ar_article", AArArticleTable.GetColumnStringList(), ATemplateRow, ATemplateOperators)), ATransaction, false, GetParametersForWhereClause(ATemplateRow, AArArticleTable.GetPrimKeyColumnOrdList())));
+                "PUB_a_ar_discount.a_ar_article_code_c = PUB_a_ar_article.a_ar_article_code_c" + GenerateWhereClauseLong("PUB_a_ar_article",
+                AArArticleTable.TableId, ATemplateRow, ATemplateOperators)),
+                ATransaction, false,
+                GetParametersForWhereClauseWithPrimaryKey(AArArticleTable.TableId, ATemplateRow)));
         }
 
         /// auto generated
@@ -3511,8 +3450,8 @@ namespace Ict.Petra.Shared.MFinance.AR.Data.Access
         {
             return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_a_ar_discount, PUB_a_ar_article WHERE " +
                 "PUB_a_ar_discount.a_ar_article_code_c = PUB_a_ar_article.a_ar_article_code_c" +
-                GenerateWhereClauseLong("PUB_a_ar_article", AArArticleTable.GetColumnStringList(), ASearchCriteria)), ATransaction, false,
-                GetParametersForWhereClause(new AArArticleTable(), ASearchCriteria)));
+                GenerateWhereClauseLong("PUB_a_ar_article", ASearchCriteria)), ATransaction, false,
+                GetParametersForWhereClause(AArArticleTable.TableId, ASearchCriteria)));
         }
 
         /// auto generated LoadViaLinkTable
@@ -3521,10 +3460,10 @@ namespace Ict.Petra.Shared.MFinance.AR.Data.Access
             OdbcParameter[] ParametersArray = new OdbcParameter[1];
             ParametersArray[0] = new OdbcParameter("", OdbcType.VarChar, 100);
             ParametersArray[0].Value = ((object)(AArCategoryCode));
-            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, ((GenerateSelectClauseLong("PUB_a_ar_discount", AFieldList, new string[] {
-                            "a_ar_discount_code_c", "a_ar_date_valid_from_d"}) + " FROM PUB_a_ar_discount, PUB_a_ar_default_discount WHERE " +
-                            "PUB_a_ar_default_discount.a_ar_discount_code_c = PUB_a_ar_discount.a_ar_discount_code_c AND PUB_a_ar_default_discount.a_ar_date_valid_from_d = PUB_a_ar_discount.a_ar_date_valid_from_d AND PUB_a_ar_default_discount.a_ar_category_code_c = ?")
-                            + GenerateOrderByClause(AOrderBy)), AArDiscountTable.GetTableName(), ATransaction, ParametersArray, AStartRecord, AMaxRecords);
+            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, ((GenerateSelectClauseLong("PUB_a_ar_discount", AFieldList, AArDiscountTable.TableId) +
+                            " FROM PUB_a_ar_discount, PUB_a_ar_default_discount WHERE " +
+                            "PUB_a_ar_default_discount.a_ar_discount_code_c = PUB_a_ar_discount.a_ar_discount_code_c AND PUB_a_ar_default_discount.a_ar_date_valid_from_d = PUB_a_ar_discount.a_ar_date_valid_from_d AND PUB_a_ar_default_discount.a_ar_category_code_c = ?") +
+                            GenerateOrderByClause(AOrderBy)), TTypedDataTable.GetTableName(AArDiscountTable.TableId), ATransaction, ParametersArray, AStartRecord, AMaxRecords);
         }
 
         /// auto generated
@@ -3564,11 +3503,12 @@ namespace Ict.Petra.Shared.MFinance.AR.Data.Access
         /// auto generated
         public static void LoadViaAArCategoryTemplate(DataSet ADataSet, AArCategoryRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClauseLong("PUB_a_ar_discount", AFieldList, new string[] {
-                            "a_ar_discount_code_c", "a_ar_date_valid_from_d"}) + " FROM PUB_a_ar_discount, PUB_a_ar_default_discount, PUB_a_ar_category WHERE " +
-                            "PUB_a_ar_default_discount.a_ar_discount_code_c = PUB_a_ar_discount.a_ar_discount_code_c AND PUB_a_ar_default_discount.a_ar_date_valid_from_d = PUB_a_ar_discount.a_ar_date_valid_from_d AND PUB_a_ar_default_discount.a_ar_category_code_c = PUB_a_ar_category.a_ar_category_code_c")
-                            + GenerateWhereClauseLong("PUB_a_ar_category", AArCategoryTable.GetColumnStringList(), ATemplateRow, ATemplateOperators))
-                            + GenerateOrderByClause(AOrderBy)), AArDiscountTable.GetTableName(), ATransaction, GetParametersForWhereClause(ATemplateRow), AStartRecord, AMaxRecords);
+            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClauseLong("PUB_a_ar_discount", AFieldList, AArDiscountTable.TableId) +
+                            " FROM PUB_a_ar_discount, PUB_a_ar_default_discount, PUB_a_ar_category WHERE " +
+                            "PUB_a_ar_default_discount.a_ar_discount_code_c = PUB_a_ar_discount.a_ar_discount_code_c AND PUB_a_ar_default_discount.a_ar_date_valid_from_d = PUB_a_ar_discount.a_ar_date_valid_from_d AND PUB_a_ar_default_discount.a_ar_category_code_c = PUB_a_ar_category.a_ar_category_code_c") +
+                            GenerateWhereClauseLong("PUB_a_ar_category", AArCategoryTable.TableId, ATemplateRow, ATemplateOperators)) +
+                            GenerateOrderByClause(AOrderBy)), TTypedDataTable.GetTableName(AArDiscountTable.TableId), ATransaction,
+                            GetParametersForWhereClause(AArCategoryTable.TableId, ATemplateRow), AStartRecord, AMaxRecords);
         }
 
         /// auto generated
@@ -3614,12 +3554,12 @@ namespace Ict.Petra.Shared.MFinance.AR.Data.Access
         /// auto generated
         public static void LoadViaAArCategoryTemplate(DataSet ADataSet, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClauseLong("PUB_a_ar_discount", AFieldList, new string[] {
-                            "a_ar_discount_code_c", "a_ar_date_valid_from_d"}) + " FROM PUB_a_ar_discount, PUB_a_ar_default_discount, PUB_a_ar_category WHERE " +
-                            "PUB_a_ar_default_discount.a_ar_discount_code_c = PUB_a_ar_discount.a_ar_discount_code_c AND PUB_a_ar_default_discount.a_ar_date_valid_from_d = PUB_a_ar_discount.a_ar_date_valid_from_d AND PUB_a_ar_default_discount.a_ar_category_code_c = PUB_a_ar_category.a_ar_category_code_c")
-                            + GenerateWhereClauseLong("PUB_a_ar_category", AArCategoryTable.GetColumnStringList(), ASearchCriteria))
-                            + GenerateOrderByClause(AOrderBy)), AArDiscountTable.GetTableName(), ATransaction,
-                            GetParametersForWhereClause(new AArDiscountTable(), ASearchCriteria), AStartRecord, AMaxRecords);
+            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClauseLong("PUB_a_ar_discount", AFieldList, AArDiscountTable.TableId) +
+                            " FROM PUB_a_ar_discount, PUB_a_ar_default_discount, PUB_a_ar_category WHERE " +
+                            "PUB_a_ar_default_discount.a_ar_discount_code_c = PUB_a_ar_discount.a_ar_discount_code_c AND PUB_a_ar_default_discount.a_ar_date_valid_from_d = PUB_a_ar_discount.a_ar_date_valid_from_d AND PUB_a_ar_default_discount.a_ar_category_code_c = PUB_a_ar_category.a_ar_category_code_c") +
+                            GenerateWhereClauseLong("PUB_a_ar_category", ASearchCriteria)) +
+                            GenerateOrderByClause(AOrderBy)), TTypedDataTable.GetTableName(AArDiscountTable.TableId), ATransaction,
+                            GetParametersForWhereClause(AArDiscountTable.TableId, ASearchCriteria), AStartRecord, AMaxRecords);
         }
 
         /// auto generated
@@ -3672,7 +3612,8 @@ namespace Ict.Petra.Shared.MFinance.AR.Data.Access
         {
             return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_a_ar_discount, PUB_a_ar_default_discount, PUB_a_ar_category WHERE " +
                         "PUB_a_ar_default_discount.a_ar_discount_code_c = PUB_a_ar_discount.a_ar_discount_code_c AND PUB_a_ar_default_discount.a_ar_date_valid_from_d = PUB_a_ar_discount.a_ar_date_valid_from_d AND PUB_a_ar_default_discount.a_ar_category_code_c = PUB_a_ar_category.a_ar_category_code_c" +
-                        GenerateWhereClauseLong("PUB_a_ar_default_discount", AArDiscountTable.GetColumnStringList(), ATemplateRow, ATemplateOperators)), ATransaction, false, GetParametersForWhereClause(ATemplateRow, AArCategoryTable.GetPrimKeyColumnOrdList())));
+                        GenerateWhereClauseLong("PUB_a_ar_default_discount", AArDiscountTable.TableId, ATemplateRow, ATemplateOperators)), ATransaction, false,
+                        GetParametersForWhereClauseWithPrimaryKey(AArCategoryTable.TableId, ATemplateRow)));
         }
 
         /// auto generated
@@ -3680,8 +3621,8 @@ namespace Ict.Petra.Shared.MFinance.AR.Data.Access
         {
             return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_a_ar_discount, PUB_a_ar_default_discount, PUB_a_ar_category WHERE " +
                         "PUB_a_ar_default_discount.a_ar_discount_code_c = PUB_a_ar_discount.a_ar_discount_code_c AND PUB_a_ar_default_discount.a_ar_date_valid_from_d = PUB_a_ar_discount.a_ar_date_valid_from_d AND PUB_a_ar_default_discount.a_ar_category_code_c = PUB_a_ar_category.a_ar_category_code_c" +
-                        GenerateWhereClauseLong("PUB_a_ar_default_discount", AArDiscountTable.GetColumnStringList(), ASearchCriteria)), ATransaction, false,
-                        GetParametersForWhereClause(new AArDiscountTable(), ASearchCriteria)));
+                        GenerateWhereClauseLong("PUB_a_ar_default_discount", ASearchCriteria)), ATransaction, false,
+                        GetParametersForWhereClause(AArDiscountTable.TableId, ASearchCriteria)));
         }
 
         /// auto generated LoadViaLinkTable
@@ -3692,10 +3633,10 @@ namespace Ict.Petra.Shared.MFinance.AR.Data.Access
             ParametersArray[0].Value = ((object)(ALedgerNumber));
             ParametersArray[1] = new OdbcParameter("", OdbcType.Int);
             ParametersArray[1].Value = ((object)(AKey));
-            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, ((GenerateSelectClauseLong("PUB_a_ar_discount", AFieldList, new string[] {
-                            "a_ar_discount_code_c", "a_ar_date_valid_from_d"}) + " FROM PUB_a_ar_discount, PUB_a_ar_invoice_discount WHERE " +
-                            "PUB_a_ar_invoice_discount.a_ar_discount_code_c = PUB_a_ar_discount.a_ar_discount_code_c AND PUB_a_ar_invoice_discount.a_ar_discount_date_valid_from_d = PUB_a_ar_discount.a_ar_date_valid_from_d AND PUB_a_ar_invoice_discount.a_ledger_number_i = ? AND PUB_a_ar_invoice_discount.a_invoice_key_i = ?")
-                            + GenerateOrderByClause(AOrderBy)), AArDiscountTable.GetTableName(), ATransaction, ParametersArray, AStartRecord, AMaxRecords);
+            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, ((GenerateSelectClauseLong("PUB_a_ar_discount", AFieldList, AArDiscountTable.TableId) +
+                            " FROM PUB_a_ar_discount, PUB_a_ar_invoice_discount WHERE " +
+                            "PUB_a_ar_invoice_discount.a_ar_discount_code_c = PUB_a_ar_discount.a_ar_discount_code_c AND PUB_a_ar_invoice_discount.a_ar_discount_date_valid_from_d = PUB_a_ar_discount.a_ar_date_valid_from_d AND PUB_a_ar_invoice_discount.a_ledger_number_i = ? AND PUB_a_ar_invoice_discount.a_invoice_key_i = ?") +
+                            GenerateOrderByClause(AOrderBy)), TTypedDataTable.GetTableName(AArDiscountTable.TableId), ATransaction, ParametersArray, AStartRecord, AMaxRecords);
         }
 
         /// auto generated
@@ -3735,11 +3676,12 @@ namespace Ict.Petra.Shared.MFinance.AR.Data.Access
         /// auto generated
         public static void LoadViaAArInvoiceTemplate(DataSet ADataSet, AArInvoiceRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClauseLong("PUB_a_ar_discount", AFieldList, new string[] {
-                            "a_ar_discount_code_c", "a_ar_date_valid_from_d"}) + " FROM PUB_a_ar_discount, PUB_a_ar_invoice_discount, PUB_a_ar_invoice WHERE " +
-                            "PUB_a_ar_invoice_discount.a_ar_discount_code_c = PUB_a_ar_discount.a_ar_discount_code_c AND PUB_a_ar_invoice_discount.a_ar_discount_date_valid_from_d = PUB_a_ar_discount.a_ar_date_valid_from_d AND PUB_a_ar_invoice_discount.a_ledger_number_i = PUB_a_ar_invoice.a_ledger_number_i AND PUB_a_ar_invoice_discount.a_invoice_key_i = PUB_a_ar_invoice.a_key_i")
-                            + GenerateWhereClauseLong("PUB_a_ar_invoice", AArInvoiceTable.GetColumnStringList(), ATemplateRow, ATemplateOperators))
-                            + GenerateOrderByClause(AOrderBy)), AArDiscountTable.GetTableName(), ATransaction, GetParametersForWhereClause(ATemplateRow), AStartRecord, AMaxRecords);
+            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClauseLong("PUB_a_ar_discount", AFieldList, AArDiscountTable.TableId) +
+                            " FROM PUB_a_ar_discount, PUB_a_ar_invoice_discount, PUB_a_ar_invoice WHERE " +
+                            "PUB_a_ar_invoice_discount.a_ar_discount_code_c = PUB_a_ar_discount.a_ar_discount_code_c AND PUB_a_ar_invoice_discount.a_ar_discount_date_valid_from_d = PUB_a_ar_discount.a_ar_date_valid_from_d AND PUB_a_ar_invoice_discount.a_ledger_number_i = PUB_a_ar_invoice.a_ledger_number_i AND PUB_a_ar_invoice_discount.a_invoice_key_i = PUB_a_ar_invoice.a_key_i") +
+                            GenerateWhereClauseLong("PUB_a_ar_invoice", AArInvoiceTable.TableId, ATemplateRow, ATemplateOperators)) +
+                            GenerateOrderByClause(AOrderBy)), TTypedDataTable.GetTableName(AArDiscountTable.TableId), ATransaction,
+                            GetParametersForWhereClause(AArInvoiceTable.TableId, ATemplateRow), AStartRecord, AMaxRecords);
         }
 
         /// auto generated
@@ -3785,12 +3727,12 @@ namespace Ict.Petra.Shared.MFinance.AR.Data.Access
         /// auto generated
         public static void LoadViaAArInvoiceTemplate(DataSet ADataSet, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClauseLong("PUB_a_ar_discount", AFieldList, new string[] {
-                            "a_ar_discount_code_c", "a_ar_date_valid_from_d"}) + " FROM PUB_a_ar_discount, PUB_a_ar_invoice_discount, PUB_a_ar_invoice WHERE " +
-                            "PUB_a_ar_invoice_discount.a_ar_discount_code_c = PUB_a_ar_discount.a_ar_discount_code_c AND PUB_a_ar_invoice_discount.a_ar_discount_date_valid_from_d = PUB_a_ar_discount.a_ar_date_valid_from_d AND PUB_a_ar_invoice_discount.a_ledger_number_i = PUB_a_ar_invoice.a_ledger_number_i AND PUB_a_ar_invoice_discount.a_invoice_key_i = PUB_a_ar_invoice.a_key_i")
-                            + GenerateWhereClauseLong("PUB_a_ar_invoice", AArInvoiceTable.GetColumnStringList(), ASearchCriteria))
-                            + GenerateOrderByClause(AOrderBy)), AArDiscountTable.GetTableName(), ATransaction,
-                            GetParametersForWhereClause(new AArDiscountTable(), ASearchCriteria), AStartRecord, AMaxRecords);
+            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClauseLong("PUB_a_ar_discount", AFieldList, AArDiscountTable.TableId) +
+                            " FROM PUB_a_ar_discount, PUB_a_ar_invoice_discount, PUB_a_ar_invoice WHERE " +
+                            "PUB_a_ar_invoice_discount.a_ar_discount_code_c = PUB_a_ar_discount.a_ar_discount_code_c AND PUB_a_ar_invoice_discount.a_ar_discount_date_valid_from_d = PUB_a_ar_discount.a_ar_date_valid_from_d AND PUB_a_ar_invoice_discount.a_ledger_number_i = PUB_a_ar_invoice.a_ledger_number_i AND PUB_a_ar_invoice_discount.a_invoice_key_i = PUB_a_ar_invoice.a_key_i") +
+                            GenerateWhereClauseLong("PUB_a_ar_invoice", ASearchCriteria)) +
+                            GenerateOrderByClause(AOrderBy)), TTypedDataTable.GetTableName(AArDiscountTable.TableId), ATransaction,
+                            GetParametersForWhereClause(AArDiscountTable.TableId, ASearchCriteria), AStartRecord, AMaxRecords);
         }
 
         /// auto generated
@@ -3845,7 +3787,8 @@ namespace Ict.Petra.Shared.MFinance.AR.Data.Access
         {
             return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_a_ar_discount, PUB_a_ar_invoice_discount, PUB_a_ar_invoice WHERE " +
                         "PUB_a_ar_invoice_discount.a_ar_discount_code_c = PUB_a_ar_discount.a_ar_discount_code_c AND PUB_a_ar_invoice_discount.a_ar_discount_date_valid_from_d = PUB_a_ar_discount.a_ar_date_valid_from_d AND PUB_a_ar_invoice_discount.a_ledger_number_i = PUB_a_ar_invoice.a_ledger_number_i AND PUB_a_ar_invoice_discount.a_invoice_key_i = PUB_a_ar_invoice.a_key_i" +
-                        GenerateWhereClauseLong("PUB_a_ar_invoice_discount", AArDiscountTable.GetColumnStringList(), ATemplateRow, ATemplateOperators)), ATransaction, false, GetParametersForWhereClause(ATemplateRow, AArInvoiceTable.GetPrimKeyColumnOrdList())));
+                        GenerateWhereClauseLong("PUB_a_ar_invoice_discount", AArDiscountTable.TableId, ATemplateRow, ATemplateOperators)), ATransaction, false,
+                        GetParametersForWhereClauseWithPrimaryKey(AArInvoiceTable.TableId, ATemplateRow)));
         }
 
         /// auto generated
@@ -3853,8 +3796,8 @@ namespace Ict.Petra.Shared.MFinance.AR.Data.Access
         {
             return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_a_ar_discount, PUB_a_ar_invoice_discount, PUB_a_ar_invoice WHERE " +
                         "PUB_a_ar_invoice_discount.a_ar_discount_code_c = PUB_a_ar_discount.a_ar_discount_code_c AND PUB_a_ar_invoice_discount.a_ar_discount_date_valid_from_d = PUB_a_ar_discount.a_ar_date_valid_from_d AND PUB_a_ar_invoice_discount.a_ledger_number_i = PUB_a_ar_invoice.a_ledger_number_i AND PUB_a_ar_invoice_discount.a_invoice_key_i = PUB_a_ar_invoice.a_key_i" +
-                        GenerateWhereClauseLong("PUB_a_ar_invoice_discount", AArDiscountTable.GetColumnStringList(), ASearchCriteria)), ATransaction, false,
-                        GetParametersForWhereClause(new AArDiscountTable(), ASearchCriteria)));
+                        GenerateWhereClauseLong("PUB_a_ar_invoice_discount", ASearchCriteria)), ATransaction, false,
+                        GetParametersForWhereClause(AArDiscountTable.TableId, ASearchCriteria)));
         }
 
         /// auto generated LoadViaLinkTable
@@ -3867,10 +3810,10 @@ namespace Ict.Petra.Shared.MFinance.AR.Data.Access
             ParametersArray[1].Value = ((object)(AInvoiceKey));
             ParametersArray[2] = new OdbcParameter("", OdbcType.Int);
             ParametersArray[2].Value = ((object)(ADetailNumber));
-            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, ((GenerateSelectClauseLong("PUB_a_ar_discount", AFieldList, new string[] {
-                            "a_ar_discount_code_c", "a_ar_date_valid_from_d"}) + " FROM PUB_a_ar_discount, PUB_a_ar_invoice_detail_discount WHERE " +
-                            "PUB_a_ar_invoice_detail_discount.a_ar_discount_code_c = PUB_a_ar_discount.a_ar_discount_code_c AND PUB_a_ar_invoice_detail_discount.a_ar_discount_date_valid_from_d = PUB_a_ar_discount.a_ar_date_valid_from_d AND PUB_a_ar_invoice_detail_discount.a_ledger_number_i = ? AND PUB_a_ar_invoice_detail_discount.a_invoice_key_i = ? AND PUB_a_ar_invoice_detail_discount.a_detail_number_i = ?")
-                            + GenerateOrderByClause(AOrderBy)), AArDiscountTable.GetTableName(), ATransaction, ParametersArray, AStartRecord, AMaxRecords);
+            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, ((GenerateSelectClauseLong("PUB_a_ar_discount", AFieldList, AArDiscountTable.TableId) +
+                            " FROM PUB_a_ar_discount, PUB_a_ar_invoice_detail_discount WHERE " +
+                            "PUB_a_ar_invoice_detail_discount.a_ar_discount_code_c = PUB_a_ar_discount.a_ar_discount_code_c AND PUB_a_ar_invoice_detail_discount.a_ar_discount_date_valid_from_d = PUB_a_ar_discount.a_ar_date_valid_from_d AND PUB_a_ar_invoice_detail_discount.a_ledger_number_i = ? AND PUB_a_ar_invoice_detail_discount.a_invoice_key_i = ? AND PUB_a_ar_invoice_detail_discount.a_detail_number_i = ?") +
+                            GenerateOrderByClause(AOrderBy)), TTypedDataTable.GetTableName(AArDiscountTable.TableId), ATransaction, ParametersArray, AStartRecord, AMaxRecords);
         }
 
         /// auto generated
@@ -3910,11 +3853,12 @@ namespace Ict.Petra.Shared.MFinance.AR.Data.Access
         /// auto generated
         public static void LoadViaAArInvoiceDetailTemplate(DataSet ADataSet, AArInvoiceDetailRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClauseLong("PUB_a_ar_discount", AFieldList, new string[] {
-                            "a_ar_discount_code_c", "a_ar_date_valid_from_d"}) + " FROM PUB_a_ar_discount, PUB_a_ar_invoice_detail_discount, PUB_a_ar_invoice_detail WHERE " +
-                            "PUB_a_ar_invoice_detail_discount.a_ar_discount_code_c = PUB_a_ar_discount.a_ar_discount_code_c AND PUB_a_ar_invoice_detail_discount.a_ar_discount_date_valid_from_d = PUB_a_ar_discount.a_ar_date_valid_from_d AND PUB_a_ar_invoice_detail_discount.a_ledger_number_i = PUB_a_ar_invoice_detail.a_ledger_number_i AND PUB_a_ar_invoice_detail_discount.a_invoice_key_i = PUB_a_ar_invoice_detail.a_invoice_key_i AND PUB_a_ar_invoice_detail_discount.a_detail_number_i = PUB_a_ar_invoice_detail.a_detail_number_i")
-                            + GenerateWhereClauseLong("PUB_a_ar_invoice_detail", AArInvoiceDetailTable.GetColumnStringList(), ATemplateRow, ATemplateOperators))
-                            + GenerateOrderByClause(AOrderBy)), AArDiscountTable.GetTableName(), ATransaction, GetParametersForWhereClause(ATemplateRow), AStartRecord, AMaxRecords);
+            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClauseLong("PUB_a_ar_discount", AFieldList, AArDiscountTable.TableId) +
+                            " FROM PUB_a_ar_discount, PUB_a_ar_invoice_detail_discount, PUB_a_ar_invoice_detail WHERE " +
+                            "PUB_a_ar_invoice_detail_discount.a_ar_discount_code_c = PUB_a_ar_discount.a_ar_discount_code_c AND PUB_a_ar_invoice_detail_discount.a_ar_discount_date_valid_from_d = PUB_a_ar_discount.a_ar_date_valid_from_d AND PUB_a_ar_invoice_detail_discount.a_ledger_number_i = PUB_a_ar_invoice_detail.a_ledger_number_i AND PUB_a_ar_invoice_detail_discount.a_invoice_key_i = PUB_a_ar_invoice_detail.a_invoice_key_i AND PUB_a_ar_invoice_detail_discount.a_detail_number_i = PUB_a_ar_invoice_detail.a_detail_number_i") +
+                            GenerateWhereClauseLong("PUB_a_ar_invoice_detail", AArInvoiceDetailTable.TableId, ATemplateRow, ATemplateOperators)) +
+                            GenerateOrderByClause(AOrderBy)), TTypedDataTable.GetTableName(AArDiscountTable.TableId), ATransaction,
+                            GetParametersForWhereClause(AArInvoiceDetailTable.TableId, ATemplateRow), AStartRecord, AMaxRecords);
         }
 
         /// auto generated
@@ -3960,12 +3904,12 @@ namespace Ict.Petra.Shared.MFinance.AR.Data.Access
         /// auto generated
         public static void LoadViaAArInvoiceDetailTemplate(DataSet ADataSet, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClauseLong("PUB_a_ar_discount", AFieldList, new string[] {
-                            "a_ar_discount_code_c", "a_ar_date_valid_from_d"}) + " FROM PUB_a_ar_discount, PUB_a_ar_invoice_detail_discount, PUB_a_ar_invoice_detail WHERE " +
-                            "PUB_a_ar_invoice_detail_discount.a_ar_discount_code_c = PUB_a_ar_discount.a_ar_discount_code_c AND PUB_a_ar_invoice_detail_discount.a_ar_discount_date_valid_from_d = PUB_a_ar_discount.a_ar_date_valid_from_d AND PUB_a_ar_invoice_detail_discount.a_ledger_number_i = PUB_a_ar_invoice_detail.a_ledger_number_i AND PUB_a_ar_invoice_detail_discount.a_invoice_key_i = PUB_a_ar_invoice_detail.a_invoice_key_i AND PUB_a_ar_invoice_detail_discount.a_detail_number_i = PUB_a_ar_invoice_detail.a_detail_number_i")
-                            + GenerateWhereClauseLong("PUB_a_ar_invoice_detail", AArInvoiceDetailTable.GetColumnStringList(), ASearchCriteria))
-                            + GenerateOrderByClause(AOrderBy)), AArDiscountTable.GetTableName(), ATransaction,
-                            GetParametersForWhereClause(new AArDiscountTable(), ASearchCriteria), AStartRecord, AMaxRecords);
+            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClauseLong("PUB_a_ar_discount", AFieldList, AArDiscountTable.TableId) +
+                            " FROM PUB_a_ar_discount, PUB_a_ar_invoice_detail_discount, PUB_a_ar_invoice_detail WHERE " +
+                            "PUB_a_ar_invoice_detail_discount.a_ar_discount_code_c = PUB_a_ar_discount.a_ar_discount_code_c AND PUB_a_ar_invoice_detail_discount.a_ar_discount_date_valid_from_d = PUB_a_ar_discount.a_ar_date_valid_from_d AND PUB_a_ar_invoice_detail_discount.a_ledger_number_i = PUB_a_ar_invoice_detail.a_ledger_number_i AND PUB_a_ar_invoice_detail_discount.a_invoice_key_i = PUB_a_ar_invoice_detail.a_invoice_key_i AND PUB_a_ar_invoice_detail_discount.a_detail_number_i = PUB_a_ar_invoice_detail.a_detail_number_i") +
+                            GenerateWhereClauseLong("PUB_a_ar_invoice_detail", ASearchCriteria)) +
+                            GenerateOrderByClause(AOrderBy)), TTypedDataTable.GetTableName(AArDiscountTable.TableId), ATransaction,
+                            GetParametersForWhereClause(AArDiscountTable.TableId, ASearchCriteria), AStartRecord, AMaxRecords);
         }
 
         /// auto generated
@@ -4022,7 +3966,8 @@ namespace Ict.Petra.Shared.MFinance.AR.Data.Access
         {
             return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_a_ar_discount, PUB_a_ar_invoice_detail_discount, PUB_a_ar_invoice_detail WHERE " +
                         "PUB_a_ar_invoice_detail_discount.a_ar_discount_code_c = PUB_a_ar_discount.a_ar_discount_code_c AND PUB_a_ar_invoice_detail_discount.a_ar_discount_date_valid_from_d = PUB_a_ar_discount.a_ar_date_valid_from_d AND PUB_a_ar_invoice_detail_discount.a_ledger_number_i = PUB_a_ar_invoice_detail.a_ledger_number_i AND PUB_a_ar_invoice_detail_discount.a_invoice_key_i = PUB_a_ar_invoice_detail.a_invoice_key_i AND PUB_a_ar_invoice_detail_discount.a_detail_number_i = PUB_a_ar_invoice_detail.a_detail_number_i" +
-                        GenerateWhereClauseLong("PUB_a_ar_invoice_detail_discount", AArDiscountTable.GetColumnStringList(), ATemplateRow, ATemplateOperators)), ATransaction, false, GetParametersForWhereClause(ATemplateRow, AArInvoiceDetailTable.GetPrimKeyColumnOrdList())));
+                        GenerateWhereClauseLong("PUB_a_ar_invoice_detail_discount", AArDiscountTable.TableId, ATemplateRow, ATemplateOperators)), ATransaction, false,
+                        GetParametersForWhereClauseWithPrimaryKey(AArInvoiceDetailTable.TableId, ATemplateRow)));
         }
 
         /// auto generated
@@ -4030,33 +3975,26 @@ namespace Ict.Petra.Shared.MFinance.AR.Data.Access
         {
             return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_a_ar_discount, PUB_a_ar_invoice_detail_discount, PUB_a_ar_invoice_detail WHERE " +
                         "PUB_a_ar_invoice_detail_discount.a_ar_discount_code_c = PUB_a_ar_discount.a_ar_discount_code_c AND PUB_a_ar_invoice_detail_discount.a_ar_discount_date_valid_from_d = PUB_a_ar_discount.a_ar_date_valid_from_d AND PUB_a_ar_invoice_detail_discount.a_ledger_number_i = PUB_a_ar_invoice_detail.a_ledger_number_i AND PUB_a_ar_invoice_detail_discount.a_invoice_key_i = PUB_a_ar_invoice_detail.a_invoice_key_i AND PUB_a_ar_invoice_detail_discount.a_detail_number_i = PUB_a_ar_invoice_detail.a_detail_number_i" +
-                        GenerateWhereClauseLong("PUB_a_ar_invoice_detail_discount", AArDiscountTable.GetColumnStringList(), ASearchCriteria)), ATransaction, false,
-                        GetParametersForWhereClause(new AArDiscountTable(), ASearchCriteria)));
+                        GenerateWhereClauseLong("PUB_a_ar_invoice_detail_discount", ASearchCriteria)), ATransaction, false,
+                        GetParametersForWhereClause(AArDiscountTable.TableId, ASearchCriteria)));
         }
 
         /// auto generated
         public static void DeleteByPrimaryKey(String AArDiscountCode, System.DateTime AArDateValidFrom, TDBTransaction ATransaction)
         {
-            OdbcParameter[] ParametersArray = new OdbcParameter[2];
-            ParametersArray[0] = new OdbcParameter("", OdbcType.VarChar, 100);
-            ParametersArray[0].Value = ((object)(AArDiscountCode));
-            ParametersArray[1] = new OdbcParameter("", OdbcType.Date);
-            ParametersArray[1].Value = ((object)(AArDateValidFrom));
-            DBAccess.GDBAccessObj.ExecuteNonQuery("DELETE FROM PUB_a_ar_discount WHERE a_ar_discount_code_c = ? AND a_ar_date_valid_from_d = ?", ATransaction, false, ParametersArray);
+            DeleteByPrimaryKey(AArDiscountTable.TableId, new System.Object[2]{AArDiscountCode, AArDateValidFrom}, ATransaction);
         }
 
         /// auto generated
         public static void DeleteUsingTemplate(AArDiscountRow ATemplateRow, StringCollection ATemplateOperators, TDBTransaction ATransaction)
         {
-            DBAccess.GDBAccessObj.ExecuteNonQuery(("DELETE FROM PUB_a_ar_discount" + GenerateWhereClause(AArDiscountTable.GetColumnStringList(), ATemplateRow, ATemplateOperators)), ATransaction, false, GetParametersForWhereClause(ATemplateRow));
+            DeleteUsingTemplate(AArDiscountTable.TableId, ATemplateRow, ATemplateOperators, ATransaction);
         }
 
         /// auto generated
         public static void DeleteUsingTemplate(TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
         {
-            DBAccess.GDBAccessObj.ExecuteNonQuery(("DELETE FROM PUB_a_ar_discount" +
-                GenerateWhereClause(AArDiscountTable.GetColumnStringList(), ASearchCriteria)), ATransaction, false,
-                GetParametersForWhereClause(new AArDiscountTable(), ASearchCriteria));
+            DeleteUsingTemplate(AArDiscountTable.TableId, ASearchCriteria, ATransaction);
         }
 
         /// auto generated
@@ -4073,15 +4011,15 @@ namespace Ict.Petra.Shared.MFinance.AR.Data.Access
                 {
                     if ((TheRow.RowState == DataRowState.Added))
                     {
-                        TTypedDataAccess.InsertRow("a_ar_discount", AArDiscountTable.GetColumnStringList(), ref TheRow, ATransaction, UserInfo.GUserInfo.UserID);
+                        TTypedDataAccess.InsertRow(AArDiscountTable.TableId, ref TheRow, ATransaction, UserInfo.GUserInfo.UserID);
                     }
                     if ((TheRow.RowState == DataRowState.Modified))
                     {
-                        TTypedDataAccess.UpdateRow("a_ar_discount", AArDiscountTable.GetColumnStringList(), AArDiscountTable.GetPrimKeyColumnOrdList(), ref TheRow, ATransaction, UserInfo.GUserInfo.UserID);
+                        TTypedDataAccess.UpdateRow(AArDiscountTable.TableId, ref TheRow, ATransaction, UserInfo.GUserInfo.UserID);
                     }
                     if ((TheRow.RowState == DataRowState.Deleted))
                     {
-                        TTypedDataAccess.DeleteRow("a_ar_discount", AArDiscountTable.GetColumnStringList(), AArDiscountTable.GetPrimKeyColumnOrdList(), TheRow, ATransaction);
+                        TTypedDataAccess.DeleteRow(AArDiscountTable.TableId, TheRow, ATransaction);
                     }
                 }
                 catch (OdbcException ex)
@@ -4111,9 +4049,8 @@ namespace Ict.Petra.Shared.MFinance.AR.Data.Access
         /// this method is called by all overloads
         public static void LoadAll(DataSet ADataSet, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, ((GenerateSelectClause(AFieldList, new string[] {
-                            "a_ar_category_code_c", "a_ar_discount_code_c"}) + " FROM PUB_a_ar_discount_per_category")
-                            + GenerateOrderByClause(AOrderBy)), AArDiscountPerCategoryTable.GetTableName(), ATransaction, AStartRecord, AMaxRecords);
+            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, ((GenerateSelectClause(AFieldList, AArDiscountPerCategoryTable.TableId) + " FROM PUB_a_ar_discount_per_category") +
+                            GenerateOrderByClause(AOrderBy)), TTypedDataTable.GetTableName(AArDiscountPerCategoryTable.TableId), ATransaction, AStartRecord, AMaxRecords);
         }
 
         /// auto generated
@@ -4153,14 +4090,8 @@ namespace Ict.Petra.Shared.MFinance.AR.Data.Access
         /// this method is called by all overloads
         public static void LoadByPrimaryKey(DataSet ADataSet, String AArCategoryCode, String AArDiscountCode, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            OdbcParameter[] ParametersArray = new OdbcParameter[2];
-            ParametersArray[0] = new OdbcParameter("", OdbcType.VarChar, 100);
-            ParametersArray[0].Value = ((object)(AArCategoryCode));
-            ParametersArray[1] = new OdbcParameter("", OdbcType.VarChar, 100);
-            ParametersArray[1].Value = ((object)(AArDiscountCode));
-            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, ((GenerateSelectClause(AFieldList, new string[] {
-                            "a_ar_category_code_c", "a_ar_discount_code_c"}) + " FROM PUB_a_ar_discount_per_category WHERE a_ar_category_code_c = ? AND a_ar_discount_code_c = ?")
-                            + GenerateOrderByClause(AOrderBy)), AArDiscountPerCategoryTable.GetTableName(), ATransaction, ParametersArray, AStartRecord, AMaxRecords);
+            ADataSet = LoadByPrimaryKey(AArDiscountPerCategoryTable.TableId,
+                ADataSet, new System.Object[2]{AArCategoryCode, AArDiscountCode}, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
         }
 
         /// auto generated
@@ -4200,10 +4131,10 @@ namespace Ict.Petra.Shared.MFinance.AR.Data.Access
         /// this method is called by all overloads
         public static void LoadUsingTemplate(DataSet ADataSet, AArDiscountPerCategoryRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClause(AFieldList, new string[] {
-                            "a_ar_category_code_c", "a_ar_discount_code_c"}) + " FROM PUB_a_ar_discount_per_category")
-                            + GenerateWhereClause(AArDiscountPerCategoryTable.GetColumnStringList(), ATemplateRow, ATemplateOperators))
-                            + GenerateOrderByClause(AOrderBy)), AArDiscountPerCategoryTable.GetTableName(), ATransaction, GetParametersForWhereClause(ATemplateRow), AStartRecord, AMaxRecords);
+            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClause(AFieldList, AArDiscountPerCategoryTable.TableId) + " FROM PUB_a_ar_discount_per_category") +
+                            GenerateWhereClause(TTypedDataTable.GetColumnStringList(AArDiscountPerCategoryTable.TableId), ATemplateRow, ATemplateOperators)) +
+                            GenerateOrderByClause(AOrderBy)), TTypedDataTable.GetTableName(AArDiscountPerCategoryTable.TableId), ATransaction,
+                            GetParametersForWhereClause(AArDiscountPerCategoryTable.TableId, ATemplateRow), AStartRecord, AMaxRecords);
         }
 
         /// auto generated
@@ -4249,11 +4180,10 @@ namespace Ict.Petra.Shared.MFinance.AR.Data.Access
         /// this method is called by all overloads
         public static void LoadUsingTemplate(DataSet ADataSet, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClause(AFieldList, new string[] {
-                            "a_ar_category_code_c", "a_ar_discount_code_c"}) + " FROM PUB_a_ar_discount_per_category")
-                            + GenerateWhereClause(AArDiscountPerCategoryTable.GetColumnStringList(), ASearchCriteria))
-                            + GenerateOrderByClause(AOrderBy)), AArDiscountPerCategoryTable.GetTableName(), ATransaction,
-                            GetParametersForWhereClause(new AArDiscountPerCategoryTable(), ASearchCriteria), AStartRecord, AMaxRecords);
+            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClause(AFieldList, AArDiscountPerCategoryTable.TableId) + " FROM PUB_a_ar_discount_per_category") +
+                            GenerateWhereClause(TTypedDataTable.GetColumnStringList(AArDiscountPerCategoryTable.TableId), ASearchCriteria)) +
+                            GenerateOrderByClause(AOrderBy)), TTypedDataTable.GetTableName(AArDiscountPerCategoryTable.TableId), ATransaction,
+                            GetParametersForWhereClause(AArDiscountPerCategoryTable.TableId, ASearchCriteria), AStartRecord, AMaxRecords);
         }
 
         /// auto generated
@@ -4296,28 +4226,24 @@ namespace Ict.Petra.Shared.MFinance.AR.Data.Access
             return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar("SELECT COUNT(*) FROM PUB_a_ar_discount_per_category", ATransaction, false));
         }
 
-        /// this method is called by all overloads
-        public static int CountByPrimaryKey(String AArCategoryCode, String AArDiscountCode, TDBTransaction ATransaction)
+        /// check if a row exists by using the primary key
+        public static bool Exists(String AArCategoryCode, String AArDiscountCode, TDBTransaction ATransaction)
         {
-            OdbcParameter[] ParametersArray = new OdbcParameter[2];
-            ParametersArray[0] = new OdbcParameter("", OdbcType.VarChar, 100);
-            ParametersArray[0].Value = ((object)(AArCategoryCode));
-            ParametersArray[1] = new OdbcParameter("", OdbcType.VarChar, 100);
-            ParametersArray[1].Value = ((object)(AArDiscountCode));
-            return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar("SELECT COUNT(*) FROM PUB_a_ar_discount_per_category WHERE a_ar_category_code_c = ? AND a_ar_discount_code_c = ?", ATransaction, false, ParametersArray));
+            return Exists(AArDiscountPerCategoryTable.TableId, new System.Object[2]{AArCategoryCode, AArDiscountCode}, ATransaction);
         }
 
         /// this method is called by all overloads
         public static int CountUsingTemplate(AArDiscountPerCategoryRow ATemplateRow, StringCollection ATemplateOperators, TDBTransaction ATransaction)
         {
-            return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_a_ar_discount_per_category" + GenerateWhereClause(AArDiscountPerCategoryTable.GetColumnStringList(), ATemplateRow, ATemplateOperators)), ATransaction, false, GetParametersForWhereClause(ATemplateRow)));
+            return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_a_ar_discount_per_category" + GenerateWhereClause(TTypedDataTable.GetColumnStringList(AArDiscountPerCategoryTable.TableId), ATemplateRow, ATemplateOperators)), ATransaction, false,
+                   GetParametersForWhereClause(AArDiscountPerCategoryTable.TableId, ATemplateRow)));
         }
 
         /// this method is called by all overloads
         public static int CountUsingTemplate(TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
         {
-            return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_a_ar_discount_per_category" + GenerateWhereClause(AArDiscountPerCategoryTable.GetColumnStringList(), ASearchCriteria)), ATransaction, false,
-            GetParametersForWhereClause(new AArDiscountPerCategoryTable(), ASearchCriteria)));
+            return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_a_ar_discount_per_category" + GenerateWhereClause(TTypedDataTable.GetColumnStringList(AArDiscountPerCategoryTable.TableId), ASearchCriteria)), ATransaction, false,
+            GetParametersForWhereClause(AArDiscountPerCategoryTable.TableId, ASearchCriteria)));
         }
 
         /// auto generated
@@ -4326,9 +4252,9 @@ namespace Ict.Petra.Shared.MFinance.AR.Data.Access
             OdbcParameter[] ParametersArray = new OdbcParameter[1];
             ParametersArray[0] = new OdbcParameter("", OdbcType.VarChar, 100);
             ParametersArray[0].Value = ((object)(AArCategoryCode));
-            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, ((GenerateSelectClause(AFieldList, new string[] {
-                            "a_ar_category_code_c", "a_ar_discount_code_c"}) + " FROM PUB_a_ar_discount_per_category WHERE a_ar_category_code_c = ?")
-                            + GenerateOrderByClause(AOrderBy)), AArDiscountPerCategoryTable.GetTableName(), ATransaction, ParametersArray, AStartRecord, AMaxRecords);
+            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, ((GenerateSelectClause(AFieldList, AArDiscountPerCategoryTable.TableId) +
+                            " FROM PUB_a_ar_discount_per_category WHERE a_ar_category_code_c = ?") +
+                            GenerateOrderByClause(AOrderBy)), TTypedDataTable.GetTableName(AArDiscountPerCategoryTable.TableId), ATransaction, ParametersArray, AStartRecord, AMaxRecords);
         }
 
         /// auto generated
@@ -4368,11 +4294,12 @@ namespace Ict.Petra.Shared.MFinance.AR.Data.Access
         /// auto generated
         public static void LoadViaAArCategoryTemplate(DataSet ADataSet, AArCategoryRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClauseLong("PUB_a_ar_discount_per_category", AFieldList, new string[] {
-                            "a_ar_category_code_c", "a_ar_discount_code_c"}) + " FROM PUB_a_ar_discount_per_category, PUB_a_ar_category WHERE " +
-                            "PUB_a_ar_discount_per_category.a_ar_category_code_c = PUB_a_ar_category.a_ar_category_code_c")
-                            + GenerateWhereClauseLong("PUB_a_ar_category", AArCategoryTable.GetColumnStringList(), ATemplateRow, ATemplateOperators))
-                            + GenerateOrderByClause(AOrderBy)), AArDiscountPerCategoryTable.GetTableName(), ATransaction, GetParametersForWhereClause(ATemplateRow), AStartRecord, AMaxRecords);
+            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClauseLong("PUB_a_ar_discount_per_category", AFieldList, AArDiscountPerCategoryTable.TableId) +
+                            " FROM PUB_a_ar_discount_per_category, PUB_a_ar_category WHERE " +
+                            "PUB_a_ar_discount_per_category.a_ar_category_code_c = PUB_a_ar_category.a_ar_category_code_c") +
+                            GenerateWhereClauseLong("PUB_a_ar_category", AArCategoryTable.TableId, ATemplateRow, ATemplateOperators)) +
+                            GenerateOrderByClause(AOrderBy)), TTypedDataTable.GetTableName(AArDiscountPerCategoryTable.TableId), ATransaction,
+                            GetParametersForWhereClause(AArCategoryTable.TableId, ATemplateRow), AStartRecord, AMaxRecords);
         }
 
         /// auto generated
@@ -4418,12 +4345,12 @@ namespace Ict.Petra.Shared.MFinance.AR.Data.Access
         /// auto generated
         public static void LoadViaAArCategoryTemplate(DataSet ADataSet, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClauseLong("PUB_a_ar_discount_per_category", AFieldList, new string[] {
-                            "a_ar_category_code_c", "a_ar_discount_code_c"}) + " FROM PUB_a_ar_discount_per_category, PUB_a_ar_category WHERE " +
-                            "PUB_a_ar_discount_per_category.a_ar_category_code_c = PUB_a_ar_category.a_ar_category_code_c")
-                            + GenerateWhereClauseLong("PUB_a_ar_category", AArCategoryTable.GetColumnStringList(), ASearchCriteria))
-                            + GenerateOrderByClause(AOrderBy)), AArDiscountPerCategoryTable.GetTableName(), ATransaction,
-                            GetParametersForWhereClause(new AArDiscountPerCategoryTable(), ASearchCriteria), AStartRecord, AMaxRecords);
+            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClauseLong("PUB_a_ar_discount_per_category", AFieldList, AArDiscountPerCategoryTable.TableId) +
+                            " FROM PUB_a_ar_discount_per_category, PUB_a_ar_category WHERE " +
+                            "PUB_a_ar_discount_per_category.a_ar_category_code_c = PUB_a_ar_category.a_ar_category_code_c") +
+                            GenerateWhereClauseLong("PUB_a_ar_category", ASearchCriteria)) +
+                            GenerateOrderByClause(AOrderBy)), TTypedDataTable.GetTableName(AArDiscountPerCategoryTable.TableId), ATransaction,
+                            GetParametersForWhereClause(AArDiscountPerCategoryTable.TableId, ASearchCriteria), AStartRecord, AMaxRecords);
         }
 
         /// auto generated
@@ -4473,7 +4400,10 @@ namespace Ict.Petra.Shared.MFinance.AR.Data.Access
         public static int CountViaAArCategoryTemplate(AArCategoryRow ATemplateRow, StringCollection ATemplateOperators, TDBTransaction ATransaction)
         {
             return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_a_ar_discount_per_category, PUB_a_ar_category WHERE " +
-                "PUB_a_ar_discount_per_category.a_ar_category_code_c = PUB_a_ar_category.a_ar_category_code_c" + GenerateWhereClauseLong("PUB_a_ar_category", AArCategoryTable.GetColumnStringList(), ATemplateRow, ATemplateOperators)), ATransaction, false, GetParametersForWhereClause(ATemplateRow, AArCategoryTable.GetPrimKeyColumnOrdList())));
+                "PUB_a_ar_discount_per_category.a_ar_category_code_c = PUB_a_ar_category.a_ar_category_code_c" + GenerateWhereClauseLong("PUB_a_ar_category",
+                AArCategoryTable.TableId, ATemplateRow, ATemplateOperators)),
+                ATransaction, false,
+                GetParametersForWhereClauseWithPrimaryKey(AArCategoryTable.TableId, ATemplateRow)));
         }
 
         /// auto generated
@@ -4481,8 +4411,8 @@ namespace Ict.Petra.Shared.MFinance.AR.Data.Access
         {
             return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_a_ar_discount_per_category, PUB_a_ar_category WHERE " +
                 "PUB_a_ar_discount_per_category.a_ar_category_code_c = PUB_a_ar_category.a_ar_category_code_c" +
-                GenerateWhereClauseLong("PUB_a_ar_category", AArCategoryTable.GetColumnStringList(), ASearchCriteria)), ATransaction, false,
-                GetParametersForWhereClause(new AArCategoryTable(), ASearchCriteria)));
+                GenerateWhereClauseLong("PUB_a_ar_category", ASearchCriteria)), ATransaction, false,
+                GetParametersForWhereClause(AArCategoryTable.TableId, ASearchCriteria)));
         }
 
         /// auto generated
@@ -4493,9 +4423,9 @@ namespace Ict.Petra.Shared.MFinance.AR.Data.Access
             ParametersArray[0].Value = ((object)(AArDiscountCode));
             ParametersArray[1] = new OdbcParameter("", OdbcType.Date);
             ParametersArray[1].Value = ((object)(AArDateValidFrom));
-            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, ((GenerateSelectClause(AFieldList, new string[] {
-                            "a_ar_category_code_c", "a_ar_discount_code_c"}) + " FROM PUB_a_ar_discount_per_category WHERE a_ar_discount_code_c = ? AND a_ar_date_valid_from_d = ?")
-                            + GenerateOrderByClause(AOrderBy)), AArDiscountPerCategoryTable.GetTableName(), ATransaction, ParametersArray, AStartRecord, AMaxRecords);
+            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, ((GenerateSelectClause(AFieldList, AArDiscountPerCategoryTable.TableId) +
+                            " FROM PUB_a_ar_discount_per_category WHERE a_ar_discount_code_c = ? AND a_ar_date_valid_from_d = ?") +
+                            GenerateOrderByClause(AOrderBy)), TTypedDataTable.GetTableName(AArDiscountPerCategoryTable.TableId), ATransaction, ParametersArray, AStartRecord, AMaxRecords);
         }
 
         /// auto generated
@@ -4535,11 +4465,12 @@ namespace Ict.Petra.Shared.MFinance.AR.Data.Access
         /// auto generated
         public static void LoadViaAArDiscountTemplate(DataSet ADataSet, AArDiscountRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClauseLong("PUB_a_ar_discount_per_category", AFieldList, new string[] {
-                            "a_ar_category_code_c", "a_ar_discount_code_c"}) + " FROM PUB_a_ar_discount_per_category, PUB_a_ar_discount WHERE " +
-                            "PUB_a_ar_discount_per_category.a_ar_discount_code_c = PUB_a_ar_discount.a_ar_discount_code_c AND PUB_a_ar_discount_per_category.a_ar_date_valid_from_d = PUB_a_ar_discount.a_ar_date_valid_from_d")
-                            + GenerateWhereClauseLong("PUB_a_ar_discount", AArDiscountTable.GetColumnStringList(), ATemplateRow, ATemplateOperators))
-                            + GenerateOrderByClause(AOrderBy)), AArDiscountPerCategoryTable.GetTableName(), ATransaction, GetParametersForWhereClause(ATemplateRow), AStartRecord, AMaxRecords);
+            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClauseLong("PUB_a_ar_discount_per_category", AFieldList, AArDiscountPerCategoryTable.TableId) +
+                            " FROM PUB_a_ar_discount_per_category, PUB_a_ar_discount WHERE " +
+                            "PUB_a_ar_discount_per_category.a_ar_discount_code_c = PUB_a_ar_discount.a_ar_discount_code_c AND PUB_a_ar_discount_per_category.a_ar_date_valid_from_d = PUB_a_ar_discount.a_ar_date_valid_from_d") +
+                            GenerateWhereClauseLong("PUB_a_ar_discount", AArDiscountTable.TableId, ATemplateRow, ATemplateOperators)) +
+                            GenerateOrderByClause(AOrderBy)), TTypedDataTable.GetTableName(AArDiscountPerCategoryTable.TableId), ATransaction,
+                            GetParametersForWhereClause(AArDiscountTable.TableId, ATemplateRow), AStartRecord, AMaxRecords);
         }
 
         /// auto generated
@@ -4585,12 +4516,12 @@ namespace Ict.Petra.Shared.MFinance.AR.Data.Access
         /// auto generated
         public static void LoadViaAArDiscountTemplate(DataSet ADataSet, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClauseLong("PUB_a_ar_discount_per_category", AFieldList, new string[] {
-                            "a_ar_category_code_c", "a_ar_discount_code_c"}) + " FROM PUB_a_ar_discount_per_category, PUB_a_ar_discount WHERE " +
-                            "PUB_a_ar_discount_per_category.a_ar_discount_code_c = PUB_a_ar_discount.a_ar_discount_code_c AND PUB_a_ar_discount_per_category.a_ar_date_valid_from_d = PUB_a_ar_discount.a_ar_date_valid_from_d")
-                            + GenerateWhereClauseLong("PUB_a_ar_discount", AArDiscountTable.GetColumnStringList(), ASearchCriteria))
-                            + GenerateOrderByClause(AOrderBy)), AArDiscountPerCategoryTable.GetTableName(), ATransaction,
-                            GetParametersForWhereClause(new AArDiscountPerCategoryTable(), ASearchCriteria), AStartRecord, AMaxRecords);
+            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClauseLong("PUB_a_ar_discount_per_category", AFieldList, AArDiscountPerCategoryTable.TableId) +
+                            " FROM PUB_a_ar_discount_per_category, PUB_a_ar_discount WHERE " +
+                            "PUB_a_ar_discount_per_category.a_ar_discount_code_c = PUB_a_ar_discount.a_ar_discount_code_c AND PUB_a_ar_discount_per_category.a_ar_date_valid_from_d = PUB_a_ar_discount.a_ar_date_valid_from_d") +
+                            GenerateWhereClauseLong("PUB_a_ar_discount", ASearchCriteria)) +
+                            GenerateOrderByClause(AOrderBy)), TTypedDataTable.GetTableName(AArDiscountPerCategoryTable.TableId), ATransaction,
+                            GetParametersForWhereClause(AArDiscountPerCategoryTable.TableId, ASearchCriteria), AStartRecord, AMaxRecords);
         }
 
         /// auto generated
@@ -4642,7 +4573,10 @@ namespace Ict.Petra.Shared.MFinance.AR.Data.Access
         public static int CountViaAArDiscountTemplate(AArDiscountRow ATemplateRow, StringCollection ATemplateOperators, TDBTransaction ATransaction)
         {
             return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_a_ar_discount_per_category, PUB_a_ar_discount WHERE " +
-                "PUB_a_ar_discount_per_category.a_ar_discount_code_c = PUB_a_ar_discount.a_ar_discount_code_c AND PUB_a_ar_discount_per_category.a_ar_date_valid_from_d = PUB_a_ar_discount.a_ar_date_valid_from_d" + GenerateWhereClauseLong("PUB_a_ar_discount", AArDiscountTable.GetColumnStringList(), ATemplateRow, ATemplateOperators)), ATransaction, false, GetParametersForWhereClause(ATemplateRow, AArDiscountTable.GetPrimKeyColumnOrdList())));
+                "PUB_a_ar_discount_per_category.a_ar_discount_code_c = PUB_a_ar_discount.a_ar_discount_code_c AND PUB_a_ar_discount_per_category.a_ar_date_valid_from_d = PUB_a_ar_discount.a_ar_date_valid_from_d" + GenerateWhereClauseLong("PUB_a_ar_discount",
+                AArDiscountTable.TableId, ATemplateRow, ATemplateOperators)),
+                ATransaction, false,
+                GetParametersForWhereClauseWithPrimaryKey(AArDiscountTable.TableId, ATemplateRow)));
         }
 
         /// auto generated
@@ -4650,33 +4584,26 @@ namespace Ict.Petra.Shared.MFinance.AR.Data.Access
         {
             return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_a_ar_discount_per_category, PUB_a_ar_discount WHERE " +
                 "PUB_a_ar_discount_per_category.a_ar_discount_code_c = PUB_a_ar_discount.a_ar_discount_code_c AND PUB_a_ar_discount_per_category.a_ar_date_valid_from_d = PUB_a_ar_discount.a_ar_date_valid_from_d" +
-                GenerateWhereClauseLong("PUB_a_ar_discount", AArDiscountTable.GetColumnStringList(), ASearchCriteria)), ATransaction, false,
-                GetParametersForWhereClause(new AArDiscountTable(), ASearchCriteria)));
+                GenerateWhereClauseLong("PUB_a_ar_discount", ASearchCriteria)), ATransaction, false,
+                GetParametersForWhereClause(AArDiscountTable.TableId, ASearchCriteria)));
         }
 
         /// auto generated
         public static void DeleteByPrimaryKey(String AArCategoryCode, String AArDiscountCode, TDBTransaction ATransaction)
         {
-            OdbcParameter[] ParametersArray = new OdbcParameter[2];
-            ParametersArray[0] = new OdbcParameter("", OdbcType.VarChar, 100);
-            ParametersArray[0].Value = ((object)(AArCategoryCode));
-            ParametersArray[1] = new OdbcParameter("", OdbcType.VarChar, 100);
-            ParametersArray[1].Value = ((object)(AArDiscountCode));
-            DBAccess.GDBAccessObj.ExecuteNonQuery("DELETE FROM PUB_a_ar_discount_per_category WHERE a_ar_category_code_c = ? AND a_ar_discount_code_c = ?", ATransaction, false, ParametersArray);
+            DeleteByPrimaryKey(AArDiscountPerCategoryTable.TableId, new System.Object[2]{AArCategoryCode, AArDiscountCode}, ATransaction);
         }
 
         /// auto generated
         public static void DeleteUsingTemplate(AArDiscountPerCategoryRow ATemplateRow, StringCollection ATemplateOperators, TDBTransaction ATransaction)
         {
-            DBAccess.GDBAccessObj.ExecuteNonQuery(("DELETE FROM PUB_a_ar_discount_per_category" + GenerateWhereClause(AArDiscountPerCategoryTable.GetColumnStringList(), ATemplateRow, ATemplateOperators)), ATransaction, false, GetParametersForWhereClause(ATemplateRow));
+            DeleteUsingTemplate(AArDiscountPerCategoryTable.TableId, ATemplateRow, ATemplateOperators, ATransaction);
         }
 
         /// auto generated
         public static void DeleteUsingTemplate(TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
         {
-            DBAccess.GDBAccessObj.ExecuteNonQuery(("DELETE FROM PUB_a_ar_discount_per_category" +
-                GenerateWhereClause(AArDiscountPerCategoryTable.GetColumnStringList(), ASearchCriteria)), ATransaction, false,
-                GetParametersForWhereClause(new AArDiscountPerCategoryTable(), ASearchCriteria));
+            DeleteUsingTemplate(AArDiscountPerCategoryTable.TableId, ASearchCriteria, ATransaction);
         }
 
         /// auto generated
@@ -4693,15 +4620,15 @@ namespace Ict.Petra.Shared.MFinance.AR.Data.Access
                 {
                     if ((TheRow.RowState == DataRowState.Added))
                     {
-                        TTypedDataAccess.InsertRow("a_ar_discount_per_category", AArDiscountPerCategoryTable.GetColumnStringList(), ref TheRow, ATransaction, UserInfo.GUserInfo.UserID);
+                        TTypedDataAccess.InsertRow(AArDiscountPerCategoryTable.TableId, ref TheRow, ATransaction, UserInfo.GUserInfo.UserID);
                     }
                     if ((TheRow.RowState == DataRowState.Modified))
                     {
-                        TTypedDataAccess.UpdateRow("a_ar_discount_per_category", AArDiscountPerCategoryTable.GetColumnStringList(), AArDiscountPerCategoryTable.GetPrimKeyColumnOrdList(), ref TheRow, ATransaction, UserInfo.GUserInfo.UserID);
+                        TTypedDataAccess.UpdateRow(AArDiscountPerCategoryTable.TableId, ref TheRow, ATransaction, UserInfo.GUserInfo.UserID);
                     }
                     if ((TheRow.RowState == DataRowState.Deleted))
                     {
-                        TTypedDataAccess.DeleteRow("a_ar_discount_per_category", AArDiscountPerCategoryTable.GetColumnStringList(), AArDiscountPerCategoryTable.GetPrimKeyColumnOrdList(), TheRow, ATransaction);
+                        TTypedDataAccess.DeleteRow(AArDiscountPerCategoryTable.TableId, TheRow, ATransaction);
                     }
                 }
                 catch (OdbcException ex)
@@ -4731,9 +4658,8 @@ namespace Ict.Petra.Shared.MFinance.AR.Data.Access
         /// this method is called by all overloads
         public static void LoadAll(DataSet ADataSet, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, ((GenerateSelectClause(AFieldList, new string[] {
-                            "a_ar_category_code_c", "a_ar_discount_code_c", "a_ar_date_valid_from_d"}) + " FROM PUB_a_ar_default_discount")
-                            + GenerateOrderByClause(AOrderBy)), AArDefaultDiscountTable.GetTableName(), ATransaction, AStartRecord, AMaxRecords);
+            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, ((GenerateSelectClause(AFieldList, AArDefaultDiscountTable.TableId) + " FROM PUB_a_ar_default_discount") +
+                            GenerateOrderByClause(AOrderBy)), TTypedDataTable.GetTableName(AArDefaultDiscountTable.TableId), ATransaction, AStartRecord, AMaxRecords);
         }
 
         /// auto generated
@@ -4773,16 +4699,8 @@ namespace Ict.Petra.Shared.MFinance.AR.Data.Access
         /// this method is called by all overloads
         public static void LoadByPrimaryKey(DataSet ADataSet, String AArCategoryCode, String AArDiscountCode, System.DateTime AArDateValidFrom, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            OdbcParameter[] ParametersArray = new OdbcParameter[3];
-            ParametersArray[0] = new OdbcParameter("", OdbcType.VarChar, 100);
-            ParametersArray[0].Value = ((object)(AArCategoryCode));
-            ParametersArray[1] = new OdbcParameter("", OdbcType.VarChar, 100);
-            ParametersArray[1].Value = ((object)(AArDiscountCode));
-            ParametersArray[2] = new OdbcParameter("", OdbcType.Date);
-            ParametersArray[2].Value = ((object)(AArDateValidFrom));
-            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, ((GenerateSelectClause(AFieldList, new string[] {
-                            "a_ar_category_code_c", "a_ar_discount_code_c", "a_ar_date_valid_from_d"}) + " FROM PUB_a_ar_default_discount WHERE a_ar_category_code_c = ? AND a_ar_discount_code_c = ? AND a_ar_date_valid_from_d = ?")
-                            + GenerateOrderByClause(AOrderBy)), AArDefaultDiscountTable.GetTableName(), ATransaction, ParametersArray, AStartRecord, AMaxRecords);
+            ADataSet = LoadByPrimaryKey(AArDefaultDiscountTable.TableId,
+                ADataSet, new System.Object[3]{AArCategoryCode, AArDiscountCode, AArDateValidFrom}, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
         }
 
         /// auto generated
@@ -4822,10 +4740,10 @@ namespace Ict.Petra.Shared.MFinance.AR.Data.Access
         /// this method is called by all overloads
         public static void LoadUsingTemplate(DataSet ADataSet, AArDefaultDiscountRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClause(AFieldList, new string[] {
-                            "a_ar_category_code_c", "a_ar_discount_code_c", "a_ar_date_valid_from_d"}) + " FROM PUB_a_ar_default_discount")
-                            + GenerateWhereClause(AArDefaultDiscountTable.GetColumnStringList(), ATemplateRow, ATemplateOperators))
-                            + GenerateOrderByClause(AOrderBy)), AArDefaultDiscountTable.GetTableName(), ATransaction, GetParametersForWhereClause(ATemplateRow), AStartRecord, AMaxRecords);
+            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClause(AFieldList, AArDefaultDiscountTable.TableId) + " FROM PUB_a_ar_default_discount") +
+                            GenerateWhereClause(TTypedDataTable.GetColumnStringList(AArDefaultDiscountTable.TableId), ATemplateRow, ATemplateOperators)) +
+                            GenerateOrderByClause(AOrderBy)), TTypedDataTable.GetTableName(AArDefaultDiscountTable.TableId), ATransaction,
+                            GetParametersForWhereClause(AArDefaultDiscountTable.TableId, ATemplateRow), AStartRecord, AMaxRecords);
         }
 
         /// auto generated
@@ -4871,11 +4789,10 @@ namespace Ict.Petra.Shared.MFinance.AR.Data.Access
         /// this method is called by all overloads
         public static void LoadUsingTemplate(DataSet ADataSet, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClause(AFieldList, new string[] {
-                            "a_ar_category_code_c", "a_ar_discount_code_c", "a_ar_date_valid_from_d"}) + " FROM PUB_a_ar_default_discount")
-                            + GenerateWhereClause(AArDefaultDiscountTable.GetColumnStringList(), ASearchCriteria))
-                            + GenerateOrderByClause(AOrderBy)), AArDefaultDiscountTable.GetTableName(), ATransaction,
-                            GetParametersForWhereClause(new AArDefaultDiscountTable(), ASearchCriteria), AStartRecord, AMaxRecords);
+            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClause(AFieldList, AArDefaultDiscountTable.TableId) + " FROM PUB_a_ar_default_discount") +
+                            GenerateWhereClause(TTypedDataTable.GetColumnStringList(AArDefaultDiscountTable.TableId), ASearchCriteria)) +
+                            GenerateOrderByClause(AOrderBy)), TTypedDataTable.GetTableName(AArDefaultDiscountTable.TableId), ATransaction,
+                            GetParametersForWhereClause(AArDefaultDiscountTable.TableId, ASearchCriteria), AStartRecord, AMaxRecords);
         }
 
         /// auto generated
@@ -4918,30 +4835,24 @@ namespace Ict.Petra.Shared.MFinance.AR.Data.Access
             return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar("SELECT COUNT(*) FROM PUB_a_ar_default_discount", ATransaction, false));
         }
 
-        /// this method is called by all overloads
-        public static int CountByPrimaryKey(String AArCategoryCode, String AArDiscountCode, System.DateTime AArDateValidFrom, TDBTransaction ATransaction)
+        /// check if a row exists by using the primary key
+        public static bool Exists(String AArCategoryCode, String AArDiscountCode, System.DateTime AArDateValidFrom, TDBTransaction ATransaction)
         {
-            OdbcParameter[] ParametersArray = new OdbcParameter[3];
-            ParametersArray[0] = new OdbcParameter("", OdbcType.VarChar, 100);
-            ParametersArray[0].Value = ((object)(AArCategoryCode));
-            ParametersArray[1] = new OdbcParameter("", OdbcType.VarChar, 100);
-            ParametersArray[1].Value = ((object)(AArDiscountCode));
-            ParametersArray[2] = new OdbcParameter("", OdbcType.Date);
-            ParametersArray[2].Value = ((object)(AArDateValidFrom));
-            return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar("SELECT COUNT(*) FROM PUB_a_ar_default_discount WHERE a_ar_category_code_c = ? AND a_ar_discount_code_c = ? AND a_ar_date_valid_from_d = ?", ATransaction, false, ParametersArray));
+            return Exists(AArDefaultDiscountTable.TableId, new System.Object[3]{AArCategoryCode, AArDiscountCode, AArDateValidFrom}, ATransaction);
         }
 
         /// this method is called by all overloads
         public static int CountUsingTemplate(AArDefaultDiscountRow ATemplateRow, StringCollection ATemplateOperators, TDBTransaction ATransaction)
         {
-            return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_a_ar_default_discount" + GenerateWhereClause(AArDefaultDiscountTable.GetColumnStringList(), ATemplateRow, ATemplateOperators)), ATransaction, false, GetParametersForWhereClause(ATemplateRow)));
+            return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_a_ar_default_discount" + GenerateWhereClause(TTypedDataTable.GetColumnStringList(AArDefaultDiscountTable.TableId), ATemplateRow, ATemplateOperators)), ATransaction, false,
+                   GetParametersForWhereClause(AArDefaultDiscountTable.TableId, ATemplateRow)));
         }
 
         /// this method is called by all overloads
         public static int CountUsingTemplate(TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
         {
-            return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_a_ar_default_discount" + GenerateWhereClause(AArDefaultDiscountTable.GetColumnStringList(), ASearchCriteria)), ATransaction, false,
-            GetParametersForWhereClause(new AArDefaultDiscountTable(), ASearchCriteria)));
+            return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_a_ar_default_discount" + GenerateWhereClause(TTypedDataTable.GetColumnStringList(AArDefaultDiscountTable.TableId), ASearchCriteria)), ATransaction, false,
+            GetParametersForWhereClause(AArDefaultDiscountTable.TableId, ASearchCriteria)));
         }
 
         /// auto generated
@@ -4950,9 +4861,9 @@ namespace Ict.Petra.Shared.MFinance.AR.Data.Access
             OdbcParameter[] ParametersArray = new OdbcParameter[1];
             ParametersArray[0] = new OdbcParameter("", OdbcType.VarChar, 100);
             ParametersArray[0].Value = ((object)(AArCategoryCode));
-            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, ((GenerateSelectClause(AFieldList, new string[] {
-                            "a_ar_category_code_c", "a_ar_discount_code_c", "a_ar_date_valid_from_d"}) + " FROM PUB_a_ar_default_discount WHERE a_ar_category_code_c = ?")
-                            + GenerateOrderByClause(AOrderBy)), AArDefaultDiscountTable.GetTableName(), ATransaction, ParametersArray, AStartRecord, AMaxRecords);
+            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, ((GenerateSelectClause(AFieldList, AArDefaultDiscountTable.TableId) +
+                            " FROM PUB_a_ar_default_discount WHERE a_ar_category_code_c = ?") +
+                            GenerateOrderByClause(AOrderBy)), TTypedDataTable.GetTableName(AArDefaultDiscountTable.TableId), ATransaction, ParametersArray, AStartRecord, AMaxRecords);
         }
 
         /// auto generated
@@ -4992,11 +4903,12 @@ namespace Ict.Petra.Shared.MFinance.AR.Data.Access
         /// auto generated
         public static void LoadViaAArCategoryTemplate(DataSet ADataSet, AArCategoryRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClauseLong("PUB_a_ar_default_discount", AFieldList, new string[] {
-                            "a_ar_category_code_c", "a_ar_discount_code_c", "a_ar_date_valid_from_d"}) + " FROM PUB_a_ar_default_discount, PUB_a_ar_category WHERE " +
-                            "PUB_a_ar_default_discount.a_ar_category_code_c = PUB_a_ar_category.a_ar_category_code_c")
-                            + GenerateWhereClauseLong("PUB_a_ar_category", AArCategoryTable.GetColumnStringList(), ATemplateRow, ATemplateOperators))
-                            + GenerateOrderByClause(AOrderBy)), AArDefaultDiscountTable.GetTableName(), ATransaction, GetParametersForWhereClause(ATemplateRow), AStartRecord, AMaxRecords);
+            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClauseLong("PUB_a_ar_default_discount", AFieldList, AArDefaultDiscountTable.TableId) +
+                            " FROM PUB_a_ar_default_discount, PUB_a_ar_category WHERE " +
+                            "PUB_a_ar_default_discount.a_ar_category_code_c = PUB_a_ar_category.a_ar_category_code_c") +
+                            GenerateWhereClauseLong("PUB_a_ar_category", AArCategoryTable.TableId, ATemplateRow, ATemplateOperators)) +
+                            GenerateOrderByClause(AOrderBy)), TTypedDataTable.GetTableName(AArDefaultDiscountTable.TableId), ATransaction,
+                            GetParametersForWhereClause(AArCategoryTable.TableId, ATemplateRow), AStartRecord, AMaxRecords);
         }
 
         /// auto generated
@@ -5042,12 +4954,12 @@ namespace Ict.Petra.Shared.MFinance.AR.Data.Access
         /// auto generated
         public static void LoadViaAArCategoryTemplate(DataSet ADataSet, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClauseLong("PUB_a_ar_default_discount", AFieldList, new string[] {
-                            "a_ar_category_code_c", "a_ar_discount_code_c", "a_ar_date_valid_from_d"}) + " FROM PUB_a_ar_default_discount, PUB_a_ar_category WHERE " +
-                            "PUB_a_ar_default_discount.a_ar_category_code_c = PUB_a_ar_category.a_ar_category_code_c")
-                            + GenerateWhereClauseLong("PUB_a_ar_category", AArCategoryTable.GetColumnStringList(), ASearchCriteria))
-                            + GenerateOrderByClause(AOrderBy)), AArDefaultDiscountTable.GetTableName(), ATransaction,
-                            GetParametersForWhereClause(new AArDefaultDiscountTable(), ASearchCriteria), AStartRecord, AMaxRecords);
+            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClauseLong("PUB_a_ar_default_discount", AFieldList, AArDefaultDiscountTable.TableId) +
+                            " FROM PUB_a_ar_default_discount, PUB_a_ar_category WHERE " +
+                            "PUB_a_ar_default_discount.a_ar_category_code_c = PUB_a_ar_category.a_ar_category_code_c") +
+                            GenerateWhereClauseLong("PUB_a_ar_category", ASearchCriteria)) +
+                            GenerateOrderByClause(AOrderBy)), TTypedDataTable.GetTableName(AArDefaultDiscountTable.TableId), ATransaction,
+                            GetParametersForWhereClause(AArDefaultDiscountTable.TableId, ASearchCriteria), AStartRecord, AMaxRecords);
         }
 
         /// auto generated
@@ -5097,7 +5009,10 @@ namespace Ict.Petra.Shared.MFinance.AR.Data.Access
         public static int CountViaAArCategoryTemplate(AArCategoryRow ATemplateRow, StringCollection ATemplateOperators, TDBTransaction ATransaction)
         {
             return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_a_ar_default_discount, PUB_a_ar_category WHERE " +
-                "PUB_a_ar_default_discount.a_ar_category_code_c = PUB_a_ar_category.a_ar_category_code_c" + GenerateWhereClauseLong("PUB_a_ar_category", AArCategoryTable.GetColumnStringList(), ATemplateRow, ATemplateOperators)), ATransaction, false, GetParametersForWhereClause(ATemplateRow, AArCategoryTable.GetPrimKeyColumnOrdList())));
+                "PUB_a_ar_default_discount.a_ar_category_code_c = PUB_a_ar_category.a_ar_category_code_c" + GenerateWhereClauseLong("PUB_a_ar_category",
+                AArCategoryTable.TableId, ATemplateRow, ATemplateOperators)),
+                ATransaction, false,
+                GetParametersForWhereClauseWithPrimaryKey(AArCategoryTable.TableId, ATemplateRow)));
         }
 
         /// auto generated
@@ -5105,8 +5020,8 @@ namespace Ict.Petra.Shared.MFinance.AR.Data.Access
         {
             return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_a_ar_default_discount, PUB_a_ar_category WHERE " +
                 "PUB_a_ar_default_discount.a_ar_category_code_c = PUB_a_ar_category.a_ar_category_code_c" +
-                GenerateWhereClauseLong("PUB_a_ar_category", AArCategoryTable.GetColumnStringList(), ASearchCriteria)), ATransaction, false,
-                GetParametersForWhereClause(new AArCategoryTable(), ASearchCriteria)));
+                GenerateWhereClauseLong("PUB_a_ar_category", ASearchCriteria)), ATransaction, false,
+                GetParametersForWhereClause(AArCategoryTable.TableId, ASearchCriteria)));
         }
 
         /// auto generated
@@ -5117,9 +5032,9 @@ namespace Ict.Petra.Shared.MFinance.AR.Data.Access
             ParametersArray[0].Value = ((object)(AArDiscountCode));
             ParametersArray[1] = new OdbcParameter("", OdbcType.Date);
             ParametersArray[1].Value = ((object)(AArDateValidFrom));
-            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, ((GenerateSelectClause(AFieldList, new string[] {
-                            "a_ar_category_code_c", "a_ar_discount_code_c", "a_ar_date_valid_from_d"}) + " FROM PUB_a_ar_default_discount WHERE a_ar_discount_code_c = ? AND a_ar_date_valid_from_d = ?")
-                            + GenerateOrderByClause(AOrderBy)), AArDefaultDiscountTable.GetTableName(), ATransaction, ParametersArray, AStartRecord, AMaxRecords);
+            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, ((GenerateSelectClause(AFieldList, AArDefaultDiscountTable.TableId) +
+                            " FROM PUB_a_ar_default_discount WHERE a_ar_discount_code_c = ? AND a_ar_date_valid_from_d = ?") +
+                            GenerateOrderByClause(AOrderBy)), TTypedDataTable.GetTableName(AArDefaultDiscountTable.TableId), ATransaction, ParametersArray, AStartRecord, AMaxRecords);
         }
 
         /// auto generated
@@ -5159,11 +5074,12 @@ namespace Ict.Petra.Shared.MFinance.AR.Data.Access
         /// auto generated
         public static void LoadViaAArDiscountTemplate(DataSet ADataSet, AArDiscountRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClauseLong("PUB_a_ar_default_discount", AFieldList, new string[] {
-                            "a_ar_category_code_c", "a_ar_discount_code_c", "a_ar_date_valid_from_d"}) + " FROM PUB_a_ar_default_discount, PUB_a_ar_discount WHERE " +
-                            "PUB_a_ar_default_discount.a_ar_discount_code_c = PUB_a_ar_discount.a_ar_discount_code_c AND PUB_a_ar_default_discount.a_ar_date_valid_from_d = PUB_a_ar_discount.a_ar_date_valid_from_d")
-                            + GenerateWhereClauseLong("PUB_a_ar_discount", AArDiscountTable.GetColumnStringList(), ATemplateRow, ATemplateOperators))
-                            + GenerateOrderByClause(AOrderBy)), AArDefaultDiscountTable.GetTableName(), ATransaction, GetParametersForWhereClause(ATemplateRow), AStartRecord, AMaxRecords);
+            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClauseLong("PUB_a_ar_default_discount", AFieldList, AArDefaultDiscountTable.TableId) +
+                            " FROM PUB_a_ar_default_discount, PUB_a_ar_discount WHERE " +
+                            "PUB_a_ar_default_discount.a_ar_discount_code_c = PUB_a_ar_discount.a_ar_discount_code_c AND PUB_a_ar_default_discount.a_ar_date_valid_from_d = PUB_a_ar_discount.a_ar_date_valid_from_d") +
+                            GenerateWhereClauseLong("PUB_a_ar_discount", AArDiscountTable.TableId, ATemplateRow, ATemplateOperators)) +
+                            GenerateOrderByClause(AOrderBy)), TTypedDataTable.GetTableName(AArDefaultDiscountTable.TableId), ATransaction,
+                            GetParametersForWhereClause(AArDiscountTable.TableId, ATemplateRow), AStartRecord, AMaxRecords);
         }
 
         /// auto generated
@@ -5209,12 +5125,12 @@ namespace Ict.Petra.Shared.MFinance.AR.Data.Access
         /// auto generated
         public static void LoadViaAArDiscountTemplate(DataSet ADataSet, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClauseLong("PUB_a_ar_default_discount", AFieldList, new string[] {
-                            "a_ar_category_code_c", "a_ar_discount_code_c", "a_ar_date_valid_from_d"}) + " FROM PUB_a_ar_default_discount, PUB_a_ar_discount WHERE " +
-                            "PUB_a_ar_default_discount.a_ar_discount_code_c = PUB_a_ar_discount.a_ar_discount_code_c AND PUB_a_ar_default_discount.a_ar_date_valid_from_d = PUB_a_ar_discount.a_ar_date_valid_from_d")
-                            + GenerateWhereClauseLong("PUB_a_ar_discount", AArDiscountTable.GetColumnStringList(), ASearchCriteria))
-                            + GenerateOrderByClause(AOrderBy)), AArDefaultDiscountTable.GetTableName(), ATransaction,
-                            GetParametersForWhereClause(new AArDefaultDiscountTable(), ASearchCriteria), AStartRecord, AMaxRecords);
+            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClauseLong("PUB_a_ar_default_discount", AFieldList, AArDefaultDiscountTable.TableId) +
+                            " FROM PUB_a_ar_default_discount, PUB_a_ar_discount WHERE " +
+                            "PUB_a_ar_default_discount.a_ar_discount_code_c = PUB_a_ar_discount.a_ar_discount_code_c AND PUB_a_ar_default_discount.a_ar_date_valid_from_d = PUB_a_ar_discount.a_ar_date_valid_from_d") +
+                            GenerateWhereClauseLong("PUB_a_ar_discount", ASearchCriteria)) +
+                            GenerateOrderByClause(AOrderBy)), TTypedDataTable.GetTableName(AArDefaultDiscountTable.TableId), ATransaction,
+                            GetParametersForWhereClause(AArDefaultDiscountTable.TableId, ASearchCriteria), AStartRecord, AMaxRecords);
         }
 
         /// auto generated
@@ -5266,7 +5182,10 @@ namespace Ict.Petra.Shared.MFinance.AR.Data.Access
         public static int CountViaAArDiscountTemplate(AArDiscountRow ATemplateRow, StringCollection ATemplateOperators, TDBTransaction ATransaction)
         {
             return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_a_ar_default_discount, PUB_a_ar_discount WHERE " +
-                "PUB_a_ar_default_discount.a_ar_discount_code_c = PUB_a_ar_discount.a_ar_discount_code_c AND PUB_a_ar_default_discount.a_ar_date_valid_from_d = PUB_a_ar_discount.a_ar_date_valid_from_d" + GenerateWhereClauseLong("PUB_a_ar_discount", AArDiscountTable.GetColumnStringList(), ATemplateRow, ATemplateOperators)), ATransaction, false, GetParametersForWhereClause(ATemplateRow, AArDiscountTable.GetPrimKeyColumnOrdList())));
+                "PUB_a_ar_default_discount.a_ar_discount_code_c = PUB_a_ar_discount.a_ar_discount_code_c AND PUB_a_ar_default_discount.a_ar_date_valid_from_d = PUB_a_ar_discount.a_ar_date_valid_from_d" + GenerateWhereClauseLong("PUB_a_ar_discount",
+                AArDiscountTable.TableId, ATemplateRow, ATemplateOperators)),
+                ATransaction, false,
+                GetParametersForWhereClauseWithPrimaryKey(AArDiscountTable.TableId, ATemplateRow)));
         }
 
         /// auto generated
@@ -5274,35 +5193,26 @@ namespace Ict.Petra.Shared.MFinance.AR.Data.Access
         {
             return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_a_ar_default_discount, PUB_a_ar_discount WHERE " +
                 "PUB_a_ar_default_discount.a_ar_discount_code_c = PUB_a_ar_discount.a_ar_discount_code_c AND PUB_a_ar_default_discount.a_ar_date_valid_from_d = PUB_a_ar_discount.a_ar_date_valid_from_d" +
-                GenerateWhereClauseLong("PUB_a_ar_discount", AArDiscountTable.GetColumnStringList(), ASearchCriteria)), ATransaction, false,
-                GetParametersForWhereClause(new AArDiscountTable(), ASearchCriteria)));
+                GenerateWhereClauseLong("PUB_a_ar_discount", ASearchCriteria)), ATransaction, false,
+                GetParametersForWhereClause(AArDiscountTable.TableId, ASearchCriteria)));
         }
 
         /// auto generated
         public static void DeleteByPrimaryKey(String AArCategoryCode, String AArDiscountCode, System.DateTime AArDateValidFrom, TDBTransaction ATransaction)
         {
-            OdbcParameter[] ParametersArray = new OdbcParameter[3];
-            ParametersArray[0] = new OdbcParameter("", OdbcType.VarChar, 100);
-            ParametersArray[0].Value = ((object)(AArCategoryCode));
-            ParametersArray[1] = new OdbcParameter("", OdbcType.VarChar, 100);
-            ParametersArray[1].Value = ((object)(AArDiscountCode));
-            ParametersArray[2] = new OdbcParameter("", OdbcType.Date);
-            ParametersArray[2].Value = ((object)(AArDateValidFrom));
-            DBAccess.GDBAccessObj.ExecuteNonQuery("DELETE FROM PUB_a_ar_default_discount WHERE a_ar_category_code_c = ? AND a_ar_discount_code_c = ? AND a_ar_date_valid_from_d = ?", ATransaction, false, ParametersArray);
+            DeleteByPrimaryKey(AArDefaultDiscountTable.TableId, new System.Object[3]{AArCategoryCode, AArDiscountCode, AArDateValidFrom}, ATransaction);
         }
 
         /// auto generated
         public static void DeleteUsingTemplate(AArDefaultDiscountRow ATemplateRow, StringCollection ATemplateOperators, TDBTransaction ATransaction)
         {
-            DBAccess.GDBAccessObj.ExecuteNonQuery(("DELETE FROM PUB_a_ar_default_discount" + GenerateWhereClause(AArDefaultDiscountTable.GetColumnStringList(), ATemplateRow, ATemplateOperators)), ATransaction, false, GetParametersForWhereClause(ATemplateRow));
+            DeleteUsingTemplate(AArDefaultDiscountTable.TableId, ATemplateRow, ATemplateOperators, ATransaction);
         }
 
         /// auto generated
         public static void DeleteUsingTemplate(TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
         {
-            DBAccess.GDBAccessObj.ExecuteNonQuery(("DELETE FROM PUB_a_ar_default_discount" +
-                GenerateWhereClause(AArDefaultDiscountTable.GetColumnStringList(), ASearchCriteria)), ATransaction, false,
-                GetParametersForWhereClause(new AArDefaultDiscountTable(), ASearchCriteria));
+            DeleteUsingTemplate(AArDefaultDiscountTable.TableId, ASearchCriteria, ATransaction);
         }
 
         /// auto generated
@@ -5319,15 +5229,15 @@ namespace Ict.Petra.Shared.MFinance.AR.Data.Access
                 {
                     if ((TheRow.RowState == DataRowState.Added))
                     {
-                        TTypedDataAccess.InsertRow("a_ar_default_discount", AArDefaultDiscountTable.GetColumnStringList(), ref TheRow, ATransaction, UserInfo.GUserInfo.UserID);
+                        TTypedDataAccess.InsertRow(AArDefaultDiscountTable.TableId, ref TheRow, ATransaction, UserInfo.GUserInfo.UserID);
                     }
                     if ((TheRow.RowState == DataRowState.Modified))
                     {
-                        TTypedDataAccess.UpdateRow("a_ar_default_discount", AArDefaultDiscountTable.GetColumnStringList(), AArDefaultDiscountTable.GetPrimKeyColumnOrdList(), ref TheRow, ATransaction, UserInfo.GUserInfo.UserID);
+                        TTypedDataAccess.UpdateRow(AArDefaultDiscountTable.TableId, ref TheRow, ATransaction, UserInfo.GUserInfo.UserID);
                     }
                     if ((TheRow.RowState == DataRowState.Deleted))
                     {
-                        TTypedDataAccess.DeleteRow("a_ar_default_discount", AArDefaultDiscountTable.GetColumnStringList(), AArDefaultDiscountTable.GetPrimKeyColumnOrdList(), TheRow, ATransaction);
+                        TTypedDataAccess.DeleteRow(AArDefaultDiscountTable.TableId, TheRow, ATransaction);
                     }
                 }
                 catch (OdbcException ex)
@@ -5357,9 +5267,8 @@ namespace Ict.Petra.Shared.MFinance.AR.Data.Access
         /// this method is called by all overloads
         public static void LoadAll(DataSet ADataSet, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, ((GenerateSelectClause(AFieldList, new string[] {
-                            "a_ledger_number_i", "a_key_i"}) + " FROM PUB_a_ar_invoice")
-                            + GenerateOrderByClause(AOrderBy)), AArInvoiceTable.GetTableName(), ATransaction, AStartRecord, AMaxRecords);
+            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, ((GenerateSelectClause(AFieldList, AArInvoiceTable.TableId) + " FROM PUB_a_ar_invoice") +
+                            GenerateOrderByClause(AOrderBy)), TTypedDataTable.GetTableName(AArInvoiceTable.TableId), ATransaction, AStartRecord, AMaxRecords);
         }
 
         /// auto generated
@@ -5399,14 +5308,8 @@ namespace Ict.Petra.Shared.MFinance.AR.Data.Access
         /// this method is called by all overloads
         public static void LoadByPrimaryKey(DataSet ADataSet, Int32 ALedgerNumber, Int32 AKey, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            OdbcParameter[] ParametersArray = new OdbcParameter[2];
-            ParametersArray[0] = new OdbcParameter("", OdbcType.Int);
-            ParametersArray[0].Value = ((object)(ALedgerNumber));
-            ParametersArray[1] = new OdbcParameter("", OdbcType.Int);
-            ParametersArray[1].Value = ((object)(AKey));
-            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, ((GenerateSelectClause(AFieldList, new string[] {
-                            "a_ledger_number_i", "a_key_i"}) + " FROM PUB_a_ar_invoice WHERE a_ledger_number_i = ? AND a_key_i = ?")
-                            + GenerateOrderByClause(AOrderBy)), AArInvoiceTable.GetTableName(), ATransaction, ParametersArray, AStartRecord, AMaxRecords);
+            ADataSet = LoadByPrimaryKey(AArInvoiceTable.TableId,
+                ADataSet, new System.Object[2]{ALedgerNumber, AKey}, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
         }
 
         /// auto generated
@@ -5446,10 +5349,10 @@ namespace Ict.Petra.Shared.MFinance.AR.Data.Access
         /// this method is called by all overloads
         public static void LoadUsingTemplate(DataSet ADataSet, AArInvoiceRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClause(AFieldList, new string[] {
-                            "a_ledger_number_i", "a_key_i"}) + " FROM PUB_a_ar_invoice")
-                            + GenerateWhereClause(AArInvoiceTable.GetColumnStringList(), ATemplateRow, ATemplateOperators))
-                            + GenerateOrderByClause(AOrderBy)), AArInvoiceTable.GetTableName(), ATransaction, GetParametersForWhereClause(ATemplateRow), AStartRecord, AMaxRecords);
+            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClause(AFieldList, AArInvoiceTable.TableId) + " FROM PUB_a_ar_invoice") +
+                            GenerateWhereClause(TTypedDataTable.GetColumnStringList(AArInvoiceTable.TableId), ATemplateRow, ATemplateOperators)) +
+                            GenerateOrderByClause(AOrderBy)), TTypedDataTable.GetTableName(AArInvoiceTable.TableId), ATransaction,
+                            GetParametersForWhereClause(AArInvoiceTable.TableId, ATemplateRow), AStartRecord, AMaxRecords);
         }
 
         /// auto generated
@@ -5495,11 +5398,10 @@ namespace Ict.Petra.Shared.MFinance.AR.Data.Access
         /// this method is called by all overloads
         public static void LoadUsingTemplate(DataSet ADataSet, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClause(AFieldList, new string[] {
-                            "a_ledger_number_i", "a_key_i"}) + " FROM PUB_a_ar_invoice")
-                            + GenerateWhereClause(AArInvoiceTable.GetColumnStringList(), ASearchCriteria))
-                            + GenerateOrderByClause(AOrderBy)), AArInvoiceTable.GetTableName(), ATransaction,
-                            GetParametersForWhereClause(new AArInvoiceTable(), ASearchCriteria), AStartRecord, AMaxRecords);
+            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClause(AFieldList, AArInvoiceTable.TableId) + " FROM PUB_a_ar_invoice") +
+                            GenerateWhereClause(TTypedDataTable.GetColumnStringList(AArInvoiceTable.TableId), ASearchCriteria)) +
+                            GenerateOrderByClause(AOrderBy)), TTypedDataTable.GetTableName(AArInvoiceTable.TableId), ATransaction,
+                            GetParametersForWhereClause(AArInvoiceTable.TableId, ASearchCriteria), AStartRecord, AMaxRecords);
         }
 
         /// auto generated
@@ -5542,28 +5444,24 @@ namespace Ict.Petra.Shared.MFinance.AR.Data.Access
             return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar("SELECT COUNT(*) FROM PUB_a_ar_invoice", ATransaction, false));
         }
 
-        /// this method is called by all overloads
-        public static int CountByPrimaryKey(Int32 ALedgerNumber, Int32 AKey, TDBTransaction ATransaction)
+        /// check if a row exists by using the primary key
+        public static bool Exists(Int32 ALedgerNumber, Int32 AKey, TDBTransaction ATransaction)
         {
-            OdbcParameter[] ParametersArray = new OdbcParameter[2];
-            ParametersArray[0] = new OdbcParameter("", OdbcType.Int);
-            ParametersArray[0].Value = ((object)(ALedgerNumber));
-            ParametersArray[1] = new OdbcParameter("", OdbcType.Int);
-            ParametersArray[1].Value = ((object)(AKey));
-            return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar("SELECT COUNT(*) FROM PUB_a_ar_invoice WHERE a_ledger_number_i = ? AND a_key_i = ?", ATransaction, false, ParametersArray));
+            return Exists(AArInvoiceTable.TableId, new System.Object[2]{ALedgerNumber, AKey}, ATransaction);
         }
 
         /// this method is called by all overloads
         public static int CountUsingTemplate(AArInvoiceRow ATemplateRow, StringCollection ATemplateOperators, TDBTransaction ATransaction)
         {
-            return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_a_ar_invoice" + GenerateWhereClause(AArInvoiceTable.GetColumnStringList(), ATemplateRow, ATemplateOperators)), ATransaction, false, GetParametersForWhereClause(ATemplateRow)));
+            return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_a_ar_invoice" + GenerateWhereClause(TTypedDataTable.GetColumnStringList(AArInvoiceTable.TableId), ATemplateRow, ATemplateOperators)), ATransaction, false,
+                   GetParametersForWhereClause(AArInvoiceTable.TableId, ATemplateRow)));
         }
 
         /// this method is called by all overloads
         public static int CountUsingTemplate(TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
         {
-            return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_a_ar_invoice" + GenerateWhereClause(AArInvoiceTable.GetColumnStringList(), ASearchCriteria)), ATransaction, false,
-            GetParametersForWhereClause(new AArInvoiceTable(), ASearchCriteria)));
+            return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_a_ar_invoice" + GenerateWhereClause(TTypedDataTable.GetColumnStringList(AArInvoiceTable.TableId), ASearchCriteria)), ATransaction, false,
+            GetParametersForWhereClause(AArInvoiceTable.TableId, ASearchCriteria)));
         }
 
         /// auto generated
@@ -5572,9 +5470,9 @@ namespace Ict.Petra.Shared.MFinance.AR.Data.Access
             OdbcParameter[] ParametersArray = new OdbcParameter[1];
             ParametersArray[0] = new OdbcParameter("", OdbcType.Decimal, 10);
             ParametersArray[0].Value = ((object)(APartnerKey));
-            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, ((GenerateSelectClause(AFieldList, new string[] {
-                            "a_ledger_number_i", "a_key_i"}) + " FROM PUB_a_ar_invoice WHERE p_partner_key_n = ?")
-                            + GenerateOrderByClause(AOrderBy)), AArInvoiceTable.GetTableName(), ATransaction, ParametersArray, AStartRecord, AMaxRecords);
+            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, ((GenerateSelectClause(AFieldList, AArInvoiceTable.TableId) +
+                            " FROM PUB_a_ar_invoice WHERE p_partner_key_n = ?") +
+                            GenerateOrderByClause(AOrderBy)), TTypedDataTable.GetTableName(AArInvoiceTable.TableId), ATransaction, ParametersArray, AStartRecord, AMaxRecords);
         }
 
         /// auto generated
@@ -5614,11 +5512,12 @@ namespace Ict.Petra.Shared.MFinance.AR.Data.Access
         /// auto generated
         public static void LoadViaPPartnerTemplate(DataSet ADataSet, PPartnerRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClauseLong("PUB_a_ar_invoice", AFieldList, new string[] {
-                            "a_ledger_number_i", "a_key_i"}) + " FROM PUB_a_ar_invoice, PUB_p_partner WHERE " +
-                            "PUB_a_ar_invoice.p_partner_key_n = PUB_p_partner.p_partner_key_n")
-                            + GenerateWhereClauseLong("PUB_p_partner", PPartnerTable.GetColumnStringList(), ATemplateRow, ATemplateOperators))
-                            + GenerateOrderByClause(AOrderBy)), AArInvoiceTable.GetTableName(), ATransaction, GetParametersForWhereClause(ATemplateRow), AStartRecord, AMaxRecords);
+            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClauseLong("PUB_a_ar_invoice", AFieldList, AArInvoiceTable.TableId) +
+                            " FROM PUB_a_ar_invoice, PUB_p_partner WHERE " +
+                            "PUB_a_ar_invoice.p_partner_key_n = PUB_p_partner.p_partner_key_n") +
+                            GenerateWhereClauseLong("PUB_p_partner", PPartnerTable.TableId, ATemplateRow, ATemplateOperators)) +
+                            GenerateOrderByClause(AOrderBy)), TTypedDataTable.GetTableName(AArInvoiceTable.TableId), ATransaction,
+                            GetParametersForWhereClause(PPartnerTable.TableId, ATemplateRow), AStartRecord, AMaxRecords);
         }
 
         /// auto generated
@@ -5664,12 +5563,12 @@ namespace Ict.Petra.Shared.MFinance.AR.Data.Access
         /// auto generated
         public static void LoadViaPPartnerTemplate(DataSet ADataSet, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClauseLong("PUB_a_ar_invoice", AFieldList, new string[] {
-                            "a_ledger_number_i", "a_key_i"}) + " FROM PUB_a_ar_invoice, PUB_p_partner WHERE " +
-                            "PUB_a_ar_invoice.p_partner_key_n = PUB_p_partner.p_partner_key_n")
-                            + GenerateWhereClauseLong("PUB_p_partner", PPartnerTable.GetColumnStringList(), ASearchCriteria))
-                            + GenerateOrderByClause(AOrderBy)), AArInvoiceTable.GetTableName(), ATransaction,
-                            GetParametersForWhereClause(new AArInvoiceTable(), ASearchCriteria), AStartRecord, AMaxRecords);
+            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClauseLong("PUB_a_ar_invoice", AFieldList, AArInvoiceTable.TableId) +
+                            " FROM PUB_a_ar_invoice, PUB_p_partner WHERE " +
+                            "PUB_a_ar_invoice.p_partner_key_n = PUB_p_partner.p_partner_key_n") +
+                            GenerateWhereClauseLong("PUB_p_partner", ASearchCriteria)) +
+                            GenerateOrderByClause(AOrderBy)), TTypedDataTable.GetTableName(AArInvoiceTable.TableId), ATransaction,
+                            GetParametersForWhereClause(AArInvoiceTable.TableId, ASearchCriteria), AStartRecord, AMaxRecords);
         }
 
         /// auto generated
@@ -5719,7 +5618,10 @@ namespace Ict.Petra.Shared.MFinance.AR.Data.Access
         public static int CountViaPPartnerTemplate(PPartnerRow ATemplateRow, StringCollection ATemplateOperators, TDBTransaction ATransaction)
         {
             return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_a_ar_invoice, PUB_p_partner WHERE " +
-                "PUB_a_ar_invoice.p_partner_key_n = PUB_p_partner.p_partner_key_n" + GenerateWhereClauseLong("PUB_p_partner", PPartnerTable.GetColumnStringList(), ATemplateRow, ATemplateOperators)), ATransaction, false, GetParametersForWhereClause(ATemplateRow, PPartnerTable.GetPrimKeyColumnOrdList())));
+                "PUB_a_ar_invoice.p_partner_key_n = PUB_p_partner.p_partner_key_n" + GenerateWhereClauseLong("PUB_p_partner",
+                PPartnerTable.TableId, ATemplateRow, ATemplateOperators)),
+                ATransaction, false,
+                GetParametersForWhereClauseWithPrimaryKey(PPartnerTable.TableId, ATemplateRow)));
         }
 
         /// auto generated
@@ -5727,8 +5629,8 @@ namespace Ict.Petra.Shared.MFinance.AR.Data.Access
         {
             return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_a_ar_invoice, PUB_p_partner WHERE " +
                 "PUB_a_ar_invoice.p_partner_key_n = PUB_p_partner.p_partner_key_n" +
-                GenerateWhereClauseLong("PUB_p_partner", PPartnerTable.GetColumnStringList(), ASearchCriteria)), ATransaction, false,
-                GetParametersForWhereClause(new PPartnerTable(), ASearchCriteria)));
+                GenerateWhereClauseLong("PUB_p_partner", ASearchCriteria)), ATransaction, false,
+                GetParametersForWhereClause(PPartnerTable.TableId, ASearchCriteria)));
         }
 
         /// auto generated
@@ -5743,9 +5645,9 @@ namespace Ict.Petra.Shared.MFinance.AR.Data.Access
             ParametersArray[2].Value = ((object)(ATaxRateCode));
             ParametersArray[3] = new OdbcParameter("", OdbcType.Date);
             ParametersArray[3].Value = ((object)(ATaxValidFrom));
-            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, ((GenerateSelectClause(AFieldList, new string[] {
-                            "a_ledger_number_i", "a_key_i"}) + " FROM PUB_a_ar_invoice WHERE a_ledger_number_i = ? AND a_special_tax_type_code_c = ? AND a_special_tax_rate_code_c = ? AND a_special_tax_valid_from_d = ?")
-                            + GenerateOrderByClause(AOrderBy)), AArInvoiceTable.GetTableName(), ATransaction, ParametersArray, AStartRecord, AMaxRecords);
+            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, ((GenerateSelectClause(AFieldList, AArInvoiceTable.TableId) +
+                            " FROM PUB_a_ar_invoice WHERE a_ledger_number_i = ? AND a_special_tax_type_code_c = ? AND a_special_tax_rate_code_c = ? AND a_special_tax_valid_from_d = ?") +
+                            GenerateOrderByClause(AOrderBy)), TTypedDataTable.GetTableName(AArInvoiceTable.TableId), ATransaction, ParametersArray, AStartRecord, AMaxRecords);
         }
 
         /// auto generated
@@ -5785,11 +5687,12 @@ namespace Ict.Petra.Shared.MFinance.AR.Data.Access
         /// auto generated
         public static void LoadViaATaxTableTemplate(DataSet ADataSet, ATaxTableRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClauseLong("PUB_a_ar_invoice", AFieldList, new string[] {
-                            "a_ledger_number_i", "a_key_i"}) + " FROM PUB_a_ar_invoice, PUB_a_tax_table WHERE " +
-                            "PUB_a_ar_invoice.a_ledger_number_i = PUB_a_tax_table.a_ledger_number_i AND PUB_a_ar_invoice.a_special_tax_type_code_c = PUB_a_tax_table.a_tax_type_code_c AND PUB_a_ar_invoice.a_special_tax_rate_code_c = PUB_a_tax_table.a_tax_rate_code_c AND PUB_a_ar_invoice.a_special_tax_valid_from_d = PUB_a_tax_table.a_tax_valid_from_d")
-                            + GenerateWhereClauseLong("PUB_a_tax_table", ATaxTableTable.GetColumnStringList(), ATemplateRow, ATemplateOperators))
-                            + GenerateOrderByClause(AOrderBy)), AArInvoiceTable.GetTableName(), ATransaction, GetParametersForWhereClause(ATemplateRow), AStartRecord, AMaxRecords);
+            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClauseLong("PUB_a_ar_invoice", AFieldList, AArInvoiceTable.TableId) +
+                            " FROM PUB_a_ar_invoice, PUB_a_tax_table WHERE " +
+                            "PUB_a_ar_invoice.a_ledger_number_i = PUB_a_tax_table.a_ledger_number_i AND PUB_a_ar_invoice.a_special_tax_type_code_c = PUB_a_tax_table.a_tax_type_code_c AND PUB_a_ar_invoice.a_special_tax_rate_code_c = PUB_a_tax_table.a_tax_rate_code_c AND PUB_a_ar_invoice.a_special_tax_valid_from_d = PUB_a_tax_table.a_tax_valid_from_d") +
+                            GenerateWhereClauseLong("PUB_a_tax_table", ATaxTableTable.TableId, ATemplateRow, ATemplateOperators)) +
+                            GenerateOrderByClause(AOrderBy)), TTypedDataTable.GetTableName(AArInvoiceTable.TableId), ATransaction,
+                            GetParametersForWhereClause(ATaxTableTable.TableId, ATemplateRow), AStartRecord, AMaxRecords);
         }
 
         /// auto generated
@@ -5835,12 +5738,12 @@ namespace Ict.Petra.Shared.MFinance.AR.Data.Access
         /// auto generated
         public static void LoadViaATaxTableTemplate(DataSet ADataSet, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClauseLong("PUB_a_ar_invoice", AFieldList, new string[] {
-                            "a_ledger_number_i", "a_key_i"}) + " FROM PUB_a_ar_invoice, PUB_a_tax_table WHERE " +
-                            "PUB_a_ar_invoice.a_ledger_number_i = PUB_a_tax_table.a_ledger_number_i AND PUB_a_ar_invoice.a_special_tax_type_code_c = PUB_a_tax_table.a_tax_type_code_c AND PUB_a_ar_invoice.a_special_tax_rate_code_c = PUB_a_tax_table.a_tax_rate_code_c AND PUB_a_ar_invoice.a_special_tax_valid_from_d = PUB_a_tax_table.a_tax_valid_from_d")
-                            + GenerateWhereClauseLong("PUB_a_tax_table", ATaxTableTable.GetColumnStringList(), ASearchCriteria))
-                            + GenerateOrderByClause(AOrderBy)), AArInvoiceTable.GetTableName(), ATransaction,
-                            GetParametersForWhereClause(new AArInvoiceTable(), ASearchCriteria), AStartRecord, AMaxRecords);
+            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClauseLong("PUB_a_ar_invoice", AFieldList, AArInvoiceTable.TableId) +
+                            " FROM PUB_a_ar_invoice, PUB_a_tax_table WHERE " +
+                            "PUB_a_ar_invoice.a_ledger_number_i = PUB_a_tax_table.a_ledger_number_i AND PUB_a_ar_invoice.a_special_tax_type_code_c = PUB_a_tax_table.a_tax_type_code_c AND PUB_a_ar_invoice.a_special_tax_rate_code_c = PUB_a_tax_table.a_tax_rate_code_c AND PUB_a_ar_invoice.a_special_tax_valid_from_d = PUB_a_tax_table.a_tax_valid_from_d") +
+                            GenerateWhereClauseLong("PUB_a_tax_table", ASearchCriteria)) +
+                            GenerateOrderByClause(AOrderBy)), TTypedDataTable.GetTableName(AArInvoiceTable.TableId), ATransaction,
+                            GetParametersForWhereClause(AArInvoiceTable.TableId, ASearchCriteria), AStartRecord, AMaxRecords);
         }
 
         /// auto generated
@@ -5896,7 +5799,10 @@ namespace Ict.Petra.Shared.MFinance.AR.Data.Access
         public static int CountViaATaxTableTemplate(ATaxTableRow ATemplateRow, StringCollection ATemplateOperators, TDBTransaction ATransaction)
         {
             return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_a_ar_invoice, PUB_a_tax_table WHERE " +
-                "PUB_a_ar_invoice.a_ledger_number_i = PUB_a_tax_table.a_ledger_number_i AND PUB_a_ar_invoice.a_special_tax_type_code_c = PUB_a_tax_table.a_tax_type_code_c AND PUB_a_ar_invoice.a_special_tax_rate_code_c = PUB_a_tax_table.a_tax_rate_code_c AND PUB_a_ar_invoice.a_special_tax_valid_from_d = PUB_a_tax_table.a_tax_valid_from_d" + GenerateWhereClauseLong("PUB_a_tax_table", ATaxTableTable.GetColumnStringList(), ATemplateRow, ATemplateOperators)), ATransaction, false, GetParametersForWhereClause(ATemplateRow, ATaxTableTable.GetPrimKeyColumnOrdList())));
+                "PUB_a_ar_invoice.a_ledger_number_i = PUB_a_tax_table.a_ledger_number_i AND PUB_a_ar_invoice.a_special_tax_type_code_c = PUB_a_tax_table.a_tax_type_code_c AND PUB_a_ar_invoice.a_special_tax_rate_code_c = PUB_a_tax_table.a_tax_rate_code_c AND PUB_a_ar_invoice.a_special_tax_valid_from_d = PUB_a_tax_table.a_tax_valid_from_d" + GenerateWhereClauseLong("PUB_a_tax_table",
+                ATaxTableTable.TableId, ATemplateRow, ATemplateOperators)),
+                ATransaction, false,
+                GetParametersForWhereClauseWithPrimaryKey(ATaxTableTable.TableId, ATemplateRow)));
         }
 
         /// auto generated
@@ -5904,8 +5810,8 @@ namespace Ict.Petra.Shared.MFinance.AR.Data.Access
         {
             return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_a_ar_invoice, PUB_a_tax_table WHERE " +
                 "PUB_a_ar_invoice.a_ledger_number_i = PUB_a_tax_table.a_ledger_number_i AND PUB_a_ar_invoice.a_special_tax_type_code_c = PUB_a_tax_table.a_tax_type_code_c AND PUB_a_ar_invoice.a_special_tax_rate_code_c = PUB_a_tax_table.a_tax_rate_code_c AND PUB_a_ar_invoice.a_special_tax_valid_from_d = PUB_a_tax_table.a_tax_valid_from_d" +
-                GenerateWhereClauseLong("PUB_a_tax_table", ATaxTableTable.GetColumnStringList(), ASearchCriteria)), ATransaction, false,
-                GetParametersForWhereClause(new ATaxTableTable(), ASearchCriteria)));
+                GenerateWhereClauseLong("PUB_a_tax_table", ASearchCriteria)), ATransaction, false,
+                GetParametersForWhereClause(ATaxTableTable.TableId, ASearchCriteria)));
         }
 
         /// auto generated
@@ -5914,9 +5820,9 @@ namespace Ict.Petra.Shared.MFinance.AR.Data.Access
             OdbcParameter[] ParametersArray = new OdbcParameter[1];
             ParametersArray[0] = new OdbcParameter("", OdbcType.Int);
             ParametersArray[0].Value = ((object)(ALedgerNumber));
-            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, ((GenerateSelectClause(AFieldList, new string[] {
-                            "a_ledger_number_i", "a_key_i"}) + " FROM PUB_a_ar_invoice WHERE a_ledger_number_i = ?")
-                            + GenerateOrderByClause(AOrderBy)), AArInvoiceTable.GetTableName(), ATransaction, ParametersArray, AStartRecord, AMaxRecords);
+            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, ((GenerateSelectClause(AFieldList, AArInvoiceTable.TableId) +
+                            " FROM PUB_a_ar_invoice WHERE a_ledger_number_i = ?") +
+                            GenerateOrderByClause(AOrderBy)), TTypedDataTable.GetTableName(AArInvoiceTable.TableId), ATransaction, ParametersArray, AStartRecord, AMaxRecords);
         }
 
         /// auto generated
@@ -5956,11 +5862,12 @@ namespace Ict.Petra.Shared.MFinance.AR.Data.Access
         /// auto generated
         public static void LoadViaALedgerTemplate(DataSet ADataSet, ALedgerRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClauseLong("PUB_a_ar_invoice", AFieldList, new string[] {
-                            "a_ledger_number_i", "a_key_i"}) + " FROM PUB_a_ar_invoice, PUB_a_ledger WHERE " +
-                            "PUB_a_ar_invoice.a_ledger_number_i = PUB_a_ledger.a_ledger_number_i")
-                            + GenerateWhereClauseLong("PUB_a_ledger", ALedgerTable.GetColumnStringList(), ATemplateRow, ATemplateOperators))
-                            + GenerateOrderByClause(AOrderBy)), AArInvoiceTable.GetTableName(), ATransaction, GetParametersForWhereClause(ATemplateRow), AStartRecord, AMaxRecords);
+            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClauseLong("PUB_a_ar_invoice", AFieldList, AArInvoiceTable.TableId) +
+                            " FROM PUB_a_ar_invoice, PUB_a_ledger WHERE " +
+                            "PUB_a_ar_invoice.a_ledger_number_i = PUB_a_ledger.a_ledger_number_i") +
+                            GenerateWhereClauseLong("PUB_a_ledger", ALedgerTable.TableId, ATemplateRow, ATemplateOperators)) +
+                            GenerateOrderByClause(AOrderBy)), TTypedDataTable.GetTableName(AArInvoiceTable.TableId), ATransaction,
+                            GetParametersForWhereClause(ALedgerTable.TableId, ATemplateRow), AStartRecord, AMaxRecords);
         }
 
         /// auto generated
@@ -6006,12 +5913,12 @@ namespace Ict.Petra.Shared.MFinance.AR.Data.Access
         /// auto generated
         public static void LoadViaALedgerTemplate(DataSet ADataSet, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClauseLong("PUB_a_ar_invoice", AFieldList, new string[] {
-                            "a_ledger_number_i", "a_key_i"}) + " FROM PUB_a_ar_invoice, PUB_a_ledger WHERE " +
-                            "PUB_a_ar_invoice.a_ledger_number_i = PUB_a_ledger.a_ledger_number_i")
-                            + GenerateWhereClauseLong("PUB_a_ledger", ALedgerTable.GetColumnStringList(), ASearchCriteria))
-                            + GenerateOrderByClause(AOrderBy)), AArInvoiceTable.GetTableName(), ATransaction,
-                            GetParametersForWhereClause(new AArInvoiceTable(), ASearchCriteria), AStartRecord, AMaxRecords);
+            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClauseLong("PUB_a_ar_invoice", AFieldList, AArInvoiceTable.TableId) +
+                            " FROM PUB_a_ar_invoice, PUB_a_ledger WHERE " +
+                            "PUB_a_ar_invoice.a_ledger_number_i = PUB_a_ledger.a_ledger_number_i") +
+                            GenerateWhereClauseLong("PUB_a_ledger", ASearchCriteria)) +
+                            GenerateOrderByClause(AOrderBy)), TTypedDataTable.GetTableName(AArInvoiceTable.TableId), ATransaction,
+                            GetParametersForWhereClause(AArInvoiceTable.TableId, ASearchCriteria), AStartRecord, AMaxRecords);
         }
 
         /// auto generated
@@ -6061,7 +5968,10 @@ namespace Ict.Petra.Shared.MFinance.AR.Data.Access
         public static int CountViaALedgerTemplate(ALedgerRow ATemplateRow, StringCollection ATemplateOperators, TDBTransaction ATransaction)
         {
             return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_a_ar_invoice, PUB_a_ledger WHERE " +
-                "PUB_a_ar_invoice.a_ledger_number_i = PUB_a_ledger.a_ledger_number_i" + GenerateWhereClauseLong("PUB_a_ledger", ALedgerTable.GetColumnStringList(), ATemplateRow, ATemplateOperators)), ATransaction, false, GetParametersForWhereClause(ATemplateRow, ALedgerTable.GetPrimKeyColumnOrdList())));
+                "PUB_a_ar_invoice.a_ledger_number_i = PUB_a_ledger.a_ledger_number_i" + GenerateWhereClauseLong("PUB_a_ledger",
+                ALedgerTable.TableId, ATemplateRow, ATemplateOperators)),
+                ATransaction, false,
+                GetParametersForWhereClauseWithPrimaryKey(ALedgerTable.TableId, ATemplateRow)));
         }
 
         /// auto generated
@@ -6069,8 +5979,8 @@ namespace Ict.Petra.Shared.MFinance.AR.Data.Access
         {
             return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_a_ar_invoice, PUB_a_ledger WHERE " +
                 "PUB_a_ar_invoice.a_ledger_number_i = PUB_a_ledger.a_ledger_number_i" +
-                GenerateWhereClauseLong("PUB_a_ledger", ALedgerTable.GetColumnStringList(), ASearchCriteria)), ATransaction, false,
-                GetParametersForWhereClause(new ALedgerTable(), ASearchCriteria)));
+                GenerateWhereClauseLong("PUB_a_ledger", ASearchCriteria)), ATransaction, false,
+                GetParametersForWhereClause(ALedgerTable.TableId, ASearchCriteria)));
         }
 
         /// auto generated
@@ -6079,9 +5989,9 @@ namespace Ict.Petra.Shared.MFinance.AR.Data.Access
             OdbcParameter[] ParametersArray = new OdbcParameter[1];
             ParametersArray[0] = new OdbcParameter("", OdbcType.VarChar, 16);
             ParametersArray[0].Value = ((object)(ATaxTypeCode));
-            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, ((GenerateSelectClause(AFieldList, new string[] {
-                            "a_ledger_number_i", "a_key_i"}) + " FROM PUB_a_ar_invoice WHERE a_special_tax_type_code_c = ?")
-                            + GenerateOrderByClause(AOrderBy)), AArInvoiceTable.GetTableName(), ATransaction, ParametersArray, AStartRecord, AMaxRecords);
+            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, ((GenerateSelectClause(AFieldList, AArInvoiceTable.TableId) +
+                            " FROM PUB_a_ar_invoice WHERE a_special_tax_type_code_c = ?") +
+                            GenerateOrderByClause(AOrderBy)), TTypedDataTable.GetTableName(AArInvoiceTable.TableId), ATransaction, ParametersArray, AStartRecord, AMaxRecords);
         }
 
         /// auto generated
@@ -6121,11 +6031,12 @@ namespace Ict.Petra.Shared.MFinance.AR.Data.Access
         /// auto generated
         public static void LoadViaATaxTypeTemplate(DataSet ADataSet, ATaxTypeRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClauseLong("PUB_a_ar_invoice", AFieldList, new string[] {
-                            "a_ledger_number_i", "a_key_i"}) + " FROM PUB_a_ar_invoice, PUB_a_tax_type WHERE " +
-                            "PUB_a_ar_invoice.a_special_tax_type_code_c = PUB_a_tax_type.a_tax_type_code_c")
-                            + GenerateWhereClauseLong("PUB_a_tax_type", ATaxTypeTable.GetColumnStringList(), ATemplateRow, ATemplateOperators))
-                            + GenerateOrderByClause(AOrderBy)), AArInvoiceTable.GetTableName(), ATransaction, GetParametersForWhereClause(ATemplateRow), AStartRecord, AMaxRecords);
+            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClauseLong("PUB_a_ar_invoice", AFieldList, AArInvoiceTable.TableId) +
+                            " FROM PUB_a_ar_invoice, PUB_a_tax_type WHERE " +
+                            "PUB_a_ar_invoice.a_special_tax_type_code_c = PUB_a_tax_type.a_tax_type_code_c") +
+                            GenerateWhereClauseLong("PUB_a_tax_type", ATaxTypeTable.TableId, ATemplateRow, ATemplateOperators)) +
+                            GenerateOrderByClause(AOrderBy)), TTypedDataTable.GetTableName(AArInvoiceTable.TableId), ATransaction,
+                            GetParametersForWhereClause(ATaxTypeTable.TableId, ATemplateRow), AStartRecord, AMaxRecords);
         }
 
         /// auto generated
@@ -6171,12 +6082,12 @@ namespace Ict.Petra.Shared.MFinance.AR.Data.Access
         /// auto generated
         public static void LoadViaATaxTypeTemplate(DataSet ADataSet, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClauseLong("PUB_a_ar_invoice", AFieldList, new string[] {
-                            "a_ledger_number_i", "a_key_i"}) + " FROM PUB_a_ar_invoice, PUB_a_tax_type WHERE " +
-                            "PUB_a_ar_invoice.a_special_tax_type_code_c = PUB_a_tax_type.a_tax_type_code_c")
-                            + GenerateWhereClauseLong("PUB_a_tax_type", ATaxTypeTable.GetColumnStringList(), ASearchCriteria))
-                            + GenerateOrderByClause(AOrderBy)), AArInvoiceTable.GetTableName(), ATransaction,
-                            GetParametersForWhereClause(new AArInvoiceTable(), ASearchCriteria), AStartRecord, AMaxRecords);
+            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClauseLong("PUB_a_ar_invoice", AFieldList, AArInvoiceTable.TableId) +
+                            " FROM PUB_a_ar_invoice, PUB_a_tax_type WHERE " +
+                            "PUB_a_ar_invoice.a_special_tax_type_code_c = PUB_a_tax_type.a_tax_type_code_c") +
+                            GenerateWhereClauseLong("PUB_a_tax_type", ASearchCriteria)) +
+                            GenerateOrderByClause(AOrderBy)), TTypedDataTable.GetTableName(AArInvoiceTable.TableId), ATransaction,
+                            GetParametersForWhereClause(AArInvoiceTable.TableId, ASearchCriteria), AStartRecord, AMaxRecords);
         }
 
         /// auto generated
@@ -6226,7 +6137,10 @@ namespace Ict.Petra.Shared.MFinance.AR.Data.Access
         public static int CountViaATaxTypeTemplate(ATaxTypeRow ATemplateRow, StringCollection ATemplateOperators, TDBTransaction ATransaction)
         {
             return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_a_ar_invoice, PUB_a_tax_type WHERE " +
-                "PUB_a_ar_invoice.a_special_tax_type_code_c = PUB_a_tax_type.a_tax_type_code_c" + GenerateWhereClauseLong("PUB_a_tax_type", ATaxTypeTable.GetColumnStringList(), ATemplateRow, ATemplateOperators)), ATransaction, false, GetParametersForWhereClause(ATemplateRow, ATaxTypeTable.GetPrimKeyColumnOrdList())));
+                "PUB_a_ar_invoice.a_special_tax_type_code_c = PUB_a_tax_type.a_tax_type_code_c" + GenerateWhereClauseLong("PUB_a_tax_type",
+                ATaxTypeTable.TableId, ATemplateRow, ATemplateOperators)),
+                ATransaction, false,
+                GetParametersForWhereClauseWithPrimaryKey(ATaxTypeTable.TableId, ATemplateRow)));
         }
 
         /// auto generated
@@ -6234,8 +6148,8 @@ namespace Ict.Petra.Shared.MFinance.AR.Data.Access
         {
             return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_a_ar_invoice, PUB_a_tax_type WHERE " +
                 "PUB_a_ar_invoice.a_special_tax_type_code_c = PUB_a_tax_type.a_tax_type_code_c" +
-                GenerateWhereClauseLong("PUB_a_tax_type", ATaxTypeTable.GetColumnStringList(), ASearchCriteria)), ATransaction, false,
-                GetParametersForWhereClause(new ATaxTypeTable(), ASearchCriteria)));
+                GenerateWhereClauseLong("PUB_a_tax_type", ASearchCriteria)), ATransaction, false,
+                GetParametersForWhereClause(ATaxTypeTable.TableId, ASearchCriteria)));
         }
 
         /// auto generated
@@ -6244,9 +6158,9 @@ namespace Ict.Petra.Shared.MFinance.AR.Data.Access
             OdbcParameter[] ParametersArray = new OdbcParameter[1];
             ParametersArray[0] = new OdbcParameter("", OdbcType.VarChar, 16);
             ParametersArray[0].Value = ((object)(ACurrencyCode));
-            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, ((GenerateSelectClause(AFieldList, new string[] {
-                            "a_ledger_number_i", "a_key_i"}) + " FROM PUB_a_ar_invoice WHERE a_currency_code_c = ?")
-                            + GenerateOrderByClause(AOrderBy)), AArInvoiceTable.GetTableName(), ATransaction, ParametersArray, AStartRecord, AMaxRecords);
+            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, ((GenerateSelectClause(AFieldList, AArInvoiceTable.TableId) +
+                            " FROM PUB_a_ar_invoice WHERE a_currency_code_c = ?") +
+                            GenerateOrderByClause(AOrderBy)), TTypedDataTable.GetTableName(AArInvoiceTable.TableId), ATransaction, ParametersArray, AStartRecord, AMaxRecords);
         }
 
         /// auto generated
@@ -6286,11 +6200,12 @@ namespace Ict.Petra.Shared.MFinance.AR.Data.Access
         /// auto generated
         public static void LoadViaACurrencyTemplate(DataSet ADataSet, ACurrencyRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClauseLong("PUB_a_ar_invoice", AFieldList, new string[] {
-                            "a_ledger_number_i", "a_key_i"}) + " FROM PUB_a_ar_invoice, PUB_a_currency WHERE " +
-                            "PUB_a_ar_invoice.a_currency_code_c = PUB_a_currency.a_currency_code_c")
-                            + GenerateWhereClauseLong("PUB_a_currency", ACurrencyTable.GetColumnStringList(), ATemplateRow, ATemplateOperators))
-                            + GenerateOrderByClause(AOrderBy)), AArInvoiceTable.GetTableName(), ATransaction, GetParametersForWhereClause(ATemplateRow), AStartRecord, AMaxRecords);
+            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClauseLong("PUB_a_ar_invoice", AFieldList, AArInvoiceTable.TableId) +
+                            " FROM PUB_a_ar_invoice, PUB_a_currency WHERE " +
+                            "PUB_a_ar_invoice.a_currency_code_c = PUB_a_currency.a_currency_code_c") +
+                            GenerateWhereClauseLong("PUB_a_currency", ACurrencyTable.TableId, ATemplateRow, ATemplateOperators)) +
+                            GenerateOrderByClause(AOrderBy)), TTypedDataTable.GetTableName(AArInvoiceTable.TableId), ATransaction,
+                            GetParametersForWhereClause(ACurrencyTable.TableId, ATemplateRow), AStartRecord, AMaxRecords);
         }
 
         /// auto generated
@@ -6336,12 +6251,12 @@ namespace Ict.Petra.Shared.MFinance.AR.Data.Access
         /// auto generated
         public static void LoadViaACurrencyTemplate(DataSet ADataSet, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClauseLong("PUB_a_ar_invoice", AFieldList, new string[] {
-                            "a_ledger_number_i", "a_key_i"}) + " FROM PUB_a_ar_invoice, PUB_a_currency WHERE " +
-                            "PUB_a_ar_invoice.a_currency_code_c = PUB_a_currency.a_currency_code_c")
-                            + GenerateWhereClauseLong("PUB_a_currency", ACurrencyTable.GetColumnStringList(), ASearchCriteria))
-                            + GenerateOrderByClause(AOrderBy)), AArInvoiceTable.GetTableName(), ATransaction,
-                            GetParametersForWhereClause(new AArInvoiceTable(), ASearchCriteria), AStartRecord, AMaxRecords);
+            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClauseLong("PUB_a_ar_invoice", AFieldList, AArInvoiceTable.TableId) +
+                            " FROM PUB_a_ar_invoice, PUB_a_currency WHERE " +
+                            "PUB_a_ar_invoice.a_currency_code_c = PUB_a_currency.a_currency_code_c") +
+                            GenerateWhereClauseLong("PUB_a_currency", ASearchCriteria)) +
+                            GenerateOrderByClause(AOrderBy)), TTypedDataTable.GetTableName(AArInvoiceTable.TableId), ATransaction,
+                            GetParametersForWhereClause(AArInvoiceTable.TableId, ASearchCriteria), AStartRecord, AMaxRecords);
         }
 
         /// auto generated
@@ -6391,7 +6306,10 @@ namespace Ict.Petra.Shared.MFinance.AR.Data.Access
         public static int CountViaACurrencyTemplate(ACurrencyRow ATemplateRow, StringCollection ATemplateOperators, TDBTransaction ATransaction)
         {
             return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_a_ar_invoice, PUB_a_currency WHERE " +
-                "PUB_a_ar_invoice.a_currency_code_c = PUB_a_currency.a_currency_code_c" + GenerateWhereClauseLong("PUB_a_currency", ACurrencyTable.GetColumnStringList(), ATemplateRow, ATemplateOperators)), ATransaction, false, GetParametersForWhereClause(ATemplateRow, ACurrencyTable.GetPrimKeyColumnOrdList())));
+                "PUB_a_ar_invoice.a_currency_code_c = PUB_a_currency.a_currency_code_c" + GenerateWhereClauseLong("PUB_a_currency",
+                ACurrencyTable.TableId, ATemplateRow, ATemplateOperators)),
+                ATransaction, false,
+                GetParametersForWhereClauseWithPrimaryKey(ACurrencyTable.TableId, ATemplateRow)));
         }
 
         /// auto generated
@@ -6399,8 +6317,8 @@ namespace Ict.Petra.Shared.MFinance.AR.Data.Access
         {
             return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_a_ar_invoice, PUB_a_currency WHERE " +
                 "PUB_a_ar_invoice.a_currency_code_c = PUB_a_currency.a_currency_code_c" +
-                GenerateWhereClauseLong("PUB_a_currency", ACurrencyTable.GetColumnStringList(), ASearchCriteria)), ATransaction, false,
-                GetParametersForWhereClause(new ACurrencyTable(), ASearchCriteria)));
+                GenerateWhereClauseLong("PUB_a_currency", ASearchCriteria)), ATransaction, false,
+                GetParametersForWhereClause(ACurrencyTable.TableId, ASearchCriteria)));
         }
 
         /// auto generated LoadViaLinkTable
@@ -6411,10 +6329,10 @@ namespace Ict.Petra.Shared.MFinance.AR.Data.Access
             ParametersArray[0].Value = ((object)(AArDiscountCode));
             ParametersArray[1] = new OdbcParameter("", OdbcType.Date);
             ParametersArray[1].Value = ((object)(AArDateValidFrom));
-            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, ((GenerateSelectClauseLong("PUB_a_ar_invoice", AFieldList, new string[] {
-                            "a_ledger_number_i", "a_key_i"}) + " FROM PUB_a_ar_invoice, PUB_a_ar_invoice_discount WHERE " +
-                            "PUB_a_ar_invoice_discount.a_ledger_number_i = PUB_a_ar_invoice.a_ledger_number_i AND PUB_a_ar_invoice_discount.a_invoice_key_i = PUB_a_ar_invoice.a_key_i AND PUB_a_ar_invoice_discount.a_ar_discount_code_c = ? AND PUB_a_ar_invoice_discount.a_ar_discount_date_valid_from_d = ?")
-                            + GenerateOrderByClause(AOrderBy)), AArInvoiceTable.GetTableName(), ATransaction, ParametersArray, AStartRecord, AMaxRecords);
+            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, ((GenerateSelectClauseLong("PUB_a_ar_invoice", AFieldList, AArInvoiceTable.TableId) +
+                            " FROM PUB_a_ar_invoice, PUB_a_ar_invoice_discount WHERE " +
+                            "PUB_a_ar_invoice_discount.a_ledger_number_i = PUB_a_ar_invoice.a_ledger_number_i AND PUB_a_ar_invoice_discount.a_invoice_key_i = PUB_a_ar_invoice.a_key_i AND PUB_a_ar_invoice_discount.a_ar_discount_code_c = ? AND PUB_a_ar_invoice_discount.a_ar_discount_date_valid_from_d = ?") +
+                            GenerateOrderByClause(AOrderBy)), TTypedDataTable.GetTableName(AArInvoiceTable.TableId), ATransaction, ParametersArray, AStartRecord, AMaxRecords);
         }
 
         /// auto generated
@@ -6454,11 +6372,12 @@ namespace Ict.Petra.Shared.MFinance.AR.Data.Access
         /// auto generated
         public static void LoadViaAArDiscountTemplate(DataSet ADataSet, AArDiscountRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClauseLong("PUB_a_ar_invoice", AFieldList, new string[] {
-                            "a_ledger_number_i", "a_key_i"}) + " FROM PUB_a_ar_invoice, PUB_a_ar_invoice_discount, PUB_a_ar_discount WHERE " +
-                            "PUB_a_ar_invoice_discount.a_ledger_number_i = PUB_a_ar_invoice.a_ledger_number_i AND PUB_a_ar_invoice_discount.a_invoice_key_i = PUB_a_ar_invoice.a_key_i AND PUB_a_ar_invoice_discount.a_ar_discount_code_c = PUB_a_ar_discount.a_ar_discount_code_c AND PUB_a_ar_invoice_discount.a_ar_discount_date_valid_from_d = PUB_a_ar_discount.a_ar_date_valid_from_d")
-                            + GenerateWhereClauseLong("PUB_a_ar_discount", AArDiscountTable.GetColumnStringList(), ATemplateRow, ATemplateOperators))
-                            + GenerateOrderByClause(AOrderBy)), AArInvoiceTable.GetTableName(), ATransaction, GetParametersForWhereClause(ATemplateRow), AStartRecord, AMaxRecords);
+            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClauseLong("PUB_a_ar_invoice", AFieldList, AArInvoiceTable.TableId) +
+                            " FROM PUB_a_ar_invoice, PUB_a_ar_invoice_discount, PUB_a_ar_discount WHERE " +
+                            "PUB_a_ar_invoice_discount.a_ledger_number_i = PUB_a_ar_invoice.a_ledger_number_i AND PUB_a_ar_invoice_discount.a_invoice_key_i = PUB_a_ar_invoice.a_key_i AND PUB_a_ar_invoice_discount.a_ar_discount_code_c = PUB_a_ar_discount.a_ar_discount_code_c AND PUB_a_ar_invoice_discount.a_ar_discount_date_valid_from_d = PUB_a_ar_discount.a_ar_date_valid_from_d") +
+                            GenerateWhereClauseLong("PUB_a_ar_discount", AArDiscountTable.TableId, ATemplateRow, ATemplateOperators)) +
+                            GenerateOrderByClause(AOrderBy)), TTypedDataTable.GetTableName(AArInvoiceTable.TableId), ATransaction,
+                            GetParametersForWhereClause(AArDiscountTable.TableId, ATemplateRow), AStartRecord, AMaxRecords);
         }
 
         /// auto generated
@@ -6504,12 +6423,12 @@ namespace Ict.Petra.Shared.MFinance.AR.Data.Access
         /// auto generated
         public static void LoadViaAArDiscountTemplate(DataSet ADataSet, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClauseLong("PUB_a_ar_invoice", AFieldList, new string[] {
-                            "a_ledger_number_i", "a_key_i"}) + " FROM PUB_a_ar_invoice, PUB_a_ar_invoice_discount, PUB_a_ar_discount WHERE " +
-                            "PUB_a_ar_invoice_discount.a_ledger_number_i = PUB_a_ar_invoice.a_ledger_number_i AND PUB_a_ar_invoice_discount.a_invoice_key_i = PUB_a_ar_invoice.a_key_i AND PUB_a_ar_invoice_discount.a_ar_discount_code_c = PUB_a_ar_discount.a_ar_discount_code_c AND PUB_a_ar_invoice_discount.a_ar_discount_date_valid_from_d = PUB_a_ar_discount.a_ar_date_valid_from_d")
-                            + GenerateWhereClauseLong("PUB_a_ar_discount", AArDiscountTable.GetColumnStringList(), ASearchCriteria))
-                            + GenerateOrderByClause(AOrderBy)), AArInvoiceTable.GetTableName(), ATransaction,
-                            GetParametersForWhereClause(new AArInvoiceTable(), ASearchCriteria), AStartRecord, AMaxRecords);
+            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClauseLong("PUB_a_ar_invoice", AFieldList, AArInvoiceTable.TableId) +
+                            " FROM PUB_a_ar_invoice, PUB_a_ar_invoice_discount, PUB_a_ar_discount WHERE " +
+                            "PUB_a_ar_invoice_discount.a_ledger_number_i = PUB_a_ar_invoice.a_ledger_number_i AND PUB_a_ar_invoice_discount.a_invoice_key_i = PUB_a_ar_invoice.a_key_i AND PUB_a_ar_invoice_discount.a_ar_discount_code_c = PUB_a_ar_discount.a_ar_discount_code_c AND PUB_a_ar_invoice_discount.a_ar_discount_date_valid_from_d = PUB_a_ar_discount.a_ar_date_valid_from_d") +
+                            GenerateWhereClauseLong("PUB_a_ar_discount", ASearchCriteria)) +
+                            GenerateOrderByClause(AOrderBy)), TTypedDataTable.GetTableName(AArInvoiceTable.TableId), ATransaction,
+                            GetParametersForWhereClause(AArInvoiceTable.TableId, ASearchCriteria), AStartRecord, AMaxRecords);
         }
 
         /// auto generated
@@ -6564,7 +6483,8 @@ namespace Ict.Petra.Shared.MFinance.AR.Data.Access
         {
             return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_a_ar_invoice, PUB_a_ar_invoice_discount, PUB_a_ar_discount WHERE " +
                         "PUB_a_ar_invoice_discount.a_ledger_number_i = PUB_a_ar_invoice.a_ledger_number_i AND PUB_a_ar_invoice_discount.a_invoice_key_i = PUB_a_ar_invoice.a_key_i AND PUB_a_ar_invoice_discount.a_ar_discount_code_c = PUB_a_ar_discount.a_ar_discount_code_c AND PUB_a_ar_invoice_discount.a_ar_discount_date_valid_from_d = PUB_a_ar_discount.a_ar_date_valid_from_d" +
-                        GenerateWhereClauseLong("PUB_a_ar_invoice_discount", AArInvoiceTable.GetColumnStringList(), ATemplateRow, ATemplateOperators)), ATransaction, false, GetParametersForWhereClause(ATemplateRow, AArDiscountTable.GetPrimKeyColumnOrdList())));
+                        GenerateWhereClauseLong("PUB_a_ar_invoice_discount", AArInvoiceTable.TableId, ATemplateRow, ATemplateOperators)), ATransaction, false,
+                        GetParametersForWhereClauseWithPrimaryKey(AArDiscountTable.TableId, ATemplateRow)));
         }
 
         /// auto generated
@@ -6572,33 +6492,26 @@ namespace Ict.Petra.Shared.MFinance.AR.Data.Access
         {
             return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_a_ar_invoice, PUB_a_ar_invoice_discount, PUB_a_ar_discount WHERE " +
                         "PUB_a_ar_invoice_discount.a_ledger_number_i = PUB_a_ar_invoice.a_ledger_number_i AND PUB_a_ar_invoice_discount.a_invoice_key_i = PUB_a_ar_invoice.a_key_i AND PUB_a_ar_invoice_discount.a_ar_discount_code_c = PUB_a_ar_discount.a_ar_discount_code_c AND PUB_a_ar_invoice_discount.a_ar_discount_date_valid_from_d = PUB_a_ar_discount.a_ar_date_valid_from_d" +
-                        GenerateWhereClauseLong("PUB_a_ar_invoice_discount", AArInvoiceTable.GetColumnStringList(), ASearchCriteria)), ATransaction, false,
-                        GetParametersForWhereClause(new AArInvoiceTable(), ASearchCriteria)));
+                        GenerateWhereClauseLong("PUB_a_ar_invoice_discount", ASearchCriteria)), ATransaction, false,
+                        GetParametersForWhereClause(AArInvoiceTable.TableId, ASearchCriteria)));
         }
 
         /// auto generated
         public static void DeleteByPrimaryKey(Int32 ALedgerNumber, Int32 AKey, TDBTransaction ATransaction)
         {
-            OdbcParameter[] ParametersArray = new OdbcParameter[2];
-            ParametersArray[0] = new OdbcParameter("", OdbcType.Int);
-            ParametersArray[0].Value = ((object)(ALedgerNumber));
-            ParametersArray[1] = new OdbcParameter("", OdbcType.Int);
-            ParametersArray[1].Value = ((object)(AKey));
-            DBAccess.GDBAccessObj.ExecuteNonQuery("DELETE FROM PUB_a_ar_invoice WHERE a_ledger_number_i = ? AND a_key_i = ?", ATransaction, false, ParametersArray);
+            DeleteByPrimaryKey(AArInvoiceTable.TableId, new System.Object[2]{ALedgerNumber, AKey}, ATransaction);
         }
 
         /// auto generated
         public static void DeleteUsingTemplate(AArInvoiceRow ATemplateRow, StringCollection ATemplateOperators, TDBTransaction ATransaction)
         {
-            DBAccess.GDBAccessObj.ExecuteNonQuery(("DELETE FROM PUB_a_ar_invoice" + GenerateWhereClause(AArInvoiceTable.GetColumnStringList(), ATemplateRow, ATemplateOperators)), ATransaction, false, GetParametersForWhereClause(ATemplateRow));
+            DeleteUsingTemplate(AArInvoiceTable.TableId, ATemplateRow, ATemplateOperators, ATransaction);
         }
 
         /// auto generated
         public static void DeleteUsingTemplate(TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
         {
-            DBAccess.GDBAccessObj.ExecuteNonQuery(("DELETE FROM PUB_a_ar_invoice" +
-                GenerateWhereClause(AArInvoiceTable.GetColumnStringList(), ASearchCriteria)), ATransaction, false,
-                GetParametersForWhereClause(new AArInvoiceTable(), ASearchCriteria));
+            DeleteUsingTemplate(AArInvoiceTable.TableId, ASearchCriteria, ATransaction);
         }
 
         /// auto generated
@@ -6616,15 +6529,15 @@ namespace Ict.Petra.Shared.MFinance.AR.Data.Access
                     if ((TheRow.RowState == DataRowState.Added))
                     {
                         ((AArInvoiceRow)(TheRow)).Key = ((Int32)(DBAccess.GDBAccessObj.GetNextSequenceValue("seq_ar_invoice", ATransaction)));
-                        TTypedDataAccess.InsertRow("a_ar_invoice", AArInvoiceTable.GetColumnStringList(), ref TheRow, ATransaction, UserInfo.GUserInfo.UserID);
+                        TTypedDataAccess.InsertRow(AArInvoiceTable.TableId, ref TheRow, ATransaction, UserInfo.GUserInfo.UserID);
                     }
                     if ((TheRow.RowState == DataRowState.Modified))
                     {
-                        TTypedDataAccess.UpdateRow("a_ar_invoice", AArInvoiceTable.GetColumnStringList(), AArInvoiceTable.GetPrimKeyColumnOrdList(), ref TheRow, ATransaction, UserInfo.GUserInfo.UserID);
+                        TTypedDataAccess.UpdateRow(AArInvoiceTable.TableId, ref TheRow, ATransaction, UserInfo.GUserInfo.UserID);
                     }
                     if ((TheRow.RowState == DataRowState.Deleted))
                     {
-                        TTypedDataAccess.DeleteRow("a_ar_invoice", AArInvoiceTable.GetColumnStringList(), AArInvoiceTable.GetPrimKeyColumnOrdList(), TheRow, ATransaction);
+                        TTypedDataAccess.DeleteRow(AArInvoiceTable.TableId, TheRow, ATransaction);
                     }
                 }
                 catch (OdbcException ex)
@@ -6654,9 +6567,8 @@ namespace Ict.Petra.Shared.MFinance.AR.Data.Access
         /// this method is called by all overloads
         public static void LoadAll(DataSet ADataSet, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, ((GenerateSelectClause(AFieldList, new string[] {
-                            "a_ledger_number_i", "a_invoice_key_i", "a_detail_number_i"}) + " FROM PUB_a_ar_invoice_detail")
-                            + GenerateOrderByClause(AOrderBy)), AArInvoiceDetailTable.GetTableName(), ATransaction, AStartRecord, AMaxRecords);
+            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, ((GenerateSelectClause(AFieldList, AArInvoiceDetailTable.TableId) + " FROM PUB_a_ar_invoice_detail") +
+                            GenerateOrderByClause(AOrderBy)), TTypedDataTable.GetTableName(AArInvoiceDetailTable.TableId), ATransaction, AStartRecord, AMaxRecords);
         }
 
         /// auto generated
@@ -6696,16 +6608,8 @@ namespace Ict.Petra.Shared.MFinance.AR.Data.Access
         /// this method is called by all overloads
         public static void LoadByPrimaryKey(DataSet ADataSet, Int32 ALedgerNumber, Int32 AInvoiceKey, Int32 ADetailNumber, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            OdbcParameter[] ParametersArray = new OdbcParameter[3];
-            ParametersArray[0] = new OdbcParameter("", OdbcType.Int);
-            ParametersArray[0].Value = ((object)(ALedgerNumber));
-            ParametersArray[1] = new OdbcParameter("", OdbcType.Int);
-            ParametersArray[1].Value = ((object)(AInvoiceKey));
-            ParametersArray[2] = new OdbcParameter("", OdbcType.Int);
-            ParametersArray[2].Value = ((object)(ADetailNumber));
-            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, ((GenerateSelectClause(AFieldList, new string[] {
-                            "a_ledger_number_i", "a_invoice_key_i", "a_detail_number_i"}) + " FROM PUB_a_ar_invoice_detail WHERE a_ledger_number_i = ? AND a_invoice_key_i = ? AND a_detail_number_i = ?")
-                            + GenerateOrderByClause(AOrderBy)), AArInvoiceDetailTable.GetTableName(), ATransaction, ParametersArray, AStartRecord, AMaxRecords);
+            ADataSet = LoadByPrimaryKey(AArInvoiceDetailTable.TableId,
+                ADataSet, new System.Object[3]{ALedgerNumber, AInvoiceKey, ADetailNumber}, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
         }
 
         /// auto generated
@@ -6745,10 +6649,10 @@ namespace Ict.Petra.Shared.MFinance.AR.Data.Access
         /// this method is called by all overloads
         public static void LoadUsingTemplate(DataSet ADataSet, AArInvoiceDetailRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClause(AFieldList, new string[] {
-                            "a_ledger_number_i", "a_invoice_key_i", "a_detail_number_i"}) + " FROM PUB_a_ar_invoice_detail")
-                            + GenerateWhereClause(AArInvoiceDetailTable.GetColumnStringList(), ATemplateRow, ATemplateOperators))
-                            + GenerateOrderByClause(AOrderBy)), AArInvoiceDetailTable.GetTableName(), ATransaction, GetParametersForWhereClause(ATemplateRow), AStartRecord, AMaxRecords);
+            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClause(AFieldList, AArInvoiceDetailTable.TableId) + " FROM PUB_a_ar_invoice_detail") +
+                            GenerateWhereClause(TTypedDataTable.GetColumnStringList(AArInvoiceDetailTable.TableId), ATemplateRow, ATemplateOperators)) +
+                            GenerateOrderByClause(AOrderBy)), TTypedDataTable.GetTableName(AArInvoiceDetailTable.TableId), ATransaction,
+                            GetParametersForWhereClause(AArInvoiceDetailTable.TableId, ATemplateRow), AStartRecord, AMaxRecords);
         }
 
         /// auto generated
@@ -6794,11 +6698,10 @@ namespace Ict.Petra.Shared.MFinance.AR.Data.Access
         /// this method is called by all overloads
         public static void LoadUsingTemplate(DataSet ADataSet, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClause(AFieldList, new string[] {
-                            "a_ledger_number_i", "a_invoice_key_i", "a_detail_number_i"}) + " FROM PUB_a_ar_invoice_detail")
-                            + GenerateWhereClause(AArInvoiceDetailTable.GetColumnStringList(), ASearchCriteria))
-                            + GenerateOrderByClause(AOrderBy)), AArInvoiceDetailTable.GetTableName(), ATransaction,
-                            GetParametersForWhereClause(new AArInvoiceDetailTable(), ASearchCriteria), AStartRecord, AMaxRecords);
+            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClause(AFieldList, AArInvoiceDetailTable.TableId) + " FROM PUB_a_ar_invoice_detail") +
+                            GenerateWhereClause(TTypedDataTable.GetColumnStringList(AArInvoiceDetailTable.TableId), ASearchCriteria)) +
+                            GenerateOrderByClause(AOrderBy)), TTypedDataTable.GetTableName(AArInvoiceDetailTable.TableId), ATransaction,
+                            GetParametersForWhereClause(AArInvoiceDetailTable.TableId, ASearchCriteria), AStartRecord, AMaxRecords);
         }
 
         /// auto generated
@@ -6841,30 +6744,24 @@ namespace Ict.Petra.Shared.MFinance.AR.Data.Access
             return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar("SELECT COUNT(*) FROM PUB_a_ar_invoice_detail", ATransaction, false));
         }
 
-        /// this method is called by all overloads
-        public static int CountByPrimaryKey(Int32 ALedgerNumber, Int32 AInvoiceKey, Int32 ADetailNumber, TDBTransaction ATransaction)
+        /// check if a row exists by using the primary key
+        public static bool Exists(Int32 ALedgerNumber, Int32 AInvoiceKey, Int32 ADetailNumber, TDBTransaction ATransaction)
         {
-            OdbcParameter[] ParametersArray = new OdbcParameter[3];
-            ParametersArray[0] = new OdbcParameter("", OdbcType.Int);
-            ParametersArray[0].Value = ((object)(ALedgerNumber));
-            ParametersArray[1] = new OdbcParameter("", OdbcType.Int);
-            ParametersArray[1].Value = ((object)(AInvoiceKey));
-            ParametersArray[2] = new OdbcParameter("", OdbcType.Int);
-            ParametersArray[2].Value = ((object)(ADetailNumber));
-            return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar("SELECT COUNT(*) FROM PUB_a_ar_invoice_detail WHERE a_ledger_number_i = ? AND a_invoice_key_i = ? AND a_detail_number_i = ?", ATransaction, false, ParametersArray));
+            return Exists(AArInvoiceDetailTable.TableId, new System.Object[3]{ALedgerNumber, AInvoiceKey, ADetailNumber}, ATransaction);
         }
 
         /// this method is called by all overloads
         public static int CountUsingTemplate(AArInvoiceDetailRow ATemplateRow, StringCollection ATemplateOperators, TDBTransaction ATransaction)
         {
-            return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_a_ar_invoice_detail" + GenerateWhereClause(AArInvoiceDetailTable.GetColumnStringList(), ATemplateRow, ATemplateOperators)), ATransaction, false, GetParametersForWhereClause(ATemplateRow)));
+            return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_a_ar_invoice_detail" + GenerateWhereClause(TTypedDataTable.GetColumnStringList(AArInvoiceDetailTable.TableId), ATemplateRow, ATemplateOperators)), ATransaction, false,
+                   GetParametersForWhereClause(AArInvoiceDetailTable.TableId, ATemplateRow)));
         }
 
         /// this method is called by all overloads
         public static int CountUsingTemplate(TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
         {
-            return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_a_ar_invoice_detail" + GenerateWhereClause(AArInvoiceDetailTable.GetColumnStringList(), ASearchCriteria)), ATransaction, false,
-            GetParametersForWhereClause(new AArInvoiceDetailTable(), ASearchCriteria)));
+            return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_a_ar_invoice_detail" + GenerateWhereClause(TTypedDataTable.GetColumnStringList(AArInvoiceDetailTable.TableId), ASearchCriteria)), ATransaction, false,
+            GetParametersForWhereClause(AArInvoiceDetailTable.TableId, ASearchCriteria)));
         }
 
         /// auto generated
@@ -6875,9 +6772,9 @@ namespace Ict.Petra.Shared.MFinance.AR.Data.Access
             ParametersArray[0].Value = ((object)(ALedgerNumber));
             ParametersArray[1] = new OdbcParameter("", OdbcType.Int);
             ParametersArray[1].Value = ((object)(AKey));
-            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, ((GenerateSelectClause(AFieldList, new string[] {
-                            "a_ledger_number_i", "a_invoice_key_i", "a_detail_number_i"}) + " FROM PUB_a_ar_invoice_detail WHERE a_ledger_number_i = ? AND a_invoice_key_i = ?")
-                            + GenerateOrderByClause(AOrderBy)), AArInvoiceDetailTable.GetTableName(), ATransaction, ParametersArray, AStartRecord, AMaxRecords);
+            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, ((GenerateSelectClause(AFieldList, AArInvoiceDetailTable.TableId) +
+                            " FROM PUB_a_ar_invoice_detail WHERE a_ledger_number_i = ? AND a_invoice_key_i = ?") +
+                            GenerateOrderByClause(AOrderBy)), TTypedDataTable.GetTableName(AArInvoiceDetailTable.TableId), ATransaction, ParametersArray, AStartRecord, AMaxRecords);
         }
 
         /// auto generated
@@ -6917,11 +6814,12 @@ namespace Ict.Petra.Shared.MFinance.AR.Data.Access
         /// auto generated
         public static void LoadViaAArInvoiceTemplate(DataSet ADataSet, AArInvoiceRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClauseLong("PUB_a_ar_invoice_detail", AFieldList, new string[] {
-                            "a_ledger_number_i", "a_invoice_key_i", "a_detail_number_i"}) + " FROM PUB_a_ar_invoice_detail, PUB_a_ar_invoice WHERE " +
-                            "PUB_a_ar_invoice_detail.a_ledger_number_i = PUB_a_ar_invoice.a_ledger_number_i AND PUB_a_ar_invoice_detail.a_invoice_key_i = PUB_a_ar_invoice.a_key_i")
-                            + GenerateWhereClauseLong("PUB_a_ar_invoice", AArInvoiceTable.GetColumnStringList(), ATemplateRow, ATemplateOperators))
-                            + GenerateOrderByClause(AOrderBy)), AArInvoiceDetailTable.GetTableName(), ATransaction, GetParametersForWhereClause(ATemplateRow), AStartRecord, AMaxRecords);
+            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClauseLong("PUB_a_ar_invoice_detail", AFieldList, AArInvoiceDetailTable.TableId) +
+                            " FROM PUB_a_ar_invoice_detail, PUB_a_ar_invoice WHERE " +
+                            "PUB_a_ar_invoice_detail.a_ledger_number_i = PUB_a_ar_invoice.a_ledger_number_i AND PUB_a_ar_invoice_detail.a_invoice_key_i = PUB_a_ar_invoice.a_key_i") +
+                            GenerateWhereClauseLong("PUB_a_ar_invoice", AArInvoiceTable.TableId, ATemplateRow, ATemplateOperators)) +
+                            GenerateOrderByClause(AOrderBy)), TTypedDataTable.GetTableName(AArInvoiceDetailTable.TableId), ATransaction,
+                            GetParametersForWhereClause(AArInvoiceTable.TableId, ATemplateRow), AStartRecord, AMaxRecords);
         }
 
         /// auto generated
@@ -6967,12 +6865,12 @@ namespace Ict.Petra.Shared.MFinance.AR.Data.Access
         /// auto generated
         public static void LoadViaAArInvoiceTemplate(DataSet ADataSet, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClauseLong("PUB_a_ar_invoice_detail", AFieldList, new string[] {
-                            "a_ledger_number_i", "a_invoice_key_i", "a_detail_number_i"}) + " FROM PUB_a_ar_invoice_detail, PUB_a_ar_invoice WHERE " +
-                            "PUB_a_ar_invoice_detail.a_ledger_number_i = PUB_a_ar_invoice.a_ledger_number_i AND PUB_a_ar_invoice_detail.a_invoice_key_i = PUB_a_ar_invoice.a_key_i")
-                            + GenerateWhereClauseLong("PUB_a_ar_invoice", AArInvoiceTable.GetColumnStringList(), ASearchCriteria))
-                            + GenerateOrderByClause(AOrderBy)), AArInvoiceDetailTable.GetTableName(), ATransaction,
-                            GetParametersForWhereClause(new AArInvoiceDetailTable(), ASearchCriteria), AStartRecord, AMaxRecords);
+            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClauseLong("PUB_a_ar_invoice_detail", AFieldList, AArInvoiceDetailTable.TableId) +
+                            " FROM PUB_a_ar_invoice_detail, PUB_a_ar_invoice WHERE " +
+                            "PUB_a_ar_invoice_detail.a_ledger_number_i = PUB_a_ar_invoice.a_ledger_number_i AND PUB_a_ar_invoice_detail.a_invoice_key_i = PUB_a_ar_invoice.a_key_i") +
+                            GenerateWhereClauseLong("PUB_a_ar_invoice", ASearchCriteria)) +
+                            GenerateOrderByClause(AOrderBy)), TTypedDataTable.GetTableName(AArInvoiceDetailTable.TableId), ATransaction,
+                            GetParametersForWhereClause(AArInvoiceDetailTable.TableId, ASearchCriteria), AStartRecord, AMaxRecords);
         }
 
         /// auto generated
@@ -7024,7 +6922,10 @@ namespace Ict.Petra.Shared.MFinance.AR.Data.Access
         public static int CountViaAArInvoiceTemplate(AArInvoiceRow ATemplateRow, StringCollection ATemplateOperators, TDBTransaction ATransaction)
         {
             return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_a_ar_invoice_detail, PUB_a_ar_invoice WHERE " +
-                "PUB_a_ar_invoice_detail.a_ledger_number_i = PUB_a_ar_invoice.a_ledger_number_i AND PUB_a_ar_invoice_detail.a_invoice_key_i = PUB_a_ar_invoice.a_key_i" + GenerateWhereClauseLong("PUB_a_ar_invoice", AArInvoiceTable.GetColumnStringList(), ATemplateRow, ATemplateOperators)), ATransaction, false, GetParametersForWhereClause(ATemplateRow, AArInvoiceTable.GetPrimKeyColumnOrdList())));
+                "PUB_a_ar_invoice_detail.a_ledger_number_i = PUB_a_ar_invoice.a_ledger_number_i AND PUB_a_ar_invoice_detail.a_invoice_key_i = PUB_a_ar_invoice.a_key_i" + GenerateWhereClauseLong("PUB_a_ar_invoice",
+                AArInvoiceTable.TableId, ATemplateRow, ATemplateOperators)),
+                ATransaction, false,
+                GetParametersForWhereClauseWithPrimaryKey(AArInvoiceTable.TableId, ATemplateRow)));
         }
 
         /// auto generated
@@ -7032,8 +6933,8 @@ namespace Ict.Petra.Shared.MFinance.AR.Data.Access
         {
             return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_a_ar_invoice_detail, PUB_a_ar_invoice WHERE " +
                 "PUB_a_ar_invoice_detail.a_ledger_number_i = PUB_a_ar_invoice.a_ledger_number_i AND PUB_a_ar_invoice_detail.a_invoice_key_i = PUB_a_ar_invoice.a_key_i" +
-                GenerateWhereClauseLong("PUB_a_ar_invoice", AArInvoiceTable.GetColumnStringList(), ASearchCriteria)), ATransaction, false,
-                GetParametersForWhereClause(new AArInvoiceTable(), ASearchCriteria)));
+                GenerateWhereClauseLong("PUB_a_ar_invoice", ASearchCriteria)), ATransaction, false,
+                GetParametersForWhereClause(AArInvoiceTable.TableId, ASearchCriteria)));
         }
 
         /// auto generated
@@ -7048,9 +6949,9 @@ namespace Ict.Petra.Shared.MFinance.AR.Data.Access
             ParametersArray[2].Value = ((object)(ATaxRateCode));
             ParametersArray[3] = new OdbcParameter("", OdbcType.Date);
             ParametersArray[3].Value = ((object)(ATaxValidFrom));
-            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, ((GenerateSelectClause(AFieldList, new string[] {
-                            "a_ledger_number_i", "a_invoice_key_i", "a_detail_number_i"}) + " FROM PUB_a_ar_invoice_detail WHERE a_ledger_number_i = ? AND a_tax_type_code_c = ? AND a_tax_rate_code_c = ? AND a_tax_valid_from_d = ?")
-                            + GenerateOrderByClause(AOrderBy)), AArInvoiceDetailTable.GetTableName(), ATransaction, ParametersArray, AStartRecord, AMaxRecords);
+            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, ((GenerateSelectClause(AFieldList, AArInvoiceDetailTable.TableId) +
+                            " FROM PUB_a_ar_invoice_detail WHERE a_ledger_number_i = ? AND a_tax_type_code_c = ? AND a_tax_rate_code_c = ? AND a_tax_valid_from_d = ?") +
+                            GenerateOrderByClause(AOrderBy)), TTypedDataTable.GetTableName(AArInvoiceDetailTable.TableId), ATransaction, ParametersArray, AStartRecord, AMaxRecords);
         }
 
         /// auto generated
@@ -7090,11 +6991,12 @@ namespace Ict.Petra.Shared.MFinance.AR.Data.Access
         /// auto generated
         public static void LoadViaATaxTableTemplate(DataSet ADataSet, ATaxTableRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClauseLong("PUB_a_ar_invoice_detail", AFieldList, new string[] {
-                            "a_ledger_number_i", "a_invoice_key_i", "a_detail_number_i"}) + " FROM PUB_a_ar_invoice_detail, PUB_a_tax_table WHERE " +
-                            "PUB_a_ar_invoice_detail.a_ledger_number_i = PUB_a_tax_table.a_ledger_number_i AND PUB_a_ar_invoice_detail.a_tax_type_code_c = PUB_a_tax_table.a_tax_type_code_c AND PUB_a_ar_invoice_detail.a_tax_rate_code_c = PUB_a_tax_table.a_tax_rate_code_c AND PUB_a_ar_invoice_detail.a_tax_valid_from_d = PUB_a_tax_table.a_tax_valid_from_d")
-                            + GenerateWhereClauseLong("PUB_a_tax_table", ATaxTableTable.GetColumnStringList(), ATemplateRow, ATemplateOperators))
-                            + GenerateOrderByClause(AOrderBy)), AArInvoiceDetailTable.GetTableName(), ATransaction, GetParametersForWhereClause(ATemplateRow), AStartRecord, AMaxRecords);
+            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClauseLong("PUB_a_ar_invoice_detail", AFieldList, AArInvoiceDetailTable.TableId) +
+                            " FROM PUB_a_ar_invoice_detail, PUB_a_tax_table WHERE " +
+                            "PUB_a_ar_invoice_detail.a_ledger_number_i = PUB_a_tax_table.a_ledger_number_i AND PUB_a_ar_invoice_detail.a_tax_type_code_c = PUB_a_tax_table.a_tax_type_code_c AND PUB_a_ar_invoice_detail.a_tax_rate_code_c = PUB_a_tax_table.a_tax_rate_code_c AND PUB_a_ar_invoice_detail.a_tax_valid_from_d = PUB_a_tax_table.a_tax_valid_from_d") +
+                            GenerateWhereClauseLong("PUB_a_tax_table", ATaxTableTable.TableId, ATemplateRow, ATemplateOperators)) +
+                            GenerateOrderByClause(AOrderBy)), TTypedDataTable.GetTableName(AArInvoiceDetailTable.TableId), ATransaction,
+                            GetParametersForWhereClause(ATaxTableTable.TableId, ATemplateRow), AStartRecord, AMaxRecords);
         }
 
         /// auto generated
@@ -7140,12 +7042,12 @@ namespace Ict.Petra.Shared.MFinance.AR.Data.Access
         /// auto generated
         public static void LoadViaATaxTableTemplate(DataSet ADataSet, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClauseLong("PUB_a_ar_invoice_detail", AFieldList, new string[] {
-                            "a_ledger_number_i", "a_invoice_key_i", "a_detail_number_i"}) + " FROM PUB_a_ar_invoice_detail, PUB_a_tax_table WHERE " +
-                            "PUB_a_ar_invoice_detail.a_ledger_number_i = PUB_a_tax_table.a_ledger_number_i AND PUB_a_ar_invoice_detail.a_tax_type_code_c = PUB_a_tax_table.a_tax_type_code_c AND PUB_a_ar_invoice_detail.a_tax_rate_code_c = PUB_a_tax_table.a_tax_rate_code_c AND PUB_a_ar_invoice_detail.a_tax_valid_from_d = PUB_a_tax_table.a_tax_valid_from_d")
-                            + GenerateWhereClauseLong("PUB_a_tax_table", ATaxTableTable.GetColumnStringList(), ASearchCriteria))
-                            + GenerateOrderByClause(AOrderBy)), AArInvoiceDetailTable.GetTableName(), ATransaction,
-                            GetParametersForWhereClause(new AArInvoiceDetailTable(), ASearchCriteria), AStartRecord, AMaxRecords);
+            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClauseLong("PUB_a_ar_invoice_detail", AFieldList, AArInvoiceDetailTable.TableId) +
+                            " FROM PUB_a_ar_invoice_detail, PUB_a_tax_table WHERE " +
+                            "PUB_a_ar_invoice_detail.a_ledger_number_i = PUB_a_tax_table.a_ledger_number_i AND PUB_a_ar_invoice_detail.a_tax_type_code_c = PUB_a_tax_table.a_tax_type_code_c AND PUB_a_ar_invoice_detail.a_tax_rate_code_c = PUB_a_tax_table.a_tax_rate_code_c AND PUB_a_ar_invoice_detail.a_tax_valid_from_d = PUB_a_tax_table.a_tax_valid_from_d") +
+                            GenerateWhereClauseLong("PUB_a_tax_table", ASearchCriteria)) +
+                            GenerateOrderByClause(AOrderBy)), TTypedDataTable.GetTableName(AArInvoiceDetailTable.TableId), ATransaction,
+                            GetParametersForWhereClause(AArInvoiceDetailTable.TableId, ASearchCriteria), AStartRecord, AMaxRecords);
         }
 
         /// auto generated
@@ -7201,7 +7103,10 @@ namespace Ict.Petra.Shared.MFinance.AR.Data.Access
         public static int CountViaATaxTableTemplate(ATaxTableRow ATemplateRow, StringCollection ATemplateOperators, TDBTransaction ATransaction)
         {
             return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_a_ar_invoice_detail, PUB_a_tax_table WHERE " +
-                "PUB_a_ar_invoice_detail.a_ledger_number_i = PUB_a_tax_table.a_ledger_number_i AND PUB_a_ar_invoice_detail.a_tax_type_code_c = PUB_a_tax_table.a_tax_type_code_c AND PUB_a_ar_invoice_detail.a_tax_rate_code_c = PUB_a_tax_table.a_tax_rate_code_c AND PUB_a_ar_invoice_detail.a_tax_valid_from_d = PUB_a_tax_table.a_tax_valid_from_d" + GenerateWhereClauseLong("PUB_a_tax_table", ATaxTableTable.GetColumnStringList(), ATemplateRow, ATemplateOperators)), ATransaction, false, GetParametersForWhereClause(ATemplateRow, ATaxTableTable.GetPrimKeyColumnOrdList())));
+                "PUB_a_ar_invoice_detail.a_ledger_number_i = PUB_a_tax_table.a_ledger_number_i AND PUB_a_ar_invoice_detail.a_tax_type_code_c = PUB_a_tax_table.a_tax_type_code_c AND PUB_a_ar_invoice_detail.a_tax_rate_code_c = PUB_a_tax_table.a_tax_rate_code_c AND PUB_a_ar_invoice_detail.a_tax_valid_from_d = PUB_a_tax_table.a_tax_valid_from_d" + GenerateWhereClauseLong("PUB_a_tax_table",
+                ATaxTableTable.TableId, ATemplateRow, ATemplateOperators)),
+                ATransaction, false,
+                GetParametersForWhereClauseWithPrimaryKey(ATaxTableTable.TableId, ATemplateRow)));
         }
 
         /// auto generated
@@ -7209,8 +7114,8 @@ namespace Ict.Petra.Shared.MFinance.AR.Data.Access
         {
             return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_a_ar_invoice_detail, PUB_a_tax_table WHERE " +
                 "PUB_a_ar_invoice_detail.a_ledger_number_i = PUB_a_tax_table.a_ledger_number_i AND PUB_a_ar_invoice_detail.a_tax_type_code_c = PUB_a_tax_table.a_tax_type_code_c AND PUB_a_ar_invoice_detail.a_tax_rate_code_c = PUB_a_tax_table.a_tax_rate_code_c AND PUB_a_ar_invoice_detail.a_tax_valid_from_d = PUB_a_tax_table.a_tax_valid_from_d" +
-                GenerateWhereClauseLong("PUB_a_tax_table", ATaxTableTable.GetColumnStringList(), ASearchCriteria)), ATransaction, false,
-                GetParametersForWhereClause(new ATaxTableTable(), ASearchCriteria)));
+                GenerateWhereClauseLong("PUB_a_tax_table", ASearchCriteria)), ATransaction, false,
+                GetParametersForWhereClause(ATaxTableTable.TableId, ASearchCriteria)));
         }
 
         /// auto generated
@@ -7219,9 +7124,9 @@ namespace Ict.Petra.Shared.MFinance.AR.Data.Access
             OdbcParameter[] ParametersArray = new OdbcParameter[1];
             ParametersArray[0] = new OdbcParameter("", OdbcType.Int);
             ParametersArray[0].Value = ((object)(ALedgerNumber));
-            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, ((GenerateSelectClause(AFieldList, new string[] {
-                            "a_ledger_number_i", "a_invoice_key_i", "a_detail_number_i"}) + " FROM PUB_a_ar_invoice_detail WHERE a_ledger_number_i = ?")
-                            + GenerateOrderByClause(AOrderBy)), AArInvoiceDetailTable.GetTableName(), ATransaction, ParametersArray, AStartRecord, AMaxRecords);
+            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, ((GenerateSelectClause(AFieldList, AArInvoiceDetailTable.TableId) +
+                            " FROM PUB_a_ar_invoice_detail WHERE a_ledger_number_i = ?") +
+                            GenerateOrderByClause(AOrderBy)), TTypedDataTable.GetTableName(AArInvoiceDetailTable.TableId), ATransaction, ParametersArray, AStartRecord, AMaxRecords);
         }
 
         /// auto generated
@@ -7261,11 +7166,12 @@ namespace Ict.Petra.Shared.MFinance.AR.Data.Access
         /// auto generated
         public static void LoadViaALedgerTemplate(DataSet ADataSet, ALedgerRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClauseLong("PUB_a_ar_invoice_detail", AFieldList, new string[] {
-                            "a_ledger_number_i", "a_invoice_key_i", "a_detail_number_i"}) + " FROM PUB_a_ar_invoice_detail, PUB_a_ledger WHERE " +
-                            "PUB_a_ar_invoice_detail.a_ledger_number_i = PUB_a_ledger.a_ledger_number_i")
-                            + GenerateWhereClauseLong("PUB_a_ledger", ALedgerTable.GetColumnStringList(), ATemplateRow, ATemplateOperators))
-                            + GenerateOrderByClause(AOrderBy)), AArInvoiceDetailTable.GetTableName(), ATransaction, GetParametersForWhereClause(ATemplateRow), AStartRecord, AMaxRecords);
+            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClauseLong("PUB_a_ar_invoice_detail", AFieldList, AArInvoiceDetailTable.TableId) +
+                            " FROM PUB_a_ar_invoice_detail, PUB_a_ledger WHERE " +
+                            "PUB_a_ar_invoice_detail.a_ledger_number_i = PUB_a_ledger.a_ledger_number_i") +
+                            GenerateWhereClauseLong("PUB_a_ledger", ALedgerTable.TableId, ATemplateRow, ATemplateOperators)) +
+                            GenerateOrderByClause(AOrderBy)), TTypedDataTable.GetTableName(AArInvoiceDetailTable.TableId), ATransaction,
+                            GetParametersForWhereClause(ALedgerTable.TableId, ATemplateRow), AStartRecord, AMaxRecords);
         }
 
         /// auto generated
@@ -7311,12 +7217,12 @@ namespace Ict.Petra.Shared.MFinance.AR.Data.Access
         /// auto generated
         public static void LoadViaALedgerTemplate(DataSet ADataSet, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClauseLong("PUB_a_ar_invoice_detail", AFieldList, new string[] {
-                            "a_ledger_number_i", "a_invoice_key_i", "a_detail_number_i"}) + " FROM PUB_a_ar_invoice_detail, PUB_a_ledger WHERE " +
-                            "PUB_a_ar_invoice_detail.a_ledger_number_i = PUB_a_ledger.a_ledger_number_i")
-                            + GenerateWhereClauseLong("PUB_a_ledger", ALedgerTable.GetColumnStringList(), ASearchCriteria))
-                            + GenerateOrderByClause(AOrderBy)), AArInvoiceDetailTable.GetTableName(), ATransaction,
-                            GetParametersForWhereClause(new AArInvoiceDetailTable(), ASearchCriteria), AStartRecord, AMaxRecords);
+            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClauseLong("PUB_a_ar_invoice_detail", AFieldList, AArInvoiceDetailTable.TableId) +
+                            " FROM PUB_a_ar_invoice_detail, PUB_a_ledger WHERE " +
+                            "PUB_a_ar_invoice_detail.a_ledger_number_i = PUB_a_ledger.a_ledger_number_i") +
+                            GenerateWhereClauseLong("PUB_a_ledger", ASearchCriteria)) +
+                            GenerateOrderByClause(AOrderBy)), TTypedDataTable.GetTableName(AArInvoiceDetailTable.TableId), ATransaction,
+                            GetParametersForWhereClause(AArInvoiceDetailTable.TableId, ASearchCriteria), AStartRecord, AMaxRecords);
         }
 
         /// auto generated
@@ -7366,7 +7272,10 @@ namespace Ict.Petra.Shared.MFinance.AR.Data.Access
         public static int CountViaALedgerTemplate(ALedgerRow ATemplateRow, StringCollection ATemplateOperators, TDBTransaction ATransaction)
         {
             return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_a_ar_invoice_detail, PUB_a_ledger WHERE " +
-                "PUB_a_ar_invoice_detail.a_ledger_number_i = PUB_a_ledger.a_ledger_number_i" + GenerateWhereClauseLong("PUB_a_ledger", ALedgerTable.GetColumnStringList(), ATemplateRow, ATemplateOperators)), ATransaction, false, GetParametersForWhereClause(ATemplateRow, ALedgerTable.GetPrimKeyColumnOrdList())));
+                "PUB_a_ar_invoice_detail.a_ledger_number_i = PUB_a_ledger.a_ledger_number_i" + GenerateWhereClauseLong("PUB_a_ledger",
+                ALedgerTable.TableId, ATemplateRow, ATemplateOperators)),
+                ATransaction, false,
+                GetParametersForWhereClauseWithPrimaryKey(ALedgerTable.TableId, ATemplateRow)));
         }
 
         /// auto generated
@@ -7374,8 +7283,8 @@ namespace Ict.Petra.Shared.MFinance.AR.Data.Access
         {
             return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_a_ar_invoice_detail, PUB_a_ledger WHERE " +
                 "PUB_a_ar_invoice_detail.a_ledger_number_i = PUB_a_ledger.a_ledger_number_i" +
-                GenerateWhereClauseLong("PUB_a_ledger", ALedgerTable.GetColumnStringList(), ASearchCriteria)), ATransaction, false,
-                GetParametersForWhereClause(new ALedgerTable(), ASearchCriteria)));
+                GenerateWhereClauseLong("PUB_a_ledger", ASearchCriteria)), ATransaction, false,
+                GetParametersForWhereClause(ALedgerTable.TableId, ASearchCriteria)));
         }
 
         /// auto generated
@@ -7384,9 +7293,9 @@ namespace Ict.Petra.Shared.MFinance.AR.Data.Access
             OdbcParameter[] ParametersArray = new OdbcParameter[1];
             ParametersArray[0] = new OdbcParameter("", OdbcType.VarChar, 16);
             ParametersArray[0].Value = ((object)(ATaxTypeCode));
-            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, ((GenerateSelectClause(AFieldList, new string[] {
-                            "a_ledger_number_i", "a_invoice_key_i", "a_detail_number_i"}) + " FROM PUB_a_ar_invoice_detail WHERE a_tax_type_code_c = ?")
-                            + GenerateOrderByClause(AOrderBy)), AArInvoiceDetailTable.GetTableName(), ATransaction, ParametersArray, AStartRecord, AMaxRecords);
+            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, ((GenerateSelectClause(AFieldList, AArInvoiceDetailTable.TableId) +
+                            " FROM PUB_a_ar_invoice_detail WHERE a_tax_type_code_c = ?") +
+                            GenerateOrderByClause(AOrderBy)), TTypedDataTable.GetTableName(AArInvoiceDetailTable.TableId), ATransaction, ParametersArray, AStartRecord, AMaxRecords);
         }
 
         /// auto generated
@@ -7426,11 +7335,12 @@ namespace Ict.Petra.Shared.MFinance.AR.Data.Access
         /// auto generated
         public static void LoadViaATaxTypeTemplate(DataSet ADataSet, ATaxTypeRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClauseLong("PUB_a_ar_invoice_detail", AFieldList, new string[] {
-                            "a_ledger_number_i", "a_invoice_key_i", "a_detail_number_i"}) + " FROM PUB_a_ar_invoice_detail, PUB_a_tax_type WHERE " +
-                            "PUB_a_ar_invoice_detail.a_tax_type_code_c = PUB_a_tax_type.a_tax_type_code_c")
-                            + GenerateWhereClauseLong("PUB_a_tax_type", ATaxTypeTable.GetColumnStringList(), ATemplateRow, ATemplateOperators))
-                            + GenerateOrderByClause(AOrderBy)), AArInvoiceDetailTable.GetTableName(), ATransaction, GetParametersForWhereClause(ATemplateRow), AStartRecord, AMaxRecords);
+            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClauseLong("PUB_a_ar_invoice_detail", AFieldList, AArInvoiceDetailTable.TableId) +
+                            " FROM PUB_a_ar_invoice_detail, PUB_a_tax_type WHERE " +
+                            "PUB_a_ar_invoice_detail.a_tax_type_code_c = PUB_a_tax_type.a_tax_type_code_c") +
+                            GenerateWhereClauseLong("PUB_a_tax_type", ATaxTypeTable.TableId, ATemplateRow, ATemplateOperators)) +
+                            GenerateOrderByClause(AOrderBy)), TTypedDataTable.GetTableName(AArInvoiceDetailTable.TableId), ATransaction,
+                            GetParametersForWhereClause(ATaxTypeTable.TableId, ATemplateRow), AStartRecord, AMaxRecords);
         }
 
         /// auto generated
@@ -7476,12 +7386,12 @@ namespace Ict.Petra.Shared.MFinance.AR.Data.Access
         /// auto generated
         public static void LoadViaATaxTypeTemplate(DataSet ADataSet, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClauseLong("PUB_a_ar_invoice_detail", AFieldList, new string[] {
-                            "a_ledger_number_i", "a_invoice_key_i", "a_detail_number_i"}) + " FROM PUB_a_ar_invoice_detail, PUB_a_tax_type WHERE " +
-                            "PUB_a_ar_invoice_detail.a_tax_type_code_c = PUB_a_tax_type.a_tax_type_code_c")
-                            + GenerateWhereClauseLong("PUB_a_tax_type", ATaxTypeTable.GetColumnStringList(), ASearchCriteria))
-                            + GenerateOrderByClause(AOrderBy)), AArInvoiceDetailTable.GetTableName(), ATransaction,
-                            GetParametersForWhereClause(new AArInvoiceDetailTable(), ASearchCriteria), AStartRecord, AMaxRecords);
+            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClauseLong("PUB_a_ar_invoice_detail", AFieldList, AArInvoiceDetailTable.TableId) +
+                            " FROM PUB_a_ar_invoice_detail, PUB_a_tax_type WHERE " +
+                            "PUB_a_ar_invoice_detail.a_tax_type_code_c = PUB_a_tax_type.a_tax_type_code_c") +
+                            GenerateWhereClauseLong("PUB_a_tax_type", ASearchCriteria)) +
+                            GenerateOrderByClause(AOrderBy)), TTypedDataTable.GetTableName(AArInvoiceDetailTable.TableId), ATransaction,
+                            GetParametersForWhereClause(AArInvoiceDetailTable.TableId, ASearchCriteria), AStartRecord, AMaxRecords);
         }
 
         /// auto generated
@@ -7531,7 +7441,10 @@ namespace Ict.Petra.Shared.MFinance.AR.Data.Access
         public static int CountViaATaxTypeTemplate(ATaxTypeRow ATemplateRow, StringCollection ATemplateOperators, TDBTransaction ATransaction)
         {
             return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_a_ar_invoice_detail, PUB_a_tax_type WHERE " +
-                "PUB_a_ar_invoice_detail.a_tax_type_code_c = PUB_a_tax_type.a_tax_type_code_c" + GenerateWhereClauseLong("PUB_a_tax_type", ATaxTypeTable.GetColumnStringList(), ATemplateRow, ATemplateOperators)), ATransaction, false, GetParametersForWhereClause(ATemplateRow, ATaxTypeTable.GetPrimKeyColumnOrdList())));
+                "PUB_a_ar_invoice_detail.a_tax_type_code_c = PUB_a_tax_type.a_tax_type_code_c" + GenerateWhereClauseLong("PUB_a_tax_type",
+                ATaxTypeTable.TableId, ATemplateRow, ATemplateOperators)),
+                ATransaction, false,
+                GetParametersForWhereClauseWithPrimaryKey(ATaxTypeTable.TableId, ATemplateRow)));
         }
 
         /// auto generated
@@ -7539,8 +7452,8 @@ namespace Ict.Petra.Shared.MFinance.AR.Data.Access
         {
             return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_a_ar_invoice_detail, PUB_a_tax_type WHERE " +
                 "PUB_a_ar_invoice_detail.a_tax_type_code_c = PUB_a_tax_type.a_tax_type_code_c" +
-                GenerateWhereClauseLong("PUB_a_tax_type", ATaxTypeTable.GetColumnStringList(), ASearchCriteria)), ATransaction, false,
-                GetParametersForWhereClause(new ATaxTypeTable(), ASearchCriteria)));
+                GenerateWhereClauseLong("PUB_a_tax_type", ASearchCriteria)), ATransaction, false,
+                GetParametersForWhereClause(ATaxTypeTable.TableId, ASearchCriteria)));
         }
 
         /// auto generated
@@ -7549,9 +7462,9 @@ namespace Ict.Petra.Shared.MFinance.AR.Data.Access
             OdbcParameter[] ParametersArray = new OdbcParameter[1];
             ParametersArray[0] = new OdbcParameter("", OdbcType.VarChar, 16);
             ParametersArray[0].Value = ((object)(ACurrencyCode));
-            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, ((GenerateSelectClause(AFieldList, new string[] {
-                            "a_ledger_number_i", "a_invoice_key_i", "a_detail_number_i"}) + " FROM PUB_a_ar_invoice_detail WHERE a_currency_code_c = ?")
-                            + GenerateOrderByClause(AOrderBy)), AArInvoiceDetailTable.GetTableName(), ATransaction, ParametersArray, AStartRecord, AMaxRecords);
+            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, ((GenerateSelectClause(AFieldList, AArInvoiceDetailTable.TableId) +
+                            " FROM PUB_a_ar_invoice_detail WHERE a_currency_code_c = ?") +
+                            GenerateOrderByClause(AOrderBy)), TTypedDataTable.GetTableName(AArInvoiceDetailTable.TableId), ATransaction, ParametersArray, AStartRecord, AMaxRecords);
         }
 
         /// auto generated
@@ -7591,11 +7504,12 @@ namespace Ict.Petra.Shared.MFinance.AR.Data.Access
         /// auto generated
         public static void LoadViaACurrencyTemplate(DataSet ADataSet, ACurrencyRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClauseLong("PUB_a_ar_invoice_detail", AFieldList, new string[] {
-                            "a_ledger_number_i", "a_invoice_key_i", "a_detail_number_i"}) + " FROM PUB_a_ar_invoice_detail, PUB_a_currency WHERE " +
-                            "PUB_a_ar_invoice_detail.a_currency_code_c = PUB_a_currency.a_currency_code_c")
-                            + GenerateWhereClauseLong("PUB_a_currency", ACurrencyTable.GetColumnStringList(), ATemplateRow, ATemplateOperators))
-                            + GenerateOrderByClause(AOrderBy)), AArInvoiceDetailTable.GetTableName(), ATransaction, GetParametersForWhereClause(ATemplateRow), AStartRecord, AMaxRecords);
+            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClauseLong("PUB_a_ar_invoice_detail", AFieldList, AArInvoiceDetailTable.TableId) +
+                            " FROM PUB_a_ar_invoice_detail, PUB_a_currency WHERE " +
+                            "PUB_a_ar_invoice_detail.a_currency_code_c = PUB_a_currency.a_currency_code_c") +
+                            GenerateWhereClauseLong("PUB_a_currency", ACurrencyTable.TableId, ATemplateRow, ATemplateOperators)) +
+                            GenerateOrderByClause(AOrderBy)), TTypedDataTable.GetTableName(AArInvoiceDetailTable.TableId), ATransaction,
+                            GetParametersForWhereClause(ACurrencyTable.TableId, ATemplateRow), AStartRecord, AMaxRecords);
         }
 
         /// auto generated
@@ -7641,12 +7555,12 @@ namespace Ict.Petra.Shared.MFinance.AR.Data.Access
         /// auto generated
         public static void LoadViaACurrencyTemplate(DataSet ADataSet, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClauseLong("PUB_a_ar_invoice_detail", AFieldList, new string[] {
-                            "a_ledger_number_i", "a_invoice_key_i", "a_detail_number_i"}) + " FROM PUB_a_ar_invoice_detail, PUB_a_currency WHERE " +
-                            "PUB_a_ar_invoice_detail.a_currency_code_c = PUB_a_currency.a_currency_code_c")
-                            + GenerateWhereClauseLong("PUB_a_currency", ACurrencyTable.GetColumnStringList(), ASearchCriteria))
-                            + GenerateOrderByClause(AOrderBy)), AArInvoiceDetailTable.GetTableName(), ATransaction,
-                            GetParametersForWhereClause(new AArInvoiceDetailTable(), ASearchCriteria), AStartRecord, AMaxRecords);
+            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClauseLong("PUB_a_ar_invoice_detail", AFieldList, AArInvoiceDetailTable.TableId) +
+                            " FROM PUB_a_ar_invoice_detail, PUB_a_currency WHERE " +
+                            "PUB_a_ar_invoice_detail.a_currency_code_c = PUB_a_currency.a_currency_code_c") +
+                            GenerateWhereClauseLong("PUB_a_currency", ASearchCriteria)) +
+                            GenerateOrderByClause(AOrderBy)), TTypedDataTable.GetTableName(AArInvoiceDetailTable.TableId), ATransaction,
+                            GetParametersForWhereClause(AArInvoiceDetailTable.TableId, ASearchCriteria), AStartRecord, AMaxRecords);
         }
 
         /// auto generated
@@ -7696,7 +7610,10 @@ namespace Ict.Petra.Shared.MFinance.AR.Data.Access
         public static int CountViaACurrencyTemplate(ACurrencyRow ATemplateRow, StringCollection ATemplateOperators, TDBTransaction ATransaction)
         {
             return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_a_ar_invoice_detail, PUB_a_currency WHERE " +
-                "PUB_a_ar_invoice_detail.a_currency_code_c = PUB_a_currency.a_currency_code_c" + GenerateWhereClauseLong("PUB_a_currency", ACurrencyTable.GetColumnStringList(), ATemplateRow, ATemplateOperators)), ATransaction, false, GetParametersForWhereClause(ATemplateRow, ACurrencyTable.GetPrimKeyColumnOrdList())));
+                "PUB_a_ar_invoice_detail.a_currency_code_c = PUB_a_currency.a_currency_code_c" + GenerateWhereClauseLong("PUB_a_currency",
+                ACurrencyTable.TableId, ATemplateRow, ATemplateOperators)),
+                ATransaction, false,
+                GetParametersForWhereClauseWithPrimaryKey(ACurrencyTable.TableId, ATemplateRow)));
         }
 
         /// auto generated
@@ -7704,8 +7621,8 @@ namespace Ict.Petra.Shared.MFinance.AR.Data.Access
         {
             return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_a_ar_invoice_detail, PUB_a_currency WHERE " +
                 "PUB_a_ar_invoice_detail.a_currency_code_c = PUB_a_currency.a_currency_code_c" +
-                GenerateWhereClauseLong("PUB_a_currency", ACurrencyTable.GetColumnStringList(), ASearchCriteria)), ATransaction, false,
-                GetParametersForWhereClause(new ACurrencyTable(), ASearchCriteria)));
+                GenerateWhereClauseLong("PUB_a_currency", ASearchCriteria)), ATransaction, false,
+                GetParametersForWhereClause(ACurrencyTable.TableId, ASearchCriteria)));
         }
 
         /// auto generated
@@ -7714,9 +7631,9 @@ namespace Ict.Petra.Shared.MFinance.AR.Data.Access
             OdbcParameter[] ParametersArray = new OdbcParameter[1];
             ParametersArray[0] = new OdbcParameter("", OdbcType.VarChar, 100);
             ParametersArray[0].Value = ((object)(AArArticleCode));
-            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, ((GenerateSelectClause(AFieldList, new string[] {
-                            "a_ledger_number_i", "a_invoice_key_i", "a_detail_number_i"}) + " FROM PUB_a_ar_invoice_detail WHERE a_ar_article_code_c = ?")
-                            + GenerateOrderByClause(AOrderBy)), AArInvoiceDetailTable.GetTableName(), ATransaction, ParametersArray, AStartRecord, AMaxRecords);
+            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, ((GenerateSelectClause(AFieldList, AArInvoiceDetailTable.TableId) +
+                            " FROM PUB_a_ar_invoice_detail WHERE a_ar_article_code_c = ?") +
+                            GenerateOrderByClause(AOrderBy)), TTypedDataTable.GetTableName(AArInvoiceDetailTable.TableId), ATransaction, ParametersArray, AStartRecord, AMaxRecords);
         }
 
         /// auto generated
@@ -7756,11 +7673,12 @@ namespace Ict.Petra.Shared.MFinance.AR.Data.Access
         /// auto generated
         public static void LoadViaAArArticleTemplate(DataSet ADataSet, AArArticleRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClauseLong("PUB_a_ar_invoice_detail", AFieldList, new string[] {
-                            "a_ledger_number_i", "a_invoice_key_i", "a_detail_number_i"}) + " FROM PUB_a_ar_invoice_detail, PUB_a_ar_article WHERE " +
-                            "PUB_a_ar_invoice_detail.a_ar_article_code_c = PUB_a_ar_article.a_ar_article_code_c")
-                            + GenerateWhereClauseLong("PUB_a_ar_article", AArArticleTable.GetColumnStringList(), ATemplateRow, ATemplateOperators))
-                            + GenerateOrderByClause(AOrderBy)), AArInvoiceDetailTable.GetTableName(), ATransaction, GetParametersForWhereClause(ATemplateRow), AStartRecord, AMaxRecords);
+            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClauseLong("PUB_a_ar_invoice_detail", AFieldList, AArInvoiceDetailTable.TableId) +
+                            " FROM PUB_a_ar_invoice_detail, PUB_a_ar_article WHERE " +
+                            "PUB_a_ar_invoice_detail.a_ar_article_code_c = PUB_a_ar_article.a_ar_article_code_c") +
+                            GenerateWhereClauseLong("PUB_a_ar_article", AArArticleTable.TableId, ATemplateRow, ATemplateOperators)) +
+                            GenerateOrderByClause(AOrderBy)), TTypedDataTable.GetTableName(AArInvoiceDetailTable.TableId), ATransaction,
+                            GetParametersForWhereClause(AArArticleTable.TableId, ATemplateRow), AStartRecord, AMaxRecords);
         }
 
         /// auto generated
@@ -7806,12 +7724,12 @@ namespace Ict.Petra.Shared.MFinance.AR.Data.Access
         /// auto generated
         public static void LoadViaAArArticleTemplate(DataSet ADataSet, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClauseLong("PUB_a_ar_invoice_detail", AFieldList, new string[] {
-                            "a_ledger_number_i", "a_invoice_key_i", "a_detail_number_i"}) + " FROM PUB_a_ar_invoice_detail, PUB_a_ar_article WHERE " +
-                            "PUB_a_ar_invoice_detail.a_ar_article_code_c = PUB_a_ar_article.a_ar_article_code_c")
-                            + GenerateWhereClauseLong("PUB_a_ar_article", AArArticleTable.GetColumnStringList(), ASearchCriteria))
-                            + GenerateOrderByClause(AOrderBy)), AArInvoiceDetailTable.GetTableName(), ATransaction,
-                            GetParametersForWhereClause(new AArInvoiceDetailTable(), ASearchCriteria), AStartRecord, AMaxRecords);
+            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClauseLong("PUB_a_ar_invoice_detail", AFieldList, AArInvoiceDetailTable.TableId) +
+                            " FROM PUB_a_ar_invoice_detail, PUB_a_ar_article WHERE " +
+                            "PUB_a_ar_invoice_detail.a_ar_article_code_c = PUB_a_ar_article.a_ar_article_code_c") +
+                            GenerateWhereClauseLong("PUB_a_ar_article", ASearchCriteria)) +
+                            GenerateOrderByClause(AOrderBy)), TTypedDataTable.GetTableName(AArInvoiceDetailTable.TableId), ATransaction,
+                            GetParametersForWhereClause(AArInvoiceDetailTable.TableId, ASearchCriteria), AStartRecord, AMaxRecords);
         }
 
         /// auto generated
@@ -7861,7 +7779,10 @@ namespace Ict.Petra.Shared.MFinance.AR.Data.Access
         public static int CountViaAArArticleTemplate(AArArticleRow ATemplateRow, StringCollection ATemplateOperators, TDBTransaction ATransaction)
         {
             return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_a_ar_invoice_detail, PUB_a_ar_article WHERE " +
-                "PUB_a_ar_invoice_detail.a_ar_article_code_c = PUB_a_ar_article.a_ar_article_code_c" + GenerateWhereClauseLong("PUB_a_ar_article", AArArticleTable.GetColumnStringList(), ATemplateRow, ATemplateOperators)), ATransaction, false, GetParametersForWhereClause(ATemplateRow, AArArticleTable.GetPrimKeyColumnOrdList())));
+                "PUB_a_ar_invoice_detail.a_ar_article_code_c = PUB_a_ar_article.a_ar_article_code_c" + GenerateWhereClauseLong("PUB_a_ar_article",
+                AArArticleTable.TableId, ATemplateRow, ATemplateOperators)),
+                ATransaction, false,
+                GetParametersForWhereClauseWithPrimaryKey(AArArticleTable.TableId, ATemplateRow)));
         }
 
         /// auto generated
@@ -7869,8 +7790,8 @@ namespace Ict.Petra.Shared.MFinance.AR.Data.Access
         {
             return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_a_ar_invoice_detail, PUB_a_ar_article WHERE " +
                 "PUB_a_ar_invoice_detail.a_ar_article_code_c = PUB_a_ar_article.a_ar_article_code_c" +
-                GenerateWhereClauseLong("PUB_a_ar_article", AArArticleTable.GetColumnStringList(), ASearchCriteria)), ATransaction, false,
-                GetParametersForWhereClause(new AArArticleTable(), ASearchCriteria)));
+                GenerateWhereClauseLong("PUB_a_ar_article", ASearchCriteria)), ATransaction, false,
+                GetParametersForWhereClause(AArArticleTable.TableId, ASearchCriteria)));
         }
 
         /// auto generated
@@ -7881,9 +7802,9 @@ namespace Ict.Petra.Shared.MFinance.AR.Data.Access
             ParametersArray[0].Value = ((object)(AArArticleCode));
             ParametersArray[1] = new OdbcParameter("", OdbcType.Date);
             ParametersArray[1].Value = ((object)(AArDateValidFrom));
-            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, ((GenerateSelectClause(AFieldList, new string[] {
-                            "a_ledger_number_i", "a_invoice_key_i", "a_detail_number_i"}) + " FROM PUB_a_ar_invoice_detail WHERE a_ar_article_code_c = ? AND a_ar_article_price_d = ?")
-                            + GenerateOrderByClause(AOrderBy)), AArInvoiceDetailTable.GetTableName(), ATransaction, ParametersArray, AStartRecord, AMaxRecords);
+            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, ((GenerateSelectClause(AFieldList, AArInvoiceDetailTable.TableId) +
+                            " FROM PUB_a_ar_invoice_detail WHERE a_ar_article_code_c = ? AND a_ar_article_price_d = ?") +
+                            GenerateOrderByClause(AOrderBy)), TTypedDataTable.GetTableName(AArInvoiceDetailTable.TableId), ATransaction, ParametersArray, AStartRecord, AMaxRecords);
         }
 
         /// auto generated
@@ -7923,11 +7844,12 @@ namespace Ict.Petra.Shared.MFinance.AR.Data.Access
         /// auto generated
         public static void LoadViaAArArticlePriceTemplate(DataSet ADataSet, AArArticlePriceRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClauseLong("PUB_a_ar_invoice_detail", AFieldList, new string[] {
-                            "a_ledger_number_i", "a_invoice_key_i", "a_detail_number_i"}) + " FROM PUB_a_ar_invoice_detail, PUB_a_ar_article_price WHERE " +
-                            "PUB_a_ar_invoice_detail.a_ar_article_code_c = PUB_a_ar_article_price.a_ar_article_code_c AND PUB_a_ar_invoice_detail.a_ar_article_price_d = PUB_a_ar_article_price.a_ar_date_valid_from_d")
-                            + GenerateWhereClauseLong("PUB_a_ar_article_price", AArArticlePriceTable.GetColumnStringList(), ATemplateRow, ATemplateOperators))
-                            + GenerateOrderByClause(AOrderBy)), AArInvoiceDetailTable.GetTableName(), ATransaction, GetParametersForWhereClause(ATemplateRow), AStartRecord, AMaxRecords);
+            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClauseLong("PUB_a_ar_invoice_detail", AFieldList, AArInvoiceDetailTable.TableId) +
+                            " FROM PUB_a_ar_invoice_detail, PUB_a_ar_article_price WHERE " +
+                            "PUB_a_ar_invoice_detail.a_ar_article_code_c = PUB_a_ar_article_price.a_ar_article_code_c AND PUB_a_ar_invoice_detail.a_ar_article_price_d = PUB_a_ar_article_price.a_ar_date_valid_from_d") +
+                            GenerateWhereClauseLong("PUB_a_ar_article_price", AArArticlePriceTable.TableId, ATemplateRow, ATemplateOperators)) +
+                            GenerateOrderByClause(AOrderBy)), TTypedDataTable.GetTableName(AArInvoiceDetailTable.TableId), ATransaction,
+                            GetParametersForWhereClause(AArArticlePriceTable.TableId, ATemplateRow), AStartRecord, AMaxRecords);
         }
 
         /// auto generated
@@ -7973,12 +7895,12 @@ namespace Ict.Petra.Shared.MFinance.AR.Data.Access
         /// auto generated
         public static void LoadViaAArArticlePriceTemplate(DataSet ADataSet, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClauseLong("PUB_a_ar_invoice_detail", AFieldList, new string[] {
-                            "a_ledger_number_i", "a_invoice_key_i", "a_detail_number_i"}) + " FROM PUB_a_ar_invoice_detail, PUB_a_ar_article_price WHERE " +
-                            "PUB_a_ar_invoice_detail.a_ar_article_code_c = PUB_a_ar_article_price.a_ar_article_code_c AND PUB_a_ar_invoice_detail.a_ar_article_price_d = PUB_a_ar_article_price.a_ar_date_valid_from_d")
-                            + GenerateWhereClauseLong("PUB_a_ar_article_price", AArArticlePriceTable.GetColumnStringList(), ASearchCriteria))
-                            + GenerateOrderByClause(AOrderBy)), AArInvoiceDetailTable.GetTableName(), ATransaction,
-                            GetParametersForWhereClause(new AArInvoiceDetailTable(), ASearchCriteria), AStartRecord, AMaxRecords);
+            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClauseLong("PUB_a_ar_invoice_detail", AFieldList, AArInvoiceDetailTable.TableId) +
+                            " FROM PUB_a_ar_invoice_detail, PUB_a_ar_article_price WHERE " +
+                            "PUB_a_ar_invoice_detail.a_ar_article_code_c = PUB_a_ar_article_price.a_ar_article_code_c AND PUB_a_ar_invoice_detail.a_ar_article_price_d = PUB_a_ar_article_price.a_ar_date_valid_from_d") +
+                            GenerateWhereClauseLong("PUB_a_ar_article_price", ASearchCriteria)) +
+                            GenerateOrderByClause(AOrderBy)), TTypedDataTable.GetTableName(AArInvoiceDetailTable.TableId), ATransaction,
+                            GetParametersForWhereClause(AArInvoiceDetailTable.TableId, ASearchCriteria), AStartRecord, AMaxRecords);
         }
 
         /// auto generated
@@ -8030,7 +7952,10 @@ namespace Ict.Petra.Shared.MFinance.AR.Data.Access
         public static int CountViaAArArticlePriceTemplate(AArArticlePriceRow ATemplateRow, StringCollection ATemplateOperators, TDBTransaction ATransaction)
         {
             return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_a_ar_invoice_detail, PUB_a_ar_article_price WHERE " +
-                "PUB_a_ar_invoice_detail.a_ar_article_code_c = PUB_a_ar_article_price.a_ar_article_code_c AND PUB_a_ar_invoice_detail.a_ar_article_price_d = PUB_a_ar_article_price.a_ar_date_valid_from_d" + GenerateWhereClauseLong("PUB_a_ar_article_price", AArArticlePriceTable.GetColumnStringList(), ATemplateRow, ATemplateOperators)), ATransaction, false, GetParametersForWhereClause(ATemplateRow, AArArticlePriceTable.GetPrimKeyColumnOrdList())));
+                "PUB_a_ar_invoice_detail.a_ar_article_code_c = PUB_a_ar_article_price.a_ar_article_code_c AND PUB_a_ar_invoice_detail.a_ar_article_price_d = PUB_a_ar_article_price.a_ar_date_valid_from_d" + GenerateWhereClauseLong("PUB_a_ar_article_price",
+                AArArticlePriceTable.TableId, ATemplateRow, ATemplateOperators)),
+                ATransaction, false,
+                GetParametersForWhereClauseWithPrimaryKey(AArArticlePriceTable.TableId, ATemplateRow)));
         }
 
         /// auto generated
@@ -8038,8 +7963,8 @@ namespace Ict.Petra.Shared.MFinance.AR.Data.Access
         {
             return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_a_ar_invoice_detail, PUB_a_ar_article_price WHERE " +
                 "PUB_a_ar_invoice_detail.a_ar_article_code_c = PUB_a_ar_article_price.a_ar_article_code_c AND PUB_a_ar_invoice_detail.a_ar_article_price_d = PUB_a_ar_article_price.a_ar_date_valid_from_d" +
-                GenerateWhereClauseLong("PUB_a_ar_article_price", AArArticlePriceTable.GetColumnStringList(), ASearchCriteria)), ATransaction, false,
-                GetParametersForWhereClause(new AArArticlePriceTable(), ASearchCriteria)));
+                GenerateWhereClauseLong("PUB_a_ar_article_price", ASearchCriteria)), ATransaction, false,
+                GetParametersForWhereClause(AArArticlePriceTable.TableId, ASearchCriteria)));
         }
 
         /// auto generated LoadViaLinkTable
@@ -8050,10 +7975,10 @@ namespace Ict.Petra.Shared.MFinance.AR.Data.Access
             ParametersArray[0].Value = ((object)(AArDiscountCode));
             ParametersArray[1] = new OdbcParameter("", OdbcType.Date);
             ParametersArray[1].Value = ((object)(AArDateValidFrom));
-            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, ((GenerateSelectClauseLong("PUB_a_ar_invoice_detail", AFieldList, new string[] {
-                            "a_ledger_number_i", "a_invoice_key_i", "a_detail_number_i"}) + " FROM PUB_a_ar_invoice_detail, PUB_a_ar_invoice_detail_discount WHERE " +
-                            "PUB_a_ar_invoice_detail_discount.a_ledger_number_i = PUB_a_ar_invoice_detail.a_ledger_number_i AND PUB_a_ar_invoice_detail_discount.a_invoice_key_i = PUB_a_ar_invoice_detail.a_invoice_key_i AND PUB_a_ar_invoice_detail_discount.a_detail_number_i = PUB_a_ar_invoice_detail.a_detail_number_i AND PUB_a_ar_invoice_detail_discount.a_ar_discount_code_c = ? AND PUB_a_ar_invoice_detail_discount.a_ar_discount_date_valid_from_d = ?")
-                            + GenerateOrderByClause(AOrderBy)), AArInvoiceDetailTable.GetTableName(), ATransaction, ParametersArray, AStartRecord, AMaxRecords);
+            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, ((GenerateSelectClauseLong("PUB_a_ar_invoice_detail", AFieldList, AArInvoiceDetailTable.TableId) +
+                            " FROM PUB_a_ar_invoice_detail, PUB_a_ar_invoice_detail_discount WHERE " +
+                            "PUB_a_ar_invoice_detail_discount.a_ledger_number_i = PUB_a_ar_invoice_detail.a_ledger_number_i AND PUB_a_ar_invoice_detail_discount.a_invoice_key_i = PUB_a_ar_invoice_detail.a_invoice_key_i AND PUB_a_ar_invoice_detail_discount.a_detail_number_i = PUB_a_ar_invoice_detail.a_detail_number_i AND PUB_a_ar_invoice_detail_discount.a_ar_discount_code_c = ? AND PUB_a_ar_invoice_detail_discount.a_ar_discount_date_valid_from_d = ?") +
+                            GenerateOrderByClause(AOrderBy)), TTypedDataTable.GetTableName(AArInvoiceDetailTable.TableId), ATransaction, ParametersArray, AStartRecord, AMaxRecords);
         }
 
         /// auto generated
@@ -8093,11 +8018,12 @@ namespace Ict.Petra.Shared.MFinance.AR.Data.Access
         /// auto generated
         public static void LoadViaAArDiscountTemplate(DataSet ADataSet, AArDiscountRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClauseLong("PUB_a_ar_invoice_detail", AFieldList, new string[] {
-                            "a_ledger_number_i", "a_invoice_key_i", "a_detail_number_i"}) + " FROM PUB_a_ar_invoice_detail, PUB_a_ar_invoice_detail_discount, PUB_a_ar_discount WHERE " +
-                            "PUB_a_ar_invoice_detail_discount.a_ledger_number_i = PUB_a_ar_invoice_detail.a_ledger_number_i AND PUB_a_ar_invoice_detail_discount.a_invoice_key_i = PUB_a_ar_invoice_detail.a_invoice_key_i AND PUB_a_ar_invoice_detail_discount.a_detail_number_i = PUB_a_ar_invoice_detail.a_detail_number_i AND PUB_a_ar_invoice_detail_discount.a_ar_discount_code_c = PUB_a_ar_discount.a_ar_discount_code_c AND PUB_a_ar_invoice_detail_discount.a_ar_discount_date_valid_from_d = PUB_a_ar_discount.a_ar_date_valid_from_d")
-                            + GenerateWhereClauseLong("PUB_a_ar_discount", AArDiscountTable.GetColumnStringList(), ATemplateRow, ATemplateOperators))
-                            + GenerateOrderByClause(AOrderBy)), AArInvoiceDetailTable.GetTableName(), ATransaction, GetParametersForWhereClause(ATemplateRow), AStartRecord, AMaxRecords);
+            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClauseLong("PUB_a_ar_invoice_detail", AFieldList, AArInvoiceDetailTable.TableId) +
+                            " FROM PUB_a_ar_invoice_detail, PUB_a_ar_invoice_detail_discount, PUB_a_ar_discount WHERE " +
+                            "PUB_a_ar_invoice_detail_discount.a_ledger_number_i = PUB_a_ar_invoice_detail.a_ledger_number_i AND PUB_a_ar_invoice_detail_discount.a_invoice_key_i = PUB_a_ar_invoice_detail.a_invoice_key_i AND PUB_a_ar_invoice_detail_discount.a_detail_number_i = PUB_a_ar_invoice_detail.a_detail_number_i AND PUB_a_ar_invoice_detail_discount.a_ar_discount_code_c = PUB_a_ar_discount.a_ar_discount_code_c AND PUB_a_ar_invoice_detail_discount.a_ar_discount_date_valid_from_d = PUB_a_ar_discount.a_ar_date_valid_from_d") +
+                            GenerateWhereClauseLong("PUB_a_ar_discount", AArDiscountTable.TableId, ATemplateRow, ATemplateOperators)) +
+                            GenerateOrderByClause(AOrderBy)), TTypedDataTable.GetTableName(AArInvoiceDetailTable.TableId), ATransaction,
+                            GetParametersForWhereClause(AArDiscountTable.TableId, ATemplateRow), AStartRecord, AMaxRecords);
         }
 
         /// auto generated
@@ -8143,12 +8069,12 @@ namespace Ict.Petra.Shared.MFinance.AR.Data.Access
         /// auto generated
         public static void LoadViaAArDiscountTemplate(DataSet ADataSet, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClauseLong("PUB_a_ar_invoice_detail", AFieldList, new string[] {
-                            "a_ledger_number_i", "a_invoice_key_i", "a_detail_number_i"}) + " FROM PUB_a_ar_invoice_detail, PUB_a_ar_invoice_detail_discount, PUB_a_ar_discount WHERE " +
-                            "PUB_a_ar_invoice_detail_discount.a_ledger_number_i = PUB_a_ar_invoice_detail.a_ledger_number_i AND PUB_a_ar_invoice_detail_discount.a_invoice_key_i = PUB_a_ar_invoice_detail.a_invoice_key_i AND PUB_a_ar_invoice_detail_discount.a_detail_number_i = PUB_a_ar_invoice_detail.a_detail_number_i AND PUB_a_ar_invoice_detail_discount.a_ar_discount_code_c = PUB_a_ar_discount.a_ar_discount_code_c AND PUB_a_ar_invoice_detail_discount.a_ar_discount_date_valid_from_d = PUB_a_ar_discount.a_ar_date_valid_from_d")
-                            + GenerateWhereClauseLong("PUB_a_ar_discount", AArDiscountTable.GetColumnStringList(), ASearchCriteria))
-                            + GenerateOrderByClause(AOrderBy)), AArInvoiceDetailTable.GetTableName(), ATransaction,
-                            GetParametersForWhereClause(new AArInvoiceDetailTable(), ASearchCriteria), AStartRecord, AMaxRecords);
+            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClauseLong("PUB_a_ar_invoice_detail", AFieldList, AArInvoiceDetailTable.TableId) +
+                            " FROM PUB_a_ar_invoice_detail, PUB_a_ar_invoice_detail_discount, PUB_a_ar_discount WHERE " +
+                            "PUB_a_ar_invoice_detail_discount.a_ledger_number_i = PUB_a_ar_invoice_detail.a_ledger_number_i AND PUB_a_ar_invoice_detail_discount.a_invoice_key_i = PUB_a_ar_invoice_detail.a_invoice_key_i AND PUB_a_ar_invoice_detail_discount.a_detail_number_i = PUB_a_ar_invoice_detail.a_detail_number_i AND PUB_a_ar_invoice_detail_discount.a_ar_discount_code_c = PUB_a_ar_discount.a_ar_discount_code_c AND PUB_a_ar_invoice_detail_discount.a_ar_discount_date_valid_from_d = PUB_a_ar_discount.a_ar_date_valid_from_d") +
+                            GenerateWhereClauseLong("PUB_a_ar_discount", ASearchCriteria)) +
+                            GenerateOrderByClause(AOrderBy)), TTypedDataTable.GetTableName(AArInvoiceDetailTable.TableId), ATransaction,
+                            GetParametersForWhereClause(AArInvoiceDetailTable.TableId, ASearchCriteria), AStartRecord, AMaxRecords);
         }
 
         /// auto generated
@@ -8203,7 +8129,8 @@ namespace Ict.Petra.Shared.MFinance.AR.Data.Access
         {
             return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_a_ar_invoice_detail, PUB_a_ar_invoice_detail_discount, PUB_a_ar_discount WHERE " +
                         "PUB_a_ar_invoice_detail_discount.a_ledger_number_i = PUB_a_ar_invoice_detail.a_ledger_number_i AND PUB_a_ar_invoice_detail_discount.a_invoice_key_i = PUB_a_ar_invoice_detail.a_invoice_key_i AND PUB_a_ar_invoice_detail_discount.a_detail_number_i = PUB_a_ar_invoice_detail.a_detail_number_i AND PUB_a_ar_invoice_detail_discount.a_ar_discount_code_c = PUB_a_ar_discount.a_ar_discount_code_c AND PUB_a_ar_invoice_detail_discount.a_ar_discount_date_valid_from_d = PUB_a_ar_discount.a_ar_date_valid_from_d" +
-                        GenerateWhereClauseLong("PUB_a_ar_invoice_detail_discount", AArInvoiceDetailTable.GetColumnStringList(), ATemplateRow, ATemplateOperators)), ATransaction, false, GetParametersForWhereClause(ATemplateRow, AArDiscountTable.GetPrimKeyColumnOrdList())));
+                        GenerateWhereClauseLong("PUB_a_ar_invoice_detail_discount", AArInvoiceDetailTable.TableId, ATemplateRow, ATemplateOperators)), ATransaction, false,
+                        GetParametersForWhereClauseWithPrimaryKey(AArDiscountTable.TableId, ATemplateRow)));
         }
 
         /// auto generated
@@ -8211,35 +8138,26 @@ namespace Ict.Petra.Shared.MFinance.AR.Data.Access
         {
             return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_a_ar_invoice_detail, PUB_a_ar_invoice_detail_discount, PUB_a_ar_discount WHERE " +
                         "PUB_a_ar_invoice_detail_discount.a_ledger_number_i = PUB_a_ar_invoice_detail.a_ledger_number_i AND PUB_a_ar_invoice_detail_discount.a_invoice_key_i = PUB_a_ar_invoice_detail.a_invoice_key_i AND PUB_a_ar_invoice_detail_discount.a_detail_number_i = PUB_a_ar_invoice_detail.a_detail_number_i AND PUB_a_ar_invoice_detail_discount.a_ar_discount_code_c = PUB_a_ar_discount.a_ar_discount_code_c AND PUB_a_ar_invoice_detail_discount.a_ar_discount_date_valid_from_d = PUB_a_ar_discount.a_ar_date_valid_from_d" +
-                        GenerateWhereClauseLong("PUB_a_ar_invoice_detail_discount", AArInvoiceDetailTable.GetColumnStringList(), ASearchCriteria)), ATransaction, false,
-                        GetParametersForWhereClause(new AArInvoiceDetailTable(), ASearchCriteria)));
+                        GenerateWhereClauseLong("PUB_a_ar_invoice_detail_discount", ASearchCriteria)), ATransaction, false,
+                        GetParametersForWhereClause(AArInvoiceDetailTable.TableId, ASearchCriteria)));
         }
 
         /// auto generated
         public static void DeleteByPrimaryKey(Int32 ALedgerNumber, Int32 AInvoiceKey, Int32 ADetailNumber, TDBTransaction ATransaction)
         {
-            OdbcParameter[] ParametersArray = new OdbcParameter[3];
-            ParametersArray[0] = new OdbcParameter("", OdbcType.Int);
-            ParametersArray[0].Value = ((object)(ALedgerNumber));
-            ParametersArray[1] = new OdbcParameter("", OdbcType.Int);
-            ParametersArray[1].Value = ((object)(AInvoiceKey));
-            ParametersArray[2] = new OdbcParameter("", OdbcType.Int);
-            ParametersArray[2].Value = ((object)(ADetailNumber));
-            DBAccess.GDBAccessObj.ExecuteNonQuery("DELETE FROM PUB_a_ar_invoice_detail WHERE a_ledger_number_i = ? AND a_invoice_key_i = ? AND a_detail_number_i = ?", ATransaction, false, ParametersArray);
+            DeleteByPrimaryKey(AArInvoiceDetailTable.TableId, new System.Object[3]{ALedgerNumber, AInvoiceKey, ADetailNumber}, ATransaction);
         }
 
         /// auto generated
         public static void DeleteUsingTemplate(AArInvoiceDetailRow ATemplateRow, StringCollection ATemplateOperators, TDBTransaction ATransaction)
         {
-            DBAccess.GDBAccessObj.ExecuteNonQuery(("DELETE FROM PUB_a_ar_invoice_detail" + GenerateWhereClause(AArInvoiceDetailTable.GetColumnStringList(), ATemplateRow, ATemplateOperators)), ATransaction, false, GetParametersForWhereClause(ATemplateRow));
+            DeleteUsingTemplate(AArInvoiceDetailTable.TableId, ATemplateRow, ATemplateOperators, ATransaction);
         }
 
         /// auto generated
         public static void DeleteUsingTemplate(TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
         {
-            DBAccess.GDBAccessObj.ExecuteNonQuery(("DELETE FROM PUB_a_ar_invoice_detail" +
-                GenerateWhereClause(AArInvoiceDetailTable.GetColumnStringList(), ASearchCriteria)), ATransaction, false,
-                GetParametersForWhereClause(new AArInvoiceDetailTable(), ASearchCriteria));
+            DeleteUsingTemplate(AArInvoiceDetailTable.TableId, ASearchCriteria, ATransaction);
         }
 
         /// auto generated
@@ -8256,15 +8174,15 @@ namespace Ict.Petra.Shared.MFinance.AR.Data.Access
                 {
                     if ((TheRow.RowState == DataRowState.Added))
                     {
-                        TTypedDataAccess.InsertRow("a_ar_invoice_detail", AArInvoiceDetailTable.GetColumnStringList(), ref TheRow, ATransaction, UserInfo.GUserInfo.UserID);
+                        TTypedDataAccess.InsertRow(AArInvoiceDetailTable.TableId, ref TheRow, ATransaction, UserInfo.GUserInfo.UserID);
                     }
                     if ((TheRow.RowState == DataRowState.Modified))
                     {
-                        TTypedDataAccess.UpdateRow("a_ar_invoice_detail", AArInvoiceDetailTable.GetColumnStringList(), AArInvoiceDetailTable.GetPrimKeyColumnOrdList(), ref TheRow, ATransaction, UserInfo.GUserInfo.UserID);
+                        TTypedDataAccess.UpdateRow(AArInvoiceDetailTable.TableId, ref TheRow, ATransaction, UserInfo.GUserInfo.UserID);
                     }
                     if ((TheRow.RowState == DataRowState.Deleted))
                     {
-                        TTypedDataAccess.DeleteRow("a_ar_invoice_detail", AArInvoiceDetailTable.GetColumnStringList(), AArInvoiceDetailTable.GetPrimKeyColumnOrdList(), TheRow, ATransaction);
+                        TTypedDataAccess.DeleteRow(AArInvoiceDetailTable.TableId, TheRow, ATransaction);
                     }
                 }
                 catch (OdbcException ex)
@@ -8294,9 +8212,8 @@ namespace Ict.Petra.Shared.MFinance.AR.Data.Access
         /// this method is called by all overloads
         public static void LoadAll(DataSet ADataSet, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, ((GenerateSelectClause(AFieldList, new string[] {
-                            "a_ledger_number_i", "a_invoice_key_i", "a_ar_discount_code_c", "a_ar_discount_date_valid_from_d"}) + " FROM PUB_a_ar_invoice_discount")
-                            + GenerateOrderByClause(AOrderBy)), AArInvoiceDiscountTable.GetTableName(), ATransaction, AStartRecord, AMaxRecords);
+            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, ((GenerateSelectClause(AFieldList, AArInvoiceDiscountTable.TableId) + " FROM PUB_a_ar_invoice_discount") +
+                            GenerateOrderByClause(AOrderBy)), TTypedDataTable.GetTableName(AArInvoiceDiscountTable.TableId), ATransaction, AStartRecord, AMaxRecords);
         }
 
         /// auto generated
@@ -8336,18 +8253,8 @@ namespace Ict.Petra.Shared.MFinance.AR.Data.Access
         /// this method is called by all overloads
         public static void LoadByPrimaryKey(DataSet ADataSet, Int32 ALedgerNumber, Int32 AInvoiceKey, String AArDiscountCode, System.DateTime AArDiscountDateValidFrom, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            OdbcParameter[] ParametersArray = new OdbcParameter[4];
-            ParametersArray[0] = new OdbcParameter("", OdbcType.Int);
-            ParametersArray[0].Value = ((object)(ALedgerNumber));
-            ParametersArray[1] = new OdbcParameter("", OdbcType.Int);
-            ParametersArray[1].Value = ((object)(AInvoiceKey));
-            ParametersArray[2] = new OdbcParameter("", OdbcType.VarChar, 100);
-            ParametersArray[2].Value = ((object)(AArDiscountCode));
-            ParametersArray[3] = new OdbcParameter("", OdbcType.Date);
-            ParametersArray[3].Value = ((object)(AArDiscountDateValidFrom));
-            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, ((GenerateSelectClause(AFieldList, new string[] {
-                            "a_ledger_number_i", "a_invoice_key_i", "a_ar_discount_code_c", "a_ar_discount_date_valid_from_d"}) + " FROM PUB_a_ar_invoice_discount WHERE a_ledger_number_i = ? AND a_invoice_key_i = ? AND a_ar_discount_code_c = ? AND a_ar_discount_date_valid_from_d = ?")
-                            + GenerateOrderByClause(AOrderBy)), AArInvoiceDiscountTable.GetTableName(), ATransaction, ParametersArray, AStartRecord, AMaxRecords);
+            ADataSet = LoadByPrimaryKey(AArInvoiceDiscountTable.TableId,
+                ADataSet, new System.Object[4]{ALedgerNumber, AInvoiceKey, AArDiscountCode, AArDiscountDateValidFrom}, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
         }
 
         /// auto generated
@@ -8387,10 +8294,10 @@ namespace Ict.Petra.Shared.MFinance.AR.Data.Access
         /// this method is called by all overloads
         public static void LoadUsingTemplate(DataSet ADataSet, AArInvoiceDiscountRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClause(AFieldList, new string[] {
-                            "a_ledger_number_i", "a_invoice_key_i", "a_ar_discount_code_c", "a_ar_discount_date_valid_from_d"}) + " FROM PUB_a_ar_invoice_discount")
-                            + GenerateWhereClause(AArInvoiceDiscountTable.GetColumnStringList(), ATemplateRow, ATemplateOperators))
-                            + GenerateOrderByClause(AOrderBy)), AArInvoiceDiscountTable.GetTableName(), ATransaction, GetParametersForWhereClause(ATemplateRow), AStartRecord, AMaxRecords);
+            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClause(AFieldList, AArInvoiceDiscountTable.TableId) + " FROM PUB_a_ar_invoice_discount") +
+                            GenerateWhereClause(TTypedDataTable.GetColumnStringList(AArInvoiceDiscountTable.TableId), ATemplateRow, ATemplateOperators)) +
+                            GenerateOrderByClause(AOrderBy)), TTypedDataTable.GetTableName(AArInvoiceDiscountTable.TableId), ATransaction,
+                            GetParametersForWhereClause(AArInvoiceDiscountTable.TableId, ATemplateRow), AStartRecord, AMaxRecords);
         }
 
         /// auto generated
@@ -8436,11 +8343,10 @@ namespace Ict.Petra.Shared.MFinance.AR.Data.Access
         /// this method is called by all overloads
         public static void LoadUsingTemplate(DataSet ADataSet, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClause(AFieldList, new string[] {
-                            "a_ledger_number_i", "a_invoice_key_i", "a_ar_discount_code_c", "a_ar_discount_date_valid_from_d"}) + " FROM PUB_a_ar_invoice_discount")
-                            + GenerateWhereClause(AArInvoiceDiscountTable.GetColumnStringList(), ASearchCriteria))
-                            + GenerateOrderByClause(AOrderBy)), AArInvoiceDiscountTable.GetTableName(), ATransaction,
-                            GetParametersForWhereClause(new AArInvoiceDiscountTable(), ASearchCriteria), AStartRecord, AMaxRecords);
+            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClause(AFieldList, AArInvoiceDiscountTable.TableId) + " FROM PUB_a_ar_invoice_discount") +
+                            GenerateWhereClause(TTypedDataTable.GetColumnStringList(AArInvoiceDiscountTable.TableId), ASearchCriteria)) +
+                            GenerateOrderByClause(AOrderBy)), TTypedDataTable.GetTableName(AArInvoiceDiscountTable.TableId), ATransaction,
+                            GetParametersForWhereClause(AArInvoiceDiscountTable.TableId, ASearchCriteria), AStartRecord, AMaxRecords);
         }
 
         /// auto generated
@@ -8483,32 +8389,24 @@ namespace Ict.Petra.Shared.MFinance.AR.Data.Access
             return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar("SELECT COUNT(*) FROM PUB_a_ar_invoice_discount", ATransaction, false));
         }
 
-        /// this method is called by all overloads
-        public static int CountByPrimaryKey(Int32 ALedgerNumber, Int32 AInvoiceKey, String AArDiscountCode, System.DateTime AArDiscountDateValidFrom, TDBTransaction ATransaction)
+        /// check if a row exists by using the primary key
+        public static bool Exists(Int32 ALedgerNumber, Int32 AInvoiceKey, String AArDiscountCode, System.DateTime AArDiscountDateValidFrom, TDBTransaction ATransaction)
         {
-            OdbcParameter[] ParametersArray = new OdbcParameter[4];
-            ParametersArray[0] = new OdbcParameter("", OdbcType.Int);
-            ParametersArray[0].Value = ((object)(ALedgerNumber));
-            ParametersArray[1] = new OdbcParameter("", OdbcType.Int);
-            ParametersArray[1].Value = ((object)(AInvoiceKey));
-            ParametersArray[2] = new OdbcParameter("", OdbcType.VarChar, 100);
-            ParametersArray[2].Value = ((object)(AArDiscountCode));
-            ParametersArray[3] = new OdbcParameter("", OdbcType.Date);
-            ParametersArray[3].Value = ((object)(AArDiscountDateValidFrom));
-            return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar("SELECT COUNT(*) FROM PUB_a_ar_invoice_discount WHERE a_ledger_number_i = ? AND a_invoice_key_i = ? AND a_ar_discount_code_c = ? AND a_ar_discount_date_valid_from_d = ?", ATransaction, false, ParametersArray));
+            return Exists(AArInvoiceDiscountTable.TableId, new System.Object[4]{ALedgerNumber, AInvoiceKey, AArDiscountCode, AArDiscountDateValidFrom}, ATransaction);
         }
 
         /// this method is called by all overloads
         public static int CountUsingTemplate(AArInvoiceDiscountRow ATemplateRow, StringCollection ATemplateOperators, TDBTransaction ATransaction)
         {
-            return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_a_ar_invoice_discount" + GenerateWhereClause(AArInvoiceDiscountTable.GetColumnStringList(), ATemplateRow, ATemplateOperators)), ATransaction, false, GetParametersForWhereClause(ATemplateRow)));
+            return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_a_ar_invoice_discount" + GenerateWhereClause(TTypedDataTable.GetColumnStringList(AArInvoiceDiscountTable.TableId), ATemplateRow, ATemplateOperators)), ATransaction, false,
+                   GetParametersForWhereClause(AArInvoiceDiscountTable.TableId, ATemplateRow)));
         }
 
         /// this method is called by all overloads
         public static int CountUsingTemplate(TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
         {
-            return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_a_ar_invoice_discount" + GenerateWhereClause(AArInvoiceDiscountTable.GetColumnStringList(), ASearchCriteria)), ATransaction, false,
-            GetParametersForWhereClause(new AArInvoiceDiscountTable(), ASearchCriteria)));
+            return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_a_ar_invoice_discount" + GenerateWhereClause(TTypedDataTable.GetColumnStringList(AArInvoiceDiscountTable.TableId), ASearchCriteria)), ATransaction, false,
+            GetParametersForWhereClause(AArInvoiceDiscountTable.TableId, ASearchCriteria)));
         }
 
         /// auto generated
@@ -8519,9 +8417,9 @@ namespace Ict.Petra.Shared.MFinance.AR.Data.Access
             ParametersArray[0].Value = ((object)(ALedgerNumber));
             ParametersArray[1] = new OdbcParameter("", OdbcType.Int);
             ParametersArray[1].Value = ((object)(AKey));
-            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, ((GenerateSelectClause(AFieldList, new string[] {
-                            "a_ledger_number_i", "a_invoice_key_i", "a_ar_discount_code_c", "a_ar_discount_date_valid_from_d"}) + " FROM PUB_a_ar_invoice_discount WHERE a_ledger_number_i = ? AND a_invoice_key_i = ?")
-                            + GenerateOrderByClause(AOrderBy)), AArInvoiceDiscountTable.GetTableName(), ATransaction, ParametersArray, AStartRecord, AMaxRecords);
+            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, ((GenerateSelectClause(AFieldList, AArInvoiceDiscountTable.TableId) +
+                            " FROM PUB_a_ar_invoice_discount WHERE a_ledger_number_i = ? AND a_invoice_key_i = ?") +
+                            GenerateOrderByClause(AOrderBy)), TTypedDataTable.GetTableName(AArInvoiceDiscountTable.TableId), ATransaction, ParametersArray, AStartRecord, AMaxRecords);
         }
 
         /// auto generated
@@ -8561,11 +8459,12 @@ namespace Ict.Petra.Shared.MFinance.AR.Data.Access
         /// auto generated
         public static void LoadViaAArInvoiceTemplate(DataSet ADataSet, AArInvoiceRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClauseLong("PUB_a_ar_invoice_discount", AFieldList, new string[] {
-                            "a_ledger_number_i", "a_invoice_key_i", "a_ar_discount_code_c", "a_ar_discount_date_valid_from_d"}) + " FROM PUB_a_ar_invoice_discount, PUB_a_ar_invoice WHERE " +
-                            "PUB_a_ar_invoice_discount.a_ledger_number_i = PUB_a_ar_invoice.a_ledger_number_i AND PUB_a_ar_invoice_discount.a_invoice_key_i = PUB_a_ar_invoice.a_key_i")
-                            + GenerateWhereClauseLong("PUB_a_ar_invoice", AArInvoiceTable.GetColumnStringList(), ATemplateRow, ATemplateOperators))
-                            + GenerateOrderByClause(AOrderBy)), AArInvoiceDiscountTable.GetTableName(), ATransaction, GetParametersForWhereClause(ATemplateRow), AStartRecord, AMaxRecords);
+            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClauseLong("PUB_a_ar_invoice_discount", AFieldList, AArInvoiceDiscountTable.TableId) +
+                            " FROM PUB_a_ar_invoice_discount, PUB_a_ar_invoice WHERE " +
+                            "PUB_a_ar_invoice_discount.a_ledger_number_i = PUB_a_ar_invoice.a_ledger_number_i AND PUB_a_ar_invoice_discount.a_invoice_key_i = PUB_a_ar_invoice.a_key_i") +
+                            GenerateWhereClauseLong("PUB_a_ar_invoice", AArInvoiceTable.TableId, ATemplateRow, ATemplateOperators)) +
+                            GenerateOrderByClause(AOrderBy)), TTypedDataTable.GetTableName(AArInvoiceDiscountTable.TableId), ATransaction,
+                            GetParametersForWhereClause(AArInvoiceTable.TableId, ATemplateRow), AStartRecord, AMaxRecords);
         }
 
         /// auto generated
@@ -8611,12 +8510,12 @@ namespace Ict.Petra.Shared.MFinance.AR.Data.Access
         /// auto generated
         public static void LoadViaAArInvoiceTemplate(DataSet ADataSet, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClauseLong("PUB_a_ar_invoice_discount", AFieldList, new string[] {
-                            "a_ledger_number_i", "a_invoice_key_i", "a_ar_discount_code_c", "a_ar_discount_date_valid_from_d"}) + " FROM PUB_a_ar_invoice_discount, PUB_a_ar_invoice WHERE " +
-                            "PUB_a_ar_invoice_discount.a_ledger_number_i = PUB_a_ar_invoice.a_ledger_number_i AND PUB_a_ar_invoice_discount.a_invoice_key_i = PUB_a_ar_invoice.a_key_i")
-                            + GenerateWhereClauseLong("PUB_a_ar_invoice", AArInvoiceTable.GetColumnStringList(), ASearchCriteria))
-                            + GenerateOrderByClause(AOrderBy)), AArInvoiceDiscountTable.GetTableName(), ATransaction,
-                            GetParametersForWhereClause(new AArInvoiceDiscountTable(), ASearchCriteria), AStartRecord, AMaxRecords);
+            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClauseLong("PUB_a_ar_invoice_discount", AFieldList, AArInvoiceDiscountTable.TableId) +
+                            " FROM PUB_a_ar_invoice_discount, PUB_a_ar_invoice WHERE " +
+                            "PUB_a_ar_invoice_discount.a_ledger_number_i = PUB_a_ar_invoice.a_ledger_number_i AND PUB_a_ar_invoice_discount.a_invoice_key_i = PUB_a_ar_invoice.a_key_i") +
+                            GenerateWhereClauseLong("PUB_a_ar_invoice", ASearchCriteria)) +
+                            GenerateOrderByClause(AOrderBy)), TTypedDataTable.GetTableName(AArInvoiceDiscountTable.TableId), ATransaction,
+                            GetParametersForWhereClause(AArInvoiceDiscountTable.TableId, ASearchCriteria), AStartRecord, AMaxRecords);
         }
 
         /// auto generated
@@ -8668,7 +8567,10 @@ namespace Ict.Petra.Shared.MFinance.AR.Data.Access
         public static int CountViaAArInvoiceTemplate(AArInvoiceRow ATemplateRow, StringCollection ATemplateOperators, TDBTransaction ATransaction)
         {
             return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_a_ar_invoice_discount, PUB_a_ar_invoice WHERE " +
-                "PUB_a_ar_invoice_discount.a_ledger_number_i = PUB_a_ar_invoice.a_ledger_number_i AND PUB_a_ar_invoice_discount.a_invoice_key_i = PUB_a_ar_invoice.a_key_i" + GenerateWhereClauseLong("PUB_a_ar_invoice", AArInvoiceTable.GetColumnStringList(), ATemplateRow, ATemplateOperators)), ATransaction, false, GetParametersForWhereClause(ATemplateRow, AArInvoiceTable.GetPrimKeyColumnOrdList())));
+                "PUB_a_ar_invoice_discount.a_ledger_number_i = PUB_a_ar_invoice.a_ledger_number_i AND PUB_a_ar_invoice_discount.a_invoice_key_i = PUB_a_ar_invoice.a_key_i" + GenerateWhereClauseLong("PUB_a_ar_invoice",
+                AArInvoiceTable.TableId, ATemplateRow, ATemplateOperators)),
+                ATransaction, false,
+                GetParametersForWhereClauseWithPrimaryKey(AArInvoiceTable.TableId, ATemplateRow)));
         }
 
         /// auto generated
@@ -8676,8 +8578,8 @@ namespace Ict.Petra.Shared.MFinance.AR.Data.Access
         {
             return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_a_ar_invoice_discount, PUB_a_ar_invoice WHERE " +
                 "PUB_a_ar_invoice_discount.a_ledger_number_i = PUB_a_ar_invoice.a_ledger_number_i AND PUB_a_ar_invoice_discount.a_invoice_key_i = PUB_a_ar_invoice.a_key_i" +
-                GenerateWhereClauseLong("PUB_a_ar_invoice", AArInvoiceTable.GetColumnStringList(), ASearchCriteria)), ATransaction, false,
-                GetParametersForWhereClause(new AArInvoiceTable(), ASearchCriteria)));
+                GenerateWhereClauseLong("PUB_a_ar_invoice", ASearchCriteria)), ATransaction, false,
+                GetParametersForWhereClause(AArInvoiceTable.TableId, ASearchCriteria)));
         }
 
         /// auto generated
@@ -8688,9 +8590,9 @@ namespace Ict.Petra.Shared.MFinance.AR.Data.Access
             ParametersArray[0].Value = ((object)(AArDiscountCode));
             ParametersArray[1] = new OdbcParameter("", OdbcType.Date);
             ParametersArray[1].Value = ((object)(AArDateValidFrom));
-            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, ((GenerateSelectClause(AFieldList, new string[] {
-                            "a_ledger_number_i", "a_invoice_key_i", "a_ar_discount_code_c", "a_ar_discount_date_valid_from_d"}) + " FROM PUB_a_ar_invoice_discount WHERE a_ar_discount_code_c = ? AND a_ar_discount_date_valid_from_d = ?")
-                            + GenerateOrderByClause(AOrderBy)), AArInvoiceDiscountTable.GetTableName(), ATransaction, ParametersArray, AStartRecord, AMaxRecords);
+            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, ((GenerateSelectClause(AFieldList, AArInvoiceDiscountTable.TableId) +
+                            " FROM PUB_a_ar_invoice_discount WHERE a_ar_discount_code_c = ? AND a_ar_discount_date_valid_from_d = ?") +
+                            GenerateOrderByClause(AOrderBy)), TTypedDataTable.GetTableName(AArInvoiceDiscountTable.TableId), ATransaction, ParametersArray, AStartRecord, AMaxRecords);
         }
 
         /// auto generated
@@ -8730,11 +8632,12 @@ namespace Ict.Petra.Shared.MFinance.AR.Data.Access
         /// auto generated
         public static void LoadViaAArDiscountTemplate(DataSet ADataSet, AArDiscountRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClauseLong("PUB_a_ar_invoice_discount", AFieldList, new string[] {
-                            "a_ledger_number_i", "a_invoice_key_i", "a_ar_discount_code_c", "a_ar_discount_date_valid_from_d"}) + " FROM PUB_a_ar_invoice_discount, PUB_a_ar_discount WHERE " +
-                            "PUB_a_ar_invoice_discount.a_ar_discount_code_c = PUB_a_ar_discount.a_ar_discount_code_c AND PUB_a_ar_invoice_discount.a_ar_discount_date_valid_from_d = PUB_a_ar_discount.a_ar_date_valid_from_d")
-                            + GenerateWhereClauseLong("PUB_a_ar_discount", AArDiscountTable.GetColumnStringList(), ATemplateRow, ATemplateOperators))
-                            + GenerateOrderByClause(AOrderBy)), AArInvoiceDiscountTable.GetTableName(), ATransaction, GetParametersForWhereClause(ATemplateRow), AStartRecord, AMaxRecords);
+            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClauseLong("PUB_a_ar_invoice_discount", AFieldList, AArInvoiceDiscountTable.TableId) +
+                            " FROM PUB_a_ar_invoice_discount, PUB_a_ar_discount WHERE " +
+                            "PUB_a_ar_invoice_discount.a_ar_discount_code_c = PUB_a_ar_discount.a_ar_discount_code_c AND PUB_a_ar_invoice_discount.a_ar_discount_date_valid_from_d = PUB_a_ar_discount.a_ar_date_valid_from_d") +
+                            GenerateWhereClauseLong("PUB_a_ar_discount", AArDiscountTable.TableId, ATemplateRow, ATemplateOperators)) +
+                            GenerateOrderByClause(AOrderBy)), TTypedDataTable.GetTableName(AArInvoiceDiscountTable.TableId), ATransaction,
+                            GetParametersForWhereClause(AArDiscountTable.TableId, ATemplateRow), AStartRecord, AMaxRecords);
         }
 
         /// auto generated
@@ -8780,12 +8683,12 @@ namespace Ict.Petra.Shared.MFinance.AR.Data.Access
         /// auto generated
         public static void LoadViaAArDiscountTemplate(DataSet ADataSet, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClauseLong("PUB_a_ar_invoice_discount", AFieldList, new string[] {
-                            "a_ledger_number_i", "a_invoice_key_i", "a_ar_discount_code_c", "a_ar_discount_date_valid_from_d"}) + " FROM PUB_a_ar_invoice_discount, PUB_a_ar_discount WHERE " +
-                            "PUB_a_ar_invoice_discount.a_ar_discount_code_c = PUB_a_ar_discount.a_ar_discount_code_c AND PUB_a_ar_invoice_discount.a_ar_discount_date_valid_from_d = PUB_a_ar_discount.a_ar_date_valid_from_d")
-                            + GenerateWhereClauseLong("PUB_a_ar_discount", AArDiscountTable.GetColumnStringList(), ASearchCriteria))
-                            + GenerateOrderByClause(AOrderBy)), AArInvoiceDiscountTable.GetTableName(), ATransaction,
-                            GetParametersForWhereClause(new AArInvoiceDiscountTable(), ASearchCriteria), AStartRecord, AMaxRecords);
+            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClauseLong("PUB_a_ar_invoice_discount", AFieldList, AArInvoiceDiscountTable.TableId) +
+                            " FROM PUB_a_ar_invoice_discount, PUB_a_ar_discount WHERE " +
+                            "PUB_a_ar_invoice_discount.a_ar_discount_code_c = PUB_a_ar_discount.a_ar_discount_code_c AND PUB_a_ar_invoice_discount.a_ar_discount_date_valid_from_d = PUB_a_ar_discount.a_ar_date_valid_from_d") +
+                            GenerateWhereClauseLong("PUB_a_ar_discount", ASearchCriteria)) +
+                            GenerateOrderByClause(AOrderBy)), TTypedDataTable.GetTableName(AArInvoiceDiscountTable.TableId), ATransaction,
+                            GetParametersForWhereClause(AArInvoiceDiscountTable.TableId, ASearchCriteria), AStartRecord, AMaxRecords);
         }
 
         /// auto generated
@@ -8837,7 +8740,10 @@ namespace Ict.Petra.Shared.MFinance.AR.Data.Access
         public static int CountViaAArDiscountTemplate(AArDiscountRow ATemplateRow, StringCollection ATemplateOperators, TDBTransaction ATransaction)
         {
             return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_a_ar_invoice_discount, PUB_a_ar_discount WHERE " +
-                "PUB_a_ar_invoice_discount.a_ar_discount_code_c = PUB_a_ar_discount.a_ar_discount_code_c AND PUB_a_ar_invoice_discount.a_ar_discount_date_valid_from_d = PUB_a_ar_discount.a_ar_date_valid_from_d" + GenerateWhereClauseLong("PUB_a_ar_discount", AArDiscountTable.GetColumnStringList(), ATemplateRow, ATemplateOperators)), ATransaction, false, GetParametersForWhereClause(ATemplateRow, AArDiscountTable.GetPrimKeyColumnOrdList())));
+                "PUB_a_ar_invoice_discount.a_ar_discount_code_c = PUB_a_ar_discount.a_ar_discount_code_c AND PUB_a_ar_invoice_discount.a_ar_discount_date_valid_from_d = PUB_a_ar_discount.a_ar_date_valid_from_d" + GenerateWhereClauseLong("PUB_a_ar_discount",
+                AArDiscountTable.TableId, ATemplateRow, ATemplateOperators)),
+                ATransaction, false,
+                GetParametersForWhereClauseWithPrimaryKey(AArDiscountTable.TableId, ATemplateRow)));
         }
 
         /// auto generated
@@ -8845,37 +8751,26 @@ namespace Ict.Petra.Shared.MFinance.AR.Data.Access
         {
             return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_a_ar_invoice_discount, PUB_a_ar_discount WHERE " +
                 "PUB_a_ar_invoice_discount.a_ar_discount_code_c = PUB_a_ar_discount.a_ar_discount_code_c AND PUB_a_ar_invoice_discount.a_ar_discount_date_valid_from_d = PUB_a_ar_discount.a_ar_date_valid_from_d" +
-                GenerateWhereClauseLong("PUB_a_ar_discount", AArDiscountTable.GetColumnStringList(), ASearchCriteria)), ATransaction, false,
-                GetParametersForWhereClause(new AArDiscountTable(), ASearchCriteria)));
+                GenerateWhereClauseLong("PUB_a_ar_discount", ASearchCriteria)), ATransaction, false,
+                GetParametersForWhereClause(AArDiscountTable.TableId, ASearchCriteria)));
         }
 
         /// auto generated
         public static void DeleteByPrimaryKey(Int32 ALedgerNumber, Int32 AInvoiceKey, String AArDiscountCode, System.DateTime AArDiscountDateValidFrom, TDBTransaction ATransaction)
         {
-            OdbcParameter[] ParametersArray = new OdbcParameter[4];
-            ParametersArray[0] = new OdbcParameter("", OdbcType.Int);
-            ParametersArray[0].Value = ((object)(ALedgerNumber));
-            ParametersArray[1] = new OdbcParameter("", OdbcType.Int);
-            ParametersArray[1].Value = ((object)(AInvoiceKey));
-            ParametersArray[2] = new OdbcParameter("", OdbcType.VarChar, 100);
-            ParametersArray[2].Value = ((object)(AArDiscountCode));
-            ParametersArray[3] = new OdbcParameter("", OdbcType.Date);
-            ParametersArray[3].Value = ((object)(AArDiscountDateValidFrom));
-            DBAccess.GDBAccessObj.ExecuteNonQuery("DELETE FROM PUB_a_ar_invoice_discount WHERE a_ledger_number_i = ? AND a_invoice_key_i = ? AND a_ar_discount_code_c = ? AND a_ar_discount_date_valid_from_d = ?", ATransaction, false, ParametersArray);
+            DeleteByPrimaryKey(AArInvoiceDiscountTable.TableId, new System.Object[4]{ALedgerNumber, AInvoiceKey, AArDiscountCode, AArDiscountDateValidFrom}, ATransaction);
         }
 
         /// auto generated
         public static void DeleteUsingTemplate(AArInvoiceDiscountRow ATemplateRow, StringCollection ATemplateOperators, TDBTransaction ATransaction)
         {
-            DBAccess.GDBAccessObj.ExecuteNonQuery(("DELETE FROM PUB_a_ar_invoice_discount" + GenerateWhereClause(AArInvoiceDiscountTable.GetColumnStringList(), ATemplateRow, ATemplateOperators)), ATransaction, false, GetParametersForWhereClause(ATemplateRow));
+            DeleteUsingTemplate(AArInvoiceDiscountTable.TableId, ATemplateRow, ATemplateOperators, ATransaction);
         }
 
         /// auto generated
         public static void DeleteUsingTemplate(TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
         {
-            DBAccess.GDBAccessObj.ExecuteNonQuery(("DELETE FROM PUB_a_ar_invoice_discount" +
-                GenerateWhereClause(AArInvoiceDiscountTable.GetColumnStringList(), ASearchCriteria)), ATransaction, false,
-                GetParametersForWhereClause(new AArInvoiceDiscountTable(), ASearchCriteria));
+            DeleteUsingTemplate(AArInvoiceDiscountTable.TableId, ASearchCriteria, ATransaction);
         }
 
         /// auto generated
@@ -8892,15 +8787,15 @@ namespace Ict.Petra.Shared.MFinance.AR.Data.Access
                 {
                     if ((TheRow.RowState == DataRowState.Added))
                     {
-                        TTypedDataAccess.InsertRow("a_ar_invoice_discount", AArInvoiceDiscountTable.GetColumnStringList(), ref TheRow, ATransaction, UserInfo.GUserInfo.UserID);
+                        TTypedDataAccess.InsertRow(AArInvoiceDiscountTable.TableId, ref TheRow, ATransaction, UserInfo.GUserInfo.UserID);
                     }
                     if ((TheRow.RowState == DataRowState.Modified))
                     {
-                        TTypedDataAccess.UpdateRow("a_ar_invoice_discount", AArInvoiceDiscountTable.GetColumnStringList(), AArInvoiceDiscountTable.GetPrimKeyColumnOrdList(), ref TheRow, ATransaction, UserInfo.GUserInfo.UserID);
+                        TTypedDataAccess.UpdateRow(AArInvoiceDiscountTable.TableId, ref TheRow, ATransaction, UserInfo.GUserInfo.UserID);
                     }
                     if ((TheRow.RowState == DataRowState.Deleted))
                     {
-                        TTypedDataAccess.DeleteRow("a_ar_invoice_discount", AArInvoiceDiscountTable.GetColumnStringList(), AArInvoiceDiscountTable.GetPrimKeyColumnOrdList(), TheRow, ATransaction);
+                        TTypedDataAccess.DeleteRow(AArInvoiceDiscountTable.TableId, TheRow, ATransaction);
                     }
                 }
                 catch (OdbcException ex)
@@ -8930,9 +8825,8 @@ namespace Ict.Petra.Shared.MFinance.AR.Data.Access
         /// this method is called by all overloads
         public static void LoadAll(DataSet ADataSet, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, ((GenerateSelectClause(AFieldList, new string[] {
-                            "a_ledger_number_i", "a_invoice_key_i", "a_detail_number_i", "a_ar_discount_code_c", "a_ar_discount_date_valid_from_d"}) + " FROM PUB_a_ar_invoice_detail_discount")
-                            + GenerateOrderByClause(AOrderBy)), AArInvoiceDetailDiscountTable.GetTableName(), ATransaction, AStartRecord, AMaxRecords);
+            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, ((GenerateSelectClause(AFieldList, AArInvoiceDetailDiscountTable.TableId) + " FROM PUB_a_ar_invoice_detail_discount") +
+                            GenerateOrderByClause(AOrderBy)), TTypedDataTable.GetTableName(AArInvoiceDetailDiscountTable.TableId), ATransaction, AStartRecord, AMaxRecords);
         }
 
         /// auto generated
@@ -8972,20 +8866,8 @@ namespace Ict.Petra.Shared.MFinance.AR.Data.Access
         /// this method is called by all overloads
         public static void LoadByPrimaryKey(DataSet ADataSet, Int32 ALedgerNumber, Int32 AInvoiceKey, Int32 ADetailNumber, String AArDiscountCode, System.DateTime AArDiscountDateValidFrom, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            OdbcParameter[] ParametersArray = new OdbcParameter[5];
-            ParametersArray[0] = new OdbcParameter("", OdbcType.Int);
-            ParametersArray[0].Value = ((object)(ALedgerNumber));
-            ParametersArray[1] = new OdbcParameter("", OdbcType.Int);
-            ParametersArray[1].Value = ((object)(AInvoiceKey));
-            ParametersArray[2] = new OdbcParameter("", OdbcType.Int);
-            ParametersArray[2].Value = ((object)(ADetailNumber));
-            ParametersArray[3] = new OdbcParameter("", OdbcType.VarChar, 100);
-            ParametersArray[3].Value = ((object)(AArDiscountCode));
-            ParametersArray[4] = new OdbcParameter("", OdbcType.Date);
-            ParametersArray[4].Value = ((object)(AArDiscountDateValidFrom));
-            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, ((GenerateSelectClause(AFieldList, new string[] {
-                            "a_ledger_number_i", "a_invoice_key_i", "a_detail_number_i", "a_ar_discount_code_c", "a_ar_discount_date_valid_from_d"}) + " FROM PUB_a_ar_invoice_detail_discount WHERE a_ledger_number_i = ? AND a_invoice_key_i = ? AND a_detail_number_i = ? AND a_ar_discount_code_c = ? AND a_ar_discount_date_valid_from_d = ?")
-                            + GenerateOrderByClause(AOrderBy)), AArInvoiceDetailDiscountTable.GetTableName(), ATransaction, ParametersArray, AStartRecord, AMaxRecords);
+            ADataSet = LoadByPrimaryKey(AArInvoiceDetailDiscountTable.TableId,
+                ADataSet, new System.Object[5]{ALedgerNumber, AInvoiceKey, ADetailNumber, AArDiscountCode, AArDiscountDateValidFrom}, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
         }
 
         /// auto generated
@@ -9025,10 +8907,10 @@ namespace Ict.Petra.Shared.MFinance.AR.Data.Access
         /// this method is called by all overloads
         public static void LoadUsingTemplate(DataSet ADataSet, AArInvoiceDetailDiscountRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClause(AFieldList, new string[] {
-                            "a_ledger_number_i", "a_invoice_key_i", "a_detail_number_i", "a_ar_discount_code_c", "a_ar_discount_date_valid_from_d"}) + " FROM PUB_a_ar_invoice_detail_discount")
-                            + GenerateWhereClause(AArInvoiceDetailDiscountTable.GetColumnStringList(), ATemplateRow, ATemplateOperators))
-                            + GenerateOrderByClause(AOrderBy)), AArInvoiceDetailDiscountTable.GetTableName(), ATransaction, GetParametersForWhereClause(ATemplateRow), AStartRecord, AMaxRecords);
+            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClause(AFieldList, AArInvoiceDetailDiscountTable.TableId) + " FROM PUB_a_ar_invoice_detail_discount") +
+                            GenerateWhereClause(TTypedDataTable.GetColumnStringList(AArInvoiceDetailDiscountTable.TableId), ATemplateRow, ATemplateOperators)) +
+                            GenerateOrderByClause(AOrderBy)), TTypedDataTable.GetTableName(AArInvoiceDetailDiscountTable.TableId), ATransaction,
+                            GetParametersForWhereClause(AArInvoiceDetailDiscountTable.TableId, ATemplateRow), AStartRecord, AMaxRecords);
         }
 
         /// auto generated
@@ -9074,11 +8956,10 @@ namespace Ict.Petra.Shared.MFinance.AR.Data.Access
         /// this method is called by all overloads
         public static void LoadUsingTemplate(DataSet ADataSet, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClause(AFieldList, new string[] {
-                            "a_ledger_number_i", "a_invoice_key_i", "a_detail_number_i", "a_ar_discount_code_c", "a_ar_discount_date_valid_from_d"}) + " FROM PUB_a_ar_invoice_detail_discount")
-                            + GenerateWhereClause(AArInvoiceDetailDiscountTable.GetColumnStringList(), ASearchCriteria))
-                            + GenerateOrderByClause(AOrderBy)), AArInvoiceDetailDiscountTable.GetTableName(), ATransaction,
-                            GetParametersForWhereClause(new AArInvoiceDetailDiscountTable(), ASearchCriteria), AStartRecord, AMaxRecords);
+            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClause(AFieldList, AArInvoiceDetailDiscountTable.TableId) + " FROM PUB_a_ar_invoice_detail_discount") +
+                            GenerateWhereClause(TTypedDataTable.GetColumnStringList(AArInvoiceDetailDiscountTable.TableId), ASearchCriteria)) +
+                            GenerateOrderByClause(AOrderBy)), TTypedDataTable.GetTableName(AArInvoiceDetailDiscountTable.TableId), ATransaction,
+                            GetParametersForWhereClause(AArInvoiceDetailDiscountTable.TableId, ASearchCriteria), AStartRecord, AMaxRecords);
         }
 
         /// auto generated
@@ -9121,34 +9002,24 @@ namespace Ict.Petra.Shared.MFinance.AR.Data.Access
             return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar("SELECT COUNT(*) FROM PUB_a_ar_invoice_detail_discount", ATransaction, false));
         }
 
-        /// this method is called by all overloads
-        public static int CountByPrimaryKey(Int32 ALedgerNumber, Int32 AInvoiceKey, Int32 ADetailNumber, String AArDiscountCode, System.DateTime AArDiscountDateValidFrom, TDBTransaction ATransaction)
+        /// check if a row exists by using the primary key
+        public static bool Exists(Int32 ALedgerNumber, Int32 AInvoiceKey, Int32 ADetailNumber, String AArDiscountCode, System.DateTime AArDiscountDateValidFrom, TDBTransaction ATransaction)
         {
-            OdbcParameter[] ParametersArray = new OdbcParameter[5];
-            ParametersArray[0] = new OdbcParameter("", OdbcType.Int);
-            ParametersArray[0].Value = ((object)(ALedgerNumber));
-            ParametersArray[1] = new OdbcParameter("", OdbcType.Int);
-            ParametersArray[1].Value = ((object)(AInvoiceKey));
-            ParametersArray[2] = new OdbcParameter("", OdbcType.Int);
-            ParametersArray[2].Value = ((object)(ADetailNumber));
-            ParametersArray[3] = new OdbcParameter("", OdbcType.VarChar, 100);
-            ParametersArray[3].Value = ((object)(AArDiscountCode));
-            ParametersArray[4] = new OdbcParameter("", OdbcType.Date);
-            ParametersArray[4].Value = ((object)(AArDiscountDateValidFrom));
-            return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar("SELECT COUNT(*) FROM PUB_a_ar_invoice_detail_discount WHERE a_ledger_number_i = ? AND a_invoice_key_i = ? AND a_detail_number_i = ? AND a_ar_discount_code_c = ? AND a_ar_discount_date_valid_from_d = ?", ATransaction, false, ParametersArray));
+            return Exists(AArInvoiceDetailDiscountTable.TableId, new System.Object[5]{ALedgerNumber, AInvoiceKey, ADetailNumber, AArDiscountCode, AArDiscountDateValidFrom}, ATransaction);
         }
 
         /// this method is called by all overloads
         public static int CountUsingTemplate(AArInvoiceDetailDiscountRow ATemplateRow, StringCollection ATemplateOperators, TDBTransaction ATransaction)
         {
-            return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_a_ar_invoice_detail_discount" + GenerateWhereClause(AArInvoiceDetailDiscountTable.GetColumnStringList(), ATemplateRow, ATemplateOperators)), ATransaction, false, GetParametersForWhereClause(ATemplateRow)));
+            return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_a_ar_invoice_detail_discount" + GenerateWhereClause(TTypedDataTable.GetColumnStringList(AArInvoiceDetailDiscountTable.TableId), ATemplateRow, ATemplateOperators)), ATransaction, false,
+                   GetParametersForWhereClause(AArInvoiceDetailDiscountTable.TableId, ATemplateRow)));
         }
 
         /// this method is called by all overloads
         public static int CountUsingTemplate(TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
         {
-            return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_a_ar_invoice_detail_discount" + GenerateWhereClause(AArInvoiceDetailDiscountTable.GetColumnStringList(), ASearchCriteria)), ATransaction, false,
-            GetParametersForWhereClause(new AArInvoiceDetailDiscountTable(), ASearchCriteria)));
+            return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_a_ar_invoice_detail_discount" + GenerateWhereClause(TTypedDataTable.GetColumnStringList(AArInvoiceDetailDiscountTable.TableId), ASearchCriteria)), ATransaction, false,
+            GetParametersForWhereClause(AArInvoiceDetailDiscountTable.TableId, ASearchCriteria)));
         }
 
         /// auto generated
@@ -9161,9 +9032,9 @@ namespace Ict.Petra.Shared.MFinance.AR.Data.Access
             ParametersArray[1].Value = ((object)(AInvoiceKey));
             ParametersArray[2] = new OdbcParameter("", OdbcType.Int);
             ParametersArray[2].Value = ((object)(ADetailNumber));
-            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, ((GenerateSelectClause(AFieldList, new string[] {
-                            "a_ledger_number_i", "a_invoice_key_i", "a_detail_number_i", "a_ar_discount_code_c", "a_ar_discount_date_valid_from_d"}) + " FROM PUB_a_ar_invoice_detail_discount WHERE a_ledger_number_i = ? AND a_invoice_key_i = ? AND a_detail_number_i = ?")
-                            + GenerateOrderByClause(AOrderBy)), AArInvoiceDetailDiscountTable.GetTableName(), ATransaction, ParametersArray, AStartRecord, AMaxRecords);
+            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, ((GenerateSelectClause(AFieldList, AArInvoiceDetailDiscountTable.TableId) +
+                            " FROM PUB_a_ar_invoice_detail_discount WHERE a_ledger_number_i = ? AND a_invoice_key_i = ? AND a_detail_number_i = ?") +
+                            GenerateOrderByClause(AOrderBy)), TTypedDataTable.GetTableName(AArInvoiceDetailDiscountTable.TableId), ATransaction, ParametersArray, AStartRecord, AMaxRecords);
         }
 
         /// auto generated
@@ -9203,11 +9074,12 @@ namespace Ict.Petra.Shared.MFinance.AR.Data.Access
         /// auto generated
         public static void LoadViaAArInvoiceDetailTemplate(DataSet ADataSet, AArInvoiceDetailRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClauseLong("PUB_a_ar_invoice_detail_discount", AFieldList, new string[] {
-                            "a_ledger_number_i", "a_invoice_key_i", "a_detail_number_i", "a_ar_discount_code_c", "a_ar_discount_date_valid_from_d"}) + " FROM PUB_a_ar_invoice_detail_discount, PUB_a_ar_invoice_detail WHERE " +
-                            "PUB_a_ar_invoice_detail_discount.a_ledger_number_i = PUB_a_ar_invoice_detail.a_ledger_number_i AND PUB_a_ar_invoice_detail_discount.a_invoice_key_i = PUB_a_ar_invoice_detail.a_invoice_key_i AND PUB_a_ar_invoice_detail_discount.a_detail_number_i = PUB_a_ar_invoice_detail.a_detail_number_i")
-                            + GenerateWhereClauseLong("PUB_a_ar_invoice_detail", AArInvoiceDetailTable.GetColumnStringList(), ATemplateRow, ATemplateOperators))
-                            + GenerateOrderByClause(AOrderBy)), AArInvoiceDetailDiscountTable.GetTableName(), ATransaction, GetParametersForWhereClause(ATemplateRow), AStartRecord, AMaxRecords);
+            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClauseLong("PUB_a_ar_invoice_detail_discount", AFieldList, AArInvoiceDetailDiscountTable.TableId) +
+                            " FROM PUB_a_ar_invoice_detail_discount, PUB_a_ar_invoice_detail WHERE " +
+                            "PUB_a_ar_invoice_detail_discount.a_ledger_number_i = PUB_a_ar_invoice_detail.a_ledger_number_i AND PUB_a_ar_invoice_detail_discount.a_invoice_key_i = PUB_a_ar_invoice_detail.a_invoice_key_i AND PUB_a_ar_invoice_detail_discount.a_detail_number_i = PUB_a_ar_invoice_detail.a_detail_number_i") +
+                            GenerateWhereClauseLong("PUB_a_ar_invoice_detail", AArInvoiceDetailTable.TableId, ATemplateRow, ATemplateOperators)) +
+                            GenerateOrderByClause(AOrderBy)), TTypedDataTable.GetTableName(AArInvoiceDetailDiscountTable.TableId), ATransaction,
+                            GetParametersForWhereClause(AArInvoiceDetailTable.TableId, ATemplateRow), AStartRecord, AMaxRecords);
         }
 
         /// auto generated
@@ -9253,12 +9125,12 @@ namespace Ict.Petra.Shared.MFinance.AR.Data.Access
         /// auto generated
         public static void LoadViaAArInvoiceDetailTemplate(DataSet ADataSet, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClauseLong("PUB_a_ar_invoice_detail_discount", AFieldList, new string[] {
-                            "a_ledger_number_i", "a_invoice_key_i", "a_detail_number_i", "a_ar_discount_code_c", "a_ar_discount_date_valid_from_d"}) + " FROM PUB_a_ar_invoice_detail_discount, PUB_a_ar_invoice_detail WHERE " +
-                            "PUB_a_ar_invoice_detail_discount.a_ledger_number_i = PUB_a_ar_invoice_detail.a_ledger_number_i AND PUB_a_ar_invoice_detail_discount.a_invoice_key_i = PUB_a_ar_invoice_detail.a_invoice_key_i AND PUB_a_ar_invoice_detail_discount.a_detail_number_i = PUB_a_ar_invoice_detail.a_detail_number_i")
-                            + GenerateWhereClauseLong("PUB_a_ar_invoice_detail", AArInvoiceDetailTable.GetColumnStringList(), ASearchCriteria))
-                            + GenerateOrderByClause(AOrderBy)), AArInvoiceDetailDiscountTable.GetTableName(), ATransaction,
-                            GetParametersForWhereClause(new AArInvoiceDetailDiscountTable(), ASearchCriteria), AStartRecord, AMaxRecords);
+            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClauseLong("PUB_a_ar_invoice_detail_discount", AFieldList, AArInvoiceDetailDiscountTable.TableId) +
+                            " FROM PUB_a_ar_invoice_detail_discount, PUB_a_ar_invoice_detail WHERE " +
+                            "PUB_a_ar_invoice_detail_discount.a_ledger_number_i = PUB_a_ar_invoice_detail.a_ledger_number_i AND PUB_a_ar_invoice_detail_discount.a_invoice_key_i = PUB_a_ar_invoice_detail.a_invoice_key_i AND PUB_a_ar_invoice_detail_discount.a_detail_number_i = PUB_a_ar_invoice_detail.a_detail_number_i") +
+                            GenerateWhereClauseLong("PUB_a_ar_invoice_detail", ASearchCriteria)) +
+                            GenerateOrderByClause(AOrderBy)), TTypedDataTable.GetTableName(AArInvoiceDetailDiscountTable.TableId), ATransaction,
+                            GetParametersForWhereClause(AArInvoiceDetailDiscountTable.TableId, ASearchCriteria), AStartRecord, AMaxRecords);
         }
 
         /// auto generated
@@ -9312,7 +9184,10 @@ namespace Ict.Petra.Shared.MFinance.AR.Data.Access
         public static int CountViaAArInvoiceDetailTemplate(AArInvoiceDetailRow ATemplateRow, StringCollection ATemplateOperators, TDBTransaction ATransaction)
         {
             return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_a_ar_invoice_detail_discount, PUB_a_ar_invoice_detail WHERE " +
-                "PUB_a_ar_invoice_detail_discount.a_ledger_number_i = PUB_a_ar_invoice_detail.a_ledger_number_i AND PUB_a_ar_invoice_detail_discount.a_invoice_key_i = PUB_a_ar_invoice_detail.a_invoice_key_i AND PUB_a_ar_invoice_detail_discount.a_detail_number_i = PUB_a_ar_invoice_detail.a_detail_number_i" + GenerateWhereClauseLong("PUB_a_ar_invoice_detail", AArInvoiceDetailTable.GetColumnStringList(), ATemplateRow, ATemplateOperators)), ATransaction, false, GetParametersForWhereClause(ATemplateRow, AArInvoiceDetailTable.GetPrimKeyColumnOrdList())));
+                "PUB_a_ar_invoice_detail_discount.a_ledger_number_i = PUB_a_ar_invoice_detail.a_ledger_number_i AND PUB_a_ar_invoice_detail_discount.a_invoice_key_i = PUB_a_ar_invoice_detail.a_invoice_key_i AND PUB_a_ar_invoice_detail_discount.a_detail_number_i = PUB_a_ar_invoice_detail.a_detail_number_i" + GenerateWhereClauseLong("PUB_a_ar_invoice_detail",
+                AArInvoiceDetailTable.TableId, ATemplateRow, ATemplateOperators)),
+                ATransaction, false,
+                GetParametersForWhereClauseWithPrimaryKey(AArInvoiceDetailTable.TableId, ATemplateRow)));
         }
 
         /// auto generated
@@ -9320,8 +9195,8 @@ namespace Ict.Petra.Shared.MFinance.AR.Data.Access
         {
             return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_a_ar_invoice_detail_discount, PUB_a_ar_invoice_detail WHERE " +
                 "PUB_a_ar_invoice_detail_discount.a_ledger_number_i = PUB_a_ar_invoice_detail.a_ledger_number_i AND PUB_a_ar_invoice_detail_discount.a_invoice_key_i = PUB_a_ar_invoice_detail.a_invoice_key_i AND PUB_a_ar_invoice_detail_discount.a_detail_number_i = PUB_a_ar_invoice_detail.a_detail_number_i" +
-                GenerateWhereClauseLong("PUB_a_ar_invoice_detail", AArInvoiceDetailTable.GetColumnStringList(), ASearchCriteria)), ATransaction, false,
-                GetParametersForWhereClause(new AArInvoiceDetailTable(), ASearchCriteria)));
+                GenerateWhereClauseLong("PUB_a_ar_invoice_detail", ASearchCriteria)), ATransaction, false,
+                GetParametersForWhereClause(AArInvoiceDetailTable.TableId, ASearchCriteria)));
         }
 
         /// auto generated
@@ -9332,9 +9207,9 @@ namespace Ict.Petra.Shared.MFinance.AR.Data.Access
             ParametersArray[0].Value = ((object)(AArDiscountCode));
             ParametersArray[1] = new OdbcParameter("", OdbcType.Date);
             ParametersArray[1].Value = ((object)(AArDateValidFrom));
-            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, ((GenerateSelectClause(AFieldList, new string[] {
-                            "a_ledger_number_i", "a_invoice_key_i", "a_detail_number_i", "a_ar_discount_code_c", "a_ar_discount_date_valid_from_d"}) + " FROM PUB_a_ar_invoice_detail_discount WHERE a_ar_discount_code_c = ? AND a_ar_discount_date_valid_from_d = ?")
-                            + GenerateOrderByClause(AOrderBy)), AArInvoiceDetailDiscountTable.GetTableName(), ATransaction, ParametersArray, AStartRecord, AMaxRecords);
+            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, ((GenerateSelectClause(AFieldList, AArInvoiceDetailDiscountTable.TableId) +
+                            " FROM PUB_a_ar_invoice_detail_discount WHERE a_ar_discount_code_c = ? AND a_ar_discount_date_valid_from_d = ?") +
+                            GenerateOrderByClause(AOrderBy)), TTypedDataTable.GetTableName(AArInvoiceDetailDiscountTable.TableId), ATransaction, ParametersArray, AStartRecord, AMaxRecords);
         }
 
         /// auto generated
@@ -9374,11 +9249,12 @@ namespace Ict.Petra.Shared.MFinance.AR.Data.Access
         /// auto generated
         public static void LoadViaAArDiscountTemplate(DataSet ADataSet, AArDiscountRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClauseLong("PUB_a_ar_invoice_detail_discount", AFieldList, new string[] {
-                            "a_ledger_number_i", "a_invoice_key_i", "a_detail_number_i", "a_ar_discount_code_c", "a_ar_discount_date_valid_from_d"}) + " FROM PUB_a_ar_invoice_detail_discount, PUB_a_ar_discount WHERE " +
-                            "PUB_a_ar_invoice_detail_discount.a_ar_discount_code_c = PUB_a_ar_discount.a_ar_discount_code_c AND PUB_a_ar_invoice_detail_discount.a_ar_discount_date_valid_from_d = PUB_a_ar_discount.a_ar_date_valid_from_d")
-                            + GenerateWhereClauseLong("PUB_a_ar_discount", AArDiscountTable.GetColumnStringList(), ATemplateRow, ATemplateOperators))
-                            + GenerateOrderByClause(AOrderBy)), AArInvoiceDetailDiscountTable.GetTableName(), ATransaction, GetParametersForWhereClause(ATemplateRow), AStartRecord, AMaxRecords);
+            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClauseLong("PUB_a_ar_invoice_detail_discount", AFieldList, AArInvoiceDetailDiscountTable.TableId) +
+                            " FROM PUB_a_ar_invoice_detail_discount, PUB_a_ar_discount WHERE " +
+                            "PUB_a_ar_invoice_detail_discount.a_ar_discount_code_c = PUB_a_ar_discount.a_ar_discount_code_c AND PUB_a_ar_invoice_detail_discount.a_ar_discount_date_valid_from_d = PUB_a_ar_discount.a_ar_date_valid_from_d") +
+                            GenerateWhereClauseLong("PUB_a_ar_discount", AArDiscountTable.TableId, ATemplateRow, ATemplateOperators)) +
+                            GenerateOrderByClause(AOrderBy)), TTypedDataTable.GetTableName(AArInvoiceDetailDiscountTable.TableId), ATransaction,
+                            GetParametersForWhereClause(AArDiscountTable.TableId, ATemplateRow), AStartRecord, AMaxRecords);
         }
 
         /// auto generated
@@ -9424,12 +9300,12 @@ namespace Ict.Petra.Shared.MFinance.AR.Data.Access
         /// auto generated
         public static void LoadViaAArDiscountTemplate(DataSet ADataSet, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClauseLong("PUB_a_ar_invoice_detail_discount", AFieldList, new string[] {
-                            "a_ledger_number_i", "a_invoice_key_i", "a_detail_number_i", "a_ar_discount_code_c", "a_ar_discount_date_valid_from_d"}) + " FROM PUB_a_ar_invoice_detail_discount, PUB_a_ar_discount WHERE " +
-                            "PUB_a_ar_invoice_detail_discount.a_ar_discount_code_c = PUB_a_ar_discount.a_ar_discount_code_c AND PUB_a_ar_invoice_detail_discount.a_ar_discount_date_valid_from_d = PUB_a_ar_discount.a_ar_date_valid_from_d")
-                            + GenerateWhereClauseLong("PUB_a_ar_discount", AArDiscountTable.GetColumnStringList(), ASearchCriteria))
-                            + GenerateOrderByClause(AOrderBy)), AArInvoiceDetailDiscountTable.GetTableName(), ATransaction,
-                            GetParametersForWhereClause(new AArInvoiceDetailDiscountTable(), ASearchCriteria), AStartRecord, AMaxRecords);
+            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClauseLong("PUB_a_ar_invoice_detail_discount", AFieldList, AArInvoiceDetailDiscountTable.TableId) +
+                            " FROM PUB_a_ar_invoice_detail_discount, PUB_a_ar_discount WHERE " +
+                            "PUB_a_ar_invoice_detail_discount.a_ar_discount_code_c = PUB_a_ar_discount.a_ar_discount_code_c AND PUB_a_ar_invoice_detail_discount.a_ar_discount_date_valid_from_d = PUB_a_ar_discount.a_ar_date_valid_from_d") +
+                            GenerateWhereClauseLong("PUB_a_ar_discount", ASearchCriteria)) +
+                            GenerateOrderByClause(AOrderBy)), TTypedDataTable.GetTableName(AArInvoiceDetailDiscountTable.TableId), ATransaction,
+                            GetParametersForWhereClause(AArInvoiceDetailDiscountTable.TableId, ASearchCriteria), AStartRecord, AMaxRecords);
         }
 
         /// auto generated
@@ -9481,7 +9357,10 @@ namespace Ict.Petra.Shared.MFinance.AR.Data.Access
         public static int CountViaAArDiscountTemplate(AArDiscountRow ATemplateRow, StringCollection ATemplateOperators, TDBTransaction ATransaction)
         {
             return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_a_ar_invoice_detail_discount, PUB_a_ar_discount WHERE " +
-                "PUB_a_ar_invoice_detail_discount.a_ar_discount_code_c = PUB_a_ar_discount.a_ar_discount_code_c AND PUB_a_ar_invoice_detail_discount.a_ar_discount_date_valid_from_d = PUB_a_ar_discount.a_ar_date_valid_from_d" + GenerateWhereClauseLong("PUB_a_ar_discount", AArDiscountTable.GetColumnStringList(), ATemplateRow, ATemplateOperators)), ATransaction, false, GetParametersForWhereClause(ATemplateRow, AArDiscountTable.GetPrimKeyColumnOrdList())));
+                "PUB_a_ar_invoice_detail_discount.a_ar_discount_code_c = PUB_a_ar_discount.a_ar_discount_code_c AND PUB_a_ar_invoice_detail_discount.a_ar_discount_date_valid_from_d = PUB_a_ar_discount.a_ar_date_valid_from_d" + GenerateWhereClauseLong("PUB_a_ar_discount",
+                AArDiscountTable.TableId, ATemplateRow, ATemplateOperators)),
+                ATransaction, false,
+                GetParametersForWhereClauseWithPrimaryKey(AArDiscountTable.TableId, ATemplateRow)));
         }
 
         /// auto generated
@@ -9489,39 +9368,26 @@ namespace Ict.Petra.Shared.MFinance.AR.Data.Access
         {
             return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_a_ar_invoice_detail_discount, PUB_a_ar_discount WHERE " +
                 "PUB_a_ar_invoice_detail_discount.a_ar_discount_code_c = PUB_a_ar_discount.a_ar_discount_code_c AND PUB_a_ar_invoice_detail_discount.a_ar_discount_date_valid_from_d = PUB_a_ar_discount.a_ar_date_valid_from_d" +
-                GenerateWhereClauseLong("PUB_a_ar_discount", AArDiscountTable.GetColumnStringList(), ASearchCriteria)), ATransaction, false,
-                GetParametersForWhereClause(new AArDiscountTable(), ASearchCriteria)));
+                GenerateWhereClauseLong("PUB_a_ar_discount", ASearchCriteria)), ATransaction, false,
+                GetParametersForWhereClause(AArDiscountTable.TableId, ASearchCriteria)));
         }
 
         /// auto generated
         public static void DeleteByPrimaryKey(Int32 ALedgerNumber, Int32 AInvoiceKey, Int32 ADetailNumber, String AArDiscountCode, System.DateTime AArDiscountDateValidFrom, TDBTransaction ATransaction)
         {
-            OdbcParameter[] ParametersArray = new OdbcParameter[5];
-            ParametersArray[0] = new OdbcParameter("", OdbcType.Int);
-            ParametersArray[0].Value = ((object)(ALedgerNumber));
-            ParametersArray[1] = new OdbcParameter("", OdbcType.Int);
-            ParametersArray[1].Value = ((object)(AInvoiceKey));
-            ParametersArray[2] = new OdbcParameter("", OdbcType.Int);
-            ParametersArray[2].Value = ((object)(ADetailNumber));
-            ParametersArray[3] = new OdbcParameter("", OdbcType.VarChar, 100);
-            ParametersArray[3].Value = ((object)(AArDiscountCode));
-            ParametersArray[4] = new OdbcParameter("", OdbcType.Date);
-            ParametersArray[4].Value = ((object)(AArDiscountDateValidFrom));
-            DBAccess.GDBAccessObj.ExecuteNonQuery("DELETE FROM PUB_a_ar_invoice_detail_discount WHERE a_ledger_number_i = ? AND a_invoice_key_i = ? AND a_detail_number_i = ? AND a_ar_discount_code_c = ? AND a_ar_discount_date_valid_from_d = ?", ATransaction, false, ParametersArray);
+            DeleteByPrimaryKey(AArInvoiceDetailDiscountTable.TableId, new System.Object[5]{ALedgerNumber, AInvoiceKey, ADetailNumber, AArDiscountCode, AArDiscountDateValidFrom}, ATransaction);
         }
 
         /// auto generated
         public static void DeleteUsingTemplate(AArInvoiceDetailDiscountRow ATemplateRow, StringCollection ATemplateOperators, TDBTransaction ATransaction)
         {
-            DBAccess.GDBAccessObj.ExecuteNonQuery(("DELETE FROM PUB_a_ar_invoice_detail_discount" + GenerateWhereClause(AArInvoiceDetailDiscountTable.GetColumnStringList(), ATemplateRow, ATemplateOperators)), ATransaction, false, GetParametersForWhereClause(ATemplateRow));
+            DeleteUsingTemplate(AArInvoiceDetailDiscountTable.TableId, ATemplateRow, ATemplateOperators, ATransaction);
         }
 
         /// auto generated
         public static void DeleteUsingTemplate(TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
         {
-            DBAccess.GDBAccessObj.ExecuteNonQuery(("DELETE FROM PUB_a_ar_invoice_detail_discount" +
-                GenerateWhereClause(AArInvoiceDetailDiscountTable.GetColumnStringList(), ASearchCriteria)), ATransaction, false,
-                GetParametersForWhereClause(new AArInvoiceDetailDiscountTable(), ASearchCriteria));
+            DeleteUsingTemplate(AArInvoiceDetailDiscountTable.TableId, ASearchCriteria, ATransaction);
         }
 
         /// auto generated
@@ -9538,15 +9404,15 @@ namespace Ict.Petra.Shared.MFinance.AR.Data.Access
                 {
                     if ((TheRow.RowState == DataRowState.Added))
                     {
-                        TTypedDataAccess.InsertRow("a_ar_invoice_detail_discount", AArInvoiceDetailDiscountTable.GetColumnStringList(), ref TheRow, ATransaction, UserInfo.GUserInfo.UserID);
+                        TTypedDataAccess.InsertRow(AArInvoiceDetailDiscountTable.TableId, ref TheRow, ATransaction, UserInfo.GUserInfo.UserID);
                     }
                     if ((TheRow.RowState == DataRowState.Modified))
                     {
-                        TTypedDataAccess.UpdateRow("a_ar_invoice_detail_discount", AArInvoiceDetailDiscountTable.GetColumnStringList(), AArInvoiceDetailDiscountTable.GetPrimKeyColumnOrdList(), ref TheRow, ATransaction, UserInfo.GUserInfo.UserID);
+                        TTypedDataAccess.UpdateRow(AArInvoiceDetailDiscountTable.TableId, ref TheRow, ATransaction, UserInfo.GUserInfo.UserID);
                     }
                     if ((TheRow.RowState == DataRowState.Deleted))
                     {
-                        TTypedDataAccess.DeleteRow("a_ar_invoice_detail_discount", AArInvoiceDetailDiscountTable.GetColumnStringList(), AArInvoiceDetailDiscountTable.GetPrimKeyColumnOrdList(), TheRow, ATransaction);
+                        TTypedDataAccess.DeleteRow(AArInvoiceDetailDiscountTable.TableId, TheRow, ATransaction);
                     }
                 }
                 catch (OdbcException ex)

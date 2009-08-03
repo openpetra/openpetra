@@ -55,9 +55,8 @@ namespace Ict.Petra.Shared.MCommon.Data.Access
         /// this method is called by all overloads
         public static void LoadAll(DataSet ADataSet, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, ((GenerateSelectClause(AFieldList, new string[] {
-                            "p_language_code_c"}) + " FROM PUB_p_language")
-                            + GenerateOrderByClause(AOrderBy)), PLanguageTable.GetTableName(), ATransaction, AStartRecord, AMaxRecords);
+            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, ((GenerateSelectClause(AFieldList, PLanguageTable.TableId) + " FROM PUB_p_language") +
+                            GenerateOrderByClause(AOrderBy)), TTypedDataTable.GetTableName(PLanguageTable.TableId), ATransaction, AStartRecord, AMaxRecords);
         }
 
         /// auto generated
@@ -97,12 +96,8 @@ namespace Ict.Petra.Shared.MCommon.Data.Access
         /// this method is called by all overloads
         public static void LoadByPrimaryKey(DataSet ADataSet, String ALanguageCode, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            OdbcParameter[] ParametersArray = new OdbcParameter[1];
-            ParametersArray[0] = new OdbcParameter("", OdbcType.VarChar, 20);
-            ParametersArray[0].Value = ((object)(ALanguageCode));
-            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, ((GenerateSelectClause(AFieldList, new string[] {
-                            "p_language_code_c"}) + " FROM PUB_p_language WHERE p_language_code_c = ?")
-                            + GenerateOrderByClause(AOrderBy)), PLanguageTable.GetTableName(), ATransaction, ParametersArray, AStartRecord, AMaxRecords);
+            ADataSet = LoadByPrimaryKey(PLanguageTable.TableId,
+                ADataSet, new System.Object[1]{ALanguageCode}, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
         }
 
         /// auto generated
@@ -142,10 +137,10 @@ namespace Ict.Petra.Shared.MCommon.Data.Access
         /// this method is called by all overloads
         public static void LoadUsingTemplate(DataSet ADataSet, PLanguageRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClause(AFieldList, new string[] {
-                            "p_language_code_c"}) + " FROM PUB_p_language")
-                            + GenerateWhereClause(PLanguageTable.GetColumnStringList(), ATemplateRow, ATemplateOperators))
-                            + GenerateOrderByClause(AOrderBy)), PLanguageTable.GetTableName(), ATransaction, GetParametersForWhereClause(ATemplateRow), AStartRecord, AMaxRecords);
+            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClause(AFieldList, PLanguageTable.TableId) + " FROM PUB_p_language") +
+                            GenerateWhereClause(TTypedDataTable.GetColumnStringList(PLanguageTable.TableId), ATemplateRow, ATemplateOperators)) +
+                            GenerateOrderByClause(AOrderBy)), TTypedDataTable.GetTableName(PLanguageTable.TableId), ATransaction,
+                            GetParametersForWhereClause(PLanguageTable.TableId, ATemplateRow), AStartRecord, AMaxRecords);
         }
 
         /// auto generated
@@ -191,11 +186,10 @@ namespace Ict.Petra.Shared.MCommon.Data.Access
         /// this method is called by all overloads
         public static void LoadUsingTemplate(DataSet ADataSet, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClause(AFieldList, new string[] {
-                            "p_language_code_c"}) + " FROM PUB_p_language")
-                            + GenerateWhereClause(PLanguageTable.GetColumnStringList(), ASearchCriteria))
-                            + GenerateOrderByClause(AOrderBy)), PLanguageTable.GetTableName(), ATransaction,
-                            GetParametersForWhereClause(new PLanguageTable(), ASearchCriteria), AStartRecord, AMaxRecords);
+            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClause(AFieldList, PLanguageTable.TableId) + " FROM PUB_p_language") +
+                            GenerateWhereClause(TTypedDataTable.GetColumnStringList(PLanguageTable.TableId), ASearchCriteria)) +
+                            GenerateOrderByClause(AOrderBy)), TTypedDataTable.GetTableName(PLanguageTable.TableId), ATransaction,
+                            GetParametersForWhereClause(PLanguageTable.TableId, ASearchCriteria), AStartRecord, AMaxRecords);
         }
 
         /// auto generated
@@ -238,26 +232,24 @@ namespace Ict.Petra.Shared.MCommon.Data.Access
             return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar("SELECT COUNT(*) FROM PUB_p_language", ATransaction, false));
         }
 
-        /// this method is called by all overloads
-        public static int CountByPrimaryKey(String ALanguageCode, TDBTransaction ATransaction)
+        /// check if a row exists by using the primary key
+        public static bool Exists(String ALanguageCode, TDBTransaction ATransaction)
         {
-            OdbcParameter[] ParametersArray = new OdbcParameter[1];
-            ParametersArray[0] = new OdbcParameter("", OdbcType.VarChar, 20);
-            ParametersArray[0].Value = ((object)(ALanguageCode));
-            return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar("SELECT COUNT(*) FROM PUB_p_language WHERE p_language_code_c = ?", ATransaction, false, ParametersArray));
+            return Exists(PLanguageTable.TableId, new System.Object[1]{ALanguageCode}, ATransaction);
         }
 
         /// this method is called by all overloads
         public static int CountUsingTemplate(PLanguageRow ATemplateRow, StringCollection ATemplateOperators, TDBTransaction ATransaction)
         {
-            return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_p_language" + GenerateWhereClause(PLanguageTable.GetColumnStringList(), ATemplateRow, ATemplateOperators)), ATransaction, false, GetParametersForWhereClause(ATemplateRow)));
+            return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_p_language" + GenerateWhereClause(TTypedDataTable.GetColumnStringList(PLanguageTable.TableId), ATemplateRow, ATemplateOperators)), ATransaction, false,
+                   GetParametersForWhereClause(PLanguageTable.TableId, ATemplateRow)));
         }
 
         /// this method is called by all overloads
         public static int CountUsingTemplate(TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
         {
-            return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_p_language" + GenerateWhereClause(PLanguageTable.GetColumnStringList(), ASearchCriteria)), ATransaction, false,
-            GetParametersForWhereClause(new PLanguageTable(), ASearchCriteria)));
+            return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_p_language" + GenerateWhereClause(TTypedDataTable.GetColumnStringList(PLanguageTable.TableId), ASearchCriteria)), ATransaction, false,
+            GetParametersForWhereClause(PLanguageTable.TableId, ASearchCriteria)));
         }
 
         /// auto generated LoadViaLinkTable
@@ -266,10 +258,10 @@ namespace Ict.Petra.Shared.MCommon.Data.Access
             OdbcParameter[] ParametersArray = new OdbcParameter[1];
             ParametersArray[0] = new OdbcParameter("", OdbcType.VarChar, 16);
             ParametersArray[0].Value = ((object)(ACurrencyCode));
-            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, ((GenerateSelectClauseLong("PUB_p_language", AFieldList, new string[] {
-                            "p_language_code_c"}) + " FROM PUB_p_language, PUB_a_currency_language WHERE " +
-                            "PUB_a_currency_language.p_language_code_c = PUB_p_language.p_language_code_c AND PUB_a_currency_language.a_currency_code_c = ?")
-                            + GenerateOrderByClause(AOrderBy)), PLanguageTable.GetTableName(), ATransaction, ParametersArray, AStartRecord, AMaxRecords);
+            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, ((GenerateSelectClauseLong("PUB_p_language", AFieldList, PLanguageTable.TableId) +
+                            " FROM PUB_p_language, PUB_a_currency_language WHERE " +
+                            "PUB_a_currency_language.p_language_code_c = PUB_p_language.p_language_code_c AND PUB_a_currency_language.a_currency_code_c = ?") +
+                            GenerateOrderByClause(AOrderBy)), TTypedDataTable.GetTableName(PLanguageTable.TableId), ATransaction, ParametersArray, AStartRecord, AMaxRecords);
         }
 
         /// auto generated
@@ -309,11 +301,12 @@ namespace Ict.Petra.Shared.MCommon.Data.Access
         /// auto generated
         public static void LoadViaACurrencyTemplate(DataSet ADataSet, ACurrencyRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClauseLong("PUB_p_language", AFieldList, new string[] {
-                            "p_language_code_c"}) + " FROM PUB_p_language, PUB_a_currency_language, PUB_a_currency WHERE " +
-                            "PUB_a_currency_language.p_language_code_c = PUB_p_language.p_language_code_c AND PUB_a_currency_language.a_currency_code_c = PUB_a_currency.a_currency_code_c")
-                            + GenerateWhereClauseLong("PUB_a_currency", ACurrencyTable.GetColumnStringList(), ATemplateRow, ATemplateOperators))
-                            + GenerateOrderByClause(AOrderBy)), PLanguageTable.GetTableName(), ATransaction, GetParametersForWhereClause(ATemplateRow), AStartRecord, AMaxRecords);
+            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClauseLong("PUB_p_language", AFieldList, PLanguageTable.TableId) +
+                            " FROM PUB_p_language, PUB_a_currency_language, PUB_a_currency WHERE " +
+                            "PUB_a_currency_language.p_language_code_c = PUB_p_language.p_language_code_c AND PUB_a_currency_language.a_currency_code_c = PUB_a_currency.a_currency_code_c") +
+                            GenerateWhereClauseLong("PUB_a_currency", ACurrencyTable.TableId, ATemplateRow, ATemplateOperators)) +
+                            GenerateOrderByClause(AOrderBy)), TTypedDataTable.GetTableName(PLanguageTable.TableId), ATransaction,
+                            GetParametersForWhereClause(ACurrencyTable.TableId, ATemplateRow), AStartRecord, AMaxRecords);
         }
 
         /// auto generated
@@ -359,12 +352,12 @@ namespace Ict.Petra.Shared.MCommon.Data.Access
         /// auto generated
         public static void LoadViaACurrencyTemplate(DataSet ADataSet, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClauseLong("PUB_p_language", AFieldList, new string[] {
-                            "p_language_code_c"}) + " FROM PUB_p_language, PUB_a_currency_language, PUB_a_currency WHERE " +
-                            "PUB_a_currency_language.p_language_code_c = PUB_p_language.p_language_code_c AND PUB_a_currency_language.a_currency_code_c = PUB_a_currency.a_currency_code_c")
-                            + GenerateWhereClauseLong("PUB_a_currency", ACurrencyTable.GetColumnStringList(), ASearchCriteria))
-                            + GenerateOrderByClause(AOrderBy)), PLanguageTable.GetTableName(), ATransaction,
-                            GetParametersForWhereClause(new PLanguageTable(), ASearchCriteria), AStartRecord, AMaxRecords);
+            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClauseLong("PUB_p_language", AFieldList, PLanguageTable.TableId) +
+                            " FROM PUB_p_language, PUB_a_currency_language, PUB_a_currency WHERE " +
+                            "PUB_a_currency_language.p_language_code_c = PUB_p_language.p_language_code_c AND PUB_a_currency_language.a_currency_code_c = PUB_a_currency.a_currency_code_c") +
+                            GenerateWhereClauseLong("PUB_a_currency", ASearchCriteria)) +
+                            GenerateOrderByClause(AOrderBy)), TTypedDataTable.GetTableName(PLanguageTable.TableId), ATransaction,
+                            GetParametersForWhereClause(PLanguageTable.TableId, ASearchCriteria), AStartRecord, AMaxRecords);
         }
 
         /// auto generated
@@ -417,7 +410,8 @@ namespace Ict.Petra.Shared.MCommon.Data.Access
         {
             return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_p_language, PUB_a_currency_language, PUB_a_currency WHERE " +
                         "PUB_a_currency_language.p_language_code_c = PUB_p_language.p_language_code_c AND PUB_a_currency_language.a_currency_code_c = PUB_a_currency.a_currency_code_c" +
-                        GenerateWhereClauseLong("PUB_a_currency_language", PLanguageTable.GetColumnStringList(), ATemplateRow, ATemplateOperators)), ATransaction, false, GetParametersForWhereClause(ATemplateRow, ACurrencyTable.GetPrimKeyColumnOrdList())));
+                        GenerateWhereClauseLong("PUB_a_currency_language", PLanguageTable.TableId, ATemplateRow, ATemplateOperators)), ATransaction, false,
+                        GetParametersForWhereClauseWithPrimaryKey(ACurrencyTable.TableId, ATemplateRow)));
         }
 
         /// auto generated
@@ -425,8 +419,8 @@ namespace Ict.Petra.Shared.MCommon.Data.Access
         {
             return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_p_language, PUB_a_currency_language, PUB_a_currency WHERE " +
                         "PUB_a_currency_language.p_language_code_c = PUB_p_language.p_language_code_c AND PUB_a_currency_language.a_currency_code_c = PUB_a_currency.a_currency_code_c" +
-                        GenerateWhereClauseLong("PUB_a_currency_language", PLanguageTable.GetColumnStringList(), ASearchCriteria)), ATransaction, false,
-                        GetParametersForWhereClause(new PLanguageTable(), ASearchCriteria)));
+                        GenerateWhereClauseLong("PUB_a_currency_language", ASearchCriteria)), ATransaction, false,
+                        GetParametersForWhereClause(PLanguageTable.TableId, ASearchCriteria)));
         }
 
         /// auto generated LoadViaLinkTable
@@ -435,10 +429,10 @@ namespace Ict.Petra.Shared.MCommon.Data.Access
             OdbcParameter[] ParametersArray = new OdbcParameter[1];
             ParametersArray[0] = new OdbcParameter("", OdbcType.Decimal, 10);
             ParametersArray[0].Value = ((object)(APartnerKey));
-            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, ((GenerateSelectClauseLong("PUB_p_language", AFieldList, new string[] {
-                            "p_language_code_c"}) + " FROM PUB_p_language, PUB_pm_person_language WHERE " +
-                            "PUB_pm_person_language.p_language_code_c = PUB_p_language.p_language_code_c AND PUB_pm_person_language.p_partner_key_n = ?")
-                            + GenerateOrderByClause(AOrderBy)), PLanguageTable.GetTableName(), ATransaction, ParametersArray, AStartRecord, AMaxRecords);
+            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, ((GenerateSelectClauseLong("PUB_p_language", AFieldList, PLanguageTable.TableId) +
+                            " FROM PUB_p_language, PUB_pm_person_language WHERE " +
+                            "PUB_pm_person_language.p_language_code_c = PUB_p_language.p_language_code_c AND PUB_pm_person_language.p_partner_key_n = ?") +
+                            GenerateOrderByClause(AOrderBy)), TTypedDataTable.GetTableName(PLanguageTable.TableId), ATransaction, ParametersArray, AStartRecord, AMaxRecords);
         }
 
         /// auto generated
@@ -478,11 +472,12 @@ namespace Ict.Petra.Shared.MCommon.Data.Access
         /// auto generated
         public static void LoadViaPPersonTemplate(DataSet ADataSet, PPersonRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClauseLong("PUB_p_language", AFieldList, new string[] {
-                            "p_language_code_c"}) + " FROM PUB_p_language, PUB_pm_person_language, PUB_p_person WHERE " +
-                            "PUB_pm_person_language.p_language_code_c = PUB_p_language.p_language_code_c AND PUB_pm_person_language.p_partner_key_n = PUB_p_person.p_partner_key_n")
-                            + GenerateWhereClauseLong("PUB_p_person", PPersonTable.GetColumnStringList(), ATemplateRow, ATemplateOperators))
-                            + GenerateOrderByClause(AOrderBy)), PLanguageTable.GetTableName(), ATransaction, GetParametersForWhereClause(ATemplateRow), AStartRecord, AMaxRecords);
+            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClauseLong("PUB_p_language", AFieldList, PLanguageTable.TableId) +
+                            " FROM PUB_p_language, PUB_pm_person_language, PUB_p_person WHERE " +
+                            "PUB_pm_person_language.p_language_code_c = PUB_p_language.p_language_code_c AND PUB_pm_person_language.p_partner_key_n = PUB_p_person.p_partner_key_n") +
+                            GenerateWhereClauseLong("PUB_p_person", PPersonTable.TableId, ATemplateRow, ATemplateOperators)) +
+                            GenerateOrderByClause(AOrderBy)), TTypedDataTable.GetTableName(PLanguageTable.TableId), ATransaction,
+                            GetParametersForWhereClause(PPersonTable.TableId, ATemplateRow), AStartRecord, AMaxRecords);
         }
 
         /// auto generated
@@ -528,12 +523,12 @@ namespace Ict.Petra.Shared.MCommon.Data.Access
         /// auto generated
         public static void LoadViaPPersonTemplate(DataSet ADataSet, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClauseLong("PUB_p_language", AFieldList, new string[] {
-                            "p_language_code_c"}) + " FROM PUB_p_language, PUB_pm_person_language, PUB_p_person WHERE " +
-                            "PUB_pm_person_language.p_language_code_c = PUB_p_language.p_language_code_c AND PUB_pm_person_language.p_partner_key_n = PUB_p_person.p_partner_key_n")
-                            + GenerateWhereClauseLong("PUB_p_person", PPersonTable.GetColumnStringList(), ASearchCriteria))
-                            + GenerateOrderByClause(AOrderBy)), PLanguageTable.GetTableName(), ATransaction,
-                            GetParametersForWhereClause(new PLanguageTable(), ASearchCriteria), AStartRecord, AMaxRecords);
+            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClauseLong("PUB_p_language", AFieldList, PLanguageTable.TableId) +
+                            " FROM PUB_p_language, PUB_pm_person_language, PUB_p_person WHERE " +
+                            "PUB_pm_person_language.p_language_code_c = PUB_p_language.p_language_code_c AND PUB_pm_person_language.p_partner_key_n = PUB_p_person.p_partner_key_n") +
+                            GenerateWhereClauseLong("PUB_p_person", ASearchCriteria)) +
+                            GenerateOrderByClause(AOrderBy)), TTypedDataTable.GetTableName(PLanguageTable.TableId), ATransaction,
+                            GetParametersForWhereClause(PLanguageTable.TableId, ASearchCriteria), AStartRecord, AMaxRecords);
         }
 
         /// auto generated
@@ -586,7 +581,8 @@ namespace Ict.Petra.Shared.MCommon.Data.Access
         {
             return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_p_language, PUB_pm_person_language, PUB_p_person WHERE " +
                         "PUB_pm_person_language.p_language_code_c = PUB_p_language.p_language_code_c AND PUB_pm_person_language.p_partner_key_n = PUB_p_person.p_partner_key_n" +
-                        GenerateWhereClauseLong("PUB_pm_person_language", PLanguageTable.GetColumnStringList(), ATemplateRow, ATemplateOperators)), ATransaction, false, GetParametersForWhereClause(ATemplateRow, PPersonTable.GetPrimKeyColumnOrdList())));
+                        GenerateWhereClauseLong("PUB_pm_person_language", PLanguageTable.TableId, ATemplateRow, ATemplateOperators)), ATransaction, false,
+                        GetParametersForWhereClauseWithPrimaryKey(PPersonTable.TableId, ATemplateRow)));
         }
 
         /// auto generated
@@ -594,8 +590,8 @@ namespace Ict.Petra.Shared.MCommon.Data.Access
         {
             return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_p_language, PUB_pm_person_language, PUB_p_person WHERE " +
                         "PUB_pm_person_language.p_language_code_c = PUB_p_language.p_language_code_c AND PUB_pm_person_language.p_partner_key_n = PUB_p_person.p_partner_key_n" +
-                        GenerateWhereClauseLong("PUB_pm_person_language", PLanguageTable.GetColumnStringList(), ASearchCriteria)), ATransaction, false,
-                        GetParametersForWhereClause(new PLanguageTable(), ASearchCriteria)));
+                        GenerateWhereClauseLong("PUB_pm_person_language", ASearchCriteria)), ATransaction, false,
+                        GetParametersForWhereClause(PLanguageTable.TableId, ASearchCriteria)));
         }
 
         /// auto generated LoadViaLinkTable
@@ -610,10 +606,10 @@ namespace Ict.Petra.Shared.MCommon.Data.Access
             ParametersArray[2].Value = ((object)(APositionScope));
             ParametersArray[3] = new OdbcParameter("", OdbcType.Int);
             ParametersArray[3].Value = ((object)(AJobKey));
-            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, ((GenerateSelectClauseLong("PUB_p_language", AFieldList, new string[] {
-                            "p_language_code_c"}) + " FROM PUB_p_language, PUB_um_job_language WHERE " +
-                            "PUB_um_job_language.p_language_code_c = PUB_p_language.p_language_code_c AND PUB_um_job_language.pm_unit_key_n = ? AND PUB_um_job_language.pt_position_name_c = ? AND PUB_um_job_language.pt_position_scope_c = ? AND PUB_um_job_language.um_job_key_i = ?")
-                            + GenerateOrderByClause(AOrderBy)), PLanguageTable.GetTableName(), ATransaction, ParametersArray, AStartRecord, AMaxRecords);
+            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, ((GenerateSelectClauseLong("PUB_p_language", AFieldList, PLanguageTable.TableId) +
+                            " FROM PUB_p_language, PUB_um_job_language WHERE " +
+                            "PUB_um_job_language.p_language_code_c = PUB_p_language.p_language_code_c AND PUB_um_job_language.pm_unit_key_n = ? AND PUB_um_job_language.pt_position_name_c = ? AND PUB_um_job_language.pt_position_scope_c = ? AND PUB_um_job_language.um_job_key_i = ?") +
+                            GenerateOrderByClause(AOrderBy)), TTypedDataTable.GetTableName(PLanguageTable.TableId), ATransaction, ParametersArray, AStartRecord, AMaxRecords);
         }
 
         /// auto generated
@@ -653,11 +649,12 @@ namespace Ict.Petra.Shared.MCommon.Data.Access
         /// auto generated
         public static void LoadViaUmJobTemplate(DataSet ADataSet, UmJobRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClauseLong("PUB_p_language", AFieldList, new string[] {
-                            "p_language_code_c"}) + " FROM PUB_p_language, PUB_um_job_language, PUB_um_job WHERE " +
-                            "PUB_um_job_language.p_language_code_c = PUB_p_language.p_language_code_c AND PUB_um_job_language.pm_unit_key_n = PUB_um_job.pm_unit_key_n AND PUB_um_job_language.pt_position_name_c = PUB_um_job.pt_position_name_c AND PUB_um_job_language.pt_position_scope_c = PUB_um_job.pt_position_scope_c AND PUB_um_job_language.um_job_key_i = PUB_um_job.um_job_key_i")
-                            + GenerateWhereClauseLong("PUB_um_job", UmJobTable.GetColumnStringList(), ATemplateRow, ATemplateOperators))
-                            + GenerateOrderByClause(AOrderBy)), PLanguageTable.GetTableName(), ATransaction, GetParametersForWhereClause(ATemplateRow), AStartRecord, AMaxRecords);
+            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClauseLong("PUB_p_language", AFieldList, PLanguageTable.TableId) +
+                            " FROM PUB_p_language, PUB_um_job_language, PUB_um_job WHERE " +
+                            "PUB_um_job_language.p_language_code_c = PUB_p_language.p_language_code_c AND PUB_um_job_language.pm_unit_key_n = PUB_um_job.pm_unit_key_n AND PUB_um_job_language.pt_position_name_c = PUB_um_job.pt_position_name_c AND PUB_um_job_language.pt_position_scope_c = PUB_um_job.pt_position_scope_c AND PUB_um_job_language.um_job_key_i = PUB_um_job.um_job_key_i") +
+                            GenerateWhereClauseLong("PUB_um_job", UmJobTable.TableId, ATemplateRow, ATemplateOperators)) +
+                            GenerateOrderByClause(AOrderBy)), TTypedDataTable.GetTableName(PLanguageTable.TableId), ATransaction,
+                            GetParametersForWhereClause(UmJobTable.TableId, ATemplateRow), AStartRecord, AMaxRecords);
         }
 
         /// auto generated
@@ -703,12 +700,12 @@ namespace Ict.Petra.Shared.MCommon.Data.Access
         /// auto generated
         public static void LoadViaUmJobTemplate(DataSet ADataSet, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClauseLong("PUB_p_language", AFieldList, new string[] {
-                            "p_language_code_c"}) + " FROM PUB_p_language, PUB_um_job_language, PUB_um_job WHERE " +
-                            "PUB_um_job_language.p_language_code_c = PUB_p_language.p_language_code_c AND PUB_um_job_language.pm_unit_key_n = PUB_um_job.pm_unit_key_n AND PUB_um_job_language.pt_position_name_c = PUB_um_job.pt_position_name_c AND PUB_um_job_language.pt_position_scope_c = PUB_um_job.pt_position_scope_c AND PUB_um_job_language.um_job_key_i = PUB_um_job.um_job_key_i")
-                            + GenerateWhereClauseLong("PUB_um_job", UmJobTable.GetColumnStringList(), ASearchCriteria))
-                            + GenerateOrderByClause(AOrderBy)), PLanguageTable.GetTableName(), ATransaction,
-                            GetParametersForWhereClause(new PLanguageTable(), ASearchCriteria), AStartRecord, AMaxRecords);
+            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClauseLong("PUB_p_language", AFieldList, PLanguageTable.TableId) +
+                            " FROM PUB_p_language, PUB_um_job_language, PUB_um_job WHERE " +
+                            "PUB_um_job_language.p_language_code_c = PUB_p_language.p_language_code_c AND PUB_um_job_language.pm_unit_key_n = PUB_um_job.pm_unit_key_n AND PUB_um_job_language.pt_position_name_c = PUB_um_job.pt_position_name_c AND PUB_um_job_language.pt_position_scope_c = PUB_um_job.pt_position_scope_c AND PUB_um_job_language.um_job_key_i = PUB_um_job.um_job_key_i") +
+                            GenerateWhereClauseLong("PUB_um_job", ASearchCriteria)) +
+                            GenerateOrderByClause(AOrderBy)), TTypedDataTable.GetTableName(PLanguageTable.TableId), ATransaction,
+                            GetParametersForWhereClause(PLanguageTable.TableId, ASearchCriteria), AStartRecord, AMaxRecords);
         }
 
         /// auto generated
@@ -767,7 +764,8 @@ namespace Ict.Petra.Shared.MCommon.Data.Access
         {
             return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_p_language, PUB_um_job_language, PUB_um_job WHERE " +
                         "PUB_um_job_language.p_language_code_c = PUB_p_language.p_language_code_c AND PUB_um_job_language.pm_unit_key_n = PUB_um_job.pm_unit_key_n AND PUB_um_job_language.pt_position_name_c = PUB_um_job.pt_position_name_c AND PUB_um_job_language.pt_position_scope_c = PUB_um_job.pt_position_scope_c AND PUB_um_job_language.um_job_key_i = PUB_um_job.um_job_key_i" +
-                        GenerateWhereClauseLong("PUB_um_job_language", PLanguageTable.GetColumnStringList(), ATemplateRow, ATemplateOperators)), ATransaction, false, GetParametersForWhereClause(ATemplateRow, UmJobTable.GetPrimKeyColumnOrdList())));
+                        GenerateWhereClauseLong("PUB_um_job_language", PLanguageTable.TableId, ATemplateRow, ATemplateOperators)), ATransaction, false,
+                        GetParametersForWhereClauseWithPrimaryKey(UmJobTable.TableId, ATemplateRow)));
         }
 
         /// auto generated
@@ -775,31 +773,26 @@ namespace Ict.Petra.Shared.MCommon.Data.Access
         {
             return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_p_language, PUB_um_job_language, PUB_um_job WHERE " +
                         "PUB_um_job_language.p_language_code_c = PUB_p_language.p_language_code_c AND PUB_um_job_language.pm_unit_key_n = PUB_um_job.pm_unit_key_n AND PUB_um_job_language.pt_position_name_c = PUB_um_job.pt_position_name_c AND PUB_um_job_language.pt_position_scope_c = PUB_um_job.pt_position_scope_c AND PUB_um_job_language.um_job_key_i = PUB_um_job.um_job_key_i" +
-                        GenerateWhereClauseLong("PUB_um_job_language", PLanguageTable.GetColumnStringList(), ASearchCriteria)), ATransaction, false,
-                        GetParametersForWhereClause(new PLanguageTable(), ASearchCriteria)));
+                        GenerateWhereClauseLong("PUB_um_job_language", ASearchCriteria)), ATransaction, false,
+                        GetParametersForWhereClause(PLanguageTable.TableId, ASearchCriteria)));
         }
 
         /// auto generated
         public static void DeleteByPrimaryKey(String ALanguageCode, TDBTransaction ATransaction)
         {
-            OdbcParameter[] ParametersArray = new OdbcParameter[1];
-            ParametersArray[0] = new OdbcParameter("", OdbcType.VarChar, 20);
-            ParametersArray[0].Value = ((object)(ALanguageCode));
-            DBAccess.GDBAccessObj.ExecuteNonQuery("DELETE FROM PUB_p_language WHERE p_language_code_c = ?", ATransaction, false, ParametersArray);
+            DeleteByPrimaryKey(PLanguageTable.TableId, new System.Object[1]{ALanguageCode}, ATransaction);
         }
 
         /// auto generated
         public static void DeleteUsingTemplate(PLanguageRow ATemplateRow, StringCollection ATemplateOperators, TDBTransaction ATransaction)
         {
-            DBAccess.GDBAccessObj.ExecuteNonQuery(("DELETE FROM PUB_p_language" + GenerateWhereClause(PLanguageTable.GetColumnStringList(), ATemplateRow, ATemplateOperators)), ATransaction, false, GetParametersForWhereClause(ATemplateRow));
+            DeleteUsingTemplate(PLanguageTable.TableId, ATemplateRow, ATemplateOperators, ATransaction);
         }
 
         /// auto generated
         public static void DeleteUsingTemplate(TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
         {
-            DBAccess.GDBAccessObj.ExecuteNonQuery(("DELETE FROM PUB_p_language" +
-                GenerateWhereClause(PLanguageTable.GetColumnStringList(), ASearchCriteria)), ATransaction, false,
-                GetParametersForWhereClause(new PLanguageTable(), ASearchCriteria));
+            DeleteUsingTemplate(PLanguageTable.TableId, ASearchCriteria, ATransaction);
         }
 
         /// auto generated
@@ -816,15 +809,15 @@ namespace Ict.Petra.Shared.MCommon.Data.Access
                 {
                     if ((TheRow.RowState == DataRowState.Added))
                     {
-                        TTypedDataAccess.InsertRow("p_language", PLanguageTable.GetColumnStringList(), ref TheRow, ATransaction, UserInfo.GUserInfo.UserID);
+                        TTypedDataAccess.InsertRow(PLanguageTable.TableId, ref TheRow, ATransaction, UserInfo.GUserInfo.UserID);
                     }
                     if ((TheRow.RowState == DataRowState.Modified))
                     {
-                        TTypedDataAccess.UpdateRow("p_language", PLanguageTable.GetColumnStringList(), PLanguageTable.GetPrimKeyColumnOrdList(), ref TheRow, ATransaction, UserInfo.GUserInfo.UserID);
+                        TTypedDataAccess.UpdateRow(PLanguageTable.TableId, ref TheRow, ATransaction, UserInfo.GUserInfo.UserID);
                     }
                     if ((TheRow.RowState == DataRowState.Deleted))
                     {
-                        TTypedDataAccess.DeleteRow("p_language", PLanguageTable.GetColumnStringList(), PLanguageTable.GetPrimKeyColumnOrdList(), TheRow, ATransaction);
+                        TTypedDataAccess.DeleteRow(PLanguageTable.TableId, TheRow, ATransaction);
                     }
                 }
                 catch (OdbcException ex)
@@ -854,9 +847,8 @@ namespace Ict.Petra.Shared.MCommon.Data.Access
         /// this method is called by all overloads
         public static void LoadAll(DataSet ADataSet, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, ((GenerateSelectClause(AFieldList, new string[] {
-                            "a_frequency_code_c"}) + " FROM PUB_a_frequency")
-                            + GenerateOrderByClause(AOrderBy)), AFrequencyTable.GetTableName(), ATransaction, AStartRecord, AMaxRecords);
+            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, ((GenerateSelectClause(AFieldList, AFrequencyTable.TableId) + " FROM PUB_a_frequency") +
+                            GenerateOrderByClause(AOrderBy)), TTypedDataTable.GetTableName(AFrequencyTable.TableId), ATransaction, AStartRecord, AMaxRecords);
         }
 
         /// auto generated
@@ -896,12 +888,8 @@ namespace Ict.Petra.Shared.MCommon.Data.Access
         /// this method is called by all overloads
         public static void LoadByPrimaryKey(DataSet ADataSet, String AFrequencyCode, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            OdbcParameter[] ParametersArray = new OdbcParameter[1];
-            ParametersArray[0] = new OdbcParameter("", OdbcType.VarChar, 24);
-            ParametersArray[0].Value = ((object)(AFrequencyCode));
-            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, ((GenerateSelectClause(AFieldList, new string[] {
-                            "a_frequency_code_c"}) + " FROM PUB_a_frequency WHERE a_frequency_code_c = ?")
-                            + GenerateOrderByClause(AOrderBy)), AFrequencyTable.GetTableName(), ATransaction, ParametersArray, AStartRecord, AMaxRecords);
+            ADataSet = LoadByPrimaryKey(AFrequencyTable.TableId,
+                ADataSet, new System.Object[1]{AFrequencyCode}, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
         }
 
         /// auto generated
@@ -941,10 +929,10 @@ namespace Ict.Petra.Shared.MCommon.Data.Access
         /// this method is called by all overloads
         public static void LoadUsingTemplate(DataSet ADataSet, AFrequencyRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClause(AFieldList, new string[] {
-                            "a_frequency_code_c"}) + " FROM PUB_a_frequency")
-                            + GenerateWhereClause(AFrequencyTable.GetColumnStringList(), ATemplateRow, ATemplateOperators))
-                            + GenerateOrderByClause(AOrderBy)), AFrequencyTable.GetTableName(), ATransaction, GetParametersForWhereClause(ATemplateRow), AStartRecord, AMaxRecords);
+            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClause(AFieldList, AFrequencyTable.TableId) + " FROM PUB_a_frequency") +
+                            GenerateWhereClause(TTypedDataTable.GetColumnStringList(AFrequencyTable.TableId), ATemplateRow, ATemplateOperators)) +
+                            GenerateOrderByClause(AOrderBy)), TTypedDataTable.GetTableName(AFrequencyTable.TableId), ATransaction,
+                            GetParametersForWhereClause(AFrequencyTable.TableId, ATemplateRow), AStartRecord, AMaxRecords);
         }
 
         /// auto generated
@@ -990,11 +978,10 @@ namespace Ict.Petra.Shared.MCommon.Data.Access
         /// this method is called by all overloads
         public static void LoadUsingTemplate(DataSet ADataSet, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClause(AFieldList, new string[] {
-                            "a_frequency_code_c"}) + " FROM PUB_a_frequency")
-                            + GenerateWhereClause(AFrequencyTable.GetColumnStringList(), ASearchCriteria))
-                            + GenerateOrderByClause(AOrderBy)), AFrequencyTable.GetTableName(), ATransaction,
-                            GetParametersForWhereClause(new AFrequencyTable(), ASearchCriteria), AStartRecord, AMaxRecords);
+            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClause(AFieldList, AFrequencyTable.TableId) + " FROM PUB_a_frequency") +
+                            GenerateWhereClause(TTypedDataTable.GetColumnStringList(AFrequencyTable.TableId), ASearchCriteria)) +
+                            GenerateOrderByClause(AOrderBy)), TTypedDataTable.GetTableName(AFrequencyTable.TableId), ATransaction,
+                            GetParametersForWhereClause(AFrequencyTable.TableId, ASearchCriteria), AStartRecord, AMaxRecords);
         }
 
         /// auto generated
@@ -1037,49 +1024,42 @@ namespace Ict.Petra.Shared.MCommon.Data.Access
             return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar("SELECT COUNT(*) FROM PUB_a_frequency", ATransaction, false));
         }
 
-        /// this method is called by all overloads
-        public static int CountByPrimaryKey(String AFrequencyCode, TDBTransaction ATransaction)
+        /// check if a row exists by using the primary key
+        public static bool Exists(String AFrequencyCode, TDBTransaction ATransaction)
         {
-            OdbcParameter[] ParametersArray = new OdbcParameter[1];
-            ParametersArray[0] = new OdbcParameter("", OdbcType.VarChar, 24);
-            ParametersArray[0].Value = ((object)(AFrequencyCode));
-            return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar("SELECT COUNT(*) FROM PUB_a_frequency WHERE a_frequency_code_c = ?", ATransaction, false, ParametersArray));
+            return Exists(AFrequencyTable.TableId, new System.Object[1]{AFrequencyCode}, ATransaction);
         }
 
         /// this method is called by all overloads
         public static int CountUsingTemplate(AFrequencyRow ATemplateRow, StringCollection ATemplateOperators, TDBTransaction ATransaction)
         {
-            return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_a_frequency" + GenerateWhereClause(AFrequencyTable.GetColumnStringList(), ATemplateRow, ATemplateOperators)), ATransaction, false, GetParametersForWhereClause(ATemplateRow)));
+            return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_a_frequency" + GenerateWhereClause(TTypedDataTable.GetColumnStringList(AFrequencyTable.TableId), ATemplateRow, ATemplateOperators)), ATransaction, false,
+                   GetParametersForWhereClause(AFrequencyTable.TableId, ATemplateRow)));
         }
 
         /// this method is called by all overloads
         public static int CountUsingTemplate(TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
         {
-            return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_a_frequency" + GenerateWhereClause(AFrequencyTable.GetColumnStringList(), ASearchCriteria)), ATransaction, false,
-            GetParametersForWhereClause(new AFrequencyTable(), ASearchCriteria)));
+            return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_a_frequency" + GenerateWhereClause(TTypedDataTable.GetColumnStringList(AFrequencyTable.TableId), ASearchCriteria)), ATransaction, false,
+            GetParametersForWhereClause(AFrequencyTable.TableId, ASearchCriteria)));
         }
 
         /// auto generated
         public static void DeleteByPrimaryKey(String AFrequencyCode, TDBTransaction ATransaction)
         {
-            OdbcParameter[] ParametersArray = new OdbcParameter[1];
-            ParametersArray[0] = new OdbcParameter("", OdbcType.VarChar, 24);
-            ParametersArray[0].Value = ((object)(AFrequencyCode));
-            DBAccess.GDBAccessObj.ExecuteNonQuery("DELETE FROM PUB_a_frequency WHERE a_frequency_code_c = ?", ATransaction, false, ParametersArray);
+            DeleteByPrimaryKey(AFrequencyTable.TableId, new System.Object[1]{AFrequencyCode}, ATransaction);
         }
 
         /// auto generated
         public static void DeleteUsingTemplate(AFrequencyRow ATemplateRow, StringCollection ATemplateOperators, TDBTransaction ATransaction)
         {
-            DBAccess.GDBAccessObj.ExecuteNonQuery(("DELETE FROM PUB_a_frequency" + GenerateWhereClause(AFrequencyTable.GetColumnStringList(), ATemplateRow, ATemplateOperators)), ATransaction, false, GetParametersForWhereClause(ATemplateRow));
+            DeleteUsingTemplate(AFrequencyTable.TableId, ATemplateRow, ATemplateOperators, ATransaction);
         }
 
         /// auto generated
         public static void DeleteUsingTemplate(TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
         {
-            DBAccess.GDBAccessObj.ExecuteNonQuery(("DELETE FROM PUB_a_frequency" +
-                GenerateWhereClause(AFrequencyTable.GetColumnStringList(), ASearchCriteria)), ATransaction, false,
-                GetParametersForWhereClause(new AFrequencyTable(), ASearchCriteria));
+            DeleteUsingTemplate(AFrequencyTable.TableId, ASearchCriteria, ATransaction);
         }
 
         /// auto generated
@@ -1096,15 +1076,15 @@ namespace Ict.Petra.Shared.MCommon.Data.Access
                 {
                     if ((TheRow.RowState == DataRowState.Added))
                     {
-                        TTypedDataAccess.InsertRow("a_frequency", AFrequencyTable.GetColumnStringList(), ref TheRow, ATransaction, UserInfo.GUserInfo.UserID);
+                        TTypedDataAccess.InsertRow(AFrequencyTable.TableId, ref TheRow, ATransaction, UserInfo.GUserInfo.UserID);
                     }
                     if ((TheRow.RowState == DataRowState.Modified))
                     {
-                        TTypedDataAccess.UpdateRow("a_frequency", AFrequencyTable.GetColumnStringList(), AFrequencyTable.GetPrimKeyColumnOrdList(), ref TheRow, ATransaction, UserInfo.GUserInfo.UserID);
+                        TTypedDataAccess.UpdateRow(AFrequencyTable.TableId, ref TheRow, ATransaction, UserInfo.GUserInfo.UserID);
                     }
                     if ((TheRow.RowState == DataRowState.Deleted))
                     {
-                        TTypedDataAccess.DeleteRow("a_frequency", AFrequencyTable.GetColumnStringList(), AFrequencyTable.GetPrimKeyColumnOrdList(), TheRow, ATransaction);
+                        TTypedDataAccess.DeleteRow(AFrequencyTable.TableId, TheRow, ATransaction);
                     }
                 }
                 catch (OdbcException ex)
@@ -1134,9 +1114,8 @@ namespace Ict.Petra.Shared.MCommon.Data.Access
         /// this method is called by all overloads
         public static void LoadAll(DataSet ADataSet, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, ((GenerateSelectClause(AFieldList, new string[] {
-                            "p_internat_postal_type_code_c"}) + " FROM PUB_p_international_postal_type")
-                            + GenerateOrderByClause(AOrderBy)), PInternationalPostalTypeTable.GetTableName(), ATransaction, AStartRecord, AMaxRecords);
+            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, ((GenerateSelectClause(AFieldList, PInternationalPostalTypeTable.TableId) + " FROM PUB_p_international_postal_type") +
+                            GenerateOrderByClause(AOrderBy)), TTypedDataTable.GetTableName(PInternationalPostalTypeTable.TableId), ATransaction, AStartRecord, AMaxRecords);
         }
 
         /// auto generated
@@ -1176,12 +1155,8 @@ namespace Ict.Petra.Shared.MCommon.Data.Access
         /// this method is called by all overloads
         public static void LoadByPrimaryKey(DataSet ADataSet, String AInternatPostalTypeCode, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            OdbcParameter[] ParametersArray = new OdbcParameter[1];
-            ParametersArray[0] = new OdbcParameter("", OdbcType.VarChar, 16);
-            ParametersArray[0].Value = ((object)(AInternatPostalTypeCode));
-            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, ((GenerateSelectClause(AFieldList, new string[] {
-                            "p_internat_postal_type_code_c"}) + " FROM PUB_p_international_postal_type WHERE p_internat_postal_type_code_c = ?")
-                            + GenerateOrderByClause(AOrderBy)), PInternationalPostalTypeTable.GetTableName(), ATransaction, ParametersArray, AStartRecord, AMaxRecords);
+            ADataSet = LoadByPrimaryKey(PInternationalPostalTypeTable.TableId,
+                ADataSet, new System.Object[1]{AInternatPostalTypeCode}, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
         }
 
         /// auto generated
@@ -1221,10 +1196,10 @@ namespace Ict.Petra.Shared.MCommon.Data.Access
         /// this method is called by all overloads
         public static void LoadUsingTemplate(DataSet ADataSet, PInternationalPostalTypeRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClause(AFieldList, new string[] {
-                            "p_internat_postal_type_code_c"}) + " FROM PUB_p_international_postal_type")
-                            + GenerateWhereClause(PInternationalPostalTypeTable.GetColumnStringList(), ATemplateRow, ATemplateOperators))
-                            + GenerateOrderByClause(AOrderBy)), PInternationalPostalTypeTable.GetTableName(), ATransaction, GetParametersForWhereClause(ATemplateRow), AStartRecord, AMaxRecords);
+            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClause(AFieldList, PInternationalPostalTypeTable.TableId) + " FROM PUB_p_international_postal_type") +
+                            GenerateWhereClause(TTypedDataTable.GetColumnStringList(PInternationalPostalTypeTable.TableId), ATemplateRow, ATemplateOperators)) +
+                            GenerateOrderByClause(AOrderBy)), TTypedDataTable.GetTableName(PInternationalPostalTypeTable.TableId), ATransaction,
+                            GetParametersForWhereClause(PInternationalPostalTypeTable.TableId, ATemplateRow), AStartRecord, AMaxRecords);
         }
 
         /// auto generated
@@ -1270,11 +1245,10 @@ namespace Ict.Petra.Shared.MCommon.Data.Access
         /// this method is called by all overloads
         public static void LoadUsingTemplate(DataSet ADataSet, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClause(AFieldList, new string[] {
-                            "p_internat_postal_type_code_c"}) + " FROM PUB_p_international_postal_type")
-                            + GenerateWhereClause(PInternationalPostalTypeTable.GetColumnStringList(), ASearchCriteria))
-                            + GenerateOrderByClause(AOrderBy)), PInternationalPostalTypeTable.GetTableName(), ATransaction,
-                            GetParametersForWhereClause(new PInternationalPostalTypeTable(), ASearchCriteria), AStartRecord, AMaxRecords);
+            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClause(AFieldList, PInternationalPostalTypeTable.TableId) + " FROM PUB_p_international_postal_type") +
+                            GenerateWhereClause(TTypedDataTable.GetColumnStringList(PInternationalPostalTypeTable.TableId), ASearchCriteria)) +
+                            GenerateOrderByClause(AOrderBy)), TTypedDataTable.GetTableName(PInternationalPostalTypeTable.TableId), ATransaction,
+                            GetParametersForWhereClause(PInternationalPostalTypeTable.TableId, ASearchCriteria), AStartRecord, AMaxRecords);
         }
 
         /// auto generated
@@ -1317,49 +1291,42 @@ namespace Ict.Petra.Shared.MCommon.Data.Access
             return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar("SELECT COUNT(*) FROM PUB_p_international_postal_type", ATransaction, false));
         }
 
-        /// this method is called by all overloads
-        public static int CountByPrimaryKey(String AInternatPostalTypeCode, TDBTransaction ATransaction)
+        /// check if a row exists by using the primary key
+        public static bool Exists(String AInternatPostalTypeCode, TDBTransaction ATransaction)
         {
-            OdbcParameter[] ParametersArray = new OdbcParameter[1];
-            ParametersArray[0] = new OdbcParameter("", OdbcType.VarChar, 16);
-            ParametersArray[0].Value = ((object)(AInternatPostalTypeCode));
-            return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar("SELECT COUNT(*) FROM PUB_p_international_postal_type WHERE p_internat_postal_type_code_c = ?", ATransaction, false, ParametersArray));
+            return Exists(PInternationalPostalTypeTable.TableId, new System.Object[1]{AInternatPostalTypeCode}, ATransaction);
         }
 
         /// this method is called by all overloads
         public static int CountUsingTemplate(PInternationalPostalTypeRow ATemplateRow, StringCollection ATemplateOperators, TDBTransaction ATransaction)
         {
-            return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_p_international_postal_type" + GenerateWhereClause(PInternationalPostalTypeTable.GetColumnStringList(), ATemplateRow, ATemplateOperators)), ATransaction, false, GetParametersForWhereClause(ATemplateRow)));
+            return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_p_international_postal_type" + GenerateWhereClause(TTypedDataTable.GetColumnStringList(PInternationalPostalTypeTable.TableId), ATemplateRow, ATemplateOperators)), ATransaction, false,
+                   GetParametersForWhereClause(PInternationalPostalTypeTable.TableId, ATemplateRow)));
         }
 
         /// this method is called by all overloads
         public static int CountUsingTemplate(TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
         {
-            return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_p_international_postal_type" + GenerateWhereClause(PInternationalPostalTypeTable.GetColumnStringList(), ASearchCriteria)), ATransaction, false,
-            GetParametersForWhereClause(new PInternationalPostalTypeTable(), ASearchCriteria)));
+            return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_p_international_postal_type" + GenerateWhereClause(TTypedDataTable.GetColumnStringList(PInternationalPostalTypeTable.TableId), ASearchCriteria)), ATransaction, false,
+            GetParametersForWhereClause(PInternationalPostalTypeTable.TableId, ASearchCriteria)));
         }
 
         /// auto generated
         public static void DeleteByPrimaryKey(String AInternatPostalTypeCode, TDBTransaction ATransaction)
         {
-            OdbcParameter[] ParametersArray = new OdbcParameter[1];
-            ParametersArray[0] = new OdbcParameter("", OdbcType.VarChar, 16);
-            ParametersArray[0].Value = ((object)(AInternatPostalTypeCode));
-            DBAccess.GDBAccessObj.ExecuteNonQuery("DELETE FROM PUB_p_international_postal_type WHERE p_internat_postal_type_code_c = ?", ATransaction, false, ParametersArray);
+            DeleteByPrimaryKey(PInternationalPostalTypeTable.TableId, new System.Object[1]{AInternatPostalTypeCode}, ATransaction);
         }
 
         /// auto generated
         public static void DeleteUsingTemplate(PInternationalPostalTypeRow ATemplateRow, StringCollection ATemplateOperators, TDBTransaction ATransaction)
         {
-            DBAccess.GDBAccessObj.ExecuteNonQuery(("DELETE FROM PUB_p_international_postal_type" + GenerateWhereClause(PInternationalPostalTypeTable.GetColumnStringList(), ATemplateRow, ATemplateOperators)), ATransaction, false, GetParametersForWhereClause(ATemplateRow));
+            DeleteUsingTemplate(PInternationalPostalTypeTable.TableId, ATemplateRow, ATemplateOperators, ATransaction);
         }
 
         /// auto generated
         public static void DeleteUsingTemplate(TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
         {
-            DBAccess.GDBAccessObj.ExecuteNonQuery(("DELETE FROM PUB_p_international_postal_type" +
-                GenerateWhereClause(PInternationalPostalTypeTable.GetColumnStringList(), ASearchCriteria)), ATransaction, false,
-                GetParametersForWhereClause(new PInternationalPostalTypeTable(), ASearchCriteria));
+            DeleteUsingTemplate(PInternationalPostalTypeTable.TableId, ASearchCriteria, ATransaction);
         }
 
         /// auto generated
@@ -1376,15 +1343,15 @@ namespace Ict.Petra.Shared.MCommon.Data.Access
                 {
                     if ((TheRow.RowState == DataRowState.Added))
                     {
-                        TTypedDataAccess.InsertRow("p_international_postal_type", PInternationalPostalTypeTable.GetColumnStringList(), ref TheRow, ATransaction, UserInfo.GUserInfo.UserID);
+                        TTypedDataAccess.InsertRow(PInternationalPostalTypeTable.TableId, ref TheRow, ATransaction, UserInfo.GUserInfo.UserID);
                     }
                     if ((TheRow.RowState == DataRowState.Modified))
                     {
-                        TTypedDataAccess.UpdateRow("p_international_postal_type", PInternationalPostalTypeTable.GetColumnStringList(), PInternationalPostalTypeTable.GetPrimKeyColumnOrdList(), ref TheRow, ATransaction, UserInfo.GUserInfo.UserID);
+                        TTypedDataAccess.UpdateRow(PInternationalPostalTypeTable.TableId, ref TheRow, ATransaction, UserInfo.GUserInfo.UserID);
                     }
                     if ((TheRow.RowState == DataRowState.Deleted))
                     {
-                        TTypedDataAccess.DeleteRow("p_international_postal_type", PInternationalPostalTypeTable.GetColumnStringList(), PInternationalPostalTypeTable.GetPrimKeyColumnOrdList(), TheRow, ATransaction);
+                        TTypedDataAccess.DeleteRow(PInternationalPostalTypeTable.TableId, TheRow, ATransaction);
                     }
                 }
                 catch (OdbcException ex)
@@ -1414,9 +1381,8 @@ namespace Ict.Petra.Shared.MCommon.Data.Access
         /// this method is called by all overloads
         public static void LoadAll(DataSet ADataSet, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, ((GenerateSelectClause(AFieldList, new string[] {
-                            "p_country_code_c"}) + " FROM PUB_p_country")
-                            + GenerateOrderByClause(AOrderBy)), PCountryTable.GetTableName(), ATransaction, AStartRecord, AMaxRecords);
+            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, ((GenerateSelectClause(AFieldList, PCountryTable.TableId) + " FROM PUB_p_country") +
+                            GenerateOrderByClause(AOrderBy)), TTypedDataTable.GetTableName(PCountryTable.TableId), ATransaction, AStartRecord, AMaxRecords);
         }
 
         /// auto generated
@@ -1456,12 +1422,8 @@ namespace Ict.Petra.Shared.MCommon.Data.Access
         /// this method is called by all overloads
         public static void LoadByPrimaryKey(DataSet ADataSet, String ACountryCode, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            OdbcParameter[] ParametersArray = new OdbcParameter[1];
-            ParametersArray[0] = new OdbcParameter("", OdbcType.VarChar, 8);
-            ParametersArray[0].Value = ((object)(ACountryCode));
-            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, ((GenerateSelectClause(AFieldList, new string[] {
-                            "p_country_code_c"}) + " FROM PUB_p_country WHERE p_country_code_c = ?")
-                            + GenerateOrderByClause(AOrderBy)), PCountryTable.GetTableName(), ATransaction, ParametersArray, AStartRecord, AMaxRecords);
+            ADataSet = LoadByPrimaryKey(PCountryTable.TableId,
+                ADataSet, new System.Object[1]{ACountryCode}, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
         }
 
         /// auto generated
@@ -1501,10 +1463,10 @@ namespace Ict.Petra.Shared.MCommon.Data.Access
         /// this method is called by all overloads
         public static void LoadUsingTemplate(DataSet ADataSet, PCountryRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClause(AFieldList, new string[] {
-                            "p_country_code_c"}) + " FROM PUB_p_country")
-                            + GenerateWhereClause(PCountryTable.GetColumnStringList(), ATemplateRow, ATemplateOperators))
-                            + GenerateOrderByClause(AOrderBy)), PCountryTable.GetTableName(), ATransaction, GetParametersForWhereClause(ATemplateRow), AStartRecord, AMaxRecords);
+            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClause(AFieldList, PCountryTable.TableId) + " FROM PUB_p_country") +
+                            GenerateWhereClause(TTypedDataTable.GetColumnStringList(PCountryTable.TableId), ATemplateRow, ATemplateOperators)) +
+                            GenerateOrderByClause(AOrderBy)), TTypedDataTable.GetTableName(PCountryTable.TableId), ATransaction,
+                            GetParametersForWhereClause(PCountryTable.TableId, ATemplateRow), AStartRecord, AMaxRecords);
         }
 
         /// auto generated
@@ -1550,11 +1512,10 @@ namespace Ict.Petra.Shared.MCommon.Data.Access
         /// this method is called by all overloads
         public static void LoadUsingTemplate(DataSet ADataSet, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClause(AFieldList, new string[] {
-                            "p_country_code_c"}) + " FROM PUB_p_country")
-                            + GenerateWhereClause(PCountryTable.GetColumnStringList(), ASearchCriteria))
-                            + GenerateOrderByClause(AOrderBy)), PCountryTable.GetTableName(), ATransaction,
-                            GetParametersForWhereClause(new PCountryTable(), ASearchCriteria), AStartRecord, AMaxRecords);
+            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClause(AFieldList, PCountryTable.TableId) + " FROM PUB_p_country") +
+                            GenerateWhereClause(TTypedDataTable.GetColumnStringList(PCountryTable.TableId), ASearchCriteria)) +
+                            GenerateOrderByClause(AOrderBy)), TTypedDataTable.GetTableName(PCountryTable.TableId), ATransaction,
+                            GetParametersForWhereClause(PCountryTable.TableId, ASearchCriteria), AStartRecord, AMaxRecords);
         }
 
         /// auto generated
@@ -1597,26 +1558,24 @@ namespace Ict.Petra.Shared.MCommon.Data.Access
             return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar("SELECT COUNT(*) FROM PUB_p_country", ATransaction, false));
         }
 
-        /// this method is called by all overloads
-        public static int CountByPrimaryKey(String ACountryCode, TDBTransaction ATransaction)
+        /// check if a row exists by using the primary key
+        public static bool Exists(String ACountryCode, TDBTransaction ATransaction)
         {
-            OdbcParameter[] ParametersArray = new OdbcParameter[1];
-            ParametersArray[0] = new OdbcParameter("", OdbcType.VarChar, 8);
-            ParametersArray[0].Value = ((object)(ACountryCode));
-            return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar("SELECT COUNT(*) FROM PUB_p_country WHERE p_country_code_c = ?", ATransaction, false, ParametersArray));
+            return Exists(PCountryTable.TableId, new System.Object[1]{ACountryCode}, ATransaction);
         }
 
         /// this method is called by all overloads
         public static int CountUsingTemplate(PCountryRow ATemplateRow, StringCollection ATemplateOperators, TDBTransaction ATransaction)
         {
-            return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_p_country" + GenerateWhereClause(PCountryTable.GetColumnStringList(), ATemplateRow, ATemplateOperators)), ATransaction, false, GetParametersForWhereClause(ATemplateRow)));
+            return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_p_country" + GenerateWhereClause(TTypedDataTable.GetColumnStringList(PCountryTable.TableId), ATemplateRow, ATemplateOperators)), ATransaction, false,
+                   GetParametersForWhereClause(PCountryTable.TableId, ATemplateRow)));
         }
 
         /// this method is called by all overloads
         public static int CountUsingTemplate(TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
         {
-            return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_p_country" + GenerateWhereClause(PCountryTable.GetColumnStringList(), ASearchCriteria)), ATransaction, false,
-            GetParametersForWhereClause(new PCountryTable(), ASearchCriteria)));
+            return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_p_country" + GenerateWhereClause(TTypedDataTable.GetColumnStringList(PCountryTable.TableId), ASearchCriteria)), ATransaction, false,
+            GetParametersForWhereClause(PCountryTable.TableId, ASearchCriteria)));
         }
 
         /// auto generated
@@ -1625,9 +1584,9 @@ namespace Ict.Petra.Shared.MCommon.Data.Access
             OdbcParameter[] ParametersArray = new OdbcParameter[1];
             ParametersArray[0] = new OdbcParameter("", OdbcType.VarChar, 16);
             ParametersArray[0].Value = ((object)(AInternatPostalTypeCode));
-            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, ((GenerateSelectClause(AFieldList, new string[] {
-                            "p_country_code_c"}) + " FROM PUB_p_country WHERE p_internat_postal_type_code_c = ?")
-                            + GenerateOrderByClause(AOrderBy)), PCountryTable.GetTableName(), ATransaction, ParametersArray, AStartRecord, AMaxRecords);
+            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, ((GenerateSelectClause(AFieldList, PCountryTable.TableId) +
+                            " FROM PUB_p_country WHERE p_internat_postal_type_code_c = ?") +
+                            GenerateOrderByClause(AOrderBy)), TTypedDataTable.GetTableName(PCountryTable.TableId), ATransaction, ParametersArray, AStartRecord, AMaxRecords);
         }
 
         /// auto generated
@@ -1667,11 +1626,12 @@ namespace Ict.Petra.Shared.MCommon.Data.Access
         /// auto generated
         public static void LoadViaPInternationalPostalTypeTemplate(DataSet ADataSet, PInternationalPostalTypeRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClauseLong("PUB_p_country", AFieldList, new string[] {
-                            "p_country_code_c"}) + " FROM PUB_p_country, PUB_p_international_postal_type WHERE " +
-                            "PUB_p_country.p_internat_postal_type_code_c = PUB_p_international_postal_type.p_internat_postal_type_code_c")
-                            + GenerateWhereClauseLong("PUB_p_international_postal_type", PInternationalPostalTypeTable.GetColumnStringList(), ATemplateRow, ATemplateOperators))
-                            + GenerateOrderByClause(AOrderBy)), PCountryTable.GetTableName(), ATransaction, GetParametersForWhereClause(ATemplateRow), AStartRecord, AMaxRecords);
+            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClauseLong("PUB_p_country", AFieldList, PCountryTable.TableId) +
+                            " FROM PUB_p_country, PUB_p_international_postal_type WHERE " +
+                            "PUB_p_country.p_internat_postal_type_code_c = PUB_p_international_postal_type.p_internat_postal_type_code_c") +
+                            GenerateWhereClauseLong("PUB_p_international_postal_type", PInternationalPostalTypeTable.TableId, ATemplateRow, ATemplateOperators)) +
+                            GenerateOrderByClause(AOrderBy)), TTypedDataTable.GetTableName(PCountryTable.TableId), ATransaction,
+                            GetParametersForWhereClause(PInternationalPostalTypeTable.TableId, ATemplateRow), AStartRecord, AMaxRecords);
         }
 
         /// auto generated
@@ -1717,12 +1677,12 @@ namespace Ict.Petra.Shared.MCommon.Data.Access
         /// auto generated
         public static void LoadViaPInternationalPostalTypeTemplate(DataSet ADataSet, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClauseLong("PUB_p_country", AFieldList, new string[] {
-                            "p_country_code_c"}) + " FROM PUB_p_country, PUB_p_international_postal_type WHERE " +
-                            "PUB_p_country.p_internat_postal_type_code_c = PUB_p_international_postal_type.p_internat_postal_type_code_c")
-                            + GenerateWhereClauseLong("PUB_p_international_postal_type", PInternationalPostalTypeTable.GetColumnStringList(), ASearchCriteria))
-                            + GenerateOrderByClause(AOrderBy)), PCountryTable.GetTableName(), ATransaction,
-                            GetParametersForWhereClause(new PCountryTable(), ASearchCriteria), AStartRecord, AMaxRecords);
+            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClauseLong("PUB_p_country", AFieldList, PCountryTable.TableId) +
+                            " FROM PUB_p_country, PUB_p_international_postal_type WHERE " +
+                            "PUB_p_country.p_internat_postal_type_code_c = PUB_p_international_postal_type.p_internat_postal_type_code_c") +
+                            GenerateWhereClauseLong("PUB_p_international_postal_type", ASearchCriteria)) +
+                            GenerateOrderByClause(AOrderBy)), TTypedDataTable.GetTableName(PCountryTable.TableId), ATransaction,
+                            GetParametersForWhereClause(PCountryTable.TableId, ASearchCriteria), AStartRecord, AMaxRecords);
         }
 
         /// auto generated
@@ -1772,7 +1732,10 @@ namespace Ict.Petra.Shared.MCommon.Data.Access
         public static int CountViaPInternationalPostalTypeTemplate(PInternationalPostalTypeRow ATemplateRow, StringCollection ATemplateOperators, TDBTransaction ATransaction)
         {
             return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_p_country, PUB_p_international_postal_type WHERE " +
-                "PUB_p_country.p_internat_postal_type_code_c = PUB_p_international_postal_type.p_internat_postal_type_code_c" + GenerateWhereClauseLong("PUB_p_international_postal_type", PInternationalPostalTypeTable.GetColumnStringList(), ATemplateRow, ATemplateOperators)), ATransaction, false, GetParametersForWhereClause(ATemplateRow, PInternationalPostalTypeTable.GetPrimKeyColumnOrdList())));
+                "PUB_p_country.p_internat_postal_type_code_c = PUB_p_international_postal_type.p_internat_postal_type_code_c" + GenerateWhereClauseLong("PUB_p_international_postal_type",
+                PInternationalPostalTypeTable.TableId, ATemplateRow, ATemplateOperators)),
+                ATransaction, false,
+                GetParametersForWhereClauseWithPrimaryKey(PInternationalPostalTypeTable.TableId, ATemplateRow)));
         }
 
         /// auto generated
@@ -1780,8 +1743,8 @@ namespace Ict.Petra.Shared.MCommon.Data.Access
         {
             return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_p_country, PUB_p_international_postal_type WHERE " +
                 "PUB_p_country.p_internat_postal_type_code_c = PUB_p_international_postal_type.p_internat_postal_type_code_c" +
-                GenerateWhereClauseLong("PUB_p_international_postal_type", PInternationalPostalTypeTable.GetColumnStringList(), ASearchCriteria)), ATransaction, false,
-                GetParametersForWhereClause(new PInternationalPostalTypeTable(), ASearchCriteria)));
+                GenerateWhereClauseLong("PUB_p_international_postal_type", ASearchCriteria)), ATransaction, false,
+                GetParametersForWhereClause(PInternationalPostalTypeTable.TableId, ASearchCriteria)));
         }
 
         /// auto generated LoadViaLinkTable
@@ -1790,10 +1753,10 @@ namespace Ict.Petra.Shared.MCommon.Data.Access
             OdbcParameter[] ParametersArray = new OdbcParameter[1];
             ParametersArray[0] = new OdbcParameter("", OdbcType.VarChar, 32);
             ParametersArray[0].Value = ((object)(ACode));
-            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, ((GenerateSelectClauseLong("PUB_p_country", AFieldList, new string[] {
-                            "p_country_code_c"}) + " FROM PUB_p_country, PUB_p_address_layout WHERE " +
-                            "PUB_p_address_layout.p_country_code_c = PUB_p_country.p_country_code_c AND PUB_p_address_layout.p_address_layout_code_c = ?")
-                            + GenerateOrderByClause(AOrderBy)), PCountryTable.GetTableName(), ATransaction, ParametersArray, AStartRecord, AMaxRecords);
+            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, ((GenerateSelectClauseLong("PUB_p_country", AFieldList, PCountryTable.TableId) +
+                            " FROM PUB_p_country, PUB_p_address_layout WHERE " +
+                            "PUB_p_address_layout.p_country_code_c = PUB_p_country.p_country_code_c AND PUB_p_address_layout.p_address_layout_code_c = ?") +
+                            GenerateOrderByClause(AOrderBy)), TTypedDataTable.GetTableName(PCountryTable.TableId), ATransaction, ParametersArray, AStartRecord, AMaxRecords);
         }
 
         /// auto generated
@@ -1833,11 +1796,12 @@ namespace Ict.Petra.Shared.MCommon.Data.Access
         /// auto generated
         public static void LoadViaPAddressLayoutCodeTemplate(DataSet ADataSet, PAddressLayoutCodeRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClauseLong("PUB_p_country", AFieldList, new string[] {
-                            "p_country_code_c"}) + " FROM PUB_p_country, PUB_p_address_layout, PUB_p_address_layout_code WHERE " +
-                            "PUB_p_address_layout.p_country_code_c = PUB_p_country.p_country_code_c AND PUB_p_address_layout.p_address_layout_code_c = PUB_p_address_layout_code.p_code_c")
-                            + GenerateWhereClauseLong("PUB_p_address_layout_code", PAddressLayoutCodeTable.GetColumnStringList(), ATemplateRow, ATemplateOperators))
-                            + GenerateOrderByClause(AOrderBy)), PCountryTable.GetTableName(), ATransaction, GetParametersForWhereClause(ATemplateRow), AStartRecord, AMaxRecords);
+            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClauseLong("PUB_p_country", AFieldList, PCountryTable.TableId) +
+                            " FROM PUB_p_country, PUB_p_address_layout, PUB_p_address_layout_code WHERE " +
+                            "PUB_p_address_layout.p_country_code_c = PUB_p_country.p_country_code_c AND PUB_p_address_layout.p_address_layout_code_c = PUB_p_address_layout_code.p_code_c") +
+                            GenerateWhereClauseLong("PUB_p_address_layout_code", PAddressLayoutCodeTable.TableId, ATemplateRow, ATemplateOperators)) +
+                            GenerateOrderByClause(AOrderBy)), TTypedDataTable.GetTableName(PCountryTable.TableId), ATransaction,
+                            GetParametersForWhereClause(PAddressLayoutCodeTable.TableId, ATemplateRow), AStartRecord, AMaxRecords);
         }
 
         /// auto generated
@@ -1883,12 +1847,12 @@ namespace Ict.Petra.Shared.MCommon.Data.Access
         /// auto generated
         public static void LoadViaPAddressLayoutCodeTemplate(DataSet ADataSet, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClauseLong("PUB_p_country", AFieldList, new string[] {
-                            "p_country_code_c"}) + " FROM PUB_p_country, PUB_p_address_layout, PUB_p_address_layout_code WHERE " +
-                            "PUB_p_address_layout.p_country_code_c = PUB_p_country.p_country_code_c AND PUB_p_address_layout.p_address_layout_code_c = PUB_p_address_layout_code.p_code_c")
-                            + GenerateWhereClauseLong("PUB_p_address_layout_code", PAddressLayoutCodeTable.GetColumnStringList(), ASearchCriteria))
-                            + GenerateOrderByClause(AOrderBy)), PCountryTable.GetTableName(), ATransaction,
-                            GetParametersForWhereClause(new PCountryTable(), ASearchCriteria), AStartRecord, AMaxRecords);
+            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClauseLong("PUB_p_country", AFieldList, PCountryTable.TableId) +
+                            " FROM PUB_p_country, PUB_p_address_layout, PUB_p_address_layout_code WHERE " +
+                            "PUB_p_address_layout.p_country_code_c = PUB_p_country.p_country_code_c AND PUB_p_address_layout.p_address_layout_code_c = PUB_p_address_layout_code.p_code_c") +
+                            GenerateWhereClauseLong("PUB_p_address_layout_code", ASearchCriteria)) +
+                            GenerateOrderByClause(AOrderBy)), TTypedDataTable.GetTableName(PCountryTable.TableId), ATransaction,
+                            GetParametersForWhereClause(PCountryTable.TableId, ASearchCriteria), AStartRecord, AMaxRecords);
         }
 
         /// auto generated
@@ -1941,7 +1905,8 @@ namespace Ict.Petra.Shared.MCommon.Data.Access
         {
             return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_p_country, PUB_p_address_layout, PUB_p_address_layout_code WHERE " +
                         "PUB_p_address_layout.p_country_code_c = PUB_p_country.p_country_code_c AND PUB_p_address_layout.p_address_layout_code_c = PUB_p_address_layout_code.p_code_c" +
-                        GenerateWhereClauseLong("PUB_p_address_layout", PCountryTable.GetColumnStringList(), ATemplateRow, ATemplateOperators)), ATransaction, false, GetParametersForWhereClause(ATemplateRow, PAddressLayoutCodeTable.GetPrimKeyColumnOrdList())));
+                        GenerateWhereClauseLong("PUB_p_address_layout", PCountryTable.TableId, ATemplateRow, ATemplateOperators)), ATransaction, false,
+                        GetParametersForWhereClauseWithPrimaryKey(PAddressLayoutCodeTable.TableId, ATemplateRow)));
         }
 
         /// auto generated
@@ -1949,31 +1914,26 @@ namespace Ict.Petra.Shared.MCommon.Data.Access
         {
             return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_p_country, PUB_p_address_layout, PUB_p_address_layout_code WHERE " +
                         "PUB_p_address_layout.p_country_code_c = PUB_p_country.p_country_code_c AND PUB_p_address_layout.p_address_layout_code_c = PUB_p_address_layout_code.p_code_c" +
-                        GenerateWhereClauseLong("PUB_p_address_layout", PCountryTable.GetColumnStringList(), ASearchCriteria)), ATransaction, false,
-                        GetParametersForWhereClause(new PCountryTable(), ASearchCriteria)));
+                        GenerateWhereClauseLong("PUB_p_address_layout", ASearchCriteria)), ATransaction, false,
+                        GetParametersForWhereClause(PCountryTable.TableId, ASearchCriteria)));
         }
 
         /// auto generated
         public static void DeleteByPrimaryKey(String ACountryCode, TDBTransaction ATransaction)
         {
-            OdbcParameter[] ParametersArray = new OdbcParameter[1];
-            ParametersArray[0] = new OdbcParameter("", OdbcType.VarChar, 8);
-            ParametersArray[0].Value = ((object)(ACountryCode));
-            DBAccess.GDBAccessObj.ExecuteNonQuery("DELETE FROM PUB_p_country WHERE p_country_code_c = ?", ATransaction, false, ParametersArray);
+            DeleteByPrimaryKey(PCountryTable.TableId, new System.Object[1]{ACountryCode}, ATransaction);
         }
 
         /// auto generated
         public static void DeleteUsingTemplate(PCountryRow ATemplateRow, StringCollection ATemplateOperators, TDBTransaction ATransaction)
         {
-            DBAccess.GDBAccessObj.ExecuteNonQuery(("DELETE FROM PUB_p_country" + GenerateWhereClause(PCountryTable.GetColumnStringList(), ATemplateRow, ATemplateOperators)), ATransaction, false, GetParametersForWhereClause(ATemplateRow));
+            DeleteUsingTemplate(PCountryTable.TableId, ATemplateRow, ATemplateOperators, ATransaction);
         }
 
         /// auto generated
         public static void DeleteUsingTemplate(TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
         {
-            DBAccess.GDBAccessObj.ExecuteNonQuery(("DELETE FROM PUB_p_country" +
-                GenerateWhereClause(PCountryTable.GetColumnStringList(), ASearchCriteria)), ATransaction, false,
-                GetParametersForWhereClause(new PCountryTable(), ASearchCriteria));
+            DeleteUsingTemplate(PCountryTable.TableId, ASearchCriteria, ATransaction);
         }
 
         /// auto generated
@@ -1990,15 +1950,15 @@ namespace Ict.Petra.Shared.MCommon.Data.Access
                 {
                     if ((TheRow.RowState == DataRowState.Added))
                     {
-                        TTypedDataAccess.InsertRow("p_country", PCountryTable.GetColumnStringList(), ref TheRow, ATransaction, UserInfo.GUserInfo.UserID);
+                        TTypedDataAccess.InsertRow(PCountryTable.TableId, ref TheRow, ATransaction, UserInfo.GUserInfo.UserID);
                     }
                     if ((TheRow.RowState == DataRowState.Modified))
                     {
-                        TTypedDataAccess.UpdateRow("p_country", PCountryTable.GetColumnStringList(), PCountryTable.GetPrimKeyColumnOrdList(), ref TheRow, ATransaction, UserInfo.GUserInfo.UserID);
+                        TTypedDataAccess.UpdateRow(PCountryTable.TableId, ref TheRow, ATransaction, UserInfo.GUserInfo.UserID);
                     }
                     if ((TheRow.RowState == DataRowState.Deleted))
                     {
-                        TTypedDataAccess.DeleteRow("p_country", PCountryTable.GetColumnStringList(), PCountryTable.GetPrimKeyColumnOrdList(), TheRow, ATransaction);
+                        TTypedDataAccess.DeleteRow(PCountryTable.TableId, TheRow, ATransaction);
                     }
                 }
                 catch (OdbcException ex)
@@ -2028,9 +1988,8 @@ namespace Ict.Petra.Shared.MCommon.Data.Access
         /// this method is called by all overloads
         public static void LoadAll(DataSet ADataSet, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, ((GenerateSelectClause(AFieldList, new string[] {
-                            "a_currency_code_c"}) + " FROM PUB_a_currency")
-                            + GenerateOrderByClause(AOrderBy)), ACurrencyTable.GetTableName(), ATransaction, AStartRecord, AMaxRecords);
+            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, ((GenerateSelectClause(AFieldList, ACurrencyTable.TableId) + " FROM PUB_a_currency") +
+                            GenerateOrderByClause(AOrderBy)), TTypedDataTable.GetTableName(ACurrencyTable.TableId), ATransaction, AStartRecord, AMaxRecords);
         }
 
         /// auto generated
@@ -2070,12 +2029,8 @@ namespace Ict.Petra.Shared.MCommon.Data.Access
         /// this method is called by all overloads
         public static void LoadByPrimaryKey(DataSet ADataSet, String ACurrencyCode, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            OdbcParameter[] ParametersArray = new OdbcParameter[1];
-            ParametersArray[0] = new OdbcParameter("", OdbcType.VarChar, 16);
-            ParametersArray[0].Value = ((object)(ACurrencyCode));
-            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, ((GenerateSelectClause(AFieldList, new string[] {
-                            "a_currency_code_c"}) + " FROM PUB_a_currency WHERE a_currency_code_c = ?")
-                            + GenerateOrderByClause(AOrderBy)), ACurrencyTable.GetTableName(), ATransaction, ParametersArray, AStartRecord, AMaxRecords);
+            ADataSet = LoadByPrimaryKey(ACurrencyTable.TableId,
+                ADataSet, new System.Object[1]{ACurrencyCode}, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
         }
 
         /// auto generated
@@ -2115,10 +2070,10 @@ namespace Ict.Petra.Shared.MCommon.Data.Access
         /// this method is called by all overloads
         public static void LoadUsingTemplate(DataSet ADataSet, ACurrencyRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClause(AFieldList, new string[] {
-                            "a_currency_code_c"}) + " FROM PUB_a_currency")
-                            + GenerateWhereClause(ACurrencyTable.GetColumnStringList(), ATemplateRow, ATemplateOperators))
-                            + GenerateOrderByClause(AOrderBy)), ACurrencyTable.GetTableName(), ATransaction, GetParametersForWhereClause(ATemplateRow), AStartRecord, AMaxRecords);
+            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClause(AFieldList, ACurrencyTable.TableId) + " FROM PUB_a_currency") +
+                            GenerateWhereClause(TTypedDataTable.GetColumnStringList(ACurrencyTable.TableId), ATemplateRow, ATemplateOperators)) +
+                            GenerateOrderByClause(AOrderBy)), TTypedDataTable.GetTableName(ACurrencyTable.TableId), ATransaction,
+                            GetParametersForWhereClause(ACurrencyTable.TableId, ATemplateRow), AStartRecord, AMaxRecords);
         }
 
         /// auto generated
@@ -2164,11 +2119,10 @@ namespace Ict.Petra.Shared.MCommon.Data.Access
         /// this method is called by all overloads
         public static void LoadUsingTemplate(DataSet ADataSet, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClause(AFieldList, new string[] {
-                            "a_currency_code_c"}) + " FROM PUB_a_currency")
-                            + GenerateWhereClause(ACurrencyTable.GetColumnStringList(), ASearchCriteria))
-                            + GenerateOrderByClause(AOrderBy)), ACurrencyTable.GetTableName(), ATransaction,
-                            GetParametersForWhereClause(new ACurrencyTable(), ASearchCriteria), AStartRecord, AMaxRecords);
+            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClause(AFieldList, ACurrencyTable.TableId) + " FROM PUB_a_currency") +
+                            GenerateWhereClause(TTypedDataTable.GetColumnStringList(ACurrencyTable.TableId), ASearchCriteria)) +
+                            GenerateOrderByClause(AOrderBy)), TTypedDataTable.GetTableName(ACurrencyTable.TableId), ATransaction,
+                            GetParametersForWhereClause(ACurrencyTable.TableId, ASearchCriteria), AStartRecord, AMaxRecords);
         }
 
         /// auto generated
@@ -2211,26 +2165,24 @@ namespace Ict.Petra.Shared.MCommon.Data.Access
             return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar("SELECT COUNT(*) FROM PUB_a_currency", ATransaction, false));
         }
 
-        /// this method is called by all overloads
-        public static int CountByPrimaryKey(String ACurrencyCode, TDBTransaction ATransaction)
+        /// check if a row exists by using the primary key
+        public static bool Exists(String ACurrencyCode, TDBTransaction ATransaction)
         {
-            OdbcParameter[] ParametersArray = new OdbcParameter[1];
-            ParametersArray[0] = new OdbcParameter("", OdbcType.VarChar, 16);
-            ParametersArray[0].Value = ((object)(ACurrencyCode));
-            return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar("SELECT COUNT(*) FROM PUB_a_currency WHERE a_currency_code_c = ?", ATransaction, false, ParametersArray));
+            return Exists(ACurrencyTable.TableId, new System.Object[1]{ACurrencyCode}, ATransaction);
         }
 
         /// this method is called by all overloads
         public static int CountUsingTemplate(ACurrencyRow ATemplateRow, StringCollection ATemplateOperators, TDBTransaction ATransaction)
         {
-            return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_a_currency" + GenerateWhereClause(ACurrencyTable.GetColumnStringList(), ATemplateRow, ATemplateOperators)), ATransaction, false, GetParametersForWhereClause(ATemplateRow)));
+            return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_a_currency" + GenerateWhereClause(TTypedDataTable.GetColumnStringList(ACurrencyTable.TableId), ATemplateRow, ATemplateOperators)), ATransaction, false,
+                   GetParametersForWhereClause(ACurrencyTable.TableId, ATemplateRow)));
         }
 
         /// this method is called by all overloads
         public static int CountUsingTemplate(TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
         {
-            return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_a_currency" + GenerateWhereClause(ACurrencyTable.GetColumnStringList(), ASearchCriteria)), ATransaction, false,
-            GetParametersForWhereClause(new ACurrencyTable(), ASearchCriteria)));
+            return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_a_currency" + GenerateWhereClause(TTypedDataTable.GetColumnStringList(ACurrencyTable.TableId), ASearchCriteria)), ATransaction, false,
+            GetParametersForWhereClause(ACurrencyTable.TableId, ASearchCriteria)));
         }
 
         /// auto generated
@@ -2239,9 +2191,9 @@ namespace Ict.Petra.Shared.MCommon.Data.Access
             OdbcParameter[] ParametersArray = new OdbcParameter[1];
             ParametersArray[0] = new OdbcParameter("", OdbcType.VarChar, 8);
             ParametersArray[0].Value = ((object)(ACountryCode));
-            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, ((GenerateSelectClause(AFieldList, new string[] {
-                            "a_currency_code_c"}) + " FROM PUB_a_currency WHERE p_country_code_c = ?")
-                            + GenerateOrderByClause(AOrderBy)), ACurrencyTable.GetTableName(), ATransaction, ParametersArray, AStartRecord, AMaxRecords);
+            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, ((GenerateSelectClause(AFieldList, ACurrencyTable.TableId) +
+                            " FROM PUB_a_currency WHERE p_country_code_c = ?") +
+                            GenerateOrderByClause(AOrderBy)), TTypedDataTable.GetTableName(ACurrencyTable.TableId), ATransaction, ParametersArray, AStartRecord, AMaxRecords);
         }
 
         /// auto generated
@@ -2281,11 +2233,12 @@ namespace Ict.Petra.Shared.MCommon.Data.Access
         /// auto generated
         public static void LoadViaPCountryTemplate(DataSet ADataSet, PCountryRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClauseLong("PUB_a_currency", AFieldList, new string[] {
-                            "a_currency_code_c"}) + " FROM PUB_a_currency, PUB_p_country WHERE " +
-                            "PUB_a_currency.p_country_code_c = PUB_p_country.p_country_code_c")
-                            + GenerateWhereClauseLong("PUB_p_country", PCountryTable.GetColumnStringList(), ATemplateRow, ATemplateOperators))
-                            + GenerateOrderByClause(AOrderBy)), ACurrencyTable.GetTableName(), ATransaction, GetParametersForWhereClause(ATemplateRow), AStartRecord, AMaxRecords);
+            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClauseLong("PUB_a_currency", AFieldList, ACurrencyTable.TableId) +
+                            " FROM PUB_a_currency, PUB_p_country WHERE " +
+                            "PUB_a_currency.p_country_code_c = PUB_p_country.p_country_code_c") +
+                            GenerateWhereClauseLong("PUB_p_country", PCountryTable.TableId, ATemplateRow, ATemplateOperators)) +
+                            GenerateOrderByClause(AOrderBy)), TTypedDataTable.GetTableName(ACurrencyTable.TableId), ATransaction,
+                            GetParametersForWhereClause(PCountryTable.TableId, ATemplateRow), AStartRecord, AMaxRecords);
         }
 
         /// auto generated
@@ -2331,12 +2284,12 @@ namespace Ict.Petra.Shared.MCommon.Data.Access
         /// auto generated
         public static void LoadViaPCountryTemplate(DataSet ADataSet, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClauseLong("PUB_a_currency", AFieldList, new string[] {
-                            "a_currency_code_c"}) + " FROM PUB_a_currency, PUB_p_country WHERE " +
-                            "PUB_a_currency.p_country_code_c = PUB_p_country.p_country_code_c")
-                            + GenerateWhereClauseLong("PUB_p_country", PCountryTable.GetColumnStringList(), ASearchCriteria))
-                            + GenerateOrderByClause(AOrderBy)), ACurrencyTable.GetTableName(), ATransaction,
-                            GetParametersForWhereClause(new ACurrencyTable(), ASearchCriteria), AStartRecord, AMaxRecords);
+            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClauseLong("PUB_a_currency", AFieldList, ACurrencyTable.TableId) +
+                            " FROM PUB_a_currency, PUB_p_country WHERE " +
+                            "PUB_a_currency.p_country_code_c = PUB_p_country.p_country_code_c") +
+                            GenerateWhereClauseLong("PUB_p_country", ASearchCriteria)) +
+                            GenerateOrderByClause(AOrderBy)), TTypedDataTable.GetTableName(ACurrencyTable.TableId), ATransaction,
+                            GetParametersForWhereClause(ACurrencyTable.TableId, ASearchCriteria), AStartRecord, AMaxRecords);
         }
 
         /// auto generated
@@ -2386,7 +2339,10 @@ namespace Ict.Petra.Shared.MCommon.Data.Access
         public static int CountViaPCountryTemplate(PCountryRow ATemplateRow, StringCollection ATemplateOperators, TDBTransaction ATransaction)
         {
             return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_a_currency, PUB_p_country WHERE " +
-                "PUB_a_currency.p_country_code_c = PUB_p_country.p_country_code_c" + GenerateWhereClauseLong("PUB_p_country", PCountryTable.GetColumnStringList(), ATemplateRow, ATemplateOperators)), ATransaction, false, GetParametersForWhereClause(ATemplateRow, PCountryTable.GetPrimKeyColumnOrdList())));
+                "PUB_a_currency.p_country_code_c = PUB_p_country.p_country_code_c" + GenerateWhereClauseLong("PUB_p_country",
+                PCountryTable.TableId, ATemplateRow, ATemplateOperators)),
+                ATransaction, false,
+                GetParametersForWhereClauseWithPrimaryKey(PCountryTable.TableId, ATemplateRow)));
         }
 
         /// auto generated
@@ -2394,8 +2350,8 @@ namespace Ict.Petra.Shared.MCommon.Data.Access
         {
             return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_a_currency, PUB_p_country WHERE " +
                 "PUB_a_currency.p_country_code_c = PUB_p_country.p_country_code_c" +
-                GenerateWhereClauseLong("PUB_p_country", PCountryTable.GetColumnStringList(), ASearchCriteria)), ATransaction, false,
-                GetParametersForWhereClause(new PCountryTable(), ASearchCriteria)));
+                GenerateWhereClauseLong("PUB_p_country", ASearchCriteria)), ATransaction, false,
+                GetParametersForWhereClause(PCountryTable.TableId, ASearchCriteria)));
         }
 
         /// auto generated LoadViaLinkTable
@@ -2404,10 +2360,10 @@ namespace Ict.Petra.Shared.MCommon.Data.Access
             OdbcParameter[] ParametersArray = new OdbcParameter[1];
             ParametersArray[0] = new OdbcParameter("", OdbcType.VarChar, 20);
             ParametersArray[0].Value = ((object)(ALanguageCode));
-            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, ((GenerateSelectClauseLong("PUB_a_currency", AFieldList, new string[] {
-                            "a_currency_code_c"}) + " FROM PUB_a_currency, PUB_a_currency_language WHERE " +
-                            "PUB_a_currency_language.a_currency_code_c = PUB_a_currency.a_currency_code_c AND PUB_a_currency_language.p_language_code_c = ?")
-                            + GenerateOrderByClause(AOrderBy)), ACurrencyTable.GetTableName(), ATransaction, ParametersArray, AStartRecord, AMaxRecords);
+            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, ((GenerateSelectClauseLong("PUB_a_currency", AFieldList, ACurrencyTable.TableId) +
+                            " FROM PUB_a_currency, PUB_a_currency_language WHERE " +
+                            "PUB_a_currency_language.a_currency_code_c = PUB_a_currency.a_currency_code_c AND PUB_a_currency_language.p_language_code_c = ?") +
+                            GenerateOrderByClause(AOrderBy)), TTypedDataTable.GetTableName(ACurrencyTable.TableId), ATransaction, ParametersArray, AStartRecord, AMaxRecords);
         }
 
         /// auto generated
@@ -2447,11 +2403,12 @@ namespace Ict.Petra.Shared.MCommon.Data.Access
         /// auto generated
         public static void LoadViaPLanguageTemplate(DataSet ADataSet, PLanguageRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClauseLong("PUB_a_currency", AFieldList, new string[] {
-                            "a_currency_code_c"}) + " FROM PUB_a_currency, PUB_a_currency_language, PUB_p_language WHERE " +
-                            "PUB_a_currency_language.a_currency_code_c = PUB_a_currency.a_currency_code_c AND PUB_a_currency_language.p_language_code_c = PUB_p_language.p_language_code_c")
-                            + GenerateWhereClauseLong("PUB_p_language", PLanguageTable.GetColumnStringList(), ATemplateRow, ATemplateOperators))
-                            + GenerateOrderByClause(AOrderBy)), ACurrencyTable.GetTableName(), ATransaction, GetParametersForWhereClause(ATemplateRow), AStartRecord, AMaxRecords);
+            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClauseLong("PUB_a_currency", AFieldList, ACurrencyTable.TableId) +
+                            " FROM PUB_a_currency, PUB_a_currency_language, PUB_p_language WHERE " +
+                            "PUB_a_currency_language.a_currency_code_c = PUB_a_currency.a_currency_code_c AND PUB_a_currency_language.p_language_code_c = PUB_p_language.p_language_code_c") +
+                            GenerateWhereClauseLong("PUB_p_language", PLanguageTable.TableId, ATemplateRow, ATemplateOperators)) +
+                            GenerateOrderByClause(AOrderBy)), TTypedDataTable.GetTableName(ACurrencyTable.TableId), ATransaction,
+                            GetParametersForWhereClause(PLanguageTable.TableId, ATemplateRow), AStartRecord, AMaxRecords);
         }
 
         /// auto generated
@@ -2497,12 +2454,12 @@ namespace Ict.Petra.Shared.MCommon.Data.Access
         /// auto generated
         public static void LoadViaPLanguageTemplate(DataSet ADataSet, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClauseLong("PUB_a_currency", AFieldList, new string[] {
-                            "a_currency_code_c"}) + " FROM PUB_a_currency, PUB_a_currency_language, PUB_p_language WHERE " +
-                            "PUB_a_currency_language.a_currency_code_c = PUB_a_currency.a_currency_code_c AND PUB_a_currency_language.p_language_code_c = PUB_p_language.p_language_code_c")
-                            + GenerateWhereClauseLong("PUB_p_language", PLanguageTable.GetColumnStringList(), ASearchCriteria))
-                            + GenerateOrderByClause(AOrderBy)), ACurrencyTable.GetTableName(), ATransaction,
-                            GetParametersForWhereClause(new ACurrencyTable(), ASearchCriteria), AStartRecord, AMaxRecords);
+            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClauseLong("PUB_a_currency", AFieldList, ACurrencyTable.TableId) +
+                            " FROM PUB_a_currency, PUB_a_currency_language, PUB_p_language WHERE " +
+                            "PUB_a_currency_language.a_currency_code_c = PUB_a_currency.a_currency_code_c AND PUB_a_currency_language.p_language_code_c = PUB_p_language.p_language_code_c") +
+                            GenerateWhereClauseLong("PUB_p_language", ASearchCriteria)) +
+                            GenerateOrderByClause(AOrderBy)), TTypedDataTable.GetTableName(ACurrencyTable.TableId), ATransaction,
+                            GetParametersForWhereClause(ACurrencyTable.TableId, ASearchCriteria), AStartRecord, AMaxRecords);
         }
 
         /// auto generated
@@ -2555,7 +2512,8 @@ namespace Ict.Petra.Shared.MCommon.Data.Access
         {
             return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_a_currency, PUB_a_currency_language, PUB_p_language WHERE " +
                         "PUB_a_currency_language.a_currency_code_c = PUB_a_currency.a_currency_code_c AND PUB_a_currency_language.p_language_code_c = PUB_p_language.p_language_code_c" +
-                        GenerateWhereClauseLong("PUB_a_currency_language", ACurrencyTable.GetColumnStringList(), ATemplateRow, ATemplateOperators)), ATransaction, false, GetParametersForWhereClause(ATemplateRow, PLanguageTable.GetPrimKeyColumnOrdList())));
+                        GenerateWhereClauseLong("PUB_a_currency_language", ACurrencyTable.TableId, ATemplateRow, ATemplateOperators)), ATransaction, false,
+                        GetParametersForWhereClauseWithPrimaryKey(PLanguageTable.TableId, ATemplateRow)));
         }
 
         /// auto generated
@@ -2563,31 +2521,26 @@ namespace Ict.Petra.Shared.MCommon.Data.Access
         {
             return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_a_currency, PUB_a_currency_language, PUB_p_language WHERE " +
                         "PUB_a_currency_language.a_currency_code_c = PUB_a_currency.a_currency_code_c AND PUB_a_currency_language.p_language_code_c = PUB_p_language.p_language_code_c" +
-                        GenerateWhereClauseLong("PUB_a_currency_language", ACurrencyTable.GetColumnStringList(), ASearchCriteria)), ATransaction, false,
-                        GetParametersForWhereClause(new ACurrencyTable(), ASearchCriteria)));
+                        GenerateWhereClauseLong("PUB_a_currency_language", ASearchCriteria)), ATransaction, false,
+                        GetParametersForWhereClause(ACurrencyTable.TableId, ASearchCriteria)));
         }
 
         /// auto generated
         public static void DeleteByPrimaryKey(String ACurrencyCode, TDBTransaction ATransaction)
         {
-            OdbcParameter[] ParametersArray = new OdbcParameter[1];
-            ParametersArray[0] = new OdbcParameter("", OdbcType.VarChar, 16);
-            ParametersArray[0].Value = ((object)(ACurrencyCode));
-            DBAccess.GDBAccessObj.ExecuteNonQuery("DELETE FROM PUB_a_currency WHERE a_currency_code_c = ?", ATransaction, false, ParametersArray);
+            DeleteByPrimaryKey(ACurrencyTable.TableId, new System.Object[1]{ACurrencyCode}, ATransaction);
         }
 
         /// auto generated
         public static void DeleteUsingTemplate(ACurrencyRow ATemplateRow, StringCollection ATemplateOperators, TDBTransaction ATransaction)
         {
-            DBAccess.GDBAccessObj.ExecuteNonQuery(("DELETE FROM PUB_a_currency" + GenerateWhereClause(ACurrencyTable.GetColumnStringList(), ATemplateRow, ATemplateOperators)), ATransaction, false, GetParametersForWhereClause(ATemplateRow));
+            DeleteUsingTemplate(ACurrencyTable.TableId, ATemplateRow, ATemplateOperators, ATransaction);
         }
 
         /// auto generated
         public static void DeleteUsingTemplate(TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
         {
-            DBAccess.GDBAccessObj.ExecuteNonQuery(("DELETE FROM PUB_a_currency" +
-                GenerateWhereClause(ACurrencyTable.GetColumnStringList(), ASearchCriteria)), ATransaction, false,
-                GetParametersForWhereClause(new ACurrencyTable(), ASearchCriteria));
+            DeleteUsingTemplate(ACurrencyTable.TableId, ASearchCriteria, ATransaction);
         }
 
         /// auto generated
@@ -2604,15 +2557,15 @@ namespace Ict.Petra.Shared.MCommon.Data.Access
                 {
                     if ((TheRow.RowState == DataRowState.Added))
                     {
-                        TTypedDataAccess.InsertRow("a_currency", ACurrencyTable.GetColumnStringList(), ref TheRow, ATransaction, UserInfo.GUserInfo.UserID);
+                        TTypedDataAccess.InsertRow(ACurrencyTable.TableId, ref TheRow, ATransaction, UserInfo.GUserInfo.UserID);
                     }
                     if ((TheRow.RowState == DataRowState.Modified))
                     {
-                        TTypedDataAccess.UpdateRow("a_currency", ACurrencyTable.GetColumnStringList(), ACurrencyTable.GetPrimKeyColumnOrdList(), ref TheRow, ATransaction, UserInfo.GUserInfo.UserID);
+                        TTypedDataAccess.UpdateRow(ACurrencyTable.TableId, ref TheRow, ATransaction, UserInfo.GUserInfo.UserID);
                     }
                     if ((TheRow.RowState == DataRowState.Deleted))
                     {
-                        TTypedDataAccess.DeleteRow("a_currency", ACurrencyTable.GetColumnStringList(), ACurrencyTable.GetPrimKeyColumnOrdList(), TheRow, ATransaction);
+                        TTypedDataAccess.DeleteRow(ACurrencyTable.TableId, TheRow, ATransaction);
                     }
                 }
                 catch (OdbcException ex)

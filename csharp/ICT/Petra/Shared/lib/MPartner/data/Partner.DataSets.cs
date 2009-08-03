@@ -1,7 +1,31 @@
 /* Auto generated with nant generateORM
- * based on PartnerTypedDataSets.xml
  * Do not modify this file manually!
  */
+/*************************************************************************
+ *
+ * DO NOT REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
+ *
+ * @Authors:
+ *       auto generated
+ *
+ * Copyright 2004-2009 by OM International
+ *
+ * This file is part of OpenPetra.org.
+ *
+ * OpenPetra.org is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * OpenPetra.org is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with OpenPetra.org.  If not, see <http://www.gnu.org/licenses/>.
+ *
+ ************************************************************************/
 namespace Ict.Petra.Shared.MPartner.Partner.Data
 {
     using Ict.Common;
@@ -12,3167 +36,60 @@ namespace Ict.Petra.Shared.MPartner.Partner.Data
     using Ict.Petra.Shared.MPartner.Partner.Data;
     using Ict.Petra.Shared.MPartner.Mailroom.Data;
     using Ict.Petra.Shared.MPersonnel.Personnel.Data;
-    
-    
-    /// auto generated table derived from PPartnerLocation
-    [Serializable()]
-    public class PartnerEditTDSPPartnerLocationTable : PPartnerLocationTable
-    {
-        
-        /// 
-        public DataColumn ColumnBestAddress;
-        
-        /// 
-        public DataColumn ColumnIcon;
-        
-        /// constructor
-        public PartnerEditTDSPPartnerLocationTable() : 
-                base("PPartnerLocation")
-        {
-        }
-        
-        /// constructor
-        public PartnerEditTDSPPartnerLocationTable(string ATablename) : 
-                base(ATablename)
-        {
-        }
-        
-        /// constructor for serialization
-        public PartnerEditTDSPPartnerLocationTable(System.Runtime.Serialization.SerializationInfo info, System.Runtime.Serialization.StreamingContext context) : 
-                base(info, context)
-        {
-        }
-        
-        /// Access a typed row by index
-        public new PartnerEditTDSPPartnerLocationRow this[int i]
-        {
-            get
-            {
-                return ((PartnerEditTDSPPartnerLocationRow)(this.Rows[i]));
-            }
-        }
-        
-        /// get the name of the field in the database for this column
-        public static string GetBestAddressDBName()
-        {
-            return "BestAddress";
-        }
-        
-        /// get help text for column
-        public static string GetBestAddressHelp()
-        {
-            return null;
-        }
-        
-        /// get label of column
-        public static string GetBestAddressLabel()
-        {
-            return "";
-        }
-        
-        /// get the name of the field in the database for this column
-        public static string GetIconDBName()
-        {
-            return "Icon";
-        }
-        
-        /// get help text for column
-        public static string GetIconHelp()
-        {
-            return null;
-        }
-        
-        /// get label of column
-        public static string GetIconLabel()
-        {
-            return "";
-        }
-        
-        /// CamelCase version of the tablename
-        public new static string GetTableName()
-        {
-            return "PPartnerLocation";
-        }
-        
-        /// original name of table in the database
-        public new static string GetTableDBName()
-        {
-            return "PPartnerLocation";
-        }
-        
-        /// assign columns to properties, set primary key
-        public override void InitVars()
-        {
-            base.InitVars();
-            this.ColumnBestAddress = this.Columns["BestAddress"];
-            this.ColumnIcon = this.Columns["Icon"];
-        }
-        
-        /// create a new typed row
-        public new PartnerEditTDSPPartnerLocationRow NewRowTyped(bool AWithDefaultValues)
-        {
-            PartnerEditTDSPPartnerLocationRow ret = ((PartnerEditTDSPPartnerLocationRow)(this.NewRow()));
-            if ((AWithDefaultValues == true))
-            {
-                ret.InitValues();
-            }
-            return ret;
-        }
-        
-        /// new typed row using DataRowBuilder
-        protected override System.Data.DataRow NewRowFromBuilder(System.Data.DataRowBuilder builder)
-        {
-            return new PartnerEditTDSPPartnerLocationRow(builder);
-        }
-        
-        /// create the columns
-        protected override void InitClass()
-        {
-            base.InitClass();
-            this.Columns.Add(new System.Data.DataColumn("BestAddress", typeof(Boolean)));
-            this.Columns.Add(new System.Data.DataColumn("Icon", typeof(Int32)));
-        }
-        
-        /// prepare odbc parameters for given column
-        public override OdbcParameter CreateOdbcParameter(DataColumn ACol)
-        {
-            if ((ACol == ColumnBestAddress))
-            {
-                return new System.Data.Odbc.OdbcParameter("", OdbcType.Int);
-            }
-            if ((ACol == ColumnIcon))
-            {
-                return new System.Data.Odbc.OdbcParameter("", OdbcType.Int);
-            }
-            return base.CreateOdbcParameter(ACol);
-        }
-    }
-    
-    /// DerivedRow from PPartnerLocationRow
-    [Serializable()]
-    public class PartnerEditTDSPPartnerLocationRow : PPartnerLocationRow
-    {
-        
-        private PartnerEditTDSPPartnerLocationTable myTable;
-        
-        /// Constructor
-        public PartnerEditTDSPPartnerLocationRow(System.Data.DataRowBuilder rb) : 
-                base(rb)
-        {
-            this.myTable = ((PartnerEditTDSPPartnerLocationTable)(this.Table));
-        }
-        
-        /// 
-        public Boolean BestAddress
-        {
-            get
-            {
-                object ret;
-                ret = this[this.myTable.ColumnBestAddress.Ordinal];
-                if ((ret == System.DBNull.Value))
-                {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
-                }
-                else
-                {
-                    return ((Boolean)(ret));
-                }
-            }
-            set
-            {
-                if ((this.IsNull(this.myTable.ColumnBestAddress) 
-                            || (((Boolean)(this[this.myTable.ColumnBestAddress])) != value)))
-                {
-                    this[this.myTable.ColumnBestAddress] = value;
-                }
-            }
-        }
-        
-        /// 
-        public Int32 Icon
-        {
-            get
-            {
-                object ret;
-                ret = this[this.myTable.ColumnIcon.Ordinal];
-                if ((ret == System.DBNull.Value))
-                {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
-                }
-                else
-                {
-                    return ((Int32)(ret));
-                }
-            }
-            set
-            {
-                if ((this.IsNull(this.myTable.ColumnIcon) 
-                            || (((Int32)(this[this.myTable.ColumnIcon])) != value)))
-                {
-                    this[this.myTable.ColumnIcon] = value;
-                }
-            }
-        }
-        
-        /// set default values
-        public override void InitValues()
-        {
-            this.SetNull(this.myTable.ColumnBestAddress);
-            this.SetNull(this.myTable.ColumnIcon);
-        }
-        
-        /// test for NULL value
-        public bool IsBestAddressNull()
-        {
-            return this.IsNull(this.myTable.ColumnBestAddress);
-        }
-        
-        /// assign NULL value
-        public void SetBestAddressNull()
-        {
-            this.SetNull(this.myTable.ColumnBestAddress);
-        }
-        
-        /// test for NULL value
-        public bool IsIconNull()
-        {
-            return this.IsNull(this.myTable.ColumnIcon);
-        }
-        
-        /// assign NULL value
-        public void SetIconNull()
-        {
-            this.SetNull(this.myTable.ColumnIcon);
-        }
-    }
-    
-    /// auto generated table derived from PPerson
-    [Serializable()]
-    public class PartnerEditTDSPPersonTable : PPersonTable
-    {
-        
-        /// 
-        public DataColumn ColumnUnitName;
-        
-        /// constructor
-        public PartnerEditTDSPPersonTable() : 
-                base("PPerson")
-        {
-        }
-        
-        /// constructor
-        public PartnerEditTDSPPersonTable(string ATablename) : 
-                base(ATablename)
-        {
-        }
-        
-        /// constructor for serialization
-        public PartnerEditTDSPPersonTable(System.Runtime.Serialization.SerializationInfo info, System.Runtime.Serialization.StreamingContext context) : 
-                base(info, context)
-        {
-        }
-        
-        /// Access a typed row by index
-        public new PartnerEditTDSPPersonRow this[int i]
-        {
-            get
-            {
-                return ((PartnerEditTDSPPersonRow)(this.Rows[i]));
-            }
-        }
-        
-        /// get the name of the field in the database for this column
-        public static string GetUnitNameDBName()
-        {
-            return "p_unit_name_c";
-        }
-        
-        /// get help text for column
-        public static string GetUnitNameHelp()
-        {
-            return "Enter the name of the unit";
-        }
-        
-        /// get label of column
-        public static string GetUnitNameLabel()
-        {
-            return "Unit Name";
-        }
-        
-        /// CamelCase version of the tablename
-        public new static string GetTableName()
-        {
-            return "PPerson";
-        }
-        
-        /// original name of table in the database
-        public new static string GetTableDBName()
-        {
-            return "PPerson";
-        }
-        
-        /// assign columns to properties, set primary key
-        public override void InitVars()
-        {
-            base.InitVars();
-            this.ColumnUnitName = this.Columns["p_unit_name_c"];
-        }
-        
-        /// create a new typed row
-        public new PartnerEditTDSPPersonRow NewRowTyped(bool AWithDefaultValues)
-        {
-            PartnerEditTDSPPersonRow ret = ((PartnerEditTDSPPersonRow)(this.NewRow()));
-            if ((AWithDefaultValues == true))
-            {
-                ret.InitValues();
-            }
-            return ret;
-        }
-        
-        /// new typed row using DataRowBuilder
-        protected override System.Data.DataRow NewRowFromBuilder(System.Data.DataRowBuilder builder)
-        {
-            return new PartnerEditTDSPPersonRow(builder);
-        }
-        
-        /// create the columns
-        protected override void InitClass()
-        {
-            base.InitClass();
-            this.Columns.Add(new System.Data.DataColumn("p_unit_name_c", typeof(String)));
-        }
-        
-        /// prepare odbc parameters for given column
-        public override OdbcParameter CreateOdbcParameter(DataColumn ACol)
-        {
-            if ((ACol == ColumnUnitName))
-            {
-                return new System.Data.Odbc.OdbcParameter("", OdbcType.VarChar, 160);
-            }
-            return base.CreateOdbcParameter(ACol);
-        }
-    }
-    
-    /// DerivedRow from PPersonRow
-    [Serializable()]
-    public class PartnerEditTDSPPersonRow : PPersonRow
-    {
-        
-        private PartnerEditTDSPPersonTable myTable;
-        
-        /// Constructor
-        public PartnerEditTDSPPersonRow(System.Data.DataRowBuilder rb) : 
-                base(rb)
-        {
-            this.myTable = ((PartnerEditTDSPPersonTable)(this.Table));
-        }
-        
-        /// 
-        public String UnitName
-        {
-            get
-            {
-                object ret;
-                ret = this[this.myTable.ColumnUnitName.Ordinal];
-                if ((ret == System.DBNull.Value))
-                {
-                    return String.Empty;
-                }
-                else
-                {
-                    return ((String)(ret));
-                }
-            }
-            set
-            {
-                if ((this.IsNull(this.myTable.ColumnUnitName) 
-                            || (((String)(this[this.myTable.ColumnUnitName])) != value)))
-                {
-                    this[this.myTable.ColumnUnitName] = value;
-                }
-            }
-        }
-        
-        /// set default values
-        public override void InitValues()
-        {
-            this.SetNull(this.myTable.ColumnUnitName);
-        }
-        
-        /// test for NULL value
-        public bool IsUnitNameNull()
-        {
-            return this.IsNull(this.myTable.ColumnUnitName);
-        }
-        
-        /// assign NULL value
-        public void SetUnitNameNull()
-        {
-            this.SetNull(this.myTable.ColumnUnitName);
-        }
-    }
-    
-    /// auto generated table derived from PFamily
-    [Serializable()]
-    public class PartnerEditTDSPFamilyTable : PFamilyTable
-    {
-        
-        /// 
-        public DataColumn ColumnUnitName;
-        
-        /// constructor
-        public PartnerEditTDSPFamilyTable() : 
-                base("PFamily")
-        {
-        }
-        
-        /// constructor
-        public PartnerEditTDSPFamilyTable(string ATablename) : 
-                base(ATablename)
-        {
-        }
-        
-        /// constructor for serialization
-        public PartnerEditTDSPFamilyTable(System.Runtime.Serialization.SerializationInfo info, System.Runtime.Serialization.StreamingContext context) : 
-                base(info, context)
-        {
-        }
-        
-        /// Access a typed row by index
-        public new PartnerEditTDSPFamilyRow this[int i]
-        {
-            get
-            {
-                return ((PartnerEditTDSPFamilyRow)(this.Rows[i]));
-            }
-        }
-        
-        /// get the name of the field in the database for this column
-        public static string GetUnitNameDBName()
-        {
-            return "p_unit_name_c";
-        }
-        
-        /// get help text for column
-        public static string GetUnitNameHelp()
-        {
-            return "Enter the name of the unit";
-        }
-        
-        /// get label of column
-        public static string GetUnitNameLabel()
-        {
-            return "Unit Name";
-        }
-        
-        /// CamelCase version of the tablename
-        public new static string GetTableName()
-        {
-            return "PFamily";
-        }
-        
-        /// original name of table in the database
-        public new static string GetTableDBName()
-        {
-            return "PFamily";
-        }
-        
-        /// assign columns to properties, set primary key
-        public override void InitVars()
-        {
-            base.InitVars();
-            this.ColumnUnitName = this.Columns["p_unit_name_c"];
-        }
-        
-        /// create a new typed row
-        public new PartnerEditTDSPFamilyRow NewRowTyped(bool AWithDefaultValues)
-        {
-            PartnerEditTDSPFamilyRow ret = ((PartnerEditTDSPFamilyRow)(this.NewRow()));
-            if ((AWithDefaultValues == true))
-            {
-                ret.InitValues();
-            }
-            return ret;
-        }
-        
-        /// new typed row using DataRowBuilder
-        protected override System.Data.DataRow NewRowFromBuilder(System.Data.DataRowBuilder builder)
-        {
-            return new PartnerEditTDSPFamilyRow(builder);
-        }
-        
-        /// create the columns
-        protected override void InitClass()
-        {
-            base.InitClass();
-            this.Columns.Add(new System.Data.DataColumn("p_unit_name_c", typeof(String)));
-        }
-        
-        /// prepare odbc parameters for given column
-        public override OdbcParameter CreateOdbcParameter(DataColumn ACol)
-        {
-            if ((ACol == ColumnUnitName))
-            {
-                return new System.Data.Odbc.OdbcParameter("", OdbcType.VarChar, 160);
-            }
-            return base.CreateOdbcParameter(ACol);
-        }
-    }
-    
-    /// DerivedRow from PFamilyRow
-    [Serializable()]
-    public class PartnerEditTDSPFamilyRow : PFamilyRow
-    {
-        
-        private PartnerEditTDSPFamilyTable myTable;
-        
-        /// Constructor
-        public PartnerEditTDSPFamilyRow(System.Data.DataRowBuilder rb) : 
-                base(rb)
-        {
-            this.myTable = ((PartnerEditTDSPFamilyTable)(this.Table));
-        }
-        
-        /// 
-        public String UnitName
-        {
-            get
-            {
-                object ret;
-                ret = this[this.myTable.ColumnUnitName.Ordinal];
-                if ((ret == System.DBNull.Value))
-                {
-                    return String.Empty;
-                }
-                else
-                {
-                    return ((String)(ret));
-                }
-            }
-            set
-            {
-                if ((this.IsNull(this.myTable.ColumnUnitName) 
-                            || (((String)(this[this.myTable.ColumnUnitName])) != value)))
-                {
-                    this[this.myTable.ColumnUnitName] = value;
-                }
-            }
-        }
-        
-        /// set default values
-        public override void InitValues()
-        {
-            this.SetNull(this.myTable.ColumnUnitName);
-        }
-        
-        /// test for NULL value
-        public bool IsUnitNameNull()
-        {
-            return this.IsNull(this.myTable.ColumnUnitName);
-        }
-        
-        /// assign NULL value
-        public void SetUnitNameNull()
-        {
-            this.SetNull(this.myTable.ColumnUnitName);
-        }
-    }
-    
-    /// auto generated custom table
-    [Serializable()]
-    public class PartnerEditTDSMiscellaneousDataTable : TTypedDataTable
-    {
-        
-        /// This is the partner key assigned to each partner. It consists of the fund id followed by a computer generated six digit number.
-        public DataColumn ColumnPartnerKey;
-        
-        /// This is the key that tell what site created the linked location
-        public DataColumn ColumnSelectedSiteKey;
-        
-        /// 
-        public DataColumn ColumnSelectedLocationKey;
-        
-        /// 
-        public DataColumn ColumnLastGiftDate;
-        
-        /// 
-        public DataColumn ColumnLastGiftInfo;
-        
-        /// 
-        public DataColumn ColumnLastContactDate;
-        
-        /// 
-        public DataColumn ColumnItemsCountAddresses;
-        
-        /// 
-        public DataColumn ColumnItemsCountAddressesActive;
-        
-        /// 
-        public DataColumn ColumnItemsCountSubscriptions;
-        
-        /// 
-        public DataColumn ColumnItemsCountSubscriptionsActive;
-        
-        /// 
-        public DataColumn ColumnItemsCountPartnerTypes;
-        
-        /// 
-        public DataColumn ColumnItemsCountFamilyMembers;
-        
-        /// 
-        public DataColumn ColumnItemsCountInterests;
-        
-        /// 
-        public DataColumn ColumnItemsCountReminders;
-        
-        /// 
-        public DataColumn ColumnItemsCountRelationships;
-        
-        /// 
-        public DataColumn ColumnItemsCountContacts;
-        
-        /// 
-        public DataColumn ColumnOfficeSpecificDataLabelsAvailable;
-        
-        /// 
-        public DataColumn ColumnFoundationOwner1Key;
-        
-        /// 
-        public DataColumn ColumnFoundationOwner2Key;
-        
-        /// 
-        public DataColumn ColumnHasEXWORKERPartnerType;
-        
-        /// auto generated
-        public DataColumn[] FKPartnerLocation2;
-        
-        /// constructor
-        public PartnerEditTDSMiscellaneousDataTable() : 
-                base("MiscellaneousData")
-        {
-        }
-        
-        /// constructor
-        public PartnerEditTDSMiscellaneousDataTable(string ATablename) : 
-                base(ATablename)
-        {
-        }
-        
-        /// constructor for serialization
-        public PartnerEditTDSMiscellaneousDataTable(System.Runtime.Serialization.SerializationInfo info, System.Runtime.Serialization.StreamingContext context) : 
-                base(info, context)
-        {
-        }
-        
-        /// Access a typed row by index
-        public PartnerEditTDSMiscellaneousDataRow this[int i]
-        {
-            get
-            {
-                return ((PartnerEditTDSMiscellaneousDataRow)(this.Rows[i]));
-            }
-        }
-        
-        /// get the name of the field in the database for this column
-        public static string GetPartnerKeyDBName()
-        {
-            return "p_partner_key_n";
-        }
-        
-        /// get help text for column
-        public static string GetPartnerKeyHelp()
-        {
-            return "Enter the partner key (SiteID + Number)";
-        }
-        
-        /// get label of column
-        public static string GetPartnerKeyLabel()
-        {
-            return "Partner Key";
-        }
-        
-        /// get the name of the field in the database for this column
-        public static string GetSelectedSiteKeyDBName()
-        {
-            return "p_site_key_n";
-        }
-        
-        /// get help text for column
-        public static string GetSelectedSiteKeyHelp()
-        {
-            return "Enter the site key";
-        }
-        
-        /// get label of column
-        public static string GetSelectedSiteKeyLabel()
-        {
-            return "Site Key";
-        }
-        
-        /// get the name of the field in the database for this column
-        public static string GetSelectedLocationKeyDBName()
-        {
-            return "p_location_key_i";
-        }
-        
-        /// get help text for column
-        public static string GetSelectedLocationKeyHelp()
-        {
-            return "";
-        }
-        
-        /// get label of column
-        public static string GetSelectedLocationKeyLabel()
-        {
-            return "Location Key";
-        }
-        
-        /// get the name of the field in the database for this column
-        public static string GetLastGiftDateDBName()
-        {
-            return "LastGiftDate";
-        }
-        
-        /// get help text for column
-        public static string GetLastGiftDateHelp()
-        {
-            return null;
-        }
-        
-        /// get label of column
-        public static string GetLastGiftDateLabel()
-        {
-            return "";
-        }
-        
-        /// get the name of the field in the database for this column
-        public static string GetLastGiftInfoDBName()
-        {
-            return "LastGiftInfo";
-        }
-        
-        /// get help text for column
-        public static string GetLastGiftInfoHelp()
-        {
-            return null;
-        }
-        
-        /// get label of column
-        public static string GetLastGiftInfoLabel()
-        {
-            return "";
-        }
-        
-        /// get the name of the field in the database for this column
-        public static string GetLastContactDateDBName()
-        {
-            return "LastContactDate";
-        }
-        
-        /// get help text for column
-        public static string GetLastContactDateHelp()
-        {
-            return null;
-        }
-        
-        /// get label of column
-        public static string GetLastContactDateLabel()
-        {
-            return "";
-        }
-        
-        /// get the name of the field in the database for this column
-        public static string GetItemsCountAddressesDBName()
-        {
-            return "ItemsCountAddresses";
-        }
-        
-        /// get help text for column
-        public static string GetItemsCountAddressesHelp()
-        {
-            return null;
-        }
-        
-        /// get label of column
-        public static string GetItemsCountAddressesLabel()
-        {
-            return "";
-        }
-        
-        /// get the name of the field in the database for this column
-        public static string GetItemsCountAddressesActiveDBName()
-        {
-            return "ItemsCountAddressesActive";
-        }
-        
-        /// get help text for column
-        public static string GetItemsCountAddressesActiveHelp()
-        {
-            return null;
-        }
-        
-        /// get label of column
-        public static string GetItemsCountAddressesActiveLabel()
-        {
-            return "";
-        }
-        
-        /// get the name of the field in the database for this column
-        public static string GetItemsCountSubscriptionsDBName()
-        {
-            return "ItemsCountSubscriptions";
-        }
-        
-        /// get help text for column
-        public static string GetItemsCountSubscriptionsHelp()
-        {
-            return null;
-        }
-        
-        /// get label of column
-        public static string GetItemsCountSubscriptionsLabel()
-        {
-            return "";
-        }
-        
-        /// get the name of the field in the database for this column
-        public static string GetItemsCountSubscriptionsActiveDBName()
-        {
-            return "ItemsCountSubscriptionsActive";
-        }
-        
-        /// get help text for column
-        public static string GetItemsCountSubscriptionsActiveHelp()
-        {
-            return null;
-        }
-        
-        /// get label of column
-        public static string GetItemsCountSubscriptionsActiveLabel()
-        {
-            return "";
-        }
-        
-        /// get the name of the field in the database for this column
-        public static string GetItemsCountPartnerTypesDBName()
-        {
-            return "ItemsCountPartnerTypes";
-        }
-        
-        /// get help text for column
-        public static string GetItemsCountPartnerTypesHelp()
-        {
-            return null;
-        }
-        
-        /// get label of column
-        public static string GetItemsCountPartnerTypesLabel()
-        {
-            return "";
-        }
-        
-        /// get the name of the field in the database for this column
-        public static string GetItemsCountFamilyMembersDBName()
-        {
-            return "ItemsCountFamilyMembers";
-        }
-        
-        /// get help text for column
-        public static string GetItemsCountFamilyMembersHelp()
-        {
-            return null;
-        }
-        
-        /// get label of column
-        public static string GetItemsCountFamilyMembersLabel()
-        {
-            return "";
-        }
-        
-        /// get the name of the field in the database for this column
-        public static string GetItemsCountInterestsDBName()
-        {
-            return "ItemsCountInterests";
-        }
-        
-        /// get help text for column
-        public static string GetItemsCountInterestsHelp()
-        {
-            return null;
-        }
-        
-        /// get label of column
-        public static string GetItemsCountInterestsLabel()
-        {
-            return "";
-        }
-        
-        /// get the name of the field in the database for this column
-        public static string GetItemsCountRemindersDBName()
-        {
-            return "ItemsCountReminders";
-        }
-        
-        /// get help text for column
-        public static string GetItemsCountRemindersHelp()
-        {
-            return null;
-        }
-        
-        /// get label of column
-        public static string GetItemsCountRemindersLabel()
-        {
-            return "";
-        }
-        
-        /// get the name of the field in the database for this column
-        public static string GetItemsCountRelationshipsDBName()
-        {
-            return "ItemsCountRelationships";
-        }
-        
-        /// get help text for column
-        public static string GetItemsCountRelationshipsHelp()
-        {
-            return null;
-        }
-        
-        /// get label of column
-        public static string GetItemsCountRelationshipsLabel()
-        {
-            return "";
-        }
-        
-        /// get the name of the field in the database for this column
-        public static string GetItemsCountContactsDBName()
-        {
-            return "ItemsCountContacts";
-        }
-        
-        /// get help text for column
-        public static string GetItemsCountContactsHelp()
-        {
-            return null;
-        }
-        
-        /// get label of column
-        public static string GetItemsCountContactsLabel()
-        {
-            return "";
-        }
-        
-        /// get the name of the field in the database for this column
-        public static string GetOfficeSpecificDataLabelsAvailableDBName()
-        {
-            return "OfficeSpecificDataLabelsAvailable";
-        }
-        
-        /// get help text for column
-        public static string GetOfficeSpecificDataLabelsAvailableHelp()
-        {
-            return null;
-        }
-        
-        /// get label of column
-        public static string GetOfficeSpecificDataLabelsAvailableLabel()
-        {
-            return "";
-        }
-        
-        /// get the name of the field in the database for this column
-        public static string GetFoundationOwner1KeyDBName()
-        {
-            return "FoundationOwner1Key";
-        }
-        
-        /// get help text for column
-        public static string GetFoundationOwner1KeyHelp()
-        {
-            return null;
-        }
-        
-        /// get label of column
-        public static string GetFoundationOwner1KeyLabel()
-        {
-            return "";
-        }
-        
-        /// get the name of the field in the database for this column
-        public static string GetFoundationOwner2KeyDBName()
-        {
-            return "FoundationOwner2Key";
-        }
-        
-        /// get help text for column
-        public static string GetFoundationOwner2KeyHelp()
-        {
-            return null;
-        }
-        
-        /// get label of column
-        public static string GetFoundationOwner2KeyLabel()
-        {
-            return "";
-        }
-        
-        /// get the name of the field in the database for this column
-        public static string GetHasEXWORKERPartnerTypeDBName()
-        {
-            return "HasEXWORKERPartnerType";
-        }
-        
-        /// get help text for column
-        public static string GetHasEXWORKERPartnerTypeHelp()
-        {
-            return null;
-        }
-        
-        /// get label of column
-        public static string GetHasEXWORKERPartnerTypeLabel()
-        {
-            return "";
-        }
-        
-        /// CamelCase version of the tablename
-        public static string GetTableName()
-        {
-            return "MiscellaneousData";
-        }
-        
-        /// original name of table in the database
-        public static string GetTableDBName()
-        {
-            return "MiscellaneousData";
-        }
-        
-        /// assign columns to properties, set primary key
-        public override void InitVars()
-        {
-            this.ColumnPartnerKey = this.Columns["p_partner_key_n"];
-            this.ColumnSelectedSiteKey = this.Columns["p_site_key_n"];
-            this.ColumnSelectedLocationKey = this.Columns["p_location_key_i"];
-            this.ColumnLastGiftDate = this.Columns["LastGiftDate"];
-            this.ColumnLastGiftInfo = this.Columns["LastGiftInfo"];
-            this.ColumnLastContactDate = this.Columns["LastContactDate"];
-            this.ColumnItemsCountAddresses = this.Columns["ItemsCountAddresses"];
-            this.ColumnItemsCountAddressesActive = this.Columns["ItemsCountAddressesActive"];
-            this.ColumnItemsCountSubscriptions = this.Columns["ItemsCountSubscriptions"];
-            this.ColumnItemsCountSubscriptionsActive = this.Columns["ItemsCountSubscriptionsActive"];
-            this.ColumnItemsCountPartnerTypes = this.Columns["ItemsCountPartnerTypes"];
-            this.ColumnItemsCountFamilyMembers = this.Columns["ItemsCountFamilyMembers"];
-            this.ColumnItemsCountInterests = this.Columns["ItemsCountInterests"];
-            this.ColumnItemsCountReminders = this.Columns["ItemsCountReminders"];
-            this.ColumnItemsCountRelationships = this.Columns["ItemsCountRelationships"];
-            this.ColumnItemsCountContacts = this.Columns["ItemsCountContacts"];
-            this.ColumnOfficeSpecificDataLabelsAvailable = this.Columns["OfficeSpecificDataLabelsAvailable"];
-            this.ColumnFoundationOwner1Key = this.Columns["FoundationOwner1Key"];
-            this.ColumnFoundationOwner2Key = this.Columns["FoundationOwner2Key"];
-            this.ColumnHasEXWORKERPartnerType = this.Columns["HasEXWORKERPartnerType"];
-            this.PrimaryKey = new System.Data.DataColumn[] {
-                    this.ColumnPartnerKey};
-            this.FKPartnerLocation2 = new System.Data.DataColumn[] {
-                    this.ColumnSelectedSiteKey,
-                    this.ColumnSelectedLocationKey};
-        }
-        
-        /// create a new typed row
-        public PartnerEditTDSMiscellaneousDataRow NewRowTyped(bool AWithDefaultValues)
-        {
-            PartnerEditTDSMiscellaneousDataRow ret = ((PartnerEditTDSMiscellaneousDataRow)(this.NewRow()));
-            if ((AWithDefaultValues == true))
-            {
-                ret.InitValues();
-            }
-            return ret;
-        }
-        
-        /// new typed row using DataRowBuilder
-        protected override System.Data.DataRow NewRowFromBuilder(System.Data.DataRowBuilder builder)
-        {
-            return new PartnerEditTDSMiscellaneousDataRow(builder);
-        }
-        
-        /// create the columns
-        protected override void InitClass()
-        {
-            this.Columns.Add(new System.Data.DataColumn("p_partner_key_n", typeof(Int64)));
-            this.Columns.Add(new System.Data.DataColumn("p_site_key_n", typeof(Int64)));
-            this.Columns.Add(new System.Data.DataColumn("p_location_key_i", typeof(Int32)));
-            this.Columns.Add(new System.Data.DataColumn("LastGiftDate", typeof(DateTime)));
-            this.Columns.Add(new System.Data.DataColumn("LastGiftInfo", typeof(String)));
-            this.Columns.Add(new System.Data.DataColumn("LastContactDate", typeof(DateTime)));
-            this.Columns.Add(new System.Data.DataColumn("ItemsCountAddresses", typeof(Int32)));
-            this.Columns.Add(new System.Data.DataColumn("ItemsCountAddressesActive", typeof(Int32)));
-            this.Columns.Add(new System.Data.DataColumn("ItemsCountSubscriptions", typeof(Int32)));
-            this.Columns.Add(new System.Data.DataColumn("ItemsCountSubscriptionsActive", typeof(Int32)));
-            this.Columns.Add(new System.Data.DataColumn("ItemsCountPartnerTypes", typeof(Int32)));
-            this.Columns.Add(new System.Data.DataColumn("ItemsCountFamilyMembers", typeof(Int32)));
-            this.Columns.Add(new System.Data.DataColumn("ItemsCountInterests", typeof(Int32)));
-            this.Columns.Add(new System.Data.DataColumn("ItemsCountReminders", typeof(Int32)));
-            this.Columns.Add(new System.Data.DataColumn("ItemsCountRelationships", typeof(Int32)));
-            this.Columns.Add(new System.Data.DataColumn("ItemsCountContacts", typeof(Int32)));
-            this.Columns.Add(new System.Data.DataColumn("OfficeSpecificDataLabelsAvailable", typeof(Boolean)));
-            this.Columns.Add(new System.Data.DataColumn("FoundationOwner1Key", typeof(Int64)));
-            this.Columns.Add(new System.Data.DataColumn("FoundationOwner2Key", typeof(Int64)));
-            this.Columns.Add(new System.Data.DataColumn("HasEXWORKERPartnerType", typeof(Boolean)));
-        }
-        
-        /// prepare odbc parameters for given column
-        public override OdbcParameter CreateOdbcParameter(DataColumn ACol)
-        {
-            if ((ACol == ColumnPartnerKey))
-            {
-                return new System.Data.Odbc.OdbcParameter("", OdbcType.Decimal, 10);
-            }
-            if ((ACol == ColumnSelectedSiteKey))
-            {
-                return new System.Data.Odbc.OdbcParameter("", OdbcType.Decimal, 10);
-            }
-            if ((ACol == ColumnSelectedLocationKey))
-            {
-                return new System.Data.Odbc.OdbcParameter("", OdbcType.Int);
-            }
-            if ((ACol == ColumnLastGiftDate))
-            {
-                return new System.Data.Odbc.OdbcParameter("", OdbcType.Int);
-            }
-            if ((ACol == ColumnLastGiftInfo))
-            {
-                return new System.Data.Odbc.OdbcParameter("", OdbcType.Int);
-            }
-            if ((ACol == ColumnLastContactDate))
-            {
-                return new System.Data.Odbc.OdbcParameter("", OdbcType.Int);
-            }
-            if ((ACol == ColumnItemsCountAddresses))
-            {
-                return new System.Data.Odbc.OdbcParameter("", OdbcType.Int);
-            }
-            if ((ACol == ColumnItemsCountAddressesActive))
-            {
-                return new System.Data.Odbc.OdbcParameter("", OdbcType.Int);
-            }
-            if ((ACol == ColumnItemsCountSubscriptions))
-            {
-                return new System.Data.Odbc.OdbcParameter("", OdbcType.Int);
-            }
-            if ((ACol == ColumnItemsCountSubscriptionsActive))
-            {
-                return new System.Data.Odbc.OdbcParameter("", OdbcType.Int);
-            }
-            if ((ACol == ColumnItemsCountPartnerTypes))
-            {
-                return new System.Data.Odbc.OdbcParameter("", OdbcType.Int);
-            }
-            if ((ACol == ColumnItemsCountFamilyMembers))
-            {
-                return new System.Data.Odbc.OdbcParameter("", OdbcType.Int);
-            }
-            if ((ACol == ColumnItemsCountInterests))
-            {
-                return new System.Data.Odbc.OdbcParameter("", OdbcType.Int);
-            }
-            if ((ACol == ColumnItemsCountReminders))
-            {
-                return new System.Data.Odbc.OdbcParameter("", OdbcType.Int);
-            }
-            if ((ACol == ColumnItemsCountRelationships))
-            {
-                return new System.Data.Odbc.OdbcParameter("", OdbcType.Int);
-            }
-            if ((ACol == ColumnItemsCountContacts))
-            {
-                return new System.Data.Odbc.OdbcParameter("", OdbcType.Int);
-            }
-            if ((ACol == ColumnOfficeSpecificDataLabelsAvailable))
-            {
-                return new System.Data.Odbc.OdbcParameter("", OdbcType.Int);
-            }
-            if ((ACol == ColumnFoundationOwner1Key))
-            {
-                return new System.Data.Odbc.OdbcParameter("", OdbcType.Int);
-            }
-            if ((ACol == ColumnFoundationOwner2Key))
-            {
-                return new System.Data.Odbc.OdbcParameter("", OdbcType.Int);
-            }
-            if ((ACol == ColumnHasEXWORKERPartnerType))
-            {
-                return new System.Data.Odbc.OdbcParameter("", OdbcType.Int);
-            }
-            return null;
-        }
-    }
-    
-    /// CustomRow auto generated
-    [Serializable()]
-    public class PartnerEditTDSMiscellaneousDataRow : System.Data.DataRow
-    {
-        
-        private PartnerEditTDSMiscellaneousDataTable myTable;
-        
-        /// Constructor
-        public PartnerEditTDSMiscellaneousDataRow(System.Data.DataRowBuilder rb) : 
-                base(rb)
-        {
-            this.myTable = ((PartnerEditTDSMiscellaneousDataTable)(this.Table));
-        }
-        
-        /// This is the partner key assigned to each partner. It consists of the fund id followed by a computer generated six digit number.
-        public Int64 PartnerKey
-        {
-            get
-            {
-                object ret;
-                ret = this[this.myTable.ColumnPartnerKey.Ordinal];
-                if ((ret == System.DBNull.Value))
-                {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
-                }
-                else
-                {
-                    return ((Int64)(ret));
-                }
-            }
-            set
-            {
-                if ((this.IsNull(this.myTable.ColumnPartnerKey) 
-                            || (((Int64)(this[this.myTable.ColumnPartnerKey])) != value)))
-                {
-                    this[this.myTable.ColumnPartnerKey] = value;
-                }
-            }
-        }
-        
-        /// This is the key that tell what site created the linked location
-        public Int64 SelectedSiteKey
-        {
-            get
-            {
-                object ret;
-                ret = this[this.myTable.ColumnSelectedSiteKey.Ordinal];
-                if ((ret == System.DBNull.Value))
-                {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
-                }
-                else
-                {
-                    return ((Int64)(ret));
-                }
-            }
-            set
-            {
-                if ((this.IsNull(this.myTable.ColumnSelectedSiteKey) 
-                            || (((Int64)(this[this.myTable.ColumnSelectedSiteKey])) != value)))
-                {
-                    this[this.myTable.ColumnSelectedSiteKey] = value;
-                }
-            }
-        }
-        
-        /// 
-        public Int32 SelectedLocationKey
-        {
-            get
-            {
-                object ret;
-                ret = this[this.myTable.ColumnSelectedLocationKey.Ordinal];
-                if ((ret == System.DBNull.Value))
-                {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
-                }
-                else
-                {
-                    return ((Int32)(ret));
-                }
-            }
-            set
-            {
-                if ((this.IsNull(this.myTable.ColumnSelectedLocationKey) 
-                            || (((Int32)(this[this.myTable.ColumnSelectedLocationKey])) != value)))
-                {
-                    this[this.myTable.ColumnSelectedLocationKey] = value;
-                }
-            }
-        }
-        
-        /// 
-        public DateTime LastGiftDate
-        {
-            get
-            {
-                object ret;
-                ret = this[this.myTable.ColumnLastGiftDate.Ordinal];
-                if ((ret == System.DBNull.Value))
-                {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
-                }
-                else
-                {
-                    return ((DateTime)(ret));
-                }
-            }
-            set
-            {
-                if ((this.IsNull(this.myTable.ColumnLastGiftDate) 
-                            || (((DateTime)(this[this.myTable.ColumnLastGiftDate])) != value)))
-                {
-                    this[this.myTable.ColumnLastGiftDate] = value;
-                }
-            }
-        }
-        
-        /// 
-        public String LastGiftInfo
-        {
-            get
-            {
-                object ret;
-                ret = this[this.myTable.ColumnLastGiftInfo.Ordinal];
-                if ((ret == System.DBNull.Value))
-                {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
-                }
-                else
-                {
-                    return ((String)(ret));
-                }
-            }
-            set
-            {
-                if ((this.IsNull(this.myTable.ColumnLastGiftInfo) 
-                            || (((String)(this[this.myTable.ColumnLastGiftInfo])) != value)))
-                {
-                    this[this.myTable.ColumnLastGiftInfo] = value;
-                }
-            }
-        }
-        
-        /// 
-        public DateTime LastContactDate
-        {
-            get
-            {
-                object ret;
-                ret = this[this.myTable.ColumnLastContactDate.Ordinal];
-                if ((ret == System.DBNull.Value))
-                {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
-                }
-                else
-                {
-                    return ((DateTime)(ret));
-                }
-            }
-            set
-            {
-                if ((this.IsNull(this.myTable.ColumnLastContactDate) 
-                            || (((DateTime)(this[this.myTable.ColumnLastContactDate])) != value)))
-                {
-                    this[this.myTable.ColumnLastContactDate] = value;
-                }
-            }
-        }
-        
-        /// 
-        public Int32 ItemsCountAddresses
-        {
-            get
-            {
-                object ret;
-                ret = this[this.myTable.ColumnItemsCountAddresses.Ordinal];
-                if ((ret == System.DBNull.Value))
-                {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
-                }
-                else
-                {
-                    return ((Int32)(ret));
-                }
-            }
-            set
-            {
-                if ((this.IsNull(this.myTable.ColumnItemsCountAddresses) 
-                            || (((Int32)(this[this.myTable.ColumnItemsCountAddresses])) != value)))
-                {
-                    this[this.myTable.ColumnItemsCountAddresses] = value;
-                }
-            }
-        }
-        
-        /// 
-        public Int32 ItemsCountAddressesActive
-        {
-            get
-            {
-                object ret;
-                ret = this[this.myTable.ColumnItemsCountAddressesActive.Ordinal];
-                if ((ret == System.DBNull.Value))
-                {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
-                }
-                else
-                {
-                    return ((Int32)(ret));
-                }
-            }
-            set
-            {
-                if ((this.IsNull(this.myTable.ColumnItemsCountAddressesActive) 
-                            || (((Int32)(this[this.myTable.ColumnItemsCountAddressesActive])) != value)))
-                {
-                    this[this.myTable.ColumnItemsCountAddressesActive] = value;
-                }
-            }
-        }
-        
-        /// 
-        public Int32 ItemsCountSubscriptions
-        {
-            get
-            {
-                object ret;
-                ret = this[this.myTable.ColumnItemsCountSubscriptions.Ordinal];
-                if ((ret == System.DBNull.Value))
-                {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
-                }
-                else
-                {
-                    return ((Int32)(ret));
-                }
-            }
-            set
-            {
-                if ((this.IsNull(this.myTable.ColumnItemsCountSubscriptions) 
-                            || (((Int32)(this[this.myTable.ColumnItemsCountSubscriptions])) != value)))
-                {
-                    this[this.myTable.ColumnItemsCountSubscriptions] = value;
-                }
-            }
-        }
-        
-        /// 
-        public Int32 ItemsCountSubscriptionsActive
-        {
-            get
-            {
-                object ret;
-                ret = this[this.myTable.ColumnItemsCountSubscriptionsActive.Ordinal];
-                if ((ret == System.DBNull.Value))
-                {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
-                }
-                else
-                {
-                    return ((Int32)(ret));
-                }
-            }
-            set
-            {
-                if ((this.IsNull(this.myTable.ColumnItemsCountSubscriptionsActive) 
-                            || (((Int32)(this[this.myTable.ColumnItemsCountSubscriptionsActive])) != value)))
-                {
-                    this[this.myTable.ColumnItemsCountSubscriptionsActive] = value;
-                }
-            }
-        }
-        
-        /// 
-        public Int32 ItemsCountPartnerTypes
-        {
-            get
-            {
-                object ret;
-                ret = this[this.myTable.ColumnItemsCountPartnerTypes.Ordinal];
-                if ((ret == System.DBNull.Value))
-                {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
-                }
-                else
-                {
-                    return ((Int32)(ret));
-                }
-            }
-            set
-            {
-                if ((this.IsNull(this.myTable.ColumnItemsCountPartnerTypes) 
-                            || (((Int32)(this[this.myTable.ColumnItemsCountPartnerTypes])) != value)))
-                {
-                    this[this.myTable.ColumnItemsCountPartnerTypes] = value;
-                }
-            }
-        }
-        
-        /// 
-        public Int32 ItemsCountFamilyMembers
-        {
-            get
-            {
-                object ret;
-                ret = this[this.myTable.ColumnItemsCountFamilyMembers.Ordinal];
-                if ((ret == System.DBNull.Value))
-                {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
-                }
-                else
-                {
-                    return ((Int32)(ret));
-                }
-            }
-            set
-            {
-                if ((this.IsNull(this.myTable.ColumnItemsCountFamilyMembers) 
-                            || (((Int32)(this[this.myTable.ColumnItemsCountFamilyMembers])) != value)))
-                {
-                    this[this.myTable.ColumnItemsCountFamilyMembers] = value;
-                }
-            }
-        }
-        
-        /// 
-        public Int32 ItemsCountInterests
-        {
-            get
-            {
-                object ret;
-                ret = this[this.myTable.ColumnItemsCountInterests.Ordinal];
-                if ((ret == System.DBNull.Value))
-                {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
-                }
-                else
-                {
-                    return ((Int32)(ret));
-                }
-            }
-            set
-            {
-                if ((this.IsNull(this.myTable.ColumnItemsCountInterests) 
-                            || (((Int32)(this[this.myTable.ColumnItemsCountInterests])) != value)))
-                {
-                    this[this.myTable.ColumnItemsCountInterests] = value;
-                }
-            }
-        }
-        
-        /// 
-        public Int32 ItemsCountReminders
-        {
-            get
-            {
-                object ret;
-                ret = this[this.myTable.ColumnItemsCountReminders.Ordinal];
-                if ((ret == System.DBNull.Value))
-                {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
-                }
-                else
-                {
-                    return ((Int32)(ret));
-                }
-            }
-            set
-            {
-                if ((this.IsNull(this.myTable.ColumnItemsCountReminders) 
-                            || (((Int32)(this[this.myTable.ColumnItemsCountReminders])) != value)))
-                {
-                    this[this.myTable.ColumnItemsCountReminders] = value;
-                }
-            }
-        }
-        
-        /// 
-        public Int32 ItemsCountRelationships
-        {
-            get
-            {
-                object ret;
-                ret = this[this.myTable.ColumnItemsCountRelationships.Ordinal];
-                if ((ret == System.DBNull.Value))
-                {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
-                }
-                else
-                {
-                    return ((Int32)(ret));
-                }
-            }
-            set
-            {
-                if ((this.IsNull(this.myTable.ColumnItemsCountRelationships) 
-                            || (((Int32)(this[this.myTable.ColumnItemsCountRelationships])) != value)))
-                {
-                    this[this.myTable.ColumnItemsCountRelationships] = value;
-                }
-            }
-        }
-        
-        /// 
-        public Int32 ItemsCountContacts
-        {
-            get
-            {
-                object ret;
-                ret = this[this.myTable.ColumnItemsCountContacts.Ordinal];
-                if ((ret == System.DBNull.Value))
-                {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
-                }
-                else
-                {
-                    return ((Int32)(ret));
-                }
-            }
-            set
-            {
-                if ((this.IsNull(this.myTable.ColumnItemsCountContacts) 
-                            || (((Int32)(this[this.myTable.ColumnItemsCountContacts])) != value)))
-                {
-                    this[this.myTable.ColumnItemsCountContacts] = value;
-                }
-            }
-        }
-        
-        /// 
-        public Boolean OfficeSpecificDataLabelsAvailable
-        {
-            get
-            {
-                object ret;
-                ret = this[this.myTable.ColumnOfficeSpecificDataLabelsAvailable.Ordinal];
-                if ((ret == System.DBNull.Value))
-                {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
-                }
-                else
-                {
-                    return ((Boolean)(ret));
-                }
-            }
-            set
-            {
-                if ((this.IsNull(this.myTable.ColumnOfficeSpecificDataLabelsAvailable) 
-                            || (((Boolean)(this[this.myTable.ColumnOfficeSpecificDataLabelsAvailable])) != value)))
-                {
-                    this[this.myTable.ColumnOfficeSpecificDataLabelsAvailable] = value;
-                }
-            }
-        }
-        
-        /// 
-        public Int64 FoundationOwner1Key
-        {
-            get
-            {
-                object ret;
-                ret = this[this.myTable.ColumnFoundationOwner1Key.Ordinal];
-                if ((ret == System.DBNull.Value))
-                {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
-                }
-                else
-                {
-                    return ((Int64)(ret));
-                }
-            }
-            set
-            {
-                if ((this.IsNull(this.myTable.ColumnFoundationOwner1Key) 
-                            || (((Int64)(this[this.myTable.ColumnFoundationOwner1Key])) != value)))
-                {
-                    this[this.myTable.ColumnFoundationOwner1Key] = value;
-                }
-            }
-        }
-        
-        /// 
-        public Int64 FoundationOwner2Key
-        {
-            get
-            {
-                object ret;
-                ret = this[this.myTable.ColumnFoundationOwner2Key.Ordinal];
-                if ((ret == System.DBNull.Value))
-                {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
-                }
-                else
-                {
-                    return ((Int64)(ret));
-                }
-            }
-            set
-            {
-                if ((this.IsNull(this.myTable.ColumnFoundationOwner2Key) 
-                            || (((Int64)(this[this.myTable.ColumnFoundationOwner2Key])) != value)))
-                {
-                    this[this.myTable.ColumnFoundationOwner2Key] = value;
-                }
-            }
-        }
-        
-        /// 
-        public Boolean HasEXWORKERPartnerType
-        {
-            get
-            {
-                object ret;
-                ret = this[this.myTable.ColumnHasEXWORKERPartnerType.Ordinal];
-                if ((ret == System.DBNull.Value))
-                {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
-                }
-                else
-                {
-                    return ((Boolean)(ret));
-                }
-            }
-            set
-            {
-                if ((this.IsNull(this.myTable.ColumnHasEXWORKERPartnerType) 
-                            || (((Boolean)(this[this.myTable.ColumnHasEXWORKERPartnerType])) != value)))
-                {
-                    this[this.myTable.ColumnHasEXWORKERPartnerType] = value;
-                }
-            }
-        }
-        
-        /// set default values
-        public virtual void InitValues()
-        {
-            this[this.myTable.ColumnPartnerKey.Ordinal] = 0;
-            this[this.myTable.ColumnSelectedSiteKey.Ordinal] = 0;
-            this[this.myTable.ColumnSelectedLocationKey.Ordinal] = 0;
-            this.SetNull(this.myTable.ColumnLastGiftDate);
-            this.SetNull(this.myTable.ColumnLastGiftInfo);
-            this.SetNull(this.myTable.ColumnLastContactDate);
-            this.SetNull(this.myTable.ColumnItemsCountAddresses);
-            this.SetNull(this.myTable.ColumnItemsCountAddressesActive);
-            this.SetNull(this.myTable.ColumnItemsCountSubscriptions);
-            this.SetNull(this.myTable.ColumnItemsCountSubscriptionsActive);
-            this.SetNull(this.myTable.ColumnItemsCountPartnerTypes);
-            this.SetNull(this.myTable.ColumnItemsCountFamilyMembers);
-            this.SetNull(this.myTable.ColumnItemsCountInterests);
-            this.SetNull(this.myTable.ColumnItemsCountReminders);
-            this.SetNull(this.myTable.ColumnItemsCountRelationships);
-            this.SetNull(this.myTable.ColumnItemsCountContacts);
-            this.SetNull(this.myTable.ColumnOfficeSpecificDataLabelsAvailable);
-            this.SetNull(this.myTable.ColumnFoundationOwner1Key);
-            this.SetNull(this.myTable.ColumnFoundationOwner2Key);
-            this.SetNull(this.myTable.ColumnHasEXWORKERPartnerType);
-        }
-        
-        /// test for NULL value
-        public bool IsLastGiftDateNull()
-        {
-            return this.IsNull(this.myTable.ColumnLastGiftDate);
-        }
-        
-        /// assign NULL value
-        public void SetLastGiftDateNull()
-        {
-            this.SetNull(this.myTable.ColumnLastGiftDate);
-        }
-        
-        /// test for NULL value
-        public bool IsLastGiftInfoNull()
-        {
-            return this.IsNull(this.myTable.ColumnLastGiftInfo);
-        }
-        
-        /// assign NULL value
-        public void SetLastGiftInfoNull()
-        {
-            this.SetNull(this.myTable.ColumnLastGiftInfo);
-        }
-        
-        /// test for NULL value
-        public bool IsLastContactDateNull()
-        {
-            return this.IsNull(this.myTable.ColumnLastContactDate);
-        }
-        
-        /// assign NULL value
-        public void SetLastContactDateNull()
-        {
-            this.SetNull(this.myTable.ColumnLastContactDate);
-        }
-        
-        /// test for NULL value
-        public bool IsItemsCountAddressesNull()
-        {
-            return this.IsNull(this.myTable.ColumnItemsCountAddresses);
-        }
-        
-        /// assign NULL value
-        public void SetItemsCountAddressesNull()
-        {
-            this.SetNull(this.myTable.ColumnItemsCountAddresses);
-        }
-        
-        /// test for NULL value
-        public bool IsItemsCountAddressesActiveNull()
-        {
-            return this.IsNull(this.myTable.ColumnItemsCountAddressesActive);
-        }
-        
-        /// assign NULL value
-        public void SetItemsCountAddressesActiveNull()
-        {
-            this.SetNull(this.myTable.ColumnItemsCountAddressesActive);
-        }
-        
-        /// test for NULL value
-        public bool IsItemsCountSubscriptionsNull()
-        {
-            return this.IsNull(this.myTable.ColumnItemsCountSubscriptions);
-        }
-        
-        /// assign NULL value
-        public void SetItemsCountSubscriptionsNull()
-        {
-            this.SetNull(this.myTable.ColumnItemsCountSubscriptions);
-        }
-        
-        /// test for NULL value
-        public bool IsItemsCountSubscriptionsActiveNull()
-        {
-            return this.IsNull(this.myTable.ColumnItemsCountSubscriptionsActive);
-        }
-        
-        /// assign NULL value
-        public void SetItemsCountSubscriptionsActiveNull()
-        {
-            this.SetNull(this.myTable.ColumnItemsCountSubscriptionsActive);
-        }
-        
-        /// test for NULL value
-        public bool IsItemsCountPartnerTypesNull()
-        {
-            return this.IsNull(this.myTable.ColumnItemsCountPartnerTypes);
-        }
-        
-        /// assign NULL value
-        public void SetItemsCountPartnerTypesNull()
-        {
-            this.SetNull(this.myTable.ColumnItemsCountPartnerTypes);
-        }
-        
-        /// test for NULL value
-        public bool IsItemsCountFamilyMembersNull()
-        {
-            return this.IsNull(this.myTable.ColumnItemsCountFamilyMembers);
-        }
-        
-        /// assign NULL value
-        public void SetItemsCountFamilyMembersNull()
-        {
-            this.SetNull(this.myTable.ColumnItemsCountFamilyMembers);
-        }
-        
-        /// test for NULL value
-        public bool IsItemsCountInterestsNull()
-        {
-            return this.IsNull(this.myTable.ColumnItemsCountInterests);
-        }
-        
-        /// assign NULL value
-        public void SetItemsCountInterestsNull()
-        {
-            this.SetNull(this.myTable.ColumnItemsCountInterests);
-        }
-        
-        /// test for NULL value
-        public bool IsItemsCountRemindersNull()
-        {
-            return this.IsNull(this.myTable.ColumnItemsCountReminders);
-        }
-        
-        /// assign NULL value
-        public void SetItemsCountRemindersNull()
-        {
-            this.SetNull(this.myTable.ColumnItemsCountReminders);
-        }
-        
-        /// test for NULL value
-        public bool IsItemsCountRelationshipsNull()
-        {
-            return this.IsNull(this.myTable.ColumnItemsCountRelationships);
-        }
-        
-        /// assign NULL value
-        public void SetItemsCountRelationshipsNull()
-        {
-            this.SetNull(this.myTable.ColumnItemsCountRelationships);
-        }
-        
-        /// test for NULL value
-        public bool IsItemsCountContactsNull()
-        {
-            return this.IsNull(this.myTable.ColumnItemsCountContacts);
-        }
-        
-        /// assign NULL value
-        public void SetItemsCountContactsNull()
-        {
-            this.SetNull(this.myTable.ColumnItemsCountContacts);
-        }
-        
-        /// test for NULL value
-        public bool IsOfficeSpecificDataLabelsAvailableNull()
-        {
-            return this.IsNull(this.myTable.ColumnOfficeSpecificDataLabelsAvailable);
-        }
-        
-        /// assign NULL value
-        public void SetOfficeSpecificDataLabelsAvailableNull()
-        {
-            this.SetNull(this.myTable.ColumnOfficeSpecificDataLabelsAvailable);
-        }
-        
-        /// test for NULL value
-        public bool IsFoundationOwner1KeyNull()
-        {
-            return this.IsNull(this.myTable.ColumnFoundationOwner1Key);
-        }
-        
-        /// assign NULL value
-        public void SetFoundationOwner1KeyNull()
-        {
-            this.SetNull(this.myTable.ColumnFoundationOwner1Key);
-        }
-        
-        /// test for NULL value
-        public bool IsFoundationOwner2KeyNull()
-        {
-            return this.IsNull(this.myTable.ColumnFoundationOwner2Key);
-        }
-        
-        /// assign NULL value
-        public void SetFoundationOwner2KeyNull()
-        {
-            this.SetNull(this.myTable.ColumnFoundationOwner2Key);
-        }
-        
-        /// test for NULL value
-        public bool IsHasEXWORKERPartnerTypeNull()
-        {
-            return this.IsNull(this.myTable.ColumnHasEXWORKERPartnerType);
-        }
-        
-        /// assign NULL value
-        public void SetHasEXWORKERPartnerTypeNull()
-        {
-            this.SetNull(this.myTable.ColumnHasEXWORKERPartnerType);
-        }
-    }
-    
-    /// auto generated custom table
-    [Serializable()]
-    public class PartnerEditTDSFamilyMembersTable : TTypedDataTable
-    {
-        
-        /// This is the partner key assigned to each partner. It consists of the fund id followed by a computer generated six digit number.
-        public DataColumn ColumnPartnerKey;
-        
-        /// Name of the person or organisation.  If a person, more name info is stored in p_person.
-        public DataColumn ColumnPartnerShortName;
-        
-        /// This field indicates the family id of the individual.
-        ///ID's 0 and 1 are used for parents; 2, 3, 4 ... 9 are used for children.
-        public DataColumn ColumnFamilyId;
-        
-        /// 
-        public DataColumn ColumnGender;
-        
-        /// This is the date the rthe person was born
-        public DataColumn ColumnDateOfBirth;
-        
-        /// 
-        public DataColumn ColumnTypeCodeModify;
-        
-        /// 
-        public DataColumn ColumnTypeCodePresent;
-        
-        /// 
-        public DataColumn ColumnOtherTypeCodes;
-        
-        /// constructor
-        public PartnerEditTDSFamilyMembersTable() : 
-                base("FamilyMembers")
-        {
-        }
-        
-        /// constructor
-        public PartnerEditTDSFamilyMembersTable(string ATablename) : 
-                base(ATablename)
-        {
-        }
-        
-        /// constructor for serialization
-        public PartnerEditTDSFamilyMembersTable(System.Runtime.Serialization.SerializationInfo info, System.Runtime.Serialization.StreamingContext context) : 
-                base(info, context)
-        {
-        }
-        
-        /// Access a typed row by index
-        public PartnerEditTDSFamilyMembersRow this[int i]
-        {
-            get
-            {
-                return ((PartnerEditTDSFamilyMembersRow)(this.Rows[i]));
-            }
-        }
-        
-        /// get the name of the field in the database for this column
-        public static string GetPartnerKeyDBName()
-        {
-            return "p_partner_key_n";
-        }
-        
-        /// get help text for column
-        public static string GetPartnerKeyHelp()
-        {
-            return "Enter the partner key (SiteID + Number)";
-        }
-        
-        /// get label of column
-        public static string GetPartnerKeyLabel()
-        {
-            return "Partner Key";
-        }
-        
-        /// get the name of the field in the database for this column
-        public static string GetPartnerShortNameDBName()
-        {
-            return "p_partner_short_name_c";
-        }
-        
-        /// get help text for column
-        public static string GetPartnerShortNameHelp()
-        {
-            return "Enter a short name for this partner";
-        }
-        
-        /// get label of column
-        public static string GetPartnerShortNameLabel()
-        {
-            return "Short Name";
-        }
-        
-        /// get the name of the field in the database for this column
-        public static string GetFamilyIdDBName()
-        {
-            return "p_family_id_i";
-        }
-        
-        /// get help text for column
-        public static string GetFamilyIdHelp()
-        {
-            return "This field indicates the family id of the individual.";
-        }
-        
-        /// get label of column
-        public static string GetFamilyIdLabel()
-        {
-            return "Family ID";
-        }
-        
-        /// get the name of the field in the database for this column
-        public static string GetGenderDBName()
-        {
-            return "p_gender_c";
-        }
-        
-        /// get help text for column
-        public static string GetGenderHelp()
-        {
-            return "Select the gender of the Person";
-        }
-        
-        /// get label of column
-        public static string GetGenderLabel()
-        {
-            return "Gender";
-        }
-        
-        /// get the name of the field in the database for this column
-        public static string GetDateOfBirthDBName()
-        {
-            return "p_date_of_birth_d";
-        }
-        
-        /// get help text for column
-        public static string GetDateOfBirthHelp()
-        {
-            return "Enter the date the person was born";
-        }
-        
-        /// get label of column
-        public static string GetDateOfBirthLabel()
-        {
-            return "Date of Birth";
-        }
-        
-        /// get the name of the field in the database for this column
-        public static string GetTypeCodeModifyDBName()
-        {
-            return "TypeCodeModify";
-        }
-        
-        /// get help text for column
-        public static string GetTypeCodeModifyHelp()
-        {
-            return null;
-        }
-        
-        /// get label of column
-        public static string GetTypeCodeModifyLabel()
-        {
-            return "";
-        }
-        
-        /// get the name of the field in the database for this column
-        public static string GetTypeCodePresentDBName()
-        {
-            return "TypeCodePresent";
-        }
-        
-        /// get help text for column
-        public static string GetTypeCodePresentHelp()
-        {
-            return null;
-        }
-        
-        /// get label of column
-        public static string GetTypeCodePresentLabel()
-        {
-            return "";
-        }
-        
-        /// get the name of the field in the database for this column
-        public static string GetOtherTypeCodesDBName()
-        {
-            return "OtherTypeCodes";
-        }
-        
-        /// get help text for column
-        public static string GetOtherTypeCodesHelp()
-        {
-            return null;
-        }
-        
-        /// get label of column
-        public static string GetOtherTypeCodesLabel()
-        {
-            return "";
-        }
-        
-        /// CamelCase version of the tablename
-        public static string GetTableName()
-        {
-            return "FamilyMembers";
-        }
-        
-        /// original name of table in the database
-        public static string GetTableDBName()
-        {
-            return "FamilyMembers";
-        }
-        
-        /// assign columns to properties, set primary key
-        public override void InitVars()
-        {
-            this.ColumnPartnerKey = this.Columns["p_partner_key_n"];
-            this.ColumnPartnerShortName = this.Columns["p_partner_short_name_c"];
-            this.ColumnFamilyId = this.Columns["p_family_id_i"];
-            this.ColumnGender = this.Columns["p_gender_c"];
-            this.ColumnDateOfBirth = this.Columns["p_date_of_birth_d"];
-            this.ColumnTypeCodeModify = this.Columns["TypeCodeModify"];
-            this.ColumnTypeCodePresent = this.Columns["TypeCodePresent"];
-            this.ColumnOtherTypeCodes = this.Columns["OtherTypeCodes"];
-            this.PrimaryKey = new System.Data.DataColumn[] {
-                    this.ColumnPartnerKey};
-        }
-        
-        /// create a new typed row
-        public PartnerEditTDSFamilyMembersRow NewRowTyped(bool AWithDefaultValues)
-        {
-            PartnerEditTDSFamilyMembersRow ret = ((PartnerEditTDSFamilyMembersRow)(this.NewRow()));
-            if ((AWithDefaultValues == true))
-            {
-                ret.InitValues();
-            }
-            return ret;
-        }
-        
-        /// new typed row using DataRowBuilder
-        protected override System.Data.DataRow NewRowFromBuilder(System.Data.DataRowBuilder builder)
-        {
-            return new PartnerEditTDSFamilyMembersRow(builder);
-        }
-        
-        /// create the columns
-        protected override void InitClass()
-        {
-            this.Columns.Add(new System.Data.DataColumn("p_partner_key_n", typeof(Int64)));
-            this.Columns.Add(new System.Data.DataColumn("p_partner_short_name_c", typeof(String)));
-            this.Columns.Add(new System.Data.DataColumn("p_family_id_i", typeof(Int32)));
-            this.Columns.Add(new System.Data.DataColumn("p_gender_c", typeof(String)));
-            this.Columns.Add(new System.Data.DataColumn("p_date_of_birth_d", typeof(System.DateTime)));
-            this.Columns.Add(new System.Data.DataColumn("TypeCodeModify", typeof(Boolean)));
-            this.Columns.Add(new System.Data.DataColumn("TypeCodePresent", typeof(Boolean)));
-            this.Columns.Add(new System.Data.DataColumn("OtherTypeCodes", typeof(String)));
-        }
-        
-        /// prepare odbc parameters for given column
-        public override OdbcParameter CreateOdbcParameter(DataColumn ACol)
-        {
-            if ((ACol == ColumnPartnerKey))
-            {
-                return new System.Data.Odbc.OdbcParameter("", OdbcType.Decimal, 10);
-            }
-            if ((ACol == ColumnPartnerShortName))
-            {
-                return new System.Data.Odbc.OdbcParameter("", OdbcType.VarChar, 160);
-            }
-            if ((ACol == ColumnFamilyId))
-            {
-                return new System.Data.Odbc.OdbcParameter("", OdbcType.Int);
-            }
-            if ((ACol == ColumnGender))
-            {
-                return new System.Data.Odbc.OdbcParameter("", OdbcType.VarChar, 16);
-            }
-            if ((ACol == ColumnDateOfBirth))
-            {
-                return new System.Data.Odbc.OdbcParameter("", OdbcType.Date);
-            }
-            if ((ACol == ColumnTypeCodeModify))
-            {
-                return new System.Data.Odbc.OdbcParameter("", OdbcType.Int);
-            }
-            if ((ACol == ColumnTypeCodePresent))
-            {
-                return new System.Data.Odbc.OdbcParameter("", OdbcType.Int);
-            }
-            if ((ACol == ColumnOtherTypeCodes))
-            {
-                return new System.Data.Odbc.OdbcParameter("", OdbcType.Int);
-            }
-            return null;
-        }
-    }
-    
-    /// CustomRow auto generated
-    [Serializable()]
-    public class PartnerEditTDSFamilyMembersRow : System.Data.DataRow
-    {
-        
-        private PartnerEditTDSFamilyMembersTable myTable;
-        
-        /// Constructor
-        public PartnerEditTDSFamilyMembersRow(System.Data.DataRowBuilder rb) : 
-                base(rb)
-        {
-            this.myTable = ((PartnerEditTDSFamilyMembersTable)(this.Table));
-        }
-        
-        /// This is the partner key assigned to each partner. It consists of the fund id followed by a computer generated six digit number.
-        public Int64 PartnerKey
-        {
-            get
-            {
-                object ret;
-                ret = this[this.myTable.ColumnPartnerKey.Ordinal];
-                if ((ret == System.DBNull.Value))
-                {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
-                }
-                else
-                {
-                    return ((Int64)(ret));
-                }
-            }
-            set
-            {
-                if ((this.IsNull(this.myTable.ColumnPartnerKey) 
-                            || (((Int64)(this[this.myTable.ColumnPartnerKey])) != value)))
-                {
-                    this[this.myTable.ColumnPartnerKey] = value;
-                }
-            }
-        }
-        
-        /// Name of the person or organisation.  If a person, more name info is stored in p_person.
-        public String PartnerShortName
-        {
-            get
-            {
-                object ret;
-                ret = this[this.myTable.ColumnPartnerShortName.Ordinal];
-                if ((ret == System.DBNull.Value))
-                {
-                    return String.Empty;
-                }
-                else
-                {
-                    return ((String)(ret));
-                }
-            }
-            set
-            {
-                if ((this.IsNull(this.myTable.ColumnPartnerShortName) 
-                            || (((String)(this[this.myTable.ColumnPartnerShortName])) != value)))
-                {
-                    this[this.myTable.ColumnPartnerShortName] = value;
-                }
-            }
-        }
-        
-        /// This field indicates the family id of the individual.
-        ///ID's 0 and 1 are used for parents; 2, 3, 4 ... 9 are used for children.
-        public Int32 FamilyId
-        {
-            get
-            {
-                object ret;
-                ret = this[this.myTable.ColumnFamilyId.Ordinal];
-                if ((ret == System.DBNull.Value))
-                {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
-                }
-                else
-                {
-                    return ((Int32)(ret));
-                }
-            }
-            set
-            {
-                if ((this.IsNull(this.myTable.ColumnFamilyId) 
-                            || (((Int32)(this[this.myTable.ColumnFamilyId])) != value)))
-                {
-                    this[this.myTable.ColumnFamilyId] = value;
-                }
-            }
-        }
-        
-        /// 
-        public String Gender
-        {
-            get
-            {
-                object ret;
-                ret = this[this.myTable.ColumnGender.Ordinal];
-                if ((ret == System.DBNull.Value))
-                {
-                    return String.Empty;
-                }
-                else
-                {
-                    return ((String)(ret));
-                }
-            }
-            set
-            {
-                if ((this.IsNull(this.myTable.ColumnGender) 
-                            || (((String)(this[this.myTable.ColumnGender])) != value)))
-                {
-                    this[this.myTable.ColumnGender] = value;
-                }
-            }
-        }
-        
-        /// This is the date the rthe person was born
-        public System.DateTime DateOfBirth
-        {
-            get
-            {
-                object ret;
-                ret = this[this.myTable.ColumnDateOfBirth.Ordinal];
-                if ((ret == System.DBNull.Value))
-                {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
-                }
-                else
-                {
-                    return ((System.DateTime)(ret));
-                }
-            }
-            set
-            {
-                if ((this.IsNull(this.myTable.ColumnDateOfBirth) 
-                            || (((System.DateTime)(this[this.myTable.ColumnDateOfBirth])) != value)))
-                {
-                    this[this.myTable.ColumnDateOfBirth] = value;
-                }
-            }
-        }
-        
-        /// 
-        public Boolean TypeCodeModify
-        {
-            get
-            {
-                object ret;
-                ret = this[this.myTable.ColumnTypeCodeModify.Ordinal];
-                if ((ret == System.DBNull.Value))
-                {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
-                }
-                else
-                {
-                    return ((Boolean)(ret));
-                }
-            }
-            set
-            {
-                if ((this.IsNull(this.myTable.ColumnTypeCodeModify) 
-                            || (((Boolean)(this[this.myTable.ColumnTypeCodeModify])) != value)))
-                {
-                    this[this.myTable.ColumnTypeCodeModify] = value;
-                }
-            }
-        }
-        
-        /// 
-        public Boolean TypeCodePresent
-        {
-            get
-            {
-                object ret;
-                ret = this[this.myTable.ColumnTypeCodePresent.Ordinal];
-                if ((ret == System.DBNull.Value))
-                {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
-                }
-                else
-                {
-                    return ((Boolean)(ret));
-                }
-            }
-            set
-            {
-                if ((this.IsNull(this.myTable.ColumnTypeCodePresent) 
-                            || (((Boolean)(this[this.myTable.ColumnTypeCodePresent])) != value)))
-                {
-                    this[this.myTable.ColumnTypeCodePresent] = value;
-                }
-            }
-        }
-        
-        /// 
-        public String OtherTypeCodes
-        {
-            get
-            {
-                object ret;
-                ret = this[this.myTable.ColumnOtherTypeCodes.Ordinal];
-                if ((ret == System.DBNull.Value))
-                {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
-                }
-                else
-                {
-                    return ((String)(ret));
-                }
-            }
-            set
-            {
-                if ((this.IsNull(this.myTable.ColumnOtherTypeCodes) 
-                            || (((String)(this[this.myTable.ColumnOtherTypeCodes])) != value)))
-                {
-                    this[this.myTable.ColumnOtherTypeCodes] = value;
-                }
-            }
-        }
-        
-        /// set default values
-        public virtual void InitValues()
-        {
-            this[this.myTable.ColumnPartnerKey.Ordinal] = 0;
-            this.SetNull(this.myTable.ColumnPartnerShortName);
-            this[this.myTable.ColumnFamilyId.Ordinal] = 0;
-            this[this.myTable.ColumnGender.Ordinal] = "Unknown";
-            this.SetNull(this.myTable.ColumnDateOfBirth);
-            this.SetNull(this.myTable.ColumnTypeCodeModify);
-            this.SetNull(this.myTable.ColumnTypeCodePresent);
-            this.SetNull(this.myTable.ColumnOtherTypeCodes);
-        }
-        
-        /// test for NULL value
-        public bool IsPartnerShortNameNull()
-        {
-            return this.IsNull(this.myTable.ColumnPartnerShortName);
-        }
-        
-        /// assign NULL value
-        public void SetPartnerShortNameNull()
-        {
-            this.SetNull(this.myTable.ColumnPartnerShortName);
-        }
-        
-        /// test for NULL value
-        public bool IsFamilyIdNull()
-        {
-            return this.IsNull(this.myTable.ColumnFamilyId);
-        }
-        
-        /// assign NULL value
-        public void SetFamilyIdNull()
-        {
-            this.SetNull(this.myTable.ColumnFamilyId);
-        }
-        
-        /// test for NULL value
-        public bool IsGenderNull()
-        {
-            return this.IsNull(this.myTable.ColumnGender);
-        }
-        
-        /// assign NULL value
-        public void SetGenderNull()
-        {
-            this.SetNull(this.myTable.ColumnGender);
-        }
-        
-        /// test for NULL value
-        public bool IsDateOfBirthNull()
-        {
-            return this.IsNull(this.myTable.ColumnDateOfBirth);
-        }
-        
-        /// assign NULL value
-        public void SetDateOfBirthNull()
-        {
-            this.SetNull(this.myTable.ColumnDateOfBirth);
-        }
-        
-        /// test for NULL value
-        public bool IsTypeCodeModifyNull()
-        {
-            return this.IsNull(this.myTable.ColumnTypeCodeModify);
-        }
-        
-        /// assign NULL value
-        public void SetTypeCodeModifyNull()
-        {
-            this.SetNull(this.myTable.ColumnTypeCodeModify);
-        }
-        
-        /// test for NULL value
-        public bool IsTypeCodePresentNull()
-        {
-            return this.IsNull(this.myTable.ColumnTypeCodePresent);
-        }
-        
-        /// assign NULL value
-        public void SetTypeCodePresentNull()
-        {
-            this.SetNull(this.myTable.ColumnTypeCodePresent);
-        }
-        
-        /// test for NULL value
-        public bool IsOtherTypeCodesNull()
-        {
-            return this.IsNull(this.myTable.ColumnOtherTypeCodes);
-        }
-        
-        /// assign NULL value
-        public void SetOtherTypeCodesNull()
-        {
-            this.SetNull(this.myTable.ColumnOtherTypeCodes);
-        }
-    }
-    
-    /// auto generated custom table
-    [Serializable()]
-    public class PartnerEditTDSFamilyMembersInfoForStatusChangeTable : TTypedDataTable
-    {
-        
-        /// This is the partner key assigned to each partner. It consists of the fund id followed by a computer generated six digit number.
-        public DataColumn ColumnPartnerKey;
-        
-        /// constructor
-        public PartnerEditTDSFamilyMembersInfoForStatusChangeTable() : 
-                base("FamilyMembersInfoForStatusChange")
-        {
-        }
-        
-        /// constructor
-        public PartnerEditTDSFamilyMembersInfoForStatusChangeTable(string ATablename) : 
-                base(ATablename)
-        {
-        }
-        
-        /// constructor for serialization
-        public PartnerEditTDSFamilyMembersInfoForStatusChangeTable(System.Runtime.Serialization.SerializationInfo info, System.Runtime.Serialization.StreamingContext context) : 
-                base(info, context)
-        {
-        }
-        
-        /// Access a typed row by index
-        public PartnerEditTDSFamilyMembersInfoForStatusChangeRow this[int i]
-        {
-            get
-            {
-                return ((PartnerEditTDSFamilyMembersInfoForStatusChangeRow)(this.Rows[i]));
-            }
-        }
-        
-        /// get the name of the field in the database for this column
-        public static string GetPartnerKeyDBName()
-        {
-            return "p_partner_key_n";
-        }
-        
-        /// get help text for column
-        public static string GetPartnerKeyHelp()
-        {
-            return "Enter the partner key (SiteID + Number)";
-        }
-        
-        /// get label of column
-        public static string GetPartnerKeyLabel()
-        {
-            return "Partner Key";
-        }
-        
-        /// CamelCase version of the tablename
-        public static string GetTableName()
-        {
-            return "FamilyMembersInfoForStatusChange";
-        }
-        
-        /// original name of table in the database
-        public static string GetTableDBName()
-        {
-            return "FamilyMembersInfoForStatusChange";
-        }
-        
-        /// assign columns to properties, set primary key
-        public override void InitVars()
-        {
-            this.ColumnPartnerKey = this.Columns["p_partner_key_n"];
-        }
-        
-        /// create a new typed row
-        public PartnerEditTDSFamilyMembersInfoForStatusChangeRow NewRowTyped(bool AWithDefaultValues)
-        {
-            PartnerEditTDSFamilyMembersInfoForStatusChangeRow ret = ((PartnerEditTDSFamilyMembersInfoForStatusChangeRow)(this.NewRow()));
-            if ((AWithDefaultValues == true))
-            {
-                ret.InitValues();
-            }
-            return ret;
-        }
-        
-        /// new typed row using DataRowBuilder
-        protected override System.Data.DataRow NewRowFromBuilder(System.Data.DataRowBuilder builder)
-        {
-            return new PartnerEditTDSFamilyMembersInfoForStatusChangeRow(builder);
-        }
-        
-        /// create the columns
-        protected override void InitClass()
-        {
-            this.Columns.Add(new System.Data.DataColumn("p_partner_key_n", typeof(Int64)));
-        }
-        
-        /// prepare odbc parameters for given column
-        public override OdbcParameter CreateOdbcParameter(DataColumn ACol)
-        {
-            if ((ACol == ColumnPartnerKey))
-            {
-                return new System.Data.Odbc.OdbcParameter("", OdbcType.Decimal, 10);
-            }
-            return null;
-        }
-    }
-    
-    /// CustomRow auto generated
-    [Serializable()]
-    public class PartnerEditTDSFamilyMembersInfoForStatusChangeRow : System.Data.DataRow
-    {
-        
-        private PartnerEditTDSFamilyMembersInfoForStatusChangeTable myTable;
-        
-        /// Constructor
-        public PartnerEditTDSFamilyMembersInfoForStatusChangeRow(System.Data.DataRowBuilder rb) : 
-                base(rb)
-        {
-            this.myTable = ((PartnerEditTDSFamilyMembersInfoForStatusChangeTable)(this.Table));
-        }
-        
-        /// This is the partner key assigned to each partner. It consists of the fund id followed by a computer generated six digit number.
-        public Int64 PartnerKey
-        {
-            get
-            {
-                object ret;
-                ret = this[this.myTable.ColumnPartnerKey.Ordinal];
-                if ((ret == System.DBNull.Value))
-                {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
-                }
-                else
-                {
-                    return ((Int64)(ret));
-                }
-            }
-            set
-            {
-                if ((this.IsNull(this.myTable.ColumnPartnerKey) 
-                            || (((Int64)(this[this.myTable.ColumnPartnerKey])) != value)))
-                {
-                    this[this.myTable.ColumnPartnerKey] = value;
-                }
-            }
-        }
-        
-        /// set default values
-        public virtual void InitValues()
-        {
-            this[this.myTable.ColumnPartnerKey.Ordinal] = 0;
-        }
-    }
-    
-    /// auto generated custom table
-    [Serializable()]
-    public class PartnerEditTDSPartnerTypeChangeFamilyMembersPromotionTable : TTypedDataTable
-    {
-        
-        /// This is the partner key assigned to each partner. It consists of the fund id followed by a computer generated six digit number.
-        public DataColumn ColumnPartnerKey;
-        
-        /// 
-        public DataColumn ColumnTypeCode;
-        
-        /// 
-        public DataColumn ColumnAddTypeCode;
-        
-        /// 
-        public DataColumn ColumnRemoveTypeCode;
-        
-        /// constructor
-        public PartnerEditTDSPartnerTypeChangeFamilyMembersPromotionTable() : 
-                base("PartnerTypeChangeFamilyMembersPromotion")
-        {
-        }
-        
-        /// constructor
-        public PartnerEditTDSPartnerTypeChangeFamilyMembersPromotionTable(string ATablename) : 
-                base(ATablename)
-        {
-        }
-        
-        /// constructor for serialization
-        public PartnerEditTDSPartnerTypeChangeFamilyMembersPromotionTable(System.Runtime.Serialization.SerializationInfo info, System.Runtime.Serialization.StreamingContext context) : 
-                base(info, context)
-        {
-        }
-        
-        /// Access a typed row by index
-        public PartnerEditTDSPartnerTypeChangeFamilyMembersPromotionRow this[int i]
-        {
-            get
-            {
-                return ((PartnerEditTDSPartnerTypeChangeFamilyMembersPromotionRow)(this.Rows[i]));
-            }
-        }
-        
-        /// get the name of the field in the database for this column
-        public static string GetPartnerKeyDBName()
-        {
-            return "p_partner_key_n";
-        }
-        
-        /// get help text for column
-        public static string GetPartnerKeyHelp()
-        {
-            return "Enter the partner key (SiteID + Number)";
-        }
-        
-        /// get label of column
-        public static string GetPartnerKeyLabel()
-        {
-            return "Partner Key";
-        }
-        
-        /// get the name of the field in the database for this column
-        public static string GetTypeCodeDBName()
-        {
-            return "TypeCode";
-        }
-        
-        /// get help text for column
-        public static string GetTypeCodeHelp()
-        {
-            return null;
-        }
-        
-        /// get label of column
-        public static string GetTypeCodeLabel()
-        {
-            return "";
-        }
-        
-        /// get the name of the field in the database for this column
-        public static string GetAddTypeCodeDBName()
-        {
-            return "AddTypeCode";
-        }
-        
-        /// get help text for column
-        public static string GetAddTypeCodeHelp()
-        {
-            return null;
-        }
-        
-        /// get label of column
-        public static string GetAddTypeCodeLabel()
-        {
-            return "";
-        }
-        
-        /// get the name of the field in the database for this column
-        public static string GetRemoveTypeCodeDBName()
-        {
-            return "RemoveTypeCode";
-        }
-        
-        /// get help text for column
-        public static string GetRemoveTypeCodeHelp()
-        {
-            return null;
-        }
-        
-        /// get label of column
-        public static string GetRemoveTypeCodeLabel()
-        {
-            return "";
-        }
-        
-        /// CamelCase version of the tablename
-        public static string GetTableName()
-        {
-            return "PartnerTypeChangeFamilyMembersPromotion";
-        }
-        
-        /// original name of table in the database
-        public static string GetTableDBName()
-        {
-            return "PartnerTypeChangeFamilyMembersPromotion";
-        }
-        
-        /// assign columns to properties, set primary key
-        public override void InitVars()
-        {
-            this.ColumnPartnerKey = this.Columns["p_partner_key_n"];
-            this.ColumnTypeCode = this.Columns["TypeCode"];
-            this.ColumnAddTypeCode = this.Columns["AddTypeCode"];
-            this.ColumnRemoveTypeCode = this.Columns["RemoveTypeCode"];
-            this.PrimaryKey = new System.Data.DataColumn[] {
-                    this.ColumnPartnerKey,
-                    this.ColumnTypeCode,
-                    this.ColumnAddTypeCode};
-        }
-        
-        /// create a new typed row
-        public PartnerEditTDSPartnerTypeChangeFamilyMembersPromotionRow NewRowTyped(bool AWithDefaultValues)
-        {
-            PartnerEditTDSPartnerTypeChangeFamilyMembersPromotionRow ret = ((PartnerEditTDSPartnerTypeChangeFamilyMembersPromotionRow)(this.NewRow()));
-            if ((AWithDefaultValues == true))
-            {
-                ret.InitValues();
-            }
-            return ret;
-        }
-        
-        /// new typed row using DataRowBuilder
-        protected override System.Data.DataRow NewRowFromBuilder(System.Data.DataRowBuilder builder)
-        {
-            return new PartnerEditTDSPartnerTypeChangeFamilyMembersPromotionRow(builder);
-        }
-        
-        /// create the columns
-        protected override void InitClass()
-        {
-            this.Columns.Add(new System.Data.DataColumn("p_partner_key_n", typeof(Int64)));
-            this.Columns.Add(new System.Data.DataColumn("TypeCode", typeof(String)));
-            this.Columns.Add(new System.Data.DataColumn("AddTypeCode", typeof(Boolean)));
-            this.Columns.Add(new System.Data.DataColumn("RemoveTypeCode", typeof(Boolean)));
-        }
-        
-        /// prepare odbc parameters for given column
-        public override OdbcParameter CreateOdbcParameter(DataColumn ACol)
-        {
-            if ((ACol == ColumnPartnerKey))
-            {
-                return new System.Data.Odbc.OdbcParameter("", OdbcType.Decimal, 10);
-            }
-            if ((ACol == ColumnTypeCode))
-            {
-                return new System.Data.Odbc.OdbcParameter("", OdbcType.Int);
-            }
-            if ((ACol == ColumnAddTypeCode))
-            {
-                return new System.Data.Odbc.OdbcParameter("", OdbcType.Int);
-            }
-            if ((ACol == ColumnRemoveTypeCode))
-            {
-                return new System.Data.Odbc.OdbcParameter("", OdbcType.Int);
-            }
-            return null;
-        }
-    }
-    
-    /// CustomRow auto generated
-    [Serializable()]
-    public class PartnerEditTDSPartnerTypeChangeFamilyMembersPromotionRow : System.Data.DataRow
-    {
-        
-        private PartnerEditTDSPartnerTypeChangeFamilyMembersPromotionTable myTable;
-        
-        /// Constructor
-        public PartnerEditTDSPartnerTypeChangeFamilyMembersPromotionRow(System.Data.DataRowBuilder rb) : 
-                base(rb)
-        {
-            this.myTable = ((PartnerEditTDSPartnerTypeChangeFamilyMembersPromotionTable)(this.Table));
-        }
-        
-        /// This is the partner key assigned to each partner. It consists of the fund id followed by a computer generated six digit number.
-        public Int64 PartnerKey
-        {
-            get
-            {
-                object ret;
-                ret = this[this.myTable.ColumnPartnerKey.Ordinal];
-                if ((ret == System.DBNull.Value))
-                {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
-                }
-                else
-                {
-                    return ((Int64)(ret));
-                }
-            }
-            set
-            {
-                if ((this.IsNull(this.myTable.ColumnPartnerKey) 
-                            || (((Int64)(this[this.myTable.ColumnPartnerKey])) != value)))
-                {
-                    this[this.myTable.ColumnPartnerKey] = value;
-                }
-            }
-        }
-        
-        /// 
-        public String TypeCode
-        {
-            get
-            {
-                object ret;
-                ret = this[this.myTable.ColumnTypeCode.Ordinal];
-                if ((ret == System.DBNull.Value))
-                {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
-                }
-                else
-                {
-                    return ((String)(ret));
-                }
-            }
-            set
-            {
-                if ((this.IsNull(this.myTable.ColumnTypeCode) 
-                            || (((String)(this[this.myTable.ColumnTypeCode])) != value)))
-                {
-                    this[this.myTable.ColumnTypeCode] = value;
-                }
-            }
-        }
-        
-        /// 
-        public Boolean AddTypeCode
-        {
-            get
-            {
-                object ret;
-                ret = this[this.myTable.ColumnAddTypeCode.Ordinal];
-                if ((ret == System.DBNull.Value))
-                {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
-                }
-                else
-                {
-                    return ((Boolean)(ret));
-                }
-            }
-            set
-            {
-                if ((this.IsNull(this.myTable.ColumnAddTypeCode) 
-                            || (((Boolean)(this[this.myTable.ColumnAddTypeCode])) != value)))
-                {
-                    this[this.myTable.ColumnAddTypeCode] = value;
-                }
-            }
-        }
-        
-        /// 
-        public Boolean RemoveTypeCode
-        {
-            get
-            {
-                object ret;
-                ret = this[this.myTable.ColumnRemoveTypeCode.Ordinal];
-                if ((ret == System.DBNull.Value))
-                {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
-                }
-                else
-                {
-                    return ((Boolean)(ret));
-                }
-            }
-            set
-            {
-                if ((this.IsNull(this.myTable.ColumnRemoveTypeCode) 
-                            || (((Boolean)(this[this.myTable.ColumnRemoveTypeCode])) != value)))
-                {
-                    this[this.myTable.ColumnRemoveTypeCode] = value;
-                }
-            }
-        }
-        
-        /// set default values
-        public virtual void InitValues()
-        {
-            this[this.myTable.ColumnPartnerKey.Ordinal] = 0;
-            this.SetNull(this.myTable.ColumnTypeCode);
-            this.SetNull(this.myTable.ColumnAddTypeCode);
-            this.SetNull(this.myTable.ColumnRemoveTypeCode);
-        }
-        
-        /// test for NULL value
-        public bool IsTypeCodeNull()
-        {
-            return this.IsNull(this.myTable.ColumnTypeCode);
-        }
-        
-        /// assign NULL value
-        public void SetTypeCodeNull()
-        {
-            this.SetNull(this.myTable.ColumnTypeCode);
-        }
-        
-        /// test for NULL value
-        public bool IsAddTypeCodeNull()
-        {
-            return this.IsNull(this.myTable.ColumnAddTypeCode);
-        }
-        
-        /// assign NULL value
-        public void SetAddTypeCodeNull()
-        {
-            this.SetNull(this.myTable.ColumnAddTypeCode);
-        }
-        
-        /// test for NULL value
-        public bool IsRemoveTypeCodeNull()
-        {
-            return this.IsNull(this.myTable.ColumnRemoveTypeCode);
-        }
-        
-        /// assign NULL value
-        public void SetRemoveTypeCodeNull()
-        {
-            this.SetNull(this.myTable.ColumnRemoveTypeCode);
-        }
-    }
-    
-    /// auto generated
+
+     /// auto generated
     [Serializable()]
     public class PartnerEditTDS : TTypedDataSet
     {
-        
+
         private PPartnerTable TablePPartner;
-        
         private PPartnerTypeTable TablePPartnerType;
-        
         private PSubscriptionTable TablePSubscription;
-        
         private PartnerEditTDSPPartnerLocationTable TablePPartnerLocation;
-        
         private PLocationTable TablePLocation;
-        
         private PartnerEditTDSPPersonTable TablePPerson;
-        
         private PartnerEditTDSPFamilyTable TablePFamily;
-        
         private PUnitTable TablePUnit;
-        
         private POrganisationTable TablePOrganisation;
-        
         private PChurchTable TablePChurch;
-        
         private PBankTable TablePBank;
-        
         private PBankingDetailsTable TablePBankingDetails;
-        
         private PPartnerBankingDetailsTable TablePPartnerBankingDetails;
-        
         private PVenueTable TablePVenue;
-        
         private PFoundationTable TablePFoundation;
-        
         private PFoundationDeadlineTable TablePFoundationDeadline;
-        
         private PFoundationProposalTable TablePFoundationProposal;
-        
         private PFoundationProposalDetailTable TablePFoundationProposalDetail;
-        
         private PPartnerInterestTable TablePPartnerInterest;
-        
         private PInterestTable TablePInterest;
-        
         private PPartnerReminderTable TablePPartnerReminder;
-        
         private PPartnerRelationshipTable TablePPartnerRelationship;
-        
         private PPartnerContactTable TablePPartnerContact;
-        
         private PDataLabelValueApplicationTable TablePDataLabelValueApplication;
-        
         private PDataLabelValuePartnerTable TablePDataLabelValuePartner;
-        
         private PartnerEditTDSMiscellaneousDataTable TableMiscellaneousData;
-        
         private PartnerEditTDSFamilyMembersTable TableFamilyMembers;
-        
         private PartnerEditTDSFamilyMembersInfoForStatusChangeTable TableFamilyMembersInfoForStatusChange;
-        
         private PartnerEditTDSPartnerTypeChangeFamilyMembersPromotionTable TablePartnerTypeChangeFamilyMembersPromotion;
-        
+
         /// auto generated
-        public PartnerEditTDS() : 
+        public PartnerEditTDS() :
                 base("PartnerEditTDS")
         {
         }
-        
+
         /// auto generated for serialization
-        public PartnerEditTDS(System.Runtime.Serialization.SerializationInfo info, System.Runtime.Serialization.StreamingContext context) : 
+        public PartnerEditTDS(System.Runtime.Serialization.SerializationInfo info, System.Runtime.Serialization.StreamingContext context) :
                 base(info, context)
         {
         }
-        
+
         /// auto generated
-        public PartnerEditTDS(string ADatasetName) : 
+        public PartnerEditTDS(string ADatasetName) :
                 base(ADatasetName)
         {
         }
-        
+
         /// auto generated
         public PPartnerTable PPartner
         {
@@ -3181,7 +98,7 @@ namespace Ict.Petra.Shared.MPartner.Partner.Data
                 return this.TablePPartner;
             }
         }
-        
+
         /// auto generated
         public PPartnerTypeTable PPartnerType
         {
@@ -3190,7 +107,7 @@ namespace Ict.Petra.Shared.MPartner.Partner.Data
                 return this.TablePPartnerType;
             }
         }
-        
+
         /// auto generated
         public PSubscriptionTable PSubscription
         {
@@ -3199,7 +116,7 @@ namespace Ict.Petra.Shared.MPartner.Partner.Data
                 return this.TablePSubscription;
             }
         }
-        
+
         /// auto generated
         public PartnerEditTDSPPartnerLocationTable PPartnerLocation
         {
@@ -3208,7 +125,7 @@ namespace Ict.Petra.Shared.MPartner.Partner.Data
                 return this.TablePPartnerLocation;
             }
         }
-        
+
         /// auto generated
         public PLocationTable PLocation
         {
@@ -3217,7 +134,7 @@ namespace Ict.Petra.Shared.MPartner.Partner.Data
                 return this.TablePLocation;
             }
         }
-        
+
         /// auto generated
         public PartnerEditTDSPPersonTable PPerson
         {
@@ -3226,7 +143,7 @@ namespace Ict.Petra.Shared.MPartner.Partner.Data
                 return this.TablePPerson;
             }
         }
-        
+
         /// auto generated
         public PartnerEditTDSPFamilyTable PFamily
         {
@@ -3235,7 +152,7 @@ namespace Ict.Petra.Shared.MPartner.Partner.Data
                 return this.TablePFamily;
             }
         }
-        
+
         /// auto generated
         public PUnitTable PUnit
         {
@@ -3244,7 +161,7 @@ namespace Ict.Petra.Shared.MPartner.Partner.Data
                 return this.TablePUnit;
             }
         }
-        
+
         /// auto generated
         public POrganisationTable POrganisation
         {
@@ -3253,7 +170,7 @@ namespace Ict.Petra.Shared.MPartner.Partner.Data
                 return this.TablePOrganisation;
             }
         }
-        
+
         /// auto generated
         public PChurchTable PChurch
         {
@@ -3262,7 +179,7 @@ namespace Ict.Petra.Shared.MPartner.Partner.Data
                 return this.TablePChurch;
             }
         }
-        
+
         /// auto generated
         public PBankTable PBank
         {
@@ -3271,7 +188,7 @@ namespace Ict.Petra.Shared.MPartner.Partner.Data
                 return this.TablePBank;
             }
         }
-        
+
         /// auto generated
         public PBankingDetailsTable PBankingDetails
         {
@@ -3280,7 +197,7 @@ namespace Ict.Petra.Shared.MPartner.Partner.Data
                 return this.TablePBankingDetails;
             }
         }
-        
+
         /// auto generated
         public PPartnerBankingDetailsTable PPartnerBankingDetails
         {
@@ -3289,7 +206,7 @@ namespace Ict.Petra.Shared.MPartner.Partner.Data
                 return this.TablePPartnerBankingDetails;
             }
         }
-        
+
         /// auto generated
         public PVenueTable PVenue
         {
@@ -3298,7 +215,7 @@ namespace Ict.Petra.Shared.MPartner.Partner.Data
                 return this.TablePVenue;
             }
         }
-        
+
         /// auto generated
         public PFoundationTable PFoundation
         {
@@ -3307,7 +224,7 @@ namespace Ict.Petra.Shared.MPartner.Partner.Data
                 return this.TablePFoundation;
             }
         }
-        
+
         /// auto generated
         public PFoundationDeadlineTable PFoundationDeadline
         {
@@ -3316,7 +233,7 @@ namespace Ict.Petra.Shared.MPartner.Partner.Data
                 return this.TablePFoundationDeadline;
             }
         }
-        
+
         /// auto generated
         public PFoundationProposalTable PFoundationProposal
         {
@@ -3325,7 +242,7 @@ namespace Ict.Petra.Shared.MPartner.Partner.Data
                 return this.TablePFoundationProposal;
             }
         }
-        
+
         /// auto generated
         public PFoundationProposalDetailTable PFoundationProposalDetail
         {
@@ -3334,7 +251,7 @@ namespace Ict.Petra.Shared.MPartner.Partner.Data
                 return this.TablePFoundationProposalDetail;
             }
         }
-        
+
         /// auto generated
         public PPartnerInterestTable PPartnerInterest
         {
@@ -3343,7 +260,7 @@ namespace Ict.Petra.Shared.MPartner.Partner.Data
                 return this.TablePPartnerInterest;
             }
         }
-        
+
         /// auto generated
         public PInterestTable PInterest
         {
@@ -3352,7 +269,7 @@ namespace Ict.Petra.Shared.MPartner.Partner.Data
                 return this.TablePInterest;
             }
         }
-        
+
         /// auto generated
         public PPartnerReminderTable PPartnerReminder
         {
@@ -3361,7 +278,7 @@ namespace Ict.Petra.Shared.MPartner.Partner.Data
                 return this.TablePPartnerReminder;
             }
         }
-        
+
         /// auto generated
         public PPartnerRelationshipTable PPartnerRelationship
         {
@@ -3370,7 +287,7 @@ namespace Ict.Petra.Shared.MPartner.Partner.Data
                 return this.TablePPartnerRelationship;
             }
         }
-        
+
         /// auto generated
         public PPartnerContactTable PPartnerContact
         {
@@ -3379,7 +296,7 @@ namespace Ict.Petra.Shared.MPartner.Partner.Data
                 return this.TablePPartnerContact;
             }
         }
-        
+
         /// auto generated
         public PDataLabelValueApplicationTable PDataLabelValueApplication
         {
@@ -3388,7 +305,7 @@ namespace Ict.Petra.Shared.MPartner.Partner.Data
                 return this.TablePDataLabelValueApplication;
             }
         }
-        
+
         /// auto generated
         public PDataLabelValuePartnerTable PDataLabelValuePartner
         {
@@ -3397,7 +314,7 @@ namespace Ict.Petra.Shared.MPartner.Partner.Data
                 return this.TablePDataLabelValuePartner;
             }
         }
-        
+
         /// auto generated
         public PartnerEditTDSMiscellaneousDataTable MiscellaneousData
         {
@@ -3406,7 +323,7 @@ namespace Ict.Petra.Shared.MPartner.Partner.Data
                 return this.TableMiscellaneousData;
             }
         }
-        
+
         /// auto generated
         public PartnerEditTDSFamilyMembersTable FamilyMembers
         {
@@ -3415,7 +332,7 @@ namespace Ict.Petra.Shared.MPartner.Partner.Data
                 return this.TableFamilyMembers;
             }
         }
-        
+
         /// auto generated
         public PartnerEditTDSFamilyMembersInfoForStatusChangeTable FamilyMembersInfoForStatusChange
         {
@@ -3424,7 +341,7 @@ namespace Ict.Petra.Shared.MPartner.Partner.Data
                 return this.TableFamilyMembersInfoForStatusChange;
             }
         }
-        
+
         /// auto generated
         public PartnerEditTDSPartnerTypeChangeFamilyMembersPromotionTable PartnerTypeChangeFamilyMembersPromotion
         {
@@ -3433,13 +350,13 @@ namespace Ict.Petra.Shared.MPartner.Partner.Data
                 return this.TablePartnerTypeChangeFamilyMembersPromotion;
             }
         }
-        
+
         /// auto generated
         public new virtual PartnerEditTDS GetChangesTyped(bool removeEmptyTables)
         {
             return ((PartnerEditTDS)(base.GetChangesTyped(removeEmptyTables)));
         }
-        
+
         /// auto generated
         protected override void InitTables()
         {
@@ -3473,7 +390,7 @@ namespace Ict.Petra.Shared.MPartner.Partner.Data
             this.Tables.Add(new PartnerEditTDSFamilyMembersInfoForStatusChangeTable("FamilyMembersInfoForStatusChange"));
             this.Tables.Add(new PartnerEditTDSPartnerTypeChangeFamilyMembersPromotionTable("PartnerTypeChangeFamilyMembersPromotion"));
         }
-        
+
         /// auto generated
         protected override void InitTables(System.Data.DataSet ds)
         {
@@ -3594,7 +511,7 @@ namespace Ict.Petra.Shared.MPartner.Partner.Data
                 this.Tables.Add(new PartnerEditTDSPartnerTypeChangeFamilyMembersPromotionTable("PartnerTypeChangeFamilyMembersPromotion"));
             }
         }
-        
+
         /// auto generated
         protected override void MapTables()
         {
@@ -3717,7 +634,7 @@ namespace Ict.Petra.Shared.MPartner.Partner.Data
                 this.TablePartnerTypeChangeFamilyMembersPromotion.InitVars();
             }
         }
-        
+
         /// auto generated
         public override void InitVars()
         {
@@ -3752,516 +669,7088 @@ namespace Ict.Petra.Shared.MPartner.Partner.Data
             this.TableFamilyMembersInfoForStatusChange = ((PartnerEditTDSFamilyMembersInfoForStatusChangeTable)(this.Tables["FamilyMembersInfoForStatusChange"]));
             this.TablePartnerTypeChangeFamilyMembersPromotion = ((PartnerEditTDSPartnerTypeChangeFamilyMembersPromotionTable)(this.Tables["PartnerTypeChangeFamilyMembersPromotion"]));
         }
-        
+
         /// auto generated
         protected override void InitConstraints()
         {
-            if (((this.TablePPartner != null) 
-                        && (this.TablePPartnerType != null)))
-            {
-                this.FConstraints.Add(new TTypedConstraint("FKPartnerType3", "PPartner", new string[] {
-                                "p_partner_key_n"}, "PPartnerType", new string[] {
-                                "p_partner_key_n"}));
-            }
-            if (((this.TablePPartner != null) 
-                        && (this.TablePSubscription != null)))
-            {
-                this.FConstraints.Add(new TTypedConstraint("FKSubscription2", "PPartner", new string[] {
-                                "p_partner_key_n"}, "PSubscription", new string[] {
-                                "p_partner_key_n"}));
-            }
-            if (((this.TablePPartner != null) 
-                        && (this.TablePSubscription != null)))
-            {
-                this.FConstraints.Add(new TTypedConstraint("FKSubscription3", "PPartner", new string[] {
-                                "p_partner_key_n"}, "PSubscription", new string[] {
-                                "p_gift_from_key_n"}));
-            }
-            if (((this.TablePPartner != null) 
-                        && (this.TablePPartnerLocation != null)))
-            {
-                this.FConstraints.Add(new TTypedConstraint("FKPartnerLocation1", "PPartner", new string[] {
-                                "p_partner_key_n"}, "PPartnerLocation", new string[] {
-                                "p_partner_key_n"}));
-            }
-            if (((this.TablePLocation != null) 
-                        && (this.TablePPartnerLocation != null)))
-            {
-                this.FConstraints.Add(new TTypedConstraint("FKPartnerLocation2", "PLocation", new string[] {
-                                "p_site_key_n",
-                                "p_location_key_i"}, "PPartnerLocation", new string[] {
-                                "p_site_key_n",
-                                "p_location_key_i"}));
-            }
-            if (((this.TablePPartner != null) 
-                        && (this.TablePPerson != null)))
-            {
-                this.FConstraints.Add(new TTypedConstraint("FKPerson1", "PPartner", new string[] {
-                                "p_partner_key_n"}, "PPerson", new string[] {
-                                "p_partner_key_n"}));
-            }
-            if (((this.TablePFamily != null) 
-                        && (this.TablePPerson != null)))
-            {
-                this.FConstraints.Add(new TTypedConstraint("FKPerson2", "PFamily", new string[] {
-                                "p_partner_key_n"}, "PPerson", new string[] {
-                                "p_family_key_n"}));
-            }
-            if (((this.TablePUnit != null) 
-                        && (this.TablePPerson != null)))
-            {
-                this.FConstraints.Add(new TTypedConstraint("FKPerson4", "PUnit", new string[] {
-                                "p_partner_key_n"}, "PPerson", new string[] {
-                                "p_field_key_n"}));
-            }
-            if (((this.TablePPartner != null) 
-                        && (this.TablePFamily != null)))
-            {
-                this.FConstraints.Add(new TTypedConstraint("FKFamily1", "PPartner", new string[] {
-                                "p_partner_key_n"}, "PFamily", new string[] {
-                                "p_partner_key_n"}));
-            }
-            if (((this.TablePUnit != null) 
-                        && (this.TablePFamily != null)))
-            {
-                this.FConstraints.Add(new TTypedConstraint("FKFamily2", "PUnit", new string[] {
-                                "p_partner_key_n"}, "PFamily", new string[] {
-                                "p_field_key_n"}));
-            }
-            if (((this.TablePPartner != null) 
-                        && (this.TablePUnit != null)))
-            {
-                this.FConstraints.Add(new TTypedConstraint("FKUnit1", "PPartner", new string[] {
-                                "p_partner_key_n"}, "PUnit", new string[] {
-                                "p_partner_key_n"}));
-            }
-            if (((this.TablePPartner != null) 
-                        && (this.TablePUnit != null)))
-            {
-                this.FConstraints.Add(new TTypedConstraint("FKUnit7", "PPartner", new string[] {
-                                "p_partner_key_n"}, "PUnit", new string[] {
-                                "p_primary_office_n"}));
-            }
-            if (((this.TablePPartner != null) 
-                        && (this.TablePOrganisation != null)))
-            {
-                this.FConstraints.Add(new TTypedConstraint("FKOrganisation1", "PPartner", new string[] {
-                                "p_partner_key_n"}, "POrganisation", new string[] {
-                                "p_partner_key_n"}));
-            }
-            if (((this.TablePPartner != null) 
-                        && (this.TablePOrganisation != null)))
-            {
-                this.FConstraints.Add(new TTypedConstraint("FKOrganisation3", "PPartner", new string[] {
-                                "p_partner_key_n"}, "POrganisation", new string[] {
-                                "p_contact_partner_key_n"}));
-            }
-            if (((this.TablePPartner != null) 
-                        && (this.TablePChurch != null)))
-            {
-                this.FConstraints.Add(new TTypedConstraint("FKChurch1", "PPartner", new string[] {
-                                "p_partner_key_n"}, "PChurch", new string[] {
-                                "p_partner_key_n"}));
-            }
-            if (((this.TablePPartner != null) 
-                        && (this.TablePChurch != null)))
-            {
-                this.FConstraints.Add(new TTypedConstraint("FKChurch3", "PPartner", new string[] {
-                                "p_partner_key_n"}, "PChurch", new string[] {
-                                "p_contact_partner_key_n"}));
-            }
-            if (((this.TablePPartner != null) 
+
+            if (((this.TablePPartner != null)
                         && (this.TablePBank != null)))
             {
                 this.FConstraints.Add(new TTypedConstraint("FKBank1", "PPartner", new string[] {
                                 "p_partner_key_n"}, "PBank", new string[] {
                                 "p_partner_key_n"}));
             }
-            if (((this.TablePPartner != null) 
+            if (((this.TablePPartner != null)
                         && (this.TablePBank != null)))
             {
                 this.FConstraints.Add(new TTypedConstraint("FKBank2", "PPartner", new string[] {
                                 "p_partner_key_n"}, "PBank", new string[] {
                                 "p_contact_partner_key_n"}));
             }
-            if (((this.TablePBank != null) 
+            if (((this.TablePBank != null)
                         && (this.TablePBankingDetails != null)))
             {
                 this.FConstraints.Add(new TTypedConstraint("FKBankingDetails4", "PBank", new string[] {
                                 "p_partner_key_n"}, "PBankingDetails", new string[] {
                                 "p_bank_key_n"}));
             }
-            if (((this.TablePPartner != null) 
-                        && (this.TablePPartnerBankingDetails != null)))
+            if (((this.TablePPartner != null)
+                        && (this.TablePChurch != null)))
             {
-                this.FConstraints.Add(new TTypedConstraint("FKPartnerBankingLink1", "PPartner", new string[] {
-                                "p_partner_key_n"}, "PPartnerBankingDetails", new string[] {
+                this.FConstraints.Add(new TTypedConstraint("FKChurch1", "PPartner", new string[] {
+                                "p_partner_key_n"}, "PChurch", new string[] {
                                 "p_partner_key_n"}));
             }
-            if (((this.TablePBankingDetails != null) 
-                        && (this.TablePPartnerBankingDetails != null)))
+            if (((this.TablePPartner != null)
+                        && (this.TablePChurch != null)))
             {
-                this.FConstraints.Add(new TTypedConstraint("FKPartnerBankingLink2", "PBankingDetails", new string[] {
-                                "p_banking_details_key_i"}, "PPartnerBankingDetails", new string[] {
-                                "p_banking_details_key_i"}));
-            }
-            if (((this.TablePPartner != null) 
-                        && (this.TablePVenue != null)))
-            {
-                this.FConstraints.Add(new TTypedConstraint("FKVenue1", "PPartner", new string[] {
-                                "p_partner_key_n"}, "PVenue", new string[] {
-                                "p_partner_key_n"}));
-            }
-            if (((this.TablePPartner != null) 
-                        && (this.TablePVenue != null)))
-            {
-                this.FConstraints.Add(new TTypedConstraint("FKVenue3", "PPartner", new string[] {
-                                "p_partner_key_n"}, "PVenue", new string[] {
+                this.FConstraints.Add(new TTypedConstraint("FKChurch3", "PPartner", new string[] {
+                                "p_partner_key_n"}, "PChurch", new string[] {
                                 "p_contact_partner_key_n"}));
             }
-            if (((this.TablePPartner != null) 
-                        && (this.TablePFoundation != null)))
-            {
-                this.FConstraints.Add(new TTypedConstraint("FKFoundationContact1", "PPartner", new string[] {
-                                "p_partner_key_n"}, "PFoundation", new string[] {
-                                "p_contact_partner_n"}));
-            }
-            if (((this.TablePOrganisation != null) 
-                        && (this.TablePFoundation != null)))
-            {
-                this.FConstraints.Add(new TTypedConstraint("FKFoundation1", "POrganisation", new string[] {
-                                "p_partner_key_n"}, "PFoundation", new string[] {
-                                "p_partner_key_n"}));
-            }
-            if (((this.TablePFoundation != null) 
-                        && (this.TablePFoundationDeadline != null)))
-            {
-                this.FConstraints.Add(new TTypedConstraint("FKFoundationDeadline1", "PFoundation", new string[] {
-                                "p_partner_key_n"}, "PFoundationDeadline", new string[] {
-                                "p_foundation_partner_key_n"}));
-            }
-            if (((this.TablePFoundation != null) 
-                        && (this.TablePFoundationProposal != null)))
-            {
-                this.FConstraints.Add(new TTypedConstraint("FKProposalStatus1", "PFoundation", new string[] {
-                                "p_partner_key_n"}, "PFoundationProposal", new string[] {
-                                "p_foundation_partner_key_n"}));
-            }
-            if (((this.TablePPartner != null) 
-                        && (this.TablePFoundationProposal != null)))
-            {
-                this.FConstraints.Add(new TTypedConstraint("FKProposalSubmitted3", "PPartner", new string[] {
-                                "p_partner_key_n"}, "PFoundationProposal", new string[] {
-                                "p_partner_submitted_by_n"}));
-            }
-            if (((this.TablePUnit != null) 
-                        && (this.TablePFoundationProposalDetail != null)))
-            {
-                this.FConstraints.Add(new TTypedConstraint("FKArea1", "PUnit", new string[] {
-                                "p_partner_key_n"}, "PFoundationProposalDetail", new string[] {
-                                "p_area_partner_key_n"}));
-            }
-            if (((this.TablePFoundationProposal != null) 
-                        && (this.TablePFoundationProposalDetail != null)))
-            {
-                this.FConstraints.Add(new TTypedConstraint("FKDetailProposal1", "PFoundationProposal", new string[] {
-                                "p_foundation_partner_key_n",
-                                "p_foundation_proposal_key_i"}, "PFoundationProposalDetail", new string[] {
-                                "p_foundation_partner_key_n",
-                                "p_foundation_proposal_key_i"}));
-            }
-            if (((this.TablePUnit != null) 
-                        && (this.TablePFoundationProposalDetail != null)))
-            {
-                this.FConstraints.Add(new TTypedConstraint("FKField1", "PUnit", new string[] {
-                                "p_partner_key_n"}, "PFoundationProposalDetail", new string[] {
-                                "p_field_partner_key_n"}));
-            }
-            if (((this.TablePFoundation != null) 
-                        && (this.TablePFoundationProposalDetail != null)))
-            {
-                this.FConstraints.Add(new TTypedConstraint("FKDetailProposal2", "PFoundation", new string[] {
-                                "p_partner_key_n"}, "PFoundationProposalDetail", new string[] {
-                                "p_foundation_partner_key_n"}));
-            }
-            if (((this.TablePUnit != null) 
-                        && (this.TablePFoundationProposalDetail != null)))
-            {
-                this.FConstraints.Add(new TTypedConstraint("FKProposalMinistry1", "PUnit", new string[] {
-                                "p_partner_key_n"}, "PFoundationProposalDetail", new string[] {
-                                "p_key_ministry_key_n"}));
-            }
-            if (((this.TablePPartner != null) 
-                        && (this.TablePPartnerInterest != null)))
-            {
-                this.FConstraints.Add(new TTypedConstraint("FKPartnerInterest1", "PPartner", new string[] {
-                                "p_partner_key_n"}, "PPartnerInterest", new string[] {
-                                "p_partner_key_n"}));
-            }
-            if (((this.TablePUnit != null) 
-                        && (this.TablePPartnerInterest != null)))
-            {
-                this.FConstraints.Add(new TTypedConstraint("FKPartnerInterest2", "PUnit", new string[] {
-                                "p_partner_key_n"}, "PPartnerInterest", new string[] {
-                                "p_field_key_n"}));
-            }
-            if (((this.TablePInterest != null) 
-                        && (this.TablePPartnerInterest != null)))
-            {
-                this.FConstraints.Add(new TTypedConstraint("FKPartnerInterest4", "PInterest", new string[] {
-                                "p_interest_c"}, "PPartnerInterest", new string[] {
-                                "p_interest_c"}));
-            }
-            if (((this.TablePPartner != null) 
-                        && (this.TablePPartnerReminder != null)))
-            {
-                this.FConstraints.Add(new TTypedConstraint("FKPartnerReminder1", "PPartner", new string[] {
-                                "p_partner_key_n"}, "PPartnerReminder", new string[] {
-                                "p_partner_key_n"}));
-            }
-            if (((this.TablePPartnerContact != null) 
-                        && (this.TablePPartnerReminder != null)))
-            {
-                this.FConstraints.Add(new TTypedConstraint("FKPartnerReminder2", "PPartnerContact", new string[] {
-                                "p_contact_id_i"}, "PPartnerReminder", new string[] {
-                                "p_contact_id_i"}));
-            }
-            if (((this.TablePPartner != null) 
-                        && (this.TablePPartnerRelationship != null)))
-            {
-                this.FConstraints.Add(new TTypedConstraint("FKPartnerRelationship1", "PPartner", new string[] {
-                                "p_partner_key_n"}, "PPartnerRelationship", new string[] {
-                                "p_partner_key_n"}));
-            }
-            if (((this.TablePPartner != null) 
-                        && (this.TablePPartnerRelationship != null)))
-            {
-                this.FConstraints.Add(new TTypedConstraint("FKPartnerRelationship2", "PPartner", new string[] {
-                                "p_partner_key_n"}, "PPartnerRelationship", new string[] {
-                                "p_relation_key_n"}));
-            }
-            if (((this.TablePPartner != null) 
-                        && (this.TablePPartnerContact != null)))
-            {
-                this.FConstraints.Add(new TTypedConstraint("FKPartnerContact1", "PPartner", new string[] {
-                                "p_partner_key_n"}, "PPartnerContact", new string[] {
-                                "p_partner_key_n"}));
-            }
-            if (((this.TablePPartner != null) 
+            if (((this.TablePPartner != null)
                         && (this.TablePDataLabelValueApplication != null)))
             {
                 this.FConstraints.Add(new TTypedConstraint("FKDataLabelValueApplication3", "PPartner", new string[] {
                                 "p_partner_key_n"}, "PDataLabelValueApplication", new string[] {
                                 "p_value_partner_key_n"}));
             }
-            if (((this.TablePPartner != null) 
+            if (((this.TablePPartner != null)
                         && (this.TablePDataLabelValuePartner != null)))
             {
                 this.FConstraints.Add(new TTypedConstraint("FKDataLabelValuePartner1", "PPartner", new string[] {
                                 "p_partner_key_n"}, "PDataLabelValuePartner", new string[] {
                                 "p_partner_key_n"}));
             }
-            if (((this.TablePPartner != null) 
+            if (((this.TablePPartner != null)
                         && (this.TablePDataLabelValuePartner != null)))
             {
                 this.FConstraints.Add(new TTypedConstraint("FKDataLabelValuePartner3", "PPartner", new string[] {
                                 "p_partner_key_n"}, "PDataLabelValuePartner", new string[] {
                                 "p_value_partner_key_n"}));
             }
-            if (((this.TablePLocation != null) 
-                        && (this.TableMiscellaneousData != null)))
+            if (((this.TablePPartner != null)
+                        && (this.TablePFamily != null)))
+            {
+                this.FConstraints.Add(new TTypedConstraint("FKFamily1", "PPartner", new string[] {
+                                "p_partner_key_n"}, "PFamily", new string[] {
+                                "p_partner_key_n"}));
+            }
+            if (((this.TablePUnit != null)
+                        && (this.TablePFamily != null)))
+            {
+                this.FConstraints.Add(new TTypedConstraint("FKFamily2", "PUnit", new string[] {
+                                "p_partner_key_n"}, "PFamily", new string[] {
+                                "p_field_key_n"}));
+            }
+            if (((this.TablePPartner != null)
+                        && (this.TablePFoundation != null)))
+            {
+                this.FConstraints.Add(new TTypedConstraint("FKFoundationContact1", "PPartner", new string[] {
+                                "p_partner_key_n"}, "PFoundation", new string[] {
+                                "p_contact_partner_n"}));
+            }
+            if (((this.TablePOrganisation != null)
+                        && (this.TablePFoundation != null)))
+            {
+                this.FConstraints.Add(new TTypedConstraint("FKFoundation1", "POrganisation", new string[] {
+                                "p_partner_key_n"}, "PFoundation", new string[] {
+                                "p_partner_key_n"}));
+            }
+            if (((this.TablePFoundation != null)
+                        && (this.TablePFoundationDeadline != null)))
+            {
+                this.FConstraints.Add(new TTypedConstraint("FKFoundationDeadline1", "PFoundation", new string[] {
+                                "p_partner_key_n"}, "PFoundationDeadline", new string[] {
+                                "p_foundation_partner_key_n"}));
+            }
+            if (((this.TablePFoundation != null)
+                        && (this.TablePFoundationProposal != null)))
+            {
+                this.FConstraints.Add(new TTypedConstraint("FKProposalStatus1", "PFoundation", new string[] {
+                                "p_partner_key_n"}, "PFoundationProposal", new string[] {
+                                "p_foundation_partner_key_n"}));
+            }
+            if (((this.TablePPartner != null)
+                        && (this.TablePFoundationProposal != null)))
+            {
+                this.FConstraints.Add(new TTypedConstraint("FKProposalSubmitted3", "PPartner", new string[] {
+                                "p_partner_key_n"}, "PFoundationProposal", new string[] {
+                                "p_partner_submitted_by_n"}));
+            }
+            if (((this.TablePUnit != null)
+                        && (this.TablePFoundationProposalDetail != null)))
+            {
+                this.FConstraints.Add(new TTypedConstraint("FKArea1", "PUnit", new string[] {
+                                "p_partner_key_n"}, "PFoundationProposalDetail", new string[] {
+                                "p_area_partner_key_n"}));
+            }
+            if (((this.TablePFoundationProposal != null)
+                        && (this.TablePFoundationProposalDetail != null)))
+            {
+                this.FConstraints.Add(new TTypedConstraint("FKDetailProposal1", "PFoundationProposal", new string[] {
+                                "p_foundation_partner_key_n", "p_foundation_proposal_key_i"}, "PFoundationProposalDetail", new string[] {
+                                "p_foundation_partner_key_n", "p_foundation_proposal_key_i"}));
+            }
+            if (((this.TablePUnit != null)
+                        && (this.TablePFoundationProposalDetail != null)))
+            {
+                this.FConstraints.Add(new TTypedConstraint("FKField1", "PUnit", new string[] {
+                                "p_partner_key_n"}, "PFoundationProposalDetail", new string[] {
+                                "p_field_partner_key_n"}));
+            }
+            if (((this.TablePFoundation != null)
+                        && (this.TablePFoundationProposalDetail != null)))
+            {
+                this.FConstraints.Add(new TTypedConstraint("FKDetailProposal2", "PFoundation", new string[] {
+                                "p_partner_key_n"}, "PFoundationProposalDetail", new string[] {
+                                "p_foundation_partner_key_n"}));
+            }
+            if (((this.TablePUnit != null)
+                        && (this.TablePFoundationProposalDetail != null)))
+            {
+                this.FConstraints.Add(new TTypedConstraint("FKProposalMinistry1", "PUnit", new string[] {
+                                "p_partner_key_n"}, "PFoundationProposalDetail", new string[] {
+                                "p_key_ministry_key_n"}));
+            }
+            if (((this.TablePPartner != null)
+                        && (this.TablePOrganisation != null)))
+            {
+                this.FConstraints.Add(new TTypedConstraint("FKOrganisation1", "PPartner", new string[] {
+                                "p_partner_key_n"}, "POrganisation", new string[] {
+                                "p_partner_key_n"}));
+            }
+            if (((this.TablePPartner != null)
+                        && (this.TablePOrganisation != null)))
+            {
+                this.FConstraints.Add(new TTypedConstraint("FKOrganisation3", "PPartner", new string[] {
+                                "p_partner_key_n"}, "POrganisation", new string[] {
+                                "p_contact_partner_key_n"}));
+            }
+            if (((this.TablePPartner != null)
+                        && (this.TablePPartnerBankingDetails != null)))
+            {
+                this.FConstraints.Add(new TTypedConstraint("FKPartnerBankingLink1", "PPartner", new string[] {
+                                "p_partner_key_n"}, "PPartnerBankingDetails", new string[] {
+                                "p_partner_key_n"}));
+            }
+            if (((this.TablePBankingDetails != null)
+                        && (this.TablePPartnerBankingDetails != null)))
+            {
+                this.FConstraints.Add(new TTypedConstraint("FKPartnerBankingLink2", "PBankingDetails", new string[] {
+                                "p_banking_details_key_i"}, "PPartnerBankingDetails", new string[] {
+                                "p_banking_details_key_i"}));
+            }
+            if (((this.TablePPartner != null)
+                        && (this.TablePPartnerContact != null)))
+            {
+                this.FConstraints.Add(new TTypedConstraint("FKPartnerContact1", "PPartner", new string[] {
+                                "p_partner_key_n"}, "PPartnerContact", new string[] {
+                                "p_partner_key_n"}));
+            }
+            if (((this.TablePPartner != null)
+                        && (this.TablePPartnerInterest != null)))
+            {
+                this.FConstraints.Add(new TTypedConstraint("FKPartnerInterest1", "PPartner", new string[] {
+                                "p_partner_key_n"}, "PPartnerInterest", new string[] {
+                                "p_partner_key_n"}));
+            }
+            if (((this.TablePUnit != null)
+                        && (this.TablePPartnerInterest != null)))
+            {
+                this.FConstraints.Add(new TTypedConstraint("FKPartnerInterest2", "PUnit", new string[] {
+                                "p_partner_key_n"}, "PPartnerInterest", new string[] {
+                                "p_field_key_n"}));
+            }
+            if (((this.TablePInterest != null)
+                        && (this.TablePPartnerInterest != null)))
+            {
+                this.FConstraints.Add(new TTypedConstraint("FKPartnerInterest4", "PInterest", new string[] {
+                                "p_interest_c"}, "PPartnerInterest", new string[] {
+                                "p_interest_c"}));
+            }
+            if (((this.TablePPartner != null)
+                        && (this.TablePPartnerLocation != null)))
+            {
+                this.FConstraints.Add(new TTypedConstraint("FKPartnerLocation1", "PPartner", new string[] {
+                                "p_partner_key_n"}, "PPartnerLocation", new string[] {
+                                "p_partner_key_n"}));
+            }
+            if (((this.TablePLocation != null)
+                        && (this.TablePPartnerLocation != null)))
             {
                 this.FConstraints.Add(new TTypedConstraint("FKPartnerLocation2", "PLocation", new string[] {
-                                "p_site_key_n",
-                                "p_location_key_i"}, "MiscellaneousData", new string[] {
-                                "p_site_key_n",
-                                "p_location_key_i"}));
+                                "p_site_key_n", "p_location_key_i"}, "PPartnerLocation", new string[] {
+                                "p_site_key_n", "p_location_key_i"}));
             }
+            if (((this.TablePPartner != null)
+                        && (this.TablePPartnerRelationship != null)))
+            {
+                this.FConstraints.Add(new TTypedConstraint("FKPartnerRelationship1", "PPartner", new string[] {
+                                "p_partner_key_n"}, "PPartnerRelationship", new string[] {
+                                "p_partner_key_n"}));
+            }
+            if (((this.TablePPartner != null)
+                        && (this.TablePPartnerRelationship != null)))
+            {
+                this.FConstraints.Add(new TTypedConstraint("FKPartnerRelationship2", "PPartner", new string[] {
+                                "p_partner_key_n"}, "PPartnerRelationship", new string[] {
+                                "p_relation_key_n"}));
+            }
+            if (((this.TablePPartner != null)
+                        && (this.TablePPartnerReminder != null)))
+            {
+                this.FConstraints.Add(new TTypedConstraint("FKPartnerReminder1", "PPartner", new string[] {
+                                "p_partner_key_n"}, "PPartnerReminder", new string[] {
+                                "p_partner_key_n"}));
+            }
+            if (((this.TablePPartnerContact != null)
+                        && (this.TablePPartnerReminder != null)))
+            {
+                this.FConstraints.Add(new TTypedConstraint("FKPartnerReminder2", "PPartnerContact", new string[] {
+                                "p_contact_id_i"}, "PPartnerReminder", new string[] {
+                                "p_contact_id_i"}));
+            }
+            if (((this.TablePPartner != null)
+                        && (this.TablePPartnerType != null)))
+            {
+                this.FConstraints.Add(new TTypedConstraint("FKPartnerType3", "PPartner", new string[] {
+                                "p_partner_key_n"}, "PPartnerType", new string[] {
+                                "p_partner_key_n"}));
+            }
+            if (((this.TablePPartner != null)
+                        && (this.TablePPerson != null)))
+            {
+                this.FConstraints.Add(new TTypedConstraint("FKPerson1", "PPartner", new string[] {
+                                "p_partner_key_n"}, "PPerson", new string[] {
+                                "p_partner_key_n"}));
+            }
+            if (((this.TablePFamily != null)
+                        && (this.TablePPerson != null)))
+            {
+                this.FConstraints.Add(new TTypedConstraint("FKPerson2", "PFamily", new string[] {
+                                "p_partner_key_n"}, "PPerson", new string[] {
+                                "p_family_key_n"}));
+            }
+            if (((this.TablePUnit != null)
+                        && (this.TablePPerson != null)))
+            {
+                this.FConstraints.Add(new TTypedConstraint("FKPerson4", "PUnit", new string[] {
+                                "p_partner_key_n"}, "PPerson", new string[] {
+                                "p_field_key_n"}));
+            }
+            if (((this.TablePPartner != null)
+                        && (this.TablePSubscription != null)))
+            {
+                this.FConstraints.Add(new TTypedConstraint("FKSubscription2", "PPartner", new string[] {
+                                "p_partner_key_n"}, "PSubscription", new string[] {
+                                "p_partner_key_n"}));
+            }
+            if (((this.TablePPartner != null)
+                        && (this.TablePSubscription != null)))
+            {
+                this.FConstraints.Add(new TTypedConstraint("FKSubscription3", "PPartner", new string[] {
+                                "p_partner_key_n"}, "PSubscription", new string[] {
+                                "p_gift_from_key_n"}));
+            }
+            if (((this.TablePPartner != null)
+                        && (this.TablePUnit != null)))
+            {
+                this.FConstraints.Add(new TTypedConstraint("FKUnit1", "PPartner", new string[] {
+                                "p_partner_key_n"}, "PUnit", new string[] {
+                                "p_partner_key_n"}));
+            }
+            if (((this.TablePPartner != null)
+                        && (this.TablePUnit != null)))
+            {
+                this.FConstraints.Add(new TTypedConstraint("FKUnit7", "PPartner", new string[] {
+                                "p_partner_key_n"}, "PUnit", new string[] {
+                                "p_primary_office_n"}));
+            }
+            if (((this.TablePPartner != null)
+                        && (this.TablePVenue != null)))
+            {
+                this.FConstraints.Add(new TTypedConstraint("FKVenue1", "PPartner", new string[] {
+                                "p_partner_key_n"}, "PVenue", new string[] {
+                                "p_partner_key_n"}));
+            }
+            if (((this.TablePPartner != null)
+                        && (this.TablePVenue != null)))
+            {
+                this.FConstraints.Add(new TTypedConstraint("FKVenue3", "PPartner", new string[] {
+                                "p_partner_key_n"}, "PVenue", new string[] {
+                                "p_contact_partner_key_n"}));
+            }
+
             this.FRelations.Add(new TTypedRelation("Address", "PPartnerLocation", new string[] {
-                            "p_site_key_n",
-                            "p_location_key_i"}, "PLocation", new string[] {
-                            "p_site_key_n",
-                            "p_location_key_i"}, false));
+                            "p_site_key_n", "p_location_key_i"}, "PLocation", new string[] {
+                            "p_site_key_n", "p_location_key_i"}, false));
             this.FRelations.Add(new TTypedRelation("PartnerInterestCategory", "PInterest", new string[] {
                             "p_interest_c"}, "PPartnerInterest", new string[] {
                             "p_interest_c"}, false));
         }
     }
-    
-    /// auto generated table derived from PLocation
+
+    /// Links partners with locations (addresses) and has specific info about the link (e.g. phone number)
     [Serializable()]
-    public class PartnerAddressAggregateTDSSimilarLocationParametersTable : PLocationTable
+    public class PartnerEditTDSPPartnerLocationTable : TTypedDataTable
     {
-        
-        /// 
-        public DataColumn ColumnSiteKeyOfSimilarLocation;
-        
-        /// 
-        public DataColumn ColumnLocationKeyOfSimilarLocation;
-        
-        /// 
-        public DataColumn ColumnUsedByNOtherPartners;
-        
-        /// 
-        public DataColumn ColumnAnswerReuse;
-        
-        /// 
-        public DataColumn ColumnAnswerProcessedClientSide;
-        
-        /// 
-        public DataColumn ColumnAnswerProcessedServerSide;
-        
+        /// This is the partner key assigned to each partner. It consists of the fund id followed by a computer generated six digit number.
+        public DataColumn ColumnPartnerKey;
+        /// This is the key that tell what site created the linked location
+        public DataColumn ColumnSiteKey;
+        ///
+        public DataColumn ColumnLocationKey;
+        ///
+        public DataColumn ColumnDateEffective;
+        ///
+        public DataColumn ColumnDateGoodUntil;
+        ///
+        public DataColumn ColumnLocationType;
+        ///
+        public DataColumn ColumnSendMail;
+        ///
+        public DataColumn ColumnFaxNumber;
+        ///
+        public DataColumn ColumnTelex;
+        ///
+        public DataColumn ColumnTelephoneNumber;
+        ///
+        public DataColumn ColumnExtension;
+        ///
+        public DataColumn ColumnEmailAddress;
+        ///
+        public DataColumn ColumnLocationDetailComment;
+        ///
+        public DataColumn ColumnFaxExtension;
+        ///
+        public DataColumn ColumnMobileNumber;
+        ///
+        public DataColumn ColumnAlternateTelephone;
+        ///
+        public DataColumn ColumnUrl;
+        /// Indicates whether or not the partner location has restricted access. If it does then the access will be controlled by s_group_partner_location.
+        public DataColumn ColumnRestricted;
+        /// The date the record was created.
+        public DataColumn ColumnDateCreated;
+        /// User ID of who created this record.
+        public DataColumn ColumnCreatedBy;
+        /// The date the record was modified.
+        public DataColumn ColumnDateModified;
+        /// User ID of who last modified this record.
+        public DataColumn ColumnModifiedBy;
+        /// This identifies the current version of the record.
+        public DataColumn ColumnModificationId;
+        ///
+        public DataColumn ColumnBestAddress;
+        ///
+        public DataColumn ColumnIcon;
+
+        /// TableId for Ict.Common.Data generic functions
+        public static short TableId = 42;
+
+        private static bool FInitInfoValues = InitInfoValues();
+        private static bool InitInfoValues()
+        {
+            TableInfo.Add(TableId, new TTypedTableInfo(TableId, "PartnerEditTDSPPartnerLocation", "PartnerEditTDSPPartnerLocation",
+                new TTypedColumnInfo[] {
+                    new TTypedColumnInfo(0, "PartnerKey", "p_partner_key_n", OdbcType.Decimal, 10, true),
+                    new TTypedColumnInfo(1, "SiteKey", "p_site_key_n", OdbcType.Decimal, 10, true),
+                    new TTypedColumnInfo(2, "LocationKey", "p_location_key_i", OdbcType.Int, -1, true),
+                    new TTypedColumnInfo(3, "DateEffective", "p_date_effective_d", OdbcType.Date, -1, false),
+                    new TTypedColumnInfo(4, "DateGoodUntil", "p_date_good_until_d", OdbcType.Date, -1, false),
+                    new TTypedColumnInfo(5, "LocationType", "p_location_type_c", OdbcType.VarChar, 24, false),
+                    new TTypedColumnInfo(6, "SendMail", "p_send_mail_l", OdbcType.Bit, -1, false),
+                    new TTypedColumnInfo(7, "FaxNumber", "p_fax_number_c", OdbcType.VarChar, 50, false),
+                    new TTypedColumnInfo(8, "Telex", "p_telex_i", OdbcType.Int, -1, false),
+                    new TTypedColumnInfo(9, "TelephoneNumber", "p_telephone_number_c", OdbcType.VarChar, 50, false),
+                    new TTypedColumnInfo(10, "Extension", "p_extension_i", OdbcType.Int, -1, false),
+                    new TTypedColumnInfo(11, "EmailAddress", "p_email_address_c", OdbcType.VarChar, 120, false),
+                    new TTypedColumnInfo(12, "LocationDetailComment", "p_location_detail_comment_c", OdbcType.VarChar, 512, false),
+                    new TTypedColumnInfo(13, "FaxExtension", "p_fax_extension_i", OdbcType.Int, -1, false),
+                    new TTypedColumnInfo(14, "MobileNumber", "p_mobile_number_c", OdbcType.VarChar, 50, false),
+                    new TTypedColumnInfo(15, "AlternateTelephone", "p_alternate_telephone_c", OdbcType.VarChar, 50, false),
+                    new TTypedColumnInfo(16, "Url", "p_url_c", OdbcType.VarChar, 128, false),
+                    new TTypedColumnInfo(17, "Restricted", "p_restricted_l", OdbcType.Bit, -1, false),
+                    new TTypedColumnInfo(18, "DateCreated", "s_date_created_d", OdbcType.Date, -1, false),
+                    new TTypedColumnInfo(19, "CreatedBy", "s_created_by_c", OdbcType.VarChar, 20, false),
+                    new TTypedColumnInfo(20, "DateModified", "s_date_modified_d", OdbcType.Date, -1, false),
+                    new TTypedColumnInfo(21, "ModifiedBy", "s_modified_by_c", OdbcType.VarChar, 20, false),
+                    new TTypedColumnInfo(22, "ModificationId", "s_modification_id_c", OdbcType.VarChar, 150, false),
+                    new TTypedColumnInfo(23, "BestAddress", "BestAddress", OdbcType.Int, -1, false),
+                    new TTypedColumnInfo(24, "Icon", "Icon", OdbcType.Int, -1, false)
+                },
+                new int[] {
+                    0, 1, 2
+                }));
+            return true;
+        }
+
         /// constructor
-        public PartnerAddressAggregateTDSSimilarLocationParametersTable() : 
-                base("SimilarLocationParameters")
+        public PartnerEditTDSPPartnerLocationTable() :
+                base("PartnerEditTDSPPartnerLocation")
         {
         }
-        
+
         /// constructor
-        public PartnerAddressAggregateTDSSimilarLocationParametersTable(string ATablename) : 
+        public PartnerEditTDSPPartnerLocationTable(string ATablename) :
                 base(ATablename)
         {
         }
-        
+
         /// constructor for serialization
-        public PartnerAddressAggregateTDSSimilarLocationParametersTable(System.Runtime.Serialization.SerializationInfo info, System.Runtime.Serialization.StreamingContext context) : 
+        public PartnerEditTDSPPartnerLocationTable(System.Runtime.Serialization.SerializationInfo info, System.Runtime.Serialization.StreamingContext context) :
                 base(info, context)
         {
         }
-        
-        /// Access a typed row by index
-        public new PartnerAddressAggregateTDSSimilarLocationParametersRow this[int i]
+
+        /// create the columns
+        protected override void InitClass()
         {
-            get
-            {
-                return ((PartnerAddressAggregateTDSSimilarLocationParametersRow)(this.Rows[i]));
-            }
+            this.Columns.Add(new System.Data.DataColumn("p_partner_key_n", typeof(Int64)));
+            this.Columns.Add(new System.Data.DataColumn("p_site_key_n", typeof(Int64)));
+            this.Columns.Add(new System.Data.DataColumn("p_location_key_i", typeof(Int32)));
+            this.Columns.Add(new System.Data.DataColumn("p_date_effective_d", typeof(System.DateTime)));
+            this.Columns.Add(new System.Data.DataColumn("p_date_good_until_d", typeof(System.DateTime)));
+            this.Columns.Add(new System.Data.DataColumn("p_location_type_c", typeof(String)));
+            this.Columns.Add(new System.Data.DataColumn("p_send_mail_l", typeof(Boolean)));
+            this.Columns.Add(new System.Data.DataColumn("p_fax_number_c", typeof(String)));
+            this.Columns.Add(new System.Data.DataColumn("p_telex_i", typeof(Int32)));
+            this.Columns.Add(new System.Data.DataColumn("p_telephone_number_c", typeof(String)));
+            this.Columns.Add(new System.Data.DataColumn("p_extension_i", typeof(Int32)));
+            this.Columns.Add(new System.Data.DataColumn("p_email_address_c", typeof(String)));
+            this.Columns.Add(new System.Data.DataColumn("p_location_detail_comment_c", typeof(String)));
+            this.Columns.Add(new System.Data.DataColumn("p_fax_extension_i", typeof(Int32)));
+            this.Columns.Add(new System.Data.DataColumn("p_mobile_number_c", typeof(String)));
+            this.Columns.Add(new System.Data.DataColumn("p_alternate_telephone_c", typeof(String)));
+            this.Columns.Add(new System.Data.DataColumn("p_url_c", typeof(String)));
+            this.Columns.Add(new System.Data.DataColumn("p_restricted_l", typeof(Boolean)));
+            this.Columns.Add(new System.Data.DataColumn("s_date_created_d", typeof(System.DateTime)));
+            this.Columns.Add(new System.Data.DataColumn("s_created_by_c", typeof(String)));
+            this.Columns.Add(new System.Data.DataColumn("s_date_modified_d", typeof(System.DateTime)));
+            this.Columns.Add(new System.Data.DataColumn("s_modified_by_c", typeof(String)));
+            this.Columns.Add(new System.Data.DataColumn("s_modification_id_c", typeof(String)));
+            this.Columns.Add(new System.Data.DataColumn("BestAddress", typeof(bool)));
+            this.Columns.Add(new System.Data.DataColumn("Icon", typeof(Int32)));
         }
-        
-        /// get the name of the field in the database for this column
-        public static string GetSiteKeyOfSimilarLocationDBName()
-        {
-            return "SiteKeyOfSimilarLocation";
-        }
-        
-        /// get help text for column
-        public static string GetSiteKeyOfSimilarLocationHelp()
-        {
-            return null;
-        }
-        
-        /// get label of column
-        public static string GetSiteKeyOfSimilarLocationLabel()
-        {
-            return "";
-        }
-        
-        /// get the name of the field in the database for this column
-        public static string GetLocationKeyOfSimilarLocationDBName()
-        {
-            return "LocationKeyOfSimilarLocation";
-        }
-        
-        /// get help text for column
-        public static string GetLocationKeyOfSimilarLocationHelp()
-        {
-            return null;
-        }
-        
-        /// get label of column
-        public static string GetLocationKeyOfSimilarLocationLabel()
-        {
-            return "";
-        }
-        
-        /// get the name of the field in the database for this column
-        public static string GetUsedByNOtherPartnersDBName()
-        {
-            return "UsedByNOtherPartners";
-        }
-        
-        /// get help text for column
-        public static string GetUsedByNOtherPartnersHelp()
-        {
-            return null;
-        }
-        
-        /// get label of column
-        public static string GetUsedByNOtherPartnersLabel()
-        {
-            return "";
-        }
-        
-        /// get the name of the field in the database for this column
-        public static string GetAnswerReuseDBName()
-        {
-            return "AnswerReuse";
-        }
-        
-        /// get help text for column
-        public static string GetAnswerReuseHelp()
-        {
-            return null;
-        }
-        
-        /// get label of column
-        public static string GetAnswerReuseLabel()
-        {
-            return "";
-        }
-        
-        /// get the name of the field in the database for this column
-        public static string GetAnswerProcessedClientSideDBName()
-        {
-            return "AnswerProcessedClientSide";
-        }
-        
-        /// get help text for column
-        public static string GetAnswerProcessedClientSideHelp()
-        {
-            return null;
-        }
-        
-        /// get label of column
-        public static string GetAnswerProcessedClientSideLabel()
-        {
-            return "";
-        }
-        
-        /// get the name of the field in the database for this column
-        public static string GetAnswerProcessedServerSideDBName()
-        {
-            return "AnswerProcessedServerSide";
-        }
-        
-        /// get help text for column
-        public static string GetAnswerProcessedServerSideHelp()
-        {
-            return null;
-        }
-        
-        /// get label of column
-        public static string GetAnswerProcessedServerSideLabel()
-        {
-            return "";
-        }
-        
-        /// CamelCase version of the tablename
-        public new static string GetTableName()
-        {
-            return "SimilarLocationParameters";
-        }
-        
-        /// original name of table in the database
-        public new static string GetTableDBName()
-        {
-            return "SimilarLocationParameters";
-        }
-        
+
         /// assign columns to properties, set primary key
         public override void InitVars()
         {
-            base.InitVars();
+            this.ColumnPartnerKey = this.Columns["p_partner_key_n"];
+            this.ColumnSiteKey = this.Columns["p_site_key_n"];
+            this.ColumnLocationKey = this.Columns["p_location_key_i"];
+            this.ColumnDateEffective = this.Columns["p_date_effective_d"];
+            this.ColumnDateGoodUntil = this.Columns["p_date_good_until_d"];
+            this.ColumnLocationType = this.Columns["p_location_type_c"];
+            this.ColumnSendMail = this.Columns["p_send_mail_l"];
+            this.ColumnFaxNumber = this.Columns["p_fax_number_c"];
+            this.ColumnTelex = this.Columns["p_telex_i"];
+            this.ColumnTelephoneNumber = this.Columns["p_telephone_number_c"];
+            this.ColumnExtension = this.Columns["p_extension_i"];
+            this.ColumnEmailAddress = this.Columns["p_email_address_c"];
+            this.ColumnLocationDetailComment = this.Columns["p_location_detail_comment_c"];
+            this.ColumnFaxExtension = this.Columns["p_fax_extension_i"];
+            this.ColumnMobileNumber = this.Columns["p_mobile_number_c"];
+            this.ColumnAlternateTelephone = this.Columns["p_alternate_telephone_c"];
+            this.ColumnUrl = this.Columns["p_url_c"];
+            this.ColumnRestricted = this.Columns["p_restricted_l"];
+            this.ColumnDateCreated = this.Columns["s_date_created_d"];
+            this.ColumnCreatedBy = this.Columns["s_created_by_c"];
+            this.ColumnDateModified = this.Columns["s_date_modified_d"];
+            this.ColumnModifiedBy = this.Columns["s_modified_by_c"];
+            this.ColumnModificationId = this.Columns["s_modification_id_c"];
+            this.ColumnBestAddress = this.Columns["BestAddress"];
+            this.ColumnIcon = this.Columns["Icon"];
+        }
+
+        /// Access a typed row by index
+        public PartnerEditTDSPPartnerLocationRow this[int i]
+        {
+            get
+            {
+                return ((PartnerEditTDSPPartnerLocationRow)(this.Rows[i]));
+            }
+        }
+
+        /// create a new typed row
+        public PartnerEditTDSPPartnerLocationRow NewRowTyped(bool AWithDefaultValues)
+        {
+            PartnerEditTDSPPartnerLocationRow ret = ((PartnerEditTDSPPartnerLocationRow)(this.NewRow()));
+            if ((AWithDefaultValues == true))
+            {
+                ret.InitValues();
+            }
+            return ret;
+        }
+
+        /// create a new typed row, always with default values
+        public PartnerEditTDSPPartnerLocationRow NewRowTyped()
+        {
+            return this.NewRowTyped(true);
+        }
+
+        /// new typed row using DataRowBuilder
+        protected override System.Data.DataRow NewRowFromBuilder(System.Data.DataRowBuilder builder)
+        {
+            return new PartnerEditTDSPPartnerLocationRow(builder);
+        }
+
+        /// get typed set of changes
+        public PartnerEditTDSPPartnerLocationTable GetChangesTyped()
+        {
+            return ((PartnerEditTDSPPartnerLocationTable)(base.GetChangesTypedInternal()));
+        }
+
+        /// get an odbc parameter for the given column
+        public override OdbcParameter CreateOdbcParameter(Int32 AColumnNr)
+        {
+            return CreateOdbcParameter(TableId, AColumnNr);
+        }
+
+        /// get the name of the field in the database for this column
+        public static string GetPartnerKeyDBName()
+        {
+            return "p_partner_key_n";
+        }
+
+        /// get character length for column
+        public static short GetPartnerKeyLength()
+        {
+            return 10;
+        }
+
+        /// get the name of the field in the database for this column
+        public static string GetSiteKeyDBName()
+        {
+            return "p_site_key_n";
+        }
+
+        /// get character length for column
+        public static short GetSiteKeyLength()
+        {
+            return 10;
+        }
+
+        /// get the name of the field in the database for this column
+        public static string GetLocationKeyDBName()
+        {
+            return "p_location_key_i";
+        }
+
+        /// get character length for column
+        public static short GetLocationKeyLength()
+        {
+            return -1;
+        }
+
+        /// get the name of the field in the database for this column
+        public static string GetDateEffectiveDBName()
+        {
+            return "p_date_effective_d";
+        }
+
+        /// get character length for column
+        public static short GetDateEffectiveLength()
+        {
+            return -1;
+        }
+
+        /// get the name of the field in the database for this column
+        public static string GetDateGoodUntilDBName()
+        {
+            return "p_date_good_until_d";
+        }
+
+        /// get character length for column
+        public static short GetDateGoodUntilLength()
+        {
+            return -1;
+        }
+
+        /// get the name of the field in the database for this column
+        public static string GetLocationTypeDBName()
+        {
+            return "p_location_type_c";
+        }
+
+        /// get character length for column
+        public static short GetLocationTypeLength()
+        {
+            return 24;
+        }
+
+        /// get the name of the field in the database for this column
+        public static string GetSendMailDBName()
+        {
+            return "p_send_mail_l";
+        }
+
+        /// get character length for column
+        public static short GetSendMailLength()
+        {
+            return -1;
+        }
+
+        /// get the name of the field in the database for this column
+        public static string GetFaxNumberDBName()
+        {
+            return "p_fax_number_c";
+        }
+
+        /// get character length for column
+        public static short GetFaxNumberLength()
+        {
+            return 50;
+        }
+
+        /// get the name of the field in the database for this column
+        public static string GetTelexDBName()
+        {
+            return "p_telex_i";
+        }
+
+        /// get character length for column
+        public static short GetTelexLength()
+        {
+            return -1;
+        }
+
+        /// get the name of the field in the database for this column
+        public static string GetTelephoneNumberDBName()
+        {
+            return "p_telephone_number_c";
+        }
+
+        /// get character length for column
+        public static short GetTelephoneNumberLength()
+        {
+            return 50;
+        }
+
+        /// get the name of the field in the database for this column
+        public static string GetExtensionDBName()
+        {
+            return "p_extension_i";
+        }
+
+        /// get character length for column
+        public static short GetExtensionLength()
+        {
+            return -1;
+        }
+
+        /// get the name of the field in the database for this column
+        public static string GetEmailAddressDBName()
+        {
+            return "p_email_address_c";
+        }
+
+        /// get character length for column
+        public static short GetEmailAddressLength()
+        {
+            return 120;
+        }
+
+        /// get the name of the field in the database for this column
+        public static string GetLocationDetailCommentDBName()
+        {
+            return "p_location_detail_comment_c";
+        }
+
+        /// get character length for column
+        public static short GetLocationDetailCommentLength()
+        {
+            return 512;
+        }
+
+        /// get the name of the field in the database for this column
+        public static string GetFaxExtensionDBName()
+        {
+            return "p_fax_extension_i";
+        }
+
+        /// get character length for column
+        public static short GetFaxExtensionLength()
+        {
+            return -1;
+        }
+
+        /// get the name of the field in the database for this column
+        public static string GetMobileNumberDBName()
+        {
+            return "p_mobile_number_c";
+        }
+
+        /// get character length for column
+        public static short GetMobileNumberLength()
+        {
+            return 50;
+        }
+
+        /// get the name of the field in the database for this column
+        public static string GetAlternateTelephoneDBName()
+        {
+            return "p_alternate_telephone_c";
+        }
+
+        /// get character length for column
+        public static short GetAlternateTelephoneLength()
+        {
+            return 50;
+        }
+
+        /// get the name of the field in the database for this column
+        public static string GetUrlDBName()
+        {
+            return "p_url_c";
+        }
+
+        /// get character length for column
+        public static short GetUrlLength()
+        {
+            return 128;
+        }
+
+        /// get the name of the field in the database for this column
+        public static string GetRestrictedDBName()
+        {
+            return "p_restricted_l";
+        }
+
+        /// get character length for column
+        public static short GetRestrictedLength()
+        {
+            return -1;
+        }
+
+        /// get the name of the field in the database for this column
+        public static string GetDateCreatedDBName()
+        {
+            return "s_date_created_d";
+        }
+
+        /// get character length for column
+        public static short GetDateCreatedLength()
+        {
+            return -1;
+        }
+
+        /// get the name of the field in the database for this column
+        public static string GetCreatedByDBName()
+        {
+            return "s_created_by_c";
+        }
+
+        /// get character length for column
+        public static short GetCreatedByLength()
+        {
+            return 20;
+        }
+
+        /// get the name of the field in the database for this column
+        public static string GetDateModifiedDBName()
+        {
+            return "s_date_modified_d";
+        }
+
+        /// get character length for column
+        public static short GetDateModifiedLength()
+        {
+            return -1;
+        }
+
+        /// get the name of the field in the database for this column
+        public static string GetModifiedByDBName()
+        {
+            return "s_modified_by_c";
+        }
+
+        /// get character length for column
+        public static short GetModifiedByLength()
+        {
+            return 20;
+        }
+
+        /// get the name of the field in the database for this column
+        public static string GetModificationIdDBName()
+        {
+            return "s_modification_id_c";
+        }
+
+        /// get character length for column
+        public static short GetModificationIdLength()
+        {
+            return 150;
+        }
+
+        /// get the name of the field in the database for this column
+        public static string GetBestAddressDBName()
+        {
+            return "BestAddress";
+        }
+
+        /// get character length for column
+        public static short GetBestAddressLength()
+        {
+            return -1;
+        }
+
+        /// get the name of the field in the database for this column
+        public static string GetIconDBName()
+        {
+            return "Icon";
+        }
+
+        /// get character length for column
+        public static short GetIconLength()
+        {
+            return -1;
+        }
+
+    }
+
+    /// Links partners with locations (addresses) and has specific info about the link (e.g. phone number)
+    [Serializable()]
+    public class PartnerEditTDSPPartnerLocationRow : System.Data.DataRow
+    {
+        private PartnerEditTDSPPartnerLocationTable myTable;
+
+        /// Constructor
+        public PartnerEditTDSPPartnerLocationRow(System.Data.DataRowBuilder rb) :
+                base(rb)
+        {
+            this.myTable = ((PartnerEditTDSPPartnerLocationTable)(this.Table));
+        }
+
+        /// This is the partner key assigned to each partner. It consists of the fund id followed by a computer generated six digit number.
+        public Int64 PartnerKey
+        {
+            get
+            {
+                object ret;
+                ret = this[this.myTable.ColumnPartnerKey.Ordinal];
+                if ((ret == System.DBNull.Value))
+                {
+                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                }
+                else
+                {
+                    return ((Int64)(ret));
+                }
+            }
+            set
+            {
+                if ((this.IsNull(this.myTable.ColumnPartnerKey)
+                            || (((Int64)(this[this.myTable.ColumnPartnerKey])) != value)))
+                {
+                    this[this.myTable.ColumnPartnerKey] = value;
+                }
+            }
+        }
+
+        /// This is the key that tell what site created the linked location
+        public Int64 SiteKey
+        {
+            get
+            {
+                object ret;
+                ret = this[this.myTable.ColumnSiteKey.Ordinal];
+                if ((ret == System.DBNull.Value))
+                {
+                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                }
+                else
+                {
+                    return ((Int64)(ret));
+                }
+            }
+            set
+            {
+                if ((this.IsNull(this.myTable.ColumnSiteKey)
+                            || (((Int64)(this[this.myTable.ColumnSiteKey])) != value)))
+                {
+                    this[this.myTable.ColumnSiteKey] = value;
+                }
+            }
+        }
+
+        ///
+        public Int32 LocationKey
+        {
+            get
+            {
+                object ret;
+                ret = this[this.myTable.ColumnLocationKey.Ordinal];
+                if ((ret == System.DBNull.Value))
+                {
+                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                }
+                else
+                {
+                    return ((Int32)(ret));
+                }
+            }
+            set
+            {
+                if ((this.IsNull(this.myTable.ColumnLocationKey)
+                            || (((Int32)(this[this.myTable.ColumnLocationKey])) != value)))
+                {
+                    this[this.myTable.ColumnLocationKey] = value;
+                }
+            }
+        }
+
+        ///
+        public System.DateTime DateEffective
+        {
+            get
+            {
+                object ret;
+                ret = this[this.myTable.ColumnDateEffective.Ordinal];
+                if ((ret == System.DBNull.Value))
+                {
+                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                }
+                else
+                {
+                    return ((System.DateTime)(ret));
+                }
+            }
+            set
+            {
+                if ((this.IsNull(this.myTable.ColumnDateEffective)
+                            || (((System.DateTime)(this[this.myTable.ColumnDateEffective])) != value)))
+                {
+                    this[this.myTable.ColumnDateEffective] = value;
+                }
+            }
+        }
+
+        ///
+        public System.DateTime DateGoodUntil
+        {
+            get
+            {
+                object ret;
+                ret = this[this.myTable.ColumnDateGoodUntil.Ordinal];
+                if ((ret == System.DBNull.Value))
+                {
+                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                }
+                else
+                {
+                    return ((System.DateTime)(ret));
+                }
+            }
+            set
+            {
+                if ((this.IsNull(this.myTable.ColumnDateGoodUntil)
+                            || (((System.DateTime)(this[this.myTable.ColumnDateGoodUntil])) != value)))
+                {
+                    this[this.myTable.ColumnDateGoodUntil] = value;
+                }
+            }
+        }
+
+        ///
+        public String LocationType
+        {
+            get
+            {
+                object ret;
+                ret = this[this.myTable.ColumnLocationType.Ordinal];
+                if ((ret == System.DBNull.Value))
+                {
+                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                }
+                else
+                {
+                    return ((String)(ret));
+                }
+            }
+            set
+            {
+                if ((this.IsNull(this.myTable.ColumnLocationType)
+                            || (((String)(this[this.myTable.ColumnLocationType])) != value)))
+                {
+                    this[this.myTable.ColumnLocationType] = value;
+                }
+            }
+        }
+
+        ///
+        public Boolean SendMail
+        {
+            get
+            {
+                object ret;
+                ret = this[this.myTable.ColumnSendMail.Ordinal];
+                if ((ret == System.DBNull.Value))
+                {
+                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                }
+                else
+                {
+                    return ((Boolean)(ret));
+                }
+            }
+            set
+            {
+                if ((this.IsNull(this.myTable.ColumnSendMail)
+                            || (((Boolean)(this[this.myTable.ColumnSendMail])) != value)))
+                {
+                    this[this.myTable.ColumnSendMail] = value;
+                }
+            }
+        }
+
+        ///
+        public String FaxNumber
+        {
+            get
+            {
+                object ret;
+                ret = this[this.myTable.ColumnFaxNumber.Ordinal];
+                if ((ret == System.DBNull.Value))
+                {
+                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                }
+                else
+                {
+                    return ((String)(ret));
+                }
+            }
+            set
+            {
+                if ((this.IsNull(this.myTable.ColumnFaxNumber)
+                            || (((String)(this[this.myTable.ColumnFaxNumber])) != value)))
+                {
+                    this[this.myTable.ColumnFaxNumber] = value;
+                }
+            }
+        }
+
+        ///
+        public Int32 Telex
+        {
+            get
+            {
+                object ret;
+                ret = this[this.myTable.ColumnTelex.Ordinal];
+                if ((ret == System.DBNull.Value))
+                {
+                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                }
+                else
+                {
+                    return ((Int32)(ret));
+                }
+            }
+            set
+            {
+                if ((this.IsNull(this.myTable.ColumnTelex)
+                            || (((Int32)(this[this.myTable.ColumnTelex])) != value)))
+                {
+                    this[this.myTable.ColumnTelex] = value;
+                }
+            }
+        }
+
+        ///
+        public String TelephoneNumber
+        {
+            get
+            {
+                object ret;
+                ret = this[this.myTable.ColumnTelephoneNumber.Ordinal];
+                if ((ret == System.DBNull.Value))
+                {
+                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                }
+                else
+                {
+                    return ((String)(ret));
+                }
+            }
+            set
+            {
+                if ((this.IsNull(this.myTable.ColumnTelephoneNumber)
+                            || (((String)(this[this.myTable.ColumnTelephoneNumber])) != value)))
+                {
+                    this[this.myTable.ColumnTelephoneNumber] = value;
+                }
+            }
+        }
+
+        ///
+        public Int32 Extension
+        {
+            get
+            {
+                object ret;
+                ret = this[this.myTable.ColumnExtension.Ordinal];
+                if ((ret == System.DBNull.Value))
+                {
+                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                }
+                else
+                {
+                    return ((Int32)(ret));
+                }
+            }
+            set
+            {
+                if ((this.IsNull(this.myTable.ColumnExtension)
+                            || (((Int32)(this[this.myTable.ColumnExtension])) != value)))
+                {
+                    this[this.myTable.ColumnExtension] = value;
+                }
+            }
+        }
+
+        ///
+        public String EmailAddress
+        {
+            get
+            {
+                object ret;
+                ret = this[this.myTable.ColumnEmailAddress.Ordinal];
+                if ((ret == System.DBNull.Value))
+                {
+                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                }
+                else
+                {
+                    return ((String)(ret));
+                }
+            }
+            set
+            {
+                if ((this.IsNull(this.myTable.ColumnEmailAddress)
+                            || (((String)(this[this.myTable.ColumnEmailAddress])) != value)))
+                {
+                    this[this.myTable.ColumnEmailAddress] = value;
+                }
+            }
+        }
+
+        ///
+        public String LocationDetailComment
+        {
+            get
+            {
+                object ret;
+                ret = this[this.myTable.ColumnLocationDetailComment.Ordinal];
+                if ((ret == System.DBNull.Value))
+                {
+                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                }
+                else
+                {
+                    return ((String)(ret));
+                }
+            }
+            set
+            {
+                if ((this.IsNull(this.myTable.ColumnLocationDetailComment)
+                            || (((String)(this[this.myTable.ColumnLocationDetailComment])) != value)))
+                {
+                    this[this.myTable.ColumnLocationDetailComment] = value;
+                }
+            }
+        }
+
+        ///
+        public Int32 FaxExtension
+        {
+            get
+            {
+                object ret;
+                ret = this[this.myTable.ColumnFaxExtension.Ordinal];
+                if ((ret == System.DBNull.Value))
+                {
+                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                }
+                else
+                {
+                    return ((Int32)(ret));
+                }
+            }
+            set
+            {
+                if ((this.IsNull(this.myTable.ColumnFaxExtension)
+                            || (((Int32)(this[this.myTable.ColumnFaxExtension])) != value)))
+                {
+                    this[this.myTable.ColumnFaxExtension] = value;
+                }
+            }
+        }
+
+        ///
+        public String MobileNumber
+        {
+            get
+            {
+                object ret;
+                ret = this[this.myTable.ColumnMobileNumber.Ordinal];
+                if ((ret == System.DBNull.Value))
+                {
+                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                }
+                else
+                {
+                    return ((String)(ret));
+                }
+            }
+            set
+            {
+                if ((this.IsNull(this.myTable.ColumnMobileNumber)
+                            || (((String)(this[this.myTable.ColumnMobileNumber])) != value)))
+                {
+                    this[this.myTable.ColumnMobileNumber] = value;
+                }
+            }
+        }
+
+        ///
+        public String AlternateTelephone
+        {
+            get
+            {
+                object ret;
+                ret = this[this.myTable.ColumnAlternateTelephone.Ordinal];
+                if ((ret == System.DBNull.Value))
+                {
+                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                }
+                else
+                {
+                    return ((String)(ret));
+                }
+            }
+            set
+            {
+                if ((this.IsNull(this.myTable.ColumnAlternateTelephone)
+                            || (((String)(this[this.myTable.ColumnAlternateTelephone])) != value)))
+                {
+                    this[this.myTable.ColumnAlternateTelephone] = value;
+                }
+            }
+        }
+
+        ///
+        public String Url
+        {
+            get
+            {
+                object ret;
+                ret = this[this.myTable.ColumnUrl.Ordinal];
+                if ((ret == System.DBNull.Value))
+                {
+                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                }
+                else
+                {
+                    return ((String)(ret));
+                }
+            }
+            set
+            {
+                if ((this.IsNull(this.myTable.ColumnUrl)
+                            || (((String)(this[this.myTable.ColumnUrl])) != value)))
+                {
+                    this[this.myTable.ColumnUrl] = value;
+                }
+            }
+        }
+
+        /// Indicates whether or not the partner location has restricted access. If it does then the access will be controlled by s_group_partner_location.
+        public Boolean Restricted
+        {
+            get
+            {
+                object ret;
+                ret = this[this.myTable.ColumnRestricted.Ordinal];
+                if ((ret == System.DBNull.Value))
+                {
+                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                }
+                else
+                {
+                    return ((Boolean)(ret));
+                }
+            }
+            set
+            {
+                if ((this.IsNull(this.myTable.ColumnRestricted)
+                            || (((Boolean)(this[this.myTable.ColumnRestricted])) != value)))
+                {
+                    this[this.myTable.ColumnRestricted] = value;
+                }
+            }
+        }
+
+        /// The date the record was created.
+        public System.DateTime DateCreated
+        {
+            get
+            {
+                object ret;
+                ret = this[this.myTable.ColumnDateCreated.Ordinal];
+                if ((ret == System.DBNull.Value))
+                {
+                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                }
+                else
+                {
+                    return ((System.DateTime)(ret));
+                }
+            }
+            set
+            {
+                if ((this.IsNull(this.myTable.ColumnDateCreated)
+                            || (((System.DateTime)(this[this.myTable.ColumnDateCreated])) != value)))
+                {
+                    this[this.myTable.ColumnDateCreated] = value;
+                }
+            }
+        }
+
+        /// User ID of who created this record.
+        public String CreatedBy
+        {
+            get
+            {
+                object ret;
+                ret = this[this.myTable.ColumnCreatedBy.Ordinal];
+                if ((ret == System.DBNull.Value))
+                {
+                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                }
+                else
+                {
+                    return ((String)(ret));
+                }
+            }
+            set
+            {
+                if ((this.IsNull(this.myTable.ColumnCreatedBy)
+                            || (((String)(this[this.myTable.ColumnCreatedBy])) != value)))
+                {
+                    this[this.myTable.ColumnCreatedBy] = value;
+                }
+            }
+        }
+
+        /// The date the record was modified.
+        public System.DateTime DateModified
+        {
+            get
+            {
+                object ret;
+                ret = this[this.myTable.ColumnDateModified.Ordinal];
+                if ((ret == System.DBNull.Value))
+                {
+                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                }
+                else
+                {
+                    return ((System.DateTime)(ret));
+                }
+            }
+            set
+            {
+                if ((this.IsNull(this.myTable.ColumnDateModified)
+                            || (((System.DateTime)(this[this.myTable.ColumnDateModified])) != value)))
+                {
+                    this[this.myTable.ColumnDateModified] = value;
+                }
+            }
+        }
+
+        /// User ID of who last modified this record.
+        public String ModifiedBy
+        {
+            get
+            {
+                object ret;
+                ret = this[this.myTable.ColumnModifiedBy.Ordinal];
+                if ((ret == System.DBNull.Value))
+                {
+                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                }
+                else
+                {
+                    return ((String)(ret));
+                }
+            }
+            set
+            {
+                if ((this.IsNull(this.myTable.ColumnModifiedBy)
+                            || (((String)(this[this.myTable.ColumnModifiedBy])) != value)))
+                {
+                    this[this.myTable.ColumnModifiedBy] = value;
+                }
+            }
+        }
+
+        /// This identifies the current version of the record.
+        public String ModificationId
+        {
+            get
+            {
+                object ret;
+                ret = this[this.myTable.ColumnModificationId.Ordinal];
+                if ((ret == System.DBNull.Value))
+                {
+                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                }
+                else
+                {
+                    return ((String)(ret));
+                }
+            }
+            set
+            {
+                if ((this.IsNull(this.myTable.ColumnModificationId)
+                            || (((String)(this[this.myTable.ColumnModificationId])) != value)))
+                {
+                    this[this.myTable.ColumnModificationId] = value;
+                }
+            }
+        }
+
+        ///
+        public bool BestAddress
+        {
+            get
+            {
+                object ret;
+                ret = this[this.myTable.ColumnBestAddress.Ordinal];
+                if ((ret == System.DBNull.Value))
+                {
+                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                }
+                else
+                {
+                    return ((bool)(ret));
+                }
+            }
+            set
+            {
+                if ((this.IsNull(this.myTable.ColumnBestAddress)
+                            || (((bool)(this[this.myTable.ColumnBestAddress])) != value)))
+                {
+                    this[this.myTable.ColumnBestAddress] = value;
+                }
+            }
+        }
+
+        ///
+        public Int32 Icon
+        {
+            get
+            {
+                object ret;
+                ret = this[this.myTable.ColumnIcon.Ordinal];
+                if ((ret == System.DBNull.Value))
+                {
+                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                }
+                else
+                {
+                    return ((Int32)(ret));
+                }
+            }
+            set
+            {
+                if ((this.IsNull(this.myTable.ColumnIcon)
+                            || (((Int32)(this[this.myTable.ColumnIcon])) != value)))
+                {
+                    this[this.myTable.ColumnIcon] = value;
+                }
+            }
+        }
+
+        /// set default values
+        public virtual void InitValues()
+        {
+            this[this.myTable.ColumnPartnerKey.Ordinal] = 0;
+            this[this.myTable.ColumnSiteKey.Ordinal] = 0;
+            this[this.myTable.ColumnLocationKey.Ordinal] = 0;
+            this.SetNull(this.myTable.ColumnDateEffective);
+            this.SetNull(this.myTable.ColumnDateGoodUntil);
+            this.SetNull(this.myTable.ColumnLocationType);
+            this[this.myTable.ColumnSendMail.Ordinal] = false;
+            this.SetNull(this.myTable.ColumnFaxNumber);
+            this[this.myTable.ColumnTelex.Ordinal] = 0;
+            this.SetNull(this.myTable.ColumnTelephoneNumber);
+            this[this.myTable.ColumnExtension.Ordinal] = 0;
+            this.SetNull(this.myTable.ColumnEmailAddress);
+            this.SetNull(this.myTable.ColumnLocationDetailComment);
+            this[this.myTable.ColumnFaxExtension.Ordinal] = 0;
+            this.SetNull(this.myTable.ColumnMobileNumber);
+            this.SetNull(this.myTable.ColumnAlternateTelephone);
+            this.SetNull(this.myTable.ColumnUrl);
+            this[this.myTable.ColumnRestricted.Ordinal] = false;
+            this[this.myTable.ColumnDateCreated.Ordinal] = DateTime.Today;
+            this.SetNull(this.myTable.ColumnCreatedBy);
+            this.SetNull(this.myTable.ColumnDateModified);
+            this.SetNull(this.myTable.ColumnModifiedBy);
+            this.SetNull(this.myTable.ColumnModificationId);
+            this.SetNull(this.myTable.ColumnBestAddress);
+            this.SetNull(this.myTable.ColumnIcon);
+        }
+
+        /// test for NULL value
+        public bool IsPartnerKeyNull()
+        {
+            return this.IsNull(this.myTable.ColumnPartnerKey);
+        }
+
+        /// assign NULL value
+        public void SetPartnerKeyNull()
+        {
+            this.SetNull(this.myTable.ColumnPartnerKey);
+        }
+
+        /// test for NULL value
+        public bool IsSiteKeyNull()
+        {
+            return this.IsNull(this.myTable.ColumnSiteKey);
+        }
+
+        /// assign NULL value
+        public void SetSiteKeyNull()
+        {
+            this.SetNull(this.myTable.ColumnSiteKey);
+        }
+
+        /// test for NULL value
+        public bool IsLocationKeyNull()
+        {
+            return this.IsNull(this.myTable.ColumnLocationKey);
+        }
+
+        /// assign NULL value
+        public void SetLocationKeyNull()
+        {
+            this.SetNull(this.myTable.ColumnLocationKey);
+        }
+
+        /// test for NULL value
+        public bool IsDateEffectiveNull()
+        {
+            return this.IsNull(this.myTable.ColumnDateEffective);
+        }
+
+        /// assign NULL value
+        public void SetDateEffectiveNull()
+        {
+            this.SetNull(this.myTable.ColumnDateEffective);
+        }
+
+        /// test for NULL value
+        public bool IsDateGoodUntilNull()
+        {
+            return this.IsNull(this.myTable.ColumnDateGoodUntil);
+        }
+
+        /// assign NULL value
+        public void SetDateGoodUntilNull()
+        {
+            this.SetNull(this.myTable.ColumnDateGoodUntil);
+        }
+
+        /// test for NULL value
+        public bool IsLocationTypeNull()
+        {
+            return this.IsNull(this.myTable.ColumnLocationType);
+        }
+
+        /// assign NULL value
+        public void SetLocationTypeNull()
+        {
+            this.SetNull(this.myTable.ColumnLocationType);
+        }
+
+        /// test for NULL value
+        public bool IsSendMailNull()
+        {
+            return this.IsNull(this.myTable.ColumnSendMail);
+        }
+
+        /// assign NULL value
+        public void SetSendMailNull()
+        {
+            this.SetNull(this.myTable.ColumnSendMail);
+        }
+
+        /// test for NULL value
+        public bool IsFaxNumberNull()
+        {
+            return this.IsNull(this.myTable.ColumnFaxNumber);
+        }
+
+        /// assign NULL value
+        public void SetFaxNumberNull()
+        {
+            this.SetNull(this.myTable.ColumnFaxNumber);
+        }
+
+        /// test for NULL value
+        public bool IsTelexNull()
+        {
+            return this.IsNull(this.myTable.ColumnTelex);
+        }
+
+        /// assign NULL value
+        public void SetTelexNull()
+        {
+            this.SetNull(this.myTable.ColumnTelex);
+        }
+
+        /// test for NULL value
+        public bool IsTelephoneNumberNull()
+        {
+            return this.IsNull(this.myTable.ColumnTelephoneNumber);
+        }
+
+        /// assign NULL value
+        public void SetTelephoneNumberNull()
+        {
+            this.SetNull(this.myTable.ColumnTelephoneNumber);
+        }
+
+        /// test for NULL value
+        public bool IsExtensionNull()
+        {
+            return this.IsNull(this.myTable.ColumnExtension);
+        }
+
+        /// assign NULL value
+        public void SetExtensionNull()
+        {
+            this.SetNull(this.myTable.ColumnExtension);
+        }
+
+        /// test for NULL value
+        public bool IsEmailAddressNull()
+        {
+            return this.IsNull(this.myTable.ColumnEmailAddress);
+        }
+
+        /// assign NULL value
+        public void SetEmailAddressNull()
+        {
+            this.SetNull(this.myTable.ColumnEmailAddress);
+        }
+
+        /// test for NULL value
+        public bool IsLocationDetailCommentNull()
+        {
+            return this.IsNull(this.myTable.ColumnLocationDetailComment);
+        }
+
+        /// assign NULL value
+        public void SetLocationDetailCommentNull()
+        {
+            this.SetNull(this.myTable.ColumnLocationDetailComment);
+        }
+
+        /// test for NULL value
+        public bool IsFaxExtensionNull()
+        {
+            return this.IsNull(this.myTable.ColumnFaxExtension);
+        }
+
+        /// assign NULL value
+        public void SetFaxExtensionNull()
+        {
+            this.SetNull(this.myTable.ColumnFaxExtension);
+        }
+
+        /// test for NULL value
+        public bool IsMobileNumberNull()
+        {
+            return this.IsNull(this.myTable.ColumnMobileNumber);
+        }
+
+        /// assign NULL value
+        public void SetMobileNumberNull()
+        {
+            this.SetNull(this.myTable.ColumnMobileNumber);
+        }
+
+        /// test for NULL value
+        public bool IsAlternateTelephoneNull()
+        {
+            return this.IsNull(this.myTable.ColumnAlternateTelephone);
+        }
+
+        /// assign NULL value
+        public void SetAlternateTelephoneNull()
+        {
+            this.SetNull(this.myTable.ColumnAlternateTelephone);
+        }
+
+        /// test for NULL value
+        public bool IsUrlNull()
+        {
+            return this.IsNull(this.myTable.ColumnUrl);
+        }
+
+        /// assign NULL value
+        public void SetUrlNull()
+        {
+            this.SetNull(this.myTable.ColumnUrl);
+        }
+
+        /// test for NULL value
+        public bool IsRestrictedNull()
+        {
+            return this.IsNull(this.myTable.ColumnRestricted);
+        }
+
+        /// assign NULL value
+        public void SetRestrictedNull()
+        {
+            this.SetNull(this.myTable.ColumnRestricted);
+        }
+
+        /// test for NULL value
+        public bool IsDateCreatedNull()
+        {
+            return this.IsNull(this.myTable.ColumnDateCreated);
+        }
+
+        /// assign NULL value
+        public void SetDateCreatedNull()
+        {
+            this.SetNull(this.myTable.ColumnDateCreated);
+        }
+
+        /// test for NULL value
+        public bool IsCreatedByNull()
+        {
+            return this.IsNull(this.myTable.ColumnCreatedBy);
+        }
+
+        /// assign NULL value
+        public void SetCreatedByNull()
+        {
+            this.SetNull(this.myTable.ColumnCreatedBy);
+        }
+
+        /// test for NULL value
+        public bool IsDateModifiedNull()
+        {
+            return this.IsNull(this.myTable.ColumnDateModified);
+        }
+
+        /// assign NULL value
+        public void SetDateModifiedNull()
+        {
+            this.SetNull(this.myTable.ColumnDateModified);
+        }
+
+        /// test for NULL value
+        public bool IsModifiedByNull()
+        {
+            return this.IsNull(this.myTable.ColumnModifiedBy);
+        }
+
+        /// assign NULL value
+        public void SetModifiedByNull()
+        {
+            this.SetNull(this.myTable.ColumnModifiedBy);
+        }
+
+        /// test for NULL value
+        public bool IsModificationIdNull()
+        {
+            return this.IsNull(this.myTable.ColumnModificationId);
+        }
+
+        /// assign NULL value
+        public void SetModificationIdNull()
+        {
+            this.SetNull(this.myTable.ColumnModificationId);
+        }
+
+        /// test for NULL value
+        public bool IsBestAddressNull()
+        {
+            return this.IsNull(this.myTable.ColumnBestAddress);
+        }
+
+        /// assign NULL value
+        public void SetBestAddressNull()
+        {
+            this.SetNull(this.myTable.ColumnBestAddress);
+        }
+
+        /// test for NULL value
+        public bool IsIconNull()
+        {
+            return this.IsNull(this.myTable.ColumnIcon);
+        }
+
+        /// assign NULL value
+        public void SetIconNull()
+        {
+            this.SetNull(this.myTable.ColumnIcon);
+        }
+    }
+
+    /// Details of a person.  A person must also have a related FAMILY class p_partner record.
+    [Serializable()]
+    public class PartnerEditTDSPPersonTable : TTypedDataTable
+    {
+        /// This is the partner key assigned to each partner. It consists of the fund id followed by a computer generated six digit number.
+        public DataColumn ColumnPartnerKey;
+        ///
+        public DataColumn ColumnTitle;
+        ///
+        public DataColumn ColumnFirstName;
+        ///
+        public DataColumn ColumnPreferedName;
+        ///
+        public DataColumn ColumnMiddleName1;
+        ///
+        public DataColumn ColumnMiddleName2;
+        ///
+        public DataColumn ColumnMiddleName3;
+        ///
+        public DataColumn ColumnFamilyName;
+        ///
+        public DataColumn ColumnDecorations;
+        /// This is the date the rthe person was born
+        public DataColumn ColumnDateOfBirth;
+        ///
+        public DataColumn ColumnGender;
+        ///
+        public DataColumn ColumnMaritalStatus;
+        ///
+        public DataColumn ColumnOccupationCode;
+        /// This is the year the person became a Believer.
+        public DataColumn ColumnBelieverSinceYear;
+        /// Comment about the year or how the person became a believer
+        public DataColumn ColumnBelieverSinceComment;
+        /// A cross reference to the family record of this person.
+        /// It should be set to ? (not 0 because such a record does not exist!) when there is no family record.
+        public DataColumn ColumnFamilyKey;
+        /// This field indicates the family id of the individual.
+        /// ID's 0 and 1 are used for parents; 2, 3, 4 ... 9 are used for children.
+        public DataColumn ColumnFamilyId;
+        /// This is the partner key of the field in which the partner (should be a Worker or ExWorker) is serving.
+        public DataColumn ColumnFieldKey;
+        /// A person's academic title such as BSc(Hons) or Prof. (eg. Herr Prof. Klaus Shmitt)
+        public DataColumn ColumnAcademicTitle;
+        ///
+        public DataColumn ColumnMaritalStatusSince;
+        ///
+        public DataColumn ColumnMaritalStatusComment;
+        /// The date the record was created.
+        public DataColumn ColumnDateCreated;
+        /// User ID of who created this record.
+        public DataColumn ColumnCreatedBy;
+        /// The date the record was modified.
+        public DataColumn ColumnDateModified;
+        /// User ID of who last modified this record.
+        public DataColumn ColumnModifiedBy;
+        /// This identifies the current version of the record.
+        public DataColumn ColumnModificationId;
+        ///
+        public DataColumn ColumnUnitName;
+
+        /// TableId for Ict.Common.Data generic functions
+        public static short TableId = 51;
+
+        private static bool FInitInfoValues = InitInfoValues();
+        private static bool InitInfoValues()
+        {
+            TableInfo.Add(TableId, new TTypedTableInfo(TableId, "PartnerEditTDSPPerson", "PartnerEditTDSPPerson",
+                new TTypedColumnInfo[] {
+                    new TTypedColumnInfo(0, "PartnerKey", "p_partner_key_n", OdbcType.Decimal, 10, true),
+                    new TTypedColumnInfo(1, "Title", "p_title_c", OdbcType.VarChar, 64, false),
+                    new TTypedColumnInfo(2, "FirstName", "p_first_name_c", OdbcType.VarChar, 64, false),
+                    new TTypedColumnInfo(3, "PreferedName", "p_prefered_name_c", OdbcType.VarChar, 64, false),
+                    new TTypedColumnInfo(4, "MiddleName1", "p_middle_name_1_c", OdbcType.VarChar, 64, false),
+                    new TTypedColumnInfo(5, "MiddleName2", "p_middle_name_2_c", OdbcType.VarChar, 64, false),
+                    new TTypedColumnInfo(6, "MiddleName3", "p_middle_name_3_c", OdbcType.VarChar, 64, false),
+                    new TTypedColumnInfo(7, "FamilyName", "p_family_name_c", OdbcType.VarChar, 64, false),
+                    new TTypedColumnInfo(8, "Decorations", "p_decorations_c", OdbcType.VarChar, 64, false),
+                    new TTypedColumnInfo(9, "DateOfBirth", "p_date_of_birth_d", OdbcType.Date, -1, false),
+                    new TTypedColumnInfo(10, "Gender", "p_gender_c", OdbcType.VarChar, 16, false),
+                    new TTypedColumnInfo(11, "MaritalStatus", "p_marital_status_c", OdbcType.VarChar, 4, false),
+                    new TTypedColumnInfo(12, "OccupationCode", "p_occupation_code_c", OdbcType.VarChar, 32, false),
+                    new TTypedColumnInfo(13, "BelieverSinceYear", "p_believer_since_year_i", OdbcType.Int, -1, false),
+                    new TTypedColumnInfo(14, "BelieverSinceComment", "p_believer_since_comment_c", OdbcType.VarChar, 1000, false),
+                    new TTypedColumnInfo(15, "FamilyKey", "p_family_key_n", OdbcType.Decimal, 10, false),
+                    new TTypedColumnInfo(16, "FamilyId", "p_family_id_i", OdbcType.Int, -1, false),
+                    new TTypedColumnInfo(17, "FieldKey", "p_field_key_n", OdbcType.Decimal, 10, false),
+                    new TTypedColumnInfo(18, "AcademicTitle", "p_academic_title_c", OdbcType.VarChar, 48, false),
+                    new TTypedColumnInfo(19, "MaritalStatusSince", "p_marital_status_since_d", OdbcType.Date, -1, false),
+                    new TTypedColumnInfo(20, "MaritalStatusComment", "p_marital_status_comment_c", OdbcType.VarChar, 512, false),
+                    new TTypedColumnInfo(21, "DateCreated", "s_date_created_d", OdbcType.Date, -1, false),
+                    new TTypedColumnInfo(22, "CreatedBy", "s_created_by_c", OdbcType.VarChar, 20, false),
+                    new TTypedColumnInfo(23, "DateModified", "s_date_modified_d", OdbcType.Date, -1, false),
+                    new TTypedColumnInfo(24, "ModifiedBy", "s_modified_by_c", OdbcType.VarChar, 20, false),
+                    new TTypedColumnInfo(25, "ModificationId", "s_modification_id_c", OdbcType.VarChar, 150, false),
+                    new TTypedColumnInfo(26, "UnitName", "p_unit_name_c", OdbcType.VarChar, 160, false)
+                },
+                new int[] {
+                    0
+                }));
+            return true;
+        }
+
+        /// constructor
+        public PartnerEditTDSPPersonTable() :
+                base("PartnerEditTDSPPerson")
+        {
+        }
+
+        /// constructor
+        public PartnerEditTDSPPersonTable(string ATablename) :
+                base(ATablename)
+        {
+        }
+
+        /// constructor for serialization
+        public PartnerEditTDSPPersonTable(System.Runtime.Serialization.SerializationInfo info, System.Runtime.Serialization.StreamingContext context) :
+                base(info, context)
+        {
+        }
+
+        /// create the columns
+        protected override void InitClass()
+        {
+            this.Columns.Add(new System.Data.DataColumn("p_partner_key_n", typeof(Int64)));
+            this.Columns.Add(new System.Data.DataColumn("p_title_c", typeof(String)));
+            this.Columns.Add(new System.Data.DataColumn("p_first_name_c", typeof(String)));
+            this.Columns.Add(new System.Data.DataColumn("p_prefered_name_c", typeof(String)));
+            this.Columns.Add(new System.Data.DataColumn("p_middle_name_1_c", typeof(String)));
+            this.Columns.Add(new System.Data.DataColumn("p_middle_name_2_c", typeof(String)));
+            this.Columns.Add(new System.Data.DataColumn("p_middle_name_3_c", typeof(String)));
+            this.Columns.Add(new System.Data.DataColumn("p_family_name_c", typeof(String)));
+            this.Columns.Add(new System.Data.DataColumn("p_decorations_c", typeof(String)));
+            this.Columns.Add(new System.Data.DataColumn("p_date_of_birth_d", typeof(System.DateTime)));
+            this.Columns.Add(new System.Data.DataColumn("p_gender_c", typeof(String)));
+            this.Columns.Add(new System.Data.DataColumn("p_marital_status_c", typeof(String)));
+            this.Columns.Add(new System.Data.DataColumn("p_occupation_code_c", typeof(String)));
+            this.Columns.Add(new System.Data.DataColumn("p_believer_since_year_i", typeof(Int32)));
+            this.Columns.Add(new System.Data.DataColumn("p_believer_since_comment_c", typeof(String)));
+            this.Columns.Add(new System.Data.DataColumn("p_family_key_n", typeof(Int64)));
+            this.Columns.Add(new System.Data.DataColumn("p_family_id_i", typeof(Int32)));
+            this.Columns.Add(new System.Data.DataColumn("p_field_key_n", typeof(Int64)));
+            this.Columns.Add(new System.Data.DataColumn("p_academic_title_c", typeof(String)));
+            this.Columns.Add(new System.Data.DataColumn("p_marital_status_since_d", typeof(System.DateTime)));
+            this.Columns.Add(new System.Data.DataColumn("p_marital_status_comment_c", typeof(String)));
+            this.Columns.Add(new System.Data.DataColumn("s_date_created_d", typeof(System.DateTime)));
+            this.Columns.Add(new System.Data.DataColumn("s_created_by_c", typeof(String)));
+            this.Columns.Add(new System.Data.DataColumn("s_date_modified_d", typeof(System.DateTime)));
+            this.Columns.Add(new System.Data.DataColumn("s_modified_by_c", typeof(String)));
+            this.Columns.Add(new System.Data.DataColumn("s_modification_id_c", typeof(String)));
+            this.Columns.Add(new System.Data.DataColumn("p_unit_name_c", typeof(String)));
+        }
+
+        /// assign columns to properties, set primary key
+        public override void InitVars()
+        {
+            this.ColumnPartnerKey = this.Columns["p_partner_key_n"];
+            this.ColumnTitle = this.Columns["p_title_c"];
+            this.ColumnFirstName = this.Columns["p_first_name_c"];
+            this.ColumnPreferedName = this.Columns["p_prefered_name_c"];
+            this.ColumnMiddleName1 = this.Columns["p_middle_name_1_c"];
+            this.ColumnMiddleName2 = this.Columns["p_middle_name_2_c"];
+            this.ColumnMiddleName3 = this.Columns["p_middle_name_3_c"];
+            this.ColumnFamilyName = this.Columns["p_family_name_c"];
+            this.ColumnDecorations = this.Columns["p_decorations_c"];
+            this.ColumnDateOfBirth = this.Columns["p_date_of_birth_d"];
+            this.ColumnGender = this.Columns["p_gender_c"];
+            this.ColumnMaritalStatus = this.Columns["p_marital_status_c"];
+            this.ColumnOccupationCode = this.Columns["p_occupation_code_c"];
+            this.ColumnBelieverSinceYear = this.Columns["p_believer_since_year_i"];
+            this.ColumnBelieverSinceComment = this.Columns["p_believer_since_comment_c"];
+            this.ColumnFamilyKey = this.Columns["p_family_key_n"];
+            this.ColumnFamilyId = this.Columns["p_family_id_i"];
+            this.ColumnFieldKey = this.Columns["p_field_key_n"];
+            this.ColumnAcademicTitle = this.Columns["p_academic_title_c"];
+            this.ColumnMaritalStatusSince = this.Columns["p_marital_status_since_d"];
+            this.ColumnMaritalStatusComment = this.Columns["p_marital_status_comment_c"];
+            this.ColumnDateCreated = this.Columns["s_date_created_d"];
+            this.ColumnCreatedBy = this.Columns["s_created_by_c"];
+            this.ColumnDateModified = this.Columns["s_date_modified_d"];
+            this.ColumnModifiedBy = this.Columns["s_modified_by_c"];
+            this.ColumnModificationId = this.Columns["s_modification_id_c"];
+            this.ColumnUnitName = this.Columns["p_unit_name_c"];
+        }
+
+        /// Access a typed row by index
+        public PartnerEditTDSPPersonRow this[int i]
+        {
+            get
+            {
+                return ((PartnerEditTDSPPersonRow)(this.Rows[i]));
+            }
+        }
+
+        /// create a new typed row
+        public PartnerEditTDSPPersonRow NewRowTyped(bool AWithDefaultValues)
+        {
+            PartnerEditTDSPPersonRow ret = ((PartnerEditTDSPPersonRow)(this.NewRow()));
+            if ((AWithDefaultValues == true))
+            {
+                ret.InitValues();
+            }
+            return ret;
+        }
+
+        /// create a new typed row, always with default values
+        public PartnerEditTDSPPersonRow NewRowTyped()
+        {
+            return this.NewRowTyped(true);
+        }
+
+        /// new typed row using DataRowBuilder
+        protected override System.Data.DataRow NewRowFromBuilder(System.Data.DataRowBuilder builder)
+        {
+            return new PartnerEditTDSPPersonRow(builder);
+        }
+
+        /// get typed set of changes
+        public PartnerEditTDSPPersonTable GetChangesTyped()
+        {
+            return ((PartnerEditTDSPPersonTable)(base.GetChangesTypedInternal()));
+        }
+
+        /// get an odbc parameter for the given column
+        public override OdbcParameter CreateOdbcParameter(Int32 AColumnNr)
+        {
+            return CreateOdbcParameter(TableId, AColumnNr);
+        }
+
+        /// get the name of the field in the database for this column
+        public static string GetPartnerKeyDBName()
+        {
+            return "p_partner_key_n";
+        }
+
+        /// get character length for column
+        public static short GetPartnerKeyLength()
+        {
+            return 10;
+        }
+
+        /// get the name of the field in the database for this column
+        public static string GetTitleDBName()
+        {
+            return "p_title_c";
+        }
+
+        /// get character length for column
+        public static short GetTitleLength()
+        {
+            return 64;
+        }
+
+        /// get the name of the field in the database for this column
+        public static string GetFirstNameDBName()
+        {
+            return "p_first_name_c";
+        }
+
+        /// get character length for column
+        public static short GetFirstNameLength()
+        {
+            return 64;
+        }
+
+        /// get the name of the field in the database for this column
+        public static string GetPreferedNameDBName()
+        {
+            return "p_prefered_name_c";
+        }
+
+        /// get character length for column
+        public static short GetPreferedNameLength()
+        {
+            return 64;
+        }
+
+        /// get the name of the field in the database for this column
+        public static string GetMiddleName1DBName()
+        {
+            return "p_middle_name_1_c";
+        }
+
+        /// get character length for column
+        public static short GetMiddleName1Length()
+        {
+            return 64;
+        }
+
+        /// get the name of the field in the database for this column
+        public static string GetMiddleName2DBName()
+        {
+            return "p_middle_name_2_c";
+        }
+
+        /// get character length for column
+        public static short GetMiddleName2Length()
+        {
+            return 64;
+        }
+
+        /// get the name of the field in the database for this column
+        public static string GetMiddleName3DBName()
+        {
+            return "p_middle_name_3_c";
+        }
+
+        /// get character length for column
+        public static short GetMiddleName3Length()
+        {
+            return 64;
+        }
+
+        /// get the name of the field in the database for this column
+        public static string GetFamilyNameDBName()
+        {
+            return "p_family_name_c";
+        }
+
+        /// get character length for column
+        public static short GetFamilyNameLength()
+        {
+            return 64;
+        }
+
+        /// get the name of the field in the database for this column
+        public static string GetDecorationsDBName()
+        {
+            return "p_decorations_c";
+        }
+
+        /// get character length for column
+        public static short GetDecorationsLength()
+        {
+            return 64;
+        }
+
+        /// get the name of the field in the database for this column
+        public static string GetDateOfBirthDBName()
+        {
+            return "p_date_of_birth_d";
+        }
+
+        /// get character length for column
+        public static short GetDateOfBirthLength()
+        {
+            return -1;
+        }
+
+        /// get the name of the field in the database for this column
+        public static string GetGenderDBName()
+        {
+            return "p_gender_c";
+        }
+
+        /// get character length for column
+        public static short GetGenderLength()
+        {
+            return 16;
+        }
+
+        /// get the name of the field in the database for this column
+        public static string GetMaritalStatusDBName()
+        {
+            return "p_marital_status_c";
+        }
+
+        /// get character length for column
+        public static short GetMaritalStatusLength()
+        {
+            return 4;
+        }
+
+        /// get the name of the field in the database for this column
+        public static string GetOccupationCodeDBName()
+        {
+            return "p_occupation_code_c";
+        }
+
+        /// get character length for column
+        public static short GetOccupationCodeLength()
+        {
+            return 32;
+        }
+
+        /// get the name of the field in the database for this column
+        public static string GetBelieverSinceYearDBName()
+        {
+            return "p_believer_since_year_i";
+        }
+
+        /// get character length for column
+        public static short GetBelieverSinceYearLength()
+        {
+            return -1;
+        }
+
+        /// get the name of the field in the database for this column
+        public static string GetBelieverSinceCommentDBName()
+        {
+            return "p_believer_since_comment_c";
+        }
+
+        /// get character length for column
+        public static short GetBelieverSinceCommentLength()
+        {
+            return 1000;
+        }
+
+        /// get the name of the field in the database for this column
+        public static string GetFamilyKeyDBName()
+        {
+            return "p_family_key_n";
+        }
+
+        /// get character length for column
+        public static short GetFamilyKeyLength()
+        {
+            return 10;
+        }
+
+        /// get the name of the field in the database for this column
+        public static string GetFamilyIdDBName()
+        {
+            return "p_family_id_i";
+        }
+
+        /// get character length for column
+        public static short GetFamilyIdLength()
+        {
+            return -1;
+        }
+
+        /// get the name of the field in the database for this column
+        public static string GetFieldKeyDBName()
+        {
+            return "p_field_key_n";
+        }
+
+        /// get character length for column
+        public static short GetFieldKeyLength()
+        {
+            return 10;
+        }
+
+        /// get the name of the field in the database for this column
+        public static string GetAcademicTitleDBName()
+        {
+            return "p_academic_title_c";
+        }
+
+        /// get character length for column
+        public static short GetAcademicTitleLength()
+        {
+            return 48;
+        }
+
+        /// get the name of the field in the database for this column
+        public static string GetMaritalStatusSinceDBName()
+        {
+            return "p_marital_status_since_d";
+        }
+
+        /// get character length for column
+        public static short GetMaritalStatusSinceLength()
+        {
+            return -1;
+        }
+
+        /// get the name of the field in the database for this column
+        public static string GetMaritalStatusCommentDBName()
+        {
+            return "p_marital_status_comment_c";
+        }
+
+        /// get character length for column
+        public static short GetMaritalStatusCommentLength()
+        {
+            return 512;
+        }
+
+        /// get the name of the field in the database for this column
+        public static string GetDateCreatedDBName()
+        {
+            return "s_date_created_d";
+        }
+
+        /// get character length for column
+        public static short GetDateCreatedLength()
+        {
+            return -1;
+        }
+
+        /// get the name of the field in the database for this column
+        public static string GetCreatedByDBName()
+        {
+            return "s_created_by_c";
+        }
+
+        /// get character length for column
+        public static short GetCreatedByLength()
+        {
+            return 20;
+        }
+
+        /// get the name of the field in the database for this column
+        public static string GetDateModifiedDBName()
+        {
+            return "s_date_modified_d";
+        }
+
+        /// get character length for column
+        public static short GetDateModifiedLength()
+        {
+            return -1;
+        }
+
+        /// get the name of the field in the database for this column
+        public static string GetModifiedByDBName()
+        {
+            return "s_modified_by_c";
+        }
+
+        /// get character length for column
+        public static short GetModifiedByLength()
+        {
+            return 20;
+        }
+
+        /// get the name of the field in the database for this column
+        public static string GetModificationIdDBName()
+        {
+            return "s_modification_id_c";
+        }
+
+        /// get character length for column
+        public static short GetModificationIdLength()
+        {
+            return 150;
+        }
+
+        /// get the name of the field in the database for this column
+        public static string GetUnitNameDBName()
+        {
+            return "p_unit_name_c";
+        }
+
+        /// get character length for column
+        public static short GetUnitNameLength()
+        {
+            return 160;
+        }
+
+    }
+
+    /// Details of a person.  A person must also have a related FAMILY class p_partner record.
+    [Serializable()]
+    public class PartnerEditTDSPPersonRow : System.Data.DataRow
+    {
+        private PartnerEditTDSPPersonTable myTable;
+
+        /// Constructor
+        public PartnerEditTDSPPersonRow(System.Data.DataRowBuilder rb) :
+                base(rb)
+        {
+            this.myTable = ((PartnerEditTDSPPersonTable)(this.Table));
+        }
+
+        /// This is the partner key assigned to each partner. It consists of the fund id followed by a computer generated six digit number.
+        public Int64 PartnerKey
+        {
+            get
+            {
+                object ret;
+                ret = this[this.myTable.ColumnPartnerKey.Ordinal];
+                if ((ret == System.DBNull.Value))
+                {
+                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                }
+                else
+                {
+                    return ((Int64)(ret));
+                }
+            }
+            set
+            {
+                if ((this.IsNull(this.myTable.ColumnPartnerKey)
+                            || (((Int64)(this[this.myTable.ColumnPartnerKey])) != value)))
+                {
+                    this[this.myTable.ColumnPartnerKey] = value;
+                }
+            }
+        }
+
+        ///
+        public String Title
+        {
+            get
+            {
+                object ret;
+                ret = this[this.myTable.ColumnTitle.Ordinal];
+                if ((ret == System.DBNull.Value))
+                {
+                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                }
+                else
+                {
+                    return ((String)(ret));
+                }
+            }
+            set
+            {
+                if ((this.IsNull(this.myTable.ColumnTitle)
+                            || (((String)(this[this.myTable.ColumnTitle])) != value)))
+                {
+                    this[this.myTable.ColumnTitle] = value;
+                }
+            }
+        }
+
+        ///
+        public String FirstName
+        {
+            get
+            {
+                object ret;
+                ret = this[this.myTable.ColumnFirstName.Ordinal];
+                if ((ret == System.DBNull.Value))
+                {
+                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                }
+                else
+                {
+                    return ((String)(ret));
+                }
+            }
+            set
+            {
+                if ((this.IsNull(this.myTable.ColumnFirstName)
+                            || (((String)(this[this.myTable.ColumnFirstName])) != value)))
+                {
+                    this[this.myTable.ColumnFirstName] = value;
+                }
+            }
+        }
+
+        ///
+        public String PreferedName
+        {
+            get
+            {
+                object ret;
+                ret = this[this.myTable.ColumnPreferedName.Ordinal];
+                if ((ret == System.DBNull.Value))
+                {
+                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                }
+                else
+                {
+                    return ((String)(ret));
+                }
+            }
+            set
+            {
+                if ((this.IsNull(this.myTable.ColumnPreferedName)
+                            || (((String)(this[this.myTable.ColumnPreferedName])) != value)))
+                {
+                    this[this.myTable.ColumnPreferedName] = value;
+                }
+            }
+        }
+
+        ///
+        public String MiddleName1
+        {
+            get
+            {
+                object ret;
+                ret = this[this.myTable.ColumnMiddleName1.Ordinal];
+                if ((ret == System.DBNull.Value))
+                {
+                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                }
+                else
+                {
+                    return ((String)(ret));
+                }
+            }
+            set
+            {
+                if ((this.IsNull(this.myTable.ColumnMiddleName1)
+                            || (((String)(this[this.myTable.ColumnMiddleName1])) != value)))
+                {
+                    this[this.myTable.ColumnMiddleName1] = value;
+                }
+            }
+        }
+
+        ///
+        public String MiddleName2
+        {
+            get
+            {
+                object ret;
+                ret = this[this.myTable.ColumnMiddleName2.Ordinal];
+                if ((ret == System.DBNull.Value))
+                {
+                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                }
+                else
+                {
+                    return ((String)(ret));
+                }
+            }
+            set
+            {
+                if ((this.IsNull(this.myTable.ColumnMiddleName2)
+                            || (((String)(this[this.myTable.ColumnMiddleName2])) != value)))
+                {
+                    this[this.myTable.ColumnMiddleName2] = value;
+                }
+            }
+        }
+
+        ///
+        public String MiddleName3
+        {
+            get
+            {
+                object ret;
+                ret = this[this.myTable.ColumnMiddleName3.Ordinal];
+                if ((ret == System.DBNull.Value))
+                {
+                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                }
+                else
+                {
+                    return ((String)(ret));
+                }
+            }
+            set
+            {
+                if ((this.IsNull(this.myTable.ColumnMiddleName3)
+                            || (((String)(this[this.myTable.ColumnMiddleName3])) != value)))
+                {
+                    this[this.myTable.ColumnMiddleName3] = value;
+                }
+            }
+        }
+
+        ///
+        public String FamilyName
+        {
+            get
+            {
+                object ret;
+                ret = this[this.myTable.ColumnFamilyName.Ordinal];
+                if ((ret == System.DBNull.Value))
+                {
+                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                }
+                else
+                {
+                    return ((String)(ret));
+                }
+            }
+            set
+            {
+                if ((this.IsNull(this.myTable.ColumnFamilyName)
+                            || (((String)(this[this.myTable.ColumnFamilyName])) != value)))
+                {
+                    this[this.myTable.ColumnFamilyName] = value;
+                }
+            }
+        }
+
+        ///
+        public String Decorations
+        {
+            get
+            {
+                object ret;
+                ret = this[this.myTable.ColumnDecorations.Ordinal];
+                if ((ret == System.DBNull.Value))
+                {
+                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                }
+                else
+                {
+                    return ((String)(ret));
+                }
+            }
+            set
+            {
+                if ((this.IsNull(this.myTable.ColumnDecorations)
+                            || (((String)(this[this.myTable.ColumnDecorations])) != value)))
+                {
+                    this[this.myTable.ColumnDecorations] = value;
+                }
+            }
+        }
+
+        /// This is the date the rthe person was born
+        public System.DateTime DateOfBirth
+        {
+            get
+            {
+                object ret;
+                ret = this[this.myTable.ColumnDateOfBirth.Ordinal];
+                if ((ret == System.DBNull.Value))
+                {
+                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                }
+                else
+                {
+                    return ((System.DateTime)(ret));
+                }
+            }
+            set
+            {
+                if ((this.IsNull(this.myTable.ColumnDateOfBirth)
+                            || (((System.DateTime)(this[this.myTable.ColumnDateOfBirth])) != value)))
+                {
+                    this[this.myTable.ColumnDateOfBirth] = value;
+                }
+            }
+        }
+
+        ///
+        public String Gender
+        {
+            get
+            {
+                object ret;
+                ret = this[this.myTable.ColumnGender.Ordinal];
+                if ((ret == System.DBNull.Value))
+                {
+                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                }
+                else
+                {
+                    return ((String)(ret));
+                }
+            }
+            set
+            {
+                if ((this.IsNull(this.myTable.ColumnGender)
+                            || (((String)(this[this.myTable.ColumnGender])) != value)))
+                {
+                    this[this.myTable.ColumnGender] = value;
+                }
+            }
+        }
+
+        ///
+        public String MaritalStatus
+        {
+            get
+            {
+                object ret;
+                ret = this[this.myTable.ColumnMaritalStatus.Ordinal];
+                if ((ret == System.DBNull.Value))
+                {
+                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                }
+                else
+                {
+                    return ((String)(ret));
+                }
+            }
+            set
+            {
+                if ((this.IsNull(this.myTable.ColumnMaritalStatus)
+                            || (((String)(this[this.myTable.ColumnMaritalStatus])) != value)))
+                {
+                    this[this.myTable.ColumnMaritalStatus] = value;
+                }
+            }
+        }
+
+        ///
+        public String OccupationCode
+        {
+            get
+            {
+                object ret;
+                ret = this[this.myTable.ColumnOccupationCode.Ordinal];
+                if ((ret == System.DBNull.Value))
+                {
+                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                }
+                else
+                {
+                    return ((String)(ret));
+                }
+            }
+            set
+            {
+                if ((this.IsNull(this.myTable.ColumnOccupationCode)
+                            || (((String)(this[this.myTable.ColumnOccupationCode])) != value)))
+                {
+                    this[this.myTable.ColumnOccupationCode] = value;
+                }
+            }
+        }
+
+        /// This is the year the person became a Believer.
+        public Int32 BelieverSinceYear
+        {
+            get
+            {
+                object ret;
+                ret = this[this.myTable.ColumnBelieverSinceYear.Ordinal];
+                if ((ret == System.DBNull.Value))
+                {
+                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                }
+                else
+                {
+                    return ((Int32)(ret));
+                }
+            }
+            set
+            {
+                if ((this.IsNull(this.myTable.ColumnBelieverSinceYear)
+                            || (((Int32)(this[this.myTable.ColumnBelieverSinceYear])) != value)))
+                {
+                    this[this.myTable.ColumnBelieverSinceYear] = value;
+                }
+            }
+        }
+
+        /// Comment about the year or how the person became a believer
+        public String BelieverSinceComment
+        {
+            get
+            {
+                object ret;
+                ret = this[this.myTable.ColumnBelieverSinceComment.Ordinal];
+                if ((ret == System.DBNull.Value))
+                {
+                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                }
+                else
+                {
+                    return ((String)(ret));
+                }
+            }
+            set
+            {
+                if ((this.IsNull(this.myTable.ColumnBelieverSinceComment)
+                            || (((String)(this[this.myTable.ColumnBelieverSinceComment])) != value)))
+                {
+                    this[this.myTable.ColumnBelieverSinceComment] = value;
+                }
+            }
+        }
+
+        /// A cross reference to the family record of this person.
+        /// It should be set to ? (not 0 because such a record does not exist!) when there is no family record.
+        public Int64 FamilyKey
+        {
+            get
+            {
+                object ret;
+                ret = this[this.myTable.ColumnFamilyKey.Ordinal];
+                if ((ret == System.DBNull.Value))
+                {
+                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                }
+                else
+                {
+                    return ((Int64)(ret));
+                }
+            }
+            set
+            {
+                if ((this.IsNull(this.myTable.ColumnFamilyKey)
+                            || (((Int64)(this[this.myTable.ColumnFamilyKey])) != value)))
+                {
+                    this[this.myTable.ColumnFamilyKey] = value;
+                }
+            }
+        }
+
+        /// This field indicates the family id of the individual.
+        /// ID's 0 and 1 are used for parents; 2, 3, 4 ... 9 are used for children.
+        public Int32 FamilyId
+        {
+            get
+            {
+                object ret;
+                ret = this[this.myTable.ColumnFamilyId.Ordinal];
+                if ((ret == System.DBNull.Value))
+                {
+                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                }
+                else
+                {
+                    return ((Int32)(ret));
+                }
+            }
+            set
+            {
+                if ((this.IsNull(this.myTable.ColumnFamilyId)
+                            || (((Int32)(this[this.myTable.ColumnFamilyId])) != value)))
+                {
+                    this[this.myTable.ColumnFamilyId] = value;
+                }
+            }
+        }
+
+        /// This is the partner key of the field in which the partner (should be a Worker or ExWorker) is serving.
+        public Int64 FieldKey
+        {
+            get
+            {
+                object ret;
+                ret = this[this.myTable.ColumnFieldKey.Ordinal];
+                if ((ret == System.DBNull.Value))
+                {
+                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                }
+                else
+                {
+                    return ((Int64)(ret));
+                }
+            }
+            set
+            {
+                if ((this.IsNull(this.myTable.ColumnFieldKey)
+                            || (((Int64)(this[this.myTable.ColumnFieldKey])) != value)))
+                {
+                    this[this.myTable.ColumnFieldKey] = value;
+                }
+            }
+        }
+
+        /// A person's academic title such as BSc(Hons) or Prof. (eg. Herr Prof. Klaus Shmitt)
+        public String AcademicTitle
+        {
+            get
+            {
+                object ret;
+                ret = this[this.myTable.ColumnAcademicTitle.Ordinal];
+                if ((ret == System.DBNull.Value))
+                {
+                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                }
+                else
+                {
+                    return ((String)(ret));
+                }
+            }
+            set
+            {
+                if ((this.IsNull(this.myTable.ColumnAcademicTitle)
+                            || (((String)(this[this.myTable.ColumnAcademicTitle])) != value)))
+                {
+                    this[this.myTable.ColumnAcademicTitle] = value;
+                }
+            }
+        }
+
+        ///
+        public System.DateTime MaritalStatusSince
+        {
+            get
+            {
+                object ret;
+                ret = this[this.myTable.ColumnMaritalStatusSince.Ordinal];
+                if ((ret == System.DBNull.Value))
+                {
+                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                }
+                else
+                {
+                    return ((System.DateTime)(ret));
+                }
+            }
+            set
+            {
+                if ((this.IsNull(this.myTable.ColumnMaritalStatusSince)
+                            || (((System.DateTime)(this[this.myTable.ColumnMaritalStatusSince])) != value)))
+                {
+                    this[this.myTable.ColumnMaritalStatusSince] = value;
+                }
+            }
+        }
+
+        ///
+        public String MaritalStatusComment
+        {
+            get
+            {
+                object ret;
+                ret = this[this.myTable.ColumnMaritalStatusComment.Ordinal];
+                if ((ret == System.DBNull.Value))
+                {
+                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                }
+                else
+                {
+                    return ((String)(ret));
+                }
+            }
+            set
+            {
+                if ((this.IsNull(this.myTable.ColumnMaritalStatusComment)
+                            || (((String)(this[this.myTable.ColumnMaritalStatusComment])) != value)))
+                {
+                    this[this.myTable.ColumnMaritalStatusComment] = value;
+                }
+            }
+        }
+
+        /// The date the record was created.
+        public System.DateTime DateCreated
+        {
+            get
+            {
+                object ret;
+                ret = this[this.myTable.ColumnDateCreated.Ordinal];
+                if ((ret == System.DBNull.Value))
+                {
+                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                }
+                else
+                {
+                    return ((System.DateTime)(ret));
+                }
+            }
+            set
+            {
+                if ((this.IsNull(this.myTable.ColumnDateCreated)
+                            || (((System.DateTime)(this[this.myTable.ColumnDateCreated])) != value)))
+                {
+                    this[this.myTable.ColumnDateCreated] = value;
+                }
+            }
+        }
+
+        /// User ID of who created this record.
+        public String CreatedBy
+        {
+            get
+            {
+                object ret;
+                ret = this[this.myTable.ColumnCreatedBy.Ordinal];
+                if ((ret == System.DBNull.Value))
+                {
+                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                }
+                else
+                {
+                    return ((String)(ret));
+                }
+            }
+            set
+            {
+                if ((this.IsNull(this.myTable.ColumnCreatedBy)
+                            || (((String)(this[this.myTable.ColumnCreatedBy])) != value)))
+                {
+                    this[this.myTable.ColumnCreatedBy] = value;
+                }
+            }
+        }
+
+        /// The date the record was modified.
+        public System.DateTime DateModified
+        {
+            get
+            {
+                object ret;
+                ret = this[this.myTable.ColumnDateModified.Ordinal];
+                if ((ret == System.DBNull.Value))
+                {
+                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                }
+                else
+                {
+                    return ((System.DateTime)(ret));
+                }
+            }
+            set
+            {
+                if ((this.IsNull(this.myTable.ColumnDateModified)
+                            || (((System.DateTime)(this[this.myTable.ColumnDateModified])) != value)))
+                {
+                    this[this.myTable.ColumnDateModified] = value;
+                }
+            }
+        }
+
+        /// User ID of who last modified this record.
+        public String ModifiedBy
+        {
+            get
+            {
+                object ret;
+                ret = this[this.myTable.ColumnModifiedBy.Ordinal];
+                if ((ret == System.DBNull.Value))
+                {
+                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                }
+                else
+                {
+                    return ((String)(ret));
+                }
+            }
+            set
+            {
+                if ((this.IsNull(this.myTable.ColumnModifiedBy)
+                            || (((String)(this[this.myTable.ColumnModifiedBy])) != value)))
+                {
+                    this[this.myTable.ColumnModifiedBy] = value;
+                }
+            }
+        }
+
+        /// This identifies the current version of the record.
+        public String ModificationId
+        {
+            get
+            {
+                object ret;
+                ret = this[this.myTable.ColumnModificationId.Ordinal];
+                if ((ret == System.DBNull.Value))
+                {
+                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                }
+                else
+                {
+                    return ((String)(ret));
+                }
+            }
+            set
+            {
+                if ((this.IsNull(this.myTable.ColumnModificationId)
+                            || (((String)(this[this.myTable.ColumnModificationId])) != value)))
+                {
+                    this[this.myTable.ColumnModificationId] = value;
+                }
+            }
+        }
+
+        ///
+        public String UnitName
+        {
+            get
+            {
+                object ret;
+                ret = this[this.myTable.ColumnUnitName.Ordinal];
+                if ((ret == System.DBNull.Value))
+                {
+                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                }
+                else
+                {
+                    return ((String)(ret));
+                }
+            }
+            set
+            {
+                if ((this.IsNull(this.myTable.ColumnUnitName)
+                            || (((String)(this[this.myTable.ColumnUnitName])) != value)))
+                {
+                    this[this.myTable.ColumnUnitName] = value;
+                }
+            }
+        }
+
+        /// set default values
+        public virtual void InitValues()
+        {
+            this[this.myTable.ColumnPartnerKey.Ordinal] = 0;
+            this.SetNull(this.myTable.ColumnTitle);
+            this.SetNull(this.myTable.ColumnFirstName);
+            this.SetNull(this.myTable.ColumnPreferedName);
+            this.SetNull(this.myTable.ColumnMiddleName1);
+            this.SetNull(this.myTable.ColumnMiddleName2);
+            this.SetNull(this.myTable.ColumnMiddleName3);
+            this.SetNull(this.myTable.ColumnFamilyName);
+            this.SetNull(this.myTable.ColumnDecorations);
+            this.SetNull(this.myTable.ColumnDateOfBirth);
+            this[this.myTable.ColumnGender.Ordinal] = "Unknown";
+            this[this.myTable.ColumnMaritalStatus.Ordinal] = "U";
+            this.SetNull(this.myTable.ColumnOccupationCode);
+            this.SetNull(this.myTable.ColumnBelieverSinceYear);
+            this.SetNull(this.myTable.ColumnBelieverSinceComment);
+            this[this.myTable.ColumnFamilyKey.Ordinal] = 0;
+            this[this.myTable.ColumnFamilyId.Ordinal] = 0;
+            this.SetNull(this.myTable.ColumnFieldKey);
+            this.SetNull(this.myTable.ColumnAcademicTitle);
+            this.SetNull(this.myTable.ColumnMaritalStatusSince);
+            this.SetNull(this.myTable.ColumnMaritalStatusComment);
+            this[this.myTable.ColumnDateCreated.Ordinal] = DateTime.Today;
+            this.SetNull(this.myTable.ColumnCreatedBy);
+            this.SetNull(this.myTable.ColumnDateModified);
+            this.SetNull(this.myTable.ColumnModifiedBy);
+            this.SetNull(this.myTable.ColumnModificationId);
+            this.SetNull(this.myTable.ColumnUnitName);
+        }
+
+        /// test for NULL value
+        public bool IsPartnerKeyNull()
+        {
+            return this.IsNull(this.myTable.ColumnPartnerKey);
+        }
+
+        /// assign NULL value
+        public void SetPartnerKeyNull()
+        {
+            this.SetNull(this.myTable.ColumnPartnerKey);
+        }
+
+        /// test for NULL value
+        public bool IsTitleNull()
+        {
+            return this.IsNull(this.myTable.ColumnTitle);
+        }
+
+        /// assign NULL value
+        public void SetTitleNull()
+        {
+            this.SetNull(this.myTable.ColumnTitle);
+        }
+
+        /// test for NULL value
+        public bool IsFirstNameNull()
+        {
+            return this.IsNull(this.myTable.ColumnFirstName);
+        }
+
+        /// assign NULL value
+        public void SetFirstNameNull()
+        {
+            this.SetNull(this.myTable.ColumnFirstName);
+        }
+
+        /// test for NULL value
+        public bool IsPreferedNameNull()
+        {
+            return this.IsNull(this.myTable.ColumnPreferedName);
+        }
+
+        /// assign NULL value
+        public void SetPreferedNameNull()
+        {
+            this.SetNull(this.myTable.ColumnPreferedName);
+        }
+
+        /// test for NULL value
+        public bool IsMiddleName1Null()
+        {
+            return this.IsNull(this.myTable.ColumnMiddleName1);
+        }
+
+        /// assign NULL value
+        public void SetMiddleName1Null()
+        {
+            this.SetNull(this.myTable.ColumnMiddleName1);
+        }
+
+        /// test for NULL value
+        public bool IsMiddleName2Null()
+        {
+            return this.IsNull(this.myTable.ColumnMiddleName2);
+        }
+
+        /// assign NULL value
+        public void SetMiddleName2Null()
+        {
+            this.SetNull(this.myTable.ColumnMiddleName2);
+        }
+
+        /// test for NULL value
+        public bool IsMiddleName3Null()
+        {
+            return this.IsNull(this.myTable.ColumnMiddleName3);
+        }
+
+        /// assign NULL value
+        public void SetMiddleName3Null()
+        {
+            this.SetNull(this.myTable.ColumnMiddleName3);
+        }
+
+        /// test for NULL value
+        public bool IsFamilyNameNull()
+        {
+            return this.IsNull(this.myTable.ColumnFamilyName);
+        }
+
+        /// assign NULL value
+        public void SetFamilyNameNull()
+        {
+            this.SetNull(this.myTable.ColumnFamilyName);
+        }
+
+        /// test for NULL value
+        public bool IsDecorationsNull()
+        {
+            return this.IsNull(this.myTable.ColumnDecorations);
+        }
+
+        /// assign NULL value
+        public void SetDecorationsNull()
+        {
+            this.SetNull(this.myTable.ColumnDecorations);
+        }
+
+        /// test for NULL value
+        public bool IsDateOfBirthNull()
+        {
+            return this.IsNull(this.myTable.ColumnDateOfBirth);
+        }
+
+        /// assign NULL value
+        public void SetDateOfBirthNull()
+        {
+            this.SetNull(this.myTable.ColumnDateOfBirth);
+        }
+
+        /// test for NULL value
+        public bool IsGenderNull()
+        {
+            return this.IsNull(this.myTable.ColumnGender);
+        }
+
+        /// assign NULL value
+        public void SetGenderNull()
+        {
+            this.SetNull(this.myTable.ColumnGender);
+        }
+
+        /// test for NULL value
+        public bool IsMaritalStatusNull()
+        {
+            return this.IsNull(this.myTable.ColumnMaritalStatus);
+        }
+
+        /// assign NULL value
+        public void SetMaritalStatusNull()
+        {
+            this.SetNull(this.myTable.ColumnMaritalStatus);
+        }
+
+        /// test for NULL value
+        public bool IsOccupationCodeNull()
+        {
+            return this.IsNull(this.myTable.ColumnOccupationCode);
+        }
+
+        /// assign NULL value
+        public void SetOccupationCodeNull()
+        {
+            this.SetNull(this.myTable.ColumnOccupationCode);
+        }
+
+        /// test for NULL value
+        public bool IsBelieverSinceYearNull()
+        {
+            return this.IsNull(this.myTable.ColumnBelieverSinceYear);
+        }
+
+        /// assign NULL value
+        public void SetBelieverSinceYearNull()
+        {
+            this.SetNull(this.myTable.ColumnBelieverSinceYear);
+        }
+
+        /// test for NULL value
+        public bool IsBelieverSinceCommentNull()
+        {
+            return this.IsNull(this.myTable.ColumnBelieverSinceComment);
+        }
+
+        /// assign NULL value
+        public void SetBelieverSinceCommentNull()
+        {
+            this.SetNull(this.myTable.ColumnBelieverSinceComment);
+        }
+
+        /// test for NULL value
+        public bool IsFamilyKeyNull()
+        {
+            return this.IsNull(this.myTable.ColumnFamilyKey);
+        }
+
+        /// assign NULL value
+        public void SetFamilyKeyNull()
+        {
+            this.SetNull(this.myTable.ColumnFamilyKey);
+        }
+
+        /// test for NULL value
+        public bool IsFamilyIdNull()
+        {
+            return this.IsNull(this.myTable.ColumnFamilyId);
+        }
+
+        /// assign NULL value
+        public void SetFamilyIdNull()
+        {
+            this.SetNull(this.myTable.ColumnFamilyId);
+        }
+
+        /// test for NULL value
+        public bool IsFieldKeyNull()
+        {
+            return this.IsNull(this.myTable.ColumnFieldKey);
+        }
+
+        /// assign NULL value
+        public void SetFieldKeyNull()
+        {
+            this.SetNull(this.myTable.ColumnFieldKey);
+        }
+
+        /// test for NULL value
+        public bool IsAcademicTitleNull()
+        {
+            return this.IsNull(this.myTable.ColumnAcademicTitle);
+        }
+
+        /// assign NULL value
+        public void SetAcademicTitleNull()
+        {
+            this.SetNull(this.myTable.ColumnAcademicTitle);
+        }
+
+        /// test for NULL value
+        public bool IsMaritalStatusSinceNull()
+        {
+            return this.IsNull(this.myTable.ColumnMaritalStatusSince);
+        }
+
+        /// assign NULL value
+        public void SetMaritalStatusSinceNull()
+        {
+            this.SetNull(this.myTable.ColumnMaritalStatusSince);
+        }
+
+        /// test for NULL value
+        public bool IsMaritalStatusCommentNull()
+        {
+            return this.IsNull(this.myTable.ColumnMaritalStatusComment);
+        }
+
+        /// assign NULL value
+        public void SetMaritalStatusCommentNull()
+        {
+            this.SetNull(this.myTable.ColumnMaritalStatusComment);
+        }
+
+        /// test for NULL value
+        public bool IsDateCreatedNull()
+        {
+            return this.IsNull(this.myTable.ColumnDateCreated);
+        }
+
+        /// assign NULL value
+        public void SetDateCreatedNull()
+        {
+            this.SetNull(this.myTable.ColumnDateCreated);
+        }
+
+        /// test for NULL value
+        public bool IsCreatedByNull()
+        {
+            return this.IsNull(this.myTable.ColumnCreatedBy);
+        }
+
+        /// assign NULL value
+        public void SetCreatedByNull()
+        {
+            this.SetNull(this.myTable.ColumnCreatedBy);
+        }
+
+        /// test for NULL value
+        public bool IsDateModifiedNull()
+        {
+            return this.IsNull(this.myTable.ColumnDateModified);
+        }
+
+        /// assign NULL value
+        public void SetDateModifiedNull()
+        {
+            this.SetNull(this.myTable.ColumnDateModified);
+        }
+
+        /// test for NULL value
+        public bool IsModifiedByNull()
+        {
+            return this.IsNull(this.myTable.ColumnModifiedBy);
+        }
+
+        /// assign NULL value
+        public void SetModifiedByNull()
+        {
+            this.SetNull(this.myTable.ColumnModifiedBy);
+        }
+
+        /// test for NULL value
+        public bool IsModificationIdNull()
+        {
+            return this.IsNull(this.myTable.ColumnModificationId);
+        }
+
+        /// assign NULL value
+        public void SetModificationIdNull()
+        {
+            this.SetNull(this.myTable.ColumnModificationId);
+        }
+
+        /// test for NULL value
+        public bool IsUnitNameNull()
+        {
+            return this.IsNull(this.myTable.ColumnUnitName);
+        }
+
+        /// assign NULL value
+        public void SetUnitNameNull()
+        {
+            this.SetNull(this.myTable.ColumnUnitName);
+        }
+    }
+
+    /// Contains details about a family in Partnership with us.  May have P_Person records linked to it.
+    [Serializable()]
+    public class PartnerEditTDSPFamilyTable : TTypedDataTable
+    {
+        /// This is the partner key assigned to each partner. It consists of the fund id followed by a computer generated six digit number.
+        public DataColumn ColumnPartnerKey;
+        /// Flag is set if there are family members with their own records in the p_person table. IMPORTANT: Don't rely on this flag anymore but determine this state on-the-fly! Reason: The value of this field isn't maintained reliably any more and the field will be removed in a future version of the DB!
+        public DataColumn ColumnFamilyMembers;
+        /// How the family is to be addressed
+        public DataColumn ColumnTitle;
+        ///
+        public DataColumn ColumnFirstName;
+        ///
+        public DataColumn ColumnFamilyName;
+        /// Flag is set if there are different surnames entered for husband and wife
+        public DataColumn ColumnDifferentSurnames;
+        /// This is the partner key of the field in which the partner (should be a Worker or ExWorker is serving.
+        public DataColumn ColumnFieldKey;
+        ///
+        public DataColumn ColumnMaritalStatus;
+        ///
+        public DataColumn ColumnMaritalStatusSince;
+        ///
+        public DataColumn ColumnMaritalStatusComment;
+        /// The date the record was created.
+        public DataColumn ColumnDateCreated;
+        /// User ID of who created this record.
+        public DataColumn ColumnCreatedBy;
+        /// The date the record was modified.
+        public DataColumn ColumnDateModified;
+        /// User ID of who last modified this record.
+        public DataColumn ColumnModifiedBy;
+        /// This identifies the current version of the record.
+        public DataColumn ColumnModificationId;
+        ///
+        public DataColumn ColumnUnitName;
+
+        /// TableId for Ict.Common.Data generic functions
+        public static short TableId = 48;
+
+        private static bool FInitInfoValues = InitInfoValues();
+        private static bool InitInfoValues()
+        {
+            TableInfo.Add(TableId, new TTypedTableInfo(TableId, "PartnerEditTDSPFamily", "PartnerEditTDSPFamily",
+                new TTypedColumnInfo[] {
+                    new TTypedColumnInfo(0, "PartnerKey", "p_partner_key_n", OdbcType.Decimal, 10, true),
+                    new TTypedColumnInfo(1, "FamilyMembers", "p_family_members_l", OdbcType.Bit, -1, false),
+                    new TTypedColumnInfo(2, "Title", "p_title_c", OdbcType.VarChar, 64, false),
+                    new TTypedColumnInfo(3, "FirstName", "p_first_name_c", OdbcType.VarChar, 96, false),
+                    new TTypedColumnInfo(4, "FamilyName", "p_family_name_c", OdbcType.VarChar, 120, false),
+                    new TTypedColumnInfo(5, "DifferentSurnames", "p_different_surnames_l", OdbcType.Bit, -1, false),
+                    new TTypedColumnInfo(6, "FieldKey", "p_field_key_n", OdbcType.Decimal, 10, false),
+                    new TTypedColumnInfo(7, "MaritalStatus", "p_marital_status_c", OdbcType.VarChar, 4, false),
+                    new TTypedColumnInfo(8, "MaritalStatusSince", "p_marital_status_since_d", OdbcType.Date, -1, false),
+                    new TTypedColumnInfo(9, "MaritalStatusComment", "p_marital_status_comment_c", OdbcType.VarChar, 512, false),
+                    new TTypedColumnInfo(10, "DateCreated", "s_date_created_d", OdbcType.Date, -1, false),
+                    new TTypedColumnInfo(11, "CreatedBy", "s_created_by_c", OdbcType.VarChar, 20, false),
+                    new TTypedColumnInfo(12, "DateModified", "s_date_modified_d", OdbcType.Date, -1, false),
+                    new TTypedColumnInfo(13, "ModifiedBy", "s_modified_by_c", OdbcType.VarChar, 20, false),
+                    new TTypedColumnInfo(14, "ModificationId", "s_modification_id_c", OdbcType.VarChar, 150, false),
+                    new TTypedColumnInfo(15, "UnitName", "p_unit_name_c", OdbcType.VarChar, 160, false)
+                },
+                new int[] {
+                    0
+                }));
+            return true;
+        }
+
+        /// constructor
+        public PartnerEditTDSPFamilyTable() :
+                base("PartnerEditTDSPFamily")
+        {
+        }
+
+        /// constructor
+        public PartnerEditTDSPFamilyTable(string ATablename) :
+                base(ATablename)
+        {
+        }
+
+        /// constructor for serialization
+        public PartnerEditTDSPFamilyTable(System.Runtime.Serialization.SerializationInfo info, System.Runtime.Serialization.StreamingContext context) :
+                base(info, context)
+        {
+        }
+
+        /// create the columns
+        protected override void InitClass()
+        {
+            this.Columns.Add(new System.Data.DataColumn("p_partner_key_n", typeof(Int64)));
+            this.Columns.Add(new System.Data.DataColumn("p_family_members_l", typeof(Boolean)));
+            this.Columns.Add(new System.Data.DataColumn("p_title_c", typeof(String)));
+            this.Columns.Add(new System.Data.DataColumn("p_first_name_c", typeof(String)));
+            this.Columns.Add(new System.Data.DataColumn("p_family_name_c", typeof(String)));
+            this.Columns.Add(new System.Data.DataColumn("p_different_surnames_l", typeof(Boolean)));
+            this.Columns.Add(new System.Data.DataColumn("p_field_key_n", typeof(Int64)));
+            this.Columns.Add(new System.Data.DataColumn("p_marital_status_c", typeof(String)));
+            this.Columns.Add(new System.Data.DataColumn("p_marital_status_since_d", typeof(System.DateTime)));
+            this.Columns.Add(new System.Data.DataColumn("p_marital_status_comment_c", typeof(String)));
+            this.Columns.Add(new System.Data.DataColumn("s_date_created_d", typeof(System.DateTime)));
+            this.Columns.Add(new System.Data.DataColumn("s_created_by_c", typeof(String)));
+            this.Columns.Add(new System.Data.DataColumn("s_date_modified_d", typeof(System.DateTime)));
+            this.Columns.Add(new System.Data.DataColumn("s_modified_by_c", typeof(String)));
+            this.Columns.Add(new System.Data.DataColumn("s_modification_id_c", typeof(String)));
+            this.Columns.Add(new System.Data.DataColumn("p_unit_name_c", typeof(String)));
+        }
+
+        /// assign columns to properties, set primary key
+        public override void InitVars()
+        {
+            this.ColumnPartnerKey = this.Columns["p_partner_key_n"];
+            this.ColumnFamilyMembers = this.Columns["p_family_members_l"];
+            this.ColumnTitle = this.Columns["p_title_c"];
+            this.ColumnFirstName = this.Columns["p_first_name_c"];
+            this.ColumnFamilyName = this.Columns["p_family_name_c"];
+            this.ColumnDifferentSurnames = this.Columns["p_different_surnames_l"];
+            this.ColumnFieldKey = this.Columns["p_field_key_n"];
+            this.ColumnMaritalStatus = this.Columns["p_marital_status_c"];
+            this.ColumnMaritalStatusSince = this.Columns["p_marital_status_since_d"];
+            this.ColumnMaritalStatusComment = this.Columns["p_marital_status_comment_c"];
+            this.ColumnDateCreated = this.Columns["s_date_created_d"];
+            this.ColumnCreatedBy = this.Columns["s_created_by_c"];
+            this.ColumnDateModified = this.Columns["s_date_modified_d"];
+            this.ColumnModifiedBy = this.Columns["s_modified_by_c"];
+            this.ColumnModificationId = this.Columns["s_modification_id_c"];
+            this.ColumnUnitName = this.Columns["p_unit_name_c"];
+        }
+
+        /// Access a typed row by index
+        public PartnerEditTDSPFamilyRow this[int i]
+        {
+            get
+            {
+                return ((PartnerEditTDSPFamilyRow)(this.Rows[i]));
+            }
+        }
+
+        /// create a new typed row
+        public PartnerEditTDSPFamilyRow NewRowTyped(bool AWithDefaultValues)
+        {
+            PartnerEditTDSPFamilyRow ret = ((PartnerEditTDSPFamilyRow)(this.NewRow()));
+            if ((AWithDefaultValues == true))
+            {
+                ret.InitValues();
+            }
+            return ret;
+        }
+
+        /// create a new typed row, always with default values
+        public PartnerEditTDSPFamilyRow NewRowTyped()
+        {
+            return this.NewRowTyped(true);
+        }
+
+        /// new typed row using DataRowBuilder
+        protected override System.Data.DataRow NewRowFromBuilder(System.Data.DataRowBuilder builder)
+        {
+            return new PartnerEditTDSPFamilyRow(builder);
+        }
+
+        /// get typed set of changes
+        public PartnerEditTDSPFamilyTable GetChangesTyped()
+        {
+            return ((PartnerEditTDSPFamilyTable)(base.GetChangesTypedInternal()));
+        }
+
+        /// get an odbc parameter for the given column
+        public override OdbcParameter CreateOdbcParameter(Int32 AColumnNr)
+        {
+            return CreateOdbcParameter(TableId, AColumnNr);
+        }
+
+        /// get the name of the field in the database for this column
+        public static string GetPartnerKeyDBName()
+        {
+            return "p_partner_key_n";
+        }
+
+        /// get character length for column
+        public static short GetPartnerKeyLength()
+        {
+            return 10;
+        }
+
+        /// get the name of the field in the database for this column
+        public static string GetFamilyMembersDBName()
+        {
+            return "p_family_members_l";
+        }
+
+        /// get character length for column
+        public static short GetFamilyMembersLength()
+        {
+            return -1;
+        }
+
+        /// get the name of the field in the database for this column
+        public static string GetTitleDBName()
+        {
+            return "p_title_c";
+        }
+
+        /// get character length for column
+        public static short GetTitleLength()
+        {
+            return 64;
+        }
+
+        /// get the name of the field in the database for this column
+        public static string GetFirstNameDBName()
+        {
+            return "p_first_name_c";
+        }
+
+        /// get character length for column
+        public static short GetFirstNameLength()
+        {
+            return 96;
+        }
+
+        /// get the name of the field in the database for this column
+        public static string GetFamilyNameDBName()
+        {
+            return "p_family_name_c";
+        }
+
+        /// get character length for column
+        public static short GetFamilyNameLength()
+        {
+            return 120;
+        }
+
+        /// get the name of the field in the database for this column
+        public static string GetDifferentSurnamesDBName()
+        {
+            return "p_different_surnames_l";
+        }
+
+        /// get character length for column
+        public static short GetDifferentSurnamesLength()
+        {
+            return -1;
+        }
+
+        /// get the name of the field in the database for this column
+        public static string GetFieldKeyDBName()
+        {
+            return "p_field_key_n";
+        }
+
+        /// get character length for column
+        public static short GetFieldKeyLength()
+        {
+            return 10;
+        }
+
+        /// get the name of the field in the database for this column
+        public static string GetMaritalStatusDBName()
+        {
+            return "p_marital_status_c";
+        }
+
+        /// get character length for column
+        public static short GetMaritalStatusLength()
+        {
+            return 4;
+        }
+
+        /// get the name of the field in the database for this column
+        public static string GetMaritalStatusSinceDBName()
+        {
+            return "p_marital_status_since_d";
+        }
+
+        /// get character length for column
+        public static short GetMaritalStatusSinceLength()
+        {
+            return -1;
+        }
+
+        /// get the name of the field in the database for this column
+        public static string GetMaritalStatusCommentDBName()
+        {
+            return "p_marital_status_comment_c";
+        }
+
+        /// get character length for column
+        public static short GetMaritalStatusCommentLength()
+        {
+            return 512;
+        }
+
+        /// get the name of the field in the database for this column
+        public static string GetDateCreatedDBName()
+        {
+            return "s_date_created_d";
+        }
+
+        /// get character length for column
+        public static short GetDateCreatedLength()
+        {
+            return -1;
+        }
+
+        /// get the name of the field in the database for this column
+        public static string GetCreatedByDBName()
+        {
+            return "s_created_by_c";
+        }
+
+        /// get character length for column
+        public static short GetCreatedByLength()
+        {
+            return 20;
+        }
+
+        /// get the name of the field in the database for this column
+        public static string GetDateModifiedDBName()
+        {
+            return "s_date_modified_d";
+        }
+
+        /// get character length for column
+        public static short GetDateModifiedLength()
+        {
+            return -1;
+        }
+
+        /// get the name of the field in the database for this column
+        public static string GetModifiedByDBName()
+        {
+            return "s_modified_by_c";
+        }
+
+        /// get character length for column
+        public static short GetModifiedByLength()
+        {
+            return 20;
+        }
+
+        /// get the name of the field in the database for this column
+        public static string GetModificationIdDBName()
+        {
+            return "s_modification_id_c";
+        }
+
+        /// get character length for column
+        public static short GetModificationIdLength()
+        {
+            return 150;
+        }
+
+        /// get the name of the field in the database for this column
+        public static string GetUnitNameDBName()
+        {
+            return "p_unit_name_c";
+        }
+
+        /// get character length for column
+        public static short GetUnitNameLength()
+        {
+            return 160;
+        }
+
+    }
+
+    /// Contains details about a family in Partnership with us.  May have P_Person records linked to it.
+    [Serializable()]
+    public class PartnerEditTDSPFamilyRow : System.Data.DataRow
+    {
+        private PartnerEditTDSPFamilyTable myTable;
+
+        /// Constructor
+        public PartnerEditTDSPFamilyRow(System.Data.DataRowBuilder rb) :
+                base(rb)
+        {
+            this.myTable = ((PartnerEditTDSPFamilyTable)(this.Table));
+        }
+
+        /// This is the partner key assigned to each partner. It consists of the fund id followed by a computer generated six digit number.
+        public Int64 PartnerKey
+        {
+            get
+            {
+                object ret;
+                ret = this[this.myTable.ColumnPartnerKey.Ordinal];
+                if ((ret == System.DBNull.Value))
+                {
+                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                }
+                else
+                {
+                    return ((Int64)(ret));
+                }
+            }
+            set
+            {
+                if ((this.IsNull(this.myTable.ColumnPartnerKey)
+                            || (((Int64)(this[this.myTable.ColumnPartnerKey])) != value)))
+                {
+                    this[this.myTable.ColumnPartnerKey] = value;
+                }
+            }
+        }
+
+        /// Flag is set if there are family members with their own records in the p_person table. IMPORTANT: Don't rely on this flag anymore but determine this state on-the-fly! Reason: The value of this field isn't maintained reliably any more and the field will be removed in a future version of the DB!
+        public Boolean FamilyMembers
+        {
+            get
+            {
+                object ret;
+                ret = this[this.myTable.ColumnFamilyMembers.Ordinal];
+                if ((ret == System.DBNull.Value))
+                {
+                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                }
+                else
+                {
+                    return ((Boolean)(ret));
+                }
+            }
+            set
+            {
+                if ((this.IsNull(this.myTable.ColumnFamilyMembers)
+                            || (((Boolean)(this[this.myTable.ColumnFamilyMembers])) != value)))
+                {
+                    this[this.myTable.ColumnFamilyMembers] = value;
+                }
+            }
+        }
+
+        /// How the family is to be addressed
+        public String Title
+        {
+            get
+            {
+                object ret;
+                ret = this[this.myTable.ColumnTitle.Ordinal];
+                if ((ret == System.DBNull.Value))
+                {
+                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                }
+                else
+                {
+                    return ((String)(ret));
+                }
+            }
+            set
+            {
+                if ((this.IsNull(this.myTable.ColumnTitle)
+                            || (((String)(this[this.myTable.ColumnTitle])) != value)))
+                {
+                    this[this.myTable.ColumnTitle] = value;
+                }
+            }
+        }
+
+        ///
+        public String FirstName
+        {
+            get
+            {
+                object ret;
+                ret = this[this.myTable.ColumnFirstName.Ordinal];
+                if ((ret == System.DBNull.Value))
+                {
+                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                }
+                else
+                {
+                    return ((String)(ret));
+                }
+            }
+            set
+            {
+                if ((this.IsNull(this.myTable.ColumnFirstName)
+                            || (((String)(this[this.myTable.ColumnFirstName])) != value)))
+                {
+                    this[this.myTable.ColumnFirstName] = value;
+                }
+            }
+        }
+
+        ///
+        public String FamilyName
+        {
+            get
+            {
+                object ret;
+                ret = this[this.myTable.ColumnFamilyName.Ordinal];
+                if ((ret == System.DBNull.Value))
+                {
+                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                }
+                else
+                {
+                    return ((String)(ret));
+                }
+            }
+            set
+            {
+                if ((this.IsNull(this.myTable.ColumnFamilyName)
+                            || (((String)(this[this.myTable.ColumnFamilyName])) != value)))
+                {
+                    this[this.myTable.ColumnFamilyName] = value;
+                }
+            }
+        }
+
+        /// Flag is set if there are different surnames entered for husband and wife
+        public Boolean DifferentSurnames
+        {
+            get
+            {
+                object ret;
+                ret = this[this.myTable.ColumnDifferentSurnames.Ordinal];
+                if ((ret == System.DBNull.Value))
+                {
+                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                }
+                else
+                {
+                    return ((Boolean)(ret));
+                }
+            }
+            set
+            {
+                if ((this.IsNull(this.myTable.ColumnDifferentSurnames)
+                            || (((Boolean)(this[this.myTable.ColumnDifferentSurnames])) != value)))
+                {
+                    this[this.myTable.ColumnDifferentSurnames] = value;
+                }
+            }
+        }
+
+        /// This is the partner key of the field in which the partner (should be a Worker or ExWorker is serving.
+        public Int64 FieldKey
+        {
+            get
+            {
+                object ret;
+                ret = this[this.myTable.ColumnFieldKey.Ordinal];
+                if ((ret == System.DBNull.Value))
+                {
+                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                }
+                else
+                {
+                    return ((Int64)(ret));
+                }
+            }
+            set
+            {
+                if ((this.IsNull(this.myTable.ColumnFieldKey)
+                            || (((Int64)(this[this.myTable.ColumnFieldKey])) != value)))
+                {
+                    this[this.myTable.ColumnFieldKey] = value;
+                }
+            }
+        }
+
+        ///
+        public String MaritalStatus
+        {
+            get
+            {
+                object ret;
+                ret = this[this.myTable.ColumnMaritalStatus.Ordinal];
+                if ((ret == System.DBNull.Value))
+                {
+                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                }
+                else
+                {
+                    return ((String)(ret));
+                }
+            }
+            set
+            {
+                if ((this.IsNull(this.myTable.ColumnMaritalStatus)
+                            || (((String)(this[this.myTable.ColumnMaritalStatus])) != value)))
+                {
+                    this[this.myTable.ColumnMaritalStatus] = value;
+                }
+            }
+        }
+
+        ///
+        public System.DateTime MaritalStatusSince
+        {
+            get
+            {
+                object ret;
+                ret = this[this.myTable.ColumnMaritalStatusSince.Ordinal];
+                if ((ret == System.DBNull.Value))
+                {
+                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                }
+                else
+                {
+                    return ((System.DateTime)(ret));
+                }
+            }
+            set
+            {
+                if ((this.IsNull(this.myTable.ColumnMaritalStatusSince)
+                            || (((System.DateTime)(this[this.myTable.ColumnMaritalStatusSince])) != value)))
+                {
+                    this[this.myTable.ColumnMaritalStatusSince] = value;
+                }
+            }
+        }
+
+        ///
+        public String MaritalStatusComment
+        {
+            get
+            {
+                object ret;
+                ret = this[this.myTable.ColumnMaritalStatusComment.Ordinal];
+                if ((ret == System.DBNull.Value))
+                {
+                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                }
+                else
+                {
+                    return ((String)(ret));
+                }
+            }
+            set
+            {
+                if ((this.IsNull(this.myTable.ColumnMaritalStatusComment)
+                            || (((String)(this[this.myTable.ColumnMaritalStatusComment])) != value)))
+                {
+                    this[this.myTable.ColumnMaritalStatusComment] = value;
+                }
+            }
+        }
+
+        /// The date the record was created.
+        public System.DateTime DateCreated
+        {
+            get
+            {
+                object ret;
+                ret = this[this.myTable.ColumnDateCreated.Ordinal];
+                if ((ret == System.DBNull.Value))
+                {
+                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                }
+                else
+                {
+                    return ((System.DateTime)(ret));
+                }
+            }
+            set
+            {
+                if ((this.IsNull(this.myTable.ColumnDateCreated)
+                            || (((System.DateTime)(this[this.myTable.ColumnDateCreated])) != value)))
+                {
+                    this[this.myTable.ColumnDateCreated] = value;
+                }
+            }
+        }
+
+        /// User ID of who created this record.
+        public String CreatedBy
+        {
+            get
+            {
+                object ret;
+                ret = this[this.myTable.ColumnCreatedBy.Ordinal];
+                if ((ret == System.DBNull.Value))
+                {
+                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                }
+                else
+                {
+                    return ((String)(ret));
+                }
+            }
+            set
+            {
+                if ((this.IsNull(this.myTable.ColumnCreatedBy)
+                            || (((String)(this[this.myTable.ColumnCreatedBy])) != value)))
+                {
+                    this[this.myTable.ColumnCreatedBy] = value;
+                }
+            }
+        }
+
+        /// The date the record was modified.
+        public System.DateTime DateModified
+        {
+            get
+            {
+                object ret;
+                ret = this[this.myTable.ColumnDateModified.Ordinal];
+                if ((ret == System.DBNull.Value))
+                {
+                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                }
+                else
+                {
+                    return ((System.DateTime)(ret));
+                }
+            }
+            set
+            {
+                if ((this.IsNull(this.myTable.ColumnDateModified)
+                            || (((System.DateTime)(this[this.myTable.ColumnDateModified])) != value)))
+                {
+                    this[this.myTable.ColumnDateModified] = value;
+                }
+            }
+        }
+
+        /// User ID of who last modified this record.
+        public String ModifiedBy
+        {
+            get
+            {
+                object ret;
+                ret = this[this.myTable.ColumnModifiedBy.Ordinal];
+                if ((ret == System.DBNull.Value))
+                {
+                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                }
+                else
+                {
+                    return ((String)(ret));
+                }
+            }
+            set
+            {
+                if ((this.IsNull(this.myTable.ColumnModifiedBy)
+                            || (((String)(this[this.myTable.ColumnModifiedBy])) != value)))
+                {
+                    this[this.myTable.ColumnModifiedBy] = value;
+                }
+            }
+        }
+
+        /// This identifies the current version of the record.
+        public String ModificationId
+        {
+            get
+            {
+                object ret;
+                ret = this[this.myTable.ColumnModificationId.Ordinal];
+                if ((ret == System.DBNull.Value))
+                {
+                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                }
+                else
+                {
+                    return ((String)(ret));
+                }
+            }
+            set
+            {
+                if ((this.IsNull(this.myTable.ColumnModificationId)
+                            || (((String)(this[this.myTable.ColumnModificationId])) != value)))
+                {
+                    this[this.myTable.ColumnModificationId] = value;
+                }
+            }
+        }
+
+        ///
+        public String UnitName
+        {
+            get
+            {
+                object ret;
+                ret = this[this.myTable.ColumnUnitName.Ordinal];
+                if ((ret == System.DBNull.Value))
+                {
+                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                }
+                else
+                {
+                    return ((String)(ret));
+                }
+            }
+            set
+            {
+                if ((this.IsNull(this.myTable.ColumnUnitName)
+                            || (((String)(this[this.myTable.ColumnUnitName])) != value)))
+                {
+                    this[this.myTable.ColumnUnitName] = value;
+                }
+            }
+        }
+
+        /// set default values
+        public virtual void InitValues()
+        {
+            this[this.myTable.ColumnPartnerKey.Ordinal] = 0;
+            this[this.myTable.ColumnFamilyMembers.Ordinal] = false;
+            this.SetNull(this.myTable.ColumnTitle);
+            this.SetNull(this.myTable.ColumnFirstName);
+            this.SetNull(this.myTable.ColumnFamilyName);
+            this[this.myTable.ColumnDifferentSurnames.Ordinal] = false;
+            this.SetNull(this.myTable.ColumnFieldKey);
+            this[this.myTable.ColumnMaritalStatus.Ordinal] = "U";
+            this.SetNull(this.myTable.ColumnMaritalStatusSince);
+            this.SetNull(this.myTable.ColumnMaritalStatusComment);
+            this[this.myTable.ColumnDateCreated.Ordinal] = DateTime.Today;
+            this.SetNull(this.myTable.ColumnCreatedBy);
+            this.SetNull(this.myTable.ColumnDateModified);
+            this.SetNull(this.myTable.ColumnModifiedBy);
+            this.SetNull(this.myTable.ColumnModificationId);
+            this.SetNull(this.myTable.ColumnUnitName);
+        }
+
+        /// test for NULL value
+        public bool IsPartnerKeyNull()
+        {
+            return this.IsNull(this.myTable.ColumnPartnerKey);
+        }
+
+        /// assign NULL value
+        public void SetPartnerKeyNull()
+        {
+            this.SetNull(this.myTable.ColumnPartnerKey);
+        }
+
+        /// test for NULL value
+        public bool IsFamilyMembersNull()
+        {
+            return this.IsNull(this.myTable.ColumnFamilyMembers);
+        }
+
+        /// assign NULL value
+        public void SetFamilyMembersNull()
+        {
+            this.SetNull(this.myTable.ColumnFamilyMembers);
+        }
+
+        /// test for NULL value
+        public bool IsTitleNull()
+        {
+            return this.IsNull(this.myTable.ColumnTitle);
+        }
+
+        /// assign NULL value
+        public void SetTitleNull()
+        {
+            this.SetNull(this.myTable.ColumnTitle);
+        }
+
+        /// test for NULL value
+        public bool IsFirstNameNull()
+        {
+            return this.IsNull(this.myTable.ColumnFirstName);
+        }
+
+        /// assign NULL value
+        public void SetFirstNameNull()
+        {
+            this.SetNull(this.myTable.ColumnFirstName);
+        }
+
+        /// test for NULL value
+        public bool IsFamilyNameNull()
+        {
+            return this.IsNull(this.myTable.ColumnFamilyName);
+        }
+
+        /// assign NULL value
+        public void SetFamilyNameNull()
+        {
+            this.SetNull(this.myTable.ColumnFamilyName);
+        }
+
+        /// test for NULL value
+        public bool IsDifferentSurnamesNull()
+        {
+            return this.IsNull(this.myTable.ColumnDifferentSurnames);
+        }
+
+        /// assign NULL value
+        public void SetDifferentSurnamesNull()
+        {
+            this.SetNull(this.myTable.ColumnDifferentSurnames);
+        }
+
+        /// test for NULL value
+        public bool IsFieldKeyNull()
+        {
+            return this.IsNull(this.myTable.ColumnFieldKey);
+        }
+
+        /// assign NULL value
+        public void SetFieldKeyNull()
+        {
+            this.SetNull(this.myTable.ColumnFieldKey);
+        }
+
+        /// test for NULL value
+        public bool IsMaritalStatusNull()
+        {
+            return this.IsNull(this.myTable.ColumnMaritalStatus);
+        }
+
+        /// assign NULL value
+        public void SetMaritalStatusNull()
+        {
+            this.SetNull(this.myTable.ColumnMaritalStatus);
+        }
+
+        /// test for NULL value
+        public bool IsMaritalStatusSinceNull()
+        {
+            return this.IsNull(this.myTable.ColumnMaritalStatusSince);
+        }
+
+        /// assign NULL value
+        public void SetMaritalStatusSinceNull()
+        {
+            this.SetNull(this.myTable.ColumnMaritalStatusSince);
+        }
+
+        /// test for NULL value
+        public bool IsMaritalStatusCommentNull()
+        {
+            return this.IsNull(this.myTable.ColumnMaritalStatusComment);
+        }
+
+        /// assign NULL value
+        public void SetMaritalStatusCommentNull()
+        {
+            this.SetNull(this.myTable.ColumnMaritalStatusComment);
+        }
+
+        /// test for NULL value
+        public bool IsDateCreatedNull()
+        {
+            return this.IsNull(this.myTable.ColumnDateCreated);
+        }
+
+        /// assign NULL value
+        public void SetDateCreatedNull()
+        {
+            this.SetNull(this.myTable.ColumnDateCreated);
+        }
+
+        /// test for NULL value
+        public bool IsCreatedByNull()
+        {
+            return this.IsNull(this.myTable.ColumnCreatedBy);
+        }
+
+        /// assign NULL value
+        public void SetCreatedByNull()
+        {
+            this.SetNull(this.myTable.ColumnCreatedBy);
+        }
+
+        /// test for NULL value
+        public bool IsDateModifiedNull()
+        {
+            return this.IsNull(this.myTable.ColumnDateModified);
+        }
+
+        /// assign NULL value
+        public void SetDateModifiedNull()
+        {
+            this.SetNull(this.myTable.ColumnDateModified);
+        }
+
+        /// test for NULL value
+        public bool IsModifiedByNull()
+        {
+            return this.IsNull(this.myTable.ColumnModifiedBy);
+        }
+
+        /// assign NULL value
+        public void SetModifiedByNull()
+        {
+            this.SetNull(this.myTable.ColumnModifiedBy);
+        }
+
+        /// test for NULL value
+        public bool IsModificationIdNull()
+        {
+            return this.IsNull(this.myTable.ColumnModificationId);
+        }
+
+        /// assign NULL value
+        public void SetModificationIdNull()
+        {
+            this.SetNull(this.myTable.ColumnModificationId);
+        }
+
+        /// test for NULL value
+        public bool IsUnitNameNull()
+        {
+            return this.IsNull(this.myTable.ColumnUnitName);
+        }
+
+        /// assign NULL value
+        public void SetUnitNameNull()
+        {
+            this.SetNull(this.myTable.ColumnUnitName);
+        }
+    }
+
+    ///
+    [Serializable()]
+    public class PartnerEditTDSMiscellaneousDataTable : TTypedDataTable
+    {
+        /// This is the partner key assigned to each partner. It consists of the fund id followed by a computer generated six digit number.
+        public DataColumn ColumnPartnerKey;
+        /// This is the key that tell what site created the linked location
+        public DataColumn ColumnSelectedSiteKey;
+        ///
+        public DataColumn ColumnSelectedLocationKey;
+        ///
+        public DataColumn ColumnLastGiftDate;
+        ///
+        public DataColumn ColumnLastGiftInfo;
+        ///
+        public DataColumn ColumnLastContactDate;
+        ///
+        public DataColumn ColumnItemsCountAddresses;
+        ///
+        public DataColumn ColumnItemsCountAddressesActive;
+        ///
+        public DataColumn ColumnItemsCountSubscriptions;
+        ///
+        public DataColumn ColumnItemsCountSubscriptionsActive;
+        ///
+        public DataColumn ColumnItemsCountPartnerTypes;
+        ///
+        public DataColumn ColumnItemsCountFamilyMembers;
+        ///
+        public DataColumn ColumnItemsCountInterests;
+        ///
+        public DataColumn ColumnItemsCountReminders;
+        ///
+        public DataColumn ColumnItemsCountRelationships;
+        ///
+        public DataColumn ColumnItemsCountContacts;
+        ///
+        public DataColumn ColumnOfficeSpecificDataLabelsAvailable;
+        ///
+        public DataColumn ColumnFoundationOwner1Key;
+        ///
+        public DataColumn ColumnFoundationOwner2Key;
+        ///
+        public DataColumn ColumnHasEXWORKERPartnerType;
+
+        /// TableId for Ict.Common.Data generic functions
+        public static short TableId = -1;
+
+        private static bool FInitInfoValues = InitInfoValues();
+        private static bool InitInfoValues()
+        {
+            TableInfo.Add(TableId, new TTypedTableInfo(TableId, "PartnerEditTDSMiscellaneousData", "PartnerEditTDSMiscellaneousData",
+                new TTypedColumnInfo[] {
+                    new TTypedColumnInfo(0, "PartnerKey", "p_partner_key_n", OdbcType.Decimal, 10, true),
+                    new TTypedColumnInfo(1, "SelectedSiteKey", "p_site_key_n", OdbcType.Decimal, 10, true),
+                    new TTypedColumnInfo(2, "SelectedLocationKey", "p_location_key_i", OdbcType.Int, -1, true),
+                    new TTypedColumnInfo(3, "LastGiftDate", "LastGiftDate", OdbcType.Int, -1, false),
+                    new TTypedColumnInfo(4, "LastGiftInfo", "LastGiftInfo", OdbcType.Int, -1, false),
+                    new TTypedColumnInfo(5, "LastContactDate", "LastContactDate", OdbcType.Int, -1, false),
+                    new TTypedColumnInfo(6, "ItemsCountAddresses", "ItemsCountAddresses", OdbcType.Int, -1, false),
+                    new TTypedColumnInfo(7, "ItemsCountAddressesActive", "ItemsCountAddressesActive", OdbcType.Int, -1, false),
+                    new TTypedColumnInfo(8, "ItemsCountSubscriptions", "ItemsCountSubscriptions", OdbcType.Int, -1, false),
+                    new TTypedColumnInfo(9, "ItemsCountSubscriptionsActive", "ItemsCountSubscriptionsActive", OdbcType.Int, -1, false),
+                    new TTypedColumnInfo(10, "ItemsCountPartnerTypes", "ItemsCountPartnerTypes", OdbcType.Int, -1, false),
+                    new TTypedColumnInfo(11, "ItemsCountFamilyMembers", "ItemsCountFamilyMembers", OdbcType.Int, -1, false),
+                    new TTypedColumnInfo(12, "ItemsCountInterests", "ItemsCountInterests", OdbcType.Int, -1, false),
+                    new TTypedColumnInfo(13, "ItemsCountReminders", "ItemsCountReminders", OdbcType.Int, -1, false),
+                    new TTypedColumnInfo(14, "ItemsCountRelationships", "ItemsCountRelationships", OdbcType.Int, -1, false),
+                    new TTypedColumnInfo(15, "ItemsCountContacts", "ItemsCountContacts", OdbcType.Int, -1, false),
+                    new TTypedColumnInfo(16, "OfficeSpecificDataLabelsAvailable", "OfficeSpecificDataLabelsAvailable", OdbcType.Int, -1, false),
+                    new TTypedColumnInfo(17, "FoundationOwner1Key", "FoundationOwner1Key", OdbcType.Int, -1, false),
+                    new TTypedColumnInfo(18, "FoundationOwner2Key", "FoundationOwner2Key", OdbcType.Int, -1, false),
+                    new TTypedColumnInfo(19, "HasEXWORKERPartnerType", "HasEXWORKERPartnerType", OdbcType.Int, -1, false)
+                },
+                new int[] {
+
+                }));
+            return true;
+        }
+
+        /// constructor
+        public PartnerEditTDSMiscellaneousDataTable() :
+                base("PartnerEditTDSMiscellaneousData")
+        {
+        }
+
+        /// constructor
+        public PartnerEditTDSMiscellaneousDataTable(string ATablename) :
+                base(ATablename)
+        {
+        }
+
+        /// constructor for serialization
+        public PartnerEditTDSMiscellaneousDataTable(System.Runtime.Serialization.SerializationInfo info, System.Runtime.Serialization.StreamingContext context) :
+                base(info, context)
+        {
+        }
+
+        /// create the columns
+        protected override void InitClass()
+        {
+            this.Columns.Add(new System.Data.DataColumn("p_partner_key_n", typeof(Int64)));
+            this.Columns.Add(new System.Data.DataColumn("p_site_key_n", typeof(Int64)));
+            this.Columns.Add(new System.Data.DataColumn("p_location_key_i", typeof(Int32)));
+            this.Columns.Add(new System.Data.DataColumn("LastGiftDate", typeof(DateTime)));
+            this.Columns.Add(new System.Data.DataColumn("LastGiftInfo", typeof(string)));
+            this.Columns.Add(new System.Data.DataColumn("LastContactDate", typeof(DateTime)));
+            this.Columns.Add(new System.Data.DataColumn("ItemsCountAddresses", typeof(Int32)));
+            this.Columns.Add(new System.Data.DataColumn("ItemsCountAddressesActive", typeof(Int32)));
+            this.Columns.Add(new System.Data.DataColumn("ItemsCountSubscriptions", typeof(Int32)));
+            this.Columns.Add(new System.Data.DataColumn("ItemsCountSubscriptionsActive", typeof(Int32)));
+            this.Columns.Add(new System.Data.DataColumn("ItemsCountPartnerTypes", typeof(Int32)));
+            this.Columns.Add(new System.Data.DataColumn("ItemsCountFamilyMembers", typeof(Int32)));
+            this.Columns.Add(new System.Data.DataColumn("ItemsCountInterests", typeof(Int32)));
+            this.Columns.Add(new System.Data.DataColumn("ItemsCountReminders", typeof(Int32)));
+            this.Columns.Add(new System.Data.DataColumn("ItemsCountRelationships", typeof(Int32)));
+            this.Columns.Add(new System.Data.DataColumn("ItemsCountContacts", typeof(Int32)));
+            this.Columns.Add(new System.Data.DataColumn("OfficeSpecificDataLabelsAvailable", typeof(bool)));
+            this.Columns.Add(new System.Data.DataColumn("FoundationOwner1Key", typeof(Int64)));
+            this.Columns.Add(new System.Data.DataColumn("FoundationOwner2Key", typeof(Int64)));
+            this.Columns.Add(new System.Data.DataColumn("HasEXWORKERPartnerType", typeof(bool)));
+        }
+
+        /// assign columns to properties, set primary key
+        public override void InitVars()
+        {
+            this.ColumnPartnerKey = this.Columns["p_partner_key_n"];
+            this.ColumnSelectedSiteKey = this.Columns["p_site_key_n"];
+            this.ColumnSelectedLocationKey = this.Columns["p_location_key_i"];
+            this.ColumnLastGiftDate = this.Columns["LastGiftDate"];
+            this.ColumnLastGiftInfo = this.Columns["LastGiftInfo"];
+            this.ColumnLastContactDate = this.Columns["LastContactDate"];
+            this.ColumnItemsCountAddresses = this.Columns["ItemsCountAddresses"];
+            this.ColumnItemsCountAddressesActive = this.Columns["ItemsCountAddressesActive"];
+            this.ColumnItemsCountSubscriptions = this.Columns["ItemsCountSubscriptions"];
+            this.ColumnItemsCountSubscriptionsActive = this.Columns["ItemsCountSubscriptionsActive"];
+            this.ColumnItemsCountPartnerTypes = this.Columns["ItemsCountPartnerTypes"];
+            this.ColumnItemsCountFamilyMembers = this.Columns["ItemsCountFamilyMembers"];
+            this.ColumnItemsCountInterests = this.Columns["ItemsCountInterests"];
+            this.ColumnItemsCountReminders = this.Columns["ItemsCountReminders"];
+            this.ColumnItemsCountRelationships = this.Columns["ItemsCountRelationships"];
+            this.ColumnItemsCountContacts = this.Columns["ItemsCountContacts"];
+            this.ColumnOfficeSpecificDataLabelsAvailable = this.Columns["OfficeSpecificDataLabelsAvailable"];
+            this.ColumnFoundationOwner1Key = this.Columns["FoundationOwner1Key"];
+            this.ColumnFoundationOwner2Key = this.Columns["FoundationOwner2Key"];
+            this.ColumnHasEXWORKERPartnerType = this.Columns["HasEXWORKERPartnerType"];
+        }
+
+        /// Access a typed row by index
+        public PartnerEditTDSMiscellaneousDataRow this[int i]
+        {
+            get
+            {
+                return ((PartnerEditTDSMiscellaneousDataRow)(this.Rows[i]));
+            }
+        }
+
+        /// create a new typed row
+        public PartnerEditTDSMiscellaneousDataRow NewRowTyped(bool AWithDefaultValues)
+        {
+            PartnerEditTDSMiscellaneousDataRow ret = ((PartnerEditTDSMiscellaneousDataRow)(this.NewRow()));
+            if ((AWithDefaultValues == true))
+            {
+                ret.InitValues();
+            }
+            return ret;
+        }
+
+        /// create a new typed row, always with default values
+        public PartnerEditTDSMiscellaneousDataRow NewRowTyped()
+        {
+            return this.NewRowTyped(true);
+        }
+
+        /// new typed row using DataRowBuilder
+        protected override System.Data.DataRow NewRowFromBuilder(System.Data.DataRowBuilder builder)
+        {
+            return new PartnerEditTDSMiscellaneousDataRow(builder);
+        }
+
+        /// get typed set of changes
+        public PartnerEditTDSMiscellaneousDataTable GetChangesTyped()
+        {
+            return ((PartnerEditTDSMiscellaneousDataTable)(base.GetChangesTypedInternal()));
+        }
+
+        /// get an odbc parameter for the given column
+        public override OdbcParameter CreateOdbcParameter(Int32 AColumnNr)
+        {
+            return CreateOdbcParameter(TableId, AColumnNr);
+        }
+
+        /// get the name of the field in the database for this column
+        public static string GetPartnerKeyDBName()
+        {
+            return "p_partner_key_n";
+        }
+
+        /// get character length for column
+        public static short GetPartnerKeyLength()
+        {
+            return 10;
+        }
+
+        /// get the name of the field in the database for this column
+        public static string GetSelectedSiteKeyDBName()
+        {
+            return "p_site_key_n";
+        }
+
+        /// get character length for column
+        public static short GetSelectedSiteKeyLength()
+        {
+            return 10;
+        }
+
+        /// get the name of the field in the database for this column
+        public static string GetSelectedLocationKeyDBName()
+        {
+            return "p_location_key_i";
+        }
+
+        /// get character length for column
+        public static short GetSelectedLocationKeyLength()
+        {
+            return -1;
+        }
+
+        /// get the name of the field in the database for this column
+        public static string GetLastGiftDateDBName()
+        {
+            return "LastGiftDate";
+        }
+
+        /// get character length for column
+        public static short GetLastGiftDateLength()
+        {
+            return -1;
+        }
+
+        /// get the name of the field in the database for this column
+        public static string GetLastGiftInfoDBName()
+        {
+            return "LastGiftInfo";
+        }
+
+        /// get character length for column
+        public static short GetLastGiftInfoLength()
+        {
+            return -1;
+        }
+
+        /// get the name of the field in the database for this column
+        public static string GetLastContactDateDBName()
+        {
+            return "LastContactDate";
+        }
+
+        /// get character length for column
+        public static short GetLastContactDateLength()
+        {
+            return -1;
+        }
+
+        /// get the name of the field in the database for this column
+        public static string GetItemsCountAddressesDBName()
+        {
+            return "ItemsCountAddresses";
+        }
+
+        /// get character length for column
+        public static short GetItemsCountAddressesLength()
+        {
+            return -1;
+        }
+
+        /// get the name of the field in the database for this column
+        public static string GetItemsCountAddressesActiveDBName()
+        {
+            return "ItemsCountAddressesActive";
+        }
+
+        /// get character length for column
+        public static short GetItemsCountAddressesActiveLength()
+        {
+            return -1;
+        }
+
+        /// get the name of the field in the database for this column
+        public static string GetItemsCountSubscriptionsDBName()
+        {
+            return "ItemsCountSubscriptions";
+        }
+
+        /// get character length for column
+        public static short GetItemsCountSubscriptionsLength()
+        {
+            return -1;
+        }
+
+        /// get the name of the field in the database for this column
+        public static string GetItemsCountSubscriptionsActiveDBName()
+        {
+            return "ItemsCountSubscriptionsActive";
+        }
+
+        /// get character length for column
+        public static short GetItemsCountSubscriptionsActiveLength()
+        {
+            return -1;
+        }
+
+        /// get the name of the field in the database for this column
+        public static string GetItemsCountPartnerTypesDBName()
+        {
+            return "ItemsCountPartnerTypes";
+        }
+
+        /// get character length for column
+        public static short GetItemsCountPartnerTypesLength()
+        {
+            return -1;
+        }
+
+        /// get the name of the field in the database for this column
+        public static string GetItemsCountFamilyMembersDBName()
+        {
+            return "ItemsCountFamilyMembers";
+        }
+
+        /// get character length for column
+        public static short GetItemsCountFamilyMembersLength()
+        {
+            return -1;
+        }
+
+        /// get the name of the field in the database for this column
+        public static string GetItemsCountInterestsDBName()
+        {
+            return "ItemsCountInterests";
+        }
+
+        /// get character length for column
+        public static short GetItemsCountInterestsLength()
+        {
+            return -1;
+        }
+
+        /// get the name of the field in the database for this column
+        public static string GetItemsCountRemindersDBName()
+        {
+            return "ItemsCountReminders";
+        }
+
+        /// get character length for column
+        public static short GetItemsCountRemindersLength()
+        {
+            return -1;
+        }
+
+        /// get the name of the field in the database for this column
+        public static string GetItemsCountRelationshipsDBName()
+        {
+            return "ItemsCountRelationships";
+        }
+
+        /// get character length for column
+        public static short GetItemsCountRelationshipsLength()
+        {
+            return -1;
+        }
+
+        /// get the name of the field in the database for this column
+        public static string GetItemsCountContactsDBName()
+        {
+            return "ItemsCountContacts";
+        }
+
+        /// get character length for column
+        public static short GetItemsCountContactsLength()
+        {
+            return -1;
+        }
+
+        /// get the name of the field in the database for this column
+        public static string GetOfficeSpecificDataLabelsAvailableDBName()
+        {
+            return "OfficeSpecificDataLabelsAvailable";
+        }
+
+        /// get character length for column
+        public static short GetOfficeSpecificDataLabelsAvailableLength()
+        {
+            return -1;
+        }
+
+        /// get the name of the field in the database for this column
+        public static string GetFoundationOwner1KeyDBName()
+        {
+            return "FoundationOwner1Key";
+        }
+
+        /// get character length for column
+        public static short GetFoundationOwner1KeyLength()
+        {
+            return -1;
+        }
+
+        /// get the name of the field in the database for this column
+        public static string GetFoundationOwner2KeyDBName()
+        {
+            return "FoundationOwner2Key";
+        }
+
+        /// get character length for column
+        public static short GetFoundationOwner2KeyLength()
+        {
+            return -1;
+        }
+
+        /// get the name of the field in the database for this column
+        public static string GetHasEXWORKERPartnerTypeDBName()
+        {
+            return "HasEXWORKERPartnerType";
+        }
+
+        /// get character length for column
+        public static short GetHasEXWORKERPartnerTypeLength()
+        {
+            return -1;
+        }
+
+    }
+
+    ///
+    [Serializable()]
+    public class PartnerEditTDSMiscellaneousDataRow : System.Data.DataRow
+    {
+        private PartnerEditTDSMiscellaneousDataTable myTable;
+
+        /// Constructor
+        public PartnerEditTDSMiscellaneousDataRow(System.Data.DataRowBuilder rb) :
+                base(rb)
+        {
+            this.myTable = ((PartnerEditTDSMiscellaneousDataTable)(this.Table));
+        }
+
+        /// This is the partner key assigned to each partner. It consists of the fund id followed by a computer generated six digit number.
+        public Int64 PartnerKey
+        {
+            get
+            {
+                object ret;
+                ret = this[this.myTable.ColumnPartnerKey.Ordinal];
+                if ((ret == System.DBNull.Value))
+                {
+                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                }
+                else
+                {
+                    return ((Int64)(ret));
+                }
+            }
+            set
+            {
+                if ((this.IsNull(this.myTable.ColumnPartnerKey)
+                            || (((Int64)(this[this.myTable.ColumnPartnerKey])) != value)))
+                {
+                    this[this.myTable.ColumnPartnerKey] = value;
+                }
+            }
+        }
+
+        /// This is the key that tell what site created the linked location
+        public Int64 SelectedSiteKey
+        {
+            get
+            {
+                object ret;
+                ret = this[this.myTable.ColumnSelectedSiteKey.Ordinal];
+                if ((ret == System.DBNull.Value))
+                {
+                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                }
+                else
+                {
+                    return ((Int64)(ret));
+                }
+            }
+            set
+            {
+                if ((this.IsNull(this.myTable.ColumnSelectedSiteKey)
+                            || (((Int64)(this[this.myTable.ColumnSelectedSiteKey])) != value)))
+                {
+                    this[this.myTable.ColumnSelectedSiteKey] = value;
+                }
+            }
+        }
+
+        ///
+        public Int32 SelectedLocationKey
+        {
+            get
+            {
+                object ret;
+                ret = this[this.myTable.ColumnSelectedLocationKey.Ordinal];
+                if ((ret == System.DBNull.Value))
+                {
+                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                }
+                else
+                {
+                    return ((Int32)(ret));
+                }
+            }
+            set
+            {
+                if ((this.IsNull(this.myTable.ColumnSelectedLocationKey)
+                            || (((Int32)(this[this.myTable.ColumnSelectedLocationKey])) != value)))
+                {
+                    this[this.myTable.ColumnSelectedLocationKey] = value;
+                }
+            }
+        }
+
+        ///
+        public DateTime LastGiftDate
+        {
+            get
+            {
+                object ret;
+                ret = this[this.myTable.ColumnLastGiftDate.Ordinal];
+                if ((ret == System.DBNull.Value))
+                {
+                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                }
+                else
+                {
+                    return ((DateTime)(ret));
+                }
+            }
+            set
+            {
+                if ((this.IsNull(this.myTable.ColumnLastGiftDate)
+                            || (((DateTime)(this[this.myTable.ColumnLastGiftDate])) != value)))
+                {
+                    this[this.myTable.ColumnLastGiftDate] = value;
+                }
+            }
+        }
+
+        ///
+        public string LastGiftInfo
+        {
+            get
+            {
+                object ret;
+                ret = this[this.myTable.ColumnLastGiftInfo.Ordinal];
+                if ((ret == System.DBNull.Value))
+                {
+                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                }
+                else
+                {
+                    return ((string)(ret));
+                }
+            }
+            set
+            {
+                if ((this.IsNull(this.myTable.ColumnLastGiftInfo)
+                            || (((string)(this[this.myTable.ColumnLastGiftInfo])) != value)))
+                {
+                    this[this.myTable.ColumnLastGiftInfo] = value;
+                }
+            }
+        }
+
+        ///
+        public DateTime LastContactDate
+        {
+            get
+            {
+                object ret;
+                ret = this[this.myTable.ColumnLastContactDate.Ordinal];
+                if ((ret == System.DBNull.Value))
+                {
+                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                }
+                else
+                {
+                    return ((DateTime)(ret));
+                }
+            }
+            set
+            {
+                if ((this.IsNull(this.myTable.ColumnLastContactDate)
+                            || (((DateTime)(this[this.myTable.ColumnLastContactDate])) != value)))
+                {
+                    this[this.myTable.ColumnLastContactDate] = value;
+                }
+            }
+        }
+
+        ///
+        public Int32 ItemsCountAddresses
+        {
+            get
+            {
+                object ret;
+                ret = this[this.myTable.ColumnItemsCountAddresses.Ordinal];
+                if ((ret == System.DBNull.Value))
+                {
+                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                }
+                else
+                {
+                    return ((Int32)(ret));
+                }
+            }
+            set
+            {
+                if ((this.IsNull(this.myTable.ColumnItemsCountAddresses)
+                            || (((Int32)(this[this.myTable.ColumnItemsCountAddresses])) != value)))
+                {
+                    this[this.myTable.ColumnItemsCountAddresses] = value;
+                }
+            }
+        }
+
+        ///
+        public Int32 ItemsCountAddressesActive
+        {
+            get
+            {
+                object ret;
+                ret = this[this.myTable.ColumnItemsCountAddressesActive.Ordinal];
+                if ((ret == System.DBNull.Value))
+                {
+                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                }
+                else
+                {
+                    return ((Int32)(ret));
+                }
+            }
+            set
+            {
+                if ((this.IsNull(this.myTable.ColumnItemsCountAddressesActive)
+                            || (((Int32)(this[this.myTable.ColumnItemsCountAddressesActive])) != value)))
+                {
+                    this[this.myTable.ColumnItemsCountAddressesActive] = value;
+                }
+            }
+        }
+
+        ///
+        public Int32 ItemsCountSubscriptions
+        {
+            get
+            {
+                object ret;
+                ret = this[this.myTable.ColumnItemsCountSubscriptions.Ordinal];
+                if ((ret == System.DBNull.Value))
+                {
+                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                }
+                else
+                {
+                    return ((Int32)(ret));
+                }
+            }
+            set
+            {
+                if ((this.IsNull(this.myTable.ColumnItemsCountSubscriptions)
+                            || (((Int32)(this[this.myTable.ColumnItemsCountSubscriptions])) != value)))
+                {
+                    this[this.myTable.ColumnItemsCountSubscriptions] = value;
+                }
+            }
+        }
+
+        ///
+        public Int32 ItemsCountSubscriptionsActive
+        {
+            get
+            {
+                object ret;
+                ret = this[this.myTable.ColumnItemsCountSubscriptionsActive.Ordinal];
+                if ((ret == System.DBNull.Value))
+                {
+                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                }
+                else
+                {
+                    return ((Int32)(ret));
+                }
+            }
+            set
+            {
+                if ((this.IsNull(this.myTable.ColumnItemsCountSubscriptionsActive)
+                            || (((Int32)(this[this.myTable.ColumnItemsCountSubscriptionsActive])) != value)))
+                {
+                    this[this.myTable.ColumnItemsCountSubscriptionsActive] = value;
+                }
+            }
+        }
+
+        ///
+        public Int32 ItemsCountPartnerTypes
+        {
+            get
+            {
+                object ret;
+                ret = this[this.myTable.ColumnItemsCountPartnerTypes.Ordinal];
+                if ((ret == System.DBNull.Value))
+                {
+                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                }
+                else
+                {
+                    return ((Int32)(ret));
+                }
+            }
+            set
+            {
+                if ((this.IsNull(this.myTable.ColumnItemsCountPartnerTypes)
+                            || (((Int32)(this[this.myTable.ColumnItemsCountPartnerTypes])) != value)))
+                {
+                    this[this.myTable.ColumnItemsCountPartnerTypes] = value;
+                }
+            }
+        }
+
+        ///
+        public Int32 ItemsCountFamilyMembers
+        {
+            get
+            {
+                object ret;
+                ret = this[this.myTable.ColumnItemsCountFamilyMembers.Ordinal];
+                if ((ret == System.DBNull.Value))
+                {
+                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                }
+                else
+                {
+                    return ((Int32)(ret));
+                }
+            }
+            set
+            {
+                if ((this.IsNull(this.myTable.ColumnItemsCountFamilyMembers)
+                            || (((Int32)(this[this.myTable.ColumnItemsCountFamilyMembers])) != value)))
+                {
+                    this[this.myTable.ColumnItemsCountFamilyMembers] = value;
+                }
+            }
+        }
+
+        ///
+        public Int32 ItemsCountInterests
+        {
+            get
+            {
+                object ret;
+                ret = this[this.myTable.ColumnItemsCountInterests.Ordinal];
+                if ((ret == System.DBNull.Value))
+                {
+                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                }
+                else
+                {
+                    return ((Int32)(ret));
+                }
+            }
+            set
+            {
+                if ((this.IsNull(this.myTable.ColumnItemsCountInterests)
+                            || (((Int32)(this[this.myTable.ColumnItemsCountInterests])) != value)))
+                {
+                    this[this.myTable.ColumnItemsCountInterests] = value;
+                }
+            }
+        }
+
+        ///
+        public Int32 ItemsCountReminders
+        {
+            get
+            {
+                object ret;
+                ret = this[this.myTable.ColumnItemsCountReminders.Ordinal];
+                if ((ret == System.DBNull.Value))
+                {
+                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                }
+                else
+                {
+                    return ((Int32)(ret));
+                }
+            }
+            set
+            {
+                if ((this.IsNull(this.myTable.ColumnItemsCountReminders)
+                            || (((Int32)(this[this.myTable.ColumnItemsCountReminders])) != value)))
+                {
+                    this[this.myTable.ColumnItemsCountReminders] = value;
+                }
+            }
+        }
+
+        ///
+        public Int32 ItemsCountRelationships
+        {
+            get
+            {
+                object ret;
+                ret = this[this.myTable.ColumnItemsCountRelationships.Ordinal];
+                if ((ret == System.DBNull.Value))
+                {
+                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                }
+                else
+                {
+                    return ((Int32)(ret));
+                }
+            }
+            set
+            {
+                if ((this.IsNull(this.myTable.ColumnItemsCountRelationships)
+                            || (((Int32)(this[this.myTable.ColumnItemsCountRelationships])) != value)))
+                {
+                    this[this.myTable.ColumnItemsCountRelationships] = value;
+                }
+            }
+        }
+
+        ///
+        public Int32 ItemsCountContacts
+        {
+            get
+            {
+                object ret;
+                ret = this[this.myTable.ColumnItemsCountContacts.Ordinal];
+                if ((ret == System.DBNull.Value))
+                {
+                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                }
+                else
+                {
+                    return ((Int32)(ret));
+                }
+            }
+            set
+            {
+                if ((this.IsNull(this.myTable.ColumnItemsCountContacts)
+                            || (((Int32)(this[this.myTable.ColumnItemsCountContacts])) != value)))
+                {
+                    this[this.myTable.ColumnItemsCountContacts] = value;
+                }
+            }
+        }
+
+        ///
+        public bool OfficeSpecificDataLabelsAvailable
+        {
+            get
+            {
+                object ret;
+                ret = this[this.myTable.ColumnOfficeSpecificDataLabelsAvailable.Ordinal];
+                if ((ret == System.DBNull.Value))
+                {
+                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                }
+                else
+                {
+                    return ((bool)(ret));
+                }
+            }
+            set
+            {
+                if ((this.IsNull(this.myTable.ColumnOfficeSpecificDataLabelsAvailable)
+                            || (((bool)(this[this.myTable.ColumnOfficeSpecificDataLabelsAvailable])) != value)))
+                {
+                    this[this.myTable.ColumnOfficeSpecificDataLabelsAvailable] = value;
+                }
+            }
+        }
+
+        ///
+        public Int64 FoundationOwner1Key
+        {
+            get
+            {
+                object ret;
+                ret = this[this.myTable.ColumnFoundationOwner1Key.Ordinal];
+                if ((ret == System.DBNull.Value))
+                {
+                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                }
+                else
+                {
+                    return ((Int64)(ret));
+                }
+            }
+            set
+            {
+                if ((this.IsNull(this.myTable.ColumnFoundationOwner1Key)
+                            || (((Int64)(this[this.myTable.ColumnFoundationOwner1Key])) != value)))
+                {
+                    this[this.myTable.ColumnFoundationOwner1Key] = value;
+                }
+            }
+        }
+
+        ///
+        public Int64 FoundationOwner2Key
+        {
+            get
+            {
+                object ret;
+                ret = this[this.myTable.ColumnFoundationOwner2Key.Ordinal];
+                if ((ret == System.DBNull.Value))
+                {
+                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                }
+                else
+                {
+                    return ((Int64)(ret));
+                }
+            }
+            set
+            {
+                if ((this.IsNull(this.myTable.ColumnFoundationOwner2Key)
+                            || (((Int64)(this[this.myTable.ColumnFoundationOwner2Key])) != value)))
+                {
+                    this[this.myTable.ColumnFoundationOwner2Key] = value;
+                }
+            }
+        }
+
+        ///
+        public bool HasEXWORKERPartnerType
+        {
+            get
+            {
+                object ret;
+                ret = this[this.myTable.ColumnHasEXWORKERPartnerType.Ordinal];
+                if ((ret == System.DBNull.Value))
+                {
+                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                }
+                else
+                {
+                    return ((bool)(ret));
+                }
+            }
+            set
+            {
+                if ((this.IsNull(this.myTable.ColumnHasEXWORKERPartnerType)
+                            || (((bool)(this[this.myTable.ColumnHasEXWORKERPartnerType])) != value)))
+                {
+                    this[this.myTable.ColumnHasEXWORKERPartnerType] = value;
+                }
+            }
+        }
+
+        /// set default values
+        public virtual void InitValues()
+        {
+            this[this.myTable.ColumnPartnerKey.Ordinal] = 0;
+            this[this.myTable.ColumnSelectedSiteKey.Ordinal] = 0;
+            this[this.myTable.ColumnSelectedLocationKey.Ordinal] = 0;
+            this.SetNull(this.myTable.ColumnLastGiftDate);
+            this.SetNull(this.myTable.ColumnLastGiftInfo);
+            this.SetNull(this.myTable.ColumnLastContactDate);
+            this.SetNull(this.myTable.ColumnItemsCountAddresses);
+            this.SetNull(this.myTable.ColumnItemsCountAddressesActive);
+            this.SetNull(this.myTable.ColumnItemsCountSubscriptions);
+            this.SetNull(this.myTable.ColumnItemsCountSubscriptionsActive);
+            this.SetNull(this.myTable.ColumnItemsCountPartnerTypes);
+            this.SetNull(this.myTable.ColumnItemsCountFamilyMembers);
+            this.SetNull(this.myTable.ColumnItemsCountInterests);
+            this.SetNull(this.myTable.ColumnItemsCountReminders);
+            this.SetNull(this.myTable.ColumnItemsCountRelationships);
+            this.SetNull(this.myTable.ColumnItemsCountContacts);
+            this.SetNull(this.myTable.ColumnOfficeSpecificDataLabelsAvailable);
+            this.SetNull(this.myTable.ColumnFoundationOwner1Key);
+            this.SetNull(this.myTable.ColumnFoundationOwner2Key);
+            this.SetNull(this.myTable.ColumnHasEXWORKERPartnerType);
+        }
+
+        /// test for NULL value
+        public bool IsPartnerKeyNull()
+        {
+            return this.IsNull(this.myTable.ColumnPartnerKey);
+        }
+
+        /// assign NULL value
+        public void SetPartnerKeyNull()
+        {
+            this.SetNull(this.myTable.ColumnPartnerKey);
+        }
+
+        /// test for NULL value
+        public bool IsSelectedSiteKeyNull()
+        {
+            return this.IsNull(this.myTable.ColumnSelectedSiteKey);
+        }
+
+        /// assign NULL value
+        public void SetSelectedSiteKeyNull()
+        {
+            this.SetNull(this.myTable.ColumnSelectedSiteKey);
+        }
+
+        /// test for NULL value
+        public bool IsSelectedLocationKeyNull()
+        {
+            return this.IsNull(this.myTable.ColumnSelectedLocationKey);
+        }
+
+        /// assign NULL value
+        public void SetSelectedLocationKeyNull()
+        {
+            this.SetNull(this.myTable.ColumnSelectedLocationKey);
+        }
+
+        /// test for NULL value
+        public bool IsLastGiftDateNull()
+        {
+            return this.IsNull(this.myTable.ColumnLastGiftDate);
+        }
+
+        /// assign NULL value
+        public void SetLastGiftDateNull()
+        {
+            this.SetNull(this.myTable.ColumnLastGiftDate);
+        }
+
+        /// test for NULL value
+        public bool IsLastGiftInfoNull()
+        {
+            return this.IsNull(this.myTable.ColumnLastGiftInfo);
+        }
+
+        /// assign NULL value
+        public void SetLastGiftInfoNull()
+        {
+            this.SetNull(this.myTable.ColumnLastGiftInfo);
+        }
+
+        /// test for NULL value
+        public bool IsLastContactDateNull()
+        {
+            return this.IsNull(this.myTable.ColumnLastContactDate);
+        }
+
+        /// assign NULL value
+        public void SetLastContactDateNull()
+        {
+            this.SetNull(this.myTable.ColumnLastContactDate);
+        }
+
+        /// test for NULL value
+        public bool IsItemsCountAddressesNull()
+        {
+            return this.IsNull(this.myTable.ColumnItemsCountAddresses);
+        }
+
+        /// assign NULL value
+        public void SetItemsCountAddressesNull()
+        {
+            this.SetNull(this.myTable.ColumnItemsCountAddresses);
+        }
+
+        /// test for NULL value
+        public bool IsItemsCountAddressesActiveNull()
+        {
+            return this.IsNull(this.myTable.ColumnItemsCountAddressesActive);
+        }
+
+        /// assign NULL value
+        public void SetItemsCountAddressesActiveNull()
+        {
+            this.SetNull(this.myTable.ColumnItemsCountAddressesActive);
+        }
+
+        /// test for NULL value
+        public bool IsItemsCountSubscriptionsNull()
+        {
+            return this.IsNull(this.myTable.ColumnItemsCountSubscriptions);
+        }
+
+        /// assign NULL value
+        public void SetItemsCountSubscriptionsNull()
+        {
+            this.SetNull(this.myTable.ColumnItemsCountSubscriptions);
+        }
+
+        /// test for NULL value
+        public bool IsItemsCountSubscriptionsActiveNull()
+        {
+            return this.IsNull(this.myTable.ColumnItemsCountSubscriptionsActive);
+        }
+
+        /// assign NULL value
+        public void SetItemsCountSubscriptionsActiveNull()
+        {
+            this.SetNull(this.myTable.ColumnItemsCountSubscriptionsActive);
+        }
+
+        /// test for NULL value
+        public bool IsItemsCountPartnerTypesNull()
+        {
+            return this.IsNull(this.myTable.ColumnItemsCountPartnerTypes);
+        }
+
+        /// assign NULL value
+        public void SetItemsCountPartnerTypesNull()
+        {
+            this.SetNull(this.myTable.ColumnItemsCountPartnerTypes);
+        }
+
+        /// test for NULL value
+        public bool IsItemsCountFamilyMembersNull()
+        {
+            return this.IsNull(this.myTable.ColumnItemsCountFamilyMembers);
+        }
+
+        /// assign NULL value
+        public void SetItemsCountFamilyMembersNull()
+        {
+            this.SetNull(this.myTable.ColumnItemsCountFamilyMembers);
+        }
+
+        /// test for NULL value
+        public bool IsItemsCountInterestsNull()
+        {
+            return this.IsNull(this.myTable.ColumnItemsCountInterests);
+        }
+
+        /// assign NULL value
+        public void SetItemsCountInterestsNull()
+        {
+            this.SetNull(this.myTable.ColumnItemsCountInterests);
+        }
+
+        /// test for NULL value
+        public bool IsItemsCountRemindersNull()
+        {
+            return this.IsNull(this.myTable.ColumnItemsCountReminders);
+        }
+
+        /// assign NULL value
+        public void SetItemsCountRemindersNull()
+        {
+            this.SetNull(this.myTable.ColumnItemsCountReminders);
+        }
+
+        /// test for NULL value
+        public bool IsItemsCountRelationshipsNull()
+        {
+            return this.IsNull(this.myTable.ColumnItemsCountRelationships);
+        }
+
+        /// assign NULL value
+        public void SetItemsCountRelationshipsNull()
+        {
+            this.SetNull(this.myTable.ColumnItemsCountRelationships);
+        }
+
+        /// test for NULL value
+        public bool IsItemsCountContactsNull()
+        {
+            return this.IsNull(this.myTable.ColumnItemsCountContacts);
+        }
+
+        /// assign NULL value
+        public void SetItemsCountContactsNull()
+        {
+            this.SetNull(this.myTable.ColumnItemsCountContacts);
+        }
+
+        /// test for NULL value
+        public bool IsOfficeSpecificDataLabelsAvailableNull()
+        {
+            return this.IsNull(this.myTable.ColumnOfficeSpecificDataLabelsAvailable);
+        }
+
+        /// assign NULL value
+        public void SetOfficeSpecificDataLabelsAvailableNull()
+        {
+            this.SetNull(this.myTable.ColumnOfficeSpecificDataLabelsAvailable);
+        }
+
+        /// test for NULL value
+        public bool IsFoundationOwner1KeyNull()
+        {
+            return this.IsNull(this.myTable.ColumnFoundationOwner1Key);
+        }
+
+        /// assign NULL value
+        public void SetFoundationOwner1KeyNull()
+        {
+            this.SetNull(this.myTable.ColumnFoundationOwner1Key);
+        }
+
+        /// test for NULL value
+        public bool IsFoundationOwner2KeyNull()
+        {
+            return this.IsNull(this.myTable.ColumnFoundationOwner2Key);
+        }
+
+        /// assign NULL value
+        public void SetFoundationOwner2KeyNull()
+        {
+            this.SetNull(this.myTable.ColumnFoundationOwner2Key);
+        }
+
+        /// test for NULL value
+        public bool IsHasEXWORKERPartnerTypeNull()
+        {
+            return this.IsNull(this.myTable.ColumnHasEXWORKERPartnerType);
+        }
+
+        /// assign NULL value
+        public void SetHasEXWORKERPartnerTypeNull()
+        {
+            this.SetNull(this.myTable.ColumnHasEXWORKERPartnerType);
+        }
+    }
+
+    ///
+    [Serializable()]
+    public class PartnerEditTDSFamilyMembersTable : TTypedDataTable
+    {
+        /// This is the partner key assigned to each partner. It consists of the fund id followed by a computer generated six digit number.
+        public DataColumn ColumnPartnerKey;
+        /// Name of the person or organisation.  If a person, more name info is stored in p_person.
+        public DataColumn ColumnPartnerShortName;
+        /// This field indicates the family id of the individual.
+        /// ID's 0 and 1 are used for parents; 2, 3, 4 ... 9 are used for children.
+        public DataColumn ColumnFamilyId;
+        ///
+        public DataColumn ColumnGender;
+        /// This is the date the rthe person was born
+        public DataColumn ColumnDateOfBirth;
+        ///
+        public DataColumn ColumnTypeCodeModify;
+        ///
+        public DataColumn ColumnTypeCodePresent;
+        ///
+        public DataColumn ColumnOtherTypeCodes;
+
+        /// TableId for Ict.Common.Data generic functions
+        public static short TableId = -1;
+
+        private static bool FInitInfoValues = InitInfoValues();
+        private static bool InitInfoValues()
+        {
+            TableInfo.Add(TableId, new TTypedTableInfo(TableId, "PartnerEditTDSFamilyMembers", "PartnerEditTDSFamilyMembers",
+                new TTypedColumnInfo[] {
+                    new TTypedColumnInfo(0, "PartnerKey", "p_partner_key_n", OdbcType.Decimal, 10, true),
+                    new TTypedColumnInfo(1, "PartnerShortName", "p_partner_short_name_c", OdbcType.VarChar, 160, false),
+                    new TTypedColumnInfo(2, "FamilyId", "p_family_id_i", OdbcType.Int, -1, false),
+                    new TTypedColumnInfo(3, "Gender", "p_gender_c", OdbcType.VarChar, 16, false),
+                    new TTypedColumnInfo(4, "DateOfBirth", "p_date_of_birth_d", OdbcType.Date, -1, false),
+                    new TTypedColumnInfo(5, "TypeCodeModify", "TypeCodeModify", OdbcType.Int, -1, false),
+                    new TTypedColumnInfo(6, "TypeCodePresent", "TypeCodePresent", OdbcType.Int, -1, false),
+                    new TTypedColumnInfo(7, "OtherTypeCodes", "OtherTypeCodes", OdbcType.Int, -1, false)
+                },
+                new int[] {
+
+                }));
+            return true;
+        }
+
+        /// constructor
+        public PartnerEditTDSFamilyMembersTable() :
+                base("PartnerEditTDSFamilyMembers")
+        {
+        }
+
+        /// constructor
+        public PartnerEditTDSFamilyMembersTable(string ATablename) :
+                base(ATablename)
+        {
+        }
+
+        /// constructor for serialization
+        public PartnerEditTDSFamilyMembersTable(System.Runtime.Serialization.SerializationInfo info, System.Runtime.Serialization.StreamingContext context) :
+                base(info, context)
+        {
+        }
+
+        /// create the columns
+        protected override void InitClass()
+        {
+            this.Columns.Add(new System.Data.DataColumn("p_partner_key_n", typeof(Int64)));
+            this.Columns.Add(new System.Data.DataColumn("p_partner_short_name_c", typeof(String)));
+            this.Columns.Add(new System.Data.DataColumn("p_family_id_i", typeof(Int32)));
+            this.Columns.Add(new System.Data.DataColumn("p_gender_c", typeof(String)));
+            this.Columns.Add(new System.Data.DataColumn("p_date_of_birth_d", typeof(System.DateTime)));
+            this.Columns.Add(new System.Data.DataColumn("TypeCodeModify", typeof(bool)));
+            this.Columns.Add(new System.Data.DataColumn("TypeCodePresent", typeof(bool)));
+            this.Columns.Add(new System.Data.DataColumn("OtherTypeCodes", typeof(string)));
+        }
+
+        /// assign columns to properties, set primary key
+        public override void InitVars()
+        {
+            this.ColumnPartnerKey = this.Columns["p_partner_key_n"];
+            this.ColumnPartnerShortName = this.Columns["p_partner_short_name_c"];
+            this.ColumnFamilyId = this.Columns["p_family_id_i"];
+            this.ColumnGender = this.Columns["p_gender_c"];
+            this.ColumnDateOfBirth = this.Columns["p_date_of_birth_d"];
+            this.ColumnTypeCodeModify = this.Columns["TypeCodeModify"];
+            this.ColumnTypeCodePresent = this.Columns["TypeCodePresent"];
+            this.ColumnOtherTypeCodes = this.Columns["OtherTypeCodes"];
+        }
+
+        /// Access a typed row by index
+        public PartnerEditTDSFamilyMembersRow this[int i]
+        {
+            get
+            {
+                return ((PartnerEditTDSFamilyMembersRow)(this.Rows[i]));
+            }
+        }
+
+        /// create a new typed row
+        public PartnerEditTDSFamilyMembersRow NewRowTyped(bool AWithDefaultValues)
+        {
+            PartnerEditTDSFamilyMembersRow ret = ((PartnerEditTDSFamilyMembersRow)(this.NewRow()));
+            if ((AWithDefaultValues == true))
+            {
+                ret.InitValues();
+            }
+            return ret;
+        }
+
+        /// create a new typed row, always with default values
+        public PartnerEditTDSFamilyMembersRow NewRowTyped()
+        {
+            return this.NewRowTyped(true);
+        }
+
+        /// new typed row using DataRowBuilder
+        protected override System.Data.DataRow NewRowFromBuilder(System.Data.DataRowBuilder builder)
+        {
+            return new PartnerEditTDSFamilyMembersRow(builder);
+        }
+
+        /// get typed set of changes
+        public PartnerEditTDSFamilyMembersTable GetChangesTyped()
+        {
+            return ((PartnerEditTDSFamilyMembersTable)(base.GetChangesTypedInternal()));
+        }
+
+        /// get an odbc parameter for the given column
+        public override OdbcParameter CreateOdbcParameter(Int32 AColumnNr)
+        {
+            return CreateOdbcParameter(TableId, AColumnNr);
+        }
+
+        /// get the name of the field in the database for this column
+        public static string GetPartnerKeyDBName()
+        {
+            return "p_partner_key_n";
+        }
+
+        /// get character length for column
+        public static short GetPartnerKeyLength()
+        {
+            return 10;
+        }
+
+        /// get the name of the field in the database for this column
+        public static string GetPartnerShortNameDBName()
+        {
+            return "p_partner_short_name_c";
+        }
+
+        /// get character length for column
+        public static short GetPartnerShortNameLength()
+        {
+            return 160;
+        }
+
+        /// get the name of the field in the database for this column
+        public static string GetFamilyIdDBName()
+        {
+            return "p_family_id_i";
+        }
+
+        /// get character length for column
+        public static short GetFamilyIdLength()
+        {
+            return -1;
+        }
+
+        /// get the name of the field in the database for this column
+        public static string GetGenderDBName()
+        {
+            return "p_gender_c";
+        }
+
+        /// get character length for column
+        public static short GetGenderLength()
+        {
+            return 16;
+        }
+
+        /// get the name of the field in the database for this column
+        public static string GetDateOfBirthDBName()
+        {
+            return "p_date_of_birth_d";
+        }
+
+        /// get character length for column
+        public static short GetDateOfBirthLength()
+        {
+            return -1;
+        }
+
+        /// get the name of the field in the database for this column
+        public static string GetTypeCodeModifyDBName()
+        {
+            return "TypeCodeModify";
+        }
+
+        /// get character length for column
+        public static short GetTypeCodeModifyLength()
+        {
+            return -1;
+        }
+
+        /// get the name of the field in the database for this column
+        public static string GetTypeCodePresentDBName()
+        {
+            return "TypeCodePresent";
+        }
+
+        /// get character length for column
+        public static short GetTypeCodePresentLength()
+        {
+            return -1;
+        }
+
+        /// get the name of the field in the database for this column
+        public static string GetOtherTypeCodesDBName()
+        {
+            return "OtherTypeCodes";
+        }
+
+        /// get character length for column
+        public static short GetOtherTypeCodesLength()
+        {
+            return -1;
+        }
+
+    }
+
+    ///
+    [Serializable()]
+    public class PartnerEditTDSFamilyMembersRow : System.Data.DataRow
+    {
+        private PartnerEditTDSFamilyMembersTable myTable;
+
+        /// Constructor
+        public PartnerEditTDSFamilyMembersRow(System.Data.DataRowBuilder rb) :
+                base(rb)
+        {
+            this.myTable = ((PartnerEditTDSFamilyMembersTable)(this.Table));
+        }
+
+        /// This is the partner key assigned to each partner. It consists of the fund id followed by a computer generated six digit number.
+        public Int64 PartnerKey
+        {
+            get
+            {
+                object ret;
+                ret = this[this.myTable.ColumnPartnerKey.Ordinal];
+                if ((ret == System.DBNull.Value))
+                {
+                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                }
+                else
+                {
+                    return ((Int64)(ret));
+                }
+            }
+            set
+            {
+                if ((this.IsNull(this.myTable.ColumnPartnerKey)
+                            || (((Int64)(this[this.myTable.ColumnPartnerKey])) != value)))
+                {
+                    this[this.myTable.ColumnPartnerKey] = value;
+                }
+            }
+        }
+
+        /// Name of the person or organisation.  If a person, more name info is stored in p_person.
+        public String PartnerShortName
+        {
+            get
+            {
+                object ret;
+                ret = this[this.myTable.ColumnPartnerShortName.Ordinal];
+                if ((ret == System.DBNull.Value))
+                {
+                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                }
+                else
+                {
+                    return ((String)(ret));
+                }
+            }
+            set
+            {
+                if ((this.IsNull(this.myTable.ColumnPartnerShortName)
+                            || (((String)(this[this.myTable.ColumnPartnerShortName])) != value)))
+                {
+                    this[this.myTable.ColumnPartnerShortName] = value;
+                }
+            }
+        }
+
+        /// This field indicates the family id of the individual.
+        /// ID's 0 and 1 are used for parents; 2, 3, 4 ... 9 are used for children.
+        public Int32 FamilyId
+        {
+            get
+            {
+                object ret;
+                ret = this[this.myTable.ColumnFamilyId.Ordinal];
+                if ((ret == System.DBNull.Value))
+                {
+                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                }
+                else
+                {
+                    return ((Int32)(ret));
+                }
+            }
+            set
+            {
+                if ((this.IsNull(this.myTable.ColumnFamilyId)
+                            || (((Int32)(this[this.myTable.ColumnFamilyId])) != value)))
+                {
+                    this[this.myTable.ColumnFamilyId] = value;
+                }
+            }
+        }
+
+        ///
+        public String Gender
+        {
+            get
+            {
+                object ret;
+                ret = this[this.myTable.ColumnGender.Ordinal];
+                if ((ret == System.DBNull.Value))
+                {
+                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                }
+                else
+                {
+                    return ((String)(ret));
+                }
+            }
+            set
+            {
+                if ((this.IsNull(this.myTable.ColumnGender)
+                            || (((String)(this[this.myTable.ColumnGender])) != value)))
+                {
+                    this[this.myTable.ColumnGender] = value;
+                }
+            }
+        }
+
+        /// This is the date the rthe person was born
+        public System.DateTime DateOfBirth
+        {
+            get
+            {
+                object ret;
+                ret = this[this.myTable.ColumnDateOfBirth.Ordinal];
+                if ((ret == System.DBNull.Value))
+                {
+                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                }
+                else
+                {
+                    return ((System.DateTime)(ret));
+                }
+            }
+            set
+            {
+                if ((this.IsNull(this.myTable.ColumnDateOfBirth)
+                            || (((System.DateTime)(this[this.myTable.ColumnDateOfBirth])) != value)))
+                {
+                    this[this.myTable.ColumnDateOfBirth] = value;
+                }
+            }
+        }
+
+        ///
+        public bool TypeCodeModify
+        {
+            get
+            {
+                object ret;
+                ret = this[this.myTable.ColumnTypeCodeModify.Ordinal];
+                if ((ret == System.DBNull.Value))
+                {
+                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                }
+                else
+                {
+                    return ((bool)(ret));
+                }
+            }
+            set
+            {
+                if ((this.IsNull(this.myTable.ColumnTypeCodeModify)
+                            || (((bool)(this[this.myTable.ColumnTypeCodeModify])) != value)))
+                {
+                    this[this.myTable.ColumnTypeCodeModify] = value;
+                }
+            }
+        }
+
+        ///
+        public bool TypeCodePresent
+        {
+            get
+            {
+                object ret;
+                ret = this[this.myTable.ColumnTypeCodePresent.Ordinal];
+                if ((ret == System.DBNull.Value))
+                {
+                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                }
+                else
+                {
+                    return ((bool)(ret));
+                }
+            }
+            set
+            {
+                if ((this.IsNull(this.myTable.ColumnTypeCodePresent)
+                            || (((bool)(this[this.myTable.ColumnTypeCodePresent])) != value)))
+                {
+                    this[this.myTable.ColumnTypeCodePresent] = value;
+                }
+            }
+        }
+
+        ///
+        public string OtherTypeCodes
+        {
+            get
+            {
+                object ret;
+                ret = this[this.myTable.ColumnOtherTypeCodes.Ordinal];
+                if ((ret == System.DBNull.Value))
+                {
+                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                }
+                else
+                {
+                    return ((string)(ret));
+                }
+            }
+            set
+            {
+                if ((this.IsNull(this.myTable.ColumnOtherTypeCodes)
+                            || (((string)(this[this.myTable.ColumnOtherTypeCodes])) != value)))
+                {
+                    this[this.myTable.ColumnOtherTypeCodes] = value;
+                }
+            }
+        }
+
+        /// set default values
+        public virtual void InitValues()
+        {
+            this[this.myTable.ColumnPartnerKey.Ordinal] = 0;
+            this.SetNull(this.myTable.ColumnPartnerShortName);
+            this[this.myTable.ColumnFamilyId.Ordinal] = 0;
+            this[this.myTable.ColumnGender.Ordinal] = "Unknown";
+            this.SetNull(this.myTable.ColumnDateOfBirth);
+            this.SetNull(this.myTable.ColumnTypeCodeModify);
+            this.SetNull(this.myTable.ColumnTypeCodePresent);
+            this.SetNull(this.myTable.ColumnOtherTypeCodes);
+        }
+
+        /// test for NULL value
+        public bool IsPartnerKeyNull()
+        {
+            return this.IsNull(this.myTable.ColumnPartnerKey);
+        }
+
+        /// assign NULL value
+        public void SetPartnerKeyNull()
+        {
+            this.SetNull(this.myTable.ColumnPartnerKey);
+        }
+
+        /// test for NULL value
+        public bool IsPartnerShortNameNull()
+        {
+            return this.IsNull(this.myTable.ColumnPartnerShortName);
+        }
+
+        /// assign NULL value
+        public void SetPartnerShortNameNull()
+        {
+            this.SetNull(this.myTable.ColumnPartnerShortName);
+        }
+
+        /// test for NULL value
+        public bool IsFamilyIdNull()
+        {
+            return this.IsNull(this.myTable.ColumnFamilyId);
+        }
+
+        /// assign NULL value
+        public void SetFamilyIdNull()
+        {
+            this.SetNull(this.myTable.ColumnFamilyId);
+        }
+
+        /// test for NULL value
+        public bool IsGenderNull()
+        {
+            return this.IsNull(this.myTable.ColumnGender);
+        }
+
+        /// assign NULL value
+        public void SetGenderNull()
+        {
+            this.SetNull(this.myTable.ColumnGender);
+        }
+
+        /// test for NULL value
+        public bool IsDateOfBirthNull()
+        {
+            return this.IsNull(this.myTable.ColumnDateOfBirth);
+        }
+
+        /// assign NULL value
+        public void SetDateOfBirthNull()
+        {
+            this.SetNull(this.myTable.ColumnDateOfBirth);
+        }
+
+        /// test for NULL value
+        public bool IsTypeCodeModifyNull()
+        {
+            return this.IsNull(this.myTable.ColumnTypeCodeModify);
+        }
+
+        /// assign NULL value
+        public void SetTypeCodeModifyNull()
+        {
+            this.SetNull(this.myTable.ColumnTypeCodeModify);
+        }
+
+        /// test for NULL value
+        public bool IsTypeCodePresentNull()
+        {
+            return this.IsNull(this.myTable.ColumnTypeCodePresent);
+        }
+
+        /// assign NULL value
+        public void SetTypeCodePresentNull()
+        {
+            this.SetNull(this.myTable.ColumnTypeCodePresent);
+        }
+
+        /// test for NULL value
+        public bool IsOtherTypeCodesNull()
+        {
+            return this.IsNull(this.myTable.ColumnOtherTypeCodes);
+        }
+
+        /// assign NULL value
+        public void SetOtherTypeCodesNull()
+        {
+            this.SetNull(this.myTable.ColumnOtherTypeCodes);
+        }
+    }
+
+    ///
+    [Serializable()]
+    public class PartnerEditTDSFamilyMembersInfoForStatusChangeTable : TTypedDataTable
+    {
+        /// This is the partner key assigned to each partner. It consists of the fund id followed by a computer generated six digit number.
+        public DataColumn ColumnPartnerKey;
+
+        /// TableId for Ict.Common.Data generic functions
+        public static short TableId = -1;
+
+        private static bool FInitInfoValues = InitInfoValues();
+        private static bool InitInfoValues()
+        {
+            TableInfo.Add(TableId, new TTypedTableInfo(TableId, "PartnerEditTDSFamilyMembersInfoForStatusChange", "PartnerEditTDSFamilyMembersInfoForStatusChange",
+                new TTypedColumnInfo[] {
+                    new TTypedColumnInfo(0, "PartnerKey", "p_partner_key_n", OdbcType.Decimal, 10, true)
+                },
+                new int[] {
+
+                }));
+            return true;
+        }
+
+        /// constructor
+        public PartnerEditTDSFamilyMembersInfoForStatusChangeTable() :
+                base("PartnerEditTDSFamilyMembersInfoForStatusChange")
+        {
+        }
+
+        /// constructor
+        public PartnerEditTDSFamilyMembersInfoForStatusChangeTable(string ATablename) :
+                base(ATablename)
+        {
+        }
+
+        /// constructor for serialization
+        public PartnerEditTDSFamilyMembersInfoForStatusChangeTable(System.Runtime.Serialization.SerializationInfo info, System.Runtime.Serialization.StreamingContext context) :
+                base(info, context)
+        {
+        }
+
+        /// create the columns
+        protected override void InitClass()
+        {
+            this.Columns.Add(new System.Data.DataColumn("p_partner_key_n", typeof(Int64)));
+        }
+
+        /// assign columns to properties, set primary key
+        public override void InitVars()
+        {
+            this.ColumnPartnerKey = this.Columns["p_partner_key_n"];
+        }
+
+        /// Access a typed row by index
+        public PartnerEditTDSFamilyMembersInfoForStatusChangeRow this[int i]
+        {
+            get
+            {
+                return ((PartnerEditTDSFamilyMembersInfoForStatusChangeRow)(this.Rows[i]));
+            }
+        }
+
+        /// create a new typed row
+        public PartnerEditTDSFamilyMembersInfoForStatusChangeRow NewRowTyped(bool AWithDefaultValues)
+        {
+            PartnerEditTDSFamilyMembersInfoForStatusChangeRow ret = ((PartnerEditTDSFamilyMembersInfoForStatusChangeRow)(this.NewRow()));
+            if ((AWithDefaultValues == true))
+            {
+                ret.InitValues();
+            }
+            return ret;
+        }
+
+        /// create a new typed row, always with default values
+        public PartnerEditTDSFamilyMembersInfoForStatusChangeRow NewRowTyped()
+        {
+            return this.NewRowTyped(true);
+        }
+
+        /// new typed row using DataRowBuilder
+        protected override System.Data.DataRow NewRowFromBuilder(System.Data.DataRowBuilder builder)
+        {
+            return new PartnerEditTDSFamilyMembersInfoForStatusChangeRow(builder);
+        }
+
+        /// get typed set of changes
+        public PartnerEditTDSFamilyMembersInfoForStatusChangeTable GetChangesTyped()
+        {
+            return ((PartnerEditTDSFamilyMembersInfoForStatusChangeTable)(base.GetChangesTypedInternal()));
+        }
+
+        /// get an odbc parameter for the given column
+        public override OdbcParameter CreateOdbcParameter(Int32 AColumnNr)
+        {
+            return CreateOdbcParameter(TableId, AColumnNr);
+        }
+
+        /// get the name of the field in the database for this column
+        public static string GetPartnerKeyDBName()
+        {
+            return "p_partner_key_n";
+        }
+
+        /// get character length for column
+        public static short GetPartnerKeyLength()
+        {
+            return 10;
+        }
+
+    }
+
+    ///
+    [Serializable()]
+    public class PartnerEditTDSFamilyMembersInfoForStatusChangeRow : System.Data.DataRow
+    {
+        private PartnerEditTDSFamilyMembersInfoForStatusChangeTable myTable;
+
+        /// Constructor
+        public PartnerEditTDSFamilyMembersInfoForStatusChangeRow(System.Data.DataRowBuilder rb) :
+                base(rb)
+        {
+            this.myTable = ((PartnerEditTDSFamilyMembersInfoForStatusChangeTable)(this.Table));
+        }
+
+        /// This is the partner key assigned to each partner. It consists of the fund id followed by a computer generated six digit number.
+        public Int64 PartnerKey
+        {
+            get
+            {
+                object ret;
+                ret = this[this.myTable.ColumnPartnerKey.Ordinal];
+                if ((ret == System.DBNull.Value))
+                {
+                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                }
+                else
+                {
+                    return ((Int64)(ret));
+                }
+            }
+            set
+            {
+                if ((this.IsNull(this.myTable.ColumnPartnerKey)
+                            || (((Int64)(this[this.myTable.ColumnPartnerKey])) != value)))
+                {
+                    this[this.myTable.ColumnPartnerKey] = value;
+                }
+            }
+        }
+
+        /// set default values
+        public virtual void InitValues()
+        {
+            this[this.myTable.ColumnPartnerKey.Ordinal] = 0;
+        }
+
+        /// test for NULL value
+        public bool IsPartnerKeyNull()
+        {
+            return this.IsNull(this.myTable.ColumnPartnerKey);
+        }
+
+        /// assign NULL value
+        public void SetPartnerKeyNull()
+        {
+            this.SetNull(this.myTable.ColumnPartnerKey);
+        }
+    }
+
+    ///
+    [Serializable()]
+    public class PartnerEditTDSPartnerTypeChangeFamilyMembersPromotionTable : TTypedDataTable
+    {
+        /// This is the partner key assigned to each partner. It consists of the fund id followed by a computer generated six digit number.
+        public DataColumn ColumnPartnerKey;
+        ///
+        public DataColumn ColumnTypeCode;
+        ///
+        public DataColumn ColumnAddTypeCode;
+        ///
+        public DataColumn ColumnRemoveTypeCode;
+
+        /// TableId for Ict.Common.Data generic functions
+        public static short TableId = -1;
+
+        private static bool FInitInfoValues = InitInfoValues();
+        private static bool InitInfoValues()
+        {
+            TableInfo.Add(TableId, new TTypedTableInfo(TableId, "PartnerEditTDSPartnerTypeChangeFamilyMembersPromotion", "PartnerEditTDSPartnerTypeChangeFamilyMembersPromotion",
+                new TTypedColumnInfo[] {
+                    new TTypedColumnInfo(0, "PartnerKey", "p_partner_key_n", OdbcType.Decimal, 10, true),
+                    new TTypedColumnInfo(1, "TypeCode", "TypeCode", OdbcType.Int, -1, false),
+                    new TTypedColumnInfo(2, "AddTypeCode", "AddTypeCode", OdbcType.Int, -1, false),
+                    new TTypedColumnInfo(3, "RemoveTypeCode", "RemoveTypeCode", OdbcType.Int, -1, false)
+                },
+                new int[] {
+
+                }));
+            return true;
+        }
+
+        /// constructor
+        public PartnerEditTDSPartnerTypeChangeFamilyMembersPromotionTable() :
+                base("PartnerEditTDSPartnerTypeChangeFamilyMembersPromotion")
+        {
+        }
+
+        /// constructor
+        public PartnerEditTDSPartnerTypeChangeFamilyMembersPromotionTable(string ATablename) :
+                base(ATablename)
+        {
+        }
+
+        /// constructor for serialization
+        public PartnerEditTDSPartnerTypeChangeFamilyMembersPromotionTable(System.Runtime.Serialization.SerializationInfo info, System.Runtime.Serialization.StreamingContext context) :
+                base(info, context)
+        {
+        }
+
+        /// create the columns
+        protected override void InitClass()
+        {
+            this.Columns.Add(new System.Data.DataColumn("p_partner_key_n", typeof(Int64)));
+            this.Columns.Add(new System.Data.DataColumn("TypeCode", typeof(string)));
+            this.Columns.Add(new System.Data.DataColumn("AddTypeCode", typeof(bool)));
+            this.Columns.Add(new System.Data.DataColumn("RemoveTypeCode", typeof(bool)));
+        }
+
+        /// assign columns to properties, set primary key
+        public override void InitVars()
+        {
+            this.ColumnPartnerKey = this.Columns["p_partner_key_n"];
+            this.ColumnTypeCode = this.Columns["TypeCode"];
+            this.ColumnAddTypeCode = this.Columns["AddTypeCode"];
+            this.ColumnRemoveTypeCode = this.Columns["RemoveTypeCode"];
+        }
+
+        /// Access a typed row by index
+        public PartnerEditTDSPartnerTypeChangeFamilyMembersPromotionRow this[int i]
+        {
+            get
+            {
+                return ((PartnerEditTDSPartnerTypeChangeFamilyMembersPromotionRow)(this.Rows[i]));
+            }
+        }
+
+        /// create a new typed row
+        public PartnerEditTDSPartnerTypeChangeFamilyMembersPromotionRow NewRowTyped(bool AWithDefaultValues)
+        {
+            PartnerEditTDSPartnerTypeChangeFamilyMembersPromotionRow ret = ((PartnerEditTDSPartnerTypeChangeFamilyMembersPromotionRow)(this.NewRow()));
+            if ((AWithDefaultValues == true))
+            {
+                ret.InitValues();
+            }
+            return ret;
+        }
+
+        /// create a new typed row, always with default values
+        public PartnerEditTDSPartnerTypeChangeFamilyMembersPromotionRow NewRowTyped()
+        {
+            return this.NewRowTyped(true);
+        }
+
+        /// new typed row using DataRowBuilder
+        protected override System.Data.DataRow NewRowFromBuilder(System.Data.DataRowBuilder builder)
+        {
+            return new PartnerEditTDSPartnerTypeChangeFamilyMembersPromotionRow(builder);
+        }
+
+        /// get typed set of changes
+        public PartnerEditTDSPartnerTypeChangeFamilyMembersPromotionTable GetChangesTyped()
+        {
+            return ((PartnerEditTDSPartnerTypeChangeFamilyMembersPromotionTable)(base.GetChangesTypedInternal()));
+        }
+
+        /// get an odbc parameter for the given column
+        public override OdbcParameter CreateOdbcParameter(Int32 AColumnNr)
+        {
+            return CreateOdbcParameter(TableId, AColumnNr);
+        }
+
+        /// get the name of the field in the database for this column
+        public static string GetPartnerKeyDBName()
+        {
+            return "p_partner_key_n";
+        }
+
+        /// get character length for column
+        public static short GetPartnerKeyLength()
+        {
+            return 10;
+        }
+
+        /// get the name of the field in the database for this column
+        public static string GetTypeCodeDBName()
+        {
+            return "TypeCode";
+        }
+
+        /// get character length for column
+        public static short GetTypeCodeLength()
+        {
+            return -1;
+        }
+
+        /// get the name of the field in the database for this column
+        public static string GetAddTypeCodeDBName()
+        {
+            return "AddTypeCode";
+        }
+
+        /// get character length for column
+        public static short GetAddTypeCodeLength()
+        {
+            return -1;
+        }
+
+        /// get the name of the field in the database for this column
+        public static string GetRemoveTypeCodeDBName()
+        {
+            return "RemoveTypeCode";
+        }
+
+        /// get character length for column
+        public static short GetRemoveTypeCodeLength()
+        {
+            return -1;
+        }
+
+    }
+
+    ///
+    [Serializable()]
+    public class PartnerEditTDSPartnerTypeChangeFamilyMembersPromotionRow : System.Data.DataRow
+    {
+        private PartnerEditTDSPartnerTypeChangeFamilyMembersPromotionTable myTable;
+
+        /// Constructor
+        public PartnerEditTDSPartnerTypeChangeFamilyMembersPromotionRow(System.Data.DataRowBuilder rb) :
+                base(rb)
+        {
+            this.myTable = ((PartnerEditTDSPartnerTypeChangeFamilyMembersPromotionTable)(this.Table));
+        }
+
+        /// This is the partner key assigned to each partner. It consists of the fund id followed by a computer generated six digit number.
+        public Int64 PartnerKey
+        {
+            get
+            {
+                object ret;
+                ret = this[this.myTable.ColumnPartnerKey.Ordinal];
+                if ((ret == System.DBNull.Value))
+                {
+                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                }
+                else
+                {
+                    return ((Int64)(ret));
+                }
+            }
+            set
+            {
+                if ((this.IsNull(this.myTable.ColumnPartnerKey)
+                            || (((Int64)(this[this.myTable.ColumnPartnerKey])) != value)))
+                {
+                    this[this.myTable.ColumnPartnerKey] = value;
+                }
+            }
+        }
+
+        ///
+        public string TypeCode
+        {
+            get
+            {
+                object ret;
+                ret = this[this.myTable.ColumnTypeCode.Ordinal];
+                if ((ret == System.DBNull.Value))
+                {
+                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                }
+                else
+                {
+                    return ((string)(ret));
+                }
+            }
+            set
+            {
+                if ((this.IsNull(this.myTable.ColumnTypeCode)
+                            || (((string)(this[this.myTable.ColumnTypeCode])) != value)))
+                {
+                    this[this.myTable.ColumnTypeCode] = value;
+                }
+            }
+        }
+
+        ///
+        public bool AddTypeCode
+        {
+            get
+            {
+                object ret;
+                ret = this[this.myTable.ColumnAddTypeCode.Ordinal];
+                if ((ret == System.DBNull.Value))
+                {
+                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                }
+                else
+                {
+                    return ((bool)(ret));
+                }
+            }
+            set
+            {
+                if ((this.IsNull(this.myTable.ColumnAddTypeCode)
+                            || (((bool)(this[this.myTable.ColumnAddTypeCode])) != value)))
+                {
+                    this[this.myTable.ColumnAddTypeCode] = value;
+                }
+            }
+        }
+
+        ///
+        public bool RemoveTypeCode
+        {
+            get
+            {
+                object ret;
+                ret = this[this.myTable.ColumnRemoveTypeCode.Ordinal];
+                if ((ret == System.DBNull.Value))
+                {
+                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                }
+                else
+                {
+                    return ((bool)(ret));
+                }
+            }
+            set
+            {
+                if ((this.IsNull(this.myTable.ColumnRemoveTypeCode)
+                            || (((bool)(this[this.myTable.ColumnRemoveTypeCode])) != value)))
+                {
+                    this[this.myTable.ColumnRemoveTypeCode] = value;
+                }
+            }
+        }
+
+        /// set default values
+        public virtual void InitValues()
+        {
+            this[this.myTable.ColumnPartnerKey.Ordinal] = 0;
+            this.SetNull(this.myTable.ColumnTypeCode);
+            this.SetNull(this.myTable.ColumnAddTypeCode);
+            this.SetNull(this.myTable.ColumnRemoveTypeCode);
+        }
+
+        /// test for NULL value
+        public bool IsPartnerKeyNull()
+        {
+            return this.IsNull(this.myTable.ColumnPartnerKey);
+        }
+
+        /// assign NULL value
+        public void SetPartnerKeyNull()
+        {
+            this.SetNull(this.myTable.ColumnPartnerKey);
+        }
+
+        /// test for NULL value
+        public bool IsTypeCodeNull()
+        {
+            return this.IsNull(this.myTable.ColumnTypeCode);
+        }
+
+        /// assign NULL value
+        public void SetTypeCodeNull()
+        {
+            this.SetNull(this.myTable.ColumnTypeCode);
+        }
+
+        /// test for NULL value
+        public bool IsAddTypeCodeNull()
+        {
+            return this.IsNull(this.myTable.ColumnAddTypeCode);
+        }
+
+        /// assign NULL value
+        public void SetAddTypeCodeNull()
+        {
+            this.SetNull(this.myTable.ColumnAddTypeCode);
+        }
+
+        /// test for NULL value
+        public bool IsRemoveTypeCodeNull()
+        {
+            return this.IsNull(this.myTable.ColumnRemoveTypeCode);
+        }
+
+        /// assign NULL value
+        public void SetRemoveTypeCodeNull()
+        {
+            this.SetNull(this.myTable.ColumnRemoveTypeCode);
+        }
+    }
+
+     /// auto generated
+    [Serializable()]
+    public class PartnerAddressAggregateTDS : TTypedDataSet
+    {
+
+        private PartnerAddressAggregateTDSPLocationTable TableSimilarLocationParameters;
+        private PartnerAddressAggregateTDSChangePromotionParametersTable TableChangePromotionParameters;
+        private PartnerAddressAggregateTDSAddressAddedOrChangedPromotionTable TableAddressAddedOrChangedPromotion;
+
+        /// auto generated
+        public PartnerAddressAggregateTDS() :
+                base("PartnerAddressAggregateTDS")
+        {
+        }
+
+        /// auto generated for serialization
+        public PartnerAddressAggregateTDS(System.Runtime.Serialization.SerializationInfo info, System.Runtime.Serialization.StreamingContext context) :
+                base(info, context)
+        {
+        }
+
+        /// auto generated
+        public PartnerAddressAggregateTDS(string ADatasetName) :
+                base(ADatasetName)
+        {
+        }
+
+        /// auto generated
+        public PartnerAddressAggregateTDSPLocationTable SimilarLocationParameters
+        {
+            get
+            {
+                return this.TableSimilarLocationParameters;
+            }
+        }
+
+        /// auto generated
+        public PartnerAddressAggregateTDSChangePromotionParametersTable ChangePromotionParameters
+        {
+            get
+            {
+                return this.TableChangePromotionParameters;
+            }
+        }
+
+        /// auto generated
+        public PartnerAddressAggregateTDSAddressAddedOrChangedPromotionTable AddressAddedOrChangedPromotion
+        {
+            get
+            {
+                return this.TableAddressAddedOrChangedPromotion;
+            }
+        }
+
+        /// auto generated
+        public new virtual PartnerAddressAggregateTDS GetChangesTyped(bool removeEmptyTables)
+        {
+            return ((PartnerAddressAggregateTDS)(base.GetChangesTyped(removeEmptyTables)));
+        }
+
+        /// auto generated
+        protected override void InitTables()
+        {
+            this.Tables.Add(new PartnerAddressAggregateTDSPLocationTable("SimilarLocationParameters"));
+            this.Tables.Add(new PartnerAddressAggregateTDSChangePromotionParametersTable("ChangePromotionParameters"));
+            this.Tables.Add(new PartnerAddressAggregateTDSAddressAddedOrChangedPromotionTable("AddressAddedOrChangedPromotion"));
+        }
+
+        /// auto generated
+        protected override void InitTables(System.Data.DataSet ds)
+        {
+            if ((ds.Tables.IndexOf("SimilarLocationParameters") != -1))
+            {
+                this.Tables.Add(new PartnerAddressAggregateTDSPLocationTable("SimilarLocationParameters"));
+            }
+            if ((ds.Tables.IndexOf("ChangePromotionParameters") != -1))
+            {
+                this.Tables.Add(new PartnerAddressAggregateTDSChangePromotionParametersTable("ChangePromotionParameters"));
+            }
+            if ((ds.Tables.IndexOf("AddressAddedOrChangedPromotion") != -1))
+            {
+                this.Tables.Add(new PartnerAddressAggregateTDSAddressAddedOrChangedPromotionTable("AddressAddedOrChangedPromotion"));
+            }
+        }
+
+        /// auto generated
+        protected override void MapTables()
+        {
+            this.InitVars();
+            base.MapTables();
+            if ((this.TableSimilarLocationParameters != null))
+            {
+                this.TableSimilarLocationParameters.InitVars();
+            }
+            if ((this.TableChangePromotionParameters != null))
+            {
+                this.TableChangePromotionParameters.InitVars();
+            }
+            if ((this.TableAddressAddedOrChangedPromotion != null))
+            {
+                this.TableAddressAddedOrChangedPromotion.InitVars();
+            }
+        }
+
+        /// auto generated
+        public override void InitVars()
+        {
+            this.DataSetName = "PartnerAddressAggregateTDS";
+            this.TableSimilarLocationParameters = ((PartnerAddressAggregateTDSPLocationTable)(this.Tables["SimilarLocationParameters"]));
+            this.TableChangePromotionParameters = ((PartnerAddressAggregateTDSChangePromotionParametersTable)(this.Tables["ChangePromotionParameters"]));
+            this.TableAddressAddedOrChangedPromotion = ((PartnerAddressAggregateTDSAddressAddedOrChangedPromotionTable)(this.Tables["AddressAddedOrChangedPromotion"]));
+        }
+
+        /// auto generated
+        protected override void InitConstraints()
+        {
+
+        }
+    }
+
+    /// Address and other data related to that address.
+    [Serializable()]
+    public class PartnerAddressAggregateTDSPLocationTable : TTypedDataTable
+    {
+        /// This is the key that tell what site created this location, it will help to merge addresses when doing imports
+        public DataColumn ColumnSiteKey;
+        ///
+        public DataColumn ColumnLocationKey;
+        /// The name of the building
+        public DataColumn ColumnBuilding1;
+        /// The name of the building (continued)
+        public DataColumn ColumnBuilding2;
+        /// The name of the street that the house is located on
+        public DataColumn ColumnStreetName;
+        /// This is the first element of an address
+        public DataColumn ColumnLocality;
+        /// The name of the suburb
+        public DataColumn ColumnSuburb;
+        /// This can be a post town or city
+        public DataColumn ColumnCity;
+        /// This can be a county (UK), a state (US), province (CDN), canton (CH) etc.
+        public DataColumn ColumnCounty;
+        /// This is the national post code
+        public DataColumn ColumnPostalCode;
+        /// This is a code which identifies a country.
+        /// It is taken from the ISO 3166-1-alpha-2 code elements.
+        public DataColumn ColumnCountryCode;
+        /// This is the third element of an address (if required)
+        public DataColumn ColumnAddress3;
+        /// The latitude of the location; a number between -90 and +90; precision is 6 digits (11cm)
+        public DataColumn ColumnGeoLatitude;
+        /// The longitude of the location; a number between -180 and +180; precision is 6 digits (11cm)
+        public DataColumn ColumnGeoLongitude;
+        /// The distance in km of this location to the location 0 if location 0 was on the same longitude; this is for improving query performance
+        public DataColumn ColumnGeoKmX;
+        /// The distance in km of this location to the location 0 if location 0 was on the same latitude; this is for improving query performance
+        public DataColumn ColumnGeoKmY;
+        /// The accuracy of the stored geo data;                  -2: server did not respond;                 -1: not processed yet;                 0: Unknown Location;                 1: Country level accuracy;                 2: Region;                 3: Sub-Region;                 4: Town/City/Village;                 5: Post code;                 6: Street;                 7: Intersection;                 8: Address level accuracy
+        public DataColumn ColumnGeoAccuracy;
+        /// Indicates whether or not the location has restricted access. If it does then the access will be controlled by s_group_location.
+        public DataColumn ColumnRestricted;
+        /// The date the record was created.
+        public DataColumn ColumnDateCreated;
+        /// User ID of who created this record.
+        public DataColumn ColumnCreatedBy;
+        /// The date the record was modified.
+        public DataColumn ColumnDateModified;
+        /// User ID of who last modified this record.
+        public DataColumn ColumnModifiedBy;
+        /// This identifies the current version of the record.
+        public DataColumn ColumnModificationId;
+        ///
+        public DataColumn ColumnSiteKeyOfSimilarLocation;
+        ///
+        public DataColumn ColumnLocationKeyOfSimilarLocation;
+        ///
+        public DataColumn ColumnUsedByNOtherPartners;
+        ///
+        public DataColumn ColumnAnswerReuse;
+        ///
+        public DataColumn ColumnAnswerProcessedClientSide;
+        ///
+        public DataColumn ColumnAnswerProcessedServerSide;
+
+        /// TableId for Ict.Common.Data generic functions
+        public static short TableId = 40;
+
+        private static bool FInitInfoValues = InitInfoValues();
+        private static bool InitInfoValues()
+        {
+            TableInfo.Add(TableId, new TTypedTableInfo(TableId, "PartnerAddressAggregateTDSPLocation", "PartnerAddressAggregateTDSPLocation",
+                new TTypedColumnInfo[] {
+                    new TTypedColumnInfo(0, "SiteKey", "p_site_key_n", OdbcType.Decimal, 10, true),
+                    new TTypedColumnInfo(1, "LocationKey", "p_location_key_i", OdbcType.Int, -1, true),
+                    new TTypedColumnInfo(2, "Building1", "p_building_1_c", OdbcType.VarChar, 100, false),
+                    new TTypedColumnInfo(3, "Building2", "p_building_2_c", OdbcType.VarChar, 100, false),
+                    new TTypedColumnInfo(4, "StreetName", "p_street_name_c", OdbcType.VarChar, 100, false),
+                    new TTypedColumnInfo(5, "Locality", "p_locality_c", OdbcType.VarChar, 100, false),
+                    new TTypedColumnInfo(6, "Suburb", "p_suburb_c", OdbcType.VarChar, 100, false),
+                    new TTypedColumnInfo(7, "City", "p_city_c", OdbcType.VarChar, 64, false),
+                    new TTypedColumnInfo(8, "County", "p_county_c", OdbcType.VarChar, 64, false),
+                    new TTypedColumnInfo(9, "PostalCode", "p_postal_code_c", OdbcType.VarChar, 40, false),
+                    new TTypedColumnInfo(10, "CountryCode", "p_country_code_c", OdbcType.VarChar, 8, false),
+                    new TTypedColumnInfo(11, "Address3", "p_address_3_c", OdbcType.VarChar, 100, false),
+                    new TTypedColumnInfo(12, "GeoLatitude", "p_geo_latitude_n", OdbcType.Decimal, 9, false),
+                    new TTypedColumnInfo(13, "GeoLongitude", "p_geo_longitude_n", OdbcType.Decimal, 9, false),
+                    new TTypedColumnInfo(14, "GeoKmX", "p_geo_km_x_i", OdbcType.Int, -1, false),
+                    new TTypedColumnInfo(15, "GeoKmY", "p_geo_km_y_i", OdbcType.Int, -1, false),
+                    new TTypedColumnInfo(16, "GeoAccuracy", "p_geo_accuracy_i", OdbcType.Int, -1, false),
+                    new TTypedColumnInfo(17, "Restricted", "p_restricted_l", OdbcType.Bit, -1, false),
+                    new TTypedColumnInfo(18, "DateCreated", "s_date_created_d", OdbcType.Date, -1, false),
+                    new TTypedColumnInfo(19, "CreatedBy", "s_created_by_c", OdbcType.VarChar, 20, false),
+                    new TTypedColumnInfo(20, "DateModified", "s_date_modified_d", OdbcType.Date, -1, false),
+                    new TTypedColumnInfo(21, "ModifiedBy", "s_modified_by_c", OdbcType.VarChar, 20, false),
+                    new TTypedColumnInfo(22, "ModificationId", "s_modification_id_c", OdbcType.VarChar, 150, false),
+                    new TTypedColumnInfo(23, "SiteKeyOfSimilarLocation", "SiteKeyOfSimilarLocation", OdbcType.Int, -1, false),
+                    new TTypedColumnInfo(24, "LocationKeyOfSimilarLocation", "LocationKeyOfSimilarLocation", OdbcType.Int, -1, false),
+                    new TTypedColumnInfo(25, "UsedByNOtherPartners", "UsedByNOtherPartners", OdbcType.Int, -1, false),
+                    new TTypedColumnInfo(26, "AnswerReuse", "AnswerReuse", OdbcType.Int, -1, false),
+                    new TTypedColumnInfo(27, "AnswerProcessedClientSide", "AnswerProcessedClientSide", OdbcType.Int, -1, false),
+                    new TTypedColumnInfo(28, "AnswerProcessedServerSide", "AnswerProcessedServerSide", OdbcType.Int, -1, false)
+                },
+                new int[] {
+                    0, 1
+                }));
+            return true;
+        }
+
+        /// constructor
+        public PartnerAddressAggregateTDSPLocationTable() :
+                base("PartnerAddressAggregateTDSPLocation")
+        {
+        }
+
+        /// constructor
+        public PartnerAddressAggregateTDSPLocationTable(string ATablename) :
+                base(ATablename)
+        {
+        }
+
+        /// constructor for serialization
+        public PartnerAddressAggregateTDSPLocationTable(System.Runtime.Serialization.SerializationInfo info, System.Runtime.Serialization.StreamingContext context) :
+                base(info, context)
+        {
+        }
+
+        /// create the columns
+        protected override void InitClass()
+        {
+            this.Columns.Add(new System.Data.DataColumn("p_site_key_n", typeof(Int64)));
+            this.Columns.Add(new System.Data.DataColumn("p_location_key_i", typeof(Int32)));
+            this.Columns.Add(new System.Data.DataColumn("p_building_1_c", typeof(String)));
+            this.Columns.Add(new System.Data.DataColumn("p_building_2_c", typeof(String)));
+            this.Columns.Add(new System.Data.DataColumn("p_street_name_c", typeof(String)));
+            this.Columns.Add(new System.Data.DataColumn("p_locality_c", typeof(String)));
+            this.Columns.Add(new System.Data.DataColumn("p_suburb_c", typeof(String)));
+            this.Columns.Add(new System.Data.DataColumn("p_city_c", typeof(String)));
+            this.Columns.Add(new System.Data.DataColumn("p_county_c", typeof(String)));
+            this.Columns.Add(new System.Data.DataColumn("p_postal_code_c", typeof(String)));
+            this.Columns.Add(new System.Data.DataColumn("p_country_code_c", typeof(String)));
+            this.Columns.Add(new System.Data.DataColumn("p_address_3_c", typeof(String)));
+            this.Columns.Add(new System.Data.DataColumn("p_geo_latitude_n", typeof(Decimal)));
+            this.Columns.Add(new System.Data.DataColumn("p_geo_longitude_n", typeof(Decimal)));
+            this.Columns.Add(new System.Data.DataColumn("p_geo_km_x_i", typeof(Int32)));
+            this.Columns.Add(new System.Data.DataColumn("p_geo_km_y_i", typeof(Int32)));
+            this.Columns.Add(new System.Data.DataColumn("p_geo_accuracy_i", typeof(Int32)));
+            this.Columns.Add(new System.Data.DataColumn("p_restricted_l", typeof(Boolean)));
+            this.Columns.Add(new System.Data.DataColumn("s_date_created_d", typeof(System.DateTime)));
+            this.Columns.Add(new System.Data.DataColumn("s_created_by_c", typeof(String)));
+            this.Columns.Add(new System.Data.DataColumn("s_date_modified_d", typeof(System.DateTime)));
+            this.Columns.Add(new System.Data.DataColumn("s_modified_by_c", typeof(String)));
+            this.Columns.Add(new System.Data.DataColumn("s_modification_id_c", typeof(String)));
+            this.Columns.Add(new System.Data.DataColumn("SiteKeyOfSimilarLocation", typeof(Int64)));
+            this.Columns.Add(new System.Data.DataColumn("LocationKeyOfSimilarLocation", typeof(Int32)));
+            this.Columns.Add(new System.Data.DataColumn("UsedByNOtherPartners", typeof(Int32)));
+            this.Columns.Add(new System.Data.DataColumn("AnswerReuse", typeof(bool)));
+            this.Columns.Add(new System.Data.DataColumn("AnswerProcessedClientSide", typeof(bool)));
+            this.Columns.Add(new System.Data.DataColumn("AnswerProcessedServerSide", typeof(bool)));
+        }
+
+        /// assign columns to properties, set primary key
+        public override void InitVars()
+        {
+            this.ColumnSiteKey = this.Columns["p_site_key_n"];
+            this.ColumnLocationKey = this.Columns["p_location_key_i"];
+            this.ColumnBuilding1 = this.Columns["p_building_1_c"];
+            this.ColumnBuilding2 = this.Columns["p_building_2_c"];
+            this.ColumnStreetName = this.Columns["p_street_name_c"];
+            this.ColumnLocality = this.Columns["p_locality_c"];
+            this.ColumnSuburb = this.Columns["p_suburb_c"];
+            this.ColumnCity = this.Columns["p_city_c"];
+            this.ColumnCounty = this.Columns["p_county_c"];
+            this.ColumnPostalCode = this.Columns["p_postal_code_c"];
+            this.ColumnCountryCode = this.Columns["p_country_code_c"];
+            this.ColumnAddress3 = this.Columns["p_address_3_c"];
+            this.ColumnGeoLatitude = this.Columns["p_geo_latitude_n"];
+            this.ColumnGeoLongitude = this.Columns["p_geo_longitude_n"];
+            this.ColumnGeoKmX = this.Columns["p_geo_km_x_i"];
+            this.ColumnGeoKmY = this.Columns["p_geo_km_y_i"];
+            this.ColumnGeoAccuracy = this.Columns["p_geo_accuracy_i"];
+            this.ColumnRestricted = this.Columns["p_restricted_l"];
+            this.ColumnDateCreated = this.Columns["s_date_created_d"];
+            this.ColumnCreatedBy = this.Columns["s_created_by_c"];
+            this.ColumnDateModified = this.Columns["s_date_modified_d"];
+            this.ColumnModifiedBy = this.Columns["s_modified_by_c"];
+            this.ColumnModificationId = this.Columns["s_modification_id_c"];
             this.ColumnSiteKeyOfSimilarLocation = this.Columns["SiteKeyOfSimilarLocation"];
             this.ColumnLocationKeyOfSimilarLocation = this.Columns["LocationKeyOfSimilarLocation"];
             this.ColumnUsedByNOtherPartners = this.Columns["UsedByNOtherPartners"];
@@ -4269,82 +7758,1014 @@ namespace Ict.Petra.Shared.MPartner.Partner.Data
             this.ColumnAnswerProcessedClientSide = this.Columns["AnswerProcessedClientSide"];
             this.ColumnAnswerProcessedServerSide = this.Columns["AnswerProcessedServerSide"];
         }
-        
-        /// create a new typed row
-        public new PartnerAddressAggregateTDSSimilarLocationParametersRow NewRowTyped(bool AWithDefaultValues)
+
+        /// Access a typed row by index
+        public PartnerAddressAggregateTDSPLocationRow this[int i]
         {
-            PartnerAddressAggregateTDSSimilarLocationParametersRow ret = ((PartnerAddressAggregateTDSSimilarLocationParametersRow)(this.NewRow()));
+            get
+            {
+                return ((PartnerAddressAggregateTDSPLocationRow)(this.Rows[i]));
+            }
+        }
+
+        /// create a new typed row
+        public PartnerAddressAggregateTDSPLocationRow NewRowTyped(bool AWithDefaultValues)
+        {
+            PartnerAddressAggregateTDSPLocationRow ret = ((PartnerAddressAggregateTDSPLocationRow)(this.NewRow()));
             if ((AWithDefaultValues == true))
             {
                 ret.InitValues();
             }
             return ret;
         }
-        
+
+        /// create a new typed row, always with default values
+        public PartnerAddressAggregateTDSPLocationRow NewRowTyped()
+        {
+            return this.NewRowTyped(true);
+        }
+
         /// new typed row using DataRowBuilder
         protected override System.Data.DataRow NewRowFromBuilder(System.Data.DataRowBuilder builder)
         {
-            return new PartnerAddressAggregateTDSSimilarLocationParametersRow(builder);
+            return new PartnerAddressAggregateTDSPLocationRow(builder);
         }
-        
-        /// create the columns
-        protected override void InitClass()
+
+        /// get typed set of changes
+        public PartnerAddressAggregateTDSPLocationTable GetChangesTyped()
         {
-            base.InitClass();
-            this.Columns.Add(new System.Data.DataColumn("SiteKeyOfSimilarLocation", typeof(Int64)));
-            this.Columns.Add(new System.Data.DataColumn("LocationKeyOfSimilarLocation", typeof(Int32)));
-            this.Columns.Add(new System.Data.DataColumn("UsedByNOtherPartners", typeof(Int32)));
-            this.Columns.Add(new System.Data.DataColumn("AnswerReuse", typeof(Boolean)));
-            this.Columns.Add(new System.Data.DataColumn("AnswerProcessedClientSide", typeof(Boolean)));
-            this.Columns.Add(new System.Data.DataColumn("AnswerProcessedServerSide", typeof(Boolean)));
+            return ((PartnerAddressAggregateTDSPLocationTable)(base.GetChangesTypedInternal()));
         }
-        
-        /// prepare odbc parameters for given column
-        public override OdbcParameter CreateOdbcParameter(DataColumn ACol)
+
+        /// get an odbc parameter for the given column
+        public override OdbcParameter CreateOdbcParameter(Int32 AColumnNr)
         {
-            if ((ACol == ColumnSiteKeyOfSimilarLocation))
-            {
-                return new System.Data.Odbc.OdbcParameter("", OdbcType.Int);
-            }
-            if ((ACol == ColumnLocationKeyOfSimilarLocation))
-            {
-                return new System.Data.Odbc.OdbcParameter("", OdbcType.Int);
-            }
-            if ((ACol == ColumnUsedByNOtherPartners))
-            {
-                return new System.Data.Odbc.OdbcParameter("", OdbcType.Int);
-            }
-            if ((ACol == ColumnAnswerReuse))
-            {
-                return new System.Data.Odbc.OdbcParameter("", OdbcType.Int);
-            }
-            if ((ACol == ColumnAnswerProcessedClientSide))
-            {
-                return new System.Data.Odbc.OdbcParameter("", OdbcType.Int);
-            }
-            if ((ACol == ColumnAnswerProcessedServerSide))
-            {
-                return new System.Data.Odbc.OdbcParameter("", OdbcType.Int);
-            }
-            return base.CreateOdbcParameter(ACol);
+            return CreateOdbcParameter(TableId, AColumnNr);
         }
+
+        /// get the name of the field in the database for this column
+        public static string GetSiteKeyDBName()
+        {
+            return "p_site_key_n";
+        }
+
+        /// get character length for column
+        public static short GetSiteKeyLength()
+        {
+            return 10;
+        }
+
+        /// get the name of the field in the database for this column
+        public static string GetLocationKeyDBName()
+        {
+            return "p_location_key_i";
+        }
+
+        /// get character length for column
+        public static short GetLocationKeyLength()
+        {
+            return -1;
+        }
+
+        /// get the name of the field in the database for this column
+        public static string GetBuilding1DBName()
+        {
+            return "p_building_1_c";
+        }
+
+        /// get character length for column
+        public static short GetBuilding1Length()
+        {
+            return 100;
+        }
+
+        /// get the name of the field in the database for this column
+        public static string GetBuilding2DBName()
+        {
+            return "p_building_2_c";
+        }
+
+        /// get character length for column
+        public static short GetBuilding2Length()
+        {
+            return 100;
+        }
+
+        /// get the name of the field in the database for this column
+        public static string GetStreetNameDBName()
+        {
+            return "p_street_name_c";
+        }
+
+        /// get character length for column
+        public static short GetStreetNameLength()
+        {
+            return 100;
+        }
+
+        /// get the name of the field in the database for this column
+        public static string GetLocalityDBName()
+        {
+            return "p_locality_c";
+        }
+
+        /// get character length for column
+        public static short GetLocalityLength()
+        {
+            return 100;
+        }
+
+        /// get the name of the field in the database for this column
+        public static string GetSuburbDBName()
+        {
+            return "p_suburb_c";
+        }
+
+        /// get character length for column
+        public static short GetSuburbLength()
+        {
+            return 100;
+        }
+
+        /// get the name of the field in the database for this column
+        public static string GetCityDBName()
+        {
+            return "p_city_c";
+        }
+
+        /// get character length for column
+        public static short GetCityLength()
+        {
+            return 64;
+        }
+
+        /// get the name of the field in the database for this column
+        public static string GetCountyDBName()
+        {
+            return "p_county_c";
+        }
+
+        /// get character length for column
+        public static short GetCountyLength()
+        {
+            return 64;
+        }
+
+        /// get the name of the field in the database for this column
+        public static string GetPostalCodeDBName()
+        {
+            return "p_postal_code_c";
+        }
+
+        /// get character length for column
+        public static short GetPostalCodeLength()
+        {
+            return 40;
+        }
+
+        /// get the name of the field in the database for this column
+        public static string GetCountryCodeDBName()
+        {
+            return "p_country_code_c";
+        }
+
+        /// get character length for column
+        public static short GetCountryCodeLength()
+        {
+            return 8;
+        }
+
+        /// get the name of the field in the database for this column
+        public static string GetAddress3DBName()
+        {
+            return "p_address_3_c";
+        }
+
+        /// get character length for column
+        public static short GetAddress3Length()
+        {
+            return 100;
+        }
+
+        /// get the name of the field in the database for this column
+        public static string GetGeoLatitudeDBName()
+        {
+            return "p_geo_latitude_n";
+        }
+
+        /// get character length for column
+        public static short GetGeoLatitudeLength()
+        {
+            return 9;
+        }
+
+        /// get the name of the field in the database for this column
+        public static string GetGeoLongitudeDBName()
+        {
+            return "p_geo_longitude_n";
+        }
+
+        /// get character length for column
+        public static short GetGeoLongitudeLength()
+        {
+            return 9;
+        }
+
+        /// get the name of the field in the database for this column
+        public static string GetGeoKmXDBName()
+        {
+            return "p_geo_km_x_i";
+        }
+
+        /// get character length for column
+        public static short GetGeoKmXLength()
+        {
+            return -1;
+        }
+
+        /// get the name of the field in the database for this column
+        public static string GetGeoKmYDBName()
+        {
+            return "p_geo_km_y_i";
+        }
+
+        /// get character length for column
+        public static short GetGeoKmYLength()
+        {
+            return -1;
+        }
+
+        /// get the name of the field in the database for this column
+        public static string GetGeoAccuracyDBName()
+        {
+            return "p_geo_accuracy_i";
+        }
+
+        /// get character length for column
+        public static short GetGeoAccuracyLength()
+        {
+            return -1;
+        }
+
+        /// get the name of the field in the database for this column
+        public static string GetRestrictedDBName()
+        {
+            return "p_restricted_l";
+        }
+
+        /// get character length for column
+        public static short GetRestrictedLength()
+        {
+            return -1;
+        }
+
+        /// get the name of the field in the database for this column
+        public static string GetDateCreatedDBName()
+        {
+            return "s_date_created_d";
+        }
+
+        /// get character length for column
+        public static short GetDateCreatedLength()
+        {
+            return -1;
+        }
+
+        /// get the name of the field in the database for this column
+        public static string GetCreatedByDBName()
+        {
+            return "s_created_by_c";
+        }
+
+        /// get character length for column
+        public static short GetCreatedByLength()
+        {
+            return 20;
+        }
+
+        /// get the name of the field in the database for this column
+        public static string GetDateModifiedDBName()
+        {
+            return "s_date_modified_d";
+        }
+
+        /// get character length for column
+        public static short GetDateModifiedLength()
+        {
+            return -1;
+        }
+
+        /// get the name of the field in the database for this column
+        public static string GetModifiedByDBName()
+        {
+            return "s_modified_by_c";
+        }
+
+        /// get character length for column
+        public static short GetModifiedByLength()
+        {
+            return 20;
+        }
+
+        /// get the name of the field in the database for this column
+        public static string GetModificationIdDBName()
+        {
+            return "s_modification_id_c";
+        }
+
+        /// get character length for column
+        public static short GetModificationIdLength()
+        {
+            return 150;
+        }
+
+        /// get the name of the field in the database for this column
+        public static string GetSiteKeyOfSimilarLocationDBName()
+        {
+            return "SiteKeyOfSimilarLocation";
+        }
+
+        /// get character length for column
+        public static short GetSiteKeyOfSimilarLocationLength()
+        {
+            return -1;
+        }
+
+        /// get the name of the field in the database for this column
+        public static string GetLocationKeyOfSimilarLocationDBName()
+        {
+            return "LocationKeyOfSimilarLocation";
+        }
+
+        /// get character length for column
+        public static short GetLocationKeyOfSimilarLocationLength()
+        {
+            return -1;
+        }
+
+        /// get the name of the field in the database for this column
+        public static string GetUsedByNOtherPartnersDBName()
+        {
+            return "UsedByNOtherPartners";
+        }
+
+        /// get character length for column
+        public static short GetUsedByNOtherPartnersLength()
+        {
+            return -1;
+        }
+
+        /// get the name of the field in the database for this column
+        public static string GetAnswerReuseDBName()
+        {
+            return "AnswerReuse";
+        }
+
+        /// get character length for column
+        public static short GetAnswerReuseLength()
+        {
+            return -1;
+        }
+
+        /// get the name of the field in the database for this column
+        public static string GetAnswerProcessedClientSideDBName()
+        {
+            return "AnswerProcessedClientSide";
+        }
+
+        /// get character length for column
+        public static short GetAnswerProcessedClientSideLength()
+        {
+            return -1;
+        }
+
+        /// get the name of the field in the database for this column
+        public static string GetAnswerProcessedServerSideDBName()
+        {
+            return "AnswerProcessedServerSide";
+        }
+
+        /// get character length for column
+        public static short GetAnswerProcessedServerSideLength()
+        {
+            return -1;
+        }
+
     }
-    
-    /// DerivedRow from PLocationRow
+
+    /// Address and other data related to that address.
     [Serializable()]
-    public class PartnerAddressAggregateTDSSimilarLocationParametersRow : PLocationRow
+    public class PartnerAddressAggregateTDSPLocationRow : System.Data.DataRow
     {
-        
-        private PartnerAddressAggregateTDSSimilarLocationParametersTable myTable;
-        
+        private PartnerAddressAggregateTDSPLocationTable myTable;
+
         /// Constructor
-        public PartnerAddressAggregateTDSSimilarLocationParametersRow(System.Data.DataRowBuilder rb) : 
+        public PartnerAddressAggregateTDSPLocationRow(System.Data.DataRowBuilder rb) :
                 base(rb)
         {
-            this.myTable = ((PartnerAddressAggregateTDSSimilarLocationParametersTable)(this.Table));
+            this.myTable = ((PartnerAddressAggregateTDSPLocationTable)(this.Table));
         }
-        
-        /// 
+
+        /// This is the key that tell what site created this location, it will help to merge addresses when doing imports
+        public Int64 SiteKey
+        {
+            get
+            {
+                object ret;
+                ret = this[this.myTable.ColumnSiteKey.Ordinal];
+                if ((ret == System.DBNull.Value))
+                {
+                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                }
+                else
+                {
+                    return ((Int64)(ret));
+                }
+            }
+            set
+            {
+                if ((this.IsNull(this.myTable.ColumnSiteKey)
+                            || (((Int64)(this[this.myTable.ColumnSiteKey])) != value)))
+                {
+                    this[this.myTable.ColumnSiteKey] = value;
+                }
+            }
+        }
+
+        ///
+        public Int32 LocationKey
+        {
+            get
+            {
+                object ret;
+                ret = this[this.myTable.ColumnLocationKey.Ordinal];
+                if ((ret == System.DBNull.Value))
+                {
+                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                }
+                else
+                {
+                    return ((Int32)(ret));
+                }
+            }
+            set
+            {
+                if ((this.IsNull(this.myTable.ColumnLocationKey)
+                            || (((Int32)(this[this.myTable.ColumnLocationKey])) != value)))
+                {
+                    this[this.myTable.ColumnLocationKey] = value;
+                }
+            }
+        }
+
+        /// The name of the building
+        public String Building1
+        {
+            get
+            {
+                object ret;
+                ret = this[this.myTable.ColumnBuilding1.Ordinal];
+                if ((ret == System.DBNull.Value))
+                {
+                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                }
+                else
+                {
+                    return ((String)(ret));
+                }
+            }
+            set
+            {
+                if ((this.IsNull(this.myTable.ColumnBuilding1)
+                            || (((String)(this[this.myTable.ColumnBuilding1])) != value)))
+                {
+                    this[this.myTable.ColumnBuilding1] = value;
+                }
+            }
+        }
+
+        /// The name of the building (continued)
+        public String Building2
+        {
+            get
+            {
+                object ret;
+                ret = this[this.myTable.ColumnBuilding2.Ordinal];
+                if ((ret == System.DBNull.Value))
+                {
+                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                }
+                else
+                {
+                    return ((String)(ret));
+                }
+            }
+            set
+            {
+                if ((this.IsNull(this.myTable.ColumnBuilding2)
+                            || (((String)(this[this.myTable.ColumnBuilding2])) != value)))
+                {
+                    this[this.myTable.ColumnBuilding2] = value;
+                }
+            }
+        }
+
+        /// The name of the street that the house is located on
+        public String StreetName
+        {
+            get
+            {
+                object ret;
+                ret = this[this.myTable.ColumnStreetName.Ordinal];
+                if ((ret == System.DBNull.Value))
+                {
+                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                }
+                else
+                {
+                    return ((String)(ret));
+                }
+            }
+            set
+            {
+                if ((this.IsNull(this.myTable.ColumnStreetName)
+                            || (((String)(this[this.myTable.ColumnStreetName])) != value)))
+                {
+                    this[this.myTable.ColumnStreetName] = value;
+                }
+            }
+        }
+
+        /// This is the first element of an address
+        public String Locality
+        {
+            get
+            {
+                object ret;
+                ret = this[this.myTable.ColumnLocality.Ordinal];
+                if ((ret == System.DBNull.Value))
+                {
+                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                }
+                else
+                {
+                    return ((String)(ret));
+                }
+            }
+            set
+            {
+                if ((this.IsNull(this.myTable.ColumnLocality)
+                            || (((String)(this[this.myTable.ColumnLocality])) != value)))
+                {
+                    this[this.myTable.ColumnLocality] = value;
+                }
+            }
+        }
+
+        /// The name of the suburb
+        public String Suburb
+        {
+            get
+            {
+                object ret;
+                ret = this[this.myTable.ColumnSuburb.Ordinal];
+                if ((ret == System.DBNull.Value))
+                {
+                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                }
+                else
+                {
+                    return ((String)(ret));
+                }
+            }
+            set
+            {
+                if ((this.IsNull(this.myTable.ColumnSuburb)
+                            || (((String)(this[this.myTable.ColumnSuburb])) != value)))
+                {
+                    this[this.myTable.ColumnSuburb] = value;
+                }
+            }
+        }
+
+        /// This can be a post town or city
+        public String City
+        {
+            get
+            {
+                object ret;
+                ret = this[this.myTable.ColumnCity.Ordinal];
+                if ((ret == System.DBNull.Value))
+                {
+                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                }
+                else
+                {
+                    return ((String)(ret));
+                }
+            }
+            set
+            {
+                if ((this.IsNull(this.myTable.ColumnCity)
+                            || (((String)(this[this.myTable.ColumnCity])) != value)))
+                {
+                    this[this.myTable.ColumnCity] = value;
+                }
+            }
+        }
+
+        /// This can be a county (UK), a state (US), province (CDN), canton (CH) etc.
+        public String County
+        {
+            get
+            {
+                object ret;
+                ret = this[this.myTable.ColumnCounty.Ordinal];
+                if ((ret == System.DBNull.Value))
+                {
+                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                }
+                else
+                {
+                    return ((String)(ret));
+                }
+            }
+            set
+            {
+                if ((this.IsNull(this.myTable.ColumnCounty)
+                            || (((String)(this[this.myTable.ColumnCounty])) != value)))
+                {
+                    this[this.myTable.ColumnCounty] = value;
+                }
+            }
+        }
+
+        /// This is the national post code
+        public String PostalCode
+        {
+            get
+            {
+                object ret;
+                ret = this[this.myTable.ColumnPostalCode.Ordinal];
+                if ((ret == System.DBNull.Value))
+                {
+                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                }
+                else
+                {
+                    return ((String)(ret));
+                }
+            }
+            set
+            {
+                if ((this.IsNull(this.myTable.ColumnPostalCode)
+                            || (((String)(this[this.myTable.ColumnPostalCode])) != value)))
+                {
+                    this[this.myTable.ColumnPostalCode] = value;
+                }
+            }
+        }
+
+        /// This is a code which identifies a country.
+        /// It is taken from the ISO 3166-1-alpha-2 code elements.
+        public String CountryCode
+        {
+            get
+            {
+                object ret;
+                ret = this[this.myTable.ColumnCountryCode.Ordinal];
+                if ((ret == System.DBNull.Value))
+                {
+                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                }
+                else
+                {
+                    return ((String)(ret));
+                }
+            }
+            set
+            {
+                if ((this.IsNull(this.myTable.ColumnCountryCode)
+                            || (((String)(this[this.myTable.ColumnCountryCode])) != value)))
+                {
+                    this[this.myTable.ColumnCountryCode] = value;
+                }
+            }
+        }
+
+        /// This is the third element of an address (if required)
+        public String Address3
+        {
+            get
+            {
+                object ret;
+                ret = this[this.myTable.ColumnAddress3.Ordinal];
+                if ((ret == System.DBNull.Value))
+                {
+                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                }
+                else
+                {
+                    return ((String)(ret));
+                }
+            }
+            set
+            {
+                if ((this.IsNull(this.myTable.ColumnAddress3)
+                            || (((String)(this[this.myTable.ColumnAddress3])) != value)))
+                {
+                    this[this.myTable.ColumnAddress3] = value;
+                }
+            }
+        }
+
+        /// The latitude of the location; a number between -90 and +90; precision is 6 digits (11cm)
+        public Decimal GeoLatitude
+        {
+            get
+            {
+                object ret;
+                ret = this[this.myTable.ColumnGeoLatitude.Ordinal];
+                if ((ret == System.DBNull.Value))
+                {
+                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                }
+                else
+                {
+                    return ((Decimal)(ret));
+                }
+            }
+            set
+            {
+                if ((this.IsNull(this.myTable.ColumnGeoLatitude)
+                            || (((Decimal)(this[this.myTable.ColumnGeoLatitude])) != value)))
+                {
+                    this[this.myTable.ColumnGeoLatitude] = value;
+                }
+            }
+        }
+
+        /// The longitude of the location; a number between -180 and +180; precision is 6 digits (11cm)
+        public Decimal GeoLongitude
+        {
+            get
+            {
+                object ret;
+                ret = this[this.myTable.ColumnGeoLongitude.Ordinal];
+                if ((ret == System.DBNull.Value))
+                {
+                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                }
+                else
+                {
+                    return ((Decimal)(ret));
+                }
+            }
+            set
+            {
+                if ((this.IsNull(this.myTable.ColumnGeoLongitude)
+                            || (((Decimal)(this[this.myTable.ColumnGeoLongitude])) != value)))
+                {
+                    this[this.myTable.ColumnGeoLongitude] = value;
+                }
+            }
+        }
+
+        /// The distance in km of this location to the location 0 if location 0 was on the same longitude; this is for improving query performance
+        public Int32 GeoKmX
+        {
+            get
+            {
+                object ret;
+                ret = this[this.myTable.ColumnGeoKmX.Ordinal];
+                if ((ret == System.DBNull.Value))
+                {
+                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                }
+                else
+                {
+                    return ((Int32)(ret));
+                }
+            }
+            set
+            {
+                if ((this.IsNull(this.myTable.ColumnGeoKmX)
+                            || (((Int32)(this[this.myTable.ColumnGeoKmX])) != value)))
+                {
+                    this[this.myTable.ColumnGeoKmX] = value;
+                }
+            }
+        }
+
+        /// The distance in km of this location to the location 0 if location 0 was on the same latitude; this is for improving query performance
+        public Int32 GeoKmY
+        {
+            get
+            {
+                object ret;
+                ret = this[this.myTable.ColumnGeoKmY.Ordinal];
+                if ((ret == System.DBNull.Value))
+                {
+                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                }
+                else
+                {
+                    return ((Int32)(ret));
+                }
+            }
+            set
+            {
+                if ((this.IsNull(this.myTable.ColumnGeoKmY)
+                            || (((Int32)(this[this.myTable.ColumnGeoKmY])) != value)))
+                {
+                    this[this.myTable.ColumnGeoKmY] = value;
+                }
+            }
+        }
+
+        /// The accuracy of the stored geo data;                  -2: server did not respond;                 -1: not processed yet;                 0: Unknown Location;                 1: Country level accuracy;                 2: Region;                 3: Sub-Region;                 4: Town/City/Village;                 5: Post code;                 6: Street;                 7: Intersection;                 8: Address level accuracy
+        public Int32 GeoAccuracy
+        {
+            get
+            {
+                object ret;
+                ret = this[this.myTable.ColumnGeoAccuracy.Ordinal];
+                if ((ret == System.DBNull.Value))
+                {
+                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                }
+                else
+                {
+                    return ((Int32)(ret));
+                }
+            }
+            set
+            {
+                if ((this.IsNull(this.myTable.ColumnGeoAccuracy)
+                            || (((Int32)(this[this.myTable.ColumnGeoAccuracy])) != value)))
+                {
+                    this[this.myTable.ColumnGeoAccuracy] = value;
+                }
+            }
+        }
+
+        /// Indicates whether or not the location has restricted access. If it does then the access will be controlled by s_group_location.
+        public Boolean Restricted
+        {
+            get
+            {
+                object ret;
+                ret = this[this.myTable.ColumnRestricted.Ordinal];
+                if ((ret == System.DBNull.Value))
+                {
+                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                }
+                else
+                {
+                    return ((Boolean)(ret));
+                }
+            }
+            set
+            {
+                if ((this.IsNull(this.myTable.ColumnRestricted)
+                            || (((Boolean)(this[this.myTable.ColumnRestricted])) != value)))
+                {
+                    this[this.myTable.ColumnRestricted] = value;
+                }
+            }
+        }
+
+        /// The date the record was created.
+        public System.DateTime DateCreated
+        {
+            get
+            {
+                object ret;
+                ret = this[this.myTable.ColumnDateCreated.Ordinal];
+                if ((ret == System.DBNull.Value))
+                {
+                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                }
+                else
+                {
+                    return ((System.DateTime)(ret));
+                }
+            }
+            set
+            {
+                if ((this.IsNull(this.myTable.ColumnDateCreated)
+                            || (((System.DateTime)(this[this.myTable.ColumnDateCreated])) != value)))
+                {
+                    this[this.myTable.ColumnDateCreated] = value;
+                }
+            }
+        }
+
+        /// User ID of who created this record.
+        public String CreatedBy
+        {
+            get
+            {
+                object ret;
+                ret = this[this.myTable.ColumnCreatedBy.Ordinal];
+                if ((ret == System.DBNull.Value))
+                {
+                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                }
+                else
+                {
+                    return ((String)(ret));
+                }
+            }
+            set
+            {
+                if ((this.IsNull(this.myTable.ColumnCreatedBy)
+                            || (((String)(this[this.myTable.ColumnCreatedBy])) != value)))
+                {
+                    this[this.myTable.ColumnCreatedBy] = value;
+                }
+            }
+        }
+
+        /// The date the record was modified.
+        public System.DateTime DateModified
+        {
+            get
+            {
+                object ret;
+                ret = this[this.myTable.ColumnDateModified.Ordinal];
+                if ((ret == System.DBNull.Value))
+                {
+                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                }
+                else
+                {
+                    return ((System.DateTime)(ret));
+                }
+            }
+            set
+            {
+                if ((this.IsNull(this.myTable.ColumnDateModified)
+                            || (((System.DateTime)(this[this.myTable.ColumnDateModified])) != value)))
+                {
+                    this[this.myTable.ColumnDateModified] = value;
+                }
+            }
+        }
+
+        /// User ID of who last modified this record.
+        public String ModifiedBy
+        {
+            get
+            {
+                object ret;
+                ret = this[this.myTable.ColumnModifiedBy.Ordinal];
+                if ((ret == System.DBNull.Value))
+                {
+                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                }
+                else
+                {
+                    return ((String)(ret));
+                }
+            }
+            set
+            {
+                if ((this.IsNull(this.myTable.ColumnModifiedBy)
+                            || (((String)(this[this.myTable.ColumnModifiedBy])) != value)))
+                {
+                    this[this.myTable.ColumnModifiedBy] = value;
+                }
+            }
+        }
+
+        /// This identifies the current version of the record.
+        public String ModificationId
+        {
+            get
+            {
+                object ret;
+                ret = this[this.myTable.ColumnModificationId.Ordinal];
+                if ((ret == System.DBNull.Value))
+                {
+                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                }
+                else
+                {
+                    return ((String)(ret));
+                }
+            }
+            set
+            {
+                if ((this.IsNull(this.myTable.ColumnModificationId)
+                            || (((String)(this[this.myTable.ColumnModificationId])) != value)))
+                {
+                    this[this.myTable.ColumnModificationId] = value;
+                }
+            }
+        }
+
+        ///
         public Int64 SiteKeyOfSimilarLocation
         {
             get
@@ -4362,15 +8783,15 @@ namespace Ict.Petra.Shared.MPartner.Partner.Data
             }
             set
             {
-                if ((this.IsNull(this.myTable.ColumnSiteKeyOfSimilarLocation) 
+                if ((this.IsNull(this.myTable.ColumnSiteKeyOfSimilarLocation)
                             || (((Int64)(this[this.myTable.ColumnSiteKeyOfSimilarLocation])) != value)))
                 {
                     this[this.myTable.ColumnSiteKeyOfSimilarLocation] = value;
                 }
             }
         }
-        
-        /// 
+
+        ///
         public Int32 LocationKeyOfSimilarLocation
         {
             get
@@ -4388,15 +8809,15 @@ namespace Ict.Petra.Shared.MPartner.Partner.Data
             }
             set
             {
-                if ((this.IsNull(this.myTable.ColumnLocationKeyOfSimilarLocation) 
+                if ((this.IsNull(this.myTable.ColumnLocationKeyOfSimilarLocation)
                             || (((Int32)(this[this.myTable.ColumnLocationKeyOfSimilarLocation])) != value)))
                 {
                     this[this.myTable.ColumnLocationKeyOfSimilarLocation] = value;
                 }
             }
         }
-        
-        /// 
+
+        ///
         public Int32 UsedByNOtherPartners
         {
             get
@@ -4414,16 +8835,16 @@ namespace Ict.Petra.Shared.MPartner.Partner.Data
             }
             set
             {
-                if ((this.IsNull(this.myTable.ColumnUsedByNOtherPartners) 
+                if ((this.IsNull(this.myTable.ColumnUsedByNOtherPartners)
                             || (((Int32)(this[this.myTable.ColumnUsedByNOtherPartners])) != value)))
                 {
                     this[this.myTable.ColumnUsedByNOtherPartners] = value;
                 }
             }
         }
-        
-        /// 
-        public Boolean AnswerReuse
+
+        ///
+        public bool AnswerReuse
         {
             get
             {
@@ -4435,21 +8856,21 @@ namespace Ict.Petra.Shared.MPartner.Partner.Data
                 }
                 else
                 {
-                    return ((Boolean)(ret));
+                    return ((bool)(ret));
                 }
             }
             set
             {
-                if ((this.IsNull(this.myTable.ColumnAnswerReuse) 
-                            || (((Boolean)(this[this.myTable.ColumnAnswerReuse])) != value)))
+                if ((this.IsNull(this.myTable.ColumnAnswerReuse)
+                            || (((bool)(this[this.myTable.ColumnAnswerReuse])) != value)))
                 {
                     this[this.myTable.ColumnAnswerReuse] = value;
                 }
             }
         }
-        
-        /// 
-        public Boolean AnswerProcessedClientSide
+
+        ///
+        public bool AnswerProcessedClientSide
         {
             get
             {
@@ -4461,21 +8882,21 @@ namespace Ict.Petra.Shared.MPartner.Partner.Data
                 }
                 else
                 {
-                    return ((Boolean)(ret));
+                    return ((bool)(ret));
                 }
             }
             set
             {
-                if ((this.IsNull(this.myTable.ColumnAnswerProcessedClientSide) 
-                            || (((Boolean)(this[this.myTable.ColumnAnswerProcessedClientSide])) != value)))
+                if ((this.IsNull(this.myTable.ColumnAnswerProcessedClientSide)
+                            || (((bool)(this[this.myTable.ColumnAnswerProcessedClientSide])) != value)))
                 {
                     this[this.myTable.ColumnAnswerProcessedClientSide] = value;
                 }
             }
         }
-        
-        /// 
-        public Boolean AnswerProcessedServerSide
+
+        ///
+        public bool AnswerProcessedServerSide
         {
             get
             {
@@ -4487,22 +8908,45 @@ namespace Ict.Petra.Shared.MPartner.Partner.Data
                 }
                 else
                 {
-                    return ((Boolean)(ret));
+                    return ((bool)(ret));
                 }
             }
             set
             {
-                if ((this.IsNull(this.myTable.ColumnAnswerProcessedServerSide) 
-                            || (((Boolean)(this[this.myTable.ColumnAnswerProcessedServerSide])) != value)))
+                if ((this.IsNull(this.myTable.ColumnAnswerProcessedServerSide)
+                            || (((bool)(this[this.myTable.ColumnAnswerProcessedServerSide])) != value)))
                 {
                     this[this.myTable.ColumnAnswerProcessedServerSide] = value;
                 }
             }
         }
-        
+
         /// set default values
-        public override void InitValues()
+        public virtual void InitValues()
         {
+            this[this.myTable.ColumnSiteKey.Ordinal] = 0;
+            this[this.myTable.ColumnLocationKey.Ordinal] = 0;
+            this.SetNull(this.myTable.ColumnBuilding1);
+            this.SetNull(this.myTable.ColumnBuilding2);
+            this.SetNull(this.myTable.ColumnStreetName);
+            this.SetNull(this.myTable.ColumnLocality);
+            this.SetNull(this.myTable.ColumnSuburb);
+            this.SetNull(this.myTable.ColumnCity);
+            this.SetNull(this.myTable.ColumnCounty);
+            this.SetNull(this.myTable.ColumnPostalCode);
+            this.SetNull(this.myTable.ColumnCountryCode);
+            this.SetNull(this.myTable.ColumnAddress3);
+            this.SetNull(this.myTable.ColumnGeoLatitude);
+            this.SetNull(this.myTable.ColumnGeoLongitude);
+            this.SetNull(this.myTable.ColumnGeoKmX);
+            this.SetNull(this.myTable.ColumnGeoKmY);
+            this[this.myTable.ColumnGeoAccuracy.Ordinal] = -1;
+            this[this.myTable.ColumnRestricted.Ordinal] = false;
+            this[this.myTable.ColumnDateCreated.Ordinal] = DateTime.Today;
+            this.SetNull(this.myTable.ColumnCreatedBy);
+            this.SetNull(this.myTable.ColumnDateModified);
+            this.SetNull(this.myTable.ColumnModifiedBy);
+            this.SetNull(this.myTable.ColumnModificationId);
             this.SetNull(this.myTable.ColumnSiteKeyOfSimilarLocation);
             this.SetNull(this.myTable.ColumnLocationKeyOfSimilarLocation);
             this.SetNull(this.myTable.ColumnUsedByNOtherPartners);
@@ -4510,585 +8954,451 @@ namespace Ict.Petra.Shared.MPartner.Partner.Data
             this.SetNull(this.myTable.ColumnAnswerProcessedClientSide);
             this.SetNull(this.myTable.ColumnAnswerProcessedServerSide);
         }
-        
+
+        /// test for NULL value
+        public bool IsSiteKeyNull()
+        {
+            return this.IsNull(this.myTable.ColumnSiteKey);
+        }
+
+        /// assign NULL value
+        public void SetSiteKeyNull()
+        {
+            this.SetNull(this.myTable.ColumnSiteKey);
+        }
+
+        /// test for NULL value
+        public bool IsLocationKeyNull()
+        {
+            return this.IsNull(this.myTable.ColumnLocationKey);
+        }
+
+        /// assign NULL value
+        public void SetLocationKeyNull()
+        {
+            this.SetNull(this.myTable.ColumnLocationKey);
+        }
+
+        /// test for NULL value
+        public bool IsBuilding1Null()
+        {
+            return this.IsNull(this.myTable.ColumnBuilding1);
+        }
+
+        /// assign NULL value
+        public void SetBuilding1Null()
+        {
+            this.SetNull(this.myTable.ColumnBuilding1);
+        }
+
+        /// test for NULL value
+        public bool IsBuilding2Null()
+        {
+            return this.IsNull(this.myTable.ColumnBuilding2);
+        }
+
+        /// assign NULL value
+        public void SetBuilding2Null()
+        {
+            this.SetNull(this.myTable.ColumnBuilding2);
+        }
+
+        /// test for NULL value
+        public bool IsStreetNameNull()
+        {
+            return this.IsNull(this.myTable.ColumnStreetName);
+        }
+
+        /// assign NULL value
+        public void SetStreetNameNull()
+        {
+            this.SetNull(this.myTable.ColumnStreetName);
+        }
+
+        /// test for NULL value
+        public bool IsLocalityNull()
+        {
+            return this.IsNull(this.myTable.ColumnLocality);
+        }
+
+        /// assign NULL value
+        public void SetLocalityNull()
+        {
+            this.SetNull(this.myTable.ColumnLocality);
+        }
+
+        /// test for NULL value
+        public bool IsSuburbNull()
+        {
+            return this.IsNull(this.myTable.ColumnSuburb);
+        }
+
+        /// assign NULL value
+        public void SetSuburbNull()
+        {
+            this.SetNull(this.myTable.ColumnSuburb);
+        }
+
+        /// test for NULL value
+        public bool IsCityNull()
+        {
+            return this.IsNull(this.myTable.ColumnCity);
+        }
+
+        /// assign NULL value
+        public void SetCityNull()
+        {
+            this.SetNull(this.myTable.ColumnCity);
+        }
+
+        /// test for NULL value
+        public bool IsCountyNull()
+        {
+            return this.IsNull(this.myTable.ColumnCounty);
+        }
+
+        /// assign NULL value
+        public void SetCountyNull()
+        {
+            this.SetNull(this.myTable.ColumnCounty);
+        }
+
+        /// test for NULL value
+        public bool IsPostalCodeNull()
+        {
+            return this.IsNull(this.myTable.ColumnPostalCode);
+        }
+
+        /// assign NULL value
+        public void SetPostalCodeNull()
+        {
+            this.SetNull(this.myTable.ColumnPostalCode);
+        }
+
+        /// test for NULL value
+        public bool IsCountryCodeNull()
+        {
+            return this.IsNull(this.myTable.ColumnCountryCode);
+        }
+
+        /// assign NULL value
+        public void SetCountryCodeNull()
+        {
+            this.SetNull(this.myTable.ColumnCountryCode);
+        }
+
+        /// test for NULL value
+        public bool IsAddress3Null()
+        {
+            return this.IsNull(this.myTable.ColumnAddress3);
+        }
+
+        /// assign NULL value
+        public void SetAddress3Null()
+        {
+            this.SetNull(this.myTable.ColumnAddress3);
+        }
+
+        /// test for NULL value
+        public bool IsGeoLatitudeNull()
+        {
+            return this.IsNull(this.myTable.ColumnGeoLatitude);
+        }
+
+        /// assign NULL value
+        public void SetGeoLatitudeNull()
+        {
+            this.SetNull(this.myTable.ColumnGeoLatitude);
+        }
+
+        /// test for NULL value
+        public bool IsGeoLongitudeNull()
+        {
+            return this.IsNull(this.myTable.ColumnGeoLongitude);
+        }
+
+        /// assign NULL value
+        public void SetGeoLongitudeNull()
+        {
+            this.SetNull(this.myTable.ColumnGeoLongitude);
+        }
+
+        /// test for NULL value
+        public bool IsGeoKmXNull()
+        {
+            return this.IsNull(this.myTable.ColumnGeoKmX);
+        }
+
+        /// assign NULL value
+        public void SetGeoKmXNull()
+        {
+            this.SetNull(this.myTable.ColumnGeoKmX);
+        }
+
+        /// test for NULL value
+        public bool IsGeoKmYNull()
+        {
+            return this.IsNull(this.myTable.ColumnGeoKmY);
+        }
+
+        /// assign NULL value
+        public void SetGeoKmYNull()
+        {
+            this.SetNull(this.myTable.ColumnGeoKmY);
+        }
+
+        /// test for NULL value
+        public bool IsGeoAccuracyNull()
+        {
+            return this.IsNull(this.myTable.ColumnGeoAccuracy);
+        }
+
+        /// assign NULL value
+        public void SetGeoAccuracyNull()
+        {
+            this.SetNull(this.myTable.ColumnGeoAccuracy);
+        }
+
+        /// test for NULL value
+        public bool IsRestrictedNull()
+        {
+            return this.IsNull(this.myTable.ColumnRestricted);
+        }
+
+        /// assign NULL value
+        public void SetRestrictedNull()
+        {
+            this.SetNull(this.myTable.ColumnRestricted);
+        }
+
+        /// test for NULL value
+        public bool IsDateCreatedNull()
+        {
+            return this.IsNull(this.myTable.ColumnDateCreated);
+        }
+
+        /// assign NULL value
+        public void SetDateCreatedNull()
+        {
+            this.SetNull(this.myTable.ColumnDateCreated);
+        }
+
+        /// test for NULL value
+        public bool IsCreatedByNull()
+        {
+            return this.IsNull(this.myTable.ColumnCreatedBy);
+        }
+
+        /// assign NULL value
+        public void SetCreatedByNull()
+        {
+            this.SetNull(this.myTable.ColumnCreatedBy);
+        }
+
+        /// test for NULL value
+        public bool IsDateModifiedNull()
+        {
+            return this.IsNull(this.myTable.ColumnDateModified);
+        }
+
+        /// assign NULL value
+        public void SetDateModifiedNull()
+        {
+            this.SetNull(this.myTable.ColumnDateModified);
+        }
+
+        /// test for NULL value
+        public bool IsModifiedByNull()
+        {
+            return this.IsNull(this.myTable.ColumnModifiedBy);
+        }
+
+        /// assign NULL value
+        public void SetModifiedByNull()
+        {
+            this.SetNull(this.myTable.ColumnModifiedBy);
+        }
+
+        /// test for NULL value
+        public bool IsModificationIdNull()
+        {
+            return this.IsNull(this.myTable.ColumnModificationId);
+        }
+
+        /// assign NULL value
+        public void SetModificationIdNull()
+        {
+            this.SetNull(this.myTable.ColumnModificationId);
+        }
+
         /// test for NULL value
         public bool IsSiteKeyOfSimilarLocationNull()
         {
             return this.IsNull(this.myTable.ColumnSiteKeyOfSimilarLocation);
         }
-        
+
         /// assign NULL value
         public void SetSiteKeyOfSimilarLocationNull()
         {
             this.SetNull(this.myTable.ColumnSiteKeyOfSimilarLocation);
         }
-        
+
         /// test for NULL value
         public bool IsLocationKeyOfSimilarLocationNull()
         {
             return this.IsNull(this.myTable.ColumnLocationKeyOfSimilarLocation);
         }
-        
+
         /// assign NULL value
         public void SetLocationKeyOfSimilarLocationNull()
         {
             this.SetNull(this.myTable.ColumnLocationKeyOfSimilarLocation);
         }
-        
+
         /// test for NULL value
         public bool IsUsedByNOtherPartnersNull()
         {
             return this.IsNull(this.myTable.ColumnUsedByNOtherPartners);
         }
-        
+
         /// assign NULL value
         public void SetUsedByNOtherPartnersNull()
         {
             this.SetNull(this.myTable.ColumnUsedByNOtherPartners);
         }
-        
+
         /// test for NULL value
         public bool IsAnswerReuseNull()
         {
             return this.IsNull(this.myTable.ColumnAnswerReuse);
         }
-        
+
         /// assign NULL value
         public void SetAnswerReuseNull()
         {
             this.SetNull(this.myTable.ColumnAnswerReuse);
         }
-        
+
         /// test for NULL value
         public bool IsAnswerProcessedClientSideNull()
         {
             return this.IsNull(this.myTable.ColumnAnswerProcessedClientSide);
         }
-        
+
         /// assign NULL value
         public void SetAnswerProcessedClientSideNull()
         {
             this.SetNull(this.myTable.ColumnAnswerProcessedClientSide);
         }
-        
+
         /// test for NULL value
         public bool IsAnswerProcessedServerSideNull()
         {
             return this.IsNull(this.myTable.ColumnAnswerProcessedServerSide);
         }
-        
+
         /// assign NULL value
         public void SetAnswerProcessedServerSideNull()
         {
             this.SetNull(this.myTable.ColumnAnswerProcessedServerSide);
         }
     }
-    
-    /// auto generated custom table
+
+    ///
     [Serializable()]
     public class PartnerAddressAggregateTDSChangePromotionParametersTable : TTypedDataTable
     {
-        
         /// This is the partner key assigned to each partner. It consists of the fund id followed by a computer generated six digit number.
         public DataColumn ColumnPartnerKey;
-        
         /// This is the key that tell what site created the linked location
         public DataColumn ColumnSiteKey;
-        
-        /// 
+        ///
         public DataColumn ColumnLocationKey;
-        
         /// Name of the person or organisation.  If a person, more name info is stored in p_person.
         public DataColumn ColumnPartnerShortName;
-        
         /// This defines what type of partner this is. The classes that may be assigned are PERSON, FAMILY, CHURCH, ORGANISATION, UNIT, VENUE and BANK.
         public DataColumn ColumnPartnerClass;
-        
-        /// 
+        ///
         public DataColumn ColumnTelephoneNumber;
-        
-        /// 
+        ///
         public DataColumn ColumnExtension;
-        
-        /// 
+        ///
         public DataColumn ColumnFaxNumber;
-        
-        /// 
+        ///
         public DataColumn ColumnFaxExtension;
-        
-        /// 
+        ///
         public DataColumn ColumnAlternateTelephone;
-        
-        /// 
+        ///
         public DataColumn ColumnMobileNumber;
-        
-        /// 
+        ///
         public DataColumn ColumnEmailAddress;
-        
-        /// 
+        ///
         public DataColumn ColumnUrl;
-        
-        /// 
+        ///
         public DataColumn ColumnSendMail;
-        
-        /// 
+        ///
         public DataColumn ColumnDateEffective;
-        
-        /// 
+        ///
         public DataColumn ColumnDateGoodUntil;
-        
-        /// 
+        ///
         public DataColumn ColumnLocationType;
-        
-        /// 
+        ///
         public DataColumn ColumnSiteKeyOfEditedRecord;
-        
-        /// 
+        ///
         public DataColumn ColumnLocationKeyOfEditedRecord;
-        
-        /// auto generated
-        public DataColumn[] FKPartnerLocation1;
-        
-        /// auto generated
-        public DataColumn[] FKPartnerLocation2;
-        
-        /// auto generated
-        public DataColumn[] FKPartner7;
-        
-        /// auto generated
-        public DataColumn[] FKPartnerLocation3;
-        
+
+        /// TableId for Ict.Common.Data generic functions
+        public static short TableId = -1;
+
+        private static bool FInitInfoValues = InitInfoValues();
+        private static bool InitInfoValues()
+        {
+            TableInfo.Add(TableId, new TTypedTableInfo(TableId, "PartnerAddressAggregateTDSChangePromotionParameters", "PartnerAddressAggregateTDSChangePromotionParameters",
+                new TTypedColumnInfo[] {
+                    new TTypedColumnInfo(0, "PartnerKey", "p_partner_key_n", OdbcType.Decimal, 10, true),
+                    new TTypedColumnInfo(1, "SiteKey", "p_site_key_n", OdbcType.Decimal, 10, true),
+                    new TTypedColumnInfo(2, "LocationKey", "p_location_key_i", OdbcType.Int, -1, true),
+                    new TTypedColumnInfo(3, "PartnerShortName", "p_partner_short_name_c", OdbcType.VarChar, 160, false),
+                    new TTypedColumnInfo(4, "PartnerClass", "p_partner_class_c", OdbcType.VarChar, 24, false),
+                    new TTypedColumnInfo(5, "TelephoneNumber", "p_telephone_number_c", OdbcType.VarChar, 50, false),
+                    new TTypedColumnInfo(6, "Extension", "p_extension_i", OdbcType.Int, -1, false),
+                    new TTypedColumnInfo(7, "FaxNumber", "p_fax_number_c", OdbcType.VarChar, 50, false),
+                    new TTypedColumnInfo(8, "FaxExtension", "p_fax_extension_i", OdbcType.Int, -1, false),
+                    new TTypedColumnInfo(9, "AlternateTelephone", "p_alternate_telephone_c", OdbcType.VarChar, 50, false),
+                    new TTypedColumnInfo(10, "MobileNumber", "p_mobile_number_c", OdbcType.VarChar, 50, false),
+                    new TTypedColumnInfo(11, "EmailAddress", "p_email_address_c", OdbcType.VarChar, 120, false),
+                    new TTypedColumnInfo(12, "Url", "p_url_c", OdbcType.VarChar, 128, false),
+                    new TTypedColumnInfo(13, "SendMail", "p_send_mail_l", OdbcType.Bit, -1, false),
+                    new TTypedColumnInfo(14, "DateEffective", "p_date_effective_d", OdbcType.Date, -1, false),
+                    new TTypedColumnInfo(15, "DateGoodUntil", "p_date_good_until_d", OdbcType.Date, -1, false),
+                    new TTypedColumnInfo(16, "LocationType", "p_location_type_c", OdbcType.VarChar, 24, false),
+                    new TTypedColumnInfo(17, "SiteKeyOfEditedRecord", "SiteKeyOfEditedRecord", OdbcType.Int, -1, false),
+                    new TTypedColumnInfo(18, "LocationKeyOfEditedRecord", "LocationKeyOfEditedRecord", OdbcType.Int, -1, false)
+                },
+                new int[] {
+
+                }));
+            return true;
+        }
+
         /// constructor
-        public PartnerAddressAggregateTDSChangePromotionParametersTable() : 
-                base("ChangePromotionParameters")
+        public PartnerAddressAggregateTDSChangePromotionParametersTable() :
+                base("PartnerAddressAggregateTDSChangePromotionParameters")
         {
         }
-        
+
         /// constructor
-        public PartnerAddressAggregateTDSChangePromotionParametersTable(string ATablename) : 
+        public PartnerAddressAggregateTDSChangePromotionParametersTable(string ATablename) :
                 base(ATablename)
         {
         }
-        
+
         /// constructor for serialization
-        public PartnerAddressAggregateTDSChangePromotionParametersTable(System.Runtime.Serialization.SerializationInfo info, System.Runtime.Serialization.StreamingContext context) : 
+        public PartnerAddressAggregateTDSChangePromotionParametersTable(System.Runtime.Serialization.SerializationInfo info, System.Runtime.Serialization.StreamingContext context) :
                 base(info, context)
         {
         }
-        
-        /// Access a typed row by index
-        public PartnerAddressAggregateTDSChangePromotionParametersRow this[int i]
-        {
-            get
-            {
-                return ((PartnerAddressAggregateTDSChangePromotionParametersRow)(this.Rows[i]));
-            }
-        }
-        
-        /// get the name of the field in the database for this column
-        public static string GetPartnerKeyDBName()
-        {
-            return "p_partner_key_n";
-        }
-        
-        /// get help text for column
-        public static string GetPartnerKeyHelp()
-        {
-            return "Enter the partner key (SiteID + Number)";
-        }
-        
-        /// get label of column
-        public static string GetPartnerKeyLabel()
-        {
-            return "Partner Key";
-        }
-        
-        /// get the name of the field in the database for this column
-        public static string GetSiteKeyDBName()
-        {
-            return "p_site_key_n";
-        }
-        
-        /// get help text for column
-        public static string GetSiteKeyHelp()
-        {
-            return "Enter the site key";
-        }
-        
-        /// get label of column
-        public static string GetSiteKeyLabel()
-        {
-            return "Site Key";
-        }
-        
-        /// get the name of the field in the database for this column
-        public static string GetLocationKeyDBName()
-        {
-            return "p_location_key_i";
-        }
-        
-        /// get help text for column
-        public static string GetLocationKeyHelp()
-        {
-            return "";
-        }
-        
-        /// get label of column
-        public static string GetLocationKeyLabel()
-        {
-            return "Location Key";
-        }
-        
-        /// get the name of the field in the database for this column
-        public static string GetPartnerShortNameDBName()
-        {
-            return "p_partner_short_name_c";
-        }
-        
-        /// get help text for column
-        public static string GetPartnerShortNameHelp()
-        {
-            return "Enter a short name for this partner";
-        }
-        
-        /// get label of column
-        public static string GetPartnerShortNameLabel()
-        {
-            return "Short Name";
-        }
-        
-        /// get the name of the field in the database for this column
-        public static string GetPartnerClassDBName()
-        {
-            return "p_partner_class_c";
-        }
-        
-        /// get help text for column
-        public static string GetPartnerClassHelp()
-        {
-            return "Select a partner class";
-        }
-        
-        /// get label of column
-        public static string GetPartnerClassLabel()
-        {
-            return "Partner Class";
-        }
-        
-        /// get the name of the field in the database for this column
-        public static string GetTelephoneNumberDBName()
-        {
-            return "p_telephone_number_c";
-        }
-        
-        /// get help text for column
-        public static string GetTelephoneNumberHelp()
-        {
-            return "Enter a Telephone number for this address (if available)";
-        }
-        
-        /// get label of column
-        public static string GetTelephoneNumberLabel()
-        {
-            return "Phone";
-        }
-        
-        /// get the name of the field in the database for this column
-        public static string GetExtensionDBName()
-        {
-            return "p_extension_i";
-        }
-        
-        /// get help text for column
-        public static string GetExtensionHelp()
-        {
-            return "Enter the Telephone Extension (if available)";
-        }
-        
-        /// get label of column
-        public static string GetExtensionLabel()
-        {
-            return "Phone Extension";
-        }
-        
-        /// get the name of the field in the database for this column
-        public static string GetFaxNumberDBName()
-        {
-            return "p_fax_number_c";
-        }
-        
-        /// get help text for column
-        public static string GetFaxNumberHelp()
-        {
-            return "Enter a Fax number for this address location (if available)";
-        }
-        
-        /// get label of column
-        public static string GetFaxNumberLabel()
-        {
-            return "Fax";
-        }
-        
-        /// get the name of the field in the database for this column
-        public static string GetFaxExtensionDBName()
-        {
-            return "p_fax_extension_i";
-        }
-        
-        /// get help text for column
-        public static string GetFaxExtensionHelp()
-        {
-            return "Enter the Fax Extension (if available)";
-        }
-        
-        /// get label of column
-        public static string GetFaxExtensionLabel()
-        {
-            return "Fax Extension";
-        }
-        
-        /// get the name of the field in the database for this column
-        public static string GetAlternateTelephoneDBName()
-        {
-            return "p_alternate_telephone_c";
-        }
-        
-        /// get help text for column
-        public static string GetAlternateTelephoneHelp()
-        {
-            return "Enter an Alternative phone number (if available)";
-        }
-        
-        /// get label of column
-        public static string GetAlternateTelephoneLabel()
-        {
-            return "Alternate";
-        }
-        
-        /// get the name of the field in the database for this column
-        public static string GetMobileNumberDBName()
-        {
-            return "p_mobile_number_c";
-        }
-        
-        /// get help text for column
-        public static string GetMobileNumberHelp()
-        {
-            return "Enter a Mobile phone number for this address (if available)";
-        }
-        
-        /// get label of column
-        public static string GetMobileNumberLabel()
-        {
-            return "Mobile";
-        }
-        
-        /// get the name of the field in the database for this column
-        public static string GetEmailAddressDBName()
-        {
-            return "p_email_address_c";
-        }
-        
-        /// get help text for column
-        public static string GetEmailAddressHelp()
-        {
-            return "Enter an Email address (if available)";
-        }
-        
-        /// get label of column
-        public static string GetEmailAddressLabel()
-        {
-            return "Email";
-        }
-        
-        /// get the name of the field in the database for this column
-        public static string GetUrlDBName()
-        {
-            return "p_url_c";
-        }
-        
-        /// get help text for column
-        public static string GetUrlHelp()
-        {
-            return "URL for this Partner\'s Web Home Page";
-        }
-        
-        /// get label of column
-        public static string GetUrlLabel()
-        {
-            return "Website";
-        }
-        
-        /// get the name of the field in the database for this column
-        public static string GetSendMailDBName()
-        {
-            return "p_send_mail_l";
-        }
-        
-        /// get help text for column
-        public static string GetSendMailHelp()
-        {
-            return "Can or should, postal mail be sent to this address?";
-        }
-        
-        /// get label of column
-        public static string GetSendMailLabel()
-        {
-            return "Mailing Address";
-        }
-        
-        /// get the name of the field in the database for this column
-        public static string GetDateEffectiveDBName()
-        {
-            return "p_date_effective_d";
-        }
-        
-        /// get help text for column
-        public static string GetDateEffectiveHelp()
-        {
-            return "Enter the date this address is effective";
-        }
-        
-        /// get label of column
-        public static string GetDateEffectiveLabel()
-        {
-            return "Valid From";
-        }
-        
-        /// get the name of the field in the database for this column
-        public static string GetDateGoodUntilDBName()
-        {
-            return "p_date_good_until_d";
-        }
-        
-        /// get help text for column
-        public static string GetDateGoodUntilHelp()
-        {
-            return "Enter the date this address expires on";
-        }
-        
-        /// get label of column
-        public static string GetDateGoodUntilLabel()
-        {
-            return "Valid To";
-        }
-        
-        /// get the name of the field in the database for this column
-        public static string GetLocationTypeDBName()
-        {
-            return "p_location_type_c";
-        }
-        
-        /// get help text for column
-        public static string GetLocationTypeHelp()
-        {
-            return "Select the address location type";
-        }
-        
-        /// get label of column
-        public static string GetLocationTypeLabel()
-        {
-            return "Location Type";
-        }
-        
-        /// get the name of the field in the database for this column
-        public static string GetSiteKeyOfEditedRecordDBName()
-        {
-            return "SiteKeyOfEditedRecord";
-        }
-        
-        /// get help text for column
-        public static string GetSiteKeyOfEditedRecordHelp()
-        {
-            return null;
-        }
-        
-        /// get label of column
-        public static string GetSiteKeyOfEditedRecordLabel()
-        {
-            return "";
-        }
-        
-        /// get the name of the field in the database for this column
-        public static string GetLocationKeyOfEditedRecordDBName()
-        {
-            return "LocationKeyOfEditedRecord";
-        }
-        
-        /// get help text for column
-        public static string GetLocationKeyOfEditedRecordHelp()
-        {
-            return null;
-        }
-        
-        /// get label of column
-        public static string GetLocationKeyOfEditedRecordLabel()
-        {
-            return "";
-        }
-        
-        /// CamelCase version of the tablename
-        public static string GetTableName()
-        {
-            return "ChangePromotionParameters";
-        }
-        
-        /// original name of table in the database
-        public static string GetTableDBName()
-        {
-            return "ChangePromotionParameters";
-        }
-        
-        /// assign columns to properties, set primary key
-        public override void InitVars()
-        {
-            this.ColumnPartnerKey = this.Columns["p_partner_key_n"];
-            this.ColumnSiteKey = this.Columns["p_site_key_n"];
-            this.ColumnLocationKey = this.Columns["p_location_key_i"];
-            this.ColumnPartnerShortName = this.Columns["p_partner_short_name_c"];
-            this.ColumnPartnerClass = this.Columns["p_partner_class_c"];
-            this.ColumnTelephoneNumber = this.Columns["p_telephone_number_c"];
-            this.ColumnExtension = this.Columns["p_extension_i"];
-            this.ColumnFaxNumber = this.Columns["p_fax_number_c"];
-            this.ColumnFaxExtension = this.Columns["p_fax_extension_i"];
-            this.ColumnAlternateTelephone = this.Columns["p_alternate_telephone_c"];
-            this.ColumnMobileNumber = this.Columns["p_mobile_number_c"];
-            this.ColumnEmailAddress = this.Columns["p_email_address_c"];
-            this.ColumnUrl = this.Columns["p_url_c"];
-            this.ColumnSendMail = this.Columns["p_send_mail_l"];
-            this.ColumnDateEffective = this.Columns["p_date_effective_d"];
-            this.ColumnDateGoodUntil = this.Columns["p_date_good_until_d"];
-            this.ColumnLocationType = this.Columns["p_location_type_c"];
-            this.ColumnSiteKeyOfEditedRecord = this.Columns["SiteKeyOfEditedRecord"];
-            this.ColumnLocationKeyOfEditedRecord = this.Columns["LocationKeyOfEditedRecord"];
-            this.FKPartnerLocation1 = new System.Data.DataColumn[] {
-                    this.ColumnPartnerKey};
-            this.FKPartnerLocation2 = new System.Data.DataColumn[] {
-                    this.ColumnSiteKey,
-                    this.ColumnLocationKey};
-            this.FKPartner7 = new System.Data.DataColumn[] {
-                    this.ColumnPartnerClass};
-            this.FKPartnerLocation3 = new System.Data.DataColumn[] {
-                    this.ColumnLocationType};
-        }
-        
-        /// create a new typed row
-        public PartnerAddressAggregateTDSChangePromotionParametersRow NewRowTyped(bool AWithDefaultValues)
-        {
-            PartnerAddressAggregateTDSChangePromotionParametersRow ret = ((PartnerAddressAggregateTDSChangePromotionParametersRow)(this.NewRow()));
-            if ((AWithDefaultValues == true))
-            {
-                ret.InitValues();
-            }
-            return ret;
-        }
-        
-        /// new typed row using DataRowBuilder
-        protected override System.Data.DataRow NewRowFromBuilder(System.Data.DataRowBuilder builder)
-        {
-            return new PartnerAddressAggregateTDSChangePromotionParametersRow(builder);
-        }
-        
+
         /// create the columns
         protected override void InitClass()
         {
@@ -5112,104 +9422,318 @@ namespace Ict.Petra.Shared.MPartner.Partner.Data
             this.Columns.Add(new System.Data.DataColumn("SiteKeyOfEditedRecord", typeof(Int64)));
             this.Columns.Add(new System.Data.DataColumn("LocationKeyOfEditedRecord", typeof(Int32)));
         }
-        
-        /// prepare odbc parameters for given column
-        public override OdbcParameter CreateOdbcParameter(DataColumn ACol)
+
+        /// assign columns to properties, set primary key
+        public override void InitVars()
         {
-            if ((ACol == ColumnPartnerKey))
-            {
-                return new System.Data.Odbc.OdbcParameter("", OdbcType.Decimal, 10);
-            }
-            if ((ACol == ColumnSiteKey))
-            {
-                return new System.Data.Odbc.OdbcParameter("", OdbcType.Decimal, 10);
-            }
-            if ((ACol == ColumnLocationKey))
-            {
-                return new System.Data.Odbc.OdbcParameter("", OdbcType.Int);
-            }
-            if ((ACol == ColumnPartnerShortName))
-            {
-                return new System.Data.Odbc.OdbcParameter("", OdbcType.VarChar, 160);
-            }
-            if ((ACol == ColumnPartnerClass))
-            {
-                return new System.Data.Odbc.OdbcParameter("", OdbcType.VarChar, 24);
-            }
-            if ((ACol == ColumnTelephoneNumber))
-            {
-                return new System.Data.Odbc.OdbcParameter("", OdbcType.VarChar, 50);
-            }
-            if ((ACol == ColumnExtension))
-            {
-                return new System.Data.Odbc.OdbcParameter("", OdbcType.Int);
-            }
-            if ((ACol == ColumnFaxNumber))
-            {
-                return new System.Data.Odbc.OdbcParameter("", OdbcType.VarChar, 50);
-            }
-            if ((ACol == ColumnFaxExtension))
-            {
-                return new System.Data.Odbc.OdbcParameter("", OdbcType.Int);
-            }
-            if ((ACol == ColumnAlternateTelephone))
-            {
-                return new System.Data.Odbc.OdbcParameter("", OdbcType.VarChar, 50);
-            }
-            if ((ACol == ColumnMobileNumber))
-            {
-                return new System.Data.Odbc.OdbcParameter("", OdbcType.VarChar, 50);
-            }
-            if ((ACol == ColumnEmailAddress))
-            {
-                return new System.Data.Odbc.OdbcParameter("", OdbcType.VarChar, 120);
-            }
-            if ((ACol == ColumnUrl))
-            {
-                return new System.Data.Odbc.OdbcParameter("", OdbcType.VarChar, 128);
-            }
-            if ((ACol == ColumnSendMail))
-            {
-                return new System.Data.Odbc.OdbcParameter("", OdbcType.Bit);
-            }
-            if ((ACol == ColumnDateEffective))
-            {
-                return new System.Data.Odbc.OdbcParameter("", OdbcType.Date);
-            }
-            if ((ACol == ColumnDateGoodUntil))
-            {
-                return new System.Data.Odbc.OdbcParameter("", OdbcType.Date);
-            }
-            if ((ACol == ColumnLocationType))
-            {
-                return new System.Data.Odbc.OdbcParameter("", OdbcType.VarChar, 24);
-            }
-            if ((ACol == ColumnSiteKeyOfEditedRecord))
-            {
-                return new System.Data.Odbc.OdbcParameter("", OdbcType.Int);
-            }
-            if ((ACol == ColumnLocationKeyOfEditedRecord))
-            {
-                return new System.Data.Odbc.OdbcParameter("", OdbcType.Int);
-            }
-            return null;
+            this.ColumnPartnerKey = this.Columns["p_partner_key_n"];
+            this.ColumnSiteKey = this.Columns["p_site_key_n"];
+            this.ColumnLocationKey = this.Columns["p_location_key_i"];
+            this.ColumnPartnerShortName = this.Columns["p_partner_short_name_c"];
+            this.ColumnPartnerClass = this.Columns["p_partner_class_c"];
+            this.ColumnTelephoneNumber = this.Columns["p_telephone_number_c"];
+            this.ColumnExtension = this.Columns["p_extension_i"];
+            this.ColumnFaxNumber = this.Columns["p_fax_number_c"];
+            this.ColumnFaxExtension = this.Columns["p_fax_extension_i"];
+            this.ColumnAlternateTelephone = this.Columns["p_alternate_telephone_c"];
+            this.ColumnMobileNumber = this.Columns["p_mobile_number_c"];
+            this.ColumnEmailAddress = this.Columns["p_email_address_c"];
+            this.ColumnUrl = this.Columns["p_url_c"];
+            this.ColumnSendMail = this.Columns["p_send_mail_l"];
+            this.ColumnDateEffective = this.Columns["p_date_effective_d"];
+            this.ColumnDateGoodUntil = this.Columns["p_date_good_until_d"];
+            this.ColumnLocationType = this.Columns["p_location_type_c"];
+            this.ColumnSiteKeyOfEditedRecord = this.Columns["SiteKeyOfEditedRecord"];
+            this.ColumnLocationKeyOfEditedRecord = this.Columns["LocationKeyOfEditedRecord"];
         }
+
+        /// Access a typed row by index
+        public PartnerAddressAggregateTDSChangePromotionParametersRow this[int i]
+        {
+            get
+            {
+                return ((PartnerAddressAggregateTDSChangePromotionParametersRow)(this.Rows[i]));
+            }
+        }
+
+        /// create a new typed row
+        public PartnerAddressAggregateTDSChangePromotionParametersRow NewRowTyped(bool AWithDefaultValues)
+        {
+            PartnerAddressAggregateTDSChangePromotionParametersRow ret = ((PartnerAddressAggregateTDSChangePromotionParametersRow)(this.NewRow()));
+            if ((AWithDefaultValues == true))
+            {
+                ret.InitValues();
+            }
+            return ret;
+        }
+
+        /// create a new typed row, always with default values
+        public PartnerAddressAggregateTDSChangePromotionParametersRow NewRowTyped()
+        {
+            return this.NewRowTyped(true);
+        }
+
+        /// new typed row using DataRowBuilder
+        protected override System.Data.DataRow NewRowFromBuilder(System.Data.DataRowBuilder builder)
+        {
+            return new PartnerAddressAggregateTDSChangePromotionParametersRow(builder);
+        }
+
+        /// get typed set of changes
+        public PartnerAddressAggregateTDSChangePromotionParametersTable GetChangesTyped()
+        {
+            return ((PartnerAddressAggregateTDSChangePromotionParametersTable)(base.GetChangesTypedInternal()));
+        }
+
+        /// get an odbc parameter for the given column
+        public override OdbcParameter CreateOdbcParameter(Int32 AColumnNr)
+        {
+            return CreateOdbcParameter(TableId, AColumnNr);
+        }
+
+        /// get the name of the field in the database for this column
+        public static string GetPartnerKeyDBName()
+        {
+            return "p_partner_key_n";
+        }
+
+        /// get character length for column
+        public static short GetPartnerKeyLength()
+        {
+            return 10;
+        }
+
+        /// get the name of the field in the database for this column
+        public static string GetSiteKeyDBName()
+        {
+            return "p_site_key_n";
+        }
+
+        /// get character length for column
+        public static short GetSiteKeyLength()
+        {
+            return 10;
+        }
+
+        /// get the name of the field in the database for this column
+        public static string GetLocationKeyDBName()
+        {
+            return "p_location_key_i";
+        }
+
+        /// get character length for column
+        public static short GetLocationKeyLength()
+        {
+            return -1;
+        }
+
+        /// get the name of the field in the database for this column
+        public static string GetPartnerShortNameDBName()
+        {
+            return "p_partner_short_name_c";
+        }
+
+        /// get character length for column
+        public static short GetPartnerShortNameLength()
+        {
+            return 160;
+        }
+
+        /// get the name of the field in the database for this column
+        public static string GetPartnerClassDBName()
+        {
+            return "p_partner_class_c";
+        }
+
+        /// get character length for column
+        public static short GetPartnerClassLength()
+        {
+            return 24;
+        }
+
+        /// get the name of the field in the database for this column
+        public static string GetTelephoneNumberDBName()
+        {
+            return "p_telephone_number_c";
+        }
+
+        /// get character length for column
+        public static short GetTelephoneNumberLength()
+        {
+            return 50;
+        }
+
+        /// get the name of the field in the database for this column
+        public static string GetExtensionDBName()
+        {
+            return "p_extension_i";
+        }
+
+        /// get character length for column
+        public static short GetExtensionLength()
+        {
+            return -1;
+        }
+
+        /// get the name of the field in the database for this column
+        public static string GetFaxNumberDBName()
+        {
+            return "p_fax_number_c";
+        }
+
+        /// get character length for column
+        public static short GetFaxNumberLength()
+        {
+            return 50;
+        }
+
+        /// get the name of the field in the database for this column
+        public static string GetFaxExtensionDBName()
+        {
+            return "p_fax_extension_i";
+        }
+
+        /// get character length for column
+        public static short GetFaxExtensionLength()
+        {
+            return -1;
+        }
+
+        /// get the name of the field in the database for this column
+        public static string GetAlternateTelephoneDBName()
+        {
+            return "p_alternate_telephone_c";
+        }
+
+        /// get character length for column
+        public static short GetAlternateTelephoneLength()
+        {
+            return 50;
+        }
+
+        /// get the name of the field in the database for this column
+        public static string GetMobileNumberDBName()
+        {
+            return "p_mobile_number_c";
+        }
+
+        /// get character length for column
+        public static short GetMobileNumberLength()
+        {
+            return 50;
+        }
+
+        /// get the name of the field in the database for this column
+        public static string GetEmailAddressDBName()
+        {
+            return "p_email_address_c";
+        }
+
+        /// get character length for column
+        public static short GetEmailAddressLength()
+        {
+            return 120;
+        }
+
+        /// get the name of the field in the database for this column
+        public static string GetUrlDBName()
+        {
+            return "p_url_c";
+        }
+
+        /// get character length for column
+        public static short GetUrlLength()
+        {
+            return 128;
+        }
+
+        /// get the name of the field in the database for this column
+        public static string GetSendMailDBName()
+        {
+            return "p_send_mail_l";
+        }
+
+        /// get character length for column
+        public static short GetSendMailLength()
+        {
+            return -1;
+        }
+
+        /// get the name of the field in the database for this column
+        public static string GetDateEffectiveDBName()
+        {
+            return "p_date_effective_d";
+        }
+
+        /// get character length for column
+        public static short GetDateEffectiveLength()
+        {
+            return -1;
+        }
+
+        /// get the name of the field in the database for this column
+        public static string GetDateGoodUntilDBName()
+        {
+            return "p_date_good_until_d";
+        }
+
+        /// get character length for column
+        public static short GetDateGoodUntilLength()
+        {
+            return -1;
+        }
+
+        /// get the name of the field in the database for this column
+        public static string GetLocationTypeDBName()
+        {
+            return "p_location_type_c";
+        }
+
+        /// get character length for column
+        public static short GetLocationTypeLength()
+        {
+            return 24;
+        }
+
+        /// get the name of the field in the database for this column
+        public static string GetSiteKeyOfEditedRecordDBName()
+        {
+            return "SiteKeyOfEditedRecord";
+        }
+
+        /// get character length for column
+        public static short GetSiteKeyOfEditedRecordLength()
+        {
+            return -1;
+        }
+
+        /// get the name of the field in the database for this column
+        public static string GetLocationKeyOfEditedRecordDBName()
+        {
+            return "LocationKeyOfEditedRecord";
+        }
+
+        /// get character length for column
+        public static short GetLocationKeyOfEditedRecordLength()
+        {
+            return -1;
+        }
+
     }
-    
-    /// CustomRow auto generated
+
+    ///
     [Serializable()]
     public class PartnerAddressAggregateTDSChangePromotionParametersRow : System.Data.DataRow
     {
-        
         private PartnerAddressAggregateTDSChangePromotionParametersTable myTable;
-        
+
         /// Constructor
-        public PartnerAddressAggregateTDSChangePromotionParametersRow(System.Data.DataRowBuilder rb) : 
+        public PartnerAddressAggregateTDSChangePromotionParametersRow(System.Data.DataRowBuilder rb) :
                 base(rb)
         {
             this.myTable = ((PartnerAddressAggregateTDSChangePromotionParametersTable)(this.Table));
         }
-        
+
         /// This is the partner key assigned to each partner. It consists of the fund id followed by a computer generated six digit number.
         public Int64 PartnerKey
         {
@@ -5228,14 +9752,14 @@ namespace Ict.Petra.Shared.MPartner.Partner.Data
             }
             set
             {
-                if ((this.IsNull(this.myTable.ColumnPartnerKey) 
+                if ((this.IsNull(this.myTable.ColumnPartnerKey)
                             || (((Int64)(this[this.myTable.ColumnPartnerKey])) != value)))
                 {
                     this[this.myTable.ColumnPartnerKey] = value;
                 }
             }
         }
-        
+
         /// This is the key that tell what site created the linked location
         public Int64 SiteKey
         {
@@ -5254,15 +9778,15 @@ namespace Ict.Petra.Shared.MPartner.Partner.Data
             }
             set
             {
-                if ((this.IsNull(this.myTable.ColumnSiteKey) 
+                if ((this.IsNull(this.myTable.ColumnSiteKey)
                             || (((Int64)(this[this.myTable.ColumnSiteKey])) != value)))
                 {
                     this[this.myTable.ColumnSiteKey] = value;
                 }
             }
         }
-        
-        /// 
+
+        ///
         public Int32 LocationKey
         {
             get
@@ -5280,14 +9804,14 @@ namespace Ict.Petra.Shared.MPartner.Partner.Data
             }
             set
             {
-                if ((this.IsNull(this.myTable.ColumnLocationKey) 
+                if ((this.IsNull(this.myTable.ColumnLocationKey)
                             || (((Int32)(this[this.myTable.ColumnLocationKey])) != value)))
                 {
                     this[this.myTable.ColumnLocationKey] = value;
                 }
             }
         }
-        
+
         /// Name of the person or organisation.  If a person, more name info is stored in p_person.
         public String PartnerShortName
         {
@@ -5297,7 +9821,7 @@ namespace Ict.Petra.Shared.MPartner.Partner.Data
                 ret = this[this.myTable.ColumnPartnerShortName.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    return String.Empty;
+                    throw new System.Data.StrongTypingException("Error: DB null", null);
                 }
                 else
                 {
@@ -5306,14 +9830,14 @@ namespace Ict.Petra.Shared.MPartner.Partner.Data
             }
             set
             {
-                if ((this.IsNull(this.myTable.ColumnPartnerShortName) 
+                if ((this.IsNull(this.myTable.ColumnPartnerShortName)
                             || (((String)(this[this.myTable.ColumnPartnerShortName])) != value)))
                 {
                     this[this.myTable.ColumnPartnerShortName] = value;
                 }
             }
         }
-        
+
         /// This defines what type of partner this is. The classes that may be assigned are PERSON, FAMILY, CHURCH, ORGANISATION, UNIT, VENUE and BANK.
         public String PartnerClass
         {
@@ -5323,7 +9847,7 @@ namespace Ict.Petra.Shared.MPartner.Partner.Data
                 ret = this[this.myTable.ColumnPartnerClass.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    return String.Empty;
+                    throw new System.Data.StrongTypingException("Error: DB null", null);
                 }
                 else
                 {
@@ -5332,15 +9856,15 @@ namespace Ict.Petra.Shared.MPartner.Partner.Data
             }
             set
             {
-                if ((this.IsNull(this.myTable.ColumnPartnerClass) 
+                if ((this.IsNull(this.myTable.ColumnPartnerClass)
                             || (((String)(this[this.myTable.ColumnPartnerClass])) != value)))
                 {
                     this[this.myTable.ColumnPartnerClass] = value;
                 }
             }
         }
-        
-        /// 
+
+        ///
         public String TelephoneNumber
         {
             get
@@ -5349,7 +9873,7 @@ namespace Ict.Petra.Shared.MPartner.Partner.Data
                 ret = this[this.myTable.ColumnTelephoneNumber.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    return String.Empty;
+                    throw new System.Data.StrongTypingException("Error: DB null", null);
                 }
                 else
                 {
@@ -5358,15 +9882,15 @@ namespace Ict.Petra.Shared.MPartner.Partner.Data
             }
             set
             {
-                if ((this.IsNull(this.myTable.ColumnTelephoneNumber) 
+                if ((this.IsNull(this.myTable.ColumnTelephoneNumber)
                             || (((String)(this[this.myTable.ColumnTelephoneNumber])) != value)))
                 {
                     this[this.myTable.ColumnTelephoneNumber] = value;
                 }
             }
         }
-        
-        /// 
+
+        ///
         public Int32 Extension
         {
             get
@@ -5384,15 +9908,15 @@ namespace Ict.Petra.Shared.MPartner.Partner.Data
             }
             set
             {
-                if ((this.IsNull(this.myTable.ColumnExtension) 
+                if ((this.IsNull(this.myTable.ColumnExtension)
                             || (((Int32)(this[this.myTable.ColumnExtension])) != value)))
                 {
                     this[this.myTable.ColumnExtension] = value;
                 }
             }
         }
-        
-        /// 
+
+        ///
         public String FaxNumber
         {
             get
@@ -5401,7 +9925,7 @@ namespace Ict.Petra.Shared.MPartner.Partner.Data
                 ret = this[this.myTable.ColumnFaxNumber.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    return String.Empty;
+                    throw new System.Data.StrongTypingException("Error: DB null", null);
                 }
                 else
                 {
@@ -5410,15 +9934,15 @@ namespace Ict.Petra.Shared.MPartner.Partner.Data
             }
             set
             {
-                if ((this.IsNull(this.myTable.ColumnFaxNumber) 
+                if ((this.IsNull(this.myTable.ColumnFaxNumber)
                             || (((String)(this[this.myTable.ColumnFaxNumber])) != value)))
                 {
                     this[this.myTable.ColumnFaxNumber] = value;
                 }
             }
         }
-        
-        /// 
+
+        ///
         public Int32 FaxExtension
         {
             get
@@ -5436,15 +9960,15 @@ namespace Ict.Petra.Shared.MPartner.Partner.Data
             }
             set
             {
-                if ((this.IsNull(this.myTable.ColumnFaxExtension) 
+                if ((this.IsNull(this.myTable.ColumnFaxExtension)
                             || (((Int32)(this[this.myTable.ColumnFaxExtension])) != value)))
                 {
                     this[this.myTable.ColumnFaxExtension] = value;
                 }
             }
         }
-        
-        /// 
+
+        ///
         public String AlternateTelephone
         {
             get
@@ -5453,7 +9977,7 @@ namespace Ict.Petra.Shared.MPartner.Partner.Data
                 ret = this[this.myTable.ColumnAlternateTelephone.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    return String.Empty;
+                    throw new System.Data.StrongTypingException("Error: DB null", null);
                 }
                 else
                 {
@@ -5462,15 +9986,15 @@ namespace Ict.Petra.Shared.MPartner.Partner.Data
             }
             set
             {
-                if ((this.IsNull(this.myTable.ColumnAlternateTelephone) 
+                if ((this.IsNull(this.myTable.ColumnAlternateTelephone)
                             || (((String)(this[this.myTable.ColumnAlternateTelephone])) != value)))
                 {
                     this[this.myTable.ColumnAlternateTelephone] = value;
                 }
             }
         }
-        
-        /// 
+
+        ///
         public String MobileNumber
         {
             get
@@ -5479,7 +10003,7 @@ namespace Ict.Petra.Shared.MPartner.Partner.Data
                 ret = this[this.myTable.ColumnMobileNumber.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    return String.Empty;
+                    throw new System.Data.StrongTypingException("Error: DB null", null);
                 }
                 else
                 {
@@ -5488,15 +10012,15 @@ namespace Ict.Petra.Shared.MPartner.Partner.Data
             }
             set
             {
-                if ((this.IsNull(this.myTable.ColumnMobileNumber) 
+                if ((this.IsNull(this.myTable.ColumnMobileNumber)
                             || (((String)(this[this.myTable.ColumnMobileNumber])) != value)))
                 {
                     this[this.myTable.ColumnMobileNumber] = value;
                 }
             }
         }
-        
-        /// 
+
+        ///
         public String EmailAddress
         {
             get
@@ -5505,7 +10029,7 @@ namespace Ict.Petra.Shared.MPartner.Partner.Data
                 ret = this[this.myTable.ColumnEmailAddress.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    return String.Empty;
+                    throw new System.Data.StrongTypingException("Error: DB null", null);
                 }
                 else
                 {
@@ -5514,15 +10038,15 @@ namespace Ict.Petra.Shared.MPartner.Partner.Data
             }
             set
             {
-                if ((this.IsNull(this.myTable.ColumnEmailAddress) 
+                if ((this.IsNull(this.myTable.ColumnEmailAddress)
                             || (((String)(this[this.myTable.ColumnEmailAddress])) != value)))
                 {
                     this[this.myTable.ColumnEmailAddress] = value;
                 }
             }
         }
-        
-        /// 
+
+        ///
         public String Url
         {
             get
@@ -5531,7 +10055,7 @@ namespace Ict.Petra.Shared.MPartner.Partner.Data
                 ret = this[this.myTable.ColumnUrl.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    return String.Empty;
+                    throw new System.Data.StrongTypingException("Error: DB null", null);
                 }
                 else
                 {
@@ -5540,15 +10064,15 @@ namespace Ict.Petra.Shared.MPartner.Partner.Data
             }
             set
             {
-                if ((this.IsNull(this.myTable.ColumnUrl) 
+                if ((this.IsNull(this.myTable.ColumnUrl)
                             || (((String)(this[this.myTable.ColumnUrl])) != value)))
                 {
                     this[this.myTable.ColumnUrl] = value;
                 }
             }
         }
-        
-        /// 
+
+        ///
         public Boolean SendMail
         {
             get
@@ -5566,15 +10090,15 @@ namespace Ict.Petra.Shared.MPartner.Partner.Data
             }
             set
             {
-                if ((this.IsNull(this.myTable.ColumnSendMail) 
+                if ((this.IsNull(this.myTable.ColumnSendMail)
                             || (((Boolean)(this[this.myTable.ColumnSendMail])) != value)))
                 {
                     this[this.myTable.ColumnSendMail] = value;
                 }
             }
         }
-        
-        /// 
+
+        ///
         public System.DateTime DateEffective
         {
             get
@@ -5592,15 +10116,15 @@ namespace Ict.Petra.Shared.MPartner.Partner.Data
             }
             set
             {
-                if ((this.IsNull(this.myTable.ColumnDateEffective) 
+                if ((this.IsNull(this.myTable.ColumnDateEffective)
                             || (((System.DateTime)(this[this.myTable.ColumnDateEffective])) != value)))
                 {
                     this[this.myTable.ColumnDateEffective] = value;
                 }
             }
         }
-        
-        /// 
+
+        ///
         public System.DateTime DateGoodUntil
         {
             get
@@ -5618,15 +10142,15 @@ namespace Ict.Petra.Shared.MPartner.Partner.Data
             }
             set
             {
-                if ((this.IsNull(this.myTable.ColumnDateGoodUntil) 
+                if ((this.IsNull(this.myTable.ColumnDateGoodUntil)
                             || (((System.DateTime)(this[this.myTable.ColumnDateGoodUntil])) != value)))
                 {
                     this[this.myTable.ColumnDateGoodUntil] = value;
                 }
             }
         }
-        
-        /// 
+
+        ///
         public String LocationType
         {
             get
@@ -5635,7 +10159,7 @@ namespace Ict.Petra.Shared.MPartner.Partner.Data
                 ret = this[this.myTable.ColumnLocationType.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    return String.Empty;
+                    throw new System.Data.StrongTypingException("Error: DB null", null);
                 }
                 else
                 {
@@ -5644,15 +10168,15 @@ namespace Ict.Petra.Shared.MPartner.Partner.Data
             }
             set
             {
-                if ((this.IsNull(this.myTable.ColumnLocationType) 
+                if ((this.IsNull(this.myTable.ColumnLocationType)
                             || (((String)(this[this.myTable.ColumnLocationType])) != value)))
                 {
                     this[this.myTable.ColumnLocationType] = value;
                 }
             }
         }
-        
-        /// 
+
+        ///
         public Int64 SiteKeyOfEditedRecord
         {
             get
@@ -5670,15 +10194,15 @@ namespace Ict.Petra.Shared.MPartner.Partner.Data
             }
             set
             {
-                if ((this.IsNull(this.myTable.ColumnSiteKeyOfEditedRecord) 
+                if ((this.IsNull(this.myTable.ColumnSiteKeyOfEditedRecord)
                             || (((Int64)(this[this.myTable.ColumnSiteKeyOfEditedRecord])) != value)))
                 {
                     this[this.myTable.ColumnSiteKeyOfEditedRecord] = value;
                 }
             }
         }
-        
-        /// 
+
+        ///
         public Int32 LocationKeyOfEditedRecord
         {
             get
@@ -5696,14 +10220,14 @@ namespace Ict.Petra.Shared.MPartner.Partner.Data
             }
             set
             {
-                if ((this.IsNull(this.myTable.ColumnLocationKeyOfEditedRecord) 
+                if ((this.IsNull(this.myTable.ColumnLocationKeyOfEditedRecord)
                             || (((Int32)(this[this.myTable.ColumnLocationKeyOfEditedRecord])) != value)))
                 {
                     this[this.myTable.ColumnLocationKeyOfEditedRecord] = value;
                 }
             }
         }
-        
+
         /// set default values
         public virtual void InitValues()
         {
@@ -5727,454 +10251,319 @@ namespace Ict.Petra.Shared.MPartner.Partner.Data
             this.SetNull(this.myTable.ColumnSiteKeyOfEditedRecord);
             this.SetNull(this.myTable.ColumnLocationKeyOfEditedRecord);
         }
-        
+
+        /// test for NULL value
+        public bool IsPartnerKeyNull()
+        {
+            return this.IsNull(this.myTable.ColumnPartnerKey);
+        }
+
+        /// assign NULL value
+        public void SetPartnerKeyNull()
+        {
+            this.SetNull(this.myTable.ColumnPartnerKey);
+        }
+
+        /// test for NULL value
+        public bool IsSiteKeyNull()
+        {
+            return this.IsNull(this.myTable.ColumnSiteKey);
+        }
+
+        /// assign NULL value
+        public void SetSiteKeyNull()
+        {
+            this.SetNull(this.myTable.ColumnSiteKey);
+        }
+
+        /// test for NULL value
+        public bool IsLocationKeyNull()
+        {
+            return this.IsNull(this.myTable.ColumnLocationKey);
+        }
+
+        /// assign NULL value
+        public void SetLocationKeyNull()
+        {
+            this.SetNull(this.myTable.ColumnLocationKey);
+        }
+
         /// test for NULL value
         public bool IsPartnerShortNameNull()
         {
             return this.IsNull(this.myTable.ColumnPartnerShortName);
         }
-        
+
         /// assign NULL value
         public void SetPartnerShortNameNull()
         {
             this.SetNull(this.myTable.ColumnPartnerShortName);
         }
-        
+
         /// test for NULL value
         public bool IsPartnerClassNull()
         {
             return this.IsNull(this.myTable.ColumnPartnerClass);
         }
-        
+
         /// assign NULL value
         public void SetPartnerClassNull()
         {
             this.SetNull(this.myTable.ColumnPartnerClass);
         }
-        
+
         /// test for NULL value
         public bool IsTelephoneNumberNull()
         {
             return this.IsNull(this.myTable.ColumnTelephoneNumber);
         }
-        
+
         /// assign NULL value
         public void SetTelephoneNumberNull()
         {
             this.SetNull(this.myTable.ColumnTelephoneNumber);
         }
-        
+
         /// test for NULL value
         public bool IsExtensionNull()
         {
             return this.IsNull(this.myTable.ColumnExtension);
         }
-        
+
         /// assign NULL value
         public void SetExtensionNull()
         {
             this.SetNull(this.myTable.ColumnExtension);
         }
-        
+
         /// test for NULL value
         public bool IsFaxNumberNull()
         {
             return this.IsNull(this.myTable.ColumnFaxNumber);
         }
-        
+
         /// assign NULL value
         public void SetFaxNumberNull()
         {
             this.SetNull(this.myTable.ColumnFaxNumber);
         }
-        
+
         /// test for NULL value
         public bool IsFaxExtensionNull()
         {
             return this.IsNull(this.myTable.ColumnFaxExtension);
         }
-        
+
         /// assign NULL value
         public void SetFaxExtensionNull()
         {
             this.SetNull(this.myTable.ColumnFaxExtension);
         }
-        
+
         /// test for NULL value
         public bool IsAlternateTelephoneNull()
         {
             return this.IsNull(this.myTable.ColumnAlternateTelephone);
         }
-        
+
         /// assign NULL value
         public void SetAlternateTelephoneNull()
         {
             this.SetNull(this.myTable.ColumnAlternateTelephone);
         }
-        
+
         /// test for NULL value
         public bool IsMobileNumberNull()
         {
             return this.IsNull(this.myTable.ColumnMobileNumber);
         }
-        
+
         /// assign NULL value
         public void SetMobileNumberNull()
         {
             this.SetNull(this.myTable.ColumnMobileNumber);
         }
-        
+
         /// test for NULL value
         public bool IsEmailAddressNull()
         {
             return this.IsNull(this.myTable.ColumnEmailAddress);
         }
-        
+
         /// assign NULL value
         public void SetEmailAddressNull()
         {
             this.SetNull(this.myTable.ColumnEmailAddress);
         }
-        
+
         /// test for NULL value
         public bool IsUrlNull()
         {
             return this.IsNull(this.myTable.ColumnUrl);
         }
-        
+
         /// assign NULL value
         public void SetUrlNull()
         {
             this.SetNull(this.myTable.ColumnUrl);
         }
-        
+
         /// test for NULL value
         public bool IsSendMailNull()
         {
             return this.IsNull(this.myTable.ColumnSendMail);
         }
-        
+
         /// assign NULL value
         public void SetSendMailNull()
         {
             this.SetNull(this.myTable.ColumnSendMail);
         }
-        
+
         /// test for NULL value
         public bool IsDateEffectiveNull()
         {
             return this.IsNull(this.myTable.ColumnDateEffective);
         }
-        
+
         /// assign NULL value
         public void SetDateEffectiveNull()
         {
             this.SetNull(this.myTable.ColumnDateEffective);
         }
-        
+
         /// test for NULL value
         public bool IsDateGoodUntilNull()
         {
             return this.IsNull(this.myTable.ColumnDateGoodUntil);
         }
-        
+
         /// assign NULL value
         public void SetDateGoodUntilNull()
         {
             this.SetNull(this.myTable.ColumnDateGoodUntil);
         }
-        
+
         /// test for NULL value
         public bool IsLocationTypeNull()
         {
             return this.IsNull(this.myTable.ColumnLocationType);
         }
-        
+
         /// assign NULL value
         public void SetLocationTypeNull()
         {
             this.SetNull(this.myTable.ColumnLocationType);
         }
-        
+
         /// test for NULL value
         public bool IsSiteKeyOfEditedRecordNull()
         {
             return this.IsNull(this.myTable.ColumnSiteKeyOfEditedRecord);
         }
-        
+
         /// assign NULL value
         public void SetSiteKeyOfEditedRecordNull()
         {
             this.SetNull(this.myTable.ColumnSiteKeyOfEditedRecord);
         }
-        
+
         /// test for NULL value
         public bool IsLocationKeyOfEditedRecordNull()
         {
             return this.IsNull(this.myTable.ColumnLocationKeyOfEditedRecord);
         }
-        
+
         /// assign NULL value
         public void SetLocationKeyOfEditedRecordNull()
         {
             this.SetNull(this.myTable.ColumnLocationKeyOfEditedRecord);
         }
     }
-    
-    /// auto generated custom table
+
+    ///
     [Serializable()]
     public class PartnerAddressAggregateTDSAddressAddedOrChangedPromotionTable : TTypedDataTable
     {
-        
         /// This is the key that tell what site created this location, it will help to merge addresses when doing imports
         public DataColumn ColumnSiteKey;
-        
-        /// 
+        ///
         public DataColumn ColumnLocationKey;
-        
         /// This is the partner key assigned to each partner. It consists of the fund id followed by a computer generated six digit number.
         public DataColumn ColumnPartnerKey;
-        
-        /// 
+        ///
         public DataColumn ColumnLocationChange;
-        
-        /// 
+        ///
         public DataColumn ColumnPartnerLocationChange;
-        
-        /// 
+        ///
         public DataColumn ColumnLocationAdded;
-        
-        /// 
+        ///
         public DataColumn ColumnChangedFields;
-        
-        /// 
+        ///
         public DataColumn ColumnUserAnswer;
-        
-        /// 
+        ///
         public DataColumn ColumnAnswerProcessedClientSide;
-        
-        /// 
+        ///
         public DataColumn ColumnAnswerProcessedServerSide;
-        
+
+        /// TableId for Ict.Common.Data generic functions
+        public static short TableId = -1;
+
+        private static bool FInitInfoValues = InitInfoValues();
+        private static bool InitInfoValues()
+        {
+            TableInfo.Add(TableId, new TTypedTableInfo(TableId, "PartnerAddressAggregateTDSAddressAddedOrChangedPromotion", "PartnerAddressAggregateTDSAddressAddedOrChangedPromotion",
+                new TTypedColumnInfo[] {
+                    new TTypedColumnInfo(0, "SiteKey", "p_site_key_n", OdbcType.Decimal, 10, true),
+                    new TTypedColumnInfo(1, "LocationKey", "p_location_key_i", OdbcType.Int, -1, true),
+                    new TTypedColumnInfo(2, "PartnerKey", "p_partner_key_n", OdbcType.Decimal, 10, true),
+                    new TTypedColumnInfo(3, "LocationChange", "LocationChange", OdbcType.Int, -1, false),
+                    new TTypedColumnInfo(4, "PartnerLocationChange", "PartnerLocationChange", OdbcType.Int, -1, false),
+                    new TTypedColumnInfo(5, "LocationAdded", "LocationAdded", OdbcType.Int, -1, false),
+                    new TTypedColumnInfo(6, "ChangedFields", "ChangedFields", OdbcType.Int, -1, false),
+                    new TTypedColumnInfo(7, "UserAnswer", "UserAnswer", OdbcType.Int, -1, false),
+                    new TTypedColumnInfo(8, "AnswerProcessedClientSide", "AnswerProcessedClientSide", OdbcType.Int, -1, false),
+                    new TTypedColumnInfo(9, "AnswerProcessedServerSide", "AnswerProcessedServerSide", OdbcType.Int, -1, false)
+                },
+                new int[] {
+
+                }));
+            return true;
+        }
+
         /// constructor
-        public PartnerAddressAggregateTDSAddressAddedOrChangedPromotionTable() : 
-                base("AddressAddedOrChangedPromotion")
+        public PartnerAddressAggregateTDSAddressAddedOrChangedPromotionTable() :
+                base("PartnerAddressAggregateTDSAddressAddedOrChangedPromotion")
         {
         }
-        
+
         /// constructor
-        public PartnerAddressAggregateTDSAddressAddedOrChangedPromotionTable(string ATablename) : 
+        public PartnerAddressAggregateTDSAddressAddedOrChangedPromotionTable(string ATablename) :
                 base(ATablename)
         {
         }
-        
+
         /// constructor for serialization
-        public PartnerAddressAggregateTDSAddressAddedOrChangedPromotionTable(System.Runtime.Serialization.SerializationInfo info, System.Runtime.Serialization.StreamingContext context) : 
+        public PartnerAddressAggregateTDSAddressAddedOrChangedPromotionTable(System.Runtime.Serialization.SerializationInfo info, System.Runtime.Serialization.StreamingContext context) :
                 base(info, context)
         {
         }
-        
-        /// Access a typed row by index
-        public PartnerAddressAggregateTDSAddressAddedOrChangedPromotionRow this[int i]
+
+        /// create the columns
+        protected override void InitClass()
         {
-            get
-            {
-                return ((PartnerAddressAggregateTDSAddressAddedOrChangedPromotionRow)(this.Rows[i]));
-            }
+            this.Columns.Add(new System.Data.DataColumn("p_site_key_n", typeof(Int64)));
+            this.Columns.Add(new System.Data.DataColumn("p_location_key_i", typeof(Int32)));
+            this.Columns.Add(new System.Data.DataColumn("p_partner_key_n", typeof(Int64)));
+            this.Columns.Add(new System.Data.DataColumn("LocationChange", typeof(bool)));
+            this.Columns.Add(new System.Data.DataColumn("PartnerLocationChange", typeof(bool)));
+            this.Columns.Add(new System.Data.DataColumn("LocationAdded", typeof(bool)));
+            this.Columns.Add(new System.Data.DataColumn("ChangedFields", typeof(string)));
+            this.Columns.Add(new System.Data.DataColumn("UserAnswer", typeof(string)));
+            this.Columns.Add(new System.Data.DataColumn("AnswerProcessedClientSide", typeof(bool)));
+            this.Columns.Add(new System.Data.DataColumn("AnswerProcessedServerSide", typeof(bool)));
         }
-        
-        /// get the name of the field in the database for this column
-        public static string GetSiteKeyDBName()
-        {
-            return "p_site_key_n";
-        }
-        
-        /// get help text for column
-        public static string GetSiteKeyHelp()
-        {
-            return "Enter the site key";
-        }
-        
-        /// get label of column
-        public static string GetSiteKeyLabel()
-        {
-            return "Site Key";
-        }
-        
-        /// get the name of the field in the database for this column
-        public static string GetLocationKeyDBName()
-        {
-            return "p_location_key_i";
-        }
-        
-        /// get help text for column
-        public static string GetLocationKeyHelp()
-        {
-            return "";
-        }
-        
-        /// get label of column
-        public static string GetLocationKeyLabel()
-        {
-            return "Location Key";
-        }
-        
-        /// get the name of the field in the database for this column
-        public static string GetPartnerKeyDBName()
-        {
-            return "p_partner_key_n";
-        }
-        
-        /// get help text for column
-        public static string GetPartnerKeyHelp()
-        {
-            return "Enter the partner key (SiteID + Number)";
-        }
-        
-        /// get label of column
-        public static string GetPartnerKeyLabel()
-        {
-            return "Partner Key";
-        }
-        
-        /// get the name of the field in the database for this column
-        public static string GetLocationChangeDBName()
-        {
-            return "LocationChange";
-        }
-        
-        /// get help text for column
-        public static string GetLocationChangeHelp()
-        {
-            return null;
-        }
-        
-        /// get label of column
-        public static string GetLocationChangeLabel()
-        {
-            return "";
-        }
-        
-        /// get the name of the field in the database for this column
-        public static string GetPartnerLocationChangeDBName()
-        {
-            return "PartnerLocationChange";
-        }
-        
-        /// get help text for column
-        public static string GetPartnerLocationChangeHelp()
-        {
-            return null;
-        }
-        
-        /// get label of column
-        public static string GetPartnerLocationChangeLabel()
-        {
-            return "";
-        }
-        
-        /// get the name of the field in the database for this column
-        public static string GetLocationAddedDBName()
-        {
-            return "LocationAdded";
-        }
-        
-        /// get help text for column
-        public static string GetLocationAddedHelp()
-        {
-            return null;
-        }
-        
-        /// get label of column
-        public static string GetLocationAddedLabel()
-        {
-            return "";
-        }
-        
-        /// get the name of the field in the database for this column
-        public static string GetChangedFieldsDBName()
-        {
-            return "ChangedFields";
-        }
-        
-        /// get help text for column
-        public static string GetChangedFieldsHelp()
-        {
-            return null;
-        }
-        
-        /// get label of column
-        public static string GetChangedFieldsLabel()
-        {
-            return "";
-        }
-        
-        /// get the name of the field in the database for this column
-        public static string GetUserAnswerDBName()
-        {
-            return "UserAnswer";
-        }
-        
-        /// get help text for column
-        public static string GetUserAnswerHelp()
-        {
-            return null;
-        }
-        
-        /// get label of column
-        public static string GetUserAnswerLabel()
-        {
-            return "";
-        }
-        
-        /// get the name of the field in the database for this column
-        public static string GetAnswerProcessedClientSideDBName()
-        {
-            return "AnswerProcessedClientSide";
-        }
-        
-        /// get help text for column
-        public static string GetAnswerProcessedClientSideHelp()
-        {
-            return null;
-        }
-        
-        /// get label of column
-        public static string GetAnswerProcessedClientSideLabel()
-        {
-            return "";
-        }
-        
-        /// get the name of the field in the database for this column
-        public static string GetAnswerProcessedServerSideDBName()
-        {
-            return "AnswerProcessedServerSide";
-        }
-        
-        /// get help text for column
-        public static string GetAnswerProcessedServerSideHelp()
-        {
-            return null;
-        }
-        
-        /// get label of column
-        public static string GetAnswerProcessedServerSideLabel()
-        {
-            return "";
-        }
-        
-        /// CamelCase version of the tablename
-        public static string GetTableName()
-        {
-            return "AddressAddedOrChangedPromotion";
-        }
-        
-        /// original name of table in the database
-        public static string GetTableDBName()
-        {
-            return "AddressAddedOrChangedPromotion";
-        }
-        
+
         /// assign columns to properties, set primary key
         public override void InitVars()
         {
@@ -6189,7 +10578,16 @@ namespace Ict.Petra.Shared.MPartner.Partner.Data
             this.ColumnAnswerProcessedClientSide = this.Columns["AnswerProcessedClientSide"];
             this.ColumnAnswerProcessedServerSide = this.Columns["AnswerProcessedServerSide"];
         }
-        
+
+        /// Access a typed row by index
+        public PartnerAddressAggregateTDSAddressAddedOrChangedPromotionRow this[int i]
+        {
+            get
+            {
+                return ((PartnerAddressAggregateTDSAddressAddedOrChangedPromotionRow)(this.Rows[i]));
+            }
+        }
+
         /// create a new typed row
         public PartnerAddressAggregateTDSAddressAddedOrChangedPromotionRow NewRowTyped(bool AWithDefaultValues)
         {
@@ -6200,89 +10598,166 @@ namespace Ict.Petra.Shared.MPartner.Partner.Data
             }
             return ret;
         }
-        
+
+        /// create a new typed row, always with default values
+        public PartnerAddressAggregateTDSAddressAddedOrChangedPromotionRow NewRowTyped()
+        {
+            return this.NewRowTyped(true);
+        }
+
         /// new typed row using DataRowBuilder
         protected override System.Data.DataRow NewRowFromBuilder(System.Data.DataRowBuilder builder)
         {
             return new PartnerAddressAggregateTDSAddressAddedOrChangedPromotionRow(builder);
         }
-        
-        /// create the columns
-        protected override void InitClass()
+
+        /// get typed set of changes
+        public PartnerAddressAggregateTDSAddressAddedOrChangedPromotionTable GetChangesTyped()
         {
-            this.Columns.Add(new System.Data.DataColumn("p_site_key_n", typeof(Int64)));
-            this.Columns.Add(new System.Data.DataColumn("p_location_key_i", typeof(Int32)));
-            this.Columns.Add(new System.Data.DataColumn("p_partner_key_n", typeof(Int64)));
-            this.Columns.Add(new System.Data.DataColumn("LocationChange", typeof(Boolean)));
-            this.Columns.Add(new System.Data.DataColumn("PartnerLocationChange", typeof(Boolean)));
-            this.Columns.Add(new System.Data.DataColumn("LocationAdded", typeof(Boolean)));
-            this.Columns.Add(new System.Data.DataColumn("ChangedFields", typeof(String)));
-            this.Columns.Add(new System.Data.DataColumn("UserAnswer", typeof(String)));
-            this.Columns.Add(new System.Data.DataColumn("AnswerProcessedClientSide", typeof(Boolean)));
-            this.Columns.Add(new System.Data.DataColumn("AnswerProcessedServerSide", typeof(Boolean)));
+            return ((PartnerAddressAggregateTDSAddressAddedOrChangedPromotionTable)(base.GetChangesTypedInternal()));
         }
-        
-        /// prepare odbc parameters for given column
-        public override OdbcParameter CreateOdbcParameter(DataColumn ACol)
+
+        /// get an odbc parameter for the given column
+        public override OdbcParameter CreateOdbcParameter(Int32 AColumnNr)
         {
-            if ((ACol == ColumnSiteKey))
-            {
-                return new System.Data.Odbc.OdbcParameter("", OdbcType.Decimal, 10);
-            }
-            if ((ACol == ColumnLocationKey))
-            {
-                return new System.Data.Odbc.OdbcParameter("", OdbcType.Int);
-            }
-            if ((ACol == ColumnPartnerKey))
-            {
-                return new System.Data.Odbc.OdbcParameter("", OdbcType.Decimal, 10);
-            }
-            if ((ACol == ColumnLocationChange))
-            {
-                return new System.Data.Odbc.OdbcParameter("", OdbcType.Int);
-            }
-            if ((ACol == ColumnPartnerLocationChange))
-            {
-                return new System.Data.Odbc.OdbcParameter("", OdbcType.Int);
-            }
-            if ((ACol == ColumnLocationAdded))
-            {
-                return new System.Data.Odbc.OdbcParameter("", OdbcType.Int);
-            }
-            if ((ACol == ColumnChangedFields))
-            {
-                return new System.Data.Odbc.OdbcParameter("", OdbcType.Int);
-            }
-            if ((ACol == ColumnUserAnswer))
-            {
-                return new System.Data.Odbc.OdbcParameter("", OdbcType.Int);
-            }
-            if ((ACol == ColumnAnswerProcessedClientSide))
-            {
-                return new System.Data.Odbc.OdbcParameter("", OdbcType.Int);
-            }
-            if ((ACol == ColumnAnswerProcessedServerSide))
-            {
-                return new System.Data.Odbc.OdbcParameter("", OdbcType.Int);
-            }
-            return null;
+            return CreateOdbcParameter(TableId, AColumnNr);
         }
+
+        /// get the name of the field in the database for this column
+        public static string GetSiteKeyDBName()
+        {
+            return "p_site_key_n";
+        }
+
+        /// get character length for column
+        public static short GetSiteKeyLength()
+        {
+            return 10;
+        }
+
+        /// get the name of the field in the database for this column
+        public static string GetLocationKeyDBName()
+        {
+            return "p_location_key_i";
+        }
+
+        /// get character length for column
+        public static short GetLocationKeyLength()
+        {
+            return -1;
+        }
+
+        /// get the name of the field in the database for this column
+        public static string GetPartnerKeyDBName()
+        {
+            return "p_partner_key_n";
+        }
+
+        /// get character length for column
+        public static short GetPartnerKeyLength()
+        {
+            return 10;
+        }
+
+        /// get the name of the field in the database for this column
+        public static string GetLocationChangeDBName()
+        {
+            return "LocationChange";
+        }
+
+        /// get character length for column
+        public static short GetLocationChangeLength()
+        {
+            return -1;
+        }
+
+        /// get the name of the field in the database for this column
+        public static string GetPartnerLocationChangeDBName()
+        {
+            return "PartnerLocationChange";
+        }
+
+        /// get character length for column
+        public static short GetPartnerLocationChangeLength()
+        {
+            return -1;
+        }
+
+        /// get the name of the field in the database for this column
+        public static string GetLocationAddedDBName()
+        {
+            return "LocationAdded";
+        }
+
+        /// get character length for column
+        public static short GetLocationAddedLength()
+        {
+            return -1;
+        }
+
+        /// get the name of the field in the database for this column
+        public static string GetChangedFieldsDBName()
+        {
+            return "ChangedFields";
+        }
+
+        /// get character length for column
+        public static short GetChangedFieldsLength()
+        {
+            return -1;
+        }
+
+        /// get the name of the field in the database for this column
+        public static string GetUserAnswerDBName()
+        {
+            return "UserAnswer";
+        }
+
+        /// get character length for column
+        public static short GetUserAnswerLength()
+        {
+            return -1;
+        }
+
+        /// get the name of the field in the database for this column
+        public static string GetAnswerProcessedClientSideDBName()
+        {
+            return "AnswerProcessedClientSide";
+        }
+
+        /// get character length for column
+        public static short GetAnswerProcessedClientSideLength()
+        {
+            return -1;
+        }
+
+        /// get the name of the field in the database for this column
+        public static string GetAnswerProcessedServerSideDBName()
+        {
+            return "AnswerProcessedServerSide";
+        }
+
+        /// get character length for column
+        public static short GetAnswerProcessedServerSideLength()
+        {
+            return -1;
+        }
+
     }
-    
-    /// CustomRow auto generated
+
+    ///
     [Serializable()]
     public class PartnerAddressAggregateTDSAddressAddedOrChangedPromotionRow : System.Data.DataRow
     {
-        
         private PartnerAddressAggregateTDSAddressAddedOrChangedPromotionTable myTable;
-        
+
         /// Constructor
-        public PartnerAddressAggregateTDSAddressAddedOrChangedPromotionRow(System.Data.DataRowBuilder rb) : 
+        public PartnerAddressAggregateTDSAddressAddedOrChangedPromotionRow(System.Data.DataRowBuilder rb) :
                 base(rb)
         {
             this.myTable = ((PartnerAddressAggregateTDSAddressAddedOrChangedPromotionTable)(this.Table));
         }
-        
+
         /// This is the key that tell what site created this location, it will help to merge addresses when doing imports
         public Int64 SiteKey
         {
@@ -6301,15 +10776,15 @@ namespace Ict.Petra.Shared.MPartner.Partner.Data
             }
             set
             {
-                if ((this.IsNull(this.myTable.ColumnSiteKey) 
+                if ((this.IsNull(this.myTable.ColumnSiteKey)
                             || (((Int64)(this[this.myTable.ColumnSiteKey])) != value)))
                 {
                     this[this.myTable.ColumnSiteKey] = value;
                 }
             }
         }
-        
-        /// 
+
+        ///
         public Int32 LocationKey
         {
             get
@@ -6327,14 +10802,14 @@ namespace Ict.Petra.Shared.MPartner.Partner.Data
             }
             set
             {
-                if ((this.IsNull(this.myTable.ColumnLocationKey) 
+                if ((this.IsNull(this.myTable.ColumnLocationKey)
                             || (((Int32)(this[this.myTable.ColumnLocationKey])) != value)))
                 {
                     this[this.myTable.ColumnLocationKey] = value;
                 }
             }
         }
-        
+
         /// This is the partner key assigned to each partner. It consists of the fund id followed by a computer generated six digit number.
         public Int64 PartnerKey
         {
@@ -6353,16 +10828,16 @@ namespace Ict.Petra.Shared.MPartner.Partner.Data
             }
             set
             {
-                if ((this.IsNull(this.myTable.ColumnPartnerKey) 
+                if ((this.IsNull(this.myTable.ColumnPartnerKey)
                             || (((Int64)(this[this.myTable.ColumnPartnerKey])) != value)))
                 {
                     this[this.myTable.ColumnPartnerKey] = value;
                 }
             }
         }
-        
-        /// 
-        public Boolean LocationChange
+
+        ///
+        public bool LocationChange
         {
             get
             {
@@ -6374,21 +10849,21 @@ namespace Ict.Petra.Shared.MPartner.Partner.Data
                 }
                 else
                 {
-                    return ((Boolean)(ret));
+                    return ((bool)(ret));
                 }
             }
             set
             {
-                if ((this.IsNull(this.myTable.ColumnLocationChange) 
-                            || (((Boolean)(this[this.myTable.ColumnLocationChange])) != value)))
+                if ((this.IsNull(this.myTable.ColumnLocationChange)
+                            || (((bool)(this[this.myTable.ColumnLocationChange])) != value)))
                 {
                     this[this.myTable.ColumnLocationChange] = value;
                 }
             }
         }
-        
-        /// 
-        public Boolean PartnerLocationChange
+
+        ///
+        public bool PartnerLocationChange
         {
             get
             {
@@ -6400,21 +10875,21 @@ namespace Ict.Petra.Shared.MPartner.Partner.Data
                 }
                 else
                 {
-                    return ((Boolean)(ret));
+                    return ((bool)(ret));
                 }
             }
             set
             {
-                if ((this.IsNull(this.myTable.ColumnPartnerLocationChange) 
-                            || (((Boolean)(this[this.myTable.ColumnPartnerLocationChange])) != value)))
+                if ((this.IsNull(this.myTable.ColumnPartnerLocationChange)
+                            || (((bool)(this[this.myTable.ColumnPartnerLocationChange])) != value)))
                 {
                     this[this.myTable.ColumnPartnerLocationChange] = value;
                 }
             }
         }
-        
-        /// 
-        public Boolean LocationAdded
+
+        ///
+        public bool LocationAdded
         {
             get
             {
@@ -6426,21 +10901,21 @@ namespace Ict.Petra.Shared.MPartner.Partner.Data
                 }
                 else
                 {
-                    return ((Boolean)(ret));
+                    return ((bool)(ret));
                 }
             }
             set
             {
-                if ((this.IsNull(this.myTable.ColumnLocationAdded) 
-                            || (((Boolean)(this[this.myTable.ColumnLocationAdded])) != value)))
+                if ((this.IsNull(this.myTable.ColumnLocationAdded)
+                            || (((bool)(this[this.myTable.ColumnLocationAdded])) != value)))
                 {
                     this[this.myTable.ColumnLocationAdded] = value;
                 }
             }
         }
-        
-        /// 
-        public String ChangedFields
+
+        ///
+        public string ChangedFields
         {
             get
             {
@@ -6452,21 +10927,21 @@ namespace Ict.Petra.Shared.MPartner.Partner.Data
                 }
                 else
                 {
-                    return ((String)(ret));
+                    return ((string)(ret));
                 }
             }
             set
             {
-                if ((this.IsNull(this.myTable.ColumnChangedFields) 
-                            || (((String)(this[this.myTable.ColumnChangedFields])) != value)))
+                if ((this.IsNull(this.myTable.ColumnChangedFields)
+                            || (((string)(this[this.myTable.ColumnChangedFields])) != value)))
                 {
                     this[this.myTable.ColumnChangedFields] = value;
                 }
             }
         }
-        
-        /// 
-        public String UserAnswer
+
+        ///
+        public string UserAnswer
         {
             get
             {
@@ -6478,21 +10953,21 @@ namespace Ict.Petra.Shared.MPartner.Partner.Data
                 }
                 else
                 {
-                    return ((String)(ret));
+                    return ((string)(ret));
                 }
             }
             set
             {
-                if ((this.IsNull(this.myTable.ColumnUserAnswer) 
-                            || (((String)(this[this.myTable.ColumnUserAnswer])) != value)))
+                if ((this.IsNull(this.myTable.ColumnUserAnswer)
+                            || (((string)(this[this.myTable.ColumnUserAnswer])) != value)))
                 {
                     this[this.myTable.ColumnUserAnswer] = value;
                 }
             }
         }
-        
-        /// 
-        public Boolean AnswerProcessedClientSide
+
+        ///
+        public bool AnswerProcessedClientSide
         {
             get
             {
@@ -6504,21 +10979,21 @@ namespace Ict.Petra.Shared.MPartner.Partner.Data
                 }
                 else
                 {
-                    return ((Boolean)(ret));
+                    return ((bool)(ret));
                 }
             }
             set
             {
-                if ((this.IsNull(this.myTable.ColumnAnswerProcessedClientSide) 
-                            || (((Boolean)(this[this.myTable.ColumnAnswerProcessedClientSide])) != value)))
+                if ((this.IsNull(this.myTable.ColumnAnswerProcessedClientSide)
+                            || (((bool)(this[this.myTable.ColumnAnswerProcessedClientSide])) != value)))
                 {
                     this[this.myTable.ColumnAnswerProcessedClientSide] = value;
                 }
             }
         }
-        
-        /// 
-        public Boolean AnswerProcessedServerSide
+
+        ///
+        public bool AnswerProcessedServerSide
         {
             get
             {
@@ -6530,19 +11005,19 @@ namespace Ict.Petra.Shared.MPartner.Partner.Data
                 }
                 else
                 {
-                    return ((Boolean)(ret));
+                    return ((bool)(ret));
                 }
             }
             set
             {
-                if ((this.IsNull(this.myTable.ColumnAnswerProcessedServerSide) 
-                            || (((Boolean)(this[this.myTable.ColumnAnswerProcessedServerSide])) != value)))
+                if ((this.IsNull(this.myTable.ColumnAnswerProcessedServerSide)
+                            || (((bool)(this[this.myTable.ColumnAnswerProcessedServerSide])) != value)))
                 {
                     this[this.myTable.ColumnAnswerProcessedServerSide] = value;
                 }
             }
         }
-        
+
         /// set default values
         public virtual void InitValues()
         {
@@ -6557,2149 +11032,160 @@ namespace Ict.Petra.Shared.MPartner.Partner.Data
             this.SetNull(this.myTable.ColumnAnswerProcessedClientSide);
             this.SetNull(this.myTable.ColumnAnswerProcessedServerSide);
         }
-        
+
+        /// test for NULL value
+        public bool IsSiteKeyNull()
+        {
+            return this.IsNull(this.myTable.ColumnSiteKey);
+        }
+
+        /// assign NULL value
+        public void SetSiteKeyNull()
+        {
+            this.SetNull(this.myTable.ColumnSiteKey);
+        }
+
+        /// test for NULL value
+        public bool IsLocationKeyNull()
+        {
+            return this.IsNull(this.myTable.ColumnLocationKey);
+        }
+
+        /// assign NULL value
+        public void SetLocationKeyNull()
+        {
+            this.SetNull(this.myTable.ColumnLocationKey);
+        }
+
+        /// test for NULL value
+        public bool IsPartnerKeyNull()
+        {
+            return this.IsNull(this.myTable.ColumnPartnerKey);
+        }
+
+        /// assign NULL value
+        public void SetPartnerKeyNull()
+        {
+            this.SetNull(this.myTable.ColumnPartnerKey);
+        }
+
         /// test for NULL value
         public bool IsLocationChangeNull()
         {
             return this.IsNull(this.myTable.ColumnLocationChange);
         }
-        
+
         /// assign NULL value
         public void SetLocationChangeNull()
         {
             this.SetNull(this.myTable.ColumnLocationChange);
         }
-        
+
         /// test for NULL value
         public bool IsPartnerLocationChangeNull()
         {
             return this.IsNull(this.myTable.ColumnPartnerLocationChange);
         }
-        
+
         /// assign NULL value
         public void SetPartnerLocationChangeNull()
         {
             this.SetNull(this.myTable.ColumnPartnerLocationChange);
         }
-        
+
         /// test for NULL value
         public bool IsLocationAddedNull()
         {
             return this.IsNull(this.myTable.ColumnLocationAdded);
         }
-        
+
         /// assign NULL value
         public void SetLocationAddedNull()
         {
             this.SetNull(this.myTable.ColumnLocationAdded);
         }
-        
+
         /// test for NULL value
         public bool IsChangedFieldsNull()
         {
             return this.IsNull(this.myTable.ColumnChangedFields);
         }
-        
+
         /// assign NULL value
         public void SetChangedFieldsNull()
         {
             this.SetNull(this.myTable.ColumnChangedFields);
         }
-        
+
         /// test for NULL value
         public bool IsUserAnswerNull()
         {
             return this.IsNull(this.myTable.ColumnUserAnswer);
         }
-        
+
         /// assign NULL value
         public void SetUserAnswerNull()
         {
             this.SetNull(this.myTable.ColumnUserAnswer);
         }
-        
+
         /// test for NULL value
         public bool IsAnswerProcessedClientSideNull()
         {
             return this.IsNull(this.myTable.ColumnAnswerProcessedClientSide);
         }
-        
+
         /// assign NULL value
         public void SetAnswerProcessedClientSideNull()
         {
             this.SetNull(this.myTable.ColumnAnswerProcessedClientSide);
         }
-        
+
         /// test for NULL value
         public bool IsAnswerProcessedServerSideNull()
         {
             return this.IsNull(this.myTable.ColumnAnswerProcessedServerSide);
         }
-        
+
         /// assign NULL value
         public void SetAnswerProcessedServerSideNull()
         {
             this.SetNull(this.myTable.ColumnAnswerProcessedServerSide);
         }
     }
-    
-    /// auto generated
-    [Serializable()]
-    public class PartnerAddressAggregateTDS : TTypedDataSet
-    {
-        
-        private PartnerAddressAggregateTDSSimilarLocationParametersTable TableSimilarLocationParameters;
-        
-        private PartnerAddressAggregateTDSChangePromotionParametersTable TableChangePromotionParameters;
-        
-        private PartnerAddressAggregateTDSAddressAddedOrChangedPromotionTable TableAddressAddedOrChangedPromotion;
-        
-        /// auto generated
-        public PartnerAddressAggregateTDS() : 
-                base("PartnerAddressAggregateTDS")
-        {
-        }
-        
-        /// auto generated for serialization
-        public PartnerAddressAggregateTDS(System.Runtime.Serialization.SerializationInfo info, System.Runtime.Serialization.StreamingContext context) : 
-                base(info, context)
-        {
-        }
-        
-        /// auto generated
-        public PartnerAddressAggregateTDS(string ADatasetName) : 
-                base(ADatasetName)
-        {
-        }
-        
-        /// auto generated
-        public PartnerAddressAggregateTDSSimilarLocationParametersTable SimilarLocationParameters
-        {
-            get
-            {
-                return this.TableSimilarLocationParameters;
-            }
-        }
-        
-        /// auto generated
-        public PartnerAddressAggregateTDSChangePromotionParametersTable ChangePromotionParameters
-        {
-            get
-            {
-                return this.TableChangePromotionParameters;
-            }
-        }
-        
-        /// auto generated
-        public PartnerAddressAggregateTDSAddressAddedOrChangedPromotionTable AddressAddedOrChangedPromotion
-        {
-            get
-            {
-                return this.TableAddressAddedOrChangedPromotion;
-            }
-        }
-        
-        /// auto generated
-        public new virtual PartnerAddressAggregateTDS GetChangesTyped(bool removeEmptyTables)
-        {
-            return ((PartnerAddressAggregateTDS)(base.GetChangesTyped(removeEmptyTables)));
-        }
-        
-        /// auto generated
-        protected override void InitTables()
-        {
-            this.Tables.Add(new PartnerAddressAggregateTDSSimilarLocationParametersTable("SimilarLocationParameters"));
-            this.Tables.Add(new PartnerAddressAggregateTDSChangePromotionParametersTable("ChangePromotionParameters"));
-            this.Tables.Add(new PartnerAddressAggregateTDSAddressAddedOrChangedPromotionTable("AddressAddedOrChangedPromotion"));
-        }
-        
-        /// auto generated
-        protected override void InitTables(System.Data.DataSet ds)
-        {
-            if ((ds.Tables.IndexOf("SimilarLocationParameters") != -1))
-            {
-                this.Tables.Add(new PartnerAddressAggregateTDSSimilarLocationParametersTable("SimilarLocationParameters"));
-            }
-            if ((ds.Tables.IndexOf("ChangePromotionParameters") != -1))
-            {
-                this.Tables.Add(new PartnerAddressAggregateTDSChangePromotionParametersTable("ChangePromotionParameters"));
-            }
-            if ((ds.Tables.IndexOf("AddressAddedOrChangedPromotion") != -1))
-            {
-                this.Tables.Add(new PartnerAddressAggregateTDSAddressAddedOrChangedPromotionTable("AddressAddedOrChangedPromotion"));
-            }
-        }
-        
-        /// auto generated
-        protected override void MapTables()
-        {
-            this.InitVars();
-            base.MapTables();
-            if ((this.TableSimilarLocationParameters != null))
-            {
-                this.TableSimilarLocationParameters.InitVars();
-            }
-            if ((this.TableChangePromotionParameters != null))
-            {
-                this.TableChangePromotionParameters.InitVars();
-            }
-            if ((this.TableAddressAddedOrChangedPromotion != null))
-            {
-                this.TableAddressAddedOrChangedPromotion.InitVars();
-            }
-        }
-        
-        /// auto generated
-        public override void InitVars()
-        {
-            this.DataSetName = "PartnerAddressAggregateTDS";
-            this.TableSimilarLocationParameters = ((PartnerAddressAggregateTDSSimilarLocationParametersTable)(this.Tables["SimilarLocationParameters"]));
-            this.TableChangePromotionParameters = ((PartnerAddressAggregateTDSChangePromotionParametersTable)(this.Tables["ChangePromotionParameters"]));
-            this.TableAddressAddedOrChangedPromotion = ((PartnerAddressAggregateTDSAddressAddedOrChangedPromotionTable)(this.Tables["AddressAddedOrChangedPromotion"]));
-        }
-        
-        /// auto generated
-        protected override void InitConstraints()
-        {
-            if (((this.TableSimilarLocationParameters != null) 
-                        && (this.TableChangePromotionParameters != null)))
-            {
-                this.FConstraints.Add(new TTypedConstraint("FKPartnerLocation2", "SimilarLocationParameters", new string[] {
-                                "p_site_key_n",
-                                "p_location_key_i"}, "ChangePromotionParameters", new string[] {
-                                "p_site_key_n",
-                                "p_location_key_i"}));
-            }
-        }
-    }
-    
-    /// auto generated custom table
-    [Serializable()]
-    public class PartnerInfoTDSPartnerHeadInfoTable : TTypedDataTable
-    {
-        
-        /// This is the partner key assigned to each partner. It consists of the fund id followed by a computer generated six digit number.
-        public DataColumn ColumnPartnerKey;
-        
-        /// Name of the person or organisation.  If a person, more name info is stored in p_person.
-        public DataColumn ColumnPartnerShortName;
-        
-        /// This defines what type of partner this is. The classes that may be assigned are PERSON, FAMILY, CHURCH, ORGANISATION, UNIT, VENUE and BANK.
-        public DataColumn ColumnPartnerClass;
-        
-        /// This code describes the status of a partner.
-        ///Eg,  Active, Deceased etc
-        public DataColumn ColumnStatusCode;
-        
-        /// This code identifies the method of aquisition.
-        public DataColumn ColumnAcquisitionCode;
-        
-        /// The Petra user that the partner record is restricted to if p_restricted_i is 2.
-        public DataColumn ColumnPrivatePartnerOwner;
-        
-        /// auto generated
-        public DataColumn[] FKPartner7;
-        
-        /// auto generated
-        public DataColumn[] FKPartner3;
-        
-        /// auto generated
-        public DataColumn[] FKPartner1;
-        
-        /// constructor
-        public PartnerInfoTDSPartnerHeadInfoTable() : 
-                base("PartnerHeadInfo")
-        {
-        }
-        
-        /// constructor
-        public PartnerInfoTDSPartnerHeadInfoTable(string ATablename) : 
-                base(ATablename)
-        {
-        }
-        
-        /// constructor for serialization
-        public PartnerInfoTDSPartnerHeadInfoTable(System.Runtime.Serialization.SerializationInfo info, System.Runtime.Serialization.StreamingContext context) : 
-                base(info, context)
-        {
-        }
-        
-        /// Access a typed row by index
-        public PartnerInfoTDSPartnerHeadInfoRow this[int i]
-        {
-            get
-            {
-                return ((PartnerInfoTDSPartnerHeadInfoRow)(this.Rows[i]));
-            }
-        }
-        
-        /// get the name of the field in the database for this column
-        public static string GetPartnerKeyDBName()
-        {
-            return "p_partner_key_n";
-        }
-        
-        /// get help text for column
-        public static string GetPartnerKeyHelp()
-        {
-            return "Enter the partner key (SiteID + Number)";
-        }
-        
-        /// get label of column
-        public static string GetPartnerKeyLabel()
-        {
-            return "Partner Key";
-        }
-        
-        /// get the name of the field in the database for this column
-        public static string GetPartnerShortNameDBName()
-        {
-            return "p_partner_short_name_c";
-        }
-        
-        /// get help text for column
-        public static string GetPartnerShortNameHelp()
-        {
-            return "Enter a short name for this partner";
-        }
-        
-        /// get label of column
-        public static string GetPartnerShortNameLabel()
-        {
-            return "Short Name";
-        }
-        
-        /// get the name of the field in the database for this column
-        public static string GetPartnerClassDBName()
-        {
-            return "p_partner_class_c";
-        }
-        
-        /// get help text for column
-        public static string GetPartnerClassHelp()
-        {
-            return "Select a partner class";
-        }
-        
-        /// get label of column
-        public static string GetPartnerClassLabel()
-        {
-            return "Partner Class";
-        }
-        
-        /// get the name of the field in the database for this column
-        public static string GetStatusCodeDBName()
-        {
-            return "p_status_code_c";
-        }
-        
-        /// get help text for column
-        public static string GetStatusCodeHelp()
-        {
-            return "Select a partner status";
-        }
-        
-        /// get label of column
-        public static string GetStatusCodeLabel()
-        {
-            return "Partner Status";
-        }
-        
-        /// get the name of the field in the database for this column
-        public static string GetAcquisitionCodeDBName()
-        {
-            return "p_acquisition_code_c";
-        }
-        
-        /// get help text for column
-        public static string GetAcquisitionCodeHelp()
-        {
-            return "Select a method-of-acquisition code";
-        }
-        
-        /// get label of column
-        public static string GetAcquisitionCodeLabel()
-        {
-            return "Acquisition Code";
-        }
-        
-        /// get the name of the field in the database for this column
-        public static string GetPrivatePartnerOwnerDBName()
-        {
-            return "p_user_id_c";
-        }
-        
-        /// get help text for column
-        public static string GetPrivatePartnerOwnerHelp()
-        {
-            return "Select a corresponding User Restriction";
-        }
-        
-        /// get label of column
-        public static string GetPrivatePartnerOwnerLabel()
-        {
-            return "User ID";
-        }
-        
-        /// CamelCase version of the tablename
-        public static string GetTableName()
-        {
-            return "PartnerHeadInfo";
-        }
-        
-        /// original name of table in the database
-        public static string GetTableDBName()
-        {
-            return "PartnerHeadInfo";
-        }
-        
-        /// assign columns to properties, set primary key
-        public override void InitVars()
-        {
-            this.ColumnPartnerKey = this.Columns["p_partner_key_n"];
-            this.ColumnPartnerShortName = this.Columns["p_partner_short_name_c"];
-            this.ColumnPartnerClass = this.Columns["p_partner_class_c"];
-            this.ColumnStatusCode = this.Columns["p_status_code_c"];
-            this.ColumnAcquisitionCode = this.Columns["p_acquisition_code_c"];
-            this.ColumnPrivatePartnerOwner = this.Columns["p_user_id_c"];
-            this.FKPartner7 = new System.Data.DataColumn[] {
-                    this.ColumnPartnerClass};
-            this.FKPartner3 = new System.Data.DataColumn[] {
-                    this.ColumnStatusCode};
-            this.FKPartner1 = new System.Data.DataColumn[] {
-                    this.ColumnAcquisitionCode};
-        }
-        
-        /// create a new typed row
-        public PartnerInfoTDSPartnerHeadInfoRow NewRowTyped(bool AWithDefaultValues)
-        {
-            PartnerInfoTDSPartnerHeadInfoRow ret = ((PartnerInfoTDSPartnerHeadInfoRow)(this.NewRow()));
-            if ((AWithDefaultValues == true))
-            {
-                ret.InitValues();
-            }
-            return ret;
-        }
-        
-        /// new typed row using DataRowBuilder
-        protected override System.Data.DataRow NewRowFromBuilder(System.Data.DataRowBuilder builder)
-        {
-            return new PartnerInfoTDSPartnerHeadInfoRow(builder);
-        }
-        
-        /// create the columns
-        protected override void InitClass()
-        {
-            this.Columns.Add(new System.Data.DataColumn("p_partner_key_n", typeof(Int64)));
-            this.Columns.Add(new System.Data.DataColumn("p_partner_short_name_c", typeof(String)));
-            this.Columns.Add(new System.Data.DataColumn("p_partner_class_c", typeof(String)));
-            this.Columns.Add(new System.Data.DataColumn("p_status_code_c", typeof(String)));
-            this.Columns.Add(new System.Data.DataColumn("p_acquisition_code_c", typeof(String)));
-            this.Columns.Add(new System.Data.DataColumn("p_user_id_c", typeof(String)));
-        }
-        
-        /// prepare odbc parameters for given column
-        public override OdbcParameter CreateOdbcParameter(DataColumn ACol)
-        {
-            if ((ACol == ColumnPartnerKey))
-            {
-                return new System.Data.Odbc.OdbcParameter("", OdbcType.Decimal, 10);
-            }
-            if ((ACol == ColumnPartnerShortName))
-            {
-                return new System.Data.Odbc.OdbcParameter("", OdbcType.VarChar, 160);
-            }
-            if ((ACol == ColumnPartnerClass))
-            {
-                return new System.Data.Odbc.OdbcParameter("", OdbcType.VarChar, 24);
-            }
-            if ((ACol == ColumnStatusCode))
-            {
-                return new System.Data.Odbc.OdbcParameter("", OdbcType.VarChar, 16);
-            }
-            if ((ACol == ColumnAcquisitionCode))
-            {
-                return new System.Data.Odbc.OdbcParameter("", OdbcType.VarChar, 16);
-            }
-            if ((ACol == ColumnPrivatePartnerOwner))
-            {
-                return new System.Data.Odbc.OdbcParameter("", OdbcType.VarChar, 40);
-            }
-            return null;
-        }
-    }
-    
-    /// CustomRow auto generated
-    [Serializable()]
-    public class PartnerInfoTDSPartnerHeadInfoRow : System.Data.DataRow
-    {
-        
-        private PartnerInfoTDSPartnerHeadInfoTable myTable;
-        
-        /// Constructor
-        public PartnerInfoTDSPartnerHeadInfoRow(System.Data.DataRowBuilder rb) : 
-                base(rb)
-        {
-            this.myTable = ((PartnerInfoTDSPartnerHeadInfoTable)(this.Table));
-        }
-        
-        /// This is the partner key assigned to each partner. It consists of the fund id followed by a computer generated six digit number.
-        public Int64 PartnerKey
-        {
-            get
-            {
-                object ret;
-                ret = this[this.myTable.ColumnPartnerKey.Ordinal];
-                if ((ret == System.DBNull.Value))
-                {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
-                }
-                else
-                {
-                    return ((Int64)(ret));
-                }
-            }
-            set
-            {
-                if ((this.IsNull(this.myTable.ColumnPartnerKey) 
-                            || (((Int64)(this[this.myTable.ColumnPartnerKey])) != value)))
-                {
-                    this[this.myTable.ColumnPartnerKey] = value;
-                }
-            }
-        }
-        
-        /// Name of the person or organisation.  If a person, more name info is stored in p_person.
-        public String PartnerShortName
-        {
-            get
-            {
-                object ret;
-                ret = this[this.myTable.ColumnPartnerShortName.Ordinal];
-                if ((ret == System.DBNull.Value))
-                {
-                    return String.Empty;
-                }
-                else
-                {
-                    return ((String)(ret));
-                }
-            }
-            set
-            {
-                if ((this.IsNull(this.myTable.ColumnPartnerShortName) 
-                            || (((String)(this[this.myTable.ColumnPartnerShortName])) != value)))
-                {
-                    this[this.myTable.ColumnPartnerShortName] = value;
-                }
-            }
-        }
-        
-        /// This defines what type of partner this is. The classes that may be assigned are PERSON, FAMILY, CHURCH, ORGANISATION, UNIT, VENUE and BANK.
-        public String PartnerClass
-        {
-            get
-            {
-                object ret;
-                ret = this[this.myTable.ColumnPartnerClass.Ordinal];
-                if ((ret == System.DBNull.Value))
-                {
-                    return String.Empty;
-                }
-                else
-                {
-                    return ((String)(ret));
-                }
-            }
-            set
-            {
-                if ((this.IsNull(this.myTable.ColumnPartnerClass) 
-                            || (((String)(this[this.myTable.ColumnPartnerClass])) != value)))
-                {
-                    this[this.myTable.ColumnPartnerClass] = value;
-                }
-            }
-        }
-        
-        /// This code describes the status of a partner.
-        ///Eg,  Active, Deceased etc
-        public String StatusCode
-        {
-            get
-            {
-                object ret;
-                ret = this[this.myTable.ColumnStatusCode.Ordinal];
-                if ((ret == System.DBNull.Value))
-                {
-                    return String.Empty;
-                }
-                else
-                {
-                    return ((String)(ret));
-                }
-            }
-            set
-            {
-                if ((this.IsNull(this.myTable.ColumnStatusCode) 
-                            || (((String)(this[this.myTable.ColumnStatusCode])) != value)))
-                {
-                    this[this.myTable.ColumnStatusCode] = value;
-                }
-            }
-        }
-        
-        /// This code identifies the method of aquisition.
-        public String AcquisitionCode
-        {
-            get
-            {
-                object ret;
-                ret = this[this.myTable.ColumnAcquisitionCode.Ordinal];
-                if ((ret == System.DBNull.Value))
-                {
-                    return String.Empty;
-                }
-                else
-                {
-                    return ((String)(ret));
-                }
-            }
-            set
-            {
-                if ((this.IsNull(this.myTable.ColumnAcquisitionCode) 
-                            || (((String)(this[this.myTable.ColumnAcquisitionCode])) != value)))
-                {
-                    this[this.myTable.ColumnAcquisitionCode] = value;
-                }
-            }
-        }
-        
-        /// The Petra user that the partner record is restricted to if p_restricted_i is 2.
-        public String PrivatePartnerOwner
-        {
-            get
-            {
-                object ret;
-                ret = this[this.myTable.ColumnPrivatePartnerOwner.Ordinal];
-                if ((ret == System.DBNull.Value))
-                {
-                    return String.Empty;
-                }
-                else
-                {
-                    return ((String)(ret));
-                }
-            }
-            set
-            {
-                if ((this.IsNull(this.myTable.ColumnPrivatePartnerOwner) 
-                            || (((String)(this[this.myTable.ColumnPrivatePartnerOwner])) != value)))
-                {
-                    this[this.myTable.ColumnPrivatePartnerOwner] = value;
-                }
-            }
-        }
-        
-        /// set default values
-        public virtual void InitValues()
-        {
-            this[this.myTable.ColumnPartnerKey.Ordinal] = 0;
-            this.SetNull(this.myTable.ColumnPartnerShortName);
-            this.SetNull(this.myTable.ColumnPartnerClass);
-            this.SetNull(this.myTable.ColumnStatusCode);
-            this.SetNull(this.myTable.ColumnAcquisitionCode);
-            this.SetNull(this.myTable.ColumnPrivatePartnerOwner);
-        }
-        
-        /// test for NULL value
-        public bool IsPartnerShortNameNull()
-        {
-            return this.IsNull(this.myTable.ColumnPartnerShortName);
-        }
-        
-        /// assign NULL value
-        public void SetPartnerShortNameNull()
-        {
-            this.SetNull(this.myTable.ColumnPartnerShortName);
-        }
-        
-        /// test for NULL value
-        public bool IsPartnerClassNull()
-        {
-            return this.IsNull(this.myTable.ColumnPartnerClass);
-        }
-        
-        /// assign NULL value
-        public void SetPartnerClassNull()
-        {
-            this.SetNull(this.myTable.ColumnPartnerClass);
-        }
-        
-        /// test for NULL value
-        public bool IsStatusCodeNull()
-        {
-            return this.IsNull(this.myTable.ColumnStatusCode);
-        }
-        
-        /// assign NULL value
-        public void SetStatusCodeNull()
-        {
-            this.SetNull(this.myTable.ColumnStatusCode);
-        }
-        
-        /// test for NULL value
-        public bool IsAcquisitionCodeNull()
-        {
-            return this.IsNull(this.myTable.ColumnAcquisitionCode);
-        }
-        
-        /// assign NULL value
-        public void SetAcquisitionCodeNull()
-        {
-            this.SetNull(this.myTable.ColumnAcquisitionCode);
-        }
-        
-        /// test for NULL value
-        public bool IsPrivatePartnerOwnerNull()
-        {
-            return this.IsNull(this.myTable.ColumnPrivatePartnerOwner);
-        }
-        
-        /// assign NULL value
-        public void SetPrivatePartnerOwnerNull()
-        {
-            this.SetNull(this.myTable.ColumnPrivatePartnerOwner);
-        }
-    }
-    
-    /// auto generated custom table
-    [Serializable()]
-    public class PartnerInfoTDSPartnerAdditionalInfoTable : TTypedDataTable
-    {
-        
-        /// 
-        public DataColumn ColumnMainLanguages;
-        
-        /// 
-        public DataColumn ColumnAdditionalLanguages;
-        
-        /// Date of contact
-        public DataColumn ColumnLastContact;
-        
-        /// The date the record was created.
-        public DataColumn ColumnDateCreated;
-        
-        /// The date the record was modified.
-        public DataColumn ColumnDateModified;
-        
-        /// This is the date the rthe person was born
-        public DataColumn ColumnDateOfBirth;
-        
-        /// Name of the person or organisation.  If a person, more name info is stored in p_person.
-        public DataColumn ColumnFamily;
-        
-        /// A cross reference to the family record of this person.
-        ///It should be set to ? (not 0 because such a record does not exist!) when there is no family record.
-        public DataColumn ColumnFamilyKey;
-        
-        /// 
-        public DataColumn ColumnPreviousName;
-        
-        /// 
-        public DataColumn ColumnField;
-        
-        /// This is the partner key assigned to each partner. It consists of the fund id followed by a computer generated six digit number.
-        public DataColumn ColumnFieldKey;
-        
-        /// Additional information about the partner that is important to store in the database.
-        public DataColumn ColumnNotes;
-        
-        /// auto generated
-        public DataColumn[] FKPerson2;
-        
-        /// auto generated
-        public DataColumn[] FKUnit1;
-        
-        /// constructor
-        public PartnerInfoTDSPartnerAdditionalInfoTable() : 
-                base("PartnerAdditionalInfo")
-        {
-        }
-        
-        /// constructor
-        public PartnerInfoTDSPartnerAdditionalInfoTable(string ATablename) : 
-                base(ATablename)
-        {
-        }
-        
-        /// constructor for serialization
-        public PartnerInfoTDSPartnerAdditionalInfoTable(System.Runtime.Serialization.SerializationInfo info, System.Runtime.Serialization.StreamingContext context) : 
-                base(info, context)
-        {
-        }
-        
-        /// Access a typed row by index
-        public PartnerInfoTDSPartnerAdditionalInfoRow this[int i]
-        {
-            get
-            {
-                return ((PartnerInfoTDSPartnerAdditionalInfoRow)(this.Rows[i]));
-            }
-        }
-        
-        /// get the name of the field in the database for this column
-        public static string GetMainLanguagesDBName()
-        {
-            return "MainLanguages";
-        }
-        
-        /// get help text for column
-        public static string GetMainLanguagesHelp()
-        {
-            return null;
-        }
-        
-        /// get label of column
-        public static string GetMainLanguagesLabel()
-        {
-            return "";
-        }
-        
-        /// get the name of the field in the database for this column
-        public static string GetAdditionalLanguagesDBName()
-        {
-            return "AdditionalLanguages";
-        }
-        
-        /// get help text for column
-        public static string GetAdditionalLanguagesHelp()
-        {
-            return null;
-        }
-        
-        /// get label of column
-        public static string GetAdditionalLanguagesLabel()
-        {
-            return "";
-        }
-        
-        /// get the name of the field in the database for this column
-        public static string GetLastContactDBName()
-        {
-            return "s_contact_date_d";
-        }
-        
-        /// get help text for column
-        public static string GetLastContactHelp()
-        {
-            return "Enter the date the contact was made";
-        }
-        
-        /// get label of column
-        public static string GetLastContactLabel()
-        {
-            return "Contact Date";
-        }
-        
-        /// get the name of the field in the database for this column
-        public static string GetDateCreatedDBName()
-        {
-            return "s_date_created_d";
-        }
-        
-        /// get help text for column
-        public static string GetDateCreatedHelp()
-        {
-            return "The date the record was created.";
-        }
-        
-        /// get label of column
-        public static string GetDateCreatedLabel()
-        {
-            return "Created Date";
-        }
-        
-        /// get the name of the field in the database for this column
-        public static string GetDateModifiedDBName()
-        {
-            return "s_date_modified_d";
-        }
-        
-        /// get help text for column
-        public static string GetDateModifiedHelp()
-        {
-            return "The date the record was modified.";
-        }
-        
-        /// get label of column
-        public static string GetDateModifiedLabel()
-        {
-            return "Modified Date";
-        }
-        
-        /// get the name of the field in the database for this column
-        public static string GetDateOfBirthDBName()
-        {
-            return "p_date_of_birth_d";
-        }
-        
-        /// get help text for column
-        public static string GetDateOfBirthHelp()
-        {
-            return "Enter the date the person was born";
-        }
-        
-        /// get label of column
-        public static string GetDateOfBirthLabel()
-        {
-            return "Date of Birth";
-        }
-        
-        /// get the name of the field in the database for this column
-        public static string GetFamilyDBName()
-        {
-            return "p_partner_short_name_c";
-        }
-        
-        /// get help text for column
-        public static string GetFamilyHelp()
-        {
-            return "Enter a short name for this partner";
-        }
-        
-        /// get label of column
-        public static string GetFamilyLabel()
-        {
-            return "Short Name";
-        }
-        
-        /// get the name of the field in the database for this column
-        public static string GetFamilyKeyDBName()
-        {
-            return "p_family_key_n";
-        }
-        
-        /// get help text for column
-        public static string GetFamilyKeyHelp()
-        {
-            return "Enter the partner key of the Family record";
-        }
-        
-        /// get label of column
-        public static string GetFamilyKeyLabel()
-        {
-            return "Partner Key";
-        }
-        
-        /// get the name of the field in the database for this column
-        public static string GetPreviousNameDBName()
-        {
-            return "p_previous_name_c";
-        }
-        
-        /// get help text for column
-        public static string GetPreviousNameHelp()
-        {
-            return "Enter the previously used Surname (eg before marriage)";
-        }
-        
-        /// get label of column
-        public static string GetPreviousNameLabel()
-        {
-            return "Previous Name";
-        }
-        
-        /// get the name of the field in the database for this column
-        public static string GetFieldDBName()
-        {
-            return "p_unit_name_c";
-        }
-        
-        /// get help text for column
-        public static string GetFieldHelp()
-        {
-            return "Enter the name of the unit";
-        }
-        
-        /// get label of column
-        public static string GetFieldLabel()
-        {
-            return "Unit Name";
-        }
-        
-        /// get the name of the field in the database for this column
-        public static string GetFieldKeyDBName()
-        {
-            return "p_partner_key_n";
-        }
-        
-        /// get help text for column
-        public static string GetFieldKeyHelp()
-        {
-            return "Enter the partner key (SiteID + Number)";
-        }
-        
-        /// get label of column
-        public static string GetFieldKeyLabel()
-        {
-            return "Partner Key";
-        }
-        
-        /// get the name of the field in the database for this column
-        public static string GetNotesDBName()
-        {
-            return "p_comment_c";
-        }
-        
-        /// get help text for column
-        public static string GetNotesHelp()
-        {
-            return "Enter any additional comments (if full, use notebook)";
-        }
-        
-        /// get label of column
-        public static string GetNotesLabel()
-        {
-            return "Comments";
-        }
-        
-        /// CamelCase version of the tablename
-        public static string GetTableName()
-        {
-            return "PartnerAdditionalInfo";
-        }
-        
-        /// original name of table in the database
-        public static string GetTableDBName()
-        {
-            return "PartnerAdditionalInfo";
-        }
-        
-        /// assign columns to properties, set primary key
-        public override void InitVars()
-        {
-            this.ColumnMainLanguages = this.Columns["MainLanguages"];
-            this.ColumnAdditionalLanguages = this.Columns["AdditionalLanguages"];
-            this.ColumnLastContact = this.Columns["s_contact_date_d"];
-            this.ColumnDateCreated = this.Columns["s_date_created_d"];
-            this.ColumnDateModified = this.Columns["s_date_modified_d"];
-            this.ColumnDateOfBirth = this.Columns["p_date_of_birth_d"];
-            this.ColumnFamily = this.Columns["p_partner_short_name_c"];
-            this.ColumnFamilyKey = this.Columns["p_family_key_n"];
-            this.ColumnPreviousName = this.Columns["p_previous_name_c"];
-            this.ColumnField = this.Columns["p_unit_name_c"];
-            this.ColumnFieldKey = this.Columns["p_partner_key_n"];
-            this.ColumnNotes = this.Columns["p_comment_c"];
-            this.FKPerson2 = new System.Data.DataColumn[] {
-                    this.ColumnFamilyKey};
-            this.FKUnit1 = new System.Data.DataColumn[] {
-                    this.ColumnFieldKey};
-        }
-        
-        /// create a new typed row
-        public PartnerInfoTDSPartnerAdditionalInfoRow NewRowTyped(bool AWithDefaultValues)
-        {
-            PartnerInfoTDSPartnerAdditionalInfoRow ret = ((PartnerInfoTDSPartnerAdditionalInfoRow)(this.NewRow()));
-            if ((AWithDefaultValues == true))
-            {
-                ret.InitValues();
-            }
-            return ret;
-        }
-        
-        /// new typed row using DataRowBuilder
-        protected override System.Data.DataRow NewRowFromBuilder(System.Data.DataRowBuilder builder)
-        {
-            return new PartnerInfoTDSPartnerAdditionalInfoRow(builder);
-        }
-        
-        /// create the columns
-        protected override void InitClass()
-        {
-            this.Columns.Add(new System.Data.DataColumn("MainLanguages", typeof(String)));
-            this.Columns.Add(new System.Data.DataColumn("AdditionalLanguages", typeof(String)));
-            this.Columns.Add(new System.Data.DataColumn("s_contact_date_d", typeof(System.DateTime)));
-            this.Columns.Add(new System.Data.DataColumn("s_date_created_d", typeof(System.DateTime)));
-            this.Columns.Add(new System.Data.DataColumn("s_date_modified_d", typeof(System.DateTime)));
-            this.Columns.Add(new System.Data.DataColumn("p_date_of_birth_d", typeof(System.DateTime)));
-            this.Columns.Add(new System.Data.DataColumn("p_partner_short_name_c", typeof(String)));
-            this.Columns.Add(new System.Data.DataColumn("p_family_key_n", typeof(Int64)));
-            this.Columns.Add(new System.Data.DataColumn("p_previous_name_c", typeof(String)));
-            this.Columns.Add(new System.Data.DataColumn("p_unit_name_c", typeof(String)));
-            this.Columns.Add(new System.Data.DataColumn("p_partner_key_n", typeof(Int64)));
-            this.Columns.Add(new System.Data.DataColumn("p_comment_c", typeof(String)));
-        }
-        
-        /// prepare odbc parameters for given column
-        public override OdbcParameter CreateOdbcParameter(DataColumn ACol)
-        {
-            if ((ACol == ColumnMainLanguages))
-            {
-                return new System.Data.Odbc.OdbcParameter("", OdbcType.Int);
-            }
-            if ((ACol == ColumnAdditionalLanguages))
-            {
-                return new System.Data.Odbc.OdbcParameter("", OdbcType.Int);
-            }
-            if ((ACol == ColumnLastContact))
-            {
-                return new System.Data.Odbc.OdbcParameter("", OdbcType.Date);
-            }
-            if ((ACol == ColumnDateCreated))
-            {
-                return new System.Data.Odbc.OdbcParameter("", OdbcType.Date);
-            }
-            if ((ACol == ColumnDateModified))
-            {
-                return new System.Data.Odbc.OdbcParameter("", OdbcType.Date);
-            }
-            if ((ACol == ColumnDateOfBirth))
-            {
-                return new System.Data.Odbc.OdbcParameter("", OdbcType.Date);
-            }
-            if ((ACol == ColumnFamily))
-            {
-                return new System.Data.Odbc.OdbcParameter("", OdbcType.VarChar, 160);
-            }
-            if ((ACol == ColumnFamilyKey))
-            {
-                return new System.Data.Odbc.OdbcParameter("", OdbcType.Decimal, 10);
-            }
-            if ((ACol == ColumnPreviousName))
-            {
-                return new System.Data.Odbc.OdbcParameter("", OdbcType.VarChar, 512);
-            }
-            if ((ACol == ColumnField))
-            {
-                return new System.Data.Odbc.OdbcParameter("", OdbcType.VarChar, 160);
-            }
-            if ((ACol == ColumnFieldKey))
-            {
-                return new System.Data.Odbc.OdbcParameter("", OdbcType.Decimal, 10);
-            }
-            if ((ACol == ColumnNotes))
-            {
-                return new System.Data.Odbc.OdbcParameter("", OdbcType.VarChar, 10000);
-            }
-            return null;
-        }
-    }
-    
-    /// CustomRow auto generated
-    [Serializable()]
-    public class PartnerInfoTDSPartnerAdditionalInfoRow : System.Data.DataRow
-    {
-        
-        private PartnerInfoTDSPartnerAdditionalInfoTable myTable;
-        
-        /// Constructor
-        public PartnerInfoTDSPartnerAdditionalInfoRow(System.Data.DataRowBuilder rb) : 
-                base(rb)
-        {
-            this.myTable = ((PartnerInfoTDSPartnerAdditionalInfoTable)(this.Table));
-        }
-        
-        /// 
-        public String MainLanguages
-        {
-            get
-            {
-                object ret;
-                ret = this[this.myTable.ColumnMainLanguages.Ordinal];
-                if ((ret == System.DBNull.Value))
-                {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
-                }
-                else
-                {
-                    return ((String)(ret));
-                }
-            }
-            set
-            {
-                if ((this.IsNull(this.myTable.ColumnMainLanguages) 
-                            || (((String)(this[this.myTable.ColumnMainLanguages])) != value)))
-                {
-                    this[this.myTable.ColumnMainLanguages] = value;
-                }
-            }
-        }
-        
-        /// 
-        public String AdditionalLanguages
-        {
-            get
-            {
-                object ret;
-                ret = this[this.myTable.ColumnAdditionalLanguages.Ordinal];
-                if ((ret == System.DBNull.Value))
-                {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
-                }
-                else
-                {
-                    return ((String)(ret));
-                }
-            }
-            set
-            {
-                if ((this.IsNull(this.myTable.ColumnAdditionalLanguages) 
-                            || (((String)(this[this.myTable.ColumnAdditionalLanguages])) != value)))
-                {
-                    this[this.myTable.ColumnAdditionalLanguages] = value;
-                }
-            }
-        }
-        
-        /// Date of contact
-        public System.DateTime LastContact
-        {
-            get
-            {
-                object ret;
-                ret = this[this.myTable.ColumnLastContact.Ordinal];
-                if ((ret == System.DBNull.Value))
-                {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
-                }
-                else
-                {
-                    return ((System.DateTime)(ret));
-                }
-            }
-            set
-            {
-                if ((this.IsNull(this.myTable.ColumnLastContact) 
-                            || (((System.DateTime)(this[this.myTable.ColumnLastContact])) != value)))
-                {
-                    this[this.myTable.ColumnLastContact] = value;
-                }
-            }
-        }
-        
-        /// The date the record was created.
-        public System.DateTime DateCreated
-        {
-            get
-            {
-                object ret;
-                ret = this[this.myTable.ColumnDateCreated.Ordinal];
-                if ((ret == System.DBNull.Value))
-                {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
-                }
-                else
-                {
-                    return ((System.DateTime)(ret));
-                }
-            }
-            set
-            {
-                if ((this.IsNull(this.myTable.ColumnDateCreated) 
-                            || (((System.DateTime)(this[this.myTable.ColumnDateCreated])) != value)))
-                {
-                    this[this.myTable.ColumnDateCreated] = value;
-                }
-            }
-        }
-        
-        /// The date the record was modified.
-        public System.DateTime DateModified
-        {
-            get
-            {
-                object ret;
-                ret = this[this.myTable.ColumnDateModified.Ordinal];
-                if ((ret == System.DBNull.Value))
-                {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
-                }
-                else
-                {
-                    return ((System.DateTime)(ret));
-                }
-            }
-            set
-            {
-                if ((this.IsNull(this.myTable.ColumnDateModified) 
-                            || (((System.DateTime)(this[this.myTable.ColumnDateModified])) != value)))
-                {
-                    this[this.myTable.ColumnDateModified] = value;
-                }
-            }
-        }
-        
-        /// This is the date the rthe person was born
-        public System.DateTime DateOfBirth
-        {
-            get
-            {
-                object ret;
-                ret = this[this.myTable.ColumnDateOfBirth.Ordinal];
-                if ((ret == System.DBNull.Value))
-                {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
-                }
-                else
-                {
-                    return ((System.DateTime)(ret));
-                }
-            }
-            set
-            {
-                if ((this.IsNull(this.myTable.ColumnDateOfBirth) 
-                            || (((System.DateTime)(this[this.myTable.ColumnDateOfBirth])) != value)))
-                {
-                    this[this.myTable.ColumnDateOfBirth] = value;
-                }
-            }
-        }
-        
-        /// Name of the person or organisation.  If a person, more name info is stored in p_person.
-        public String Family
-        {
-            get
-            {
-                object ret;
-                ret = this[this.myTable.ColumnFamily.Ordinal];
-                if ((ret == System.DBNull.Value))
-                {
-                    return String.Empty;
-                }
-                else
-                {
-                    return ((String)(ret));
-                }
-            }
-            set
-            {
-                if ((this.IsNull(this.myTable.ColumnFamily) 
-                            || (((String)(this[this.myTable.ColumnFamily])) != value)))
-                {
-                    this[this.myTable.ColumnFamily] = value;
-                }
-            }
-        }
-        
-        /// A cross reference to the family record of this person.
-        ///It should be set to ? (not 0 because such a record does not exist!) when there is no family record.
-        public Int64 FamilyKey
-        {
-            get
-            {
-                object ret;
-                ret = this[this.myTable.ColumnFamilyKey.Ordinal];
-                if ((ret == System.DBNull.Value))
-                {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
-                }
-                else
-                {
-                    return ((Int64)(ret));
-                }
-            }
-            set
-            {
-                if ((this.IsNull(this.myTable.ColumnFamilyKey) 
-                            || (((Int64)(this[this.myTable.ColumnFamilyKey])) != value)))
-                {
-                    this[this.myTable.ColumnFamilyKey] = value;
-                }
-            }
-        }
-        
-        /// 
-        public String PreviousName
-        {
-            get
-            {
-                object ret;
-                ret = this[this.myTable.ColumnPreviousName.Ordinal];
-                if ((ret == System.DBNull.Value))
-                {
-                    return String.Empty;
-                }
-                else
-                {
-                    return ((String)(ret));
-                }
-            }
-            set
-            {
-                if ((this.IsNull(this.myTable.ColumnPreviousName) 
-                            || (((String)(this[this.myTable.ColumnPreviousName])) != value)))
-                {
-                    this[this.myTable.ColumnPreviousName] = value;
-                }
-            }
-        }
-        
-        /// 
-        public String Field
-        {
-            get
-            {
-                object ret;
-                ret = this[this.myTable.ColumnField.Ordinal];
-                if ((ret == System.DBNull.Value))
-                {
-                    return String.Empty;
-                }
-                else
-                {
-                    return ((String)(ret));
-                }
-            }
-            set
-            {
-                if ((this.IsNull(this.myTable.ColumnField) 
-                            || (((String)(this[this.myTable.ColumnField])) != value)))
-                {
-                    this[this.myTable.ColumnField] = value;
-                }
-            }
-        }
-        
-        /// This is the partner key assigned to each partner. It consists of the fund id followed by a computer generated six digit number.
-        public Int64 FieldKey
-        {
-            get
-            {
-                object ret;
-                ret = this[this.myTable.ColumnFieldKey.Ordinal];
-                if ((ret == System.DBNull.Value))
-                {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
-                }
-                else
-                {
-                    return ((Int64)(ret));
-                }
-            }
-            set
-            {
-                if ((this.IsNull(this.myTable.ColumnFieldKey) 
-                            || (((Int64)(this[this.myTable.ColumnFieldKey])) != value)))
-                {
-                    this[this.myTable.ColumnFieldKey] = value;
-                }
-            }
-        }
-        
-        /// Additional information about the partner that is important to store in the database.
-        public String Notes
-        {
-            get
-            {
-                object ret;
-                ret = this[this.myTable.ColumnNotes.Ordinal];
-                if ((ret == System.DBNull.Value))
-                {
-                    return String.Empty;
-                }
-                else
-                {
-                    return ((String)(ret));
-                }
-            }
-            set
-            {
-                if ((this.IsNull(this.myTable.ColumnNotes) 
-                            || (((String)(this[this.myTable.ColumnNotes])) != value)))
-                {
-                    this[this.myTable.ColumnNotes] = value;
-                }
-            }
-        }
-        
-        /// set default values
-        public virtual void InitValues()
-        {
-            this.SetNull(this.myTable.ColumnMainLanguages);
-            this.SetNull(this.myTable.ColumnAdditionalLanguages);
-            this.SetNull(this.myTable.ColumnLastContact);
-            this[this.myTable.ColumnDateCreated.Ordinal] = DateTime.Today;
-            this.SetNull(this.myTable.ColumnDateModified);
-            this.SetNull(this.myTable.ColumnDateOfBirth);
-            this.SetNull(this.myTable.ColumnFamily);
-            this[this.myTable.ColumnFamilyKey.Ordinal] = 0;
-            this.SetNull(this.myTable.ColumnPreviousName);
-            this.SetNull(this.myTable.ColumnField);
-            this[this.myTable.ColumnFieldKey.Ordinal] = 0;
-            this.SetNull(this.myTable.ColumnNotes);
-        }
-        
-        /// test for NULL value
-        public bool IsMainLanguagesNull()
-        {
-            return this.IsNull(this.myTable.ColumnMainLanguages);
-        }
-        
-        /// assign NULL value
-        public void SetMainLanguagesNull()
-        {
-            this.SetNull(this.myTable.ColumnMainLanguages);
-        }
-        
-        /// test for NULL value
-        public bool IsAdditionalLanguagesNull()
-        {
-            return this.IsNull(this.myTable.ColumnAdditionalLanguages);
-        }
-        
-        /// assign NULL value
-        public void SetAdditionalLanguagesNull()
-        {
-            this.SetNull(this.myTable.ColumnAdditionalLanguages);
-        }
-        
-        /// test for NULL value
-        public bool IsDateCreatedNull()
-        {
-            return this.IsNull(this.myTable.ColumnDateCreated);
-        }
-        
-        /// assign NULL value
-        public void SetDateCreatedNull()
-        {
-            this.SetNull(this.myTable.ColumnDateCreated);
-        }
-        
-        /// test for NULL value
-        public bool IsDateModifiedNull()
-        {
-            return this.IsNull(this.myTable.ColumnDateModified);
-        }
-        
-        /// assign NULL value
-        public void SetDateModifiedNull()
-        {
-            this.SetNull(this.myTable.ColumnDateModified);
-        }
-        
-        /// test for NULL value
-        public bool IsDateOfBirthNull()
-        {
-            return this.IsNull(this.myTable.ColumnDateOfBirth);
-        }
-        
-        /// assign NULL value
-        public void SetDateOfBirthNull()
-        {
-            this.SetNull(this.myTable.ColumnDateOfBirth);
-        }
-        
-        /// test for NULL value
-        public bool IsFamilyNull()
-        {
-            return this.IsNull(this.myTable.ColumnFamily);
-        }
-        
-        /// assign NULL value
-        public void SetFamilyNull()
-        {
-            this.SetNull(this.myTable.ColumnFamily);
-        }
-        
-        /// test for NULL value
-        public bool IsFamilyKeyNull()
-        {
-            return this.IsNull(this.myTable.ColumnFamilyKey);
-        }
-        
-        /// assign NULL value
-        public void SetFamilyKeyNull()
-        {
-            this.SetNull(this.myTable.ColumnFamilyKey);
-        }
-        
-        /// test for NULL value
-        public bool IsPreviousNameNull()
-        {
-            return this.IsNull(this.myTable.ColumnPreviousName);
-        }
-        
-        /// assign NULL value
-        public void SetPreviousNameNull()
-        {
-            this.SetNull(this.myTable.ColumnPreviousName);
-        }
-        
-        /// test for NULL value
-        public bool IsFieldNull()
-        {
-            return this.IsNull(this.myTable.ColumnField);
-        }
-        
-        /// assign NULL value
-        public void SetFieldNull()
-        {
-            this.SetNull(this.myTable.ColumnField);
-        }
-        
-        /// test for NULL value
-        public bool IsNotesNull()
-        {
-            return this.IsNull(this.myTable.ColumnNotes);
-        }
-        
-        /// assign NULL value
-        public void SetNotesNull()
-        {
-            this.SetNull(this.myTable.ColumnNotes);
-        }
-    }
-    
-    /// auto generated custom table
-    [Serializable()]
-    public class PartnerInfoTDSUnitInfoTable : TTypedDataTable
-    {
-        
-        /// This is the partner key assigned to each partner. It consists of the fund id followed by a computer generated six digit number.
-        public DataColumn ColumnParentUnitKey;
-        
-        /// 
-        public DataColumn ColumnParentUnitName;
-        
-        /// auto generated
-        public DataColumn[] FKUnit1;
-        
-        /// constructor
-        public PartnerInfoTDSUnitInfoTable() : 
-                base("UnitInfo")
-        {
-        }
-        
-        /// constructor
-        public PartnerInfoTDSUnitInfoTable(string ATablename) : 
-                base(ATablename)
-        {
-        }
-        
-        /// constructor for serialization
-        public PartnerInfoTDSUnitInfoTable(System.Runtime.Serialization.SerializationInfo info, System.Runtime.Serialization.StreamingContext context) : 
-                base(info, context)
-        {
-        }
-        
-        /// Access a typed row by index
-        public PartnerInfoTDSUnitInfoRow this[int i]
-        {
-            get
-            {
-                return ((PartnerInfoTDSUnitInfoRow)(this.Rows[i]));
-            }
-        }
-        
-        /// get the name of the field in the database for this column
-        public static string GetParentUnitKeyDBName()
-        {
-            return "p_partner_key_n";
-        }
-        
-        /// get help text for column
-        public static string GetParentUnitKeyHelp()
-        {
-            return "Enter the partner key (SiteID + Number)";
-        }
-        
-        /// get label of column
-        public static string GetParentUnitKeyLabel()
-        {
-            return "Partner Key";
-        }
-        
-        /// get the name of the field in the database for this column
-        public static string GetParentUnitNameDBName()
-        {
-            return "p_unit_name_c";
-        }
-        
-        /// get help text for column
-        public static string GetParentUnitNameHelp()
-        {
-            return "Enter the name of the unit";
-        }
-        
-        /// get label of column
-        public static string GetParentUnitNameLabel()
-        {
-            return "Unit Name";
-        }
-        
-        /// CamelCase version of the tablename
-        public static string GetTableName()
-        {
-            return "UnitInfo";
-        }
-        
-        /// original name of table in the database
-        public static string GetTableDBName()
-        {
-            return "UnitInfo";
-        }
-        
-        /// assign columns to properties, set primary key
-        public override void InitVars()
-        {
-            this.ColumnParentUnitKey = this.Columns["p_partner_key_n"];
-            this.ColumnParentUnitName = this.Columns["p_unit_name_c"];
-            this.FKUnit1 = new System.Data.DataColumn[] {
-                    this.ColumnParentUnitKey};
-        }
-        
-        /// create a new typed row
-        public PartnerInfoTDSUnitInfoRow NewRowTyped(bool AWithDefaultValues)
-        {
-            PartnerInfoTDSUnitInfoRow ret = ((PartnerInfoTDSUnitInfoRow)(this.NewRow()));
-            if ((AWithDefaultValues == true))
-            {
-                ret.InitValues();
-            }
-            return ret;
-        }
-        
-        /// new typed row using DataRowBuilder
-        protected override System.Data.DataRow NewRowFromBuilder(System.Data.DataRowBuilder builder)
-        {
-            return new PartnerInfoTDSUnitInfoRow(builder);
-        }
-        
-        /// create the columns
-        protected override void InitClass()
-        {
-            this.Columns.Add(new System.Data.DataColumn("p_partner_key_n", typeof(Int64)));
-            this.Columns.Add(new System.Data.DataColumn("p_unit_name_c", typeof(String)));
-        }
-        
-        /// prepare odbc parameters for given column
-        public override OdbcParameter CreateOdbcParameter(DataColumn ACol)
-        {
-            if ((ACol == ColumnParentUnitKey))
-            {
-                return new System.Data.Odbc.OdbcParameter("", OdbcType.Decimal, 10);
-            }
-            if ((ACol == ColumnParentUnitName))
-            {
-                return new System.Data.Odbc.OdbcParameter("", OdbcType.VarChar, 160);
-            }
-            return null;
-        }
-    }
-    
-    /// CustomRow auto generated
-    [Serializable()]
-    public class PartnerInfoTDSUnitInfoRow : System.Data.DataRow
-    {
-        
-        private PartnerInfoTDSUnitInfoTable myTable;
-        
-        /// Constructor
-        public PartnerInfoTDSUnitInfoRow(System.Data.DataRowBuilder rb) : 
-                base(rb)
-        {
-            this.myTable = ((PartnerInfoTDSUnitInfoTable)(this.Table));
-        }
-        
-        /// This is the partner key assigned to each partner. It consists of the fund id followed by a computer generated six digit number.
-        public Int64 ParentUnitKey
-        {
-            get
-            {
-                object ret;
-                ret = this[this.myTable.ColumnParentUnitKey.Ordinal];
-                if ((ret == System.DBNull.Value))
-                {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
-                }
-                else
-                {
-                    return ((Int64)(ret));
-                }
-            }
-            set
-            {
-                if ((this.IsNull(this.myTable.ColumnParentUnitKey) 
-                            || (((Int64)(this[this.myTable.ColumnParentUnitKey])) != value)))
-                {
-                    this[this.myTable.ColumnParentUnitKey] = value;
-                }
-            }
-        }
-        
-        /// 
-        public String ParentUnitName
-        {
-            get
-            {
-                object ret;
-                ret = this[this.myTable.ColumnParentUnitName.Ordinal];
-                if ((ret == System.DBNull.Value))
-                {
-                    return String.Empty;
-                }
-                else
-                {
-                    return ((String)(ret));
-                }
-            }
-            set
-            {
-                if ((this.IsNull(this.myTable.ColumnParentUnitName) 
-                            || (((String)(this[this.myTable.ColumnParentUnitName])) != value)))
-                {
-                    this[this.myTable.ColumnParentUnitName] = value;
-                }
-            }
-        }
-        
-        /// set default values
-        public virtual void InitValues()
-        {
-            this[this.myTable.ColumnParentUnitKey.Ordinal] = 0;
-            this.SetNull(this.myTable.ColumnParentUnitName);
-        }
-        
-        /// test for NULL value
-        public bool IsParentUnitNameNull()
-        {
-            return this.IsNull(this.myTable.ColumnParentUnitName);
-        }
-        
-        /// assign NULL value
-        public void SetParentUnitNameNull()
-        {
-            this.SetNull(this.myTable.ColumnParentUnitName);
-        }
-    }
-    
-    /// auto generated custom table
-    [Serializable()]
-    public class PartnerInfoTDSFamilyMembersTable : TTypedDataTable
-    {
-        
-        /// This is the partner key assigned to each partner. It consists of the fund id followed by a computer generated six digit number.
-        public DataColumn ColumnPartnerKey;
-        
-        /// Name of the person or organisation.  If a person, more name info is stored in p_person.
-        public DataColumn ColumnPartnerShortName;
-        
-        /// This field indicates the family id of the individual.
-        ///ID's 0 and 1 are used for parents; 2, 3, 4 ... 9 are used for children.
-        public DataColumn ColumnFamilyId;
-        
-        /// constructor
-        public PartnerInfoTDSFamilyMembersTable() : 
-                base("FamilyMembers")
-        {
-        }
-        
-        /// constructor
-        public PartnerInfoTDSFamilyMembersTable(string ATablename) : 
-                base(ATablename)
-        {
-        }
-        
-        /// constructor for serialization
-        public PartnerInfoTDSFamilyMembersTable(System.Runtime.Serialization.SerializationInfo info, System.Runtime.Serialization.StreamingContext context) : 
-                base(info, context)
-        {
-        }
-        
-        /// Access a typed row by index
-        public PartnerInfoTDSFamilyMembersRow this[int i]
-        {
-            get
-            {
-                return ((PartnerInfoTDSFamilyMembersRow)(this.Rows[i]));
-            }
-        }
-        
-        /// get the name of the field in the database for this column
-        public static string GetPartnerKeyDBName()
-        {
-            return "p_partner_key_n";
-        }
-        
-        /// get help text for column
-        public static string GetPartnerKeyHelp()
-        {
-            return "Enter the partner key (SiteID + Number)";
-        }
-        
-        /// get label of column
-        public static string GetPartnerKeyLabel()
-        {
-            return "Partner Key";
-        }
-        
-        /// get the name of the field in the database for this column
-        public static string GetPartnerShortNameDBName()
-        {
-            return "p_partner_short_name_c";
-        }
-        
-        /// get help text for column
-        public static string GetPartnerShortNameHelp()
-        {
-            return "Enter a short name for this partner";
-        }
-        
-        /// get label of column
-        public static string GetPartnerShortNameLabel()
-        {
-            return "Short Name";
-        }
-        
-        /// get the name of the field in the database for this column
-        public static string GetFamilyIdDBName()
-        {
-            return "p_family_id_i";
-        }
-        
-        /// get help text for column
-        public static string GetFamilyIdHelp()
-        {
-            return "This field indicates the family id of the individual.";
-        }
-        
-        /// get label of column
-        public static string GetFamilyIdLabel()
-        {
-            return "Family ID";
-        }
-        
-        /// CamelCase version of the tablename
-        public static string GetTableName()
-        {
-            return "FamilyMembers";
-        }
-        
-        /// original name of table in the database
-        public static string GetTableDBName()
-        {
-            return "FamilyMembers";
-        }
-        
-        /// assign columns to properties, set primary key
-        public override void InitVars()
-        {
-            this.ColumnPartnerKey = this.Columns["p_partner_key_n"];
-            this.ColumnPartnerShortName = this.Columns["p_partner_short_name_c"];
-            this.ColumnFamilyId = this.Columns["p_family_id_i"];
-            this.PrimaryKey = new System.Data.DataColumn[] {
-                    this.ColumnPartnerKey};
-        }
-        
-        /// create a new typed row
-        public PartnerInfoTDSFamilyMembersRow NewRowTyped(bool AWithDefaultValues)
-        {
-            PartnerInfoTDSFamilyMembersRow ret = ((PartnerInfoTDSFamilyMembersRow)(this.NewRow()));
-            if ((AWithDefaultValues == true))
-            {
-                ret.InitValues();
-            }
-            return ret;
-        }
-        
-        /// new typed row using DataRowBuilder
-        protected override System.Data.DataRow NewRowFromBuilder(System.Data.DataRowBuilder builder)
-        {
-            return new PartnerInfoTDSFamilyMembersRow(builder);
-        }
-        
-        /// create the columns
-        protected override void InitClass()
-        {
-            this.Columns.Add(new System.Data.DataColumn("p_partner_key_n", typeof(Int64)));
-            this.Columns.Add(new System.Data.DataColumn("p_partner_short_name_c", typeof(String)));
-            this.Columns.Add(new System.Data.DataColumn("p_family_id_i", typeof(Int32)));
-        }
-        
-        /// prepare odbc parameters for given column
-        public override OdbcParameter CreateOdbcParameter(DataColumn ACol)
-        {
-            if ((ACol == ColumnPartnerKey))
-            {
-                return new System.Data.Odbc.OdbcParameter("", OdbcType.Decimal, 10);
-            }
-            if ((ACol == ColumnPartnerShortName))
-            {
-                return new System.Data.Odbc.OdbcParameter("", OdbcType.VarChar, 160);
-            }
-            if ((ACol == ColumnFamilyId))
-            {
-                return new System.Data.Odbc.OdbcParameter("", OdbcType.Int);
-            }
-            return null;
-        }
-    }
-    
-    /// CustomRow auto generated
-    [Serializable()]
-    public class PartnerInfoTDSFamilyMembersRow : System.Data.DataRow
-    {
-        
-        private PartnerInfoTDSFamilyMembersTable myTable;
-        
-        /// Constructor
-        public PartnerInfoTDSFamilyMembersRow(System.Data.DataRowBuilder rb) : 
-                base(rb)
-        {
-            this.myTable = ((PartnerInfoTDSFamilyMembersTable)(this.Table));
-        }
-        
-        /// This is the partner key assigned to each partner. It consists of the fund id followed by a computer generated six digit number.
-        public Int64 PartnerKey
-        {
-            get
-            {
-                object ret;
-                ret = this[this.myTable.ColumnPartnerKey.Ordinal];
-                if ((ret == System.DBNull.Value))
-                {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
-                }
-                else
-                {
-                    return ((Int64)(ret));
-                }
-            }
-            set
-            {
-                if ((this.IsNull(this.myTable.ColumnPartnerKey) 
-                            || (((Int64)(this[this.myTable.ColumnPartnerKey])) != value)))
-                {
-                    this[this.myTable.ColumnPartnerKey] = value;
-                }
-            }
-        }
-        
-        /// Name of the person or organisation.  If a person, more name info is stored in p_person.
-        public String PartnerShortName
-        {
-            get
-            {
-                object ret;
-                ret = this[this.myTable.ColumnPartnerShortName.Ordinal];
-                if ((ret == System.DBNull.Value))
-                {
-                    return String.Empty;
-                }
-                else
-                {
-                    return ((String)(ret));
-                }
-            }
-            set
-            {
-                if ((this.IsNull(this.myTable.ColumnPartnerShortName) 
-                            || (((String)(this[this.myTable.ColumnPartnerShortName])) != value)))
-                {
-                    this[this.myTable.ColumnPartnerShortName] = value;
-                }
-            }
-        }
-        
-        /// This field indicates the family id of the individual.
-        ///ID's 0 and 1 are used for parents; 2, 3, 4 ... 9 are used for children.
-        public Int32 FamilyId
-        {
-            get
-            {
-                object ret;
-                ret = this[this.myTable.ColumnFamilyId.Ordinal];
-                if ((ret == System.DBNull.Value))
-                {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
-                }
-                else
-                {
-                    return ((Int32)(ret));
-                }
-            }
-            set
-            {
-                if ((this.IsNull(this.myTable.ColumnFamilyId) 
-                            || (((Int32)(this[this.myTable.ColumnFamilyId])) != value)))
-                {
-                    this[this.myTable.ColumnFamilyId] = value;
-                }
-            }
-        }
-        
-        /// set default values
-        public virtual void InitValues()
-        {
-            this[this.myTable.ColumnPartnerKey.Ordinal] = 0;
-            this.SetNull(this.myTable.ColumnPartnerShortName);
-            this[this.myTable.ColumnFamilyId.Ordinal] = 0;
-        }
-        
-        /// test for NULL value
-        public bool IsPartnerShortNameNull()
-        {
-            return this.IsNull(this.myTable.ColumnPartnerShortName);
-        }
-        
-        /// assign NULL value
-        public void SetPartnerShortNameNull()
-        {
-            this.SetNull(this.myTable.ColumnPartnerShortName);
-        }
-        
-        /// test for NULL value
-        public bool IsFamilyIdNull()
-        {
-            return this.IsNull(this.myTable.ColumnFamilyId);
-        }
-        
-        /// assign NULL value
-        public void SetFamilyIdNull()
-        {
-            this.SetNull(this.myTable.ColumnFamilyId);
-        }
-    }
-    
-    /// auto generated
+
+     /// auto generated
     [Serializable()]
     public class PartnerInfoTDS : TTypedDataSet
     {
-        
+
         private PartnerInfoTDSPartnerHeadInfoTable TablePartnerHeadInfo;
-        
         private PartnerInfoTDSPartnerAdditionalInfoTable TablePartnerAdditionalInfo;
-        
         private PartnerInfoTDSUnitInfoTable TableUnitInfo;
-        
         private PLocationTable TablePLocation;
-        
         private PPartnerLocationTable TablePPartnerLocation;
-        
         private PPartnerTypeTable TablePPartnerType;
-        
         private PSubscriptionTable TablePSubscription;
-        
         private PartnerInfoTDSFamilyMembersTable TableFamilyMembers;
-        
+
         /// auto generated
-        public PartnerInfoTDS() : 
+        public PartnerInfoTDS() :
                 base("PartnerInfoTDS")
         {
         }
-        
+
         /// auto generated for serialization
-        public PartnerInfoTDS(System.Runtime.Serialization.SerializationInfo info, System.Runtime.Serialization.StreamingContext context) : 
+        public PartnerInfoTDS(System.Runtime.Serialization.SerializationInfo info, System.Runtime.Serialization.StreamingContext context) :
                 base(info, context)
         {
         }
-        
+
         /// auto generated
-        public PartnerInfoTDS(string ADatasetName) : 
+        public PartnerInfoTDS(string ADatasetName) :
                 base(ADatasetName)
         {
         }
-        
+
         /// auto generated
         public PartnerInfoTDSPartnerHeadInfoTable PartnerHeadInfo
         {
@@ -8708,7 +11194,7 @@ namespace Ict.Petra.Shared.MPartner.Partner.Data
                 return this.TablePartnerHeadInfo;
             }
         }
-        
+
         /// auto generated
         public PartnerInfoTDSPartnerAdditionalInfoTable PartnerAdditionalInfo
         {
@@ -8717,7 +11203,7 @@ namespace Ict.Petra.Shared.MPartner.Partner.Data
                 return this.TablePartnerAdditionalInfo;
             }
         }
-        
+
         /// auto generated
         public PartnerInfoTDSUnitInfoTable UnitInfo
         {
@@ -8726,7 +11212,7 @@ namespace Ict.Petra.Shared.MPartner.Partner.Data
                 return this.TableUnitInfo;
             }
         }
-        
+
         /// auto generated
         public PLocationTable PLocation
         {
@@ -8735,7 +11221,7 @@ namespace Ict.Petra.Shared.MPartner.Partner.Data
                 return this.TablePLocation;
             }
         }
-        
+
         /// auto generated
         public PPartnerLocationTable PPartnerLocation
         {
@@ -8744,7 +11230,7 @@ namespace Ict.Petra.Shared.MPartner.Partner.Data
                 return this.TablePPartnerLocation;
             }
         }
-        
+
         /// auto generated
         public PPartnerTypeTable PPartnerType
         {
@@ -8753,7 +11239,7 @@ namespace Ict.Petra.Shared.MPartner.Partner.Data
                 return this.TablePPartnerType;
             }
         }
-        
+
         /// auto generated
         public PSubscriptionTable PSubscription
         {
@@ -8762,7 +11248,7 @@ namespace Ict.Petra.Shared.MPartner.Partner.Data
                 return this.TablePSubscription;
             }
         }
-        
+
         /// auto generated
         public PartnerInfoTDSFamilyMembersTable FamilyMembers
         {
@@ -8771,13 +11257,13 @@ namespace Ict.Petra.Shared.MPartner.Partner.Data
                 return this.TableFamilyMembers;
             }
         }
-        
+
         /// auto generated
         public new virtual PartnerInfoTDS GetChangesTyped(bool removeEmptyTables)
         {
             return ((PartnerInfoTDS)(base.GetChangesTyped(removeEmptyTables)));
         }
-        
+
         /// auto generated
         protected override void InitTables()
         {
@@ -8790,7 +11276,7 @@ namespace Ict.Petra.Shared.MPartner.Partner.Data
             this.Tables.Add(new PSubscriptionTable("PSubscription"));
             this.Tables.Add(new PartnerInfoTDSFamilyMembersTable("FamilyMembers"));
         }
-        
+
         /// auto generated
         protected override void InitTables(System.Data.DataSet ds)
         {
@@ -8827,7 +11313,7 @@ namespace Ict.Petra.Shared.MPartner.Partner.Data
                 this.Tables.Add(new PartnerInfoTDSFamilyMembersTable("FamilyMembers"));
             }
         }
-        
+
         /// auto generated
         protected override void MapTables()
         {
@@ -8866,7 +11352,7 @@ namespace Ict.Petra.Shared.MPartner.Partner.Data
                 this.TableFamilyMembers.InitVars();
             }
         }
-        
+
         /// auto generated
         public override void InitVars()
         {
@@ -8880,19 +11366,1765 @@ namespace Ict.Petra.Shared.MPartner.Partner.Data
             this.TablePSubscription = ((PSubscriptionTable)(this.Tables["PSubscription"]));
             this.TableFamilyMembers = ((PartnerInfoTDSFamilyMembersTable)(this.Tables["FamilyMembers"]));
         }
-        
+
         /// auto generated
         protected override void InitConstraints()
         {
-            if (((this.TablePLocation != null) 
+
+            if (((this.TablePLocation != null)
                         && (this.TablePPartnerLocation != null)))
             {
                 this.FConstraints.Add(new TTypedConstraint("FKPartnerLocation2", "PLocation", new string[] {
-                                "p_site_key_n",
-                                "p_location_key_i"}, "PPartnerLocation", new string[] {
-                                "p_site_key_n",
-                                "p_location_key_i"}));
+                                "p_site_key_n", "p_location_key_i"}, "PPartnerLocation", new string[] {
+                                "p_site_key_n", "p_location_key_i"}));
             }
+
+        }
+    }
+
+    ///
+    [Serializable()]
+    public class PartnerInfoTDSPartnerHeadInfoTable : TTypedDataTable
+    {
+        /// This is the partner key assigned to each partner. It consists of the fund id followed by a computer generated six digit number.
+        public DataColumn ColumnPartnerKey;
+        /// Name of the person or organisation.  If a person, more name info is stored in p_person.
+        public DataColumn ColumnPartnerShortName;
+        /// This defines what type of partner this is. The classes that may be assigned are PERSON, FAMILY, CHURCH, ORGANISATION, UNIT, VENUE and BANK.
+        public DataColumn ColumnPartnerClass;
+        /// This code describes the status of a partner.
+        /// Eg,  Active, Deceased etc
+        public DataColumn ColumnStatusCode;
+        /// This code identifies the method of aquisition.
+        public DataColumn ColumnAcquisitionCode;
+        /// The Petra user that the partner record is restricted to if p_restricted_i is 2.
+        public DataColumn ColumnPrivatePartnerOwner;
+
+        /// TableId for Ict.Common.Data generic functions
+        public static short TableId = -1;
+
+        private static bool FInitInfoValues = InitInfoValues();
+        private static bool InitInfoValues()
+        {
+            TableInfo.Add(TableId, new TTypedTableInfo(TableId, "PartnerInfoTDSPartnerHeadInfo", "PartnerInfoTDSPartnerHeadInfo",
+                new TTypedColumnInfo[] {
+                    new TTypedColumnInfo(0, "PartnerKey", "p_partner_key_n", OdbcType.Decimal, 10, true),
+                    new TTypedColumnInfo(1, "PartnerShortName", "p_partner_short_name_c", OdbcType.VarChar, 160, false),
+                    new TTypedColumnInfo(2, "PartnerClass", "p_partner_class_c", OdbcType.VarChar, 24, false),
+                    new TTypedColumnInfo(3, "StatusCode", "p_status_code_c", OdbcType.VarChar, 16, false),
+                    new TTypedColumnInfo(4, "AcquisitionCode", "p_acquisition_code_c", OdbcType.VarChar, 16, false),
+                    new TTypedColumnInfo(5, "PrivatePartnerOwner", "p_user_id_c", OdbcType.VarChar, 40, false)
+                },
+                new int[] {
+
+                }));
+            return true;
+        }
+
+        /// constructor
+        public PartnerInfoTDSPartnerHeadInfoTable() :
+                base("PartnerInfoTDSPartnerHeadInfo")
+        {
+        }
+
+        /// constructor
+        public PartnerInfoTDSPartnerHeadInfoTable(string ATablename) :
+                base(ATablename)
+        {
+        }
+
+        /// constructor for serialization
+        public PartnerInfoTDSPartnerHeadInfoTable(System.Runtime.Serialization.SerializationInfo info, System.Runtime.Serialization.StreamingContext context) :
+                base(info, context)
+        {
+        }
+
+        /// create the columns
+        protected override void InitClass()
+        {
+            this.Columns.Add(new System.Data.DataColumn("p_partner_key_n", typeof(Int64)));
+            this.Columns.Add(new System.Data.DataColumn("p_partner_short_name_c", typeof(String)));
+            this.Columns.Add(new System.Data.DataColumn("p_partner_class_c", typeof(String)));
+            this.Columns.Add(new System.Data.DataColumn("p_status_code_c", typeof(String)));
+            this.Columns.Add(new System.Data.DataColumn("p_acquisition_code_c", typeof(String)));
+            this.Columns.Add(new System.Data.DataColumn("p_user_id_c", typeof(String)));
+        }
+
+        /// assign columns to properties, set primary key
+        public override void InitVars()
+        {
+            this.ColumnPartnerKey = this.Columns["p_partner_key_n"];
+            this.ColumnPartnerShortName = this.Columns["p_partner_short_name_c"];
+            this.ColumnPartnerClass = this.Columns["p_partner_class_c"];
+            this.ColumnStatusCode = this.Columns["p_status_code_c"];
+            this.ColumnAcquisitionCode = this.Columns["p_acquisition_code_c"];
+            this.ColumnPrivatePartnerOwner = this.Columns["p_user_id_c"];
+        }
+
+        /// Access a typed row by index
+        public PartnerInfoTDSPartnerHeadInfoRow this[int i]
+        {
+            get
+            {
+                return ((PartnerInfoTDSPartnerHeadInfoRow)(this.Rows[i]));
+            }
+        }
+
+        /// create a new typed row
+        public PartnerInfoTDSPartnerHeadInfoRow NewRowTyped(bool AWithDefaultValues)
+        {
+            PartnerInfoTDSPartnerHeadInfoRow ret = ((PartnerInfoTDSPartnerHeadInfoRow)(this.NewRow()));
+            if ((AWithDefaultValues == true))
+            {
+                ret.InitValues();
+            }
+            return ret;
+        }
+
+        /// create a new typed row, always with default values
+        public PartnerInfoTDSPartnerHeadInfoRow NewRowTyped()
+        {
+            return this.NewRowTyped(true);
+        }
+
+        /// new typed row using DataRowBuilder
+        protected override System.Data.DataRow NewRowFromBuilder(System.Data.DataRowBuilder builder)
+        {
+            return new PartnerInfoTDSPartnerHeadInfoRow(builder);
+        }
+
+        /// get typed set of changes
+        public PartnerInfoTDSPartnerHeadInfoTable GetChangesTyped()
+        {
+            return ((PartnerInfoTDSPartnerHeadInfoTable)(base.GetChangesTypedInternal()));
+        }
+
+        /// get an odbc parameter for the given column
+        public override OdbcParameter CreateOdbcParameter(Int32 AColumnNr)
+        {
+            return CreateOdbcParameter(TableId, AColumnNr);
+        }
+
+        /// get the name of the field in the database for this column
+        public static string GetPartnerKeyDBName()
+        {
+            return "p_partner_key_n";
+        }
+
+        /// get character length for column
+        public static short GetPartnerKeyLength()
+        {
+            return 10;
+        }
+
+        /// get the name of the field in the database for this column
+        public static string GetPartnerShortNameDBName()
+        {
+            return "p_partner_short_name_c";
+        }
+
+        /// get character length for column
+        public static short GetPartnerShortNameLength()
+        {
+            return 160;
+        }
+
+        /// get the name of the field in the database for this column
+        public static string GetPartnerClassDBName()
+        {
+            return "p_partner_class_c";
+        }
+
+        /// get character length for column
+        public static short GetPartnerClassLength()
+        {
+            return 24;
+        }
+
+        /// get the name of the field in the database for this column
+        public static string GetStatusCodeDBName()
+        {
+            return "p_status_code_c";
+        }
+
+        /// get character length for column
+        public static short GetStatusCodeLength()
+        {
+            return 16;
+        }
+
+        /// get the name of the field in the database for this column
+        public static string GetAcquisitionCodeDBName()
+        {
+            return "p_acquisition_code_c";
+        }
+
+        /// get character length for column
+        public static short GetAcquisitionCodeLength()
+        {
+            return 16;
+        }
+
+        /// get the name of the field in the database for this column
+        public static string GetPrivatePartnerOwnerDBName()
+        {
+            return "p_user_id_c";
+        }
+
+        /// get character length for column
+        public static short GetPrivatePartnerOwnerLength()
+        {
+            return 40;
+        }
+
+    }
+
+    ///
+    [Serializable()]
+    public class PartnerInfoTDSPartnerHeadInfoRow : System.Data.DataRow
+    {
+        private PartnerInfoTDSPartnerHeadInfoTable myTable;
+
+        /// Constructor
+        public PartnerInfoTDSPartnerHeadInfoRow(System.Data.DataRowBuilder rb) :
+                base(rb)
+        {
+            this.myTable = ((PartnerInfoTDSPartnerHeadInfoTable)(this.Table));
+        }
+
+        /// This is the partner key assigned to each partner. It consists of the fund id followed by a computer generated six digit number.
+        public Int64 PartnerKey
+        {
+            get
+            {
+                object ret;
+                ret = this[this.myTable.ColumnPartnerKey.Ordinal];
+                if ((ret == System.DBNull.Value))
+                {
+                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                }
+                else
+                {
+                    return ((Int64)(ret));
+                }
+            }
+            set
+            {
+                if ((this.IsNull(this.myTable.ColumnPartnerKey)
+                            || (((Int64)(this[this.myTable.ColumnPartnerKey])) != value)))
+                {
+                    this[this.myTable.ColumnPartnerKey] = value;
+                }
+            }
+        }
+
+        /// Name of the person or organisation.  If a person, more name info is stored in p_person.
+        public String PartnerShortName
+        {
+            get
+            {
+                object ret;
+                ret = this[this.myTable.ColumnPartnerShortName.Ordinal];
+                if ((ret == System.DBNull.Value))
+                {
+                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                }
+                else
+                {
+                    return ((String)(ret));
+                }
+            }
+            set
+            {
+                if ((this.IsNull(this.myTable.ColumnPartnerShortName)
+                            || (((String)(this[this.myTable.ColumnPartnerShortName])) != value)))
+                {
+                    this[this.myTable.ColumnPartnerShortName] = value;
+                }
+            }
+        }
+
+        /// This defines what type of partner this is. The classes that may be assigned are PERSON, FAMILY, CHURCH, ORGANISATION, UNIT, VENUE and BANK.
+        public String PartnerClass
+        {
+            get
+            {
+                object ret;
+                ret = this[this.myTable.ColumnPartnerClass.Ordinal];
+                if ((ret == System.DBNull.Value))
+                {
+                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                }
+                else
+                {
+                    return ((String)(ret));
+                }
+            }
+            set
+            {
+                if ((this.IsNull(this.myTable.ColumnPartnerClass)
+                            || (((String)(this[this.myTable.ColumnPartnerClass])) != value)))
+                {
+                    this[this.myTable.ColumnPartnerClass] = value;
+                }
+            }
+        }
+
+        /// This code describes the status of a partner.
+        /// Eg,  Active, Deceased etc
+        public String StatusCode
+        {
+            get
+            {
+                object ret;
+                ret = this[this.myTable.ColumnStatusCode.Ordinal];
+                if ((ret == System.DBNull.Value))
+                {
+                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                }
+                else
+                {
+                    return ((String)(ret));
+                }
+            }
+            set
+            {
+                if ((this.IsNull(this.myTable.ColumnStatusCode)
+                            || (((String)(this[this.myTable.ColumnStatusCode])) != value)))
+                {
+                    this[this.myTable.ColumnStatusCode] = value;
+                }
+            }
+        }
+
+        /// This code identifies the method of aquisition.
+        public String AcquisitionCode
+        {
+            get
+            {
+                object ret;
+                ret = this[this.myTable.ColumnAcquisitionCode.Ordinal];
+                if ((ret == System.DBNull.Value))
+                {
+                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                }
+                else
+                {
+                    return ((String)(ret));
+                }
+            }
+            set
+            {
+                if ((this.IsNull(this.myTable.ColumnAcquisitionCode)
+                            || (((String)(this[this.myTable.ColumnAcquisitionCode])) != value)))
+                {
+                    this[this.myTable.ColumnAcquisitionCode] = value;
+                }
+            }
+        }
+
+        /// The Petra user that the partner record is restricted to if p_restricted_i is 2.
+        public String PrivatePartnerOwner
+        {
+            get
+            {
+                object ret;
+                ret = this[this.myTable.ColumnPrivatePartnerOwner.Ordinal];
+                if ((ret == System.DBNull.Value))
+                {
+                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                }
+                else
+                {
+                    return ((String)(ret));
+                }
+            }
+            set
+            {
+                if ((this.IsNull(this.myTable.ColumnPrivatePartnerOwner)
+                            || (((String)(this[this.myTable.ColumnPrivatePartnerOwner])) != value)))
+                {
+                    this[this.myTable.ColumnPrivatePartnerOwner] = value;
+                }
+            }
+        }
+
+        /// set default values
+        public virtual void InitValues()
+        {
+            this[this.myTable.ColumnPartnerKey.Ordinal] = 0;
+            this.SetNull(this.myTable.ColumnPartnerShortName);
+            this.SetNull(this.myTable.ColumnPartnerClass);
+            this.SetNull(this.myTable.ColumnStatusCode);
+            this.SetNull(this.myTable.ColumnAcquisitionCode);
+            this.SetNull(this.myTable.ColumnPrivatePartnerOwner);
+        }
+
+        /// test for NULL value
+        public bool IsPartnerKeyNull()
+        {
+            return this.IsNull(this.myTable.ColumnPartnerKey);
+        }
+
+        /// assign NULL value
+        public void SetPartnerKeyNull()
+        {
+            this.SetNull(this.myTable.ColumnPartnerKey);
+        }
+
+        /// test for NULL value
+        public bool IsPartnerShortNameNull()
+        {
+            return this.IsNull(this.myTable.ColumnPartnerShortName);
+        }
+
+        /// assign NULL value
+        public void SetPartnerShortNameNull()
+        {
+            this.SetNull(this.myTable.ColumnPartnerShortName);
+        }
+
+        /// test for NULL value
+        public bool IsPartnerClassNull()
+        {
+            return this.IsNull(this.myTable.ColumnPartnerClass);
+        }
+
+        /// assign NULL value
+        public void SetPartnerClassNull()
+        {
+            this.SetNull(this.myTable.ColumnPartnerClass);
+        }
+
+        /// test for NULL value
+        public bool IsStatusCodeNull()
+        {
+            return this.IsNull(this.myTable.ColumnStatusCode);
+        }
+
+        /// assign NULL value
+        public void SetStatusCodeNull()
+        {
+            this.SetNull(this.myTable.ColumnStatusCode);
+        }
+
+        /// test for NULL value
+        public bool IsAcquisitionCodeNull()
+        {
+            return this.IsNull(this.myTable.ColumnAcquisitionCode);
+        }
+
+        /// assign NULL value
+        public void SetAcquisitionCodeNull()
+        {
+            this.SetNull(this.myTable.ColumnAcquisitionCode);
+        }
+
+        /// test for NULL value
+        public bool IsPrivatePartnerOwnerNull()
+        {
+            return this.IsNull(this.myTable.ColumnPrivatePartnerOwner);
+        }
+
+        /// assign NULL value
+        public void SetPrivatePartnerOwnerNull()
+        {
+            this.SetNull(this.myTable.ColumnPrivatePartnerOwner);
+        }
+    }
+
+    ///
+    [Serializable()]
+    public class PartnerInfoTDSPartnerAdditionalInfoTable : TTypedDataTable
+    {
+        ///
+        public DataColumn ColumnMainLanguages;
+        ///
+        public DataColumn ColumnAdditionalLanguages;
+        /// Date of contact
+        public DataColumn ColumnLastContact;
+        /// The date the record was created.
+        public DataColumn ColumnDateCreated;
+        /// The date the record was modified.
+        public DataColumn ColumnDateModified;
+        /// This is the date the rthe person was born
+        public DataColumn ColumnDateOfBirth;
+        /// Name of the person or organisation.  If a person, more name info is stored in p_person.
+        public DataColumn ColumnFamily;
+        /// A cross reference to the family record of this person.
+        /// It should be set to ? (not 0 because such a record does not exist!) when there is no family record.
+        public DataColumn ColumnFamilyKey;
+        ///
+        public DataColumn ColumnPreviousName;
+        ///
+        public DataColumn ColumnField;
+        /// This is the partner key assigned to each partner. It consists of the fund id followed by a computer generated six digit number.
+        public DataColumn ColumnFieldKey;
+        /// Additional information about the partner that is important to store in the database.
+        public DataColumn ColumnNotes;
+
+        /// TableId for Ict.Common.Data generic functions
+        public static short TableId = -1;
+
+        private static bool FInitInfoValues = InitInfoValues();
+        private static bool InitInfoValues()
+        {
+            TableInfo.Add(TableId, new TTypedTableInfo(TableId, "PartnerInfoTDSPartnerAdditionalInfo", "PartnerInfoTDSPartnerAdditionalInfo",
+                new TTypedColumnInfo[] {
+                    new TTypedColumnInfo(0, "MainLanguages", "MainLanguages", OdbcType.Int, -1, false),
+                    new TTypedColumnInfo(1, "AdditionalLanguages", "AdditionalLanguages", OdbcType.Int, -1, false),
+                    new TTypedColumnInfo(2, "LastContact", "s_contact_date_d", OdbcType.Date, -1, true),
+                    new TTypedColumnInfo(3, "DateCreated", "s_date_created_d", OdbcType.Date, -1, false),
+                    new TTypedColumnInfo(4, "DateModified", "s_date_modified_d", OdbcType.Date, -1, false),
+                    new TTypedColumnInfo(5, "DateOfBirth", "p_date_of_birth_d", OdbcType.Date, -1, false),
+                    new TTypedColumnInfo(6, "Family", "p_partner_short_name_c", OdbcType.VarChar, 160, false),
+                    new TTypedColumnInfo(7, "FamilyKey", "p_family_key_n", OdbcType.Decimal, 10, false),
+                    new TTypedColumnInfo(8, "PreviousName", "p_previous_name_c", OdbcType.VarChar, 512, false),
+                    new TTypedColumnInfo(9, "Field", "p_unit_name_c", OdbcType.VarChar, 160, false),
+                    new TTypedColumnInfo(10, "FieldKey", "p_partner_key_n", OdbcType.Decimal, 10, true),
+                    new TTypedColumnInfo(11, "Notes", "p_comment_c", OdbcType.VarChar, 10000, false)
+                },
+                new int[] {
+
+                }));
+            return true;
+        }
+
+        /// constructor
+        public PartnerInfoTDSPartnerAdditionalInfoTable() :
+                base("PartnerInfoTDSPartnerAdditionalInfo")
+        {
+        }
+
+        /// constructor
+        public PartnerInfoTDSPartnerAdditionalInfoTable(string ATablename) :
+                base(ATablename)
+        {
+        }
+
+        /// constructor for serialization
+        public PartnerInfoTDSPartnerAdditionalInfoTable(System.Runtime.Serialization.SerializationInfo info, System.Runtime.Serialization.StreamingContext context) :
+                base(info, context)
+        {
+        }
+
+        /// create the columns
+        protected override void InitClass()
+        {
+            this.Columns.Add(new System.Data.DataColumn("MainLanguages", typeof(string)));
+            this.Columns.Add(new System.Data.DataColumn("AdditionalLanguages", typeof(string)));
+            this.Columns.Add(new System.Data.DataColumn("s_contact_date_d", typeof(System.DateTime)));
+            this.Columns.Add(new System.Data.DataColumn("s_date_created_d", typeof(System.DateTime)));
+            this.Columns.Add(new System.Data.DataColumn("s_date_modified_d", typeof(System.DateTime)));
+            this.Columns.Add(new System.Data.DataColumn("p_date_of_birth_d", typeof(System.DateTime)));
+            this.Columns.Add(new System.Data.DataColumn("p_partner_short_name_c", typeof(String)));
+            this.Columns.Add(new System.Data.DataColumn("p_family_key_n", typeof(Int64)));
+            this.Columns.Add(new System.Data.DataColumn("p_previous_name_c", typeof(String)));
+            this.Columns.Add(new System.Data.DataColumn("p_unit_name_c", typeof(String)));
+            this.Columns.Add(new System.Data.DataColumn("p_partner_key_n", typeof(Int64)));
+            this.Columns.Add(new System.Data.DataColumn("p_comment_c", typeof(String)));
+        }
+
+        /// assign columns to properties, set primary key
+        public override void InitVars()
+        {
+            this.ColumnMainLanguages = this.Columns["MainLanguages"];
+            this.ColumnAdditionalLanguages = this.Columns["AdditionalLanguages"];
+            this.ColumnLastContact = this.Columns["s_contact_date_d"];
+            this.ColumnDateCreated = this.Columns["s_date_created_d"];
+            this.ColumnDateModified = this.Columns["s_date_modified_d"];
+            this.ColumnDateOfBirth = this.Columns["p_date_of_birth_d"];
+            this.ColumnFamily = this.Columns["p_partner_short_name_c"];
+            this.ColumnFamilyKey = this.Columns["p_family_key_n"];
+            this.ColumnPreviousName = this.Columns["p_previous_name_c"];
+            this.ColumnField = this.Columns["p_unit_name_c"];
+            this.ColumnFieldKey = this.Columns["p_partner_key_n"];
+            this.ColumnNotes = this.Columns["p_comment_c"];
+        }
+
+        /// Access a typed row by index
+        public PartnerInfoTDSPartnerAdditionalInfoRow this[int i]
+        {
+            get
+            {
+                return ((PartnerInfoTDSPartnerAdditionalInfoRow)(this.Rows[i]));
+            }
+        }
+
+        /// create a new typed row
+        public PartnerInfoTDSPartnerAdditionalInfoRow NewRowTyped(bool AWithDefaultValues)
+        {
+            PartnerInfoTDSPartnerAdditionalInfoRow ret = ((PartnerInfoTDSPartnerAdditionalInfoRow)(this.NewRow()));
+            if ((AWithDefaultValues == true))
+            {
+                ret.InitValues();
+            }
+            return ret;
+        }
+
+        /// create a new typed row, always with default values
+        public PartnerInfoTDSPartnerAdditionalInfoRow NewRowTyped()
+        {
+            return this.NewRowTyped(true);
+        }
+
+        /// new typed row using DataRowBuilder
+        protected override System.Data.DataRow NewRowFromBuilder(System.Data.DataRowBuilder builder)
+        {
+            return new PartnerInfoTDSPartnerAdditionalInfoRow(builder);
+        }
+
+        /// get typed set of changes
+        public PartnerInfoTDSPartnerAdditionalInfoTable GetChangesTyped()
+        {
+            return ((PartnerInfoTDSPartnerAdditionalInfoTable)(base.GetChangesTypedInternal()));
+        }
+
+        /// get an odbc parameter for the given column
+        public override OdbcParameter CreateOdbcParameter(Int32 AColumnNr)
+        {
+            return CreateOdbcParameter(TableId, AColumnNr);
+        }
+
+        /// get the name of the field in the database for this column
+        public static string GetMainLanguagesDBName()
+        {
+            return "MainLanguages";
+        }
+
+        /// get character length for column
+        public static short GetMainLanguagesLength()
+        {
+            return -1;
+        }
+
+        /// get the name of the field in the database for this column
+        public static string GetAdditionalLanguagesDBName()
+        {
+            return "AdditionalLanguages";
+        }
+
+        /// get character length for column
+        public static short GetAdditionalLanguagesLength()
+        {
+            return -1;
+        }
+
+        /// get the name of the field in the database for this column
+        public static string GetLastContactDBName()
+        {
+            return "s_contact_date_d";
+        }
+
+        /// get character length for column
+        public static short GetLastContactLength()
+        {
+            return -1;
+        }
+
+        /// get the name of the field in the database for this column
+        public static string GetDateCreatedDBName()
+        {
+            return "s_date_created_d";
+        }
+
+        /// get character length for column
+        public static short GetDateCreatedLength()
+        {
+            return -1;
+        }
+
+        /// get the name of the field in the database for this column
+        public static string GetDateModifiedDBName()
+        {
+            return "s_date_modified_d";
+        }
+
+        /// get character length for column
+        public static short GetDateModifiedLength()
+        {
+            return -1;
+        }
+
+        /// get the name of the field in the database for this column
+        public static string GetDateOfBirthDBName()
+        {
+            return "p_date_of_birth_d";
+        }
+
+        /// get character length for column
+        public static short GetDateOfBirthLength()
+        {
+            return -1;
+        }
+
+        /// get the name of the field in the database for this column
+        public static string GetFamilyDBName()
+        {
+            return "p_partner_short_name_c";
+        }
+
+        /// get character length for column
+        public static short GetFamilyLength()
+        {
+            return 160;
+        }
+
+        /// get the name of the field in the database for this column
+        public static string GetFamilyKeyDBName()
+        {
+            return "p_family_key_n";
+        }
+
+        /// get character length for column
+        public static short GetFamilyKeyLength()
+        {
+            return 10;
+        }
+
+        /// get the name of the field in the database for this column
+        public static string GetPreviousNameDBName()
+        {
+            return "p_previous_name_c";
+        }
+
+        /// get character length for column
+        public static short GetPreviousNameLength()
+        {
+            return 512;
+        }
+
+        /// get the name of the field in the database for this column
+        public static string GetFieldDBName()
+        {
+            return "p_unit_name_c";
+        }
+
+        /// get character length for column
+        public static short GetFieldLength()
+        {
+            return 160;
+        }
+
+        /// get the name of the field in the database for this column
+        public static string GetFieldKeyDBName()
+        {
+            return "p_partner_key_n";
+        }
+
+        /// get character length for column
+        public static short GetFieldKeyLength()
+        {
+            return 10;
+        }
+
+        /// get the name of the field in the database for this column
+        public static string GetNotesDBName()
+        {
+            return "p_comment_c";
+        }
+
+        /// get character length for column
+        public static short GetNotesLength()
+        {
+            return 10000;
+        }
+
+    }
+
+    ///
+    [Serializable()]
+    public class PartnerInfoTDSPartnerAdditionalInfoRow : System.Data.DataRow
+    {
+        private PartnerInfoTDSPartnerAdditionalInfoTable myTable;
+
+        /// Constructor
+        public PartnerInfoTDSPartnerAdditionalInfoRow(System.Data.DataRowBuilder rb) :
+                base(rb)
+        {
+            this.myTable = ((PartnerInfoTDSPartnerAdditionalInfoTable)(this.Table));
+        }
+
+        ///
+        public string MainLanguages
+        {
+            get
+            {
+                object ret;
+                ret = this[this.myTable.ColumnMainLanguages.Ordinal];
+                if ((ret == System.DBNull.Value))
+                {
+                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                }
+                else
+                {
+                    return ((string)(ret));
+                }
+            }
+            set
+            {
+                if ((this.IsNull(this.myTable.ColumnMainLanguages)
+                            || (((string)(this[this.myTable.ColumnMainLanguages])) != value)))
+                {
+                    this[this.myTable.ColumnMainLanguages] = value;
+                }
+            }
+        }
+
+        ///
+        public string AdditionalLanguages
+        {
+            get
+            {
+                object ret;
+                ret = this[this.myTable.ColumnAdditionalLanguages.Ordinal];
+                if ((ret == System.DBNull.Value))
+                {
+                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                }
+                else
+                {
+                    return ((string)(ret));
+                }
+            }
+            set
+            {
+                if ((this.IsNull(this.myTable.ColumnAdditionalLanguages)
+                            || (((string)(this[this.myTable.ColumnAdditionalLanguages])) != value)))
+                {
+                    this[this.myTable.ColumnAdditionalLanguages] = value;
+                }
+            }
+        }
+
+        /// Date of contact
+        public System.DateTime LastContact
+        {
+            get
+            {
+                object ret;
+                ret = this[this.myTable.ColumnLastContact.Ordinal];
+                if ((ret == System.DBNull.Value))
+                {
+                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                }
+                else
+                {
+                    return ((System.DateTime)(ret));
+                }
+            }
+            set
+            {
+                if ((this.IsNull(this.myTable.ColumnLastContact)
+                            || (((System.DateTime)(this[this.myTable.ColumnLastContact])) != value)))
+                {
+                    this[this.myTable.ColumnLastContact] = value;
+                }
+            }
+        }
+
+        /// The date the record was created.
+        public System.DateTime DateCreated
+        {
+            get
+            {
+                object ret;
+                ret = this[this.myTable.ColumnDateCreated.Ordinal];
+                if ((ret == System.DBNull.Value))
+                {
+                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                }
+                else
+                {
+                    return ((System.DateTime)(ret));
+                }
+            }
+            set
+            {
+                if ((this.IsNull(this.myTable.ColumnDateCreated)
+                            || (((System.DateTime)(this[this.myTable.ColumnDateCreated])) != value)))
+                {
+                    this[this.myTable.ColumnDateCreated] = value;
+                }
+            }
+        }
+
+        /// The date the record was modified.
+        public System.DateTime DateModified
+        {
+            get
+            {
+                object ret;
+                ret = this[this.myTable.ColumnDateModified.Ordinal];
+                if ((ret == System.DBNull.Value))
+                {
+                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                }
+                else
+                {
+                    return ((System.DateTime)(ret));
+                }
+            }
+            set
+            {
+                if ((this.IsNull(this.myTable.ColumnDateModified)
+                            || (((System.DateTime)(this[this.myTable.ColumnDateModified])) != value)))
+                {
+                    this[this.myTable.ColumnDateModified] = value;
+                }
+            }
+        }
+
+        /// This is the date the rthe person was born
+        public System.DateTime DateOfBirth
+        {
+            get
+            {
+                object ret;
+                ret = this[this.myTable.ColumnDateOfBirth.Ordinal];
+                if ((ret == System.DBNull.Value))
+                {
+                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                }
+                else
+                {
+                    return ((System.DateTime)(ret));
+                }
+            }
+            set
+            {
+                if ((this.IsNull(this.myTable.ColumnDateOfBirth)
+                            || (((System.DateTime)(this[this.myTable.ColumnDateOfBirth])) != value)))
+                {
+                    this[this.myTable.ColumnDateOfBirth] = value;
+                }
+            }
+        }
+
+        /// Name of the person or organisation.  If a person, more name info is stored in p_person.
+        public String Family
+        {
+            get
+            {
+                object ret;
+                ret = this[this.myTable.ColumnFamily.Ordinal];
+                if ((ret == System.DBNull.Value))
+                {
+                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                }
+                else
+                {
+                    return ((String)(ret));
+                }
+            }
+            set
+            {
+                if ((this.IsNull(this.myTable.ColumnFamily)
+                            || (((String)(this[this.myTable.ColumnFamily])) != value)))
+                {
+                    this[this.myTable.ColumnFamily] = value;
+                }
+            }
+        }
+
+        /// A cross reference to the family record of this person.
+        /// It should be set to ? (not 0 because such a record does not exist!) when there is no family record.
+        public Int64 FamilyKey
+        {
+            get
+            {
+                object ret;
+                ret = this[this.myTable.ColumnFamilyKey.Ordinal];
+                if ((ret == System.DBNull.Value))
+                {
+                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                }
+                else
+                {
+                    return ((Int64)(ret));
+                }
+            }
+            set
+            {
+                if ((this.IsNull(this.myTable.ColumnFamilyKey)
+                            || (((Int64)(this[this.myTable.ColumnFamilyKey])) != value)))
+                {
+                    this[this.myTable.ColumnFamilyKey] = value;
+                }
+            }
+        }
+
+        ///
+        public String PreviousName
+        {
+            get
+            {
+                object ret;
+                ret = this[this.myTable.ColumnPreviousName.Ordinal];
+                if ((ret == System.DBNull.Value))
+                {
+                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                }
+                else
+                {
+                    return ((String)(ret));
+                }
+            }
+            set
+            {
+                if ((this.IsNull(this.myTable.ColumnPreviousName)
+                            || (((String)(this[this.myTable.ColumnPreviousName])) != value)))
+                {
+                    this[this.myTable.ColumnPreviousName] = value;
+                }
+            }
+        }
+
+        ///
+        public String Field
+        {
+            get
+            {
+                object ret;
+                ret = this[this.myTable.ColumnField.Ordinal];
+                if ((ret == System.DBNull.Value))
+                {
+                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                }
+                else
+                {
+                    return ((String)(ret));
+                }
+            }
+            set
+            {
+                if ((this.IsNull(this.myTable.ColumnField)
+                            || (((String)(this[this.myTable.ColumnField])) != value)))
+                {
+                    this[this.myTable.ColumnField] = value;
+                }
+            }
+        }
+
+        /// This is the partner key assigned to each partner. It consists of the fund id followed by a computer generated six digit number.
+        public Int64 FieldKey
+        {
+            get
+            {
+                object ret;
+                ret = this[this.myTable.ColumnFieldKey.Ordinal];
+                if ((ret == System.DBNull.Value))
+                {
+                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                }
+                else
+                {
+                    return ((Int64)(ret));
+                }
+            }
+            set
+            {
+                if ((this.IsNull(this.myTable.ColumnFieldKey)
+                            || (((Int64)(this[this.myTable.ColumnFieldKey])) != value)))
+                {
+                    this[this.myTable.ColumnFieldKey] = value;
+                }
+            }
+        }
+
+        /// Additional information about the partner that is important to store in the database.
+        public String Notes
+        {
+            get
+            {
+                object ret;
+                ret = this[this.myTable.ColumnNotes.Ordinal];
+                if ((ret == System.DBNull.Value))
+                {
+                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                }
+                else
+                {
+                    return ((String)(ret));
+                }
+            }
+            set
+            {
+                if ((this.IsNull(this.myTable.ColumnNotes)
+                            || (((String)(this[this.myTable.ColumnNotes])) != value)))
+                {
+                    this[this.myTable.ColumnNotes] = value;
+                }
+            }
+        }
+
+        /// set default values
+        public virtual void InitValues()
+        {
+            this.SetNull(this.myTable.ColumnMainLanguages);
+            this.SetNull(this.myTable.ColumnAdditionalLanguages);
+            this.SetNull(this.myTable.ColumnLastContact);
+            this[this.myTable.ColumnDateCreated.Ordinal] = DateTime.Today;
+            this.SetNull(this.myTable.ColumnDateModified);
+            this.SetNull(this.myTable.ColumnDateOfBirth);
+            this.SetNull(this.myTable.ColumnFamily);
+            this[this.myTable.ColumnFamilyKey.Ordinal] = 0;
+            this.SetNull(this.myTable.ColumnPreviousName);
+            this.SetNull(this.myTable.ColumnField);
+            this[this.myTable.ColumnFieldKey.Ordinal] = 0;
+            this.SetNull(this.myTable.ColumnNotes);
+        }
+
+        /// test for NULL value
+        public bool IsMainLanguagesNull()
+        {
+            return this.IsNull(this.myTable.ColumnMainLanguages);
+        }
+
+        /// assign NULL value
+        public void SetMainLanguagesNull()
+        {
+            this.SetNull(this.myTable.ColumnMainLanguages);
+        }
+
+        /// test for NULL value
+        public bool IsAdditionalLanguagesNull()
+        {
+            return this.IsNull(this.myTable.ColumnAdditionalLanguages);
+        }
+
+        /// assign NULL value
+        public void SetAdditionalLanguagesNull()
+        {
+            this.SetNull(this.myTable.ColumnAdditionalLanguages);
+        }
+
+        /// test for NULL value
+        public bool IsLastContactNull()
+        {
+            return this.IsNull(this.myTable.ColumnLastContact);
+        }
+
+        /// assign NULL value
+        public void SetLastContactNull()
+        {
+            this.SetNull(this.myTable.ColumnLastContact);
+        }
+
+        /// test for NULL value
+        public bool IsDateCreatedNull()
+        {
+            return this.IsNull(this.myTable.ColumnDateCreated);
+        }
+
+        /// assign NULL value
+        public void SetDateCreatedNull()
+        {
+            this.SetNull(this.myTable.ColumnDateCreated);
+        }
+
+        /// test for NULL value
+        public bool IsDateModifiedNull()
+        {
+            return this.IsNull(this.myTable.ColumnDateModified);
+        }
+
+        /// assign NULL value
+        public void SetDateModifiedNull()
+        {
+            this.SetNull(this.myTable.ColumnDateModified);
+        }
+
+        /// test for NULL value
+        public bool IsDateOfBirthNull()
+        {
+            return this.IsNull(this.myTable.ColumnDateOfBirth);
+        }
+
+        /// assign NULL value
+        public void SetDateOfBirthNull()
+        {
+            this.SetNull(this.myTable.ColumnDateOfBirth);
+        }
+
+        /// test for NULL value
+        public bool IsFamilyNull()
+        {
+            return this.IsNull(this.myTable.ColumnFamily);
+        }
+
+        /// assign NULL value
+        public void SetFamilyNull()
+        {
+            this.SetNull(this.myTable.ColumnFamily);
+        }
+
+        /// test for NULL value
+        public bool IsFamilyKeyNull()
+        {
+            return this.IsNull(this.myTable.ColumnFamilyKey);
+        }
+
+        /// assign NULL value
+        public void SetFamilyKeyNull()
+        {
+            this.SetNull(this.myTable.ColumnFamilyKey);
+        }
+
+        /// test for NULL value
+        public bool IsPreviousNameNull()
+        {
+            return this.IsNull(this.myTable.ColumnPreviousName);
+        }
+
+        /// assign NULL value
+        public void SetPreviousNameNull()
+        {
+            this.SetNull(this.myTable.ColumnPreviousName);
+        }
+
+        /// test for NULL value
+        public bool IsFieldNull()
+        {
+            return this.IsNull(this.myTable.ColumnField);
+        }
+
+        /// assign NULL value
+        public void SetFieldNull()
+        {
+            this.SetNull(this.myTable.ColumnField);
+        }
+
+        /// test for NULL value
+        public bool IsFieldKeyNull()
+        {
+            return this.IsNull(this.myTable.ColumnFieldKey);
+        }
+
+        /// assign NULL value
+        public void SetFieldKeyNull()
+        {
+            this.SetNull(this.myTable.ColumnFieldKey);
+        }
+
+        /// test for NULL value
+        public bool IsNotesNull()
+        {
+            return this.IsNull(this.myTable.ColumnNotes);
+        }
+
+        /// assign NULL value
+        public void SetNotesNull()
+        {
+            this.SetNull(this.myTable.ColumnNotes);
+        }
+    }
+
+    ///
+    [Serializable()]
+    public class PartnerInfoTDSUnitInfoTable : TTypedDataTable
+    {
+        /// This is the partner key assigned to each partner. It consists of the fund id followed by a computer generated six digit number.
+        public DataColumn ColumnParentUnitKey;
+        ///
+        public DataColumn ColumnParentUnitName;
+
+        /// TableId for Ict.Common.Data generic functions
+        public static short TableId = -1;
+
+        private static bool FInitInfoValues = InitInfoValues();
+        private static bool InitInfoValues()
+        {
+            TableInfo.Add(TableId, new TTypedTableInfo(TableId, "PartnerInfoTDSUnitInfo", "PartnerInfoTDSUnitInfo",
+                new TTypedColumnInfo[] {
+                    new TTypedColumnInfo(0, "ParentUnitKey", "p_partner_key_n", OdbcType.Decimal, 10, true),
+                    new TTypedColumnInfo(1, "ParentUnitName", "p_unit_name_c", OdbcType.VarChar, 160, false)
+                },
+                new int[] {
+
+                }));
+            return true;
+        }
+
+        /// constructor
+        public PartnerInfoTDSUnitInfoTable() :
+                base("PartnerInfoTDSUnitInfo")
+        {
+        }
+
+        /// constructor
+        public PartnerInfoTDSUnitInfoTable(string ATablename) :
+                base(ATablename)
+        {
+        }
+
+        /// constructor for serialization
+        public PartnerInfoTDSUnitInfoTable(System.Runtime.Serialization.SerializationInfo info, System.Runtime.Serialization.StreamingContext context) :
+                base(info, context)
+        {
+        }
+
+        /// create the columns
+        protected override void InitClass()
+        {
+            this.Columns.Add(new System.Data.DataColumn("p_partner_key_n", typeof(Int64)));
+            this.Columns.Add(new System.Data.DataColumn("p_unit_name_c", typeof(String)));
+        }
+
+        /// assign columns to properties, set primary key
+        public override void InitVars()
+        {
+            this.ColumnParentUnitKey = this.Columns["p_partner_key_n"];
+            this.ColumnParentUnitName = this.Columns["p_unit_name_c"];
+        }
+
+        /// Access a typed row by index
+        public PartnerInfoTDSUnitInfoRow this[int i]
+        {
+            get
+            {
+                return ((PartnerInfoTDSUnitInfoRow)(this.Rows[i]));
+            }
+        }
+
+        /// create a new typed row
+        public PartnerInfoTDSUnitInfoRow NewRowTyped(bool AWithDefaultValues)
+        {
+            PartnerInfoTDSUnitInfoRow ret = ((PartnerInfoTDSUnitInfoRow)(this.NewRow()));
+            if ((AWithDefaultValues == true))
+            {
+                ret.InitValues();
+            }
+            return ret;
+        }
+
+        /// create a new typed row, always with default values
+        public PartnerInfoTDSUnitInfoRow NewRowTyped()
+        {
+            return this.NewRowTyped(true);
+        }
+
+        /// new typed row using DataRowBuilder
+        protected override System.Data.DataRow NewRowFromBuilder(System.Data.DataRowBuilder builder)
+        {
+            return new PartnerInfoTDSUnitInfoRow(builder);
+        }
+
+        /// get typed set of changes
+        public PartnerInfoTDSUnitInfoTable GetChangesTyped()
+        {
+            return ((PartnerInfoTDSUnitInfoTable)(base.GetChangesTypedInternal()));
+        }
+
+        /// get an odbc parameter for the given column
+        public override OdbcParameter CreateOdbcParameter(Int32 AColumnNr)
+        {
+            return CreateOdbcParameter(TableId, AColumnNr);
+        }
+
+        /// get the name of the field in the database for this column
+        public static string GetParentUnitKeyDBName()
+        {
+            return "p_partner_key_n";
+        }
+
+        /// get character length for column
+        public static short GetParentUnitKeyLength()
+        {
+            return 10;
+        }
+
+        /// get the name of the field in the database for this column
+        public static string GetParentUnitNameDBName()
+        {
+            return "p_unit_name_c";
+        }
+
+        /// get character length for column
+        public static short GetParentUnitNameLength()
+        {
+            return 160;
+        }
+
+    }
+
+    ///
+    [Serializable()]
+    public class PartnerInfoTDSUnitInfoRow : System.Data.DataRow
+    {
+        private PartnerInfoTDSUnitInfoTable myTable;
+
+        /// Constructor
+        public PartnerInfoTDSUnitInfoRow(System.Data.DataRowBuilder rb) :
+                base(rb)
+        {
+            this.myTable = ((PartnerInfoTDSUnitInfoTable)(this.Table));
+        }
+
+        /// This is the partner key assigned to each partner. It consists of the fund id followed by a computer generated six digit number.
+        public Int64 ParentUnitKey
+        {
+            get
+            {
+                object ret;
+                ret = this[this.myTable.ColumnParentUnitKey.Ordinal];
+                if ((ret == System.DBNull.Value))
+                {
+                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                }
+                else
+                {
+                    return ((Int64)(ret));
+                }
+            }
+            set
+            {
+                if ((this.IsNull(this.myTable.ColumnParentUnitKey)
+                            || (((Int64)(this[this.myTable.ColumnParentUnitKey])) != value)))
+                {
+                    this[this.myTable.ColumnParentUnitKey] = value;
+                }
+            }
+        }
+
+        ///
+        public String ParentUnitName
+        {
+            get
+            {
+                object ret;
+                ret = this[this.myTable.ColumnParentUnitName.Ordinal];
+                if ((ret == System.DBNull.Value))
+                {
+                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                }
+                else
+                {
+                    return ((String)(ret));
+                }
+            }
+            set
+            {
+                if ((this.IsNull(this.myTable.ColumnParentUnitName)
+                            || (((String)(this[this.myTable.ColumnParentUnitName])) != value)))
+                {
+                    this[this.myTable.ColumnParentUnitName] = value;
+                }
+            }
+        }
+
+        /// set default values
+        public virtual void InitValues()
+        {
+            this[this.myTable.ColumnParentUnitKey.Ordinal] = 0;
+            this.SetNull(this.myTable.ColumnParentUnitName);
+        }
+
+        /// test for NULL value
+        public bool IsParentUnitKeyNull()
+        {
+            return this.IsNull(this.myTable.ColumnParentUnitKey);
+        }
+
+        /// assign NULL value
+        public void SetParentUnitKeyNull()
+        {
+            this.SetNull(this.myTable.ColumnParentUnitKey);
+        }
+
+        /// test for NULL value
+        public bool IsParentUnitNameNull()
+        {
+            return this.IsNull(this.myTable.ColumnParentUnitName);
+        }
+
+        /// assign NULL value
+        public void SetParentUnitNameNull()
+        {
+            this.SetNull(this.myTable.ColumnParentUnitName);
+        }
+    }
+
+    ///
+    [Serializable()]
+    public class PartnerInfoTDSFamilyMembersTable : TTypedDataTable
+    {
+        /// This is the partner key assigned to each partner. It consists of the fund id followed by a computer generated six digit number.
+        public DataColumn ColumnPartnerKey;
+        /// Name of the person or organisation.  If a person, more name info is stored in p_person.
+        public DataColumn ColumnPartnerShortName;
+        /// This field indicates the family id of the individual.
+        /// ID's 0 and 1 are used for parents; 2, 3, 4 ... 9 are used for children.
+        public DataColumn ColumnFamilyId;
+
+        /// TableId for Ict.Common.Data generic functions
+        public static short TableId = -1;
+
+        private static bool FInitInfoValues = InitInfoValues();
+        private static bool InitInfoValues()
+        {
+            TableInfo.Add(TableId, new TTypedTableInfo(TableId, "PartnerInfoTDSFamilyMembers", "PartnerInfoTDSFamilyMembers",
+                new TTypedColumnInfo[] {
+                    new TTypedColumnInfo(0, "PartnerKey", "p_partner_key_n", OdbcType.Decimal, 10, true),
+                    new TTypedColumnInfo(1, "PartnerShortName", "p_partner_short_name_c", OdbcType.VarChar, 160, false),
+                    new TTypedColumnInfo(2, "FamilyId", "p_family_id_i", OdbcType.Int, -1, false)
+                },
+                new int[] {
+
+                }));
+            return true;
+        }
+
+        /// constructor
+        public PartnerInfoTDSFamilyMembersTable() :
+                base("PartnerInfoTDSFamilyMembers")
+        {
+        }
+
+        /// constructor
+        public PartnerInfoTDSFamilyMembersTable(string ATablename) :
+                base(ATablename)
+        {
+        }
+
+        /// constructor for serialization
+        public PartnerInfoTDSFamilyMembersTable(System.Runtime.Serialization.SerializationInfo info, System.Runtime.Serialization.StreamingContext context) :
+                base(info, context)
+        {
+        }
+
+        /// create the columns
+        protected override void InitClass()
+        {
+            this.Columns.Add(new System.Data.DataColumn("p_partner_key_n", typeof(Int64)));
+            this.Columns.Add(new System.Data.DataColumn("p_partner_short_name_c", typeof(String)));
+            this.Columns.Add(new System.Data.DataColumn("p_family_id_i", typeof(Int32)));
+        }
+
+        /// assign columns to properties, set primary key
+        public override void InitVars()
+        {
+            this.ColumnPartnerKey = this.Columns["p_partner_key_n"];
+            this.ColumnPartnerShortName = this.Columns["p_partner_short_name_c"];
+            this.ColumnFamilyId = this.Columns["p_family_id_i"];
+        }
+
+        /// Access a typed row by index
+        public PartnerInfoTDSFamilyMembersRow this[int i]
+        {
+            get
+            {
+                return ((PartnerInfoTDSFamilyMembersRow)(this.Rows[i]));
+            }
+        }
+
+        /// create a new typed row
+        public PartnerInfoTDSFamilyMembersRow NewRowTyped(bool AWithDefaultValues)
+        {
+            PartnerInfoTDSFamilyMembersRow ret = ((PartnerInfoTDSFamilyMembersRow)(this.NewRow()));
+            if ((AWithDefaultValues == true))
+            {
+                ret.InitValues();
+            }
+            return ret;
+        }
+
+        /// create a new typed row, always with default values
+        public PartnerInfoTDSFamilyMembersRow NewRowTyped()
+        {
+            return this.NewRowTyped(true);
+        }
+
+        /// new typed row using DataRowBuilder
+        protected override System.Data.DataRow NewRowFromBuilder(System.Data.DataRowBuilder builder)
+        {
+            return new PartnerInfoTDSFamilyMembersRow(builder);
+        }
+
+        /// get typed set of changes
+        public PartnerInfoTDSFamilyMembersTable GetChangesTyped()
+        {
+            return ((PartnerInfoTDSFamilyMembersTable)(base.GetChangesTypedInternal()));
+        }
+
+        /// get an odbc parameter for the given column
+        public override OdbcParameter CreateOdbcParameter(Int32 AColumnNr)
+        {
+            return CreateOdbcParameter(TableId, AColumnNr);
+        }
+
+        /// get the name of the field in the database for this column
+        public static string GetPartnerKeyDBName()
+        {
+            return "p_partner_key_n";
+        }
+
+        /// get character length for column
+        public static short GetPartnerKeyLength()
+        {
+            return 10;
+        }
+
+        /// get the name of the field in the database for this column
+        public static string GetPartnerShortNameDBName()
+        {
+            return "p_partner_short_name_c";
+        }
+
+        /// get character length for column
+        public static short GetPartnerShortNameLength()
+        {
+            return 160;
+        }
+
+        /// get the name of the field in the database for this column
+        public static string GetFamilyIdDBName()
+        {
+            return "p_family_id_i";
+        }
+
+        /// get character length for column
+        public static short GetFamilyIdLength()
+        {
+            return -1;
+        }
+
+    }
+
+    ///
+    [Serializable()]
+    public class PartnerInfoTDSFamilyMembersRow : System.Data.DataRow
+    {
+        private PartnerInfoTDSFamilyMembersTable myTable;
+
+        /// Constructor
+        public PartnerInfoTDSFamilyMembersRow(System.Data.DataRowBuilder rb) :
+                base(rb)
+        {
+            this.myTable = ((PartnerInfoTDSFamilyMembersTable)(this.Table));
+        }
+
+        /// This is the partner key assigned to each partner. It consists of the fund id followed by a computer generated six digit number.
+        public Int64 PartnerKey
+        {
+            get
+            {
+                object ret;
+                ret = this[this.myTable.ColumnPartnerKey.Ordinal];
+                if ((ret == System.DBNull.Value))
+                {
+                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                }
+                else
+                {
+                    return ((Int64)(ret));
+                }
+            }
+            set
+            {
+                if ((this.IsNull(this.myTable.ColumnPartnerKey)
+                            || (((Int64)(this[this.myTable.ColumnPartnerKey])) != value)))
+                {
+                    this[this.myTable.ColumnPartnerKey] = value;
+                }
+            }
+        }
+
+        /// Name of the person or organisation.  If a person, more name info is stored in p_person.
+        public String PartnerShortName
+        {
+            get
+            {
+                object ret;
+                ret = this[this.myTable.ColumnPartnerShortName.Ordinal];
+                if ((ret == System.DBNull.Value))
+                {
+                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                }
+                else
+                {
+                    return ((String)(ret));
+                }
+            }
+            set
+            {
+                if ((this.IsNull(this.myTable.ColumnPartnerShortName)
+                            || (((String)(this[this.myTable.ColumnPartnerShortName])) != value)))
+                {
+                    this[this.myTable.ColumnPartnerShortName] = value;
+                }
+            }
+        }
+
+        /// This field indicates the family id of the individual.
+        /// ID's 0 and 1 are used for parents; 2, 3, 4 ... 9 are used for children.
+        public Int32 FamilyId
+        {
+            get
+            {
+                object ret;
+                ret = this[this.myTable.ColumnFamilyId.Ordinal];
+                if ((ret == System.DBNull.Value))
+                {
+                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                }
+                else
+                {
+                    return ((Int32)(ret));
+                }
+            }
+            set
+            {
+                if ((this.IsNull(this.myTable.ColumnFamilyId)
+                            || (((Int32)(this[this.myTable.ColumnFamilyId])) != value)))
+                {
+                    this[this.myTable.ColumnFamilyId] = value;
+                }
+            }
+        }
+
+        /// set default values
+        public virtual void InitValues()
+        {
+            this[this.myTable.ColumnPartnerKey.Ordinal] = 0;
+            this.SetNull(this.myTable.ColumnPartnerShortName);
+            this[this.myTable.ColumnFamilyId.Ordinal] = 0;
+        }
+
+        /// test for NULL value
+        public bool IsPartnerKeyNull()
+        {
+            return this.IsNull(this.myTable.ColumnPartnerKey);
+        }
+
+        /// assign NULL value
+        public void SetPartnerKeyNull()
+        {
+            this.SetNull(this.myTable.ColumnPartnerKey);
+        }
+
+        /// test for NULL value
+        public bool IsPartnerShortNameNull()
+        {
+            return this.IsNull(this.myTable.ColumnPartnerShortName);
+        }
+
+        /// assign NULL value
+        public void SetPartnerShortNameNull()
+        {
+            this.SetNull(this.myTable.ColumnPartnerShortName);
+        }
+
+        /// test for NULL value
+        public bool IsFamilyIdNull()
+        {
+            return this.IsNull(this.myTable.ColumnFamilyId);
+        }
+
+        /// assign NULL value
+        public void SetFamilyIdNull()
+        {
+            this.SetNull(this.myTable.ColumnFamilyId);
         }
     }
 }

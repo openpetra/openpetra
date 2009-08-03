@@ -355,7 +355,8 @@ namespace Ict.Petra.Shared.MCommon.Data
         /// Size of the contents of the Cached DataTable (in Bytes)
         public DataColumn ColumnTableSize;
 
-        private static short TableId = -1;
+        /// TableId for Ict.Common.Data generic functions
+        public static short TableId = -1;
 
         private static bool FInitInfoValues = InitInfoValues();
         private static bool InitInfoValues()
@@ -371,7 +372,7 @@ namespace Ict.Petra.Shared.MCommon.Data
                     new TTypedColumnInfo(6, "HashCode", "HashCode", OdbcType.Int, -1, false),
                     new TTypedColumnInfo(7, "TableSize", "TableSize", OdbcType.Int, -1, false)
                 },
-                new string[] {
+                new int[] {
 
                 }));
             return true;
@@ -466,7 +467,7 @@ namespace Ict.Petra.Shared.MCommon.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetTableNameDBName()
+        public static string GetTableNameDBName()
         {
             return "TableName";
         }
@@ -478,7 +479,7 @@ namespace Ict.Petra.Shared.MCommon.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetDataUpToDateDBName()
+        public static string GetDataUpToDateDBName()
         {
             return "DataUpToDate";
         }
@@ -490,7 +491,7 @@ namespace Ict.Petra.Shared.MCommon.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetDataChangedDBName()
+        public static string GetDataChangedDBName()
         {
             return "DataChanged";
         }
@@ -502,7 +503,7 @@ namespace Ict.Petra.Shared.MCommon.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetChangesSavedExternallyDBName()
+        public static string GetChangesSavedExternallyDBName()
         {
             return "ChangesSavedExternally";
         }
@@ -514,7 +515,7 @@ namespace Ict.Petra.Shared.MCommon.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetCachedSinceDBName()
+        public static string GetCachedSinceDBName()
         {
             return "CachedSince";
         }
@@ -526,7 +527,7 @@ namespace Ict.Petra.Shared.MCommon.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetLastAccessedDBName()
+        public static string GetLastAccessedDBName()
         {
             return "LastAccessed";
         }
@@ -538,7 +539,7 @@ namespace Ict.Petra.Shared.MCommon.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetHashCodeDBName()
+        public static string GetHashCodeDBName()
         {
             return "HashCode";
         }
@@ -550,7 +551,7 @@ namespace Ict.Petra.Shared.MCommon.Data
         }
 
         /// get the name of the field in the database for this column
-        protected static string GetTableSizeDBName()
+        public static string GetTableSizeDBName()
         {
             return "TableSize";
         }

@@ -8,8 +8,8 @@
         <Table sqltable="p_partner_type"/>
         <Table sqltable="p_subscription"/>     
         <Table sqltable="p_partner_location">
-          <CustomField name="BestAddress" type="boolean"/>  
-          <CustomField name="Icon" type="integer"/>
+          <CustomField name="BestAddress" type="bool"/>  
+          <CustomField name="Icon" type="Int32"/>
         </Table>
         <Table sqltable="p_location"/>
         <Table sqltable="p_person">
@@ -40,24 +40,24 @@
             <Field sqltable="p_partner" sqlfield="p_partner_key_n"/>
             <Field name="SelectedSiteKey" sqltable="p_partner_location" sqlfield="p_site_key_n"/>
             <Field name="SelectedLocationKey" sqltable="p_partner_location" sqlfield="p_location_key_i"/>
-            <CustomField name="LastGiftDate" type="datetime"/>
+            <CustomField name="LastGiftDate" type="DateTime"/>
             <CustomField name="LastGiftInfo" type="string"/>
-            <CustomField name="LastContactDate" type="datetime"/>     
-            <CustomField name="ItemsCountAddresses" type="integer"/>
-            <CustomField name="ItemsCountAddressesActive" type="integer"/>
-            <CustomField name="ItemsCountSubscriptions" type="integer"/>
-            <CustomField name="ItemsCountSubscriptionsActive" type="integer"/>          
-            <CustomField name="ItemsCountPartnerTypes" type="integer"/>
-            <CustomField name="ItemsCountFamilyMembers" type="integer"/>
-            <CustomField name="ItemsCountInterests" type="integer"/>
-            <CustomField name="ItemsCountReminders" type="integer"/>            <!-- not in use yet! -->
-            <CustomField name="ItemsCountRelationships" type="integer"/>        <!-- not in use yet! -->
-            <CustomField name="ItemsCountContacts" type="integer"/>         <!-- not in use yet! -->            
-            <CustomField name="OfficeSpecificDataLabelsAvailable" type="boolean"/>
-            <CustomField name="FoundationOwner1Key" type="int64"/>
-            <CustomField name="FoundationOwner2Key" type="int64"/>
-            <CustomField name="HasEXWORKERPartnerType" type="boolean"/>
-            <primarykey thisFields="PartnerKey"/>
+            <CustomField name="LastContactDate" type="DateTime"/>     
+            <CustomField name="ItemsCountAddresses" type="Int32"/>
+            <CustomField name="ItemsCountAddressesActive" type="Int32"/>
+            <CustomField name="ItemsCountSubscriptions" type="Int32"/>
+            <CustomField name="ItemsCountSubscriptionsActive" type="Int32"/>          
+            <CustomField name="ItemsCountPartnerTypes" type="Int32"/>
+            <CustomField name="ItemsCountFamilyMembers" type="Int32"/>
+            <CustomField name="ItemsCountInterests" type="Int32"/>
+            <CustomField name="ItemsCountReminders" type="Int32"/>            <!-- not in use yet! -->
+            <CustomField name="ItemsCountRelationships" type="Int32"/>        <!-- not in use yet! -->
+            <CustomField name="ItemsCountContacts" type="Int32"/>         <!-- not in use yet! -->            
+            <CustomField name="OfficeSpecificDataLabelsAvailable" type="bool"/>
+            <CustomField name="FoundationOwner1Key" type="Int64"/>
+            <CustomField name="FoundationOwner2Key" type="Int64"/>
+            <CustomField name="HasEXWORKERPartnerType" type="bool"/>
+            <PrimaryKey thisFields="PartnerKey"/>
         </CustomTable>
         <CustomTable name="FamilyMembers">
             <Field sqltable="p_partner" sqlfield="p_partner_key_n"/>
@@ -65,10 +65,10 @@
             <Field sqltable="p_person" sqlfield="p_family_id_i"/>
             <Field sqltable="p_person" sqlfield="p_gender_c"/>
             <Field sqltable="p_person" sqlfield="p_date_of_birth_d"/>
-            <CustomField name="TypeCodeModify" type="boolean"/>             
-            <CustomField name="TypeCodePresent" type="boolean"/>              
+            <CustomField name="TypeCodeModify" type="bool"/>             
+            <CustomField name="TypeCodePresent" type="bool"/>              
             <CustomField name="OtherTypeCodes" type="string"/>
-            <primarykey thisFields="PartnerKey"/>
+            <PrimaryKey thisFields="PartnerKey"/>
         </CustomTable>
         <CustomTable name="FamilyMembersInfoForStatusChange">
             <Field sqltable="p_partner" sqlfield="p_partner_key_n"/>
@@ -76,9 +76,9 @@
         <CustomTable name="PartnerTypeChangeFamilyMembersPromotion">
             <Field sqltable="p_partner" sqlfield="p_partner_key_n"/>
             <CustomField name="TypeCode" type="string"/>
-      <CustomField name="AddTypeCode" type="boolean"/>              
-      <CustomField name="RemoveTypeCode" type="boolean"/>
-            <primarykey thisFields="PartnerKey,TypeCode,AddTypeCode"/>
+      <CustomField name="AddTypeCode" type="bool"/>              
+      <CustomField name="RemoveTypeCode" type="bool"/>
+            <PrimaryKey thisFields="PartnerKey,TypeCode,AddTypeCode"/>
         </CustomTable>
         <CustomRelation name="Address" 
             parentTable="PPartnerLocation" parentFields="SiteKey,LocationKey"
@@ -96,12 +96,12 @@
         <Table name="SimilarLocationParameters" sqltable="p_location">
          <!-- Table is used for showing Location data of a Location that is similar to the one the user has chosen: holds only one record -->
 
-          <CustomField name="SiteKeyOfSimilarLocation" type="int64"/>           <!-- SiteKey of the Location that is similar -->
-          <CustomField name="LocationKeyOfSimilarLocation" type="int32"/>       <!-- LocationKey of the Location that is similar -->          
-          <CustomField name="UsedByNOtherPartners" type="integer"/>         <!-- Used for displaying how many other partners are referencing this Location -->
-          <CustomField name="AnswerReuse" type="boolean"/>              <!-- User's choice when he is finished with the screen; gets set by the PetraClient and processed by the PetraServer -->
-          <CustomField name="AnswerProcessedClientSide" type="boolean"/>        <!-- Processing Status of the record: only set by the PetraServer -->
-          <CustomField name="AnswerProcessedServerSide" type="boolean"/>        <!-- Processing Status of the record: only set by the PetraServer -->
+          <CustomField name="SiteKeyOfSimilarLocation" type="Int64"/>           <!-- SiteKey of the Location that is similar -->
+          <CustomField name="LocationKeyOfSimilarLocation" type="Int32"/>       <!-- LocationKey of the Location that is similar -->          
+          <CustomField name="UsedByNOtherPartners" type="Int32"/>         <!-- Used for displaying how many other partners are referencing this Location -->
+          <CustomField name="AnswerReuse" type="bool"/>              <!-- User's choice when he is finished with the screen; gets set by the PetraClient and processed by the PetraServer -->
+          <CustomField name="AnswerProcessedClientSide" type="bool"/>        <!-- Processing Status of the record: only set by the PetraServer -->
+          <CustomField name="AnswerProcessedServerSide" type="bool"/>        <!-- Processing Status of the record: only set by the PetraServer -->
         </Table>        
 
         <CustomTable name="ChangePromotionParameters">                  
@@ -125,8 +125,8 @@
           <Field sqltable="p_partner_location" sqlfield="p_date_effective_d"/>      <!-- used for displaying Valid From in Grid -->
           <Field sqltable="p_partner_location" sqlfield="p_date_good_until_d"/>     <!-- used for displaying Valid To in Grid -->
           <Field sqltable="p_partner_location" sqlfield="p_location_type_c"/>       <!-- used for displaying Location Type in Grid -->
-          <CustomField name="SiteKeyOfEditedRecord" type="int64"/>
-          <CustomField name="LocationKeyOfEditedRecord" type="int32"/>
+          <CustomField name="SiteKeyOfEditedRecord" type="Int64"/>
+          <CustomField name="LocationKeyOfEditedRecord" type="Int32"/>
         </CustomTable> 
         
         <CustomTable name="AddressAddedOrChangedPromotion">
@@ -136,13 +136,13 @@
           <Field sqltable="p_location" sqlfield="p_site_key_n"/>            <!-- DB table key field -->
           <Field sqltable="p_location" sqlfield="p_location_key_i"/>            <!-- DB table key field -->
           <Field sqltable="p_partner" sqlfield="p_partner_key_n"/>          <!-- DB table key field -->
-          <CustomField name="LocationChange" type="boolean"/>                   <!-- determines for which screen the data is: Location Change -->
-          <CustomField name="PartnerLocationChange" type="boolean"/>                <!-- determines for which screen the data is: Partner Location Change -->
-          <CustomField name="LocationAdded" type="boolean"/>                <!-- determines for which screen the data is: Location Added -->
+          <CustomField name="LocationChange" type="bool"/>                   <!-- determines for which screen the data is: Location Change -->
+          <CustomField name="PartnerLocationChange" type="bool"/>                <!-- determines for which screen the data is: Partner Location Change -->
+          <CustomField name="LocationAdded" type="bool"/>                <!-- determines for which screen the data is: Location Added -->
           <CustomField name="ChangedFields" type="string"/>             <!-- changed fields + their original value and changed value (only used for p_partner_location Change Promotion screen) -->
           <CustomField name="UserAnswer" type="string"/>                <!-- user's choice when he is finished with the screen; gets set by the PetraClient and processed by the PetraServer -->
-          <CustomField name="AnswerProcessedClientSide" type="boolean"/>        <!-- Processing Status of the record: only set by the PetraServer -->
-          <CustomField name="AnswerProcessedServerSide" type="boolean"/>        <!-- Processing status of the record: only set by the PetraServer -->
+          <CustomField name="AnswerProcessedClientSide" type="bool"/>        <!-- Processing Status of the record: only set by the PetraServer -->
+          <CustomField name="AnswerProcessedServerSide" type="bool"/>        <!-- Processing status of the record: only set by the PetraServer -->
         </CustomTable>        
     </DataSet>    
 
@@ -194,7 +194,7 @@
             <Field sqltable="p_partner" sqlfield="p_partner_key_n"/>
             <Field sqltable="p_partner" sqlfield="p_partner_short_name_c"/>
             <Field sqltable="p_person" sqlfield="p_family_id_i"/>
-            <primarykey thisFields="PartnerKey"/>
+            <PrimaryKey thisFields="PartnerKey"/>
         </CustomTable>        
     </DataSet>    
     

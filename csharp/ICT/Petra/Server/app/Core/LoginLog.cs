@@ -28,6 +28,7 @@ using System.Data;
 using System.Data.Odbc;
 
 using Ict.Common;
+using Ict.Common.Data;
 using Ict.Common.DB;
 using Ict.Common.Verification;
 
@@ -130,7 +131,7 @@ namespace Ict.Petra.Server.App.Core.Security
 
                 // ROWID for postgresql: see http://archives.postgresql.org/sydpug/2005-05/msg00002.php
                 AProcessID =
-                    Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar("SELECT s_login_process_id_r FROM PUB_" + SLoginTable.GetTableDBName() +
+                    Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar("SELECT s_login_process_id_r FROM PUB_" + TTypedDataTable.GetTableNameSQL(SLoginTable.TableId) +
                             ' ' +
                             "WHERE " + SLoginTable.GetUserIdDBName() + " = ? AND " + SLoginTable.GetLoginDateDBName() + " = ? AND " +
                             SLoginTable.GetLoginTimeDBName() + " = ? AND " + SLoginTable.GetLoginStatusDBName() + " = ?", ReadTransaction,
