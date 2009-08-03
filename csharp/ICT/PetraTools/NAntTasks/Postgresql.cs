@@ -122,7 +122,7 @@ namespace Ict.Tools.NAntTasks
             }
 
             process.StartInfo.Arguments += " " + FDatabase;
- 
+
             string SuperUser = string.Empty;
 
             if (NAnt.Core.PlatformHelper.IsUnix)
@@ -155,7 +155,7 @@ namespace Ict.Tools.NAntTasks
                 System.Threading.Thread.Sleep(500);
             }
 
-            if (FailOnError && process.ExitCode != 0)
+            if (FailOnError && (process.ExitCode != 0))
             {
                 throw new Exception("Exit Code " + process.ExitCode.ToString() + " shows that something went wrong");
             }
