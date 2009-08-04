@@ -21,10 +21,10 @@ namespace {#NAMESPACE}
 
 {#TABLE_DESCRIPTION}
 [Serializable()]
-public class {#TABLENAME}Table : TTypedDataTable
+public class {#TABLENAME}Table : {#BASECLASSTABLE}
 {
     /// TableId for Ict.Common.Data generic functions
-    public static short TableId = {#TABLEID};
+    public {#NEW}static short TableId = {#TABLEID};
     {#COLUMNIDS}
     
     private static bool FInitInfoValues = InitInfoValues();
@@ -77,7 +77,7 @@ public class {#TABLENAME}Table : TTypedDataTable
     }
 
     /// Access a typed row by index
-    public {#TABLENAME}Row this[int i]
+    public {#NEW}{#TABLENAME}Row this[int i]
     {
         get
         {
@@ -86,7 +86,7 @@ public class {#TABLENAME}Table : TTypedDataTable
     }
 
     /// create a new typed row
-    public {#TABLENAME}Row NewRowTyped(bool AWithDefaultValues)
+    public {#NEW}{#TABLENAME}Row NewRowTyped(bool AWithDefaultValues)
     {
         {#TABLENAME}Row ret = (({#TABLENAME}Row)(this.NewRow()));
         if ((AWithDefaultValues == true))
@@ -97,7 +97,7 @@ public class {#TABLENAME}Table : TTypedDataTable
     }
     
     /// create a new typed row, always with default values
-    public {#TABLENAME}Row NewRowTyped()
+    public {#NEW}{#TABLENAME}Row NewRowTyped()
     {
         return this.NewRowTyped(true);
     }
@@ -109,19 +109,19 @@ public class {#TABLENAME}Table : TTypedDataTable
     }
     
     /// get typed set of changes
-    public {#TABLENAME}Table GetChangesTyped()
+    public {#NEW}{#TABLENAME}Table GetChangesTyped()
     {
         return (({#TABLENAME}Table)(base.GetChangesTypedInternal()));
     }
 
     /// return the CamelCase name of the table
-    public static string GetTableName()
+    public static {#NEW}string GetTableName()
     {
         return "{#TABLENAME}";
     }
 
     /// return the name of the table as it is used in the database
-    public static string GetTableDBName()
+    public static {#NEW}string GetTableDBName()
     {
         return "{#DBTABLENAME}";
     }
@@ -138,7 +138,7 @@ public class {#TABLENAME}Table : TTypedDataTable
 
 {##COLUMNIDS}
 /// used for generic TTypedDataTable functions
-public static short Column{#COLUMNNAME}Id = {#COLUMNORDERNUMBER};
+public static {#NEW}short Column{#COLUMNNAME}Id = {#COLUMNORDERNUMBER};
 
 {##DATACOLUMN}
 {#COLUMN_DESCRIPTION}
@@ -156,13 +156,13 @@ this.Column{#COLUMNNAME} = this.Columns["{#COLUMNDBNAME}"];
 {##STATICCOLUMNPROPERTIES}
 
 /// get the name of the field in the database for this column
-public static string Get{#COLUMNNAME}DBName()
+public static {#NEW}string Get{#COLUMNNAME}DBName()
 {
     return "{#COLUMNDBNAME}";
 }
 
 /// get character length for column
-public static short Get{#COLUMNNAME}Length()
+public static {#NEW}short Get{#COLUMNNAME}Length()
 {
     return {#COLUMNLENGTH};
 }
@@ -204,7 +204,7 @@ public {#COLUMNDOTNETTYPE} {#COLUMNNAME}
         ret = this[this.myTable.Column{#COLUMNNAME}.Ordinal];
         if ((ret == System.DBNull.Value))
         {
-            throw new System.Data.StrongTypingException("Error: DB null", null);
+            {#ACTIONGETNULLVALUE}
         }
         else
         {

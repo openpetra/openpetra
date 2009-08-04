@@ -434,7 +434,7 @@ namespace Ict.Petra.Shared.MPersonnel.Personnel.Data
                 ret = this[this.myTable.ColumnUnassignableDate.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return DateTime.MinValue;
                 }
                 else
                 {
@@ -486,7 +486,7 @@ namespace Ict.Petra.Shared.MPersonnel.Personnel.Data
                 ret = this[this.myTable.ColumnDateCreated.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return DateTime.MinValue;
                 }
                 else
                 {
@@ -538,7 +538,7 @@ namespace Ict.Petra.Shared.MPersonnel.Personnel.Data
                 ret = this[this.myTable.ColumnDateModified.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return DateTime.MinValue;
                 }
                 else
                 {
@@ -1158,7 +1158,7 @@ namespace Ict.Petra.Shared.MPersonnel.Personnel.Data
                 ret = this[this.myTable.ColumnUnassignableDate.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return DateTime.MinValue;
                 }
                 else
                 {
@@ -1236,7 +1236,7 @@ namespace Ict.Petra.Shared.MPersonnel.Personnel.Data
                 ret = this[this.myTable.ColumnDateCreated.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return DateTime.MinValue;
                 }
                 else
                 {
@@ -1288,7 +1288,7 @@ namespace Ict.Petra.Shared.MPersonnel.Personnel.Data
                 ret = this[this.myTable.ColumnDateModified.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return DateTime.MinValue;
                 }
                 else
                 {
@@ -1902,7 +1902,7 @@ namespace Ict.Petra.Shared.MPersonnel.Personnel.Data
                 ret = this[this.myTable.ColumnUnassignableDate.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return DateTime.MinValue;
                 }
                 else
                 {
@@ -1954,7 +1954,7 @@ namespace Ict.Petra.Shared.MPersonnel.Personnel.Data
                 ret = this[this.myTable.ColumnDateCreated.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return DateTime.MinValue;
                 }
                 else
                 {
@@ -2006,7 +2006,7 @@ namespace Ict.Petra.Shared.MPersonnel.Personnel.Data
                 ret = this[this.myTable.ColumnDateModified.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return DateTime.MinValue;
                 }
                 else
                 {
@@ -3064,7 +3064,7 @@ namespace Ict.Petra.Shared.MPersonnel.Personnel.Data
                 ret = this[this.myTable.ColumnGenAppDate.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return DateTime.MinValue;
                 }
                 else
                 {
@@ -3299,7 +3299,7 @@ namespace Ict.Petra.Shared.MPersonnel.Personnel.Data
                 ret = this[this.myTable.ColumnDateClosed.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return DateTime.MinValue;
                 }
                 else
                 {
@@ -3429,7 +3429,7 @@ namespace Ict.Petra.Shared.MPersonnel.Personnel.Data
                 ret = this[this.myTable.ColumnGenAppCancelled.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return DateTime.MinValue;
                 }
                 else
                 {
@@ -3481,7 +3481,7 @@ namespace Ict.Petra.Shared.MPersonnel.Personnel.Data
                 ret = this[this.myTable.ColumnGenAppRecvgFldAccept.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return DateTime.MinValue;
                 }
                 else
                 {
@@ -3533,7 +3533,7 @@ namespace Ict.Petra.Shared.MPersonnel.Personnel.Data
                 ret = this[this.myTable.ColumnGenAppSendFldAcceptDate.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return DateTime.MinValue;
                 }
                 else
                 {
@@ -3611,7 +3611,7 @@ namespace Ict.Petra.Shared.MPersonnel.Personnel.Data
                 ret = this[this.myTable.ColumnGenAppUpdate.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return DateTime.MinValue;
                 }
                 else
                 {
@@ -3741,7 +3741,7 @@ namespace Ict.Petra.Shared.MPersonnel.Personnel.Data
                 ret = this[this.myTable.ColumnDateCreated.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return DateTime.MinValue;
                 }
                 else
                 {
@@ -3793,7 +3793,7 @@ namespace Ict.Petra.Shared.MPersonnel.Personnel.Data
                 ret = this[this.myTable.ColumnDateModified.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return DateTime.MinValue;
                 }
                 else
                 {
@@ -4796,7 +4796,7 @@ namespace Ict.Petra.Shared.MPersonnel.Personnel.Data
                 ret = this[this.myTable.ColumnStatusDateEffective.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return DateTime.MinValue;
                 }
                 else
                 {
@@ -4848,7 +4848,7 @@ namespace Ict.Petra.Shared.MPersonnel.Personnel.Data
                 ret = this[this.myTable.ColumnDateCreated.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return DateTime.MinValue;
                 }
                 else
                 {
@@ -4900,7 +4900,7 @@ namespace Ict.Petra.Shared.MPersonnel.Personnel.Data
                 ret = this[this.myTable.ColumnDateModified.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return DateTime.MinValue;
                 }
                 else
                 {
@@ -5527,7 +5527,7 @@ namespace Ict.Petra.Shared.MPersonnel.Personnel.Data
                 ret = this[this.myTable.ColumnUnassignableDate.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return DateTime.MinValue;
                 }
                 else
                 {
@@ -5579,7 +5579,7 @@ namespace Ict.Petra.Shared.MPersonnel.Personnel.Data
                 ret = this[this.myTable.ColumnDateCreated.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return DateTime.MinValue;
                 }
                 else
                 {
@@ -5631,7 +5631,7 @@ namespace Ict.Petra.Shared.MPersonnel.Personnel.Data
                 ret = this[this.myTable.ColumnDateModified.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return DateTime.MinValue;
                 }
                 else
                 {
@@ -6232,7 +6232,7 @@ namespace Ict.Petra.Shared.MPersonnel.Personnel.Data
                 ret = this[this.myTable.ColumnUnassignableDate.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return DateTime.MinValue;
                 }
                 else
                 {
@@ -6284,7 +6284,7 @@ namespace Ict.Petra.Shared.MPersonnel.Personnel.Data
                 ret = this[this.myTable.ColumnDateCreated.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return DateTime.MinValue;
                 }
                 else
                 {
@@ -6336,7 +6336,7 @@ namespace Ict.Petra.Shared.MPersonnel.Personnel.Data
                 ret = this[this.myTable.ColumnDateModified.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return DateTime.MinValue;
                 }
                 else
                 {
@@ -6937,7 +6937,7 @@ namespace Ict.Petra.Shared.MPersonnel.Personnel.Data
                 ret = this[this.myTable.ColumnUnassignableDate.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return DateTime.MinValue;
                 }
                 else
                 {
@@ -6989,7 +6989,7 @@ namespace Ict.Petra.Shared.MPersonnel.Personnel.Data
                 ret = this[this.myTable.ColumnDateCreated.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return DateTime.MinValue;
                 }
                 else
                 {
@@ -7041,7 +7041,7 @@ namespace Ict.Petra.Shared.MPersonnel.Personnel.Data
                 ret = this[this.myTable.ColumnDateModified.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return DateTime.MinValue;
                 }
                 else
                 {
@@ -7642,7 +7642,7 @@ namespace Ict.Petra.Shared.MPersonnel.Personnel.Data
                 ret = this[this.myTable.ColumnUnassignableDate.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return DateTime.MinValue;
                 }
                 else
                 {
@@ -7694,7 +7694,7 @@ namespace Ict.Petra.Shared.MPersonnel.Personnel.Data
                 ret = this[this.myTable.ColumnDateCreated.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return DateTime.MinValue;
                 }
                 else
                 {
@@ -7746,7 +7746,7 @@ namespace Ict.Petra.Shared.MPersonnel.Personnel.Data
                 ret = this[this.myTable.ColumnDateModified.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return DateTime.MinValue;
                 }
                 else
                 {
@@ -8468,7 +8468,7 @@ namespace Ict.Petra.Shared.MPersonnel.Personnel.Data
                 ret = this[this.myTable.ColumnUnassignableDate.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return DateTime.MinValue;
                 }
                 else
                 {
@@ -8624,7 +8624,7 @@ namespace Ict.Petra.Shared.MPersonnel.Personnel.Data
                 ret = this[this.myTable.ColumnDateCreated.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return DateTime.MinValue;
                 }
                 else
                 {
@@ -8676,7 +8676,7 @@ namespace Ict.Petra.Shared.MPersonnel.Personnel.Data
                 ret = this[this.myTable.ColumnDateModified.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return DateTime.MinValue;
                 }
                 else
                 {
@@ -9342,7 +9342,7 @@ namespace Ict.Petra.Shared.MPersonnel.Personnel.Data
                 ret = this[this.myTable.ColumnUnassignableDate.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return DateTime.MinValue;
                 }
                 else
                 {
@@ -9394,7 +9394,7 @@ namespace Ict.Petra.Shared.MPersonnel.Personnel.Data
                 ret = this[this.myTable.ColumnDateCreated.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return DateTime.MinValue;
                 }
                 else
                 {
@@ -9446,7 +9446,7 @@ namespace Ict.Petra.Shared.MPersonnel.Personnel.Data
                 ret = this[this.myTable.ColumnDateModified.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return DateTime.MinValue;
                 }
                 else
                 {
@@ -10047,7 +10047,7 @@ namespace Ict.Petra.Shared.MPersonnel.Personnel.Data
                 ret = this[this.myTable.ColumnUnassignableDate.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return DateTime.MinValue;
                 }
                 else
                 {
@@ -10099,7 +10099,7 @@ namespace Ict.Petra.Shared.MPersonnel.Personnel.Data
                 ret = this[this.myTable.ColumnDateCreated.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return DateTime.MinValue;
                 }
                 else
                 {
@@ -10151,7 +10151,7 @@ namespace Ict.Petra.Shared.MPersonnel.Personnel.Data
                 ret = this[this.myTable.ColumnDateModified.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return DateTime.MinValue;
                 }
                 else
                 {
@@ -11913,7 +11913,7 @@ namespace Ict.Petra.Shared.MPersonnel.Personnel.Data
                 ret = this[this.myTable.ColumnStAppDate.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return DateTime.MinValue;
                 }
                 else
                 {
@@ -12174,7 +12174,7 @@ namespace Ict.Petra.Shared.MPersonnel.Personnel.Data
                 ret = this[this.myTable.ColumnStScholarshipReviewDate.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return DateTime.MinValue;
                 }
                 else
                 {
@@ -12538,7 +12538,7 @@ namespace Ict.Petra.Shared.MPersonnel.Personnel.Data
                 ret = this[this.myTable.ColumnArrival.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return DateTime.MinValue;
                 }
                 else
                 {
@@ -12668,7 +12668,7 @@ namespace Ict.Petra.Shared.MPersonnel.Personnel.Data
                 ret = this[this.myTable.ColumnArrivalExp.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return DateTime.MinValue;
                 }
                 else
                 {
@@ -12850,7 +12850,7 @@ namespace Ict.Petra.Shared.MPersonnel.Personnel.Data
                 ret = this[this.myTable.ColumnDeparture.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return DateTime.MinValue;
                 }
                 else
                 {
@@ -12980,7 +12980,7 @@ namespace Ict.Petra.Shared.MPersonnel.Personnel.Data
                 ret = this[this.myTable.ColumnDepartureExp.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return DateTime.MinValue;
                 }
                 else
                 {
@@ -13553,7 +13553,7 @@ namespace Ict.Petra.Shared.MPersonnel.Personnel.Data
                 ret = this[this.myTable.ColumnDateCreated.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return DateTime.MinValue;
                 }
                 else
                 {
@@ -13605,7 +13605,7 @@ namespace Ict.Petra.Shared.MPersonnel.Personnel.Data
                 ret = this[this.myTable.ColumnDateModified.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return DateTime.MinValue;
                 }
                 else
                 {
@@ -15361,7 +15361,7 @@ namespace Ict.Petra.Shared.MPersonnel.Personnel.Data
                 ret = this[this.myTable.ColumnYpAppDate.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return DateTime.MinValue;
                 }
                 else
                 {
@@ -15596,7 +15596,7 @@ namespace Ict.Petra.Shared.MPersonnel.Personnel.Data
                 ret = this[this.myTable.ColumnYpScholarshipBeginDate.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return DateTime.MinValue;
                 }
                 else
                 {
@@ -15622,7 +15622,7 @@ namespace Ict.Petra.Shared.MPersonnel.Personnel.Data
                 ret = this[this.myTable.ColumnYpScholarshipEndDate.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return DateTime.MinValue;
                 }
                 else
                 {
@@ -15648,7 +15648,7 @@ namespace Ict.Petra.Shared.MPersonnel.Personnel.Data
                 ret = this[this.myTable.ColumnYpScholarshipReviewDate.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return DateTime.MinValue;
                 }
                 else
                 {
@@ -15752,7 +15752,7 @@ namespace Ict.Petra.Shared.MPersonnel.Personnel.Data
                 ret = this[this.myTable.ColumnStartOfCommitment.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return DateTime.MinValue;
                 }
                 else
                 {
@@ -15778,7 +15778,7 @@ namespace Ict.Petra.Shared.MPersonnel.Personnel.Data
                 ret = this[this.myTable.ColumnEndOfCommitment.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return DateTime.MinValue;
                 }
                 else
                 {
@@ -15908,7 +15908,7 @@ namespace Ict.Petra.Shared.MPersonnel.Personnel.Data
                 ret = this[this.myTable.ColumnDateCreated.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return DateTime.MinValue;
                 }
                 else
                 {
@@ -15960,7 +15960,7 @@ namespace Ict.Petra.Shared.MPersonnel.Personnel.Data
                 ret = this[this.myTable.ColumnDateModified.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return DateTime.MinValue;
                 }
                 else
                 {
@@ -16860,7 +16860,7 @@ namespace Ict.Petra.Shared.MPersonnel.Personnel.Data
                 ret = this[this.myTable.ColumnDateCreated.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return DateTime.MinValue;
                 }
                 else
                 {
@@ -16912,7 +16912,7 @@ namespace Ict.Petra.Shared.MPersonnel.Personnel.Data
                 ret = this[this.myTable.ColumnDateModified.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return DateTime.MinValue;
                 }
                 else
                 {
@@ -17776,7 +17776,7 @@ namespace Ict.Petra.Shared.MPersonnel.Personnel.Data
                 ret = this[this.myTable.ColumnFormSentDate.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return DateTime.MinValue;
                 }
                 else
                 {
@@ -17802,7 +17802,7 @@ namespace Ict.Petra.Shared.MPersonnel.Personnel.Data
                 ret = this[this.myTable.ColumnFormReceivedDate.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return DateTime.MinValue;
                 }
                 else
                 {
@@ -17880,7 +17880,7 @@ namespace Ict.Petra.Shared.MPersonnel.Personnel.Data
                 ret = this[this.myTable.ColumnDateCreated.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return DateTime.MinValue;
                 }
                 else
                 {
@@ -17932,7 +17932,7 @@ namespace Ict.Petra.Shared.MPersonnel.Personnel.Data
                 ret = this[this.myTable.ColumnDateModified.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return DateTime.MinValue;
                 }
                 else
                 {
@@ -18669,7 +18669,7 @@ namespace Ict.Petra.Shared.MPersonnel.Personnel.Data
                 ret = this[this.myTable.ColumnUnassignableDate.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return DateTime.MinValue;
                 }
                 else
                 {
@@ -18721,7 +18721,7 @@ namespace Ict.Petra.Shared.MPersonnel.Personnel.Data
                 ret = this[this.myTable.ColumnDateCreated.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return DateTime.MinValue;
                 }
                 else
                 {
@@ -18773,7 +18773,7 @@ namespace Ict.Petra.Shared.MPersonnel.Personnel.Data
                 ret = this[this.myTable.ColumnDateModified.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return DateTime.MinValue;
                 }
                 else
                 {
@@ -19432,7 +19432,7 @@ namespace Ict.Petra.Shared.MPersonnel.Personnel.Data
                 ret = this[this.myTable.ColumnUnassignableDate.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return DateTime.MinValue;
                 }
                 else
                 {
@@ -19484,7 +19484,7 @@ namespace Ict.Petra.Shared.MPersonnel.Personnel.Data
                 ret = this[this.myTable.ColumnDateCreated.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return DateTime.MinValue;
                 }
                 else
                 {
@@ -19536,7 +19536,7 @@ namespace Ict.Petra.Shared.MPersonnel.Personnel.Data
                 ret = this[this.myTable.ColumnDateModified.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return DateTime.MinValue;
                 }
                 else
                 {
@@ -20361,7 +20361,7 @@ namespace Ict.Petra.Shared.MPersonnel.Personnel.Data
                 ret = this[this.myTable.ColumnDateOfIssue.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return DateTime.MinValue;
                 }
                 else
                 {
@@ -20387,7 +20387,7 @@ namespace Ict.Petra.Shared.MPersonnel.Personnel.Data
                 ret = this[this.myTable.ColumnDateOfStart.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return DateTime.MinValue;
                 }
                 else
                 {
@@ -20413,7 +20413,7 @@ namespace Ict.Petra.Shared.MPersonnel.Personnel.Data
                 ret = this[this.myTable.ColumnDateOfExpiration.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return DateTime.MinValue;
                 }
                 else
                 {
@@ -20517,7 +20517,7 @@ namespace Ict.Petra.Shared.MPersonnel.Personnel.Data
                 ret = this[this.myTable.ColumnDateCreated.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return DateTime.MinValue;
                 }
                 else
                 {
@@ -20569,7 +20569,7 @@ namespace Ict.Petra.Shared.MPersonnel.Personnel.Data
                 ret = this[this.myTable.ColumnDateModified.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return DateTime.MinValue;
                 }
                 else
                 {
@@ -21261,7 +21261,7 @@ namespace Ict.Petra.Shared.MPersonnel.Personnel.Data
                 ret = this[this.myTable.ColumnUnassignableDate.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return DateTime.MinValue;
                 }
                 else
                 {
@@ -21313,7 +21313,7 @@ namespace Ict.Petra.Shared.MPersonnel.Personnel.Data
                 ret = this[this.myTable.ColumnDateCreated.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return DateTime.MinValue;
                 }
                 else
                 {
@@ -21365,7 +21365,7 @@ namespace Ict.Petra.Shared.MPersonnel.Personnel.Data
                 ret = this[this.myTable.ColumnDateModified.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return DateTime.MinValue;
                 }
                 else
                 {
@@ -22170,7 +22170,7 @@ namespace Ict.Petra.Shared.MPersonnel.Personnel.Data
                 ret = this[this.myTable.ColumnPassportDob.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return DateTime.MinValue;
                 }
                 else
                 {
@@ -22248,7 +22248,7 @@ namespace Ict.Petra.Shared.MPersonnel.Personnel.Data
                 ret = this[this.myTable.ColumnDateOfExpiration.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return DateTime.MinValue;
                 }
                 else
                 {
@@ -22326,7 +22326,7 @@ namespace Ict.Petra.Shared.MPersonnel.Personnel.Data
                 ret = this[this.myTable.ColumnDateOfIssue.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return DateTime.MinValue;
                 }
                 else
                 {
@@ -22378,7 +22378,7 @@ namespace Ict.Petra.Shared.MPersonnel.Personnel.Data
                 ret = this[this.myTable.ColumnDateCreated.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return DateTime.MinValue;
                 }
                 else
                 {
@@ -22430,7 +22430,7 @@ namespace Ict.Petra.Shared.MPersonnel.Personnel.Data
                 ret = this[this.myTable.ColumnDateModified.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return DateTime.MinValue;
                 }
                 else
                 {
@@ -24260,7 +24260,7 @@ namespace Ict.Petra.Shared.MPersonnel.Personnel.Data
                 ret = this[this.myTable.ColumnAgreementDate.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return DateTime.MinValue;
                 }
                 else
                 {
@@ -24286,7 +24286,7 @@ namespace Ict.Petra.Shared.MPersonnel.Personnel.Data
                 ret = this[this.myTable.ColumnReviewDate.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return DateTime.MinValue;
                 }
                 else
                 {
@@ -24312,7 +24312,7 @@ namespace Ict.Petra.Shared.MPersonnel.Personnel.Data
                 ret = this[this.myTable.ColumnDateCreated.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return DateTime.MinValue;
                 }
                 else
                 {
@@ -24364,7 +24364,7 @@ namespace Ict.Petra.Shared.MPersonnel.Personnel.Data
                 ret = this[this.myTable.ColumnDateModified.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return DateTime.MinValue;
                 }
                 else
                 {
@@ -25309,7 +25309,7 @@ namespace Ict.Petra.Shared.MPersonnel.Personnel.Data
                 ret = this[this.myTable.ColumnUnassignableDate.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return DateTime.MinValue;
                 }
                 else
                 {
@@ -25387,7 +25387,7 @@ namespace Ict.Petra.Shared.MPersonnel.Personnel.Data
                 ret = this[this.myTable.ColumnDateCreated.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return DateTime.MinValue;
                 }
                 else
                 {
@@ -25439,7 +25439,7 @@ namespace Ict.Petra.Shared.MPersonnel.Personnel.Data
                 ret = this[this.myTable.ColumnDateModified.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return DateTime.MinValue;
                 }
                 else
                 {
@@ -26131,7 +26131,7 @@ namespace Ict.Petra.Shared.MPersonnel.Personnel.Data
                 ret = this[this.myTable.ColumnYearsOfExperienceAsOf.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return DateTime.MinValue;
                 }
                 else
                 {
@@ -26287,7 +26287,7 @@ namespace Ict.Petra.Shared.MPersonnel.Personnel.Data
                 ret = this[this.myTable.ColumnDateCreated.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return DateTime.MinValue;
                 }
                 else
                 {
@@ -26339,7 +26339,7 @@ namespace Ict.Petra.Shared.MPersonnel.Personnel.Data
                 ret = this[this.myTable.ColumnDateModified.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return DateTime.MinValue;
                 }
                 else
                 {
@@ -26992,7 +26992,7 @@ namespace Ict.Petra.Shared.MPersonnel.Personnel.Data
                 ret = this[this.myTable.ColumnUnassignableDate.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return DateTime.MinValue;
                 }
                 else
                 {
@@ -27044,7 +27044,7 @@ namespace Ict.Petra.Shared.MPersonnel.Personnel.Data
                 ret = this[this.myTable.ColumnDateCreated.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return DateTime.MinValue;
                 }
                 else
                 {
@@ -27096,7 +27096,7 @@ namespace Ict.Petra.Shared.MPersonnel.Personnel.Data
                 ret = this[this.myTable.ColumnDateModified.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return DateTime.MinValue;
                 }
                 else
                 {
@@ -27888,7 +27888,7 @@ namespace Ict.Petra.Shared.MPersonnel.Personnel.Data
                 ret = this[this.myTable.ColumnDateCreated.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return DateTime.MinValue;
                 }
                 else
                 {
@@ -27940,7 +27940,7 @@ namespace Ict.Petra.Shared.MPersonnel.Personnel.Data
                 ret = this[this.myTable.ColumnDateModified.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return DateTime.MinValue;
                 }
                 else
                 {
@@ -28713,7 +28713,7 @@ namespace Ict.Petra.Shared.MPersonnel.Personnel.Data
                 ret = this[this.myTable.ColumnStartDate.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return DateTime.MinValue;
                 }
                 else
                 {
@@ -28739,7 +28739,7 @@ namespace Ict.Petra.Shared.MPersonnel.Personnel.Data
                 ret = this[this.myTable.ColumnEndDate.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return DateTime.MinValue;
                 }
                 else
                 {
@@ -28947,7 +28947,7 @@ namespace Ict.Petra.Shared.MPersonnel.Personnel.Data
                 ret = this[this.myTable.ColumnDateCreated.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return DateTime.MinValue;
                 }
                 else
                 {
@@ -28999,7 +28999,7 @@ namespace Ict.Petra.Shared.MPersonnel.Personnel.Data
                 ret = this[this.myTable.ColumnDateModified.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return DateTime.MinValue;
                 }
                 else
                 {
@@ -29736,7 +29736,7 @@ namespace Ict.Petra.Shared.MPersonnel.Personnel.Data
                 ret = this[this.myTable.ColumnUnassignableDate.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return DateTime.MinValue;
                 }
                 else
                 {
@@ -29788,7 +29788,7 @@ namespace Ict.Petra.Shared.MPersonnel.Personnel.Data
                 ret = this[this.myTable.ColumnDateCreated.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return DateTime.MinValue;
                 }
                 else
                 {
@@ -29840,7 +29840,7 @@ namespace Ict.Petra.Shared.MPersonnel.Personnel.Data
                 ret = this[this.myTable.ColumnDateModified.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return DateTime.MinValue;
                 }
                 else
                 {
@@ -30456,7 +30456,7 @@ namespace Ict.Petra.Shared.MPersonnel.Personnel.Data
                 ret = this[this.myTable.ColumnUnassignableDate.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return DateTime.MinValue;
                 }
                 else
                 {
@@ -30508,7 +30508,7 @@ namespace Ict.Petra.Shared.MPersonnel.Personnel.Data
                 ret = this[this.myTable.ColumnDateCreated.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return DateTime.MinValue;
                 }
                 else
                 {
@@ -30560,7 +30560,7 @@ namespace Ict.Petra.Shared.MPersonnel.Personnel.Data
                 ret = this[this.myTable.ColumnDateModified.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return DateTime.MinValue;
                 }
                 else
                 {
@@ -31227,7 +31227,7 @@ namespace Ict.Petra.Shared.MPersonnel.Personnel.Data
                 ret = this[this.myTable.ColumnYearsOfExperienceAsOf.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return DateTime.MinValue;
                 }
                 else
                 {
@@ -31305,7 +31305,7 @@ namespace Ict.Petra.Shared.MPersonnel.Personnel.Data
                 ret = this[this.myTable.ColumnDateCreated.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return DateTime.MinValue;
                 }
                 else
                 {
@@ -31357,7 +31357,7 @@ namespace Ict.Petra.Shared.MPersonnel.Personnel.Data
                 ret = this[this.myTable.ColumnDateModified.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return DateTime.MinValue;
                 }
                 else
                 {
@@ -31984,7 +31984,7 @@ namespace Ict.Petra.Shared.MPersonnel.Personnel.Data
                 ret = this[this.myTable.ColumnQualificationDate.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return DateTime.MinValue;
                 }
                 else
                 {
@@ -32036,7 +32036,7 @@ namespace Ict.Petra.Shared.MPersonnel.Personnel.Data
                 ret = this[this.myTable.ColumnDateCreated.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return DateTime.MinValue;
                 }
                 else
                 {
@@ -32088,7 +32088,7 @@ namespace Ict.Petra.Shared.MPersonnel.Personnel.Data
                 ret = this[this.myTable.ColumnDateModified.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return DateTime.MinValue;
                 }
                 else
                 {
@@ -32689,7 +32689,7 @@ namespace Ict.Petra.Shared.MPersonnel.Personnel.Data
                 ret = this[this.myTable.ColumnUnassignableDate.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return DateTime.MinValue;
                 }
                 else
                 {
@@ -32741,7 +32741,7 @@ namespace Ict.Petra.Shared.MPersonnel.Personnel.Data
                 ret = this[this.myTable.ColumnDateCreated.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return DateTime.MinValue;
                 }
                 else
                 {
@@ -32793,7 +32793,7 @@ namespace Ict.Petra.Shared.MPersonnel.Personnel.Data
                 ret = this[this.myTable.ColumnDateModified.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return DateTime.MinValue;
                 }
                 else
                 {
@@ -33471,7 +33471,7 @@ namespace Ict.Petra.Shared.MPersonnel.Personnel.Data
                 ret = this[this.myTable.ColumnYearsOfExperienceAsOf.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return DateTime.MinValue;
                 }
                 else
                 {
@@ -33576,7 +33576,7 @@ namespace Ict.Petra.Shared.MPersonnel.Personnel.Data
                 ret = this[this.myTable.ColumnQualificationDate.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return DateTime.MinValue;
                 }
                 else
                 {
@@ -33602,7 +33602,7 @@ namespace Ict.Petra.Shared.MPersonnel.Personnel.Data
                 ret = this[this.myTable.ColumnQualificationExpiry.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return DateTime.MinValue;
                 }
                 else
                 {
@@ -33628,7 +33628,7 @@ namespace Ict.Petra.Shared.MPersonnel.Personnel.Data
                 ret = this[this.myTable.ColumnDateCreated.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return DateTime.MinValue;
                 }
                 else
                 {
@@ -33680,7 +33680,7 @@ namespace Ict.Petra.Shared.MPersonnel.Personnel.Data
                 ret = this[this.myTable.ColumnDateModified.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return DateTime.MinValue;
                 }
                 else
                 {
@@ -34333,7 +34333,7 @@ namespace Ict.Petra.Shared.MPersonnel.Personnel.Data
                 ret = this[this.myTable.ColumnUnassignableDate.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return DateTime.MinValue;
                 }
                 else
                 {
@@ -34385,7 +34385,7 @@ namespace Ict.Petra.Shared.MPersonnel.Personnel.Data
                 ret = this[this.myTable.ColumnDateCreated.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return DateTime.MinValue;
                 }
                 else
                 {
@@ -34437,7 +34437,7 @@ namespace Ict.Petra.Shared.MPersonnel.Personnel.Data
                 ret = this[this.myTable.ColumnDateModified.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return DateTime.MinValue;
                 }
                 else
                 {
@@ -35038,7 +35038,7 @@ namespace Ict.Petra.Shared.MPersonnel.Personnel.Data
                 ret = this[this.myTable.ColumnUnassignableDate.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return DateTime.MinValue;
                 }
                 else
                 {
@@ -35090,7 +35090,7 @@ namespace Ict.Petra.Shared.MPersonnel.Personnel.Data
                 ret = this[this.myTable.ColumnDateCreated.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return DateTime.MinValue;
                 }
                 else
                 {
@@ -35142,7 +35142,7 @@ namespace Ict.Petra.Shared.MPersonnel.Personnel.Data
                 ret = this[this.myTable.ColumnDateModified.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return DateTime.MinValue;
                 }
                 else
                 {
@@ -36044,7 +36044,7 @@ namespace Ict.Petra.Shared.MPersonnel.Personnel.Data
                 ret = this[this.myTable.ColumnYearsOfExperienceAsOf.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return DateTime.MinValue;
                 }
                 else
                 {
@@ -36200,7 +36200,7 @@ namespace Ict.Petra.Shared.MPersonnel.Personnel.Data
                 ret = this[this.myTable.ColumnDateCreated.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return DateTime.MinValue;
                 }
                 else
                 {
@@ -36252,7 +36252,7 @@ namespace Ict.Petra.Shared.MPersonnel.Personnel.Data
                 ret = this[this.myTable.ColumnDateModified.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return DateTime.MinValue;
                 }
                 else
                 {
@@ -37157,7 +37157,7 @@ namespace Ict.Petra.Shared.MPersonnel.Personnel.Data
                 ret = this[this.myTable.ColumnDateCreated.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return DateTime.MinValue;
                 }
                 else
                 {
@@ -37209,7 +37209,7 @@ namespace Ict.Petra.Shared.MPersonnel.Personnel.Data
                 ret = this[this.myTable.ColumnDateModified.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return DateTime.MinValue;
                 }
                 else
                 {
@@ -37849,7 +37849,7 @@ namespace Ict.Petra.Shared.MPersonnel.Personnel.Data
                 ret = this[this.myTable.ColumnUnassignableDate.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return DateTime.MinValue;
                 }
                 else
                 {
@@ -37901,7 +37901,7 @@ namespace Ict.Petra.Shared.MPersonnel.Personnel.Data
                 ret = this[this.myTable.ColumnDateCreated.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return DateTime.MinValue;
                 }
                 else
                 {
@@ -37953,7 +37953,7 @@ namespace Ict.Petra.Shared.MPersonnel.Personnel.Data
                 ret = this[this.myTable.ColumnDateModified.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return DateTime.MinValue;
                 }
                 else
                 {
@@ -39011,7 +39011,7 @@ namespace Ict.Petra.Shared.MPersonnel.Personnel.Data
                 ret = this[this.myTable.ColumnDateCreated.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return DateTime.MinValue;
                 }
                 else
                 {
@@ -39063,7 +39063,7 @@ namespace Ict.Petra.Shared.MPersonnel.Personnel.Data
                 ret = this[this.myTable.ColumnDateModified.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return DateTime.MinValue;
                 }
                 else
                 {
@@ -40868,7 +40868,7 @@ namespace Ict.Petra.Shared.MPersonnel.Personnel.Data
                 ret = this[this.myTable.ColumnDateCreated.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return DateTime.MinValue;
                 }
                 else
                 {
@@ -40920,7 +40920,7 @@ namespace Ict.Petra.Shared.MPersonnel.Personnel.Data
                 ret = this[this.myTable.ColumnDateModified.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return DateTime.MinValue;
                 }
                 else
                 {
@@ -42097,7 +42097,7 @@ namespace Ict.Petra.Shared.MPersonnel.Personnel.Data
                 ret = this[this.myTable.ColumnDateCreated.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return DateTime.MinValue;
                 }
                 else
                 {
@@ -42149,7 +42149,7 @@ namespace Ict.Petra.Shared.MPersonnel.Personnel.Data
                 ret = this[this.myTable.ColumnDateModified.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return DateTime.MinValue;
                 }
                 else
                 {
@@ -43137,7 +43137,7 @@ namespace Ict.Petra.Shared.MPersonnel.Personnel.Data
                 ret = this[this.myTable.ColumnDateCreated.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return DateTime.MinValue;
                 }
                 else
                 {
@@ -43189,7 +43189,7 @@ namespace Ict.Petra.Shared.MPersonnel.Personnel.Data
                 ret = this[this.myTable.ColumnDateModified.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return DateTime.MinValue;
                 }
                 else
                 {
@@ -44176,7 +44176,7 @@ namespace Ict.Petra.Shared.MPersonnel.Personnel.Data
                 ret = this[this.myTable.ColumnValueDate.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return DateTime.MinValue;
                 }
                 else
                 {
@@ -44280,7 +44280,7 @@ namespace Ict.Petra.Shared.MPersonnel.Personnel.Data
                 ret = this[this.myTable.ColumnDateCreated.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return DateTime.MinValue;
                 }
                 else
                 {
@@ -44332,7 +44332,7 @@ namespace Ict.Petra.Shared.MPersonnel.Personnel.Data
                 ret = this[this.myTable.ColumnDateModified.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return DateTime.MinValue;
                 }
                 else
                 {
@@ -45023,7 +45023,7 @@ namespace Ict.Petra.Shared.MPersonnel.Personnel.Data
                 ret = this[this.myTable.ColumnInterviewDate.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return DateTime.MinValue;
                 }
                 else
                 {
@@ -45179,7 +45179,7 @@ namespace Ict.Petra.Shared.MPersonnel.Personnel.Data
                 ret = this[this.myTable.ColumnDateCreated.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return DateTime.MinValue;
                 }
                 else
                 {
@@ -45231,7 +45231,7 @@ namespace Ict.Petra.Shared.MPersonnel.Personnel.Data
                 ret = this[this.myTable.ColumnDateModified.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return DateTime.MinValue;
                 }
                 else
                 {
@@ -45870,7 +45870,7 @@ namespace Ict.Petra.Shared.MPersonnel.Personnel.Data
                 ret = this[this.myTable.ColumnEvaluationDate.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return DateTime.MinValue;
                 }
                 else
                 {
@@ -45974,7 +45974,7 @@ namespace Ict.Petra.Shared.MPersonnel.Personnel.Data
                 ret = this[this.myTable.ColumnNextEvaluationDate.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return DateTime.MinValue;
                 }
                 else
                 {
@@ -46000,7 +46000,7 @@ namespace Ict.Petra.Shared.MPersonnel.Personnel.Data
                 ret = this[this.myTable.ColumnDateCreated.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return DateTime.MinValue;
                 }
                 else
                 {
@@ -46052,7 +46052,7 @@ namespace Ict.Petra.Shared.MPersonnel.Personnel.Data
                 ret = this[this.myTable.ColumnDateModified.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return DateTime.MinValue;
                 }
                 else
                 {
@@ -46679,7 +46679,7 @@ namespace Ict.Petra.Shared.MPersonnel.Personnel.Data
                 ret = this[this.myTable.ColumnUnassignableDate.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return DateTime.MinValue;
                 }
                 else
                 {
@@ -46731,7 +46731,7 @@ namespace Ict.Petra.Shared.MPersonnel.Personnel.Data
                 ret = this[this.myTable.ColumnDateCreated.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return DateTime.MinValue;
                 }
                 else
                 {
@@ -46783,7 +46783,7 @@ namespace Ict.Petra.Shared.MPersonnel.Personnel.Data
                 ret = this[this.myTable.ColumnDateModified.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return DateTime.MinValue;
                 }
                 else
                 {
@@ -47384,7 +47384,7 @@ namespace Ict.Petra.Shared.MPersonnel.Personnel.Data
                 ret = this[this.myTable.ColumnUnassignableDate.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return DateTime.MinValue;
                 }
                 else
                 {
@@ -47436,7 +47436,7 @@ namespace Ict.Petra.Shared.MPersonnel.Personnel.Data
                 ret = this[this.myTable.ColumnDateCreated.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return DateTime.MinValue;
                 }
                 else
                 {
@@ -47488,7 +47488,7 @@ namespace Ict.Petra.Shared.MPersonnel.Personnel.Data
                 ret = this[this.myTable.ColumnDateModified.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return DateTime.MinValue;
                 }
                 else
                 {
@@ -48096,7 +48096,7 @@ namespace Ict.Petra.Shared.MPersonnel.Personnel.Data
                 ret = this[this.myTable.ColumnDateCreated.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return DateTime.MinValue;
                 }
                 else
                 {
@@ -48148,7 +48148,7 @@ namespace Ict.Petra.Shared.MPersonnel.Personnel.Data
                 ret = this[this.myTable.ColumnDateModified.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return DateTime.MinValue;
                 }
                 else
                 {
@@ -48833,7 +48833,7 @@ namespace Ict.Petra.Shared.MPersonnel.Personnel.Data
                 ret = this[this.myTable.ColumnDateCreated.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return DateTime.MinValue;
                 }
                 else
                 {
@@ -48885,7 +48885,7 @@ namespace Ict.Petra.Shared.MPersonnel.Personnel.Data
                 ret = this[this.myTable.ColumnDateModified.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return DateTime.MinValue;
                 }
                 else
                 {
@@ -49696,7 +49696,7 @@ namespace Ict.Petra.Shared.MPersonnel.Personnel.Data
                 ret = this[this.myTable.ColumnStartOfCommitment.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return DateTime.MinValue;
                 }
                 else
                 {
@@ -49748,7 +49748,7 @@ namespace Ict.Petra.Shared.MPersonnel.Personnel.Data
                 ret = this[this.myTable.ColumnEndOfCommitment.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return DateTime.MinValue;
                 }
                 else
                 {
@@ -49956,7 +49956,7 @@ namespace Ict.Petra.Shared.MPersonnel.Personnel.Data
                 ret = this[this.myTable.ColumnDateCreated.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return DateTime.MinValue;
                 }
                 else
                 {
@@ -50008,7 +50008,7 @@ namespace Ict.Petra.Shared.MPersonnel.Personnel.Data
                 ret = this[this.myTable.ColumnDateModified.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return DateTime.MinValue;
                 }
                 else
                 {
@@ -50861,7 +50861,7 @@ namespace Ict.Petra.Shared.MPersonnel.Personnel.Data
                 ret = this[this.myTable.ColumnUnassignableDate.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return DateTime.MinValue;
                 }
                 else
                 {
@@ -50913,7 +50913,7 @@ namespace Ict.Petra.Shared.MPersonnel.Personnel.Data
                 ret = this[this.myTable.ColumnDateCreated.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return DateTime.MinValue;
                 }
                 else
                 {
@@ -50965,7 +50965,7 @@ namespace Ict.Petra.Shared.MPersonnel.Personnel.Data
                 ret = this[this.myTable.ColumnDateModified.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return DateTime.MinValue;
                 }
                 else
                 {
@@ -51541,7 +51541,7 @@ namespace Ict.Petra.Shared.MPersonnel.Personnel.Data
                 ret = this[this.myTable.ColumnStatusSince.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return DateTime.MinValue;
                 }
                 else
                 {
@@ -51567,7 +51567,7 @@ namespace Ict.Petra.Shared.MPersonnel.Personnel.Data
                 ret = this[this.myTable.ColumnDateCreated.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return DateTime.MinValue;
                 }
                 else
                 {
@@ -51619,7 +51619,7 @@ namespace Ict.Petra.Shared.MPersonnel.Personnel.Data
                 ret = this[this.myTable.ColumnDateModified.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return DateTime.MinValue;
                 }
                 else
                 {
@@ -52156,7 +52156,7 @@ namespace Ict.Petra.Shared.MPersonnel.Personnel.Data
                 ret = this[this.myTable.ColumnDateCreated.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return DateTime.MinValue;
                 }
                 else
                 {
@@ -52208,7 +52208,7 @@ namespace Ict.Petra.Shared.MPersonnel.Personnel.Data
                 ret = this[this.myTable.ColumnDateModified.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return DateTime.MinValue;
                 }
                 else
                 {
@@ -53148,7 +53148,7 @@ namespace Ict.Petra.Shared.MPersonnel.Personnel.Data
                 ret = this[this.myTable.ColumnFromDate.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return DateTime.MinValue;
                 }
                 else
                 {
@@ -53174,7 +53174,7 @@ namespace Ict.Petra.Shared.MPersonnel.Personnel.Data
                 ret = this[this.myTable.ColumnToDate.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return DateTime.MinValue;
                 }
                 else
                 {
@@ -53226,7 +53226,7 @@ namespace Ict.Petra.Shared.MPersonnel.Personnel.Data
                 ret = this[this.myTable.ColumnLeavingCodeUpdatedDate.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return DateTime.MinValue;
                 }
                 else
                 {
@@ -53330,7 +53330,7 @@ namespace Ict.Petra.Shared.MPersonnel.Personnel.Data
                 ret = this[this.myTable.ColumnDateCreated.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return DateTime.MinValue;
                 }
                 else
                 {
@@ -53382,7 +53382,7 @@ namespace Ict.Petra.Shared.MPersonnel.Personnel.Data
                 ret = this[this.myTable.ColumnDateModified.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return DateTime.MinValue;
                 }
                 else
                 {
@@ -54133,7 +54133,7 @@ namespace Ict.Petra.Shared.MPersonnel.Personnel.Data
                 ret = this[this.myTable.ColumnDateCreated.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return DateTime.MinValue;
                 }
                 else
                 {
@@ -54185,7 +54185,7 @@ namespace Ict.Petra.Shared.MPersonnel.Personnel.Data
                 ret = this[this.myTable.ColumnDateModified.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return DateTime.MinValue;
                 }
                 else
                 {
@@ -54780,7 +54780,7 @@ namespace Ict.Petra.Shared.MPersonnel.Personnel.Data
                 ret = this[this.myTable.ColumnDateCreated.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return DateTime.MinValue;
                 }
                 else
                 {
@@ -54832,7 +54832,7 @@ namespace Ict.Petra.Shared.MPersonnel.Personnel.Data
                 ret = this[this.myTable.ColumnDateModified.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return DateTime.MinValue;
                 }
                 else
                 {
@@ -55472,7 +55472,7 @@ namespace Ict.Petra.Shared.MPersonnel.Personnel.Data
                 ret = this[this.myTable.ColumnDateCreated.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return DateTime.MinValue;
                 }
                 else
                 {
@@ -55524,7 +55524,7 @@ namespace Ict.Petra.Shared.MPersonnel.Personnel.Data
                 ret = this[this.myTable.ColumnDateModified.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return DateTime.MinValue;
                 }
                 else
                 {

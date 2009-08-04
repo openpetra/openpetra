@@ -494,7 +494,7 @@ namespace Ict.Petra.Shared.MPartner.Partner.Data
                 ret = this[this.myTable.ColumnDateCreated.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return DateTime.MinValue;
                 }
                 else
                 {
@@ -546,7 +546,7 @@ namespace Ict.Petra.Shared.MPartner.Partner.Data
                 ret = this[this.myTable.ColumnDateModified.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return DateTime.MinValue;
                 }
                 else
                 {
@@ -1205,7 +1205,7 @@ namespace Ict.Petra.Shared.MPartner.Partner.Data
                 ret = this[this.myTable.ColumnDateCreated.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return DateTime.MinValue;
                 }
                 else
                 {
@@ -1257,7 +1257,7 @@ namespace Ict.Petra.Shared.MPartner.Partner.Data
                 ret = this[this.myTable.ColumnDateModified.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return DateTime.MinValue;
                 }
                 else
                 {
@@ -1826,7 +1826,7 @@ namespace Ict.Petra.Shared.MPartner.Partner.Data
                 ret = this[this.myTable.ColumnDateCreated.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return DateTime.MinValue;
                 }
                 else
                 {
@@ -1878,7 +1878,7 @@ namespace Ict.Petra.Shared.MPartner.Partner.Data
                 ret = this[this.myTable.ColumnDateModified.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return DateTime.MinValue;
                 }
                 else
                 {
@@ -2415,7 +2415,7 @@ namespace Ict.Petra.Shared.MPartner.Partner.Data
                 ret = this[this.myTable.ColumnDateCreated.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return DateTime.MinValue;
                 }
                 else
                 {
@@ -2467,7 +2467,7 @@ namespace Ict.Petra.Shared.MPartner.Partner.Data
                 ret = this[this.myTable.ColumnDateModified.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return DateTime.MinValue;
                 }
                 else
                 {
@@ -2959,7 +2959,7 @@ namespace Ict.Petra.Shared.MPartner.Partner.Data
                 ret = this[this.myTable.ColumnDateCreated.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return DateTime.MinValue;
                 }
                 else
                 {
@@ -3011,7 +3011,7 @@ namespace Ict.Petra.Shared.MPartner.Partner.Data
                 ret = this[this.myTable.ColumnDateModified.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return DateTime.MinValue;
                 }
                 else
                 {
@@ -4242,7 +4242,7 @@ namespace Ict.Petra.Shared.MPartner.Partner.Data
                 ret = this[this.myTable.ColumnStatusChange.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return DateTime.MinValue;
                 }
                 else
                 {
@@ -4711,7 +4711,7 @@ namespace Ict.Petra.Shared.MPartner.Partner.Data
                 ret = this[this.myTable.ColumnDateCreated.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return DateTime.MinValue;
                 }
                 else
                 {
@@ -4763,7 +4763,7 @@ namespace Ict.Petra.Shared.MPartner.Partner.Data
                 ret = this[this.myTable.ColumnDateModified.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return DateTime.MinValue;
                 }
                 else
                 {
@@ -5579,7 +5579,7 @@ namespace Ict.Petra.Shared.MPartner.Partner.Data
                 ret = this[this.myTable.ColumnwhenDate.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return DateTime.MinValue;
                 }
                 else
                 {
@@ -5683,7 +5683,7 @@ namespace Ict.Petra.Shared.MPartner.Partner.Data
                 ret = this[this.myTable.ColumnDateCreated.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return DateTime.MinValue;
                 }
                 else
                 {
@@ -5735,7 +5735,7 @@ namespace Ict.Petra.Shared.MPartner.Partner.Data
                 ret = this[this.myTable.ColumnDateModified.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return DateTime.MinValue;
                 }
                 else
                 {
@@ -6285,7 +6285,7 @@ namespace Ict.Petra.Shared.MPartner.Partner.Data
                 ret = this[this.myTable.ColumnDateCreated.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return DateTime.MinValue;
                 }
                 else
                 {
@@ -6337,7 +6337,7 @@ namespace Ict.Petra.Shared.MPartner.Partner.Data
                 ret = this[this.myTable.ColumnDateModified.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return DateTime.MinValue;
                 }
                 else
                 {
@@ -7551,7 +7551,7 @@ namespace Ict.Petra.Shared.MPartner.Partner.Data
                 ret = this[this.myTable.ColumnDateCreated.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return DateTime.MinValue;
                 }
                 else
                 {
@@ -7603,7 +7603,7 @@ namespace Ict.Petra.Shared.MPartner.Partner.Data
                 ret = this[this.myTable.ColumnDateModified.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return DateTime.MinValue;
                 }
                 else
                 {
@@ -8380,7 +8380,7 @@ namespace Ict.Petra.Shared.MPartner.Partner.Data
                 ret = this[this.myTable.ColumnDateCreated.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return DateTime.MinValue;
                 }
                 else
                 {
@@ -8432,7 +8432,7 @@ namespace Ict.Petra.Shared.MPartner.Partner.Data
                 ret = this[this.myTable.ColumnDateModified.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return DateTime.MinValue;
                 }
                 else
                 {
@@ -9267,7 +9267,7 @@ namespace Ict.Petra.Shared.MPartner.Partner.Data
                 ret = this[this.myTable.ColumnDateEffective.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return DateTime.MinValue;
                 }
                 else
                 {
@@ -9293,7 +9293,7 @@ namespace Ict.Petra.Shared.MPartner.Partner.Data
                 ret = this[this.myTable.ColumnDateGoodUntil.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return DateTime.MinValue;
                 }
                 else
                 {
@@ -9657,7 +9657,7 @@ namespace Ict.Petra.Shared.MPartner.Partner.Data
                 ret = this[this.myTable.ColumnDateCreated.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return DateTime.MinValue;
                 }
                 else
                 {
@@ -9709,7 +9709,7 @@ namespace Ict.Petra.Shared.MPartner.Partner.Data
                 ret = this[this.myTable.ColumnDateModified.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return DateTime.MinValue;
                 }
                 else
                 {
@@ -10486,7 +10486,7 @@ namespace Ict.Petra.Shared.MPartner.Partner.Data
                 ret = this[this.myTable.ColumnDateCreated.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return DateTime.MinValue;
                 }
                 else
                 {
@@ -10538,7 +10538,7 @@ namespace Ict.Petra.Shared.MPartner.Partner.Data
                 ret = this[this.myTable.ColumnDateModified.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return DateTime.MinValue;
                 }
                 else
                 {
@@ -11216,7 +11216,7 @@ namespace Ict.Petra.Shared.MPartner.Partner.Data
                 ret = this[this.myTable.ColumnValidFrom.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return DateTime.MinValue;
                 }
                 else
                 {
@@ -11242,7 +11242,7 @@ namespace Ict.Petra.Shared.MPartner.Partner.Data
                 ret = this[this.myTable.ColumnValidTo.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return DateTime.MinValue;
                 }
                 else
                 {
@@ -11268,7 +11268,7 @@ namespace Ict.Petra.Shared.MPartner.Partner.Data
                 ret = this[this.myTable.ColumnDateCreated.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return DateTime.MinValue;
                 }
                 else
                 {
@@ -11320,7 +11320,7 @@ namespace Ict.Petra.Shared.MPartner.Partner.Data
                 ret = this[this.myTable.ColumnDateModified.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return DateTime.MinValue;
                 }
                 else
                 {
@@ -11911,7 +11911,7 @@ namespace Ict.Petra.Shared.MPartner.Partner.Data
                 ret = this[this.myTable.ColumnDateCreated.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return DateTime.MinValue;
                 }
                 else
                 {
@@ -11963,7 +11963,7 @@ namespace Ict.Petra.Shared.MPartner.Partner.Data
                 ret = this[this.myTable.ColumnDateModified.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return DateTime.MinValue;
                 }
                 else
                 {
@@ -12960,7 +12960,7 @@ namespace Ict.Petra.Shared.MPartner.Partner.Data
                 ret = this[this.myTable.ColumnDateCreated.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return DateTime.MinValue;
                 }
                 else
                 {
@@ -13012,7 +13012,7 @@ namespace Ict.Petra.Shared.MPartner.Partner.Data
                 ret = this[this.myTable.ColumnDateModified.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return DateTime.MinValue;
                 }
                 else
                 {
@@ -13638,7 +13638,7 @@ namespace Ict.Petra.Shared.MPartner.Partner.Data
                 ret = this[this.myTable.ColumnDateCreated.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return DateTime.MinValue;
                 }
                 else
                 {
@@ -13690,7 +13690,7 @@ namespace Ict.Petra.Shared.MPartner.Partner.Data
                 ret = this[this.myTable.ColumnDateModified.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return DateTime.MinValue;
                 }
                 else
                 {
@@ -14477,7 +14477,7 @@ namespace Ict.Petra.Shared.MPartner.Partner.Data
                 ret = this[this.myTable.ColumnMaritalStatusSince.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return DateTime.MinValue;
                 }
                 else
                 {
@@ -14529,7 +14529,7 @@ namespace Ict.Petra.Shared.MPartner.Partner.Data
                 ret = this[this.myTable.ColumnDateCreated.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return DateTime.MinValue;
                 }
                 else
                 {
@@ -14581,7 +14581,7 @@ namespace Ict.Petra.Shared.MPartner.Partner.Data
                 ret = this[this.myTable.ColumnDateModified.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return DateTime.MinValue;
                 }
                 else
                 {
@@ -15247,7 +15247,7 @@ namespace Ict.Petra.Shared.MPartner.Partner.Data
                 ret = this[this.myTable.ColumnAssignableDate.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return DateTime.MinValue;
                 }
                 else
                 {
@@ -15299,7 +15299,7 @@ namespace Ict.Petra.Shared.MPartner.Partner.Data
                 ret = this[this.myTable.ColumnDateCreated.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return DateTime.MinValue;
                 }
                 else
                 {
@@ -15351,7 +15351,7 @@ namespace Ict.Petra.Shared.MPartner.Partner.Data
                 ret = this[this.myTable.ColumnDateModified.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return DateTime.MinValue;
                 }
                 else
                 {
@@ -15965,7 +15965,7 @@ namespace Ict.Petra.Shared.MPartner.Partner.Data
                 ret = this[this.myTable.ColumnDateCreated.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return DateTime.MinValue;
                 }
                 else
                 {
@@ -16017,7 +16017,7 @@ namespace Ict.Petra.Shared.MPartner.Partner.Data
                 ret = this[this.myTable.ColumnDateModified.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return DateTime.MinValue;
                 }
                 else
                 {
@@ -17067,7 +17067,7 @@ namespace Ict.Petra.Shared.MPartner.Partner.Data
                 ret = this[this.myTable.ColumnDateOfBirth.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return DateTime.MinValue;
                 }
                 else
                 {
@@ -17329,7 +17329,7 @@ namespace Ict.Petra.Shared.MPartner.Partner.Data
                 ret = this[this.myTable.ColumnMaritalStatusSince.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return DateTime.MinValue;
                 }
                 else
                 {
@@ -17381,7 +17381,7 @@ namespace Ict.Petra.Shared.MPartner.Partner.Data
                 ret = this[this.myTable.ColumnDateCreated.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return DateTime.MinValue;
                 }
                 else
                 {
@@ -17433,7 +17433,7 @@ namespace Ict.Petra.Shared.MPartner.Partner.Data
                 ret = this[this.myTable.ColumnDateModified.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return DateTime.MinValue;
                 }
                 else
                 {
@@ -18255,7 +18255,7 @@ namespace Ict.Petra.Shared.MPartner.Partner.Data
                 ret = this[this.myTable.ColumnDateCreated.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return DateTime.MinValue;
                 }
                 else
                 {
@@ -18307,7 +18307,7 @@ namespace Ict.Petra.Shared.MPartner.Partner.Data
                 ret = this[this.myTable.ColumnDateModified.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return DateTime.MinValue;
                 }
                 else
                 {
@@ -19172,7 +19172,7 @@ namespace Ict.Petra.Shared.MPartner.Partner.Data
                 ret = this[this.myTable.ColumnDateCreated.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return DateTime.MinValue;
                 }
                 else
                 {
@@ -19224,7 +19224,7 @@ namespace Ict.Petra.Shared.MPartner.Partner.Data
                 ret = this[this.myTable.ColumnDateModified.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return DateTime.MinValue;
                 }
                 else
                 {
@@ -19858,7 +19858,7 @@ namespace Ict.Petra.Shared.MPartner.Partner.Data
                 ret = this[this.myTable.ColumnDateCreated.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return DateTime.MinValue;
                 }
                 else
                 {
@@ -19910,7 +19910,7 @@ namespace Ict.Petra.Shared.MPartner.Partner.Data
                 ret = this[this.myTable.ColumnDateModified.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return DateTime.MinValue;
                 }
                 else
                 {
@@ -20582,7 +20582,7 @@ namespace Ict.Petra.Shared.MPartner.Partner.Data
                 ret = this[this.myTable.ColumnDateCreated.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return DateTime.MinValue;
                 }
                 else
                 {
@@ -20634,7 +20634,7 @@ namespace Ict.Petra.Shared.MPartner.Partner.Data
                 ret = this[this.myTable.ColumnDateModified.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return DateTime.MinValue;
                 }
                 else
                 {
@@ -21390,7 +21390,7 @@ namespace Ict.Petra.Shared.MPartner.Partner.Data
                 ret = this[this.myTable.ColumnDateCreated.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return DateTime.MinValue;
                 }
                 else
                 {
@@ -21442,7 +21442,7 @@ namespace Ict.Petra.Shared.MPartner.Partner.Data
                 ret = this[this.myTable.ColumnDateModified.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return DateTime.MinValue;
                 }
                 else
                 {
@@ -22121,7 +22121,7 @@ namespace Ict.Petra.Shared.MPartner.Partner.Data
                 ret = this[this.myTable.ColumnDateCreated.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return DateTime.MinValue;
                 }
                 else
                 {
@@ -22173,7 +22173,7 @@ namespace Ict.Petra.Shared.MPartner.Partner.Data
                 ret = this[this.myTable.ColumnDateModified.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return DateTime.MinValue;
                 }
                 else
                 {
@@ -22781,7 +22781,7 @@ namespace Ict.Petra.Shared.MPartner.Partner.Data
                 ret = this[this.myTable.ColumnDateCreated.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return DateTime.MinValue;
                 }
                 else
                 {
@@ -22833,7 +22833,7 @@ namespace Ict.Petra.Shared.MPartner.Partner.Data
                 ret = this[this.myTable.ColumnDateModified.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return DateTime.MinValue;
                 }
                 else
                 {
@@ -23800,7 +23800,7 @@ namespace Ict.Petra.Shared.MPartner.Partner.Data
                 ret = this[this.myTable.ColumnValidFromDate.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return DateTime.MinValue;
                 }
                 else
                 {
@@ -23826,7 +23826,7 @@ namespace Ict.Petra.Shared.MPartner.Partner.Data
                 ret = this[this.myTable.ColumnExpiryDate.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return DateTime.MinValue;
                 }
                 else
                 {
@@ -23878,7 +23878,7 @@ namespace Ict.Petra.Shared.MPartner.Partner.Data
                 ret = this[this.myTable.ColumnDateCreated.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return DateTime.MinValue;
                 }
                 else
                 {
@@ -23930,7 +23930,7 @@ namespace Ict.Petra.Shared.MPartner.Partner.Data
                 ret = this[this.myTable.ColumnDateModified.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return DateTime.MinValue;
                 }
                 else
                 {
@@ -24565,7 +24565,7 @@ namespace Ict.Petra.Shared.MPartner.Partner.Data
                 ret = this[this.myTable.ColumnDateCreated.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return DateTime.MinValue;
                 }
                 else
                 {
@@ -24617,7 +24617,7 @@ namespace Ict.Petra.Shared.MPartner.Partner.Data
                 ret = this[this.myTable.ColumnDateModified.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return DateTime.MinValue;
                 }
                 else
                 {
@@ -25179,7 +25179,7 @@ namespace Ict.Petra.Shared.MPartner.Partner.Data
                 ret = this[this.myTable.ColumnUnassignableDate.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return DateTime.MinValue;
                 }
                 else
                 {
@@ -25231,7 +25231,7 @@ namespace Ict.Petra.Shared.MPartner.Partner.Data
                 ret = this[this.myTable.ColumnDateCreated.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return DateTime.MinValue;
                 }
                 else
                 {
@@ -25283,7 +25283,7 @@ namespace Ict.Petra.Shared.MPartner.Partner.Data
                 ret = this[this.myTable.ColumnDateModified.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return DateTime.MinValue;
                 }
                 else
                 {
@@ -25846,7 +25846,7 @@ namespace Ict.Petra.Shared.MPartner.Partner.Data
                 ret = this[this.myTable.ColumnDateCreated.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return DateTime.MinValue;
                 }
                 else
                 {
@@ -25898,7 +25898,7 @@ namespace Ict.Petra.Shared.MPartner.Partner.Data
                 ret = this[this.myTable.ColumnDateModified.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return DateTime.MinValue;
                 }
                 else
                 {
@@ -26617,7 +26617,7 @@ namespace Ict.Petra.Shared.MPartner.Partner.Data
                 ret = this[this.myTable.ColumnDateCreated.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return DateTime.MinValue;
                 }
                 else
                 {
@@ -26669,7 +26669,7 @@ namespace Ict.Petra.Shared.MPartner.Partner.Data
                 ret = this[this.myTable.ColumnDateModified.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return DateTime.MinValue;
                 }
                 else
                 {
@@ -27296,7 +27296,7 @@ namespace Ict.Petra.Shared.MPartner.Partner.Data
                 ret = this[this.myTable.ColumnUnassignableDate.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return DateTime.MinValue;
                 }
                 else
                 {
@@ -27348,7 +27348,7 @@ namespace Ict.Petra.Shared.MPartner.Partner.Data
                 ret = this[this.myTable.ColumnDateCreated.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return DateTime.MinValue;
                 }
                 else
                 {
@@ -27400,7 +27400,7 @@ namespace Ict.Petra.Shared.MPartner.Partner.Data
                 ret = this[this.myTable.ColumnDateModified.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return DateTime.MinValue;
                 }
                 else
                 {
@@ -27956,7 +27956,7 @@ namespace Ict.Petra.Shared.MPartner.Partner.Data
                 ret = this[this.myTable.ColumnValidFrom.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return DateTime.MinValue;
                 }
                 else
                 {
@@ -27982,7 +27982,7 @@ namespace Ict.Petra.Shared.MPartner.Partner.Data
                 ret = this[this.myTable.ColumnValidUntil.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return DateTime.MinValue;
                 }
                 else
                 {
@@ -28008,7 +28008,7 @@ namespace Ict.Petra.Shared.MPartner.Partner.Data
                 ret = this[this.myTable.ColumnDateCreated.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return DateTime.MinValue;
                 }
                 else
                 {
@@ -28060,7 +28060,7 @@ namespace Ict.Petra.Shared.MPartner.Partner.Data
                 ret = this[this.myTable.ColumnDateModified.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return DateTime.MinValue;
                 }
                 else
                 {
@@ -28648,7 +28648,7 @@ namespace Ict.Petra.Shared.MPartner.Partner.Data
                 ret = this[this.myTable.ColumnUnassignableDate.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return DateTime.MinValue;
                 }
                 else
                 {
@@ -28700,7 +28700,7 @@ namespace Ict.Petra.Shared.MPartner.Partner.Data
                 ret = this[this.myTable.ColumnDateCreated.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return DateTime.MinValue;
                 }
                 else
                 {
@@ -28752,7 +28752,7 @@ namespace Ict.Petra.Shared.MPartner.Partner.Data
                 ret = this[this.myTable.ColumnDateModified.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return DateTime.MinValue;
                 }
                 else
                 {
@@ -29454,7 +29454,7 @@ namespace Ict.Petra.Shared.MPartner.Partner.Data
                 ret = this[this.myTable.ColumnDateCreated.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return DateTime.MinValue;
                 }
                 else
                 {
@@ -29506,7 +29506,7 @@ namespace Ict.Petra.Shared.MPartner.Partner.Data
                 ret = this[this.myTable.ColumnDateModified.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return DateTime.MinValue;
                 }
                 else
                 {
@@ -30127,7 +30127,7 @@ namespace Ict.Petra.Shared.MPartner.Partner.Data
                 ret = this[this.myTable.ColumnDateCreated.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return DateTime.MinValue;
                 }
                 else
                 {
@@ -30179,7 +30179,7 @@ namespace Ict.Petra.Shared.MPartner.Partner.Data
                 ret = this[this.myTable.ColumnDateModified.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return DateTime.MinValue;
                 }
                 else
                 {
@@ -30729,7 +30729,7 @@ namespace Ict.Petra.Shared.MPartner.Partner.Data
                 ret = this[this.myTable.ColumnDateCreated.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return DateTime.MinValue;
                 }
                 else
                 {
@@ -30781,7 +30781,7 @@ namespace Ict.Petra.Shared.MPartner.Partner.Data
                 ret = this[this.myTable.ColumnDateModified.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return DateTime.MinValue;
                 }
                 else
                 {
@@ -31273,7 +31273,7 @@ namespace Ict.Petra.Shared.MPartner.Partner.Data
                 ret = this[this.myTable.ColumnDateCreated.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return DateTime.MinValue;
                 }
                 else
                 {
@@ -31325,7 +31325,7 @@ namespace Ict.Petra.Shared.MPartner.Partner.Data
                 ret = this[this.myTable.ColumnDateModified.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return DateTime.MinValue;
                 }
                 else
                 {
@@ -32285,7 +32285,7 @@ namespace Ict.Petra.Shared.MPartner.Partner.Data
                 ret = this[this.myTable.ColumnNotDisplayedFrom.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return DateTime.MinValue;
                 }
                 else
                 {
@@ -32337,7 +32337,7 @@ namespace Ict.Petra.Shared.MPartner.Partner.Data
                 ret = this[this.myTable.ColumnNotEditableFrom.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return DateTime.MinValue;
                 }
                 else
                 {
@@ -32389,7 +32389,7 @@ namespace Ict.Petra.Shared.MPartner.Partner.Data
                 ret = this[this.myTable.ColumnDateCreated.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return DateTime.MinValue;
                 }
                 else
                 {
@@ -32441,7 +32441,7 @@ namespace Ict.Petra.Shared.MPartner.Partner.Data
                 ret = this[this.myTable.ColumnDateModified.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return DateTime.MinValue;
                 }
                 else
                 {
@@ -33134,7 +33134,7 @@ namespace Ict.Petra.Shared.MPartner.Partner.Data
                 ret = this[this.myTable.ColumnDateCreated.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return DateTime.MinValue;
                 }
                 else
                 {
@@ -33186,7 +33186,7 @@ namespace Ict.Petra.Shared.MPartner.Partner.Data
                 ret = this[this.myTable.ColumnDateModified.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return DateTime.MinValue;
                 }
                 else
                 {
@@ -33979,7 +33979,7 @@ namespace Ict.Petra.Shared.MPartner.Partner.Data
                 ret = this[this.myTable.ColumnValueDate.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return DateTime.MinValue;
                 }
                 else
                 {
@@ -34083,7 +34083,7 @@ namespace Ict.Petra.Shared.MPartner.Partner.Data
                 ret = this[this.myTable.ColumnDateCreated.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return DateTime.MinValue;
                 }
                 else
                 {
@@ -34135,7 +34135,7 @@ namespace Ict.Petra.Shared.MPartner.Partner.Data
                 ret = this[this.myTable.ColumnDateModified.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return DateTime.MinValue;
                 }
                 else
                 {
@@ -34776,7 +34776,7 @@ namespace Ict.Petra.Shared.MPartner.Partner.Data
                 ret = this[this.myTable.ColumnDateCreated.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return DateTime.MinValue;
                 }
                 else
                 {
@@ -34828,7 +34828,7 @@ namespace Ict.Petra.Shared.MPartner.Partner.Data
                 ret = this[this.myTable.ColumnDateModified.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return DateTime.MinValue;
                 }
                 else
                 {
@@ -35410,7 +35410,7 @@ namespace Ict.Petra.Shared.MPartner.Partner.Data
                 ret = this[this.myTable.ColumnDateCreated.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return DateTime.MinValue;
                 }
                 else
                 {
@@ -35462,7 +35462,7 @@ namespace Ict.Petra.Shared.MPartner.Partner.Data
                 ret = this[this.myTable.ColumnDateModified.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return DateTime.MinValue;
                 }
                 else
                 {
@@ -36069,7 +36069,7 @@ namespace Ict.Petra.Shared.MPartner.Partner.Data
                 ret = this[this.myTable.ColumnValidFrom.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return DateTime.MinValue;
                 }
                 else
                 {
@@ -36095,7 +36095,7 @@ namespace Ict.Petra.Shared.MPartner.Partner.Data
                 ret = this[this.myTable.ColumnValidUntil.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return DateTime.MinValue;
                 }
                 else
                 {
@@ -36147,7 +36147,7 @@ namespace Ict.Petra.Shared.MPartner.Partner.Data
                 ret = this[this.myTable.ColumnDateCreated.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return DateTime.MinValue;
                 }
                 else
                 {
@@ -36199,7 +36199,7 @@ namespace Ict.Petra.Shared.MPartner.Partner.Data
                 ret = this[this.myTable.ColumnDateModified.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return DateTime.MinValue;
                 }
                 else
                 {
@@ -36865,7 +36865,7 @@ namespace Ict.Petra.Shared.MPartner.Partner.Data
                 ret = this[this.myTable.ColumnDateCreated.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return DateTime.MinValue;
                 }
                 else
                 {
@@ -36917,7 +36917,7 @@ namespace Ict.Petra.Shared.MPartner.Partner.Data
                 ret = this[this.myTable.ColumnDateModified.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return DateTime.MinValue;
                 }
                 else
                 {
@@ -37480,7 +37480,7 @@ namespace Ict.Petra.Shared.MPartner.Partner.Data
                 ret = this[this.myTable.ColumnDateCreated.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return DateTime.MinValue;
                 }
                 else
                 {
@@ -37532,7 +37532,7 @@ namespace Ict.Petra.Shared.MPartner.Partner.Data
                 ret = this[this.myTable.ColumnDateModified.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return DateTime.MinValue;
                 }
                 else
                 {
@@ -38249,7 +38249,7 @@ namespace Ict.Petra.Shared.MPartner.Partner.Data
                 ret = this[this.myTable.ColumnDateCreated.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return DateTime.MinValue;
                 }
                 else
                 {
@@ -38301,7 +38301,7 @@ namespace Ict.Petra.Shared.MPartner.Partner.Data
                 ret = this[this.myTable.ColumnDateModified.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return DateTime.MinValue;
                 }
                 else
                 {
@@ -38909,7 +38909,7 @@ namespace Ict.Petra.Shared.MPartner.Partner.Data
                 ret = this[this.myTable.ColumnMergeDate.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return DateTime.MinValue;
                 }
                 else
                 {
@@ -38935,7 +38935,7 @@ namespace Ict.Petra.Shared.MPartner.Partner.Data
                 ret = this[this.myTable.ColumnDateCreated.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return DateTime.MinValue;
                 }
                 else
                 {
@@ -38987,7 +38987,7 @@ namespace Ict.Petra.Shared.MPartner.Partner.Data
                 ret = this[this.myTable.ColumnDateModified.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return DateTime.MinValue;
                 }
                 else
                 {
@@ -39575,7 +39575,7 @@ namespace Ict.Petra.Shared.MPartner.Partner.Data
                 ret = this[this.myTable.ColumnUnassignableDate.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return DateTime.MinValue;
                 }
                 else
                 {
@@ -39627,7 +39627,7 @@ namespace Ict.Petra.Shared.MPartner.Partner.Data
                 ret = this[this.myTable.ColumnDateCreated.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return DateTime.MinValue;
                 }
                 else
                 {
@@ -39679,7 +39679,7 @@ namespace Ict.Petra.Shared.MPartner.Partner.Data
                 ret = this[this.myTable.ColumnDateModified.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return DateTime.MinValue;
                 }
                 else
                 {
@@ -40657,7 +40657,7 @@ namespace Ict.Petra.Shared.MPartner.Partner.Data
                 ret = this[this.myTable.ColumnEventDate.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return DateTime.MinValue;
                 }
                 else
                 {
@@ -40683,7 +40683,7 @@ namespace Ict.Petra.Shared.MPartner.Partner.Data
                 ret = this[this.myTable.ColumnFirstReminderDate.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return DateTime.MinValue;
                 }
                 else
                 {
@@ -40735,7 +40735,7 @@ namespace Ict.Petra.Shared.MPartner.Partner.Data
                 ret = this[this.myTable.ColumnLastReminderSent.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return DateTime.MinValue;
                 }
                 else
                 {
@@ -40761,7 +40761,7 @@ namespace Ict.Petra.Shared.MPartner.Partner.Data
                 ret = this[this.myTable.ColumnNextReminderDate.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return DateTime.MinValue;
                 }
                 else
                 {
@@ -40917,7 +40917,7 @@ namespace Ict.Petra.Shared.MPartner.Partner.Data
                 ret = this[this.myTable.ColumnDateCreated.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return DateTime.MinValue;
                 }
                 else
                 {
@@ -40969,7 +40969,7 @@ namespace Ict.Petra.Shared.MPartner.Partner.Data
                 ret = this[this.myTable.ColumnDateModified.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return DateTime.MinValue;
                 }
                 else
                 {
@@ -41853,7 +41853,7 @@ namespace Ict.Petra.Shared.MPartner.Partner.Data
                 ret = this[this.myTable.ColumnDateEffective.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return DateTime.MinValue;
                 }
                 else
                 {
@@ -41879,7 +41879,7 @@ namespace Ict.Petra.Shared.MPartner.Partner.Data
                 ret = this[this.myTable.ColumnDateExpires.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return DateTime.MinValue;
                 }
                 else
                 {
@@ -42061,7 +42061,7 @@ namespace Ict.Petra.Shared.MPartner.Partner.Data
                 ret = this[this.myTable.ColumnDateCreated.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return DateTime.MinValue;
                 }
                 else
                 {
@@ -42113,7 +42113,7 @@ namespace Ict.Petra.Shared.MPartner.Partner.Data
                 ret = this[this.myTable.ColumnDateModified.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return DateTime.MinValue;
                 }
                 else
                 {
@@ -42844,7 +42844,7 @@ namespace Ict.Petra.Shared.MPartner.Partner.Data
                 ret = this[this.myTable.ColumnDateCreated.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return DateTime.MinValue;
                 }
                 else
                 {
@@ -42896,7 +42896,7 @@ namespace Ict.Petra.Shared.MPartner.Partner.Data
                 ret = this[this.myTable.ColumnDateModified.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return DateTime.MinValue;
                 }
                 else
                 {
@@ -43459,7 +43459,7 @@ namespace Ict.Petra.Shared.MPartner.Partner.Data
                 ret = this[this.myTable.ColumnDateCreated.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return DateTime.MinValue;
                 }
                 else
                 {
@@ -43511,7 +43511,7 @@ namespace Ict.Petra.Shared.MPartner.Partner.Data
                 ret = this[this.myTable.ColumnDateModified.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return DateTime.MinValue;
                 }
                 else
                 {
@@ -44138,7 +44138,7 @@ namespace Ict.Petra.Shared.MPartner.Partner.Data
                 ret = this[this.myTable.ColumnDateCreated.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return DateTime.MinValue;
                 }
                 else
                 {
@@ -44190,7 +44190,7 @@ namespace Ict.Petra.Shared.MPartner.Partner.Data
                 ret = this[this.myTable.ColumnDateModified.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return DateTime.MinValue;
                 }
                 else
                 {
@@ -44843,7 +44843,7 @@ namespace Ict.Petra.Shared.MPartner.Partner.Data
                 ret = this[this.myTable.ColumnDateCreated.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return DateTime.MinValue;
                 }
                 else
                 {
@@ -44895,7 +44895,7 @@ namespace Ict.Petra.Shared.MPartner.Partner.Data
                 ret = this[this.myTable.ColumnDateModified.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return DateTime.MinValue;
                 }
                 else
                 {
@@ -45605,7 +45605,7 @@ namespace Ict.Petra.Shared.MPartner.Partner.Data
                 ret = this[this.myTable.ColumnStateStartDate.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return DateTime.MinValue;
                 }
                 else
                 {
@@ -45631,7 +45631,7 @@ namespace Ict.Petra.Shared.MPartner.Partner.Data
                 ret = this[this.myTable.ColumnStateEndDate.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return DateTime.MinValue;
                 }
                 else
                 {
@@ -45683,7 +45683,7 @@ namespace Ict.Petra.Shared.MPartner.Partner.Data
                 ret = this[this.myTable.ColumnDateCreated.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return DateTime.MinValue;
                 }
                 else
                 {
@@ -45735,7 +45735,7 @@ namespace Ict.Petra.Shared.MPartner.Partner.Data
                 ret = this[this.myTable.ColumnDateModified.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return DateTime.MinValue;
                 }
                 else
                 {
@@ -46624,7 +46624,7 @@ namespace Ict.Petra.Shared.MPartner.Partner.Data
                 ret = this[this.myTable.ColumnPerformByDate.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return DateTime.MinValue;
                 }
                 else
                 {
@@ -46676,7 +46676,7 @@ namespace Ict.Petra.Shared.MPartner.Partner.Data
                 ret = this[this.myTable.ColumnActionCompleteDate.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return DateTime.MinValue;
                 }
                 else
                 {
@@ -46832,7 +46832,7 @@ namespace Ict.Petra.Shared.MPartner.Partner.Data
                 ret = this[this.myTable.ColumnDateCreated.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return DateTime.MinValue;
                 }
                 else
                 {
@@ -46884,7 +46884,7 @@ namespace Ict.Petra.Shared.MPartner.Partner.Data
                 ret = this[this.myTable.ColumnDateModified.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return DateTime.MinValue;
                 }
                 else
                 {
@@ -47564,7 +47564,7 @@ namespace Ict.Petra.Shared.MPartner.Partner.Data
                 ret = this[this.myTable.ColumnDateCreated.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return DateTime.MinValue;
                 }
                 else
                 {
@@ -47616,7 +47616,7 @@ namespace Ict.Petra.Shared.MPartner.Partner.Data
                 ret = this[this.myTable.ColumnDateModified.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return DateTime.MinValue;
                 }
                 else
                 {
@@ -48153,7 +48153,7 @@ namespace Ict.Petra.Shared.MPartner.Partner.Data
                 ret = this[this.myTable.ColumnDateCreated.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return DateTime.MinValue;
                 }
                 else
                 {
@@ -48205,7 +48205,7 @@ namespace Ict.Petra.Shared.MPartner.Partner.Data
                 ret = this[this.myTable.ColumnDateModified.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return DateTime.MinValue;
                 }
                 else
                 {
@@ -48742,7 +48742,7 @@ namespace Ict.Petra.Shared.MPartner.Partner.Data
                 ret = this[this.myTable.ColumnDateCreated.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return DateTime.MinValue;
                 }
                 else
                 {
@@ -48794,7 +48794,7 @@ namespace Ict.Petra.Shared.MPartner.Partner.Data
                 ret = this[this.myTable.ColumnDateModified.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return DateTime.MinValue;
                 }
                 else
                 {
@@ -49421,7 +49421,7 @@ namespace Ict.Petra.Shared.MPartner.Partner.Data
                 ret = this[this.myTable.ColumnDateCreated.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return DateTime.MinValue;
                 }
                 else
                 {
@@ -49473,7 +49473,7 @@ namespace Ict.Petra.Shared.MPartner.Partner.Data
                 ret = this[this.myTable.ColumnDateModified.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return DateTime.MinValue;
                 }
                 else
                 {
@@ -49991,7 +49991,7 @@ namespace Ict.Petra.Shared.MPartner.Partner.Data
                 ret = this[this.myTable.ColumnDateCreated.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return DateTime.MinValue;
                 }
                 else
                 {
@@ -50043,7 +50043,7 @@ namespace Ict.Petra.Shared.MPartner.Partner.Data
                 ret = this[this.myTable.ColumnDateModified.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return DateTime.MinValue;
                 }
                 else
                 {
@@ -51062,7 +51062,7 @@ namespace Ict.Petra.Shared.MPartner.Partner.Data
                 ret = this[this.myTable.ColumnDateCreated.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return DateTime.MinValue;
                 }
                 else
                 {
@@ -51114,7 +51114,7 @@ namespace Ict.Petra.Shared.MPartner.Partner.Data
                 ret = this[this.myTable.ColumnDateModified.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return DateTime.MinValue;
                 }
                 else
                 {
@@ -51749,7 +51749,7 @@ namespace Ict.Petra.Shared.MPartner.Partner.Data
                 ret = this[this.myTable.ColumnDateCreated.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return DateTime.MinValue;
                 }
                 else
                 {
@@ -51801,7 +51801,7 @@ namespace Ict.Petra.Shared.MPartner.Partner.Data
                 ret = this[this.myTable.ColumnDateModified.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return DateTime.MinValue;
                 }
                 else
                 {
@@ -52484,7 +52484,7 @@ namespace Ict.Petra.Shared.MPartner.Partner.Data
                 ret = this[this.myTable.ColumnSubmittedDate.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return DateTime.MinValue;
                 }
                 else
                 {
@@ -52588,7 +52588,7 @@ namespace Ict.Petra.Shared.MPartner.Partner.Data
                 ret = this[this.myTable.ColumnDateGranted.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return DateTime.MinValue;
                 }
                 else
                 {
@@ -52640,7 +52640,7 @@ namespace Ict.Petra.Shared.MPartner.Partner.Data
                 ret = this[this.myTable.ColumnDateCreated.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return DateTime.MinValue;
                 }
                 else
                 {
@@ -52692,7 +52692,7 @@ namespace Ict.Petra.Shared.MPartner.Partner.Data
                 ret = this[this.myTable.ColumnDateModified.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return DateTime.MinValue;
                 }
                 else
                 {
@@ -53590,7 +53590,7 @@ namespace Ict.Petra.Shared.MPartner.Partner.Data
                 ret = this[this.myTable.ColumnDateCreated.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return DateTime.MinValue;
                 }
                 else
                 {
@@ -53642,7 +53642,7 @@ namespace Ict.Petra.Shared.MPartner.Partner.Data
                 ret = this[this.myTable.ColumnDateModified.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return DateTime.MinValue;
                 }
                 else
                 {
@@ -54302,7 +54302,7 @@ namespace Ict.Petra.Shared.MPartner.Partner.Data
                 ret = this[this.myTable.ColumnDateCreated.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return DateTime.MinValue;
                 }
                 else
                 {
@@ -54354,7 +54354,7 @@ namespace Ict.Petra.Shared.MPartner.Partner.Data
                 ret = this[this.myTable.ColumnDateModified.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return DateTime.MinValue;
                 }
                 else
                 {
@@ -55174,7 +55174,7 @@ namespace Ict.Petra.Shared.MPartner.Partner.Data
                 ret = this[this.myTable.ColumnDateCreated.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return DateTime.MinValue;
                 }
                 else
                 {
@@ -55226,7 +55226,7 @@ namespace Ict.Petra.Shared.MPartner.Partner.Data
                 ret = this[this.myTable.ColumnDateModified.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return DateTime.MinValue;
                 }
                 else
                 {
@@ -55796,7 +55796,7 @@ namespace Ict.Petra.Shared.MPartner.Partner.Data
                 ret = this[this.myTable.ColumnDateCreated.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return DateTime.MinValue;
                 }
                 else
                 {
@@ -55848,7 +55848,7 @@ namespace Ict.Petra.Shared.MPartner.Partner.Data
                 ret = this[this.myTable.ColumnDateModified.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return DateTime.MinValue;
                 }
                 else
                 {
@@ -56327,7 +56327,7 @@ namespace Ict.Petra.Shared.MPartner.Partner.Data
                 ret = this[this.myTable.ColumnDateCreated.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return DateTime.MinValue;
                 }
                 else
                 {
@@ -56379,7 +56379,7 @@ namespace Ict.Petra.Shared.MPartner.Partner.Data
                 ret = this[this.myTable.ColumnDateModified.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return DateTime.MinValue;
                 }
                 else
                 {
@@ -56903,7 +56903,7 @@ namespace Ict.Petra.Shared.MPartner.Partner.Data
                 ret = this[this.myTable.ColumnDateCreated.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return DateTime.MinValue;
                 }
                 else
                 {
@@ -56955,7 +56955,7 @@ namespace Ict.Petra.Shared.MPartner.Partner.Data
                 ret = this[this.myTable.ColumnDateModified.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return DateTime.MinValue;
                 }
                 else
                 {

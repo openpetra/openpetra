@@ -714,8 +714,8 @@ namespace Ict.Petra.Client.MCommon
             // MessageBox.Show('FLocationRow: Proposed? ' + FLocationRow.HasVersion(DataRowVersion.Proposed).ToString +
             // 'PPartnerLocationRow: Proposed? ' + PPartnerLocationRow.HasVersion(DataRowVersion.Proposed).ToString);
             // Store values of some DataColumns before the user can edit them (used later for comparisons)
-            FValidFromBeforeEditing = PPartnerLocationRow.DateEffectiveLowNull;
-            FValidUntilBeforeEditing = PPartnerLocationRow.DateGoodUntilLowNull;
+            FValidFromBeforeEditing = PPartnerLocationRow.DateEffective;
+            FValidUntilBeforeEditing = PPartnerLocationRow.DateGoodUntil;
             FSendMailBeforeEditing = PPartnerLocationRow.SendMail;
         }
 
@@ -924,12 +924,12 @@ namespace Ict.Petra.Client.MCommon
             // LocationRow.RowState)) + "\r\n" +
             // 'APartnerLocationRow RowState: ' + (Enum.GetName(typeof(DataRowState),
             // APartnerLocationRow.RowState)));
-            if ((APartnerLocationRow.DateEffectiveLowNull != FValidFromBeforeEditing)
-                || (APartnerLocationRow.DateGoodUntilLowNull != FValidUntilBeforeEditing) || (APartnerLocationRow.SendMail != FSendMailBeforeEditing))
+            if ((APartnerLocationRow.DateEffective != FValidFromBeforeEditing)
+                || (APartnerLocationRow.DateGoodUntil != FValidUntilBeforeEditing) || (APartnerLocationRow.SendMail != FSendMailBeforeEditing))
             {
                 // MessageBox.Show('PartnerLocation Date(s) or Mailing Address CheckBox have changed!');
-                FValidFromBeforeEditing = APartnerLocationRow.DateEffectiveLowNull;
-                FValidUntilBeforeEditing = APartnerLocationRow.DateGoodUntilLowNull;
+                FValidFromBeforeEditing = APartnerLocationRow.DateEffective;
+                FValidUntilBeforeEditing = APartnerLocationRow.DateGoodUntil;
 
                 // Determination of the Grid icons and the 'Best Address' (these calls change certain columns in some rows!)
                 Calculations.DeterminePartnerLocationsDateStatus((DataSet)FMainDS);

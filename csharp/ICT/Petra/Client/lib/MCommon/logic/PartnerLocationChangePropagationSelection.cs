@@ -27,6 +27,7 @@ using System;
 using System.Data;
 using System.Windows.Forms;
 using Ict.Common;
+using Ict.Common.Data;
 using Ict.Petra.Shared.MPartner.Partner.Data;
 using DevAge.Drawing;
 using DevAge.ComponentModel;
@@ -102,54 +103,54 @@ namespace Ict.Petra.Client.MCommon
             PetraDtConverter = new TPetraDateConverter();
             DateEditor.TypeConverter = PetraDtConverter;
             this.FDataGridPersonsLocations.AddTextColumn(
-                PartnerAddressAggregateTDSChangePromotionParametersTable.GetPartnerShortNameLabel(),
+                TTypedDataTable.GetLabel(PPartnerTable.TableId, PPartnerTable.ColumnPartnerShortNameId),
                 ASourceTable.Columns[PartnerAddressAggregateTDSChangePromotionParametersTable.GetPartnerShortNameDBName()]);
             this.FDataGridPersonsLocations.AddTextColumn(
-                PartnerAddressAggregateTDSChangePromotionParametersTable.GetPartnerKeyLabel(),
+                TTypedDataTable.GetLabel(PPartnerLocationTable.TableId, PPartnerLocationTable.ColumnPartnerKeyId),
                 ASourceTable.Columns[PartnerAddressAggregateTDSChangePromotionParametersTable.GetPartnerKeyDBName()], 77);
             this.FDataGridPersonsLocations.AddTextColumn(
-                PartnerAddressAggregateTDSChangePromotionParametersTable.GetTelephoneNumberLabel(),
+                TTypedDataTable.GetLabel(PPartnerLocationTable.TableId, PPartnerLocationTable.ColumnTelephoneNumberId),
                 ASourceTable.Columns[PartnerAddressAggregateTDSChangePromotionParametersTable.GetTelephoneNumberDBName()]);
             this.FDataGridPersonsLocations.AddTextColumn(
-                PartnerAddressAggregateTDSChangePromotionParametersTable.GetExtensionLabel(),
+                TTypedDataTable.GetLabel(PPartnerLocationTable.TableId, PPartnerLocationTable.ColumnExtensionId),
                 ASourceTable.Columns[PartnerAddressAggregateTDSChangePromotionParametersTable.GetExtensionDBName()]);
             this.FDataGridPersonsLocations.AddTextColumn(
-                PartnerAddressAggregateTDSChangePromotionParametersTable.GetFaxNumberLabel(),
+                TTypedDataTable.GetLabel(PPartnerLocationTable.TableId, PPartnerLocationTable.ColumnFaxNumberId),
                 ASourceTable.Columns[PartnerAddressAggregateTDSChangePromotionParametersTable.GetFaxNumberDBName()]);
             this.FDataGridPersonsLocations.AddTextColumn(
-                PartnerAddressAggregateTDSChangePromotionParametersTable.GetFaxExtensionLabel(),
+                TTypedDataTable.GetLabel(PPartnerLocationTable.TableId, PPartnerLocationTable.ColumnFaxExtensionId),
                 ASourceTable.Columns[PartnerAddressAggregateTDSChangePromotionParametersTable.GetFaxExtensionDBName()]);
             this.FDataGridPersonsLocations.AddTextColumn(
-                PartnerAddressAggregateTDSChangePromotionParametersTable.GetMobileNumberLabel(),
+                TTypedDataTable.GetLabel(PPartnerLocationTable.TableId, PPartnerLocationTable.ColumnMobileNumberId),
                 ASourceTable.Columns[PartnerAddressAggregateTDSChangePromotionParametersTable.GetMobileNumberDBName()]);
             this.FDataGridPersonsLocations.AddTextColumn(
-                PartnerAddressAggregateTDSChangePromotionParametersTable.GetAlternateTelephoneLabel(),
+                TTypedDataTable.GetLabel(PPartnerLocationTable.TableId, PPartnerLocationTable.ColumnAlternateTelephoneId),
                 ASourceTable.Columns[PartnerAddressAggregateTDSChangePromotionParametersTable.GetAlternateTelephoneDBName()]);
             this.FDataGridPersonsLocations.AddTextColumn(
-                PartnerAddressAggregateTDSChangePromotionParametersTable.GetEmailAddressLabel(),
+                TTypedDataTable.GetLabel(PPartnerLocationTable.TableId, PPartnerLocationTable.ColumnEmailAddressId),
                 ASourceTable.Columns[PartnerAddressAggregateTDSChangePromotionParametersTable.GetEmailAddressDBName()]);
             this.FDataGridPersonsLocations.AddTextColumn(
-                PartnerAddressAggregateTDSChangePromotionParametersTable.GetUrlLabel(),
+                TTypedDataTable.GetLabel(PPartnerLocationTable.TableId, PPartnerLocationTable.ColumnUrlId),
                 ASourceTable.Columns[PartnerAddressAggregateTDSChangePromotionParametersTable.GetUrlDBName()]);
             this.FDataGridPersonsLocations.AddTextColumn(
-                PartnerAddressAggregateTDSChangePromotionParametersTable.GetLocationTypeLabel(),
+                TTypedDataTable.GetLabel(PPartnerLocationTable.TableId, PPartnerLocationTable.ColumnLocationTypeId),
                 ASourceTable.Columns[PartnerAddressAggregateTDSChangePromotionParametersTable.GetLocationTypeDBName()], 88);
             this.FDataGridPersonsLocations.AddCheckBoxColumn(
-                PartnerAddressAggregateTDSChangePromotionParametersTable.GetSendMailLabel(),
+                TTypedDataTable.GetLabel(PPartnerLocationTable.TableId, PPartnerLocationTable.ColumnSendMailId),
                 ASourceTable.Columns[PartnerAddressAggregateTDSChangePromotionParametersTable.GetSendMailDBName()]);
             this.FDataGridPersonsLocations.AddTextColumn(
-                PartnerAddressAggregateTDSChangePromotionParametersTable.GetDateEffectiveLabel(),
+                TTypedDataTable.GetLabel(PPartnerLocationTable.TableId, PPartnerLocationTable.ColumnDateEffectiveId),
                 ASourceTable.Columns[PartnerAddressAggregateTDSChangePromotionParametersTable.GetDateEffectiveDBName()], -1, null, DateEditor, null,
                 null);
             this.FDataGridPersonsLocations.AddTextColumn(
-                PartnerAddressAggregateTDSChangePromotionParametersTable.GetDateGoodUntilLabel(),
+                TTypedDataTable.GetLabel(PPartnerLocationTable.TableId, PPartnerLocationTable.ColumnDateGoodUntilId),
                 ASourceTable.Columns[PartnerAddressAggregateTDSChangePromotionParametersTable.GetDateGoodUntilDBName()], -1, null, DateEditor, null,
                 null);
 
             // this.FDataGridPersonsLocations.AddTextColumn(PartnerAddressAggregateTDSChangePromotionParametersTable.GetSiteKeyLabel(),
             // ASourceTable.Columns[PartnerAddressAggregateTDSChangePromotionParametersTable.GetSiteKeyDBName()], 77);
             this.FDataGridPersonsLocations.AddTextColumn(
-                PartnerAddressAggregateTDSChangePromotionParametersTable.GetLocationKeyLabel(),
+                TTypedDataTable.GetLabel(PPartnerLocationTable.TableId, PPartnerLocationTable.ColumnLocationKeyId),
                 ASourceTable.Columns[PartnerAddressAggregateTDSChangePromotionParametersTable.GetLocationKeyDBName()]);
 
             // Following Columns are for debugging only!

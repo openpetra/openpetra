@@ -640,7 +640,7 @@ namespace Ict.Tools.DBXML
 
                 // bNotNull: row required for historic data
                 field.bNotNull = false;
-                field.iOrder = grpTableField.List.Count + 1;
+                field.iOrder = grpTableField.List.Count;
                 grpTableField.List.Add(field);
                 field = new TTableField();
                 field.strName = "s_created_by_c";
@@ -657,7 +657,7 @@ namespace Ict.Tools.DBXML
                 field.ExistsStrLabel = true;
                 field.strInitialValue = "";
                 field.ExistsStrInitialValue = true;
-                field.iOrder = grpTableField.List.Count + 1;
+                field.iOrder = grpTableField.List.Count;
                 grpTableField.List.Add(field);
                 constr = new TConstraint();
                 constr.strName = this.strName + "_fkcr";
@@ -677,7 +677,7 @@ namespace Ict.Tools.DBXML
                 // no default date, because when the record is created, the date modified should be NULL
                 field.strLabel = "Modified Date";
                 field.ExistsStrLabel = true;
-                field.iOrder = grpTableField.List.Count + 1;
+                field.iOrder = grpTableField.List.Count;
                 grpTableField.List.Add(field);
                 field = new TTableField();
                 field.strName = "s_modified_by_c";
@@ -692,7 +692,7 @@ namespace Ict.Tools.DBXML
                 field.ExistsStrLabel = true;
                 field.strInitialValue = "";
                 field.ExistsStrInitialValue = true;
-                field.iOrder = grpTableField.List.Count + 1;
+                field.iOrder = grpTableField.List.Count;
                 grpTableField.List.Add(field);
                 constr = new TConstraint();
                 constr.strName = this.strName + "_fkmd";
@@ -712,7 +712,7 @@ namespace Ict.Tools.DBXML
             field.iLength = 150;
             field.iCharLength = 150;
             field.bNotNull = false;
-            field.iOrder = grpTableField.List.Count + 1;
+            field.iOrder = grpTableField.List.Count;
             grpTableField.List.Add(field);
         }
 

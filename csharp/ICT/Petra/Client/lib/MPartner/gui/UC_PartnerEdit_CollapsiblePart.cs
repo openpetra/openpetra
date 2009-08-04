@@ -178,6 +178,7 @@ namespace Ict.Petra.Client.MPartner.Gui
             {
                 FPetraUtilsObject = value;
                 FPetraUtilsObject.SetStatusBarText(this.btnEditWorkerField, "Select " + "Worker Field");
+#if TODO
                 FPetraUtilsObject.SetStatusBarText(chkNoSolicitations, PPartnerTable.GetNoSolicitationsHelp());
                 FPetraUtilsObject.SetStatusBarText(cmbAddresseeType, PPartnerTable.GetAddresseeTypeCodeHelp());
                 FPetraUtilsObject.SetStatusBarText(cmbPartnerStatus, PPartnerTable.GetStatusCodeHelp());
@@ -194,6 +195,7 @@ namespace Ict.Petra.Client.MPartner.Gui
                 FPetraUtilsObject.SetStatusBarText(txtOtherName, PUnitTable.GetUnitNameHelp());
                 FPetraUtilsObject.SetStatusBarText(txtOtherName, PBankTable.GetBranchNameHelp());
                 FPetraUtilsObject.SetStatusBarText(txtOtherName, PVenueTable.GetVenueNameHelp());
+#endif
             }
         }
 
@@ -463,10 +465,12 @@ namespace Ict.Petra.Client.MPartner.Gui
                     txtPartnerClass.BackColor = System.Drawing.Color.Yellow;
 
                     // Set ToolTips in addition to StatusBar texts for fields to make it clearer what to fill in there...
+#if TODO
                     tipMain.SetToolTip(this.txtPersonTitle, PPersonTable.GetTitleHelp());
                     tipMain.SetToolTip(this.txtPersonFirstName, PPersonTable.GetFirstNameHelp());
                     tipMain.SetToolTip(this.txtPersonMiddleName, PPersonTable.GetMiddleName1Help());
                     tipMain.SetToolTip(this.txtPersonFamilyName, PPersonTable.GetFamilyNameHelp());
+#endif
                     FMainDS.PPerson.ColumnChanging += new DataColumnChangeEventHandler(this.OnAnyDataColumnChanging);
                     this.cmbPersonGender.SelectedValueChanged += new TSelectedValueChangedEventHandler(this.CmbPersonGender_SelectedValueChanged);
                     break;
@@ -482,9 +486,11 @@ namespace Ict.Petra.Client.MPartner.Gui
                     pnlWorkerField.Visible = true;
 
                     // Set ToolTips in addition to StatusBar texts for fields to make it clearer what to fill in there...
+#if TODO
                     tipMain.SetToolTip(this.txtFamilyTitle, PFamilyTable.GetTitleHelp());
                     tipMain.SetToolTip(this.txtFamilyFirstName, PFamilyTable.GetFirstNameHelp());
                     tipMain.SetToolTip(this.txtFamilyFamilyName, PFamilyTable.GetFamilyNameHelp());
+#endif
                     FMainDS.PFamily.ColumnChanging += new DataColumnChangeEventHandler(this.OnAnyDataColumnChanging);
                     break;
 

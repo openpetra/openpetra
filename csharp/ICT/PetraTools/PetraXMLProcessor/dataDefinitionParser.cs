@@ -268,7 +268,7 @@ namespace Ict.Tools.DBXML
                 if (tableField != null)
                 {
                     tableField.strTableName = table.strName;
-                    tableField.iOrder = table.grpTableField.List.Count + 1;
+                    tableField.iOrder = table.grpTableField.List.Count;
                     table.grpTableField.List.Add(tableField);
                 }
 

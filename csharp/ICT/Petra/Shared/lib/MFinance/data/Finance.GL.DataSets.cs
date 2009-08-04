@@ -199,74 +199,10 @@ namespace Ict.Petra.Shared.MFinance.GL.Data
 
     /// Detailed information for each debit and credit in a general ledger journal.
     [Serializable()]
-    public class GLBatchTDSATransactionTable : TTypedDataTable
+    public class GLBatchTDSATransactionTable : ATransactionTable
     {
         /// TableId for Ict.Common.Data generic functions
-        public static short TableId = 5500;
-        /// used for generic TTypedDataTable functions
-        public static short ColumnLedgerNumberId = 0;
-        /// used for generic TTypedDataTable functions
-        public static short ColumnBatchNumberId = 1;
-        /// used for generic TTypedDataTable functions
-        public static short ColumnJournalNumberId = 2;
-        /// used for generic TTypedDataTable functions
-        public static short ColumnTransactionNumberId = 3;
-        /// used for generic TTypedDataTable functions
-        public static short ColumnAccountCodeId = 4;
-        /// used for generic TTypedDataTable functions
-        public static short ColumnPrimaryAccountCodeId = 5;
-        /// used for generic TTypedDataTable functions
-        public static short ColumnCostCentreCodeId = 6;
-        /// used for generic TTypedDataTable functions
-        public static short ColumnPrimaryCostCentreCodeId = 7;
-        /// used for generic TTypedDataTable functions
-        public static short ColumnTransactionDateId = 8;
-        /// used for generic TTypedDataTable functions
-        public static short ColumnTransactionAmountId = 9;
-        /// used for generic TTypedDataTable functions
-        public static short ColumnAmountInBaseCurrencyId = 10;
-        /// used for generic TTypedDataTable functions
-        public static short ColumnAnalysisIndicatorId = 11;
-        /// used for generic TTypedDataTable functions
-        public static short ColumnReconciledStatusId = 12;
-        /// used for generic TTypedDataTable functions
-        public static short ColumnNarrativeId = 13;
-        /// used for generic TTypedDataTable functions
-        public static short ColumnDebitCreditIndicatorId = 14;
-        /// used for generic TTypedDataTable functions
-        public static short ColumnTransactionStatusId = 15;
-        /// used for generic TTypedDataTable functions
-        public static short ColumnHeaderNumberId = 16;
-        /// used for generic TTypedDataTable functions
-        public static short ColumnDetailNumberId = 17;
-        /// used for generic TTypedDataTable functions
-        public static short ColumnSubTypeId = 18;
-        /// used for generic TTypedDataTable functions
-        public static short ColumnToIltFlagId = 19;
-        /// used for generic TTypedDataTable functions
-        public static short ColumnSourceFlagId = 20;
-        /// used for generic TTypedDataTable functions
-        public static short ColumnReferenceId = 21;
-        /// used for generic TTypedDataTable functions
-        public static short ColumnSourceReferenceId = 22;
-        /// used for generic TTypedDataTable functions
-        public static short ColumnSystemGeneratedId = 23;
-        /// used for generic TTypedDataTable functions
-        public static short ColumnAmountInIntlCurrencyId = 24;
-        /// used for generic TTypedDataTable functions
-        public static short ColumnIchNumberId = 25;
-        /// used for generic TTypedDataTable functions
-        public static short ColumnKeyMinistryKeyId = 26;
-        /// used for generic TTypedDataTable functions
-        public static short ColumnDateCreatedId = 27;
-        /// used for generic TTypedDataTable functions
-        public static short ColumnCreatedById = 28;
-        /// used for generic TTypedDataTable functions
-        public static short ColumnDateModifiedId = 29;
-        /// used for generic TTypedDataTable functions
-        public static short ColumnModifiedById = 30;
-        /// used for generic TTypedDataTable functions
-        public static short ColumnModificationIdId = 31;
+        public new static short TableId = 5500;
         /// used for generic TTypedDataTable functions
         public static short ColumnDateEnteredId = 32;
         /// used for generic TTypedDataTable functions
@@ -336,70 +272,6 @@ namespace Ict.Petra.Shared.MFinance.GL.Data
         {
         }
 
-        /// This is used as a key field in most of the accounting system files
-        public DataColumn ColumnLedgerNumber;
-        /// identifes which batch a transaction belongs to
-        public DataColumn ColumnBatchNumber;
-        ///
-        public DataColumn ColumnJournalNumber;
-        /// Identifies a transaction within a journal within a batch within a ledger
-        public DataColumn ColumnTransactionNumber;
-        /// This identifies the account the financial transaction must be stored against
-        public DataColumn ColumnAccountCode;
-        /// This identifies the account the financial transaction must be stored against [NOT USED]
-        public DataColumn ColumnPrimaryAccountCode;
-        /// This identifies which cost centre an account is applied to
-        public DataColumn ColumnCostCentreCode;
-        /// This identifies which cost centre an account is applied to [NOT USED]
-        public DataColumn ColumnPrimaryCostCentreCode;
-        /// Date the transaction took place
-        public DataColumn ColumnTransactionDate;
-        /// This is a number of currency units
-        public DataColumn ColumnTransactionAmount;
-        /// This is a number of currency units
-        public DataColumn ColumnAmountInBaseCurrency;
-        /// Used to get a yes no response from the user
-        public DataColumn ColumnAnalysisIndicator;
-        /// shows if the transaction has been reconciled or not
-        public DataColumn ColumnReconciledStatus;
-        ///
-        public DataColumn ColumnNarrative;
-        ///
-        public DataColumn ColumnDebitCreditIndicator;
-        /// Has a transaction been posted yet
-        public DataColumn ColumnTransactionStatus;
-        /// The header (eg, cashbook #) that the transaction is associated with. [NOT USED]
-        public DataColumn ColumnHeaderNumber;
-        /// The detail (within the header) that the transaction is associated with. [NOT USED]
-        public DataColumn ColumnDetailNumber;
-        ///
-        public DataColumn ColumnSubType;
-        /// Indicates whether the ILT transaction has been transferred to transaction for ILT file.
-        public DataColumn ColumnToIltFlag;
-        /// To flag a transaction as having come from a source ledger and been processed in an ilt processing centre
-        public DataColumn ColumnSourceFlag;
-        /// Reference number/code for the transaction
-        public DataColumn ColumnReference;
-        /// Transaction key which initiated an ILT transaction
-        public DataColumn ColumnSourceReference;
-        /// Was this transaction generated automatically by the system?
-        public DataColumn ColumnSystemGenerated;
-        /// The transaction amount in the second base currency.
-        public DataColumn ColumnAmountInIntlCurrency;
-        /// identifes the ICH process number
-        public DataColumn ColumnIchNumber;
-        /// Key ministry to which this transaction applies (just for fund transfers)
-        public DataColumn ColumnKeyMinistryKey;
-        /// The date the record was created.
-        public DataColumn ColumnDateCreated;
-        /// User ID of who created this record.
-        public DataColumn ColumnCreatedBy;
-        /// The date the record was modified.
-        public DataColumn ColumnDateModified;
-        /// User ID of who last modified this record.
-        public DataColumn ColumnModifiedBy;
-        /// This identifies the current version of the record.
-        public DataColumn ColumnModificationId;
         ///
         public DataColumn ColumnDateEntered;
         ///
@@ -484,7 +356,7 @@ namespace Ict.Petra.Shared.MFinance.GL.Data
         }
 
         /// Access a typed row by index
-        public GLBatchTDSATransactionRow this[int i]
+        public new GLBatchTDSATransactionRow this[int i]
         {
             get
             {
@@ -493,7 +365,7 @@ namespace Ict.Petra.Shared.MFinance.GL.Data
         }
 
         /// create a new typed row
-        public GLBatchTDSATransactionRow NewRowTyped(bool AWithDefaultValues)
+        public new GLBatchTDSATransactionRow NewRowTyped(bool AWithDefaultValues)
         {
             GLBatchTDSATransactionRow ret = ((GLBatchTDSATransactionRow)(this.NewRow()));
             if ((AWithDefaultValues == true))
@@ -504,7 +376,7 @@ namespace Ict.Petra.Shared.MFinance.GL.Data
         }
 
         /// create a new typed row, always with default values
-        public GLBatchTDSATransactionRow NewRowTyped()
+        public new GLBatchTDSATransactionRow NewRowTyped()
         {
             return this.NewRowTyped(true);
         }
@@ -516,19 +388,19 @@ namespace Ict.Petra.Shared.MFinance.GL.Data
         }
 
         /// get typed set of changes
-        public GLBatchTDSATransactionTable GetChangesTyped()
+        public new GLBatchTDSATransactionTable GetChangesTyped()
         {
             return ((GLBatchTDSATransactionTable)(base.GetChangesTypedInternal()));
         }
 
         /// return the CamelCase name of the table
-        public static string GetTableName()
+        public static new string GetTableName()
         {
             return "GLBatchTDSATransaction";
         }
 
         /// return the name of the table as it is used in the database
-        public static string GetTableDBName()
+        public static new string GetTableDBName()
         {
             return "a_transaction";
         }
@@ -537,390 +409,6 @@ namespace Ict.Petra.Shared.MFinance.GL.Data
         public override OdbcParameter CreateOdbcParameter(Int32 AColumnNr)
         {
             return CreateOdbcParameter(TableId, AColumnNr);
-        }
-
-        /// get the name of the field in the database for this column
-        public static string GetLedgerNumberDBName()
-        {
-            return "a_ledger_number_i";
-        }
-
-        /// get character length for column
-        public static short GetLedgerNumberLength()
-        {
-            return -1;
-        }
-
-        /// get the name of the field in the database for this column
-        public static string GetBatchNumberDBName()
-        {
-            return "a_batch_number_i";
-        }
-
-        /// get character length for column
-        public static short GetBatchNumberLength()
-        {
-            return -1;
-        }
-
-        /// get the name of the field in the database for this column
-        public static string GetJournalNumberDBName()
-        {
-            return "a_journal_number_i";
-        }
-
-        /// get character length for column
-        public static short GetJournalNumberLength()
-        {
-            return -1;
-        }
-
-        /// get the name of the field in the database for this column
-        public static string GetTransactionNumberDBName()
-        {
-            return "a_transaction_number_i";
-        }
-
-        /// get character length for column
-        public static short GetTransactionNumberLength()
-        {
-            return -1;
-        }
-
-        /// get the name of the field in the database for this column
-        public static string GetAccountCodeDBName()
-        {
-            return "a_account_code_c";
-        }
-
-        /// get character length for column
-        public static short GetAccountCodeLength()
-        {
-            return 16;
-        }
-
-        /// get the name of the field in the database for this column
-        public static string GetPrimaryAccountCodeDBName()
-        {
-            return "a_primary_account_code_c";
-        }
-
-        /// get character length for column
-        public static short GetPrimaryAccountCodeLength()
-        {
-            return 16;
-        }
-
-        /// get the name of the field in the database for this column
-        public static string GetCostCentreCodeDBName()
-        {
-            return "a_cost_centre_code_c";
-        }
-
-        /// get character length for column
-        public static short GetCostCentreCodeLength()
-        {
-            return 24;
-        }
-
-        /// get the name of the field in the database for this column
-        public static string GetPrimaryCostCentreCodeDBName()
-        {
-            return "a_primary_cost_centre_code_c";
-        }
-
-        /// get character length for column
-        public static short GetPrimaryCostCentreCodeLength()
-        {
-            return 24;
-        }
-
-        /// get the name of the field in the database for this column
-        public static string GetTransactionDateDBName()
-        {
-            return "a_transaction_date_d";
-        }
-
-        /// get character length for column
-        public static short GetTransactionDateLength()
-        {
-            return -1;
-        }
-
-        /// get the name of the field in the database for this column
-        public static string GetTransactionAmountDBName()
-        {
-            return "a_transaction_amount_n";
-        }
-
-        /// get character length for column
-        public static short GetTransactionAmountLength()
-        {
-            return 24;
-        }
-
-        /// get the name of the field in the database for this column
-        public static string GetAmountInBaseCurrencyDBName()
-        {
-            return "a_amount_in_base_currency_n";
-        }
-
-        /// get character length for column
-        public static short GetAmountInBaseCurrencyLength()
-        {
-            return 24;
-        }
-
-        /// get the name of the field in the database for this column
-        public static string GetAnalysisIndicatorDBName()
-        {
-            return "a_analysis_indicator_l";
-        }
-
-        /// get character length for column
-        public static short GetAnalysisIndicatorLength()
-        {
-            return -1;
-        }
-
-        /// get the name of the field in the database for this column
-        public static string GetReconciledStatusDBName()
-        {
-            return "a_reconciled_status_l";
-        }
-
-        /// get character length for column
-        public static short GetReconciledStatusLength()
-        {
-            return -1;
-        }
-
-        /// get the name of the field in the database for this column
-        public static string GetNarrativeDBName()
-        {
-            return "a_narrative_c";
-        }
-
-        /// get character length for column
-        public static short GetNarrativeLength()
-        {
-            return 160;
-        }
-
-        /// get the name of the field in the database for this column
-        public static string GetDebitCreditIndicatorDBName()
-        {
-            return "a_debit_credit_indicator_l";
-        }
-
-        /// get character length for column
-        public static short GetDebitCreditIndicatorLength()
-        {
-            return -1;
-        }
-
-        /// get the name of the field in the database for this column
-        public static string GetTransactionStatusDBName()
-        {
-            return "a_transaction_status_l";
-        }
-
-        /// get character length for column
-        public static short GetTransactionStatusLength()
-        {
-            return -1;
-        }
-
-        /// get the name of the field in the database for this column
-        public static string GetHeaderNumberDBName()
-        {
-            return "a_header_number_i";
-        }
-
-        /// get character length for column
-        public static short GetHeaderNumberLength()
-        {
-            return -1;
-        }
-
-        /// get the name of the field in the database for this column
-        public static string GetDetailNumberDBName()
-        {
-            return "a_detail_number_i";
-        }
-
-        /// get character length for column
-        public static short GetDetailNumberLength()
-        {
-            return -1;
-        }
-
-        /// get the name of the field in the database for this column
-        public static string GetSubTypeDBName()
-        {
-            return "a_sub_type_c";
-        }
-
-        /// get character length for column
-        public static short GetSubTypeLength()
-        {
-            return 16;
-        }
-
-        /// get the name of the field in the database for this column
-        public static string GetToIltFlagDBName()
-        {
-            return "a_to_ilt_flag_l";
-        }
-
-        /// get character length for column
-        public static short GetToIltFlagLength()
-        {
-            return -1;
-        }
-
-        /// get the name of the field in the database for this column
-        public static string GetSourceFlagDBName()
-        {
-            return "a_source_flag_l";
-        }
-
-        /// get character length for column
-        public static short GetSourceFlagLength()
-        {
-            return -1;
-        }
-
-        /// get the name of the field in the database for this column
-        public static string GetReferenceDBName()
-        {
-            return "a_reference_c";
-        }
-
-        /// get character length for column
-        public static short GetReferenceLength()
-        {
-            return 100;
-        }
-
-        /// get the name of the field in the database for this column
-        public static string GetSourceReferenceDBName()
-        {
-            return "a_source_reference_c";
-        }
-
-        /// get character length for column
-        public static short GetSourceReferenceLength()
-        {
-            return 100;
-        }
-
-        /// get the name of the field in the database for this column
-        public static string GetSystemGeneratedDBName()
-        {
-            return "a_system_generated_l";
-        }
-
-        /// get character length for column
-        public static short GetSystemGeneratedLength()
-        {
-            return -1;
-        }
-
-        /// get the name of the field in the database for this column
-        public static string GetAmountInIntlCurrencyDBName()
-        {
-            return "a_amount_in_intl_currency_n";
-        }
-
-        /// get character length for column
-        public static short GetAmountInIntlCurrencyLength()
-        {
-            return 24;
-        }
-
-        /// get the name of the field in the database for this column
-        public static string GetIchNumberDBName()
-        {
-            return "a_ich_number_i";
-        }
-
-        /// get character length for column
-        public static short GetIchNumberLength()
-        {
-            return -1;
-        }
-
-        /// get the name of the field in the database for this column
-        public static string GetKeyMinistryKeyDBName()
-        {
-            return "a_key_ministry_key_n";
-        }
-
-        /// get character length for column
-        public static short GetKeyMinistryKeyLength()
-        {
-            return 10;
-        }
-
-        /// get the name of the field in the database for this column
-        public static string GetDateCreatedDBName()
-        {
-            return "s_date_created_d";
-        }
-
-        /// get character length for column
-        public static short GetDateCreatedLength()
-        {
-            return -1;
-        }
-
-        /// get the name of the field in the database for this column
-        public static string GetCreatedByDBName()
-        {
-            return "s_created_by_c";
-        }
-
-        /// get character length for column
-        public static short GetCreatedByLength()
-        {
-            return 20;
-        }
-
-        /// get the name of the field in the database for this column
-        public static string GetDateModifiedDBName()
-        {
-            return "s_date_modified_d";
-        }
-
-        /// get character length for column
-        public static short GetDateModifiedLength()
-        {
-            return -1;
-        }
-
-        /// get the name of the field in the database for this column
-        public static string GetModifiedByDBName()
-        {
-            return "s_modified_by_c";
-        }
-
-        /// get character length for column
-        public static short GetModifiedByLength()
-        {
-            return 20;
-        }
-
-        /// get the name of the field in the database for this column
-        public static string GetModificationIdDBName()
-        {
-            return "s_modification_id_c";
-        }
-
-        /// get character length for column
-        public static short GetModificationIdLength()
-        {
-            return 150;
         }
 
         /// get the name of the field in the database for this column
@@ -1179,7 +667,7 @@ namespace Ict.Petra.Shared.MFinance.GL.Data
                 ret = this[this.myTable.ColumnTransactionDate.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return DateTime.MinValue;
                 }
                 else
                 {
@@ -1673,7 +1161,7 @@ namespace Ict.Petra.Shared.MFinance.GL.Data
                 ret = this[this.myTable.ColumnDateCreated.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return DateTime.MinValue;
                 }
                 else
                 {
@@ -1725,7 +1213,7 @@ namespace Ict.Petra.Shared.MFinance.GL.Data
                 ret = this[this.myTable.ColumnDateModified.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return DateTime.MinValue;
                 }
                 else
                 {
@@ -1803,7 +1291,7 @@ namespace Ict.Petra.Shared.MFinance.GL.Data
                 ret = this[this.myTable.ColumnDateEntered.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return DateTime.MinValue;
                 }
                 else
                 {

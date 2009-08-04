@@ -531,7 +531,7 @@ namespace Ict.Petra.Shared.MFinance.Gift.Data
                 ret = this[this.myTable.ColumnDateCreated.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return DateTime.MinValue;
                 }
                 else
                 {
@@ -583,7 +583,7 @@ namespace Ict.Petra.Shared.MFinance.Gift.Data
                 ret = this[this.myTable.ColumnDateModified.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return DateTime.MinValue;
                 }
                 else
                 {
@@ -1294,7 +1294,7 @@ namespace Ict.Petra.Shared.MFinance.Gift.Data
                 ret = this[this.myTable.ColumnDateCreated.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return DateTime.MinValue;
                 }
                 else
                 {
@@ -1346,7 +1346,7 @@ namespace Ict.Petra.Shared.MFinance.Gift.Data
                 ret = this[this.myTable.ColumnDateModified.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return DateTime.MinValue;
                 }
                 else
                 {
@@ -2912,7 +2912,7 @@ namespace Ict.Petra.Shared.MFinance.Gift.Data
                 ret = this[this.myTable.ColumnDateCreated.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return DateTime.MinValue;
                 }
                 else
                 {
@@ -2964,7 +2964,7 @@ namespace Ict.Petra.Shared.MFinance.Gift.Data
                 ret = this[this.myTable.ColumnDateModified.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return DateTime.MinValue;
                 }
                 else
                 {
@@ -3832,7 +3832,7 @@ namespace Ict.Petra.Shared.MFinance.Gift.Data
                 ret = this[this.myTable.ColumnDateCreated.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return DateTime.MinValue;
                 }
                 else
                 {
@@ -3884,7 +3884,7 @@ namespace Ict.Petra.Shared.MFinance.Gift.Data
                 ret = this[this.myTable.ColumnDateModified.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return DateTime.MinValue;
                 }
                 else
                 {
@@ -4794,7 +4794,7 @@ namespace Ict.Petra.Shared.MFinance.Gift.Data
                 ret = this[this.myTable.ColumnDateCreated.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return DateTime.MinValue;
                 }
                 else
                 {
@@ -4846,7 +4846,7 @@ namespace Ict.Petra.Shared.MFinance.Gift.Data
                 ret = this[this.myTable.ColumnDateModified.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return DateTime.MinValue;
                 }
                 else
                 {
@@ -5904,7 +5904,7 @@ namespace Ict.Petra.Shared.MFinance.Gift.Data
                 ret = this[this.myTable.ColumnLastDebit.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return DateTime.MinValue;
                 }
                 else
                 {
@@ -5982,7 +5982,7 @@ namespace Ict.Petra.Shared.MFinance.Gift.Data
                 ret = this[this.myTable.ColumnDateCreated.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return DateTime.MinValue;
                 }
                 else
                 {
@@ -6034,7 +6034,7 @@ namespace Ict.Petra.Shared.MFinance.Gift.Data
                 ret = this[this.myTable.ColumnDateModified.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return DateTime.MinValue;
                 }
                 else
                 {
@@ -7472,7 +7472,7 @@ namespace Ict.Petra.Shared.MFinance.Gift.Data
                 ret = this[this.myTable.ColumnStartDonations.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return DateTime.MinValue;
                 }
                 else
                 {
@@ -7498,7 +7498,7 @@ namespace Ict.Petra.Shared.MFinance.Gift.Data
                 ret = this[this.myTable.ColumnEndDonations.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return DateTime.MinValue;
                 }
                 else
                 {
@@ -7524,7 +7524,7 @@ namespace Ict.Petra.Shared.MFinance.Gift.Data
                 ret = this[this.myTable.ColumnDateCreated.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return DateTime.MinValue;
                 }
                 else
                 {
@@ -7576,7 +7576,7 @@ namespace Ict.Petra.Shared.MFinance.Gift.Data
                 ret = this[this.myTable.ColumnDateModified.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return DateTime.MinValue;
                 }
                 else
                 {
@@ -8613,7 +8613,7 @@ namespace Ict.Petra.Shared.MFinance.Gift.Data
                 ret = this[this.myTable.ColumnModificationDate.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return DateTime.MinValue;
                 }
                 else
                 {
@@ -8821,7 +8821,7 @@ namespace Ict.Petra.Shared.MFinance.Gift.Data
                 ret = this[this.myTable.ColumnGlEffectiveDate.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return DateTime.MinValue;
                 }
                 else
                 {
@@ -8977,7 +8977,7 @@ namespace Ict.Petra.Shared.MFinance.Gift.Data
                 ret = this[this.myTable.ColumnDateCreated.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return DateTime.MinValue;
                 }
                 else
                 {
@@ -9029,7 +9029,7 @@ namespace Ict.Petra.Shared.MFinance.Gift.Data
                 ret = this[this.myTable.ColumnDateModified.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return DateTime.MinValue;
                 }
                 else
                 {
@@ -10078,7 +10078,7 @@ namespace Ict.Petra.Shared.MFinance.Gift.Data
                 ret = this[this.myTable.ColumnDateEntered.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return DateTime.MinValue;
                 }
                 else
                 {
@@ -10468,7 +10468,7 @@ namespace Ict.Petra.Shared.MFinance.Gift.Data
                 ret = this[this.myTable.ColumnDateCreated.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return DateTime.MinValue;
                 }
                 else
                 {
@@ -10520,7 +10520,7 @@ namespace Ict.Petra.Shared.MFinance.Gift.Data
                 ret = this[this.myTable.ColumnDateModified.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return DateTime.MinValue;
                 }
                 else
                 {
@@ -12210,7 +12210,7 @@ namespace Ict.Petra.Shared.MFinance.Gift.Data
                 ret = this[this.myTable.ColumnDateCreated.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return DateTime.MinValue;
                 }
                 else
                 {
@@ -12262,7 +12262,7 @@ namespace Ict.Petra.Shared.MFinance.Gift.Data
                 ret = this[this.myTable.ColumnDateModified.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return DateTime.MinValue;
                 }
                 else
                 {

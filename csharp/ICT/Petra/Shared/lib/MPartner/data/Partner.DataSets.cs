@@ -994,56 +994,10 @@ namespace Ict.Petra.Shared.MPartner.Partner.Data
 
     /// Links partners with locations (addresses) and has specific info about the link (e.g. phone number)
     [Serializable()]
-    public class PartnerEditTDSPPartnerLocationTable : TTypedDataTable
+    public class PartnerEditTDSPPartnerLocationTable : PPartnerLocationTable
     {
         /// TableId for Ict.Common.Data generic functions
-        public static short TableId = 5100;
-        /// used for generic TTypedDataTable functions
-        public static short ColumnPartnerKeyId = 0;
-        /// used for generic TTypedDataTable functions
-        public static short ColumnSiteKeyId = 1;
-        /// used for generic TTypedDataTable functions
-        public static short ColumnLocationKeyId = 2;
-        /// used for generic TTypedDataTable functions
-        public static short ColumnDateEffectiveId = 3;
-        /// used for generic TTypedDataTable functions
-        public static short ColumnDateGoodUntilId = 4;
-        /// used for generic TTypedDataTable functions
-        public static short ColumnLocationTypeId = 5;
-        /// used for generic TTypedDataTable functions
-        public static short ColumnSendMailId = 6;
-        /// used for generic TTypedDataTable functions
-        public static short ColumnFaxNumberId = 7;
-        /// used for generic TTypedDataTable functions
-        public static short ColumnTelexId = 8;
-        /// used for generic TTypedDataTable functions
-        public static short ColumnTelephoneNumberId = 9;
-        /// used for generic TTypedDataTable functions
-        public static short ColumnExtensionId = 10;
-        /// used for generic TTypedDataTable functions
-        public static short ColumnEmailAddressId = 11;
-        /// used for generic TTypedDataTable functions
-        public static short ColumnLocationDetailCommentId = 12;
-        /// used for generic TTypedDataTable functions
-        public static short ColumnFaxExtensionId = 13;
-        /// used for generic TTypedDataTable functions
-        public static short ColumnMobileNumberId = 14;
-        /// used for generic TTypedDataTable functions
-        public static short ColumnAlternateTelephoneId = 15;
-        /// used for generic TTypedDataTable functions
-        public static short ColumnUrlId = 16;
-        /// used for generic TTypedDataTable functions
-        public static short ColumnRestrictedId = 17;
-        /// used for generic TTypedDataTable functions
-        public static short ColumnDateCreatedId = 18;
-        /// used for generic TTypedDataTable functions
-        public static short ColumnCreatedById = 19;
-        /// used for generic TTypedDataTable functions
-        public static short ColumnDateModifiedId = 20;
-        /// used for generic TTypedDataTable functions
-        public static short ColumnModifiedById = 21;
-        /// used for generic TTypedDataTable functions
-        public static short ColumnModificationIdId = 22;
+        public new static short TableId = 5100;
         /// used for generic TTypedDataTable functions
         public static short ColumnBestAddressId = 23;
         /// used for generic TTypedDataTable functions
@@ -1104,52 +1058,6 @@ namespace Ict.Petra.Shared.MPartner.Partner.Data
         {
         }
 
-        /// This is the partner key assigned to each partner. It consists of the fund id followed by a computer generated six digit number.
-        public DataColumn ColumnPartnerKey;
-        /// This is the key that tell what site created the linked location
-        public DataColumn ColumnSiteKey;
-        ///
-        public DataColumn ColumnLocationKey;
-        ///
-        public DataColumn ColumnDateEffective;
-        ///
-        public DataColumn ColumnDateGoodUntil;
-        ///
-        public DataColumn ColumnLocationType;
-        ///
-        public DataColumn ColumnSendMail;
-        ///
-        public DataColumn ColumnFaxNumber;
-        ///
-        public DataColumn ColumnTelex;
-        ///
-        public DataColumn ColumnTelephoneNumber;
-        ///
-        public DataColumn ColumnExtension;
-        ///
-        public DataColumn ColumnEmailAddress;
-        ///
-        public DataColumn ColumnLocationDetailComment;
-        ///
-        public DataColumn ColumnFaxExtension;
-        ///
-        public DataColumn ColumnMobileNumber;
-        ///
-        public DataColumn ColumnAlternateTelephone;
-        ///
-        public DataColumn ColumnUrl;
-        /// Indicates whether or not the partner location has restricted access. If it does then the access will be controlled by s_group_partner_location.
-        public DataColumn ColumnRestricted;
-        /// The date the record was created.
-        public DataColumn ColumnDateCreated;
-        /// User ID of who created this record.
-        public DataColumn ColumnCreatedBy;
-        /// The date the record was modified.
-        public DataColumn ColumnDateModified;
-        /// User ID of who last modified this record.
-        public DataColumn ColumnModifiedBy;
-        /// This identifies the current version of the record.
-        public DataColumn ColumnModificationId;
         ///
         public DataColumn ColumnBestAddress;
         ///
@@ -1216,7 +1124,7 @@ namespace Ict.Petra.Shared.MPartner.Partner.Data
         }
 
         /// Access a typed row by index
-        public PartnerEditTDSPPartnerLocationRow this[int i]
+        public new PartnerEditTDSPPartnerLocationRow this[int i]
         {
             get
             {
@@ -1225,7 +1133,7 @@ namespace Ict.Petra.Shared.MPartner.Partner.Data
         }
 
         /// create a new typed row
-        public PartnerEditTDSPPartnerLocationRow NewRowTyped(bool AWithDefaultValues)
+        public new PartnerEditTDSPPartnerLocationRow NewRowTyped(bool AWithDefaultValues)
         {
             PartnerEditTDSPPartnerLocationRow ret = ((PartnerEditTDSPPartnerLocationRow)(this.NewRow()));
             if ((AWithDefaultValues == true))
@@ -1236,7 +1144,7 @@ namespace Ict.Petra.Shared.MPartner.Partner.Data
         }
 
         /// create a new typed row, always with default values
-        public PartnerEditTDSPPartnerLocationRow NewRowTyped()
+        public new PartnerEditTDSPPartnerLocationRow NewRowTyped()
         {
             return this.NewRowTyped(true);
         }
@@ -1248,19 +1156,19 @@ namespace Ict.Petra.Shared.MPartner.Partner.Data
         }
 
         /// get typed set of changes
-        public PartnerEditTDSPPartnerLocationTable GetChangesTyped()
+        public new PartnerEditTDSPPartnerLocationTable GetChangesTyped()
         {
             return ((PartnerEditTDSPPartnerLocationTable)(base.GetChangesTypedInternal()));
         }
 
         /// return the CamelCase name of the table
-        public static string GetTableName()
+        public static new string GetTableName()
         {
             return "PartnerEditTDSPPartnerLocation";
         }
 
         /// return the name of the table as it is used in the database
-        public static string GetTableDBName()
+        public static new string GetTableDBName()
         {
             return "p_partner_location";
         }
@@ -1269,282 +1177,6 @@ namespace Ict.Petra.Shared.MPartner.Partner.Data
         public override OdbcParameter CreateOdbcParameter(Int32 AColumnNr)
         {
             return CreateOdbcParameter(TableId, AColumnNr);
-        }
-
-        /// get the name of the field in the database for this column
-        public static string GetPartnerKeyDBName()
-        {
-            return "p_partner_key_n";
-        }
-
-        /// get character length for column
-        public static short GetPartnerKeyLength()
-        {
-            return 10;
-        }
-
-        /// get the name of the field in the database for this column
-        public static string GetSiteKeyDBName()
-        {
-            return "p_site_key_n";
-        }
-
-        /// get character length for column
-        public static short GetSiteKeyLength()
-        {
-            return 10;
-        }
-
-        /// get the name of the field in the database for this column
-        public static string GetLocationKeyDBName()
-        {
-            return "p_location_key_i";
-        }
-
-        /// get character length for column
-        public static short GetLocationKeyLength()
-        {
-            return -1;
-        }
-
-        /// get the name of the field in the database for this column
-        public static string GetDateEffectiveDBName()
-        {
-            return "p_date_effective_d";
-        }
-
-        /// get character length for column
-        public static short GetDateEffectiveLength()
-        {
-            return -1;
-        }
-
-        /// get the name of the field in the database for this column
-        public static string GetDateGoodUntilDBName()
-        {
-            return "p_date_good_until_d";
-        }
-
-        /// get character length for column
-        public static short GetDateGoodUntilLength()
-        {
-            return -1;
-        }
-
-        /// get the name of the field in the database for this column
-        public static string GetLocationTypeDBName()
-        {
-            return "p_location_type_c";
-        }
-
-        /// get character length for column
-        public static short GetLocationTypeLength()
-        {
-            return 24;
-        }
-
-        /// get the name of the field in the database for this column
-        public static string GetSendMailDBName()
-        {
-            return "p_send_mail_l";
-        }
-
-        /// get character length for column
-        public static short GetSendMailLength()
-        {
-            return -1;
-        }
-
-        /// get the name of the field in the database for this column
-        public static string GetFaxNumberDBName()
-        {
-            return "p_fax_number_c";
-        }
-
-        /// get character length for column
-        public static short GetFaxNumberLength()
-        {
-            return 50;
-        }
-
-        /// get the name of the field in the database for this column
-        public static string GetTelexDBName()
-        {
-            return "p_telex_i";
-        }
-
-        /// get character length for column
-        public static short GetTelexLength()
-        {
-            return -1;
-        }
-
-        /// get the name of the field in the database for this column
-        public static string GetTelephoneNumberDBName()
-        {
-            return "p_telephone_number_c";
-        }
-
-        /// get character length for column
-        public static short GetTelephoneNumberLength()
-        {
-            return 50;
-        }
-
-        /// get the name of the field in the database for this column
-        public static string GetExtensionDBName()
-        {
-            return "p_extension_i";
-        }
-
-        /// get character length for column
-        public static short GetExtensionLength()
-        {
-            return -1;
-        }
-
-        /// get the name of the field in the database for this column
-        public static string GetEmailAddressDBName()
-        {
-            return "p_email_address_c";
-        }
-
-        /// get character length for column
-        public static short GetEmailAddressLength()
-        {
-            return 120;
-        }
-
-        /// get the name of the field in the database for this column
-        public static string GetLocationDetailCommentDBName()
-        {
-            return "p_location_detail_comment_c";
-        }
-
-        /// get character length for column
-        public static short GetLocationDetailCommentLength()
-        {
-            return 512;
-        }
-
-        /// get the name of the field in the database for this column
-        public static string GetFaxExtensionDBName()
-        {
-            return "p_fax_extension_i";
-        }
-
-        /// get character length for column
-        public static short GetFaxExtensionLength()
-        {
-            return -1;
-        }
-
-        /// get the name of the field in the database for this column
-        public static string GetMobileNumberDBName()
-        {
-            return "p_mobile_number_c";
-        }
-
-        /// get character length for column
-        public static short GetMobileNumberLength()
-        {
-            return 50;
-        }
-
-        /// get the name of the field in the database for this column
-        public static string GetAlternateTelephoneDBName()
-        {
-            return "p_alternate_telephone_c";
-        }
-
-        /// get character length for column
-        public static short GetAlternateTelephoneLength()
-        {
-            return 50;
-        }
-
-        /// get the name of the field in the database for this column
-        public static string GetUrlDBName()
-        {
-            return "p_url_c";
-        }
-
-        /// get character length for column
-        public static short GetUrlLength()
-        {
-            return 128;
-        }
-
-        /// get the name of the field in the database for this column
-        public static string GetRestrictedDBName()
-        {
-            return "p_restricted_l";
-        }
-
-        /// get character length for column
-        public static short GetRestrictedLength()
-        {
-            return -1;
-        }
-
-        /// get the name of the field in the database for this column
-        public static string GetDateCreatedDBName()
-        {
-            return "s_date_created_d";
-        }
-
-        /// get character length for column
-        public static short GetDateCreatedLength()
-        {
-            return -1;
-        }
-
-        /// get the name of the field in the database for this column
-        public static string GetCreatedByDBName()
-        {
-            return "s_created_by_c";
-        }
-
-        /// get character length for column
-        public static short GetCreatedByLength()
-        {
-            return 20;
-        }
-
-        /// get the name of the field in the database for this column
-        public static string GetDateModifiedDBName()
-        {
-            return "s_date_modified_d";
-        }
-
-        /// get character length for column
-        public static short GetDateModifiedLength()
-        {
-            return -1;
-        }
-
-        /// get the name of the field in the database for this column
-        public static string GetModifiedByDBName()
-        {
-            return "s_modified_by_c";
-        }
-
-        /// get character length for column
-        public static short GetModifiedByLength()
-        {
-            return 20;
-        }
-
-        /// get the name of the field in the database for this column
-        public static string GetModificationIdDBName()
-        {
-            return "s_modification_id_c";
-        }
-
-        /// get character length for column
-        public static short GetModificationIdLength()
-        {
-            return 150;
         }
 
         /// get the name of the field in the database for this column
@@ -1673,7 +1305,7 @@ namespace Ict.Petra.Shared.MPartner.Partner.Data
                 ret = this[this.myTable.ColumnDateEffective.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return DateTime.MinValue;
                 }
                 else
                 {
@@ -1699,7 +1331,7 @@ namespace Ict.Petra.Shared.MPartner.Partner.Data
                 ret = this[this.myTable.ColumnDateGoodUntil.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return DateTime.MinValue;
                 }
                 else
                 {
@@ -2063,7 +1695,7 @@ namespace Ict.Petra.Shared.MPartner.Partner.Data
                 ret = this[this.myTable.ColumnDateCreated.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return DateTime.MinValue;
                 }
                 else
                 {
@@ -2115,7 +1747,7 @@ namespace Ict.Petra.Shared.MPartner.Partner.Data
                 ret = this[this.myTable.ColumnDateModified.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return DateTime.MinValue;
                 }
                 else
                 {
@@ -2569,62 +2201,10 @@ namespace Ict.Petra.Shared.MPartner.Partner.Data
 
     /// Details of a person.  A person must also have a related FAMILY class p_partner record.
     [Serializable()]
-    public class PartnerEditTDSPPersonTable : TTypedDataTable
+    public class PartnerEditTDSPPersonTable : PPersonTable
     {
         /// TableId for Ict.Common.Data generic functions
-        public static short TableId = 5101;
-        /// used for generic TTypedDataTable functions
-        public static short ColumnPartnerKeyId = 0;
-        /// used for generic TTypedDataTable functions
-        public static short ColumnTitleId = 1;
-        /// used for generic TTypedDataTable functions
-        public static short ColumnFirstNameId = 2;
-        /// used for generic TTypedDataTable functions
-        public static short ColumnPreferedNameId = 3;
-        /// used for generic TTypedDataTable functions
-        public static short ColumnMiddleName1Id = 4;
-        /// used for generic TTypedDataTable functions
-        public static short ColumnMiddleName2Id = 5;
-        /// used for generic TTypedDataTable functions
-        public static short ColumnMiddleName3Id = 6;
-        /// used for generic TTypedDataTable functions
-        public static short ColumnFamilyNameId = 7;
-        /// used for generic TTypedDataTable functions
-        public static short ColumnDecorationsId = 8;
-        /// used for generic TTypedDataTable functions
-        public static short ColumnDateOfBirthId = 9;
-        /// used for generic TTypedDataTable functions
-        public static short ColumnGenderId = 10;
-        /// used for generic TTypedDataTable functions
-        public static short ColumnMaritalStatusId = 11;
-        /// used for generic TTypedDataTable functions
-        public static short ColumnOccupationCodeId = 12;
-        /// used for generic TTypedDataTable functions
-        public static short ColumnBelieverSinceYearId = 13;
-        /// used for generic TTypedDataTable functions
-        public static short ColumnBelieverSinceCommentId = 14;
-        /// used for generic TTypedDataTable functions
-        public static short ColumnFamilyKeyId = 15;
-        /// used for generic TTypedDataTable functions
-        public static short ColumnFamilyIdId = 16;
-        /// used for generic TTypedDataTable functions
-        public static short ColumnFieldKeyId = 17;
-        /// used for generic TTypedDataTable functions
-        public static short ColumnAcademicTitleId = 18;
-        /// used for generic TTypedDataTable functions
-        public static short ColumnMaritalStatusSinceId = 19;
-        /// used for generic TTypedDataTable functions
-        public static short ColumnMaritalStatusCommentId = 20;
-        /// used for generic TTypedDataTable functions
-        public static short ColumnDateCreatedId = 21;
-        /// used for generic TTypedDataTable functions
-        public static short ColumnCreatedById = 22;
-        /// used for generic TTypedDataTable functions
-        public static short ColumnDateModifiedId = 23;
-        /// used for generic TTypedDataTable functions
-        public static short ColumnModifiedById = 24;
-        /// used for generic TTypedDataTable functions
-        public static short ColumnModificationIdId = 25;
+        public new static short TableId = 5101;
         /// used for generic TTypedDataTable functions
         public static short ColumnUnitNameId = 26;
 
@@ -2685,60 +2265,6 @@ namespace Ict.Petra.Shared.MPartner.Partner.Data
         {
         }
 
-        /// This is the partner key assigned to each partner. It consists of the fund id followed by a computer generated six digit number.
-        public DataColumn ColumnPartnerKey;
-        ///
-        public DataColumn ColumnTitle;
-        ///
-        public DataColumn ColumnFirstName;
-        ///
-        public DataColumn ColumnPreferedName;
-        ///
-        public DataColumn ColumnMiddleName1;
-        ///
-        public DataColumn ColumnMiddleName2;
-        ///
-        public DataColumn ColumnMiddleName3;
-        ///
-        public DataColumn ColumnFamilyName;
-        ///
-        public DataColumn ColumnDecorations;
-        /// This is the date the rthe person was born
-        public DataColumn ColumnDateOfBirth;
-        ///
-        public DataColumn ColumnGender;
-        ///
-        public DataColumn ColumnMaritalStatus;
-        ///
-        public DataColumn ColumnOccupationCode;
-        /// This is the year the person became a Believer.
-        public DataColumn ColumnBelieverSinceYear;
-        /// Comment about the year or how the person became a believer
-        public DataColumn ColumnBelieverSinceComment;
-        /// A cross reference to the family record of this person.
-        /// It should be set to ? (not 0 because such a record does not exist!) when there is no family record.
-        public DataColumn ColumnFamilyKey;
-        /// This field indicates the family id of the individual.
-        /// ID's 0 and 1 are used for parents; 2, 3, 4 ... 9 are used for children.
-        public DataColumn ColumnFamilyId;
-        /// This is the partner key of the field in which the partner (should be a Worker or ExWorker) is serving.
-        public DataColumn ColumnFieldKey;
-        /// A person's academic title such as BSc(Hons) or Prof. (eg. Herr Prof. Klaus Shmitt)
-        public DataColumn ColumnAcademicTitle;
-        ///
-        public DataColumn ColumnMaritalStatusSince;
-        ///
-        public DataColumn ColumnMaritalStatusComment;
-        /// The date the record was created.
-        public DataColumn ColumnDateCreated;
-        /// User ID of who created this record.
-        public DataColumn ColumnCreatedBy;
-        /// The date the record was modified.
-        public DataColumn ColumnDateModified;
-        /// User ID of who last modified this record.
-        public DataColumn ColumnModifiedBy;
-        /// This identifies the current version of the record.
-        public DataColumn ColumnModificationId;
         ///
         public DataColumn ColumnUnitName;
 
@@ -2807,7 +2333,7 @@ namespace Ict.Petra.Shared.MPartner.Partner.Data
         }
 
         /// Access a typed row by index
-        public PartnerEditTDSPPersonRow this[int i]
+        public new PartnerEditTDSPPersonRow this[int i]
         {
             get
             {
@@ -2816,7 +2342,7 @@ namespace Ict.Petra.Shared.MPartner.Partner.Data
         }
 
         /// create a new typed row
-        public PartnerEditTDSPPersonRow NewRowTyped(bool AWithDefaultValues)
+        public new PartnerEditTDSPPersonRow NewRowTyped(bool AWithDefaultValues)
         {
             PartnerEditTDSPPersonRow ret = ((PartnerEditTDSPPersonRow)(this.NewRow()));
             if ((AWithDefaultValues == true))
@@ -2827,7 +2353,7 @@ namespace Ict.Petra.Shared.MPartner.Partner.Data
         }
 
         /// create a new typed row, always with default values
-        public PartnerEditTDSPPersonRow NewRowTyped()
+        public new PartnerEditTDSPPersonRow NewRowTyped()
         {
             return this.NewRowTyped(true);
         }
@@ -2839,19 +2365,19 @@ namespace Ict.Petra.Shared.MPartner.Partner.Data
         }
 
         /// get typed set of changes
-        public PartnerEditTDSPPersonTable GetChangesTyped()
+        public new PartnerEditTDSPPersonTable GetChangesTyped()
         {
             return ((PartnerEditTDSPPersonTable)(base.GetChangesTypedInternal()));
         }
 
         /// return the CamelCase name of the table
-        public static string GetTableName()
+        public static new string GetTableName()
         {
             return "PartnerEditTDSPPerson";
         }
 
         /// return the name of the table as it is used in the database
-        public static string GetTableDBName()
+        public static new string GetTableDBName()
         {
             return "p_person";
         }
@@ -2860,318 +2386,6 @@ namespace Ict.Petra.Shared.MPartner.Partner.Data
         public override OdbcParameter CreateOdbcParameter(Int32 AColumnNr)
         {
             return CreateOdbcParameter(TableId, AColumnNr);
-        }
-
-        /// get the name of the field in the database for this column
-        public static string GetPartnerKeyDBName()
-        {
-            return "p_partner_key_n";
-        }
-
-        /// get character length for column
-        public static short GetPartnerKeyLength()
-        {
-            return 10;
-        }
-
-        /// get the name of the field in the database for this column
-        public static string GetTitleDBName()
-        {
-            return "p_title_c";
-        }
-
-        /// get character length for column
-        public static short GetTitleLength()
-        {
-            return 64;
-        }
-
-        /// get the name of the field in the database for this column
-        public static string GetFirstNameDBName()
-        {
-            return "p_first_name_c";
-        }
-
-        /// get character length for column
-        public static short GetFirstNameLength()
-        {
-            return 64;
-        }
-
-        /// get the name of the field in the database for this column
-        public static string GetPreferedNameDBName()
-        {
-            return "p_prefered_name_c";
-        }
-
-        /// get character length for column
-        public static short GetPreferedNameLength()
-        {
-            return 64;
-        }
-
-        /// get the name of the field in the database for this column
-        public static string GetMiddleName1DBName()
-        {
-            return "p_middle_name_1_c";
-        }
-
-        /// get character length for column
-        public static short GetMiddleName1Length()
-        {
-            return 64;
-        }
-
-        /// get the name of the field in the database for this column
-        public static string GetMiddleName2DBName()
-        {
-            return "p_middle_name_2_c";
-        }
-
-        /// get character length for column
-        public static short GetMiddleName2Length()
-        {
-            return 64;
-        }
-
-        /// get the name of the field in the database for this column
-        public static string GetMiddleName3DBName()
-        {
-            return "p_middle_name_3_c";
-        }
-
-        /// get character length for column
-        public static short GetMiddleName3Length()
-        {
-            return 64;
-        }
-
-        /// get the name of the field in the database for this column
-        public static string GetFamilyNameDBName()
-        {
-            return "p_family_name_c";
-        }
-
-        /// get character length for column
-        public static short GetFamilyNameLength()
-        {
-            return 64;
-        }
-
-        /// get the name of the field in the database for this column
-        public static string GetDecorationsDBName()
-        {
-            return "p_decorations_c";
-        }
-
-        /// get character length for column
-        public static short GetDecorationsLength()
-        {
-            return 64;
-        }
-
-        /// get the name of the field in the database for this column
-        public static string GetDateOfBirthDBName()
-        {
-            return "p_date_of_birth_d";
-        }
-
-        /// get character length for column
-        public static short GetDateOfBirthLength()
-        {
-            return -1;
-        }
-
-        /// get the name of the field in the database for this column
-        public static string GetGenderDBName()
-        {
-            return "p_gender_c";
-        }
-
-        /// get character length for column
-        public static short GetGenderLength()
-        {
-            return 16;
-        }
-
-        /// get the name of the field in the database for this column
-        public static string GetMaritalStatusDBName()
-        {
-            return "p_marital_status_c";
-        }
-
-        /// get character length for column
-        public static short GetMaritalStatusLength()
-        {
-            return 4;
-        }
-
-        /// get the name of the field in the database for this column
-        public static string GetOccupationCodeDBName()
-        {
-            return "p_occupation_code_c";
-        }
-
-        /// get character length for column
-        public static short GetOccupationCodeLength()
-        {
-            return 32;
-        }
-
-        /// get the name of the field in the database for this column
-        public static string GetBelieverSinceYearDBName()
-        {
-            return "p_believer_since_year_i";
-        }
-
-        /// get character length for column
-        public static short GetBelieverSinceYearLength()
-        {
-            return -1;
-        }
-
-        /// get the name of the field in the database for this column
-        public static string GetBelieverSinceCommentDBName()
-        {
-            return "p_believer_since_comment_c";
-        }
-
-        /// get character length for column
-        public static short GetBelieverSinceCommentLength()
-        {
-            return 1000;
-        }
-
-        /// get the name of the field in the database for this column
-        public static string GetFamilyKeyDBName()
-        {
-            return "p_family_key_n";
-        }
-
-        /// get character length for column
-        public static short GetFamilyKeyLength()
-        {
-            return 10;
-        }
-
-        /// get the name of the field in the database for this column
-        public static string GetFamilyIdDBName()
-        {
-            return "p_family_id_i";
-        }
-
-        /// get character length for column
-        public static short GetFamilyIdLength()
-        {
-            return -1;
-        }
-
-        /// get the name of the field in the database for this column
-        public static string GetFieldKeyDBName()
-        {
-            return "p_field_key_n";
-        }
-
-        /// get character length for column
-        public static short GetFieldKeyLength()
-        {
-            return 10;
-        }
-
-        /// get the name of the field in the database for this column
-        public static string GetAcademicTitleDBName()
-        {
-            return "p_academic_title_c";
-        }
-
-        /// get character length for column
-        public static short GetAcademicTitleLength()
-        {
-            return 48;
-        }
-
-        /// get the name of the field in the database for this column
-        public static string GetMaritalStatusSinceDBName()
-        {
-            return "p_marital_status_since_d";
-        }
-
-        /// get character length for column
-        public static short GetMaritalStatusSinceLength()
-        {
-            return -1;
-        }
-
-        /// get the name of the field in the database for this column
-        public static string GetMaritalStatusCommentDBName()
-        {
-            return "p_marital_status_comment_c";
-        }
-
-        /// get character length for column
-        public static short GetMaritalStatusCommentLength()
-        {
-            return 512;
-        }
-
-        /// get the name of the field in the database for this column
-        public static string GetDateCreatedDBName()
-        {
-            return "s_date_created_d";
-        }
-
-        /// get character length for column
-        public static short GetDateCreatedLength()
-        {
-            return -1;
-        }
-
-        /// get the name of the field in the database for this column
-        public static string GetCreatedByDBName()
-        {
-            return "s_created_by_c";
-        }
-
-        /// get character length for column
-        public static short GetCreatedByLength()
-        {
-            return 20;
-        }
-
-        /// get the name of the field in the database for this column
-        public static string GetDateModifiedDBName()
-        {
-            return "s_date_modified_d";
-        }
-
-        /// get character length for column
-        public static short GetDateModifiedLength()
-        {
-            return -1;
-        }
-
-        /// get the name of the field in the database for this column
-        public static string GetModifiedByDBName()
-        {
-            return "s_modified_by_c";
-        }
-
-        /// get character length for column
-        public static short GetModifiedByLength()
-        {
-            return 20;
-        }
-
-        /// get the name of the field in the database for this column
-        public static string GetModificationIdDBName()
-        {
-            return "s_modification_id_c";
-        }
-
-        /// get character length for column
-        public static short GetModificationIdLength()
-        {
-            return 150;
         }
 
         /// get the name of the field in the database for this column
@@ -3444,7 +2658,7 @@ namespace Ict.Petra.Shared.MPartner.Partner.Data
                 ret = this[this.myTable.ColumnDateOfBirth.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return DateTime.MinValue;
                 }
                 else
                 {
@@ -3706,7 +2920,7 @@ namespace Ict.Petra.Shared.MPartner.Partner.Data
                 ret = this[this.myTable.ColumnMaritalStatusSince.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return DateTime.MinValue;
                 }
                 else
                 {
@@ -3758,7 +2972,7 @@ namespace Ict.Petra.Shared.MPartner.Partner.Data
                 ret = this[this.myTable.ColumnDateCreated.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return DateTime.MinValue;
                 }
                 else
                 {
@@ -3810,7 +3024,7 @@ namespace Ict.Petra.Shared.MPartner.Partner.Data
                 ret = this[this.myTable.ColumnDateModified.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return DateTime.MinValue;
                 }
                 else
                 {
@@ -4264,40 +3478,10 @@ namespace Ict.Petra.Shared.MPartner.Partner.Data
 
     /// Contains details about a family in Partnership with us.  May have P_Person records linked to it.
     [Serializable()]
-    public class PartnerEditTDSPFamilyTable : TTypedDataTable
+    public class PartnerEditTDSPFamilyTable : PFamilyTable
     {
         /// TableId for Ict.Common.Data generic functions
-        public static short TableId = 5102;
-        /// used for generic TTypedDataTable functions
-        public static short ColumnPartnerKeyId = 0;
-        /// used for generic TTypedDataTable functions
-        public static short ColumnFamilyMembersId = 1;
-        /// used for generic TTypedDataTable functions
-        public static short ColumnTitleId = 2;
-        /// used for generic TTypedDataTable functions
-        public static short ColumnFirstNameId = 3;
-        /// used for generic TTypedDataTable functions
-        public static short ColumnFamilyNameId = 4;
-        /// used for generic TTypedDataTable functions
-        public static short ColumnDifferentSurnamesId = 5;
-        /// used for generic TTypedDataTable functions
-        public static short ColumnFieldKeyId = 6;
-        /// used for generic TTypedDataTable functions
-        public static short ColumnMaritalStatusId = 7;
-        /// used for generic TTypedDataTable functions
-        public static short ColumnMaritalStatusSinceId = 8;
-        /// used for generic TTypedDataTable functions
-        public static short ColumnMaritalStatusCommentId = 9;
-        /// used for generic TTypedDataTable functions
-        public static short ColumnDateCreatedId = 10;
-        /// used for generic TTypedDataTable functions
-        public static short ColumnCreatedById = 11;
-        /// used for generic TTypedDataTable functions
-        public static short ColumnDateModifiedId = 12;
-        /// used for generic TTypedDataTable functions
-        public static short ColumnModifiedById = 13;
-        /// used for generic TTypedDataTable functions
-        public static short ColumnModificationIdId = 14;
+        public new static short TableId = 5102;
         /// used for generic TTypedDataTable functions
         public static short ColumnUnitNameId = 15;
 
@@ -4347,36 +3531,6 @@ namespace Ict.Petra.Shared.MPartner.Partner.Data
         {
         }
 
-        /// This is the partner key assigned to each partner. It consists of the fund id followed by a computer generated six digit number.
-        public DataColumn ColumnPartnerKey;
-        /// Flag is set if there are family members with their own records in the p_person table. IMPORTANT: Don't rely on this flag anymore but determine this state on-the-fly! Reason: The value of this field isn't maintained reliably any more and the field will be removed in a future version of the DB!
-        public DataColumn ColumnFamilyMembers;
-        /// How the family is to be addressed
-        public DataColumn ColumnTitle;
-        ///
-        public DataColumn ColumnFirstName;
-        ///
-        public DataColumn ColumnFamilyName;
-        /// Flag is set if there are different surnames entered for husband and wife
-        public DataColumn ColumnDifferentSurnames;
-        /// This is the partner key of the field in which the partner (should be a Worker or ExWorker is serving.
-        public DataColumn ColumnFieldKey;
-        ///
-        public DataColumn ColumnMaritalStatus;
-        ///
-        public DataColumn ColumnMaritalStatusSince;
-        ///
-        public DataColumn ColumnMaritalStatusComment;
-        /// The date the record was created.
-        public DataColumn ColumnDateCreated;
-        /// User ID of who created this record.
-        public DataColumn ColumnCreatedBy;
-        /// The date the record was modified.
-        public DataColumn ColumnDateModified;
-        /// User ID of who last modified this record.
-        public DataColumn ColumnModifiedBy;
-        /// This identifies the current version of the record.
-        public DataColumn ColumnModificationId;
         ///
         public DataColumn ColumnUnitName;
 
@@ -4423,7 +3577,7 @@ namespace Ict.Petra.Shared.MPartner.Partner.Data
         }
 
         /// Access a typed row by index
-        public PartnerEditTDSPFamilyRow this[int i]
+        public new PartnerEditTDSPFamilyRow this[int i]
         {
             get
             {
@@ -4432,7 +3586,7 @@ namespace Ict.Petra.Shared.MPartner.Partner.Data
         }
 
         /// create a new typed row
-        public PartnerEditTDSPFamilyRow NewRowTyped(bool AWithDefaultValues)
+        public new PartnerEditTDSPFamilyRow NewRowTyped(bool AWithDefaultValues)
         {
             PartnerEditTDSPFamilyRow ret = ((PartnerEditTDSPFamilyRow)(this.NewRow()));
             if ((AWithDefaultValues == true))
@@ -4443,7 +3597,7 @@ namespace Ict.Petra.Shared.MPartner.Partner.Data
         }
 
         /// create a new typed row, always with default values
-        public PartnerEditTDSPFamilyRow NewRowTyped()
+        public new PartnerEditTDSPFamilyRow NewRowTyped()
         {
             return this.NewRowTyped(true);
         }
@@ -4455,19 +3609,19 @@ namespace Ict.Petra.Shared.MPartner.Partner.Data
         }
 
         /// get typed set of changes
-        public PartnerEditTDSPFamilyTable GetChangesTyped()
+        public new PartnerEditTDSPFamilyTable GetChangesTyped()
         {
             return ((PartnerEditTDSPFamilyTable)(base.GetChangesTypedInternal()));
         }
 
         /// return the CamelCase name of the table
-        public static string GetTableName()
+        public static new string GetTableName()
         {
             return "PartnerEditTDSPFamily";
         }
 
         /// return the name of the table as it is used in the database
-        public static string GetTableDBName()
+        public static new string GetTableDBName()
         {
             return "p_family";
         }
@@ -4476,186 +3630,6 @@ namespace Ict.Petra.Shared.MPartner.Partner.Data
         public override OdbcParameter CreateOdbcParameter(Int32 AColumnNr)
         {
             return CreateOdbcParameter(TableId, AColumnNr);
-        }
-
-        /// get the name of the field in the database for this column
-        public static string GetPartnerKeyDBName()
-        {
-            return "p_partner_key_n";
-        }
-
-        /// get character length for column
-        public static short GetPartnerKeyLength()
-        {
-            return 10;
-        }
-
-        /// get the name of the field in the database for this column
-        public static string GetFamilyMembersDBName()
-        {
-            return "p_family_members_l";
-        }
-
-        /// get character length for column
-        public static short GetFamilyMembersLength()
-        {
-            return -1;
-        }
-
-        /// get the name of the field in the database for this column
-        public static string GetTitleDBName()
-        {
-            return "p_title_c";
-        }
-
-        /// get character length for column
-        public static short GetTitleLength()
-        {
-            return 64;
-        }
-
-        /// get the name of the field in the database for this column
-        public static string GetFirstNameDBName()
-        {
-            return "p_first_name_c";
-        }
-
-        /// get character length for column
-        public static short GetFirstNameLength()
-        {
-            return 96;
-        }
-
-        /// get the name of the field in the database for this column
-        public static string GetFamilyNameDBName()
-        {
-            return "p_family_name_c";
-        }
-
-        /// get character length for column
-        public static short GetFamilyNameLength()
-        {
-            return 120;
-        }
-
-        /// get the name of the field in the database for this column
-        public static string GetDifferentSurnamesDBName()
-        {
-            return "p_different_surnames_l";
-        }
-
-        /// get character length for column
-        public static short GetDifferentSurnamesLength()
-        {
-            return -1;
-        }
-
-        /// get the name of the field in the database for this column
-        public static string GetFieldKeyDBName()
-        {
-            return "p_field_key_n";
-        }
-
-        /// get character length for column
-        public static short GetFieldKeyLength()
-        {
-            return 10;
-        }
-
-        /// get the name of the field in the database for this column
-        public static string GetMaritalStatusDBName()
-        {
-            return "p_marital_status_c";
-        }
-
-        /// get character length for column
-        public static short GetMaritalStatusLength()
-        {
-            return 4;
-        }
-
-        /// get the name of the field in the database for this column
-        public static string GetMaritalStatusSinceDBName()
-        {
-            return "p_marital_status_since_d";
-        }
-
-        /// get character length for column
-        public static short GetMaritalStatusSinceLength()
-        {
-            return -1;
-        }
-
-        /// get the name of the field in the database for this column
-        public static string GetMaritalStatusCommentDBName()
-        {
-            return "p_marital_status_comment_c";
-        }
-
-        /// get character length for column
-        public static short GetMaritalStatusCommentLength()
-        {
-            return 512;
-        }
-
-        /// get the name of the field in the database for this column
-        public static string GetDateCreatedDBName()
-        {
-            return "s_date_created_d";
-        }
-
-        /// get character length for column
-        public static short GetDateCreatedLength()
-        {
-            return -1;
-        }
-
-        /// get the name of the field in the database for this column
-        public static string GetCreatedByDBName()
-        {
-            return "s_created_by_c";
-        }
-
-        /// get character length for column
-        public static short GetCreatedByLength()
-        {
-            return 20;
-        }
-
-        /// get the name of the field in the database for this column
-        public static string GetDateModifiedDBName()
-        {
-            return "s_date_modified_d";
-        }
-
-        /// get character length for column
-        public static short GetDateModifiedLength()
-        {
-            return -1;
-        }
-
-        /// get the name of the field in the database for this column
-        public static string GetModifiedByDBName()
-        {
-            return "s_modified_by_c";
-        }
-
-        /// get character length for column
-        public static short GetModifiedByLength()
-        {
-            return 20;
-        }
-
-        /// get the name of the field in the database for this column
-        public static string GetModificationIdDBName()
-        {
-            return "s_modification_id_c";
-        }
-
-        /// get character length for column
-        public static short GetModificationIdLength()
-        {
-            return 150;
         }
 
         /// get the name of the field in the database for this column
@@ -4902,7 +3876,7 @@ namespace Ict.Petra.Shared.MPartner.Partner.Data
                 ret = this[this.myTable.ColumnMaritalStatusSince.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return DateTime.MinValue;
                 }
                 else
                 {
@@ -4954,7 +3928,7 @@ namespace Ict.Petra.Shared.MPartner.Partner.Data
                 ret = this[this.myTable.ColumnDateCreated.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return DateTime.MinValue;
                 }
                 else
                 {
@@ -5006,7 +3980,7 @@ namespace Ict.Petra.Shared.MPartner.Partner.Data
                 ret = this[this.myTable.ColumnDateModified.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return DateTime.MinValue;
                 }
                 else
                 {
@@ -5901,7 +4875,7 @@ namespace Ict.Petra.Shared.MPartner.Partner.Data
                 ret = this[this.myTable.ColumnLastGiftDate.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return DateTime.MinValue;
                 }
                 else
                 {
@@ -5953,7 +4927,7 @@ namespace Ict.Petra.Shared.MPartner.Partner.Data
                 ret = this[this.myTable.ColumnLastContactDate.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return DateTime.MinValue;
                 }
                 else
                 {
@@ -6986,7 +5960,7 @@ namespace Ict.Petra.Shared.MPartner.Partner.Data
                 ret = this[this.myTable.ColumnDateOfBirth.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return DateTime.MinValue;
                 }
                 else
                 {
@@ -7853,56 +6827,10 @@ namespace Ict.Petra.Shared.MPartner.Partner.Data
 
     /// Address and other data related to that address.
     [Serializable()]
-    public class PartnerAddressAggregateTDSSimilarLocationParametersTable : TTypedDataTable
+    public class PartnerAddressAggregateTDSSimilarLocationParametersTable : PLocationTable
     {
         /// TableId for Ict.Common.Data generic functions
-        public static short TableId = 5107;
-        /// used for generic TTypedDataTable functions
-        public static short ColumnSiteKeyId = 0;
-        /// used for generic TTypedDataTable functions
-        public static short ColumnLocationKeyId = 1;
-        /// used for generic TTypedDataTable functions
-        public static short ColumnBuilding1Id = 2;
-        /// used for generic TTypedDataTable functions
-        public static short ColumnBuilding2Id = 3;
-        /// used for generic TTypedDataTable functions
-        public static short ColumnStreetNameId = 4;
-        /// used for generic TTypedDataTable functions
-        public static short ColumnLocalityId = 5;
-        /// used for generic TTypedDataTable functions
-        public static short ColumnSuburbId = 6;
-        /// used for generic TTypedDataTable functions
-        public static short ColumnCityId = 7;
-        /// used for generic TTypedDataTable functions
-        public static short ColumnCountyId = 8;
-        /// used for generic TTypedDataTable functions
-        public static short ColumnPostalCodeId = 9;
-        /// used for generic TTypedDataTable functions
-        public static short ColumnCountryCodeId = 10;
-        /// used for generic TTypedDataTable functions
-        public static short ColumnAddress3Id = 11;
-        /// used for generic TTypedDataTable functions
-        public static short ColumnGeoLatitudeId = 12;
-        /// used for generic TTypedDataTable functions
-        public static short ColumnGeoLongitudeId = 13;
-        /// used for generic TTypedDataTable functions
-        public static short ColumnGeoKmXId = 14;
-        /// used for generic TTypedDataTable functions
-        public static short ColumnGeoKmYId = 15;
-        /// used for generic TTypedDataTable functions
-        public static short ColumnGeoAccuracyId = 16;
-        /// used for generic TTypedDataTable functions
-        public static short ColumnRestrictedId = 17;
-        /// used for generic TTypedDataTable functions
-        public static short ColumnDateCreatedId = 18;
-        /// used for generic TTypedDataTable functions
-        public static short ColumnCreatedById = 19;
-        /// used for generic TTypedDataTable functions
-        public static short ColumnDateModifiedId = 20;
-        /// used for generic TTypedDataTable functions
-        public static short ColumnModifiedById = 21;
-        /// used for generic TTypedDataTable functions
-        public static short ColumnModificationIdId = 22;
+        public new static short TableId = 5107;
         /// used for generic TTypedDataTable functions
         public static short ColumnSiteKeyOfSimilarLocationId = 23;
         /// used for generic TTypedDataTable functions
@@ -7975,53 +6903,6 @@ namespace Ict.Petra.Shared.MPartner.Partner.Data
         {
         }
 
-        /// This is the key that tell what site created this location, it will help to merge addresses when doing imports
-        public DataColumn ColumnSiteKey;
-        ///
-        public DataColumn ColumnLocationKey;
-        /// The name of the building
-        public DataColumn ColumnBuilding1;
-        /// The name of the building (continued)
-        public DataColumn ColumnBuilding2;
-        /// The name of the street that the house is located on
-        public DataColumn ColumnStreetName;
-        /// This is the first element of an address
-        public DataColumn ColumnLocality;
-        /// The name of the suburb
-        public DataColumn ColumnSuburb;
-        /// This can be a post town or city
-        public DataColumn ColumnCity;
-        /// This can be a county (UK), a state (US), province (CDN), canton (CH) etc.
-        public DataColumn ColumnCounty;
-        /// This is the national post code
-        public DataColumn ColumnPostalCode;
-        /// This is a code which identifies a country.
-        /// It is taken from the ISO 3166-1-alpha-2 code elements.
-        public DataColumn ColumnCountryCode;
-        /// This is the third element of an address (if required)
-        public DataColumn ColumnAddress3;
-        /// The latitude of the location; a number between -90 and +90; precision is 6 digits (11cm)
-        public DataColumn ColumnGeoLatitude;
-        /// The longitude of the location; a number between -180 and +180; precision is 6 digits (11cm)
-        public DataColumn ColumnGeoLongitude;
-        /// The distance in km of this location to the location 0 if location 0 was on the same longitude; this is for improving query performance
-        public DataColumn ColumnGeoKmX;
-        /// The distance in km of this location to the location 0 if location 0 was on the same latitude; this is for improving query performance
-        public DataColumn ColumnGeoKmY;
-        /// The accuracy of the stored geo data;                  -2: server did not respond;                 -1: not processed yet;                 0: Unknown Location;                 1: Country level accuracy;                 2: Region;                 3: Sub-Region;                 4: Town/City/Village;                 5: Post code;                 6: Street;                 7: Intersection;                 8: Address level accuracy
-        public DataColumn ColumnGeoAccuracy;
-        /// Indicates whether or not the location has restricted access. If it does then the access will be controlled by s_group_location.
-        public DataColumn ColumnRestricted;
-        /// The date the record was created.
-        public DataColumn ColumnDateCreated;
-        /// User ID of who created this record.
-        public DataColumn ColumnCreatedBy;
-        /// The date the record was modified.
-        public DataColumn ColumnDateModified;
-        /// User ID of who last modified this record.
-        public DataColumn ColumnModifiedBy;
-        /// This identifies the current version of the record.
-        public DataColumn ColumnModificationId;
         ///
         public DataColumn ColumnSiteKeyOfSimilarLocation;
         ///
@@ -8104,7 +6985,7 @@ namespace Ict.Petra.Shared.MPartner.Partner.Data
         }
 
         /// Access a typed row by index
-        public PartnerAddressAggregateTDSSimilarLocationParametersRow this[int i]
+        public new PartnerAddressAggregateTDSSimilarLocationParametersRow this[int i]
         {
             get
             {
@@ -8113,7 +6994,7 @@ namespace Ict.Petra.Shared.MPartner.Partner.Data
         }
 
         /// create a new typed row
-        public PartnerAddressAggregateTDSSimilarLocationParametersRow NewRowTyped(bool AWithDefaultValues)
+        public new PartnerAddressAggregateTDSSimilarLocationParametersRow NewRowTyped(bool AWithDefaultValues)
         {
             PartnerAddressAggregateTDSSimilarLocationParametersRow ret = ((PartnerAddressAggregateTDSSimilarLocationParametersRow)(this.NewRow()));
             if ((AWithDefaultValues == true))
@@ -8124,7 +7005,7 @@ namespace Ict.Petra.Shared.MPartner.Partner.Data
         }
 
         /// create a new typed row, always with default values
-        public PartnerAddressAggregateTDSSimilarLocationParametersRow NewRowTyped()
+        public new PartnerAddressAggregateTDSSimilarLocationParametersRow NewRowTyped()
         {
             return this.NewRowTyped(true);
         }
@@ -8136,19 +7017,19 @@ namespace Ict.Petra.Shared.MPartner.Partner.Data
         }
 
         /// get typed set of changes
-        public PartnerAddressAggregateTDSSimilarLocationParametersTable GetChangesTyped()
+        public new PartnerAddressAggregateTDSSimilarLocationParametersTable GetChangesTyped()
         {
             return ((PartnerAddressAggregateTDSSimilarLocationParametersTable)(base.GetChangesTypedInternal()));
         }
 
         /// return the CamelCase name of the table
-        public static string GetTableName()
+        public static new string GetTableName()
         {
             return "PartnerAddressAggregateTDSSimilarLocationParameters";
         }
 
         /// return the name of the table as it is used in the database
-        public static string GetTableDBName()
+        public static new string GetTableDBName()
         {
             return "p_location";
         }
@@ -8157,282 +7038,6 @@ namespace Ict.Petra.Shared.MPartner.Partner.Data
         public override OdbcParameter CreateOdbcParameter(Int32 AColumnNr)
         {
             return CreateOdbcParameter(TableId, AColumnNr);
-        }
-
-        /// get the name of the field in the database for this column
-        public static string GetSiteKeyDBName()
-        {
-            return "p_site_key_n";
-        }
-
-        /// get character length for column
-        public static short GetSiteKeyLength()
-        {
-            return 10;
-        }
-
-        /// get the name of the field in the database for this column
-        public static string GetLocationKeyDBName()
-        {
-            return "p_location_key_i";
-        }
-
-        /// get character length for column
-        public static short GetLocationKeyLength()
-        {
-            return -1;
-        }
-
-        /// get the name of the field in the database for this column
-        public static string GetBuilding1DBName()
-        {
-            return "p_building_1_c";
-        }
-
-        /// get character length for column
-        public static short GetBuilding1Length()
-        {
-            return 100;
-        }
-
-        /// get the name of the field in the database for this column
-        public static string GetBuilding2DBName()
-        {
-            return "p_building_2_c";
-        }
-
-        /// get character length for column
-        public static short GetBuilding2Length()
-        {
-            return 100;
-        }
-
-        /// get the name of the field in the database for this column
-        public static string GetStreetNameDBName()
-        {
-            return "p_street_name_c";
-        }
-
-        /// get character length for column
-        public static short GetStreetNameLength()
-        {
-            return 100;
-        }
-
-        /// get the name of the field in the database for this column
-        public static string GetLocalityDBName()
-        {
-            return "p_locality_c";
-        }
-
-        /// get character length for column
-        public static short GetLocalityLength()
-        {
-            return 100;
-        }
-
-        /// get the name of the field in the database for this column
-        public static string GetSuburbDBName()
-        {
-            return "p_suburb_c";
-        }
-
-        /// get character length for column
-        public static short GetSuburbLength()
-        {
-            return 100;
-        }
-
-        /// get the name of the field in the database for this column
-        public static string GetCityDBName()
-        {
-            return "p_city_c";
-        }
-
-        /// get character length for column
-        public static short GetCityLength()
-        {
-            return 64;
-        }
-
-        /// get the name of the field in the database for this column
-        public static string GetCountyDBName()
-        {
-            return "p_county_c";
-        }
-
-        /// get character length for column
-        public static short GetCountyLength()
-        {
-            return 64;
-        }
-
-        /// get the name of the field in the database for this column
-        public static string GetPostalCodeDBName()
-        {
-            return "p_postal_code_c";
-        }
-
-        /// get character length for column
-        public static short GetPostalCodeLength()
-        {
-            return 40;
-        }
-
-        /// get the name of the field in the database for this column
-        public static string GetCountryCodeDBName()
-        {
-            return "p_country_code_c";
-        }
-
-        /// get character length for column
-        public static short GetCountryCodeLength()
-        {
-            return 8;
-        }
-
-        /// get the name of the field in the database for this column
-        public static string GetAddress3DBName()
-        {
-            return "p_address_3_c";
-        }
-
-        /// get character length for column
-        public static short GetAddress3Length()
-        {
-            return 100;
-        }
-
-        /// get the name of the field in the database for this column
-        public static string GetGeoLatitudeDBName()
-        {
-            return "p_geo_latitude_n";
-        }
-
-        /// get character length for column
-        public static short GetGeoLatitudeLength()
-        {
-            return 9;
-        }
-
-        /// get the name of the field in the database for this column
-        public static string GetGeoLongitudeDBName()
-        {
-            return "p_geo_longitude_n";
-        }
-
-        /// get character length for column
-        public static short GetGeoLongitudeLength()
-        {
-            return 9;
-        }
-
-        /// get the name of the field in the database for this column
-        public static string GetGeoKmXDBName()
-        {
-            return "p_geo_km_x_i";
-        }
-
-        /// get character length for column
-        public static short GetGeoKmXLength()
-        {
-            return -1;
-        }
-
-        /// get the name of the field in the database for this column
-        public static string GetGeoKmYDBName()
-        {
-            return "p_geo_km_y_i";
-        }
-
-        /// get character length for column
-        public static short GetGeoKmYLength()
-        {
-            return -1;
-        }
-
-        /// get the name of the field in the database for this column
-        public static string GetGeoAccuracyDBName()
-        {
-            return "p_geo_accuracy_i";
-        }
-
-        /// get character length for column
-        public static short GetGeoAccuracyLength()
-        {
-            return -1;
-        }
-
-        /// get the name of the field in the database for this column
-        public static string GetRestrictedDBName()
-        {
-            return "p_restricted_l";
-        }
-
-        /// get character length for column
-        public static short GetRestrictedLength()
-        {
-            return -1;
-        }
-
-        /// get the name of the field in the database for this column
-        public static string GetDateCreatedDBName()
-        {
-            return "s_date_created_d";
-        }
-
-        /// get character length for column
-        public static short GetDateCreatedLength()
-        {
-            return -1;
-        }
-
-        /// get the name of the field in the database for this column
-        public static string GetCreatedByDBName()
-        {
-            return "s_created_by_c";
-        }
-
-        /// get character length for column
-        public static short GetCreatedByLength()
-        {
-            return 20;
-        }
-
-        /// get the name of the field in the database for this column
-        public static string GetDateModifiedDBName()
-        {
-            return "s_date_modified_d";
-        }
-
-        /// get character length for column
-        public static short GetDateModifiedLength()
-        {
-            return -1;
-        }
-
-        /// get the name of the field in the database for this column
-        public static string GetModifiedByDBName()
-        {
-            return "s_modified_by_c";
-        }
-
-        /// get character length for column
-        public static short GetModifiedByLength()
-        {
-            return 20;
-        }
-
-        /// get the name of the field in the database for this column
-        public static string GetModificationIdDBName()
-        {
-            return "s_modification_id_c";
-        }
-
-        /// get character length for column
-        public static short GetModificationIdLength()
-        {
-            return 150;
         }
 
         /// get the name of the field in the database for this column
@@ -9000,7 +7605,7 @@ namespace Ict.Petra.Shared.MPartner.Partner.Data
                 ret = this[this.myTable.ColumnDateCreated.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return DateTime.MinValue;
                 }
                 else
                 {
@@ -9052,7 +7657,7 @@ namespace Ict.Petra.Shared.MPartner.Partner.Data
                 ret = this[this.myTable.ColumnDateModified.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return DateTime.MinValue;
                 }
                 else
                 {
@@ -10513,7 +9118,7 @@ namespace Ict.Petra.Shared.MPartner.Partner.Data
                 ret = this[this.myTable.ColumnDateEffective.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return DateTime.MinValue;
                 }
                 else
                 {
@@ -10539,7 +9144,7 @@ namespace Ict.Petra.Shared.MPartner.Partner.Data
                 ret = this[this.myTable.ColumnDateGoodUntil.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return DateTime.MinValue;
                 }
                 else
                 {
@@ -12704,7 +11309,7 @@ namespace Ict.Petra.Shared.MPartner.Partner.Data
                 ret = this[this.myTable.ColumnLastContact.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return DateTime.MinValue;
                 }
                 else
                 {
@@ -12730,7 +11335,7 @@ namespace Ict.Petra.Shared.MPartner.Partner.Data
                 ret = this[this.myTable.ColumnDateCreated.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return DateTime.MinValue;
                 }
                 else
                 {
@@ -12756,7 +11361,7 @@ namespace Ict.Petra.Shared.MPartner.Partner.Data
                 ret = this[this.myTable.ColumnDateModified.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return DateTime.MinValue;
                 }
                 else
                 {
@@ -12782,7 +11387,7 @@ namespace Ict.Petra.Shared.MPartner.Partner.Data
                 ret = this[this.myTable.ColumnDateOfBirth.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return DateTime.MinValue;
                 }
                 else
                 {

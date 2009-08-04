@@ -526,7 +526,7 @@ namespace Ict.Petra.Server.MPartner.Partner.UIConnectors
                     {
                         // Only count
                         // $IFDEF DEBUGMODE if TSrvSetting.DL >= 0 then Console.WriteLine('TPartnerEditUIConnector.LoadData: Before Calculations.CalculateTabCountsAddresses');$ENDIF
-                        Calculations.CalculateTabCountsAddresses((PPartnerLocationTable)(TTypedDataTable)FPartnerEditScreenDS.PPartnerLocation,
+                        Calculations.CalculateTabCountsAddresses(FPartnerEditScreenDS.PPartnerLocation,
                             out ItemsCountAddresses,
                             out ItemsCountAddressesActive);
 

@@ -481,6 +481,7 @@ namespace Ict.Petra.Client.MCommon
 
             // Set StatusBar Texts
             // TODO: translate help from database
+#if TODO
             FPetraUtilsObject.SetStatusBarText(txtLocality, PLocationTable.GetLocalityHelp());
             FPetraUtilsObject.SetStatusBarText(txtStreetName, PLocationTable.GetStreetNameHelp());
             FPetraUtilsObject.SetStatusBarText(txtAddLine3, PLocationTable.GetAddress3Help());
@@ -500,6 +501,7 @@ namespace Ict.Petra.Client.MCommon
             FPetraUtilsObject.SetStatusBarText(txtFaxExt, PPartnerLocationTable.GetFaxExtensionHelp());
             FPetraUtilsObject.SetStatusBarText(txtValidFrom, PPartnerLocationTable.GetDateEffectiveHelp());
             FPetraUtilsObject.SetStatusBarText(txtValidTo, PPartnerLocationTable.GetDateGoodUntilHelp());
+#endif
 
             // hook events that allow data verification
             FMainDS.PPartnerLocation.ColumnChanging += new DataColumnChangeEventHandler(this.OnPartnerLocationDataColumnChanging);

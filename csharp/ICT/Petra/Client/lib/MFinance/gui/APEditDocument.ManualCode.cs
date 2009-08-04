@@ -33,7 +33,7 @@ using Ict.Petra.Shared.MFinance.AP.Data;
 
 namespace Ict.Petra.Client.MFinance.Gui.AccountsPayable
 {
-    public partial class TFrmAccountsPayableEditDocument
+    public partial class TFrmAPEditDocument
     {
         private void NewDetail(Object sender, EventArgs e)
         {

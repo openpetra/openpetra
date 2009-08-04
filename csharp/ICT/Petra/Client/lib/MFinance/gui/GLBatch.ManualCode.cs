@@ -64,14 +64,18 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             // TODO
         }
 
+        /// <summary>
+        /// get the current ledger
+        /// </summary>
         public void InitializeManualCode()
         {
-            Ict.Petra.Shared.MFinance.Account.Data.ALedgerTable LedgerTable;
-            todo
-            TRemote.MCommon.DataReader.GetData("ALedger",
-                new TSearchCriteria[] { new TSearchCriteria("LedgerNumber", FLedgerNumber) },
-                out LedgerTable);
-            FMainDS.Merge(LedgerTable);
+/*            todo
+ *          Ict.Petra.Shared.MFinance.Account.Data.ALedgerTable LedgerTable;
+ *          TRemote.MCommon.DataReader.GetData("ALedger",
+ *              new TSearchCriteria[] { new TSearchCriteria("LedgerNumber", FLedgerNumber) },
+ *              out LedgerTable);
+ *          FMainDS.Merge(LedgerTable);
+ */
         }
     }
 }

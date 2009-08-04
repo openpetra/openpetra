@@ -213,7 +213,7 @@ namespace Ict.Petra.Client.MFinance.Gui.AccountsPayable
         /// </summary>
         public void SupplierTransactions(object sender, EventArgs e)
         {
-            TFrmAccountsPayableSupplierTransactions frm = new TFrmAccountsPayableSupplierTransactions(this.Handle);
+            TFrmAPSupplierTransactions frm = new TFrmAPSupplierTransactions(this.Handle);
 
             frm.LoadSupplier(FLedgerNumber, GetCurrentlySelectedSupplier());
             frm.Show();
@@ -237,7 +237,7 @@ namespace Ict.Petra.Client.MFinance.Gui.AccountsPayable
                     out ResultLocationPK,
                     this.Handle))
             {
-                TFrmAccountsPayableEditSupplier frm = new TFrmAccountsPayableEditSupplier(this.Handle);
+                TFrmAPEditSupplier frm = new TFrmAPEditSupplier(this.Handle);
                 frm.CreateNewSupplier(PartnerKey);
                 frm.Show();
             }
@@ -254,7 +254,7 @@ namespace Ict.Petra.Client.MFinance.Gui.AccountsPayable
 
             if (PartnerKey != -1)
             {
-                TFrmAccountsPayableEditSupplier frm = new TFrmAccountsPayableEditSupplier(this.Handle);
+                TFrmAPEditSupplier frm = new TFrmAPEditSupplier(this.Handle);
                 frm.EditSupplier(PartnerKey);
                 frm.Show();
             }
@@ -271,7 +271,7 @@ namespace Ict.Petra.Client.MFinance.Gui.AccountsPayable
 
             if (PartnerKey != -1)
             {
-                TFrmAccountsPayableEditDocument frm = new TFrmAccountsPayableEditDocument(this.Handle);
+                TFrmAPEditDocument frm = new TFrmAPEditDocument(this.Handle);
 
                 frm.CreateNewAApDocument(FLedgerNumber, PartnerKey, false);
                 frm.Show();

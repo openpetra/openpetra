@@ -43,7 +43,7 @@ using Ict.Petra.Shared.MFinance.AP.Data;
 
 namespace Ict.Petra.Client.MFinance.Gui.AccountsPayable
 {
-    public partial class TFrmAccountsPayableSupplierTransactions
+    public partial class TFrmAPSupplierTransactions
     {
         Int32 FLedgerNumber = -1;
 
@@ -85,7 +85,7 @@ namespace Ict.Petra.Client.MFinance.Gui.AccountsPayable
 
             if (SelectedGridRow.Length >= 1)
             {
-                TFrmAccountsPayableEditDocument frm = new TFrmAccountsPayableEditDocument(this.Handle);
+                TFrmAPEditDocument frm = new TFrmAPEditDocument(this.Handle);
                 frm.LoadAApDocument(FLedgerNumber, Convert.ToInt32(SelectedGridRow[0][FMainDS.AApDocument.ColumnApNumber.ColumnName]));
                 frm.Show();
             }

@@ -126,7 +126,9 @@ namespace Ict.Petra.Client.MPartner.Gui
             txtPartnerComment.DataBindings.Add("Text", FMainDS.PPartner, PPartnerTable.GetCommentDBName());
 
             // Set StatusBar Texts
+#if TODO
             FPetraUtilsObject.SetStatusBarText(txtPartnerComment, PPartnerTable.GetCommentHelp());
+#endif
             ApplySecurity();
 
             // Extender Provider

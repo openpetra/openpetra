@@ -35,6 +35,7 @@ using Ict.Petra.Server.MFinance;
 using Ict.Petra.Shared.MFinance;
 using Ict.Petra.Shared.MFinance.GL;
 using Ict.Petra.Shared.MFinance.GL.Data;
+
 //using Ict.Petra.Shared.Interfaces.MFinance.GL.WebConnectors;
 
 namespace Ict.Petra.Server.MFinance.GL.WebConnectors
@@ -53,48 +54,50 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
         {
             // create the DataSet that will later be passed to the Client
             GLBatchTDS MainDS = new GLBatchTDS();
+
 /*
-            ABatchRow NewDocumentRow = MainDS.ABatchRow.NewRowTyped();
+ *          ABatchRow NewDocumentRow = MainDS.ABatchRow.NewRowTyped();
+ *
+ *          ABatchRow.ApNumber = -1; // ap number will be set in SubmitChanges
+ *          NewDocumentRow.LedgerNumber = ALedgerNumber;
+ *          NewDocumentRow.PartnerKey = APartnerKey;
+ *          NewDocumentRow.CreditNoteFlag = ACreditNoteOrInvoice;
+ *          NewDocumentRow.LastDetailNumber = -1;
+ *
+ *          // get the supplier defaults
+ *          AApSupplierTable tempTable;
+ *          AApSupplierAccess.LoadByPrimaryKey(out tempTable, APartnerKey, null);
+ *
+ *          if (tempTable.Rows.Count == 1)
+ *          {
+ *              MainDS.AApSupplier.Merge(tempTable);
+ *
+ *              AApSupplierRow Supplier = MainDS.AApSupplier[0];
+ *
+ *              if (!Supplier.IsDefaultCreditTermsNull())
+ *              {
+ *                  NewDocumentRow.CreditTerms = Supplier.DefaultCreditTerms;
+ *              }
+ *
+ *              if (!Supplier.IsDefaultDiscountDaysNull())
+ *              {
+ *                  NewDocumentRow.DiscountDays = Supplier.DefaultDiscountDays;
+ *              }
+ *
+ *              if (!Supplier.IsDefaultDiscountPercentageNull())
+ *              {
+ *                  NewDocumentRow.DiscountPercentage = Supplier.DefaultDiscountPercentage;
+ *              }
+ *
+ *              if (!Supplier.IsDefaultApAccountNull())
+ *              {
+ *                  NewDocumentRow.ApAccount = Supplier.DefaultApAccount;
+ *              }
+ *          }
+ *
+ *          MainDS.AApDocument.Rows.Add(NewDocumentRow);
+ */
 
-            ABatchRow.ApNumber = -1; // ap number will be set in SubmitChanges
-            NewDocumentRow.LedgerNumber = ALedgerNumber;
-            NewDocumentRow.PartnerKey = APartnerKey;
-            NewDocumentRow.CreditNoteFlag = ACreditNoteOrInvoice;
-            NewDocumentRow.LastDetailNumber = -1;
-
-            // get the supplier defaults
-            AApSupplierTable tempTable;
-            AApSupplierAccess.LoadByPrimaryKey(out tempTable, APartnerKey, null);
-
-            if (tempTable.Rows.Count == 1)
-            {
-                MainDS.AApSupplier.Merge(tempTable);
-
-                AApSupplierRow Supplier = MainDS.AApSupplier[0];
-
-                if (!Supplier.IsDefaultCreditTermsNull())
-                {
-                    NewDocumentRow.CreditTerms = Supplier.DefaultCreditTerms;
-                }
-
-                if (!Supplier.IsDefaultDiscountDaysNull())
-                {
-                    NewDocumentRow.DiscountDays = Supplier.DefaultDiscountDays;
-                }
-
-                if (!Supplier.IsDefaultDiscountPercentageNull())
-                {
-                    NewDocumentRow.DiscountPercentage = Supplier.DefaultDiscountPercentage;
-                }
-
-                if (!Supplier.IsDefaultApAccountNull())
-                {
-                    NewDocumentRow.ApAccount = Supplier.DefaultApAccount;
-                }
-            }
-
-            MainDS.AApDocument.Rows.Add(NewDocumentRow);
-*/
             // Remove all Tables that were not filled with data before remoting them.
             MainDS.RemoveEmptyTables();
 

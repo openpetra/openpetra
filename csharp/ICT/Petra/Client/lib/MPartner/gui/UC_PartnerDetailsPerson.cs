@@ -174,6 +174,7 @@ namespace Ict.Petra.Client.MPartner.Gui
             this.expStringLengthCheckPerson.RetrieveTextboxes(this);
 
             // Set StatusBar Texts
+#if TODO
             FPetraUtilsObject.SetStatusBarText(txtPreferredName, PPersonTable.GetPreferedNameHelp());
             FPetraUtilsObject.SetStatusBarText(txtPreviousName, PPartnerTable.GetPreviousNameHelp());
             FPetraUtilsObject.SetStatusBarText(txtLocalName, PPartnerTable.GetPartnerShortNameLocHelp());
@@ -187,6 +188,7 @@ namespace Ict.Petra.Client.MPartner.Gui
             FPetraUtilsObject.SetStatusBarText(cmbLanguageCode, PPartnerTable.GetLanguageCodeHelp());
             FPetraUtilsObject.SetStatusBarText(txtBelieverSince, PPersonTable.GetBelieverSinceYearHelp());
             FPetraUtilsObject.SetStatusBarText(txtBelieverComment, PPersonTable.GetBelieverSinceCommentHelp());
+#endif
             #region Verification
             txtOccupationCode.VerificationResultCollection = FPetraUtilsObject.VerificationResultCollection;
             #endregion

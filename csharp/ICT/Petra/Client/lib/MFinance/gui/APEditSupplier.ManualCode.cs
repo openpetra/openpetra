@@ -46,7 +46,7 @@ using Ict.Petra.Client.MPartner.Gui;
 
 namespace Ict.Petra.Client.MFinance.Gui.AccountsPayable
 {
-    public partial class TFrmAccountsPayableEditSupplier
+    public partial class TFrmAPEditSupplier
     {
         AccountsPayableTDS FMainDS;
 

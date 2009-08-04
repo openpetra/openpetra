@@ -39,10 +39,22 @@ namespace Ict.Tools.CodeGeneration.DataStore
 {
     public class codeGenerationTable
     {
-        public static void InsertTableDefinition(ProcessTemplate Template, TTable currentTable, string WhereToInsert)
+        public static void InsertTableDefinition(ProcessTemplate Template, TTable currentTable, TTable origTable, string WhereToInsert)
         {
             ProcessTemplate snippet = Template.GetSnippet("TYPEDTABLE");
+            string derivedTable = "";
 
+            if (origTable != null)
+            {
+                snippet.SetCodelet("BASECLASSTABLE", TTable.NiceTableName(currentTable.strName) + "Table");
+                derivedTable = "new ";
+            }
+            else
+            {
+                snippet.SetCodelet("BASECLASSTABLE", "TTypedDataTable");
+            }
+
+            snippet.SetCodelet("NEW", derivedTable);
             snippet.SetCodeletComment("TABLE_DESCRIPTION", currentTable.strDescription);
             snippet.SetCodelet("TABLENAME", currentTable.strDotNetName);
             snippet.SetCodelet("DBTABLENAME", currentTable.strName);
@@ -76,25 +88,47 @@ namespace Ict.Tools.CodeGeneration.DataStore
 
             foreach (TTableField col in currentTable.grpTableField.List)
             {
-                ProcessTemplate tempTemplate = Template.GetSnippet("DATACOLUMN");
-                tempTemplate.SetCodeletComment("COLUMN_DESCRIPTION", col.strDescription);
-                tempTemplate.SetCodelet("COLUMNNAME", TTable.NiceFieldName(col));
-                snippet.InsertSnippet("DATACOLUMNS", tempTemplate);
+                ProcessTemplate tempTemplate = null;
+                string columnOverwrite = "";
+                bool writeColumnProperties = true;
 
-                tempTemplate = Template.GetSnippet("COLUMNIDS");
-                tempTemplate.SetCodelet("COLUMNNAME", TTable.NiceFieldName(col));
-                tempTemplate.SetCodelet("COLUMNORDERNUMBER", colOrder.ToString());
-                snippet.InsertSnippet("COLUMNIDS", tempTemplate);
+                if ((origTable != null) && (origTable.GetField(col.strName, false) != null))
+                {
+                    columnOverwrite = "new ";
+
+                    if (origTable.GetField(col.strName).iOrder == colOrder)
+                    {
+                        // same order number, save some lines of code by not writing them
+                        writeColumnProperties = false;
+                    }
+                }
+
+                if (writeColumnProperties && (columnOverwrite.Length == 0))
+                {
+                    tempTemplate = Template.GetSnippet("DATACOLUMN");
+                    tempTemplate.SetCodeletComment("COLUMN_DESCRIPTION", col.strDescription);
+                    tempTemplate.SetCodelet("COLUMNNAME", TTable.NiceFieldName(col));
+                    snippet.InsertSnippet("DATACOLUMNS", tempTemplate);
+                }
+
+                if (writeColumnProperties)
+                {
+                    tempTemplate = Template.GetSnippet("COLUMNIDS");
+                    tempTemplate.SetCodelet("COLUMNNAME", TTable.NiceFieldName(col));
+                    tempTemplate.SetCodelet("COLUMNORDERNUMBER", colOrder.ToString());
+                    tempTemplate.SetCodelet("NEW", columnOverwrite);
+                    snippet.InsertSnippet("COLUMNIDS", tempTemplate);
+                }
 
                 tempTemplate = Template.GetSnippet("COLUMNINFO");
-                tempTemplate.SetCodelet("COLUMNORDERNUMBER", (colOrder++).ToString());
+                tempTemplate.SetCodelet("COLUMNORDERNUMBER", colOrder.ToString());
                 tempTemplate.SetCodelet("COLUMNNAME", TTable.NiceFieldName(col));
                 tempTemplate.SetCodelet("COLUMNDBNAME", col.strName);
                 tempTemplate.SetCodelet("COLUMNLABEL", col.strLabel);
                 tempTemplate.SetCodelet("COLUMNODBCTYPE", codeGenerationPetra.ToOdbcTypeString(col));
                 tempTemplate.SetCodelet("COLUMNLENGTH", col.iLength.ToString());
                 tempTemplate.SetCodelet("COLUMNNOTNULL", col.bNotNull.ToString().ToLower());
-                tempTemplate.SetCodelet("COLUMNCOMMA", colOrder < currentTable.grpTableField.List.Count ? "," : "");
+                tempTemplate.SetCodelet("COLUMNCOMMA", colOrder + 1 < currentTable.grpTableField.List.Count ? "," : "");
                 snippet.InsertSnippet("COLUMNINFO", tempTemplate);
 
                 tempTemplate = Template.GetSnippet("INITCLASSADDCOLUMN");
@@ -107,11 +141,17 @@ namespace Ict.Tools.CodeGeneration.DataStore
                 tempTemplate.SetCodelet("COLUMNNAME", TTable.NiceFieldName(col));
                 snippet.InsertSnippet("INITVARSCOLUMN", tempTemplate);
 
-                tempTemplate = Template.GetSnippet("STATICCOLUMNPROPERTIES");
-                tempTemplate.SetCodelet("COLUMNDBNAME", col.strName);
-                tempTemplate.SetCodelet("COLUMNNAME", TTable.NiceFieldName(col));
-                tempTemplate.SetCodelet("COLUMNLENGTH", col.iLength.ToString());
-                snippet.InsertSnippet("STATICCOLUMNPROPERTIES", tempTemplate);
+                if (writeColumnProperties)
+                {
+                    tempTemplate = Template.GetSnippet("STATICCOLUMNPROPERTIES");
+                    tempTemplate.SetCodelet("COLUMNDBNAME", col.strName);
+                    tempTemplate.SetCodelet("COLUMNNAME", TTable.NiceFieldName(col));
+                    tempTemplate.SetCodelet("COLUMNLENGTH", col.iLength.ToString());
+                    tempTemplate.SetCodelet("NEW", columnOverwrite);
+                    snippet.InsertSnippet("STATICCOLUMNPROPERTIES", tempTemplate);
+                }
+
+                colOrder++;
             }
 
             Template.InsertSnippet(WhereToInsert, snippet);
@@ -133,6 +173,16 @@ namespace Ict.Tools.CodeGeneration.DataStore
                 tempTemplate.SetCodelet("COLUMNLABEL", col.strLabel);
                 tempTemplate.SetCodelet("COLUMNLENGTH", col.iLength.ToString());
                 tempTemplate.SetCodelet("COLUMNDOTNETTYPE", col.GetDotNetType());
+
+                if (col.GetDotNetType().Contains("DateTime"))
+                {
+                    tempTemplate.SetCodelet("ACTIONGETNULLVALUE", "return DateTime.MinValue;");
+                }
+                else
+                {
+                    tempTemplate.SetCodelet("ACTIONGETNULLVALUE", "throw new System.Data.StrongTypingException(\"Error: DB null\", null);");
+                }
+
                 tempTemplate.SetCodeletComment("COLUMN_DESCRIPTION", col.strDescription);
                 snippet.InsertSnippet("ROWCOLUMNPROPERTIES", tempTemplate);
 
@@ -193,7 +243,7 @@ namespace Ict.Tools.CodeGeneration.DataStore
             {
                 if (currentTable.strGroup == strGroup)
                 {
-                    InsertTableDefinition(Template, currentTable, "TABLELOOP");
+                    InsertTableDefinition(Template, currentTable, null, "TABLELOOP");
                     InsertRowDefinition(Template, currentTable, "TABLELOOP");
                 }
             }
