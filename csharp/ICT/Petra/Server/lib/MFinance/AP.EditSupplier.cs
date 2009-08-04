@@ -84,7 +84,7 @@ namespace Ict.Petra.Server.MFinance.AccountsPayable.UIConnectors
                 ReadTransaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(IsolationLevel.ReadCommitted,
                     TEnforceIsolationLevel.eilMinimum,
                     out NewTransaction);
-                ReturnValue = AApSupplierAccess.CountByPrimaryKey(APartnerKey, ReadTransaction) > 0;
+                ReturnValue = AApSupplierAccess.Exists(APartnerKey, ReadTransaction);
             }
             finally
             {

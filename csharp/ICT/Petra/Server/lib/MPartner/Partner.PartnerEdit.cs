@@ -31,6 +31,7 @@ using System.Threading;
 using Mono.Unix;
 using Ict.Common;
 using Ict.Common.DB;
+using Ict.Common.Data;
 using Ict.Common.Verification;
 using Ict.Petra.Shared;
 using Ict.Petra.Shared.Interfaces.MPartner.Partner;
@@ -525,7 +526,7 @@ namespace Ict.Petra.Server.MPartner.Partner.UIConnectors
                     {
                         // Only count
                         // $IFDEF DEBUGMODE if TSrvSetting.DL >= 0 then Console.WriteLine('TPartnerEditUIConnector.LoadData: Before Calculations.CalculateTabCountsAddresses');$ENDIF
-                        Calculations.CalculateTabCountsAddresses(FPartnerEditScreenDS.PPartnerLocation,
+                        Calculations.CalculateTabCountsAddresses((PPartnerLocationTable)(TTypedDataTable)FPartnerEditScreenDS.PPartnerLocation,
                             out ItemsCountAddresses,
                             out ItemsCountAddressesActive);
 
@@ -894,8 +895,8 @@ namespace Ict.Petra.Server.MPartner.Partner.UIConnectors
         {
             TDBTransaction ReadTransaction;
             PPartnerRow PartnerRow;
-            PPersonRow PersonRow;
-            PFamilyRow FamilyRow;
+            PartnerEditTDSPPersonRow PersonRow;
+            PartnerEditTDSPFamilyRow FamilyRow;
             PChurchRow ChurchRow;
             POrganisationRow OrganisationRow;
             PBankRow BankRow;
@@ -2750,7 +2751,7 @@ namespace Ict.Petra.Server.MPartner.Partner.UIConnectors
             PartnerEditTDSPartnerTypeChangeFamilyMembersPromotionTable FamilyChangePromotionTable;
             PPartnerTypeTable PPartnerTypeSubmitTable;
             PPartnerTypeRow PPartnerTypeSubmitRow;
-            Int16 PartnerTypeDBCount;
+            bool PartnerTypeDBExists;
             PPartnerTypeTable PartnerType;
             DateTime DateCreated;
 
@@ -2784,20 +2785,20 @@ namespace Ict.Petra.Server.MPartner.Partner.UIConnectors
 
                     for (Counter = 0; Counter <= FamilyChangePromotionTable.Rows.Count - 1; Counter += 1)
                     {
-                        PartnerTypeDBCount =
-                            Convert.ToInt16(PPartnerTypeAccess.CountByPrimaryKey(FamilyChangePromotionTable[Counter].PartnerKey,
-                                    FamilyChangePromotionTable[Counter].TypeCode, ASubmitChangesTransaction));
+                        PartnerTypeDBExists =
+                            PPartnerTypeAccess.Exists(FamilyChangePromotionTable[Counter].PartnerKey,
+                                    FamilyChangePromotionTable[Counter].TypeCode, ASubmitChangesTransaction);
 #if DEBUGMODE
                         if (TSrvSetting.DL >= 7)
                         {
                             Console.WriteLine(
-                                "SpecialSubmitProcessingPartnerTypes: Row[" + Counter.ToString() + "]: DB Count: " + PartnerTypeDBCount.ToString());
+                                "SpecialSubmitProcessingPartnerTypes: Row[" + Counter.ToString() + "]: DB Exists: " + PartnerTypeDBExists.ToString());
                         }
 #endif
 
-                        if (((PartnerTypeDBCount == 0)
+                        if ((!PartnerTypeDBExists
                              && (FamilyChangePromotionTable[Counter].AddTypeCode))
-                            || ((PartnerTypeDBCount != 0) && (FamilyChangePromotionTable[Counter].RemoveTypeCode)))
+                            || (PartnerTypeDBExists && (FamilyChangePromotionTable[Counter].RemoveTypeCode)))
                         {
                             /*
                              * Action is needed since the PartnerType is either or is either not
@@ -2807,7 +2808,7 @@ namespace Ict.Petra.Server.MPartner.Partner.UIConnectors
                             PPartnerTypeSubmitRow.PartnerKey = FamilyChangePromotionTable[Counter].PartnerKey;
                             PPartnerTypeSubmitRow.TypeCode = FamilyChangePromotionTable[Counter].TypeCode;
 
-                            if (PartnerTypeDBCount > 0)
+                            if (PartnerTypeDBExists)
                             {
                                 // get the latest modificationID, otherwise it is emtpy, and that would cause trouble
                                 // when deleting the partner type.

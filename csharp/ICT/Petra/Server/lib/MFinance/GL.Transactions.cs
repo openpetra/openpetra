@@ -33,9 +33,9 @@ using Ict.Common.Data;
 using Ict.Common.Verification;
 using Ict.Petra.Server.MFinance;
 using Ict.Petra.Shared.MFinance;
-using Ict.Petra.Shared.MFinance.GL.Data.Access;
+using Ict.Petra.Shared.MFinance.GL;
 using Ict.Petra.Shared.MFinance.GL.Data;
-using Ict.Petra.Shared.Interfaces.MFinance.GL.WebConnectors;
+//using Ict.Petra.Shared.Interfaces.MFinance.GL.WebConnectors;
 
 namespace Ict.Petra.Server.MFinance.GL.WebConnectors
 {
@@ -48,14 +48,12 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
         /// create a new batch and increase the last batch number of the ledger
         /// </summary>
         /// <param name="ALedgerNumber"></param>
-        /// <param name="APartnerKey">the supplier</param>
-        /// <param name="ACreditNoteOrInvoice">true: credit note; false: invoice</param>
         /// <returns></returns>
         public static GLBatchTDS CreateNewABatch(Int32 ALedgerNumber)
         {
             // create the DataSet that will later be passed to the Client
-            GLBatchTDS MainDS = new AccountsPayableTDS();
-
+            GLBatchTDS MainDS = new GLBatchTDS();
+/*
             ABatchRow NewDocumentRow = MainDS.ABatchRow.NewRowTyped();
 
             ABatchRow.ApNumber = -1; // ap number will be set in SubmitChanges
@@ -96,7 +94,7 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
             }
 
             MainDS.AApDocument.Rows.Add(NewDocumentRow);
-
+*/
             // Remove all Tables that were not filled with data before remoting them.
             MainDS.RemoveEmptyTables();
 

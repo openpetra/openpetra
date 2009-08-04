@@ -42,48 +42,47 @@ namespace Ict.Petra.Shared.MFinance.Gift.Data
     [Serializable()]
     public class AMethodOfPaymentTable : TTypedDataTable
     {
-        /// This is how the partner paid. EgCash, Cheque etc
-        public DataColumn ColumnMethodOfPaymentCode;
-        /// This is a short description which is 32 charcters long
-        public DataColumn ColumnMethodOfPaymentDesc;
-        ///
-        public DataColumn ColumnMethodOfPaymentType;
-        /// The filename of the process to call
-        public DataColumn ColumnProcessToCall;
-        ///
-        public DataColumn ColumnSpecialMethodOfPmt;
-        /// Shows whether this code is active
-        public DataColumn ColumnActive;
-        /// The date the record was created.
-        public DataColumn ColumnDateCreated;
-        /// User ID of who created this record.
-        public DataColumn ColumnCreatedBy;
-        /// The date the record was modified.
-        public DataColumn ColumnDateModified;
-        /// User ID of who last modified this record.
-        public DataColumn ColumnModifiedBy;
-        /// This identifies the current version of the record.
-        public DataColumn ColumnModificationId;
-
         /// TableId for Ict.Common.Data generic functions
         public static short TableId = 142;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnMethodOfPaymentCodeId = 0;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnMethodOfPaymentDescId = 1;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnMethodOfPaymentTypeId = 2;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnProcessToCallId = 3;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnSpecialMethodOfPmtId = 4;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnActiveId = 5;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnDateCreatedId = 6;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnCreatedById = 7;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnDateModifiedId = 8;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnModifiedById = 9;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnModificationIdId = 10;
 
         private static bool FInitInfoValues = InitInfoValues();
         private static bool InitInfoValues()
         {
             TableInfo.Add(TableId, new TTypedTableInfo(TableId, "AMethodOfPayment", "a_method_of_payment",
                 new TTypedColumnInfo[] {
-                    new TTypedColumnInfo(0, "MethodOfPaymentCode", "a_method_of_payment_code_c", OdbcType.VarChar, 16, true),
-                    new TTypedColumnInfo(1, "MethodOfPaymentDesc", "a_method_of_payment_desc_c", OdbcType.VarChar, 64, true),
-                    new TTypedColumnInfo(2, "MethodOfPaymentType", "a_method_of_payment_type_c", OdbcType.VarChar, 16, false),
-                    new TTypedColumnInfo(3, "ProcessToCall", "a_process_to_call_c", OdbcType.VarChar, 80, false),
-                    new TTypedColumnInfo(4, "SpecialMethodOfPmt", "a_special_method_of_pmt_l", OdbcType.Bit, -1, true),
-                    new TTypedColumnInfo(5, "Active", "a_active_l", OdbcType.Bit, -1, false),
-                    new TTypedColumnInfo(6, "DateCreated", "s_date_created_d", OdbcType.Date, -1, false),
-                    new TTypedColumnInfo(7, "CreatedBy", "s_created_by_c", OdbcType.VarChar, 20, false),
-                    new TTypedColumnInfo(8, "DateModified", "s_date_modified_d", OdbcType.Date, -1, false),
-                    new TTypedColumnInfo(9, "ModifiedBy", "s_modified_by_c", OdbcType.VarChar, 20, false),
-                    new TTypedColumnInfo(10, "ModificationId", "s_modification_id_c", OdbcType.VarChar, 150, false)
+                    new TTypedColumnInfo(0, "MethodOfPaymentCode", "a_method_of_payment_code_c", "Method of Payment", OdbcType.VarChar, 16, true),
+                    new TTypedColumnInfo(1, "MethodOfPaymentDesc", "a_method_of_payment_desc_c", "Description", OdbcType.VarChar, 64, true),
+                    new TTypedColumnInfo(2, "MethodOfPaymentType", "a_method_of_payment_type_c", "a_method_of_payment_type_c", OdbcType.VarChar, 16, false),
+                    new TTypedColumnInfo(3, "ProcessToCall", "a_process_to_call_c", "Process to Call", OdbcType.VarChar, 80, false),
+                    new TTypedColumnInfo(4, "SpecialMethodOfPmt", "a_special_method_of_pmt_l", "Special Method of Payment", OdbcType.Bit, -1, true),
+                    new TTypedColumnInfo(5, "Active", "a_active_l", "Active", OdbcType.Bit, -1, false),
+                    new TTypedColumnInfo(6, "DateCreated", "s_date_created_d", "Created Date", OdbcType.Date, -1, false),
+                    new TTypedColumnInfo(7, "CreatedBy", "s_created_by_c", "Created By", OdbcType.VarChar, 20, false),
+                    new TTypedColumnInfo(8, "DateModified", "s_date_modified_d", "Modified Date", OdbcType.Date, -1, false),
+                    new TTypedColumnInfo(9, "ModifiedBy", "s_modified_by_c", "Modified By", OdbcType.VarChar, 20, false),
+                    new TTypedColumnInfo(10, "ModificationId", "s_modification_id_c", "", OdbcType.VarChar, 150, false)
                 },
                 new int[] {
                     0
@@ -108,6 +107,29 @@ namespace Ict.Petra.Shared.MFinance.Gift.Data
                 base(info, context)
         {
         }
+
+        /// This is how the partner paid. EgCash, Cheque etc
+        public DataColumn ColumnMethodOfPaymentCode;
+        /// This is a short description which is 32 charcters long
+        public DataColumn ColumnMethodOfPaymentDesc;
+        ///
+        public DataColumn ColumnMethodOfPaymentType;
+        /// The filename of the process to call
+        public DataColumn ColumnProcessToCall;
+        ///
+        public DataColumn ColumnSpecialMethodOfPmt;
+        /// Shows whether this code is active
+        public DataColumn ColumnActive;
+        /// The date the record was created.
+        public DataColumn ColumnDateCreated;
+        /// User ID of who created this record.
+        public DataColumn ColumnCreatedBy;
+        /// The date the record was modified.
+        public DataColumn ColumnDateModified;
+        /// User ID of who last modified this record.
+        public DataColumn ColumnModifiedBy;
+        /// This identifies the current version of the record.
+        public DataColumn ColumnModificationId;
 
         /// create the columns
         protected override void InitClass()
@@ -177,6 +199,18 @@ namespace Ict.Petra.Shared.MFinance.Gift.Data
         public AMethodOfPaymentTable GetChangesTyped()
         {
             return ((AMethodOfPaymentTable)(base.GetChangesTypedInternal()));
+        }
+
+        /// return the CamelCase name of the table
+        public static string GetTableName()
+        {
+            return "AMethodOfPayment";
+        }
+
+        /// return the name of the table as it is used in the database
+        public static string GetTableDBName()
+        {
+            return "a_method_of_payment";
         }
 
         /// get an odbc parameter for the given column
@@ -771,48 +805,47 @@ namespace Ict.Petra.Shared.MFinance.Gift.Data
     [Serializable()]
     public class AMotivationGroupTable : TTypedDataTable
     {
-        /// This is used as a key field in most of the accounting system files
-        public DataColumn ColumnLedgerNumber;
-        /// This defines a motivation group.
-        public DataColumn ColumnMotivationGroupCode;
-        /// This is a long description and is 80 characters long.
-        public DataColumn ColumnMotivationGroupDescription;
-        /// Defines whether the motivation group is still in use
-        public DataColumn ColumnGroupStatus;
-        /// This is a long description and is 80 characters long in the local language.
-        public DataColumn ColumnMotivationGroupDescLocal;
-        /// Indicates whether or not the motivation has restricted access. If it does then the access will be controlled by s_group_motivation
-        public DataColumn ColumnRestricted;
-        /// The date the record was created.
-        public DataColumn ColumnDateCreated;
-        /// User ID of who created this record.
-        public DataColumn ColumnCreatedBy;
-        /// The date the record was modified.
-        public DataColumn ColumnDateModified;
-        /// User ID of who last modified this record.
-        public DataColumn ColumnModifiedBy;
-        /// This identifies the current version of the record.
-        public DataColumn ColumnModificationId;
-
         /// TableId for Ict.Common.Data generic functions
         public static short TableId = 143;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnLedgerNumberId = 0;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnMotivationGroupCodeId = 1;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnMotivationGroupDescriptionId = 2;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnGroupStatusId = 3;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnMotivationGroupDescLocalId = 4;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnRestrictedId = 5;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnDateCreatedId = 6;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnCreatedById = 7;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnDateModifiedId = 8;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnModifiedById = 9;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnModificationIdId = 10;
 
         private static bool FInitInfoValues = InitInfoValues();
         private static bool InitInfoValues()
         {
             TableInfo.Add(TableId, new TTypedTableInfo(TableId, "AMotivationGroup", "a_motivation_group",
                 new TTypedColumnInfo[] {
-                    new TTypedColumnInfo(0, "LedgerNumber", "a_ledger_number_i", OdbcType.Int, -1, true),
-                    new TTypedColumnInfo(1, "MotivationGroupCode", "a_motivation_group_code_c", OdbcType.VarChar, 16, true),
-                    new TTypedColumnInfo(2, "MotivationGroupDescription", "a_motivation_group_description_c", OdbcType.VarChar, 100, true),
-                    new TTypedColumnInfo(3, "GroupStatus", "a_group_status_l", OdbcType.Bit, -1, true),
-                    new TTypedColumnInfo(4, "MotivationGroupDescLocal", "a_motivation_group_desc_local_c", OdbcType.VarChar, 100, false),
-                    new TTypedColumnInfo(5, "Restricted", "a_restricted_l", OdbcType.Bit, -1, false),
-                    new TTypedColumnInfo(6, "DateCreated", "s_date_created_d", OdbcType.Date, -1, false),
-                    new TTypedColumnInfo(7, "CreatedBy", "s_created_by_c", OdbcType.VarChar, 20, false),
-                    new TTypedColumnInfo(8, "DateModified", "s_date_modified_d", OdbcType.Date, -1, false),
-                    new TTypedColumnInfo(9, "ModifiedBy", "s_modified_by_c", OdbcType.VarChar, 20, false),
-                    new TTypedColumnInfo(10, "ModificationId", "s_modification_id_c", OdbcType.VarChar, 150, false)
+                    new TTypedColumnInfo(0, "LedgerNumber", "a_ledger_number_i", "Ledger Number", OdbcType.Int, -1, true),
+                    new TTypedColumnInfo(1, "MotivationGroupCode", "a_motivation_group_code_c", "Motivation Group Code", OdbcType.VarChar, 16, true),
+                    new TTypedColumnInfo(2, "MotivationGroupDescription", "a_motivation_group_description_c", "Description", OdbcType.VarChar, 100, true),
+                    new TTypedColumnInfo(3, "GroupStatus", "a_group_status_l", "Motivation Group Status", OdbcType.Bit, -1, true),
+                    new TTypedColumnInfo(4, "MotivationGroupDescLocal", "a_motivation_group_desc_local_c", "Description (local)", OdbcType.VarChar, 100, false),
+                    new TTypedColumnInfo(5, "Restricted", "a_restricted_l", "Motivation Group Restricted", OdbcType.Bit, -1, false),
+                    new TTypedColumnInfo(6, "DateCreated", "s_date_created_d", "Created Date", OdbcType.Date, -1, false),
+                    new TTypedColumnInfo(7, "CreatedBy", "s_created_by_c", "Created By", OdbcType.VarChar, 20, false),
+                    new TTypedColumnInfo(8, "DateModified", "s_date_modified_d", "Modified Date", OdbcType.Date, -1, false),
+                    new TTypedColumnInfo(9, "ModifiedBy", "s_modified_by_c", "Modified By", OdbcType.VarChar, 20, false),
+                    new TTypedColumnInfo(10, "ModificationId", "s_modification_id_c", "", OdbcType.VarChar, 150, false)
                 },
                 new int[] {
                     0, 1
@@ -837,6 +870,29 @@ namespace Ict.Petra.Shared.MFinance.Gift.Data
                 base(info, context)
         {
         }
+
+        /// This is used as a key field in most of the accounting system files
+        public DataColumn ColumnLedgerNumber;
+        /// This defines a motivation group.
+        public DataColumn ColumnMotivationGroupCode;
+        /// This is a long description and is 80 characters long.
+        public DataColumn ColumnMotivationGroupDescription;
+        /// Defines whether the motivation group is still in use
+        public DataColumn ColumnGroupStatus;
+        /// This is a long description and is 80 characters long in the local language.
+        public DataColumn ColumnMotivationGroupDescLocal;
+        /// Indicates whether or not the motivation has restricted access. If it does then the access will be controlled by s_group_motivation
+        public DataColumn ColumnRestricted;
+        /// The date the record was created.
+        public DataColumn ColumnDateCreated;
+        /// User ID of who created this record.
+        public DataColumn ColumnCreatedBy;
+        /// The date the record was modified.
+        public DataColumn ColumnDateModified;
+        /// User ID of who last modified this record.
+        public DataColumn ColumnModifiedBy;
+        /// This identifies the current version of the record.
+        public DataColumn ColumnModificationId;
 
         /// create the columns
         protected override void InitClass()
@@ -906,6 +962,18 @@ namespace Ict.Petra.Shared.MFinance.Gift.Data
         public AMotivationGroupTable GetChangesTyped()
         {
             return ((AMotivationGroupTable)(base.GetChangesTypedInternal()));
+        }
+
+        /// return the CamelCase name of the table
+        public static string GetTableName()
+        {
+            return "AMotivationGroup";
+        }
+
+        /// return the name of the table as it is used in the database
+        public static string GetTableDBName()
+        {
+            return "a_motivation_group";
         }
 
         /// get an odbc parameter for the given column
@@ -1500,6 +1568,129 @@ namespace Ict.Petra.Shared.MFinance.Gift.Data
     [Serializable()]
     public class AMotivationDetailTable : TTypedDataTable
     {
+        /// TableId for Ict.Common.Data generic functions
+        public static short TableId = 144;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnLedgerNumberId = 0;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnMotivationGroupCodeId = 1;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnMotivationDetailCodeId = 2;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnMotivationDetailAudienceId = 3;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnMotivationDetailDescId = 4;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnAccountCodeId = 5;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnCostCentreCodeId = 6;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnMotivationStatusId = 7;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnMailingCostId = 8;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnBulkRateFlagId = 9;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnNextResponseStatusId = 10;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnActivatePartnerFlagId = 11;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnNumberSentId = 12;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnNumberOfResponsesId = 13;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnTargetNumberOfResponsesId = 14;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnTargetAmountId = 15;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnAmountReceivedId = 16;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnRecipientKeyId = 17;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnAutopopdescId = 18;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnReceiptId = 19;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnTaxDeductableId = 20;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnMotivationDetailDescLocalId = 21;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnShortCodeId = 22;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnRestrictedId = 23;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnExportToIntranetId = 24;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnDateCreatedId = 25;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnCreatedById = 26;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnDateModifiedId = 27;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnModifiedById = 28;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnModificationIdId = 29;
+
+        private static bool FInitInfoValues = InitInfoValues();
+        private static bool InitInfoValues()
+        {
+            TableInfo.Add(TableId, new TTypedTableInfo(TableId, "AMotivationDetail", "a_motivation_detail",
+                new TTypedColumnInfo[] {
+                    new TTypedColumnInfo(0, "LedgerNumber", "a_ledger_number_i", " Ledger Number", OdbcType.Int, -1, true),
+                    new TTypedColumnInfo(1, "MotivationGroupCode", "a_motivation_group_code_c", "Motivation Group Code", OdbcType.VarChar, 16, true),
+                    new TTypedColumnInfo(2, "MotivationDetailCode", "a_motivation_detail_code_c", "Motivation Detail Code", OdbcType.VarChar, 16, true),
+                    new TTypedColumnInfo(3, "MotivationDetailAudience", "a_motivation_detail_audience_c", "Audience", OdbcType.VarChar, 160, false),
+                    new TTypedColumnInfo(4, "MotivationDetailDesc", "a_motivation_detail_desc_c", "Detail Description", OdbcType.VarChar, 160, true),
+                    new TTypedColumnInfo(5, "AccountCode", "a_account_code_c", "Account Code", OdbcType.VarChar, 16, true),
+                    new TTypedColumnInfo(6, "CostCentreCode", "a_cost_centre_code_c", "Cost Centre Code", OdbcType.VarChar, 24, true),
+                    new TTypedColumnInfo(7, "MotivationStatus", "a_motivation_status_l", "Motivation Status", OdbcType.Bit, -1, true),
+                    new TTypedColumnInfo(8, "MailingCost", "a_mailing_cost_n", "Mailing Cost", OdbcType.Decimal, 24, false),
+                    new TTypedColumnInfo(9, "BulkRateFlag", "a_bulk_rate_flag_l", "Bulk Rate Flag", OdbcType.Bit, -1, true),
+                    new TTypedColumnInfo(10, "NextResponseStatus", "a_next_response_status_c", "Next Response Status", OdbcType.VarChar, 24, false),
+                    new TTypedColumnInfo(11, "ActivatePartnerFlag", "a_activate_partner_flag_l", "Activate Partner", OdbcType.Bit, -1, true),
+                    new TTypedColumnInfo(12, "NumberSent", "a_number_sent_i", "Number Sent", OdbcType.Int, -1, false),
+                    new TTypedColumnInfo(13, "NumberOfResponses", "a_number_of_responses_i", "Number of Responses", OdbcType.Int, -1, false),
+                    new TTypedColumnInfo(14, "TargetNumberOfResponses", "a_target_number_of_responses_i", "Target Number of Responses", OdbcType.Int, -1, false),
+                    new TTypedColumnInfo(15, "TargetAmount", "a_target_amount_n", "Target Amount", OdbcType.Decimal, 24, false),
+                    new TTypedColumnInfo(16, "AmountReceived", "a_amount_received_n", "Amount Received", OdbcType.Decimal, 24, false),
+                    new TTypedColumnInfo(17, "RecipientKey", "p_recipient_key_n", "Partner Key", OdbcType.Decimal, 10, true),
+                    new TTypedColumnInfo(18, "Autopopdesc", "a_autopopdesc_l", "Auto Populate Description", OdbcType.Bit, -1, false),
+                    new TTypedColumnInfo(19, "Receipt", "a_receipt_l", "Print Receipt", OdbcType.Bit, -1, false),
+                    new TTypedColumnInfo(20, "TaxDeductable", "a_tax_deductable_l", "Tax Deductable", OdbcType.Bit, -1, false),
+                    new TTypedColumnInfo(21, "MotivationDetailDescLocal", "a_motivation_detail_desc_local_c", "Detail Description (Local Language)", OdbcType.VarChar, 160, false),
+                    new TTypedColumnInfo(22, "ShortCode", "a_short_code_c", "Short Code", OdbcType.VarChar, 8, false),
+                    new TTypedColumnInfo(23, "Restricted", "a_restricted_l", "Motivation Detail Restricted", OdbcType.Bit, -1, false),
+                    new TTypedColumnInfo(24, "ExportToIntranet", "a_export_to_intranet_l", "Export to Intranet?", OdbcType.Bit, -1, false),
+                    new TTypedColumnInfo(25, "DateCreated", "s_date_created_d", "Created Date", OdbcType.Date, -1, false),
+                    new TTypedColumnInfo(26, "CreatedBy", "s_created_by_c", "Created By", OdbcType.VarChar, 20, false),
+                    new TTypedColumnInfo(27, "DateModified", "s_date_modified_d", "Modified Date", OdbcType.Date, -1, false),
+                    new TTypedColumnInfo(28, "ModifiedBy", "s_modified_by_c", "Modified By", OdbcType.VarChar, 20, false),
+                    new TTypedColumnInfo(29, "ModificationId", "s_modification_id_c", "", OdbcType.VarChar, 150, false)
+                },
+                new int[] {
+                    0, 1, 2
+                }));
+            return true;
+        }
+
+        /// constructor
+        public AMotivationDetailTable() :
+                base("AMotivationDetail")
+        {
+        }
+
+        /// constructor
+        public AMotivationDetailTable(string ATablename) :
+                base(ATablename)
+        {
+        }
+
+        /// constructor for serialization
+        public AMotivationDetailTable(System.Runtime.Serialization.SerializationInfo info, System.Runtime.Serialization.StreamingContext context) :
+                base(info, context)
+        {
+        }
+
         /// This is used as a key field in most of the accounting system files
         public DataColumn ColumnLedgerNumber;
         /// This defines a motivation group.
@@ -1560,69 +1751,6 @@ namespace Ict.Petra.Shared.MFinance.Gift.Data
         public DataColumn ColumnModifiedBy;
         /// This identifies the current version of the record.
         public DataColumn ColumnModificationId;
-
-        /// TableId for Ict.Common.Data generic functions
-        public static short TableId = 144;
-
-        private static bool FInitInfoValues = InitInfoValues();
-        private static bool InitInfoValues()
-        {
-            TableInfo.Add(TableId, new TTypedTableInfo(TableId, "AMotivationDetail", "a_motivation_detail",
-                new TTypedColumnInfo[] {
-                    new TTypedColumnInfo(0, "LedgerNumber", "a_ledger_number_i", OdbcType.Int, -1, true),
-                    new TTypedColumnInfo(1, "MotivationGroupCode", "a_motivation_group_code_c", OdbcType.VarChar, 16, true),
-                    new TTypedColumnInfo(2, "MotivationDetailCode", "a_motivation_detail_code_c", OdbcType.VarChar, 16, true),
-                    new TTypedColumnInfo(3, "MotivationDetailAudience", "a_motivation_detail_audience_c", OdbcType.VarChar, 160, false),
-                    new TTypedColumnInfo(4, "MotivationDetailDesc", "a_motivation_detail_desc_c", OdbcType.VarChar, 160, true),
-                    new TTypedColumnInfo(5, "AccountCode", "a_account_code_c", OdbcType.VarChar, 16, true),
-                    new TTypedColumnInfo(6, "CostCentreCode", "a_cost_centre_code_c", OdbcType.VarChar, 24, true),
-                    new TTypedColumnInfo(7, "MotivationStatus", "a_motivation_status_l", OdbcType.Bit, -1, true),
-                    new TTypedColumnInfo(8, "MailingCost", "a_mailing_cost_n", OdbcType.Decimal, 24, false),
-                    new TTypedColumnInfo(9, "BulkRateFlag", "a_bulk_rate_flag_l", OdbcType.Bit, -1, true),
-                    new TTypedColumnInfo(10, "NextResponseStatus", "a_next_response_status_c", OdbcType.VarChar, 24, false),
-                    new TTypedColumnInfo(11, "ActivatePartnerFlag", "a_activate_partner_flag_l", OdbcType.Bit, -1, true),
-                    new TTypedColumnInfo(12, "NumberSent", "a_number_sent_i", OdbcType.Int, -1, false),
-                    new TTypedColumnInfo(13, "NumberOfResponses", "a_number_of_responses_i", OdbcType.Int, -1, false),
-                    new TTypedColumnInfo(14, "TargetNumberOfResponses", "a_target_number_of_responses_i", OdbcType.Int, -1, false),
-                    new TTypedColumnInfo(15, "TargetAmount", "a_target_amount_n", OdbcType.Decimal, 24, false),
-                    new TTypedColumnInfo(16, "AmountReceived", "a_amount_received_n", OdbcType.Decimal, 24, false),
-                    new TTypedColumnInfo(17, "RecipientKey", "p_recipient_key_n", OdbcType.Decimal, 10, true),
-                    new TTypedColumnInfo(18, "Autopopdesc", "a_autopopdesc_l", OdbcType.Bit, -1, false),
-                    new TTypedColumnInfo(19, "Receipt", "a_receipt_l", OdbcType.Bit, -1, false),
-                    new TTypedColumnInfo(20, "TaxDeductable", "a_tax_deductable_l", OdbcType.Bit, -1, false),
-                    new TTypedColumnInfo(21, "MotivationDetailDescLocal", "a_motivation_detail_desc_local_c", OdbcType.VarChar, 160, false),
-                    new TTypedColumnInfo(22, "ShortCode", "a_short_code_c", OdbcType.VarChar, 8, false),
-                    new TTypedColumnInfo(23, "Restricted", "a_restricted_l", OdbcType.Bit, -1, false),
-                    new TTypedColumnInfo(24, "ExportToIntranet", "a_export_to_intranet_l", OdbcType.Bit, -1, false),
-                    new TTypedColumnInfo(25, "DateCreated", "s_date_created_d", OdbcType.Date, -1, false),
-                    new TTypedColumnInfo(26, "CreatedBy", "s_created_by_c", OdbcType.VarChar, 20, false),
-                    new TTypedColumnInfo(27, "DateModified", "s_date_modified_d", OdbcType.Date, -1, false),
-                    new TTypedColumnInfo(28, "ModifiedBy", "s_modified_by_c", OdbcType.VarChar, 20, false),
-                    new TTypedColumnInfo(29, "ModificationId", "s_modification_id_c", OdbcType.VarChar, 150, false)
-                },
-                new int[] {
-                    0, 1, 2
-                }));
-            return true;
-        }
-
-        /// constructor
-        public AMotivationDetailTable() :
-                base("AMotivationDetail")
-        {
-        }
-
-        /// constructor
-        public AMotivationDetailTable(string ATablename) :
-                base(ATablename)
-        {
-        }
-
-        /// constructor for serialization
-        public AMotivationDetailTable(System.Runtime.Serialization.SerializationInfo info, System.Runtime.Serialization.StreamingContext context) :
-                base(info, context)
-        {
-        }
 
         /// create the columns
         protected override void InitClass()
@@ -1730,6 +1858,18 @@ namespace Ict.Petra.Shared.MFinance.Gift.Data
         public AMotivationDetailTable GetChangesTyped()
         {
             return ((AMotivationDetailTable)(base.GetChangesTypedInternal()));
+        }
+
+        /// return the CamelCase name of the table
+        public static string GetTableName()
+        {
+            return "AMotivationDetail";
+        }
+
+        /// return the name of the table as it is used in the database
+        public static string GetTableDBName()
+        {
+            return "a_motivation_detail";
         }
 
         /// get an odbc parameter for the given column
@@ -3293,42 +3433,41 @@ namespace Ict.Petra.Shared.MFinance.Gift.Data
     [Serializable()]
     public class AMotivationDetailFeeTable : TTypedDataTable
     {
-        ///
-        public DataColumn ColumnLedgerNumber;
-        ///
-        public DataColumn ColumnMotivationGroupCode;
-        ///
-        public DataColumn ColumnMotivationDetailCode;
-        ///
-        public DataColumn ColumnFeeCode;
-        /// The date the record was created.
-        public DataColumn ColumnDateCreated;
-        /// User ID of who created this record.
-        public DataColumn ColumnCreatedBy;
-        /// The date the record was modified.
-        public DataColumn ColumnDateModified;
-        /// User ID of who last modified this record.
-        public DataColumn ColumnModifiedBy;
-        /// This identifies the current version of the record.
-        public DataColumn ColumnModificationId;
-
         /// TableId for Ict.Common.Data generic functions
         public static short TableId = 145;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnLedgerNumberId = 0;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnMotivationGroupCodeId = 1;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnMotivationDetailCodeId = 2;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnFeeCodeId = 3;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnDateCreatedId = 4;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnCreatedById = 5;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnDateModifiedId = 6;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnModifiedById = 7;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnModificationIdId = 8;
 
         private static bool FInitInfoValues = InitInfoValues();
         private static bool InitInfoValues()
         {
             TableInfo.Add(TableId, new TTypedTableInfo(TableId, "AMotivationDetailFee", "a_motivation_detail_fee",
                 new TTypedColumnInfo[] {
-                    new TTypedColumnInfo(0, "LedgerNumber", "a_ledger_number_i", OdbcType.Int, -1, true),
-                    new TTypedColumnInfo(1, "MotivationGroupCode", "a_motivation_group_code_c", OdbcType.VarChar, 16, true),
-                    new TTypedColumnInfo(2, "MotivationDetailCode", "a_motivation_detail_code_c", OdbcType.VarChar, 16, true),
-                    new TTypedColumnInfo(3, "FeeCode", "a_fee_code_c", OdbcType.VarChar, 16, false),
-                    new TTypedColumnInfo(4, "DateCreated", "s_date_created_d", OdbcType.Date, -1, false),
-                    new TTypedColumnInfo(5, "CreatedBy", "s_created_by_c", OdbcType.VarChar, 20, false),
-                    new TTypedColumnInfo(6, "DateModified", "s_date_modified_d", OdbcType.Date, -1, false),
-                    new TTypedColumnInfo(7, "ModifiedBy", "s_modified_by_c", OdbcType.VarChar, 20, false),
-                    new TTypedColumnInfo(8, "ModificationId", "s_modification_id_c", OdbcType.VarChar, 150, false)
+                    new TTypedColumnInfo(0, "LedgerNumber", "a_ledger_number_i", "a_ledger_number_i", OdbcType.Int, -1, true),
+                    new TTypedColumnInfo(1, "MotivationGroupCode", "a_motivation_group_code_c", "a_motivation_group_code_c", OdbcType.VarChar, 16, true),
+                    new TTypedColumnInfo(2, "MotivationDetailCode", "a_motivation_detail_code_c", "a_motivation_detail_code_c", OdbcType.VarChar, 16, true),
+                    new TTypedColumnInfo(3, "FeeCode", "a_fee_code_c", "a_fee_code_c", OdbcType.VarChar, 16, false),
+                    new TTypedColumnInfo(4, "DateCreated", "s_date_created_d", "Created Date", OdbcType.Date, -1, false),
+                    new TTypedColumnInfo(5, "CreatedBy", "s_created_by_c", "Created By", OdbcType.VarChar, 20, false),
+                    new TTypedColumnInfo(6, "DateModified", "s_date_modified_d", "Modified Date", OdbcType.Date, -1, false),
+                    new TTypedColumnInfo(7, "ModifiedBy", "s_modified_by_c", "Modified By", OdbcType.VarChar, 20, false),
+                    new TTypedColumnInfo(8, "ModificationId", "s_modification_id_c", "", OdbcType.VarChar, 150, false)
                 },
                 new int[] {
                     0, 1, 2, 3
@@ -3353,6 +3492,25 @@ namespace Ict.Petra.Shared.MFinance.Gift.Data
                 base(info, context)
         {
         }
+
+        ///
+        public DataColumn ColumnLedgerNumber;
+        ///
+        public DataColumn ColumnMotivationGroupCode;
+        ///
+        public DataColumn ColumnMotivationDetailCode;
+        ///
+        public DataColumn ColumnFeeCode;
+        /// The date the record was created.
+        public DataColumn ColumnDateCreated;
+        /// User ID of who created this record.
+        public DataColumn ColumnCreatedBy;
+        /// The date the record was modified.
+        public DataColumn ColumnDateModified;
+        /// User ID of who last modified this record.
+        public DataColumn ColumnModifiedBy;
+        /// This identifies the current version of the record.
+        public DataColumn ColumnModificationId;
 
         /// create the columns
         protected override void InitClass()
@@ -3418,6 +3576,18 @@ namespace Ict.Petra.Shared.MFinance.Gift.Data
         public AMotivationDetailFeeTable GetChangesTyped()
         {
             return ((AMotivationDetailFeeTable)(base.GetChangesTypedInternal()));
+        }
+
+        /// return the CamelCase name of the table
+        public static string GetTableName()
+        {
+            return "AMotivationDetailFee";
+        }
+
+        /// return the name of the table as it is used in the database
+        public static string GetTableDBName()
+        {
+            return "a_motivation_detail_fee";
         }
 
         /// get an odbc parameter for the given column
@@ -3910,6 +4080,87 @@ namespace Ict.Petra.Shared.MFinance.Gift.Data
     [Serializable()]
     public class ARecurringGiftBatchTable : TTypedDataTable
     {
+        /// TableId for Ict.Common.Data generic functions
+        public static short TableId = 161;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnLedgerNumberId = 0;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnBatchNumberId = 1;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnBatchDescriptionId = 2;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnHashTotalId = 3;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnBatchTotalId = 4;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnBankAccountCodeId = 5;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnLastGiftNumberId = 6;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnCurrencyCodeId = 7;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnBankCostCentreId = 8;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnGiftTypeId = 9;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnMethodOfPaymentCodeId = 10;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnDateCreatedId = 11;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnCreatedById = 12;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnDateModifiedId = 13;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnModifiedById = 14;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnModificationIdId = 15;
+
+        private static bool FInitInfoValues = InitInfoValues();
+        private static bool InitInfoValues()
+        {
+            TableInfo.Add(TableId, new TTypedTableInfo(TableId, "ARecurringGiftBatch", "a_recurring_gift_batch",
+                new TTypedColumnInfo[] {
+                    new TTypedColumnInfo(0, "LedgerNumber", "a_ledger_number_i", "Ledger Number", OdbcType.Int, -1, true),
+                    new TTypedColumnInfo(1, "BatchNumber", "a_batch_number_i", "Batch Number", OdbcType.Int, -1, true),
+                    new TTypedColumnInfo(2, "BatchDescription", "a_batch_description_c", "Batch description", OdbcType.VarChar, 80, false),
+                    new TTypedColumnInfo(3, "HashTotal", "a_hash_total_n", "Hash Total", OdbcType.Decimal, 24, false),
+                    new TTypedColumnInfo(4, "BatchTotal", "a_batch_total_n", "Batch Total", OdbcType.Decimal, 24, false),
+                    new TTypedColumnInfo(5, "BankAccountCode", "a_bank_account_code_c", "Bank Account", OdbcType.VarChar, 16, true),
+                    new TTypedColumnInfo(6, "LastGiftNumber", "a_last_gift_number_i", "Last Gift", OdbcType.Int, -1, false),
+                    new TTypedColumnInfo(7, "CurrencyCode", "a_currency_code_c", "Gift Transaction Currency", OdbcType.VarChar, 16, true),
+                    new TTypedColumnInfo(8, "BankCostCentre", "a_bank_cost_centre_c", "Cost Centre Code", OdbcType.VarChar, 24, false),
+                    new TTypedColumnInfo(9, "GiftType", "a_gift_type_c", "Gift Type", OdbcType.VarChar, 16, true),
+                    new TTypedColumnInfo(10, "MethodOfPaymentCode", "a_method_of_payment_code_c", "Method of Payment", OdbcType.VarChar, 16, false),
+                    new TTypedColumnInfo(11, "DateCreated", "s_date_created_d", "Created Date", OdbcType.Date, -1, false),
+                    new TTypedColumnInfo(12, "CreatedBy", "s_created_by_c", "Created By", OdbcType.VarChar, 20, false),
+                    new TTypedColumnInfo(13, "DateModified", "s_date_modified_d", "Modified Date", OdbcType.Date, -1, false),
+                    new TTypedColumnInfo(14, "ModifiedBy", "s_modified_by_c", "Modified By", OdbcType.VarChar, 20, false),
+                    new TTypedColumnInfo(15, "ModificationId", "s_modification_id_c", "", OdbcType.VarChar, 150, false)
+                },
+                new int[] {
+                    0, 1
+                }));
+            return true;
+        }
+
+        /// constructor
+        public ARecurringGiftBatchTable() :
+                base("ARecurringGiftBatch")
+        {
+        }
+
+        /// constructor
+        public ARecurringGiftBatchTable(string ATablename) :
+                base(ATablename)
+        {
+        }
+
+        /// constructor for serialization
+        public ARecurringGiftBatchTable(System.Runtime.Serialization.SerializationInfo info, System.Runtime.Serialization.StreamingContext context) :
+                base(info, context)
+        {
+        }
+
         /// ledger number
         public DataColumn ColumnLedgerNumber;
         /// Gift batch number
@@ -3942,55 +4193,6 @@ namespace Ict.Petra.Shared.MFinance.Gift.Data
         public DataColumn ColumnModifiedBy;
         /// This identifies the current version of the record.
         public DataColumn ColumnModificationId;
-
-        /// TableId for Ict.Common.Data generic functions
-        public static short TableId = 161;
-
-        private static bool FInitInfoValues = InitInfoValues();
-        private static bool InitInfoValues()
-        {
-            TableInfo.Add(TableId, new TTypedTableInfo(TableId, "ARecurringGiftBatch", "a_recurring_gift_batch",
-                new TTypedColumnInfo[] {
-                    new TTypedColumnInfo(0, "LedgerNumber", "a_ledger_number_i", OdbcType.Int, -1, true),
-                    new TTypedColumnInfo(1, "BatchNumber", "a_batch_number_i", OdbcType.Int, -1, true),
-                    new TTypedColumnInfo(2, "BatchDescription", "a_batch_description_c", OdbcType.VarChar, 80, false),
-                    new TTypedColumnInfo(3, "HashTotal", "a_hash_total_n", OdbcType.Decimal, 24, false),
-                    new TTypedColumnInfo(4, "BatchTotal", "a_batch_total_n", OdbcType.Decimal, 24, false),
-                    new TTypedColumnInfo(5, "BankAccountCode", "a_bank_account_code_c", OdbcType.VarChar, 16, true),
-                    new TTypedColumnInfo(6, "LastGiftNumber", "a_last_gift_number_i", OdbcType.Int, -1, false),
-                    new TTypedColumnInfo(7, "CurrencyCode", "a_currency_code_c", OdbcType.VarChar, 16, true),
-                    new TTypedColumnInfo(8, "BankCostCentre", "a_bank_cost_centre_c", OdbcType.VarChar, 24, false),
-                    new TTypedColumnInfo(9, "GiftType", "a_gift_type_c", OdbcType.VarChar, 16, true),
-                    new TTypedColumnInfo(10, "MethodOfPaymentCode", "a_method_of_payment_code_c", OdbcType.VarChar, 16, false),
-                    new TTypedColumnInfo(11, "DateCreated", "s_date_created_d", OdbcType.Date, -1, false),
-                    new TTypedColumnInfo(12, "CreatedBy", "s_created_by_c", OdbcType.VarChar, 20, false),
-                    new TTypedColumnInfo(13, "DateModified", "s_date_modified_d", OdbcType.Date, -1, false),
-                    new TTypedColumnInfo(14, "ModifiedBy", "s_modified_by_c", OdbcType.VarChar, 20, false),
-                    new TTypedColumnInfo(15, "ModificationId", "s_modification_id_c", OdbcType.VarChar, 150, false)
-                },
-                new int[] {
-                    0, 1
-                }));
-            return true;
-        }
-
-        /// constructor
-        public ARecurringGiftBatchTable() :
-                base("ARecurringGiftBatch")
-        {
-        }
-
-        /// constructor
-        public ARecurringGiftBatchTable(string ATablename) :
-                base(ATablename)
-        {
-        }
-
-        /// constructor for serialization
-        public ARecurringGiftBatchTable(System.Runtime.Serialization.SerializationInfo info, System.Runtime.Serialization.StreamingContext context) :
-                base(info, context)
-        {
-        }
 
         /// create the columns
         protected override void InitClass()
@@ -4070,6 +4272,18 @@ namespace Ict.Petra.Shared.MFinance.Gift.Data
         public ARecurringGiftBatchTable GetChangesTyped()
         {
             return ((ARecurringGiftBatchTable)(base.GetChangesTypedInternal()));
+        }
+
+        /// return the CamelCase name of the table
+        public static string GetTableName()
+        {
+            return "ARecurringGiftBatch";
+        }
+
+        /// return the name of the table as it is used in the database
+        public static string GetTableDBName()
+        {
+            return "a_recurring_gift_batch";
         }
 
         /// get an odbc parameter for the given column
@@ -4919,6 +5133,96 @@ namespace Ict.Petra.Shared.MFinance.Gift.Data
     [Serializable()]
     public class ARecurringGiftTable : TTypedDataTable
     {
+        /// TableId for Ict.Common.Data generic functions
+        public static short TableId = 162;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnLedgerNumberId = 0;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnBatchNumberId = 1;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnGiftTransactionNumberId = 2;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnReceiptLetterCodeId = 3;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnMethodOfGivingCodeId = 4;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnMethodOfPaymentCodeId = 5;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnDonorKeyId = 6;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnLastDetailNumberId = 7;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnReferenceId = 8;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnBankingDetailsKeyId = 9;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnChargeStatusId = 10;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnLastDebitId = 11;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnDebitDayId = 12;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnActiveId = 13;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnDateCreatedId = 14;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnCreatedById = 15;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnDateModifiedId = 16;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnModifiedById = 17;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnModificationIdId = 18;
+
+        private static bool FInitInfoValues = InitInfoValues();
+        private static bool InitInfoValues()
+        {
+            TableInfo.Add(TableId, new TTypedTableInfo(TableId, "ARecurringGift", "a_recurring_gift",
+                new TTypedColumnInfo[] {
+                    new TTypedColumnInfo(0, "LedgerNumber", "a_ledger_number_i", "Ledger Number", OdbcType.Int, -1, true),
+                    new TTypedColumnInfo(1, "BatchNumber", "a_batch_number_i", "Batch Number", OdbcType.Int, -1, true),
+                    new TTypedColumnInfo(2, "GiftTransactionNumber", "a_gift_transaction_number_i", "Transaction Number", OdbcType.Int, -1, true),
+                    new TTypedColumnInfo(3, "ReceiptLetterCode", "a_receipt_letter_code_c", "Receipt Letter Code", OdbcType.VarChar, 16, false),
+                    new TTypedColumnInfo(4, "MethodOfGivingCode", "a_method_of_giving_code_c", "Method Of Giving", OdbcType.VarChar, 24, false),
+                    new TTypedColumnInfo(5, "MethodOfPaymentCode", "a_method_of_payment_code_c", "Method of Payment", OdbcType.VarChar, 16, false),
+                    new TTypedColumnInfo(6, "DonorKey", "p_donor_key_n", "Donor", OdbcType.Decimal, 10, true),
+                    new TTypedColumnInfo(7, "LastDetailNumber", "a_last_detail_number_i", "Last Gift Number", OdbcType.Int, -1, true),
+                    new TTypedColumnInfo(8, "Reference", "a_reference_c", "Reference", OdbcType.VarChar, 16, false),
+                    new TTypedColumnInfo(9, "BankingDetailsKey", "p_banking_details_key_i", "Bank or Credit Card", OdbcType.Int, -1, true),
+                    new TTypedColumnInfo(10, "ChargeStatus", "a_charge_status_c", "CC Charge Status", OdbcType.VarChar, 20, false),
+                    new TTypedColumnInfo(11, "LastDebit", "a_last_debit_d", "Date of last successfull donation", OdbcType.Date, -1, false),
+                    new TTypedColumnInfo(12, "DebitDay", "a_debit_day_i", "Day of month to debit", OdbcType.Int, -1, false),
+                    new TTypedColumnInfo(13, "Active", "a_active_l", "Active", OdbcType.Bit, -1, true),
+                    new TTypedColumnInfo(14, "DateCreated", "s_date_created_d", "Created Date", OdbcType.Date, -1, false),
+                    new TTypedColumnInfo(15, "CreatedBy", "s_created_by_c", "Created By", OdbcType.VarChar, 20, false),
+                    new TTypedColumnInfo(16, "DateModified", "s_date_modified_d", "Modified Date", OdbcType.Date, -1, false),
+                    new TTypedColumnInfo(17, "ModifiedBy", "s_modified_by_c", "Modified By", OdbcType.VarChar, 20, false),
+                    new TTypedColumnInfo(18, "ModificationId", "s_modification_id_c", "", OdbcType.VarChar, 150, false)
+                },
+                new int[] {
+                    0, 1, 2
+                }));
+            return true;
+        }
+
+        /// constructor
+        public ARecurringGiftTable() :
+                base("ARecurringGift")
+        {
+        }
+
+        /// constructor
+        public ARecurringGiftTable(string ATablename) :
+                base(ATablename)
+        {
+        }
+
+        /// constructor for serialization
+        public ARecurringGiftTable(System.Runtime.Serialization.SerializationInfo info, System.Runtime.Serialization.StreamingContext context) :
+                base(info, context)
+        {
+        }
+
         /// This is used as a key field in most of the accounting system files
         public DataColumn ColumnLedgerNumber;
         /// identifes which batch a transaction belongs to
@@ -4957,58 +5261,6 @@ namespace Ict.Petra.Shared.MFinance.Gift.Data
         public DataColumn ColumnModifiedBy;
         /// This identifies the current version of the record.
         public DataColumn ColumnModificationId;
-
-        /// TableId for Ict.Common.Data generic functions
-        public static short TableId = 162;
-
-        private static bool FInitInfoValues = InitInfoValues();
-        private static bool InitInfoValues()
-        {
-            TableInfo.Add(TableId, new TTypedTableInfo(TableId, "ARecurringGift", "a_recurring_gift",
-                new TTypedColumnInfo[] {
-                    new TTypedColumnInfo(0, "LedgerNumber", "a_ledger_number_i", OdbcType.Int, -1, true),
-                    new TTypedColumnInfo(1, "BatchNumber", "a_batch_number_i", OdbcType.Int, -1, true),
-                    new TTypedColumnInfo(2, "GiftTransactionNumber", "a_gift_transaction_number_i", OdbcType.Int, -1, true),
-                    new TTypedColumnInfo(3, "ReceiptLetterCode", "a_receipt_letter_code_c", OdbcType.VarChar, 16, false),
-                    new TTypedColumnInfo(4, "MethodOfGivingCode", "a_method_of_giving_code_c", OdbcType.VarChar, 24, false),
-                    new TTypedColumnInfo(5, "MethodOfPaymentCode", "a_method_of_payment_code_c", OdbcType.VarChar, 16, false),
-                    new TTypedColumnInfo(6, "DonorKey", "p_donor_key_n", OdbcType.Decimal, 10, true),
-                    new TTypedColumnInfo(7, "LastDetailNumber", "a_last_detail_number_i", OdbcType.Int, -1, true),
-                    new TTypedColumnInfo(8, "Reference", "a_reference_c", OdbcType.VarChar, 16, false),
-                    new TTypedColumnInfo(9, "BankingDetailsKey", "p_banking_details_key_i", OdbcType.Int, -1, true),
-                    new TTypedColumnInfo(10, "ChargeStatus", "a_charge_status_c", OdbcType.VarChar, 20, false),
-                    new TTypedColumnInfo(11, "LastDebit", "a_last_debit_d", OdbcType.Date, -1, false),
-                    new TTypedColumnInfo(12, "DebitDay", "a_debit_day_i", OdbcType.Int, -1, false),
-                    new TTypedColumnInfo(13, "Active", "a_active_l", OdbcType.Bit, -1, true),
-                    new TTypedColumnInfo(14, "DateCreated", "s_date_created_d", OdbcType.Date, -1, false),
-                    new TTypedColumnInfo(15, "CreatedBy", "s_created_by_c", OdbcType.VarChar, 20, false),
-                    new TTypedColumnInfo(16, "DateModified", "s_date_modified_d", OdbcType.Date, -1, false),
-                    new TTypedColumnInfo(17, "ModifiedBy", "s_modified_by_c", OdbcType.VarChar, 20, false),
-                    new TTypedColumnInfo(18, "ModificationId", "s_modification_id_c", OdbcType.VarChar, 150, false)
-                },
-                new int[] {
-                    0, 1, 2
-                }));
-            return true;
-        }
-
-        /// constructor
-        public ARecurringGiftTable() :
-                base("ARecurringGift")
-        {
-        }
-
-        /// constructor
-        public ARecurringGiftTable(string ATablename) :
-                base(ATablename)
-        {
-        }
-
-        /// constructor for serialization
-        public ARecurringGiftTable(System.Runtime.Serialization.SerializationInfo info, System.Runtime.Serialization.StreamingContext context) :
-                base(info, context)
-        {
-        }
 
         /// create the columns
         protected override void InitClass()
@@ -5094,6 +5346,18 @@ namespace Ict.Petra.Shared.MFinance.Gift.Data
         public ARecurringGiftTable GetChangesTyped()
         {
             return ((ARecurringGiftTable)(base.GetChangesTypedInternal()));
+        }
+
+        /// return the CamelCase name of the table
+        public static string GetTableName()
+        {
+            return "ARecurringGift";
+        }
+
+        /// return the name of the table as it is used in the database
+        public static string GetTableDBName()
+        {
+            return "a_recurring_gift";
         }
 
         /// get an odbc parameter for the given column
@@ -6096,6 +6360,117 @@ namespace Ict.Petra.Shared.MFinance.Gift.Data
     [Serializable()]
     public class ARecurringGiftDetailTable : TTypedDataTable
     {
+        /// TableId for Ict.Common.Data generic functions
+        public static short TableId = 163;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnLedgerNumberId = 0;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnBatchNumberId = 1;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnGiftTransactionNumberId = 2;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnDetailNumberId = 3;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnRecipientLedgerNumberId = 4;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnGiftAmountId = 5;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnMotivationGroupCodeId = 6;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnMotivationDetailCodeId = 7;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnCommentOneTypeId = 8;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnGiftCommentOneId = 9;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnConfidentialGiftFlagId = 10;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnTaxDeductableId = 11;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnRecipientKeyId = 12;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnChargeFlagId = 13;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnMailingCodeId = 14;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnCommentTwoTypeId = 15;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnGiftCommentTwoId = 16;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnCommentThreeTypeId = 17;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnGiftCommentThreeId = 18;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnStartDonationsId = 19;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnEndDonationsId = 20;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnDateCreatedId = 21;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnCreatedById = 22;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnDateModifiedId = 23;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnModifiedById = 24;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnModificationIdId = 25;
+
+        private static bool FInitInfoValues = InitInfoValues();
+        private static bool InitInfoValues()
+        {
+            TableInfo.Add(TableId, new TTypedTableInfo(TableId, "ARecurringGiftDetail", "a_recurring_gift_detail",
+                new TTypedColumnInfo[] {
+                    new TTypedColumnInfo(0, "LedgerNumber", "a_ledger_number_i", "Ledger Number", OdbcType.Int, -1, true),
+                    new TTypedColumnInfo(1, "BatchNumber", "a_batch_number_i", "Gift Batch Number", OdbcType.Int, -1, true),
+                    new TTypedColumnInfo(2, "GiftTransactionNumber", "a_gift_transaction_number_i", "Gift Transaction Number", OdbcType.Int, -1, true),
+                    new TTypedColumnInfo(3, "DetailNumber", "a_detail_number_i", "Gift Number", OdbcType.Int, -1, true),
+                    new TTypedColumnInfo(4, "RecipientLedgerNumber", "a_recipient_ledger_number_n", "Recipient Ledger", OdbcType.Decimal, 10, false),
+                    new TTypedColumnInfo(5, "GiftAmount", "a_gift_amount_n", "Gift Amount", OdbcType.Decimal, 24, false),
+                    new TTypedColumnInfo(6, "MotivationGroupCode", "a_motivation_group_code_c", "Motivation Group", OdbcType.VarChar, 16, true),
+                    new TTypedColumnInfo(7, "MotivationDetailCode", "a_motivation_detail_code_c", "Motivation Detail", OdbcType.VarChar, 16, true),
+                    new TTypedColumnInfo(8, "CommentOneType", "a_comment_one_type_c", "Comment Type", OdbcType.VarChar, 24, false),
+                    new TTypedColumnInfo(9, "GiftCommentOne", "a_gift_comment_one_c", "Comment One", OdbcType.VarChar, 160, false),
+                    new TTypedColumnInfo(10, "ConfidentialGiftFlag", "a_confidential_gift_flag_l", "Confidential Gift", OdbcType.Bit, -1, true),
+                    new TTypedColumnInfo(11, "TaxDeductable", "a_tax_deductable_l", "Tax Deductable", OdbcType.Bit, -1, false),
+                    new TTypedColumnInfo(12, "RecipientKey", "p_recipient_key_n", "Recipient", OdbcType.Decimal, 10, true),
+                    new TTypedColumnInfo(13, "ChargeFlag", "a_charge_flag_l", "Charge Fee", OdbcType.Bit, -1, false),
+                    new TTypedColumnInfo(14, "MailingCode", "p_mailing_code_c", "Mailing Code", OdbcType.VarChar, 50, false),
+                    new TTypedColumnInfo(15, "CommentTwoType", "a_comment_two_type_c", "Comment Type", OdbcType.VarChar, 24, false),
+                    new TTypedColumnInfo(16, "GiftCommentTwo", "a_gift_comment_two_c", "Comment Two", OdbcType.VarChar, 160, false),
+                    new TTypedColumnInfo(17, "CommentThreeType", "a_comment_three_type_c", "Comment Type", OdbcType.VarChar, 24, false),
+                    new TTypedColumnInfo(18, "GiftCommentThree", "a_gift_comment_three_c", "Comment Three", OdbcType.VarChar, 160, false),
+                    new TTypedColumnInfo(19, "StartDonations", "a_start_donations_d", "Date to begin donations", OdbcType.Date, -1, false),
+                    new TTypedColumnInfo(20, "EndDonations", "a_end_donations_d", "Date to end donations", OdbcType.Date, -1, false),
+                    new TTypedColumnInfo(21, "DateCreated", "s_date_created_d", "Created Date", OdbcType.Date, -1, false),
+                    new TTypedColumnInfo(22, "CreatedBy", "s_created_by_c", "Created By", OdbcType.VarChar, 20, false),
+                    new TTypedColumnInfo(23, "DateModified", "s_date_modified_d", "Modified Date", OdbcType.Date, -1, false),
+                    new TTypedColumnInfo(24, "ModifiedBy", "s_modified_by_c", "Modified By", OdbcType.VarChar, 20, false),
+                    new TTypedColumnInfo(25, "ModificationId", "s_modification_id_c", "", OdbcType.VarChar, 150, false)
+                },
+                new int[] {
+                    0, 1, 2, 3
+                }));
+            return true;
+        }
+
+        /// constructor
+        public ARecurringGiftDetailTable() :
+                base("ARecurringGiftDetail")
+        {
+        }
+
+        /// constructor
+        public ARecurringGiftDetailTable(string ATablename) :
+                base(ATablename)
+        {
+        }
+
+        /// constructor for serialization
+        public ARecurringGiftDetailTable(System.Runtime.Serialization.SerializationInfo info, System.Runtime.Serialization.StreamingContext context) :
+                base(info, context)
+        {
+        }
+
         /// This is used as a key field in most of the accounting system files
         public DataColumn ColumnLedgerNumber;
         /// Number of the gift batch containing this detail.
@@ -6148,65 +6523,6 @@ namespace Ict.Petra.Shared.MFinance.Gift.Data
         public DataColumn ColumnModifiedBy;
         /// This identifies the current version of the record.
         public DataColumn ColumnModificationId;
-
-        /// TableId for Ict.Common.Data generic functions
-        public static short TableId = 163;
-
-        private static bool FInitInfoValues = InitInfoValues();
-        private static bool InitInfoValues()
-        {
-            TableInfo.Add(TableId, new TTypedTableInfo(TableId, "ARecurringGiftDetail", "a_recurring_gift_detail",
-                new TTypedColumnInfo[] {
-                    new TTypedColumnInfo(0, "LedgerNumber", "a_ledger_number_i", OdbcType.Int, -1, true),
-                    new TTypedColumnInfo(1, "BatchNumber", "a_batch_number_i", OdbcType.Int, -1, true),
-                    new TTypedColumnInfo(2, "GiftTransactionNumber", "a_gift_transaction_number_i", OdbcType.Int, -1, true),
-                    new TTypedColumnInfo(3, "DetailNumber", "a_detail_number_i", OdbcType.Int, -1, true),
-                    new TTypedColumnInfo(4, "RecipientLedgerNumber", "a_recipient_ledger_number_n", OdbcType.Decimal, 10, false),
-                    new TTypedColumnInfo(5, "GiftAmount", "a_gift_amount_n", OdbcType.Decimal, 24, false),
-                    new TTypedColumnInfo(6, "MotivationGroupCode", "a_motivation_group_code_c", OdbcType.VarChar, 16, true),
-                    new TTypedColumnInfo(7, "MotivationDetailCode", "a_motivation_detail_code_c", OdbcType.VarChar, 16, true),
-                    new TTypedColumnInfo(8, "CommentOneType", "a_comment_one_type_c", OdbcType.VarChar, 24, false),
-                    new TTypedColumnInfo(9, "GiftCommentOne", "a_gift_comment_one_c", OdbcType.VarChar, 160, false),
-                    new TTypedColumnInfo(10, "ConfidentialGiftFlag", "a_confidential_gift_flag_l", OdbcType.Bit, -1, true),
-                    new TTypedColumnInfo(11, "TaxDeductable", "a_tax_deductable_l", OdbcType.Bit, -1, false),
-                    new TTypedColumnInfo(12, "RecipientKey", "p_recipient_key_n", OdbcType.Decimal, 10, true),
-                    new TTypedColumnInfo(13, "ChargeFlag", "a_charge_flag_l", OdbcType.Bit, -1, false),
-                    new TTypedColumnInfo(14, "MailingCode", "p_mailing_code_c", OdbcType.VarChar, 50, false),
-                    new TTypedColumnInfo(15, "CommentTwoType", "a_comment_two_type_c", OdbcType.VarChar, 24, false),
-                    new TTypedColumnInfo(16, "GiftCommentTwo", "a_gift_comment_two_c", OdbcType.VarChar, 160, false),
-                    new TTypedColumnInfo(17, "CommentThreeType", "a_comment_three_type_c", OdbcType.VarChar, 24, false),
-                    new TTypedColumnInfo(18, "GiftCommentThree", "a_gift_comment_three_c", OdbcType.VarChar, 160, false),
-                    new TTypedColumnInfo(19, "StartDonations", "a_start_donations_d", OdbcType.Date, -1, false),
-                    new TTypedColumnInfo(20, "EndDonations", "a_end_donations_d", OdbcType.Date, -1, false),
-                    new TTypedColumnInfo(21, "DateCreated", "s_date_created_d", OdbcType.Date, -1, false),
-                    new TTypedColumnInfo(22, "CreatedBy", "s_created_by_c", OdbcType.VarChar, 20, false),
-                    new TTypedColumnInfo(23, "DateModified", "s_date_modified_d", OdbcType.Date, -1, false),
-                    new TTypedColumnInfo(24, "ModifiedBy", "s_modified_by_c", OdbcType.VarChar, 20, false),
-                    new TTypedColumnInfo(25, "ModificationId", "s_modification_id_c", OdbcType.VarChar, 150, false)
-                },
-                new int[] {
-                    0, 1, 2, 3
-                }));
-            return true;
-        }
-
-        /// constructor
-        public ARecurringGiftDetailTable() :
-                base("ARecurringGiftDetail")
-        {
-        }
-
-        /// constructor
-        public ARecurringGiftDetailTable(string ATablename) :
-                base(ATablename)
-        {
-        }
-
-        /// constructor for serialization
-        public ARecurringGiftDetailTable(System.Runtime.Serialization.SerializationInfo info, System.Runtime.Serialization.StreamingContext context) :
-                base(info, context)
-        {
-        }
 
         /// create the columns
         protected override void InitClass()
@@ -6306,6 +6622,18 @@ namespace Ict.Petra.Shared.MFinance.Gift.Data
         public ARecurringGiftDetailTable GetChangesTyped()
         {
             return ((ARecurringGiftDetailTable)(base.GetChangesTypedInternal()));
+        }
+
+        /// return the CamelCase name of the table
+        public static string GetTableName()
+        {
+            return "ARecurringGiftDetail";
+        }
+
+        /// return the name of the table as it is used in the database
+        public static string GetTableDBName()
+        {
+            return "a_recurring_gift_detail";
         }
 
         /// get an odbc parameter for the given column
@@ -7665,6 +7993,105 @@ namespace Ict.Petra.Shared.MFinance.Gift.Data
     [Serializable()]
     public class AGiftBatchTable : TTypedDataTable
     {
+        /// TableId for Ict.Common.Data generic functions
+        public static short TableId = 164;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnLedgerNumberId = 0;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnBatchNumberId = 1;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnBatchDescriptionId = 2;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnModificationDateId = 3;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnHashTotalId = 4;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnBatchTotalId = 5;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnBankAccountCodeId = 6;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnLastGiftNumberId = 7;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnBatchStatusId = 8;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnBatchPeriodId = 9;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnBatchYearId = 10;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnGlEffectiveDateId = 11;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnCurrencyCodeId = 12;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnExchangeRateToBaseId = 13;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnBankCostCentreId = 14;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnGiftTypeId = 15;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnMethodOfPaymentCodeId = 16;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnDateCreatedId = 17;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnCreatedById = 18;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnDateModifiedId = 19;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnModifiedById = 20;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnModificationIdId = 21;
+
+        private static bool FInitInfoValues = InitInfoValues();
+        private static bool InitInfoValues()
+        {
+            TableInfo.Add(TableId, new TTypedTableInfo(TableId, "AGiftBatch", "a_gift_batch",
+                new TTypedColumnInfo[] {
+                    new TTypedColumnInfo(0, "LedgerNumber", "a_ledger_number_i", "Ledger Number", OdbcType.Int, -1, true),
+                    new TTypedColumnInfo(1, "BatchNumber", "a_batch_number_i", "Batch Number", OdbcType.Int, -1, true),
+                    new TTypedColumnInfo(2, "BatchDescription", "a_batch_description_c", "Batch description", OdbcType.VarChar, 80, false),
+                    new TTypedColumnInfo(3, "ModificationDate", "s_modification_date_d", "Modification Date", OdbcType.Date, -1, false),
+                    new TTypedColumnInfo(4, "HashTotal", "a_hash_total_n", "Hash Total", OdbcType.Decimal, 24, false),
+                    new TTypedColumnInfo(5, "BatchTotal", "a_batch_total_n", "Batch Total", OdbcType.Decimal, 24, false),
+                    new TTypedColumnInfo(6, "BankAccountCode", "a_bank_account_code_c", "Bank Account", OdbcType.VarChar, 16, true),
+                    new TTypedColumnInfo(7, "LastGiftNumber", "a_last_gift_number_i", "Last Gift", OdbcType.Int, -1, false),
+                    new TTypedColumnInfo(8, "BatchStatus", "a_batch_status_c", "Batch Status", OdbcType.VarChar, 16, false),
+                    new TTypedColumnInfo(9, "BatchPeriod", "a_batch_period_i", "Batch Period Number", OdbcType.Int, -1, true),
+                    new TTypedColumnInfo(10, "BatchYear", "a_batch_year_i", "a_batch_year_i", OdbcType.Int, -1, true),
+                    new TTypedColumnInfo(11, "GlEffectiveDate", "a_gl_effective_date_d", "GL Effective Date", OdbcType.Date, -1, false),
+                    new TTypedColumnInfo(12, "CurrencyCode", "a_currency_code_c", "Gift Transaction Currency", OdbcType.VarChar, 16, true),
+                    new TTypedColumnInfo(13, "ExchangeRateToBase", "a_exchange_rate_to_base_n", "Exchange Rate to Base", OdbcType.Decimal, 24, true),
+                    new TTypedColumnInfo(14, "BankCostCentre", "a_bank_cost_centre_c", "Cost Centre Code", OdbcType.VarChar, 24, true),
+                    new TTypedColumnInfo(15, "GiftType", "a_gift_type_c", "Gift Type", OdbcType.VarChar, 16, true),
+                    new TTypedColumnInfo(16, "MethodOfPaymentCode", "a_method_of_payment_code_c", "Method of Payment", OdbcType.VarChar, 16, false),
+                    new TTypedColumnInfo(17, "DateCreated", "s_date_created_d", "Created Date", OdbcType.Date, -1, false),
+                    new TTypedColumnInfo(18, "CreatedBy", "s_created_by_c", "Created By", OdbcType.VarChar, 20, false),
+                    new TTypedColumnInfo(19, "DateModified", "s_date_modified_d", "Modified Date", OdbcType.Date, -1, false),
+                    new TTypedColumnInfo(20, "ModifiedBy", "s_modified_by_c", "Modified By", OdbcType.VarChar, 20, false),
+                    new TTypedColumnInfo(21, "ModificationId", "s_modification_id_c", "", OdbcType.VarChar, 150, false)
+                },
+                new int[] {
+                    0, 1
+                }));
+            return true;
+        }
+
+        /// constructor
+        public AGiftBatchTable() :
+                base("AGiftBatch")
+        {
+        }
+
+        /// constructor
+        public AGiftBatchTable(string ATablename) :
+                base(ATablename)
+        {
+        }
+
+        /// constructor for serialization
+        public AGiftBatchTable(System.Runtime.Serialization.SerializationInfo info, System.Runtime.Serialization.StreamingContext context) :
+                base(info, context)
+        {
+        }
+
         /// ledger number
         public DataColumn ColumnLedgerNumber;
         /// Gift batch number
@@ -7709,61 +8136,6 @@ namespace Ict.Petra.Shared.MFinance.Gift.Data
         public DataColumn ColumnModifiedBy;
         /// This identifies the current version of the record.
         public DataColumn ColumnModificationId;
-
-        /// TableId for Ict.Common.Data generic functions
-        public static short TableId = 164;
-
-        private static bool FInitInfoValues = InitInfoValues();
-        private static bool InitInfoValues()
-        {
-            TableInfo.Add(TableId, new TTypedTableInfo(TableId, "AGiftBatch", "a_gift_batch",
-                new TTypedColumnInfo[] {
-                    new TTypedColumnInfo(0, "LedgerNumber", "a_ledger_number_i", OdbcType.Int, -1, true),
-                    new TTypedColumnInfo(1, "BatchNumber", "a_batch_number_i", OdbcType.Int, -1, true),
-                    new TTypedColumnInfo(2, "BatchDescription", "a_batch_description_c", OdbcType.VarChar, 80, false),
-                    new TTypedColumnInfo(3, "ModificationDate", "s_modification_date_d", OdbcType.Date, -1, false),
-                    new TTypedColumnInfo(4, "HashTotal", "a_hash_total_n", OdbcType.Decimal, 24, false),
-                    new TTypedColumnInfo(5, "BatchTotal", "a_batch_total_n", OdbcType.Decimal, 24, false),
-                    new TTypedColumnInfo(6, "BankAccountCode", "a_bank_account_code_c", OdbcType.VarChar, 16, true),
-                    new TTypedColumnInfo(7, "LastGiftNumber", "a_last_gift_number_i", OdbcType.Int, -1, false),
-                    new TTypedColumnInfo(8, "BatchStatus", "a_batch_status_c", OdbcType.VarChar, 16, false),
-                    new TTypedColumnInfo(9, "BatchPeriod", "a_batch_period_i", OdbcType.Int, -1, true),
-                    new TTypedColumnInfo(10, "BatchYear", "a_batch_year_i", OdbcType.Int, -1, true),
-                    new TTypedColumnInfo(11, "GlEffectiveDate", "a_gl_effective_date_d", OdbcType.Date, -1, false),
-                    new TTypedColumnInfo(12, "CurrencyCode", "a_currency_code_c", OdbcType.VarChar, 16, true),
-                    new TTypedColumnInfo(13, "ExchangeRateToBase", "a_exchange_rate_to_base_n", OdbcType.Decimal, 24, true),
-                    new TTypedColumnInfo(14, "BankCostCentre", "a_bank_cost_centre_c", OdbcType.VarChar, 24, true),
-                    new TTypedColumnInfo(15, "GiftType", "a_gift_type_c", OdbcType.VarChar, 16, true),
-                    new TTypedColumnInfo(16, "MethodOfPaymentCode", "a_method_of_payment_code_c", OdbcType.VarChar, 16, false),
-                    new TTypedColumnInfo(17, "DateCreated", "s_date_created_d", OdbcType.Date, -1, false),
-                    new TTypedColumnInfo(18, "CreatedBy", "s_created_by_c", OdbcType.VarChar, 20, false),
-                    new TTypedColumnInfo(19, "DateModified", "s_date_modified_d", OdbcType.Date, -1, false),
-                    new TTypedColumnInfo(20, "ModifiedBy", "s_modified_by_c", OdbcType.VarChar, 20, false),
-                    new TTypedColumnInfo(21, "ModificationId", "s_modification_id_c", OdbcType.VarChar, 150, false)
-                },
-                new int[] {
-                    0, 1
-                }));
-            return true;
-        }
-
-        /// constructor
-        public AGiftBatchTable() :
-                base("AGiftBatch")
-        {
-        }
-
-        /// constructor
-        public AGiftBatchTable(string ATablename) :
-                base(ATablename)
-        {
-        }
-
-        /// constructor for serialization
-        public AGiftBatchTable(System.Runtime.Serialization.SerializationInfo info, System.Runtime.Serialization.StreamingContext context) :
-                base(info, context)
-        {
-        }
 
         /// create the columns
         protected override void InitClass()
@@ -7855,6 +8227,18 @@ namespace Ict.Petra.Shared.MFinance.Gift.Data
         public AGiftBatchTable GetChangesTyped()
         {
             return ((AGiftBatchTable)(base.GetChangesTypedInternal()));
+        }
+
+        /// return the CamelCase name of the table
+        public static string GetTableName()
+        {
+            return "AGiftBatch";
+        }
+
+        /// return the name of the table as it is used in the database
+        public static string GetTableDBName()
+        {
+            return "a_gift_batch";
         }
 
         /// get an odbc parameter for the given column
@@ -9010,6 +9394,111 @@ namespace Ict.Petra.Shared.MFinance.Gift.Data
     [Serializable()]
     public class AGiftTable : TTypedDataTable
     {
+        /// TableId for Ict.Common.Data generic functions
+        public static short TableId = 165;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnLedgerNumberId = 0;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnBatchNumberId = 1;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnGiftTransactionNumberId = 2;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnGiftStatusId = 3;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnDateEnteredId = 4;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnHomeAdminChargesFlagId = 5;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnIltAdminChargesFlagId = 6;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnReceiptLetterCodeId = 7;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnMethodOfGivingCodeId = 8;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnMethodOfPaymentCodeId = 9;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnDonorKeyId = 10;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnAdminChargeId = 11;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnReceiptNumberId = 12;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnLastDetailNumberId = 13;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnReferenceId = 14;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnFirstTimeGiftId = 15;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnReceiptPrintedId = 16;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnRestrictedId = 17;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnBankingDetailsKeyId = 18;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnDateCreatedId = 19;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnCreatedById = 20;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnDateModifiedId = 21;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnModifiedById = 22;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnModificationIdId = 23;
+
+        private static bool FInitInfoValues = InitInfoValues();
+        private static bool InitInfoValues()
+        {
+            TableInfo.Add(TableId, new TTypedTableInfo(TableId, "AGift", "a_gift",
+                new TTypedColumnInfo[] {
+                    new TTypedColumnInfo(0, "LedgerNumber", "a_ledger_number_i", "Ledger Number", OdbcType.Int, -1, true),
+                    new TTypedColumnInfo(1, "BatchNumber", "a_batch_number_i", "Batch Number", OdbcType.Int, -1, true),
+                    new TTypedColumnInfo(2, "GiftTransactionNumber", "a_gift_transaction_number_i", "Transaction Number", OdbcType.Int, -1, true),
+                    new TTypedColumnInfo(3, "GiftStatus", "a_gift_status_c", "Gift Status", OdbcType.VarChar, 24, false),
+                    new TTypedColumnInfo(4, "DateEntered", "a_date_entered_d", "Date Entered", OdbcType.Date, -1, true),
+                    new TTypedColumnInfo(5, "HomeAdminChargesFlag", "a_home_admin_charges_flag_l", "Local Admin Charges", OdbcType.Bit, -1, true),
+                    new TTypedColumnInfo(6, "IltAdminChargesFlag", "a_ilt_admin_charges_flag_l", "IT Admin Charges", OdbcType.Bit, -1, true),
+                    new TTypedColumnInfo(7, "ReceiptLetterCode", "a_receipt_letter_code_c", "Receipt Letter Code", OdbcType.VarChar, 16, false),
+                    new TTypedColumnInfo(8, "MethodOfGivingCode", "a_method_of_giving_code_c", "Method Of Giving", OdbcType.VarChar, 24, false),
+                    new TTypedColumnInfo(9, "MethodOfPaymentCode", "a_method_of_payment_code_c", "Method of Payment", OdbcType.VarChar, 16, false),
+                    new TTypedColumnInfo(10, "DonorKey", "p_donor_key_n", "Donor", OdbcType.Decimal, 10, true),
+                    new TTypedColumnInfo(11, "AdminCharge", "a_admin_charge_l", "Admin Charge", OdbcType.Bit, -1, false),
+                    new TTypedColumnInfo(12, "ReceiptNumber", "a_receipt_number_i", "Receipt Number", OdbcType.Int, -1, false),
+                    new TTypedColumnInfo(13, "LastDetailNumber", "a_last_detail_number_i", "Last Gift Number", OdbcType.Int, -1, true),
+                    new TTypedColumnInfo(14, "Reference", "a_reference_c", "Reference", OdbcType.VarChar, 20, false),
+                    new TTypedColumnInfo(15, "FirstTimeGift", "a_first_time_gift_l", "Donors first gift flag", OdbcType.Bit, -1, false),
+                    new TTypedColumnInfo(16, "ReceiptPrinted", "a_receipt_printed_l", "Receipt Printed", OdbcType.Bit, -1, true),
+                    new TTypedColumnInfo(17, "Restricted", "a_restricted_l", "Gift Restricted", OdbcType.Bit, -1, false),
+                    new TTypedColumnInfo(18, "BankingDetailsKey", "p_banking_details_key_i", "Bank or Credit Card", OdbcType.Int, -1, true),
+                    new TTypedColumnInfo(19, "DateCreated", "s_date_created_d", "Created Date", OdbcType.Date, -1, false),
+                    new TTypedColumnInfo(20, "CreatedBy", "s_created_by_c", "Created By", OdbcType.VarChar, 20, false),
+                    new TTypedColumnInfo(21, "DateModified", "s_date_modified_d", "Modified Date", OdbcType.Date, -1, false),
+                    new TTypedColumnInfo(22, "ModifiedBy", "s_modified_by_c", "Modified By", OdbcType.VarChar, 20, false),
+                    new TTypedColumnInfo(23, "ModificationId", "s_modification_id_c", "", OdbcType.VarChar, 150, false)
+                },
+                new int[] {
+                    0, 1, 2
+                }));
+            return true;
+        }
+
+        /// constructor
+        public AGiftTable() :
+                base("AGift")
+        {
+        }
+
+        /// constructor
+        public AGiftTable(string ATablename) :
+                base(ATablename)
+        {
+        }
+
+        /// constructor for serialization
+        public AGiftTable(System.Runtime.Serialization.SerializationInfo info, System.Runtime.Serialization.StreamingContext context) :
+                base(info, context)
+        {
+        }
+
         /// This is used as a key field in most of the accounting system files.  The four digit ledger number of the gift.
         public DataColumn ColumnLedgerNumber;
         /// identifes which batch a transaction belongs to
@@ -9058,63 +9547,6 @@ namespace Ict.Petra.Shared.MFinance.Gift.Data
         public DataColumn ColumnModifiedBy;
         /// This identifies the current version of the record.
         public DataColumn ColumnModificationId;
-
-        /// TableId for Ict.Common.Data generic functions
-        public static short TableId = 165;
-
-        private static bool FInitInfoValues = InitInfoValues();
-        private static bool InitInfoValues()
-        {
-            TableInfo.Add(TableId, new TTypedTableInfo(TableId, "AGift", "a_gift",
-                new TTypedColumnInfo[] {
-                    new TTypedColumnInfo(0, "LedgerNumber", "a_ledger_number_i", OdbcType.Int, -1, true),
-                    new TTypedColumnInfo(1, "BatchNumber", "a_batch_number_i", OdbcType.Int, -1, true),
-                    new TTypedColumnInfo(2, "GiftTransactionNumber", "a_gift_transaction_number_i", OdbcType.Int, -1, true),
-                    new TTypedColumnInfo(3, "GiftStatus", "a_gift_status_c", OdbcType.VarChar, 24, false),
-                    new TTypedColumnInfo(4, "DateEntered", "a_date_entered_d", OdbcType.Date, -1, true),
-                    new TTypedColumnInfo(5, "HomeAdminChargesFlag", "a_home_admin_charges_flag_l", OdbcType.Bit, -1, true),
-                    new TTypedColumnInfo(6, "IltAdminChargesFlag", "a_ilt_admin_charges_flag_l", OdbcType.Bit, -1, true),
-                    new TTypedColumnInfo(7, "ReceiptLetterCode", "a_receipt_letter_code_c", OdbcType.VarChar, 16, false),
-                    new TTypedColumnInfo(8, "MethodOfGivingCode", "a_method_of_giving_code_c", OdbcType.VarChar, 24, false),
-                    new TTypedColumnInfo(9, "MethodOfPaymentCode", "a_method_of_payment_code_c", OdbcType.VarChar, 16, false),
-                    new TTypedColumnInfo(10, "DonorKey", "p_donor_key_n", OdbcType.Decimal, 10, true),
-                    new TTypedColumnInfo(11, "AdminCharge", "a_admin_charge_l", OdbcType.Bit, -1, false),
-                    new TTypedColumnInfo(12, "ReceiptNumber", "a_receipt_number_i", OdbcType.Int, -1, false),
-                    new TTypedColumnInfo(13, "LastDetailNumber", "a_last_detail_number_i", OdbcType.Int, -1, true),
-                    new TTypedColumnInfo(14, "Reference", "a_reference_c", OdbcType.VarChar, 20, false),
-                    new TTypedColumnInfo(15, "FirstTimeGift", "a_first_time_gift_l", OdbcType.Bit, -1, false),
-                    new TTypedColumnInfo(16, "ReceiptPrinted", "a_receipt_printed_l", OdbcType.Bit, -1, true),
-                    new TTypedColumnInfo(17, "Restricted", "a_restricted_l", OdbcType.Bit, -1, false),
-                    new TTypedColumnInfo(18, "BankingDetailsKey", "p_banking_details_key_i", OdbcType.Int, -1, true),
-                    new TTypedColumnInfo(19, "DateCreated", "s_date_created_d", OdbcType.Date, -1, false),
-                    new TTypedColumnInfo(20, "CreatedBy", "s_created_by_c", OdbcType.VarChar, 20, false),
-                    new TTypedColumnInfo(21, "DateModified", "s_date_modified_d", OdbcType.Date, -1, false),
-                    new TTypedColumnInfo(22, "ModifiedBy", "s_modified_by_c", OdbcType.VarChar, 20, false),
-                    new TTypedColumnInfo(23, "ModificationId", "s_modification_id_c", OdbcType.VarChar, 150, false)
-                },
-                new int[] {
-                    0, 1, 2
-                }));
-            return true;
-        }
-
-        /// constructor
-        public AGiftTable() :
-                base("AGift")
-        {
-        }
-
-        /// constructor
-        public AGiftTable(string ATablename) :
-                base(ATablename)
-        {
-        }
-
-        /// constructor for serialization
-        public AGiftTable(System.Runtime.Serialization.SerializationInfo info, System.Runtime.Serialization.StreamingContext context) :
-                base(info, context)
-        {
-        }
 
         /// create the columns
         protected override void InitClass()
@@ -9210,6 +9642,18 @@ namespace Ict.Petra.Shared.MFinance.Gift.Data
         public AGiftTable GetChangesTyped()
         {
             return ((AGiftTable)(base.GetChangesTypedInternal()));
+        }
+
+        /// return the CamelCase name of the table
+        public static string GetTableName()
+        {
+            return "AGift";
+        }
+
+        /// return the name of the table as it is used in the database
+        public static string GetTableDBName()
+        {
+            return "a_gift";
         }
 
         /// get an odbc parameter for the given column
@@ -10467,6 +10911,126 @@ namespace Ict.Petra.Shared.MFinance.Gift.Data
     [Serializable()]
     public class AGiftDetailTable : TTypedDataTable
     {
+        /// TableId for Ict.Common.Data generic functions
+        public static short TableId = 166;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnLedgerNumberId = 0;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnBatchNumberId = 1;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnGiftTransactionNumberId = 2;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnDetailNumberId = 3;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnRecipientLedgerNumberId = 4;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnGiftAmountId = 5;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnMotivationGroupCodeId = 6;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnMotivationDetailCodeId = 7;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnCommentOneTypeId = 8;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnGiftCommentOneId = 9;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnConfidentialGiftFlagId = 10;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnTaxDeductableId = 11;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnRecipientKeyId = 12;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnChargeFlagId = 13;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnCostCentreCodeId = 14;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnGiftAmountIntlId = 15;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnModifiedDetailId = 16;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnGiftTransactionAmountId = 17;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnIchNumberId = 18;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnMailingCodeId = 19;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnCommentTwoTypeId = 20;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnGiftCommentTwoId = 21;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnCommentThreeTypeId = 22;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnGiftCommentThreeId = 23;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnDateCreatedId = 24;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnCreatedById = 25;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnDateModifiedId = 26;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnModifiedById = 27;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnModificationIdId = 28;
+
+        private static bool FInitInfoValues = InitInfoValues();
+        private static bool InitInfoValues()
+        {
+            TableInfo.Add(TableId, new TTypedTableInfo(TableId, "AGiftDetail", "a_gift_detail",
+                new TTypedColumnInfo[] {
+                    new TTypedColumnInfo(0, "LedgerNumber", "a_ledger_number_i", "Ledger Number", OdbcType.Int, -1, true),
+                    new TTypedColumnInfo(1, "BatchNumber", "a_batch_number_i", "Gift Batch Number", OdbcType.Int, -1, true),
+                    new TTypedColumnInfo(2, "GiftTransactionNumber", "a_gift_transaction_number_i", "Gift Transaction Number", OdbcType.Int, -1, true),
+                    new TTypedColumnInfo(3, "DetailNumber", "a_detail_number_i", "Gift Number", OdbcType.Int, -1, true),
+                    new TTypedColumnInfo(4, "RecipientLedgerNumber", "a_recipient_ledger_number_n", "Recipient Ledger", OdbcType.Decimal, 10, true),
+                    new TTypedColumnInfo(5, "GiftAmount", "a_gift_amount_n", "Gift Amount", OdbcType.Decimal, 24, false),
+                    new TTypedColumnInfo(6, "MotivationGroupCode", "a_motivation_group_code_c", "Motivation Group", OdbcType.VarChar, 16, true),
+                    new TTypedColumnInfo(7, "MotivationDetailCode", "a_motivation_detail_code_c", "Motivation Detail", OdbcType.VarChar, 16, true),
+                    new TTypedColumnInfo(8, "CommentOneType", "a_comment_one_type_c", "Comment Type", OdbcType.VarChar, 24, false),
+                    new TTypedColumnInfo(9, "GiftCommentOne", "a_gift_comment_one_c", "Comment One", OdbcType.VarChar, 160, false),
+                    new TTypedColumnInfo(10, "ConfidentialGiftFlag", "a_confidential_gift_flag_l", "Confidential Gift", OdbcType.Bit, -1, true),
+                    new TTypedColumnInfo(11, "TaxDeductable", "a_tax_deductable_l", "Tax Deductable", OdbcType.Bit, -1, false),
+                    new TTypedColumnInfo(12, "RecipientKey", "p_recipient_key_n", "Recipient", OdbcType.Decimal, 10, true),
+                    new TTypedColumnInfo(13, "ChargeFlag", "a_charge_flag_l", "Charge Fee", OdbcType.Bit, -1, false),
+                    new TTypedColumnInfo(14, "CostCentreCode", "a_cost_centre_code_c", "Cost Centre Code", OdbcType.VarChar, 24, false),
+                    new TTypedColumnInfo(15, "GiftAmountIntl", "a_gift_amount_intl_n", "International Gift Amount", OdbcType.Decimal, 24, false),
+                    new TTypedColumnInfo(16, "ModifiedDetail", "a_modified_detail_l", "Part of a gift detail modification", OdbcType.Bit, -1, false),
+                    new TTypedColumnInfo(17, "GiftTransactionAmount", "a_gift_transaction_amount_n", "Transaction Gift Amount", OdbcType.Decimal, 24, true),
+                    new TTypedColumnInfo(18, "IchNumber", "a_ich_number_i", "ICH Process Number", OdbcType.Int, -1, true),
+                    new TTypedColumnInfo(19, "MailingCode", "p_mailing_code_c", "Mailing Code", OdbcType.VarChar, 50, false),
+                    new TTypedColumnInfo(20, "CommentTwoType", "a_comment_two_type_c", "Comment Type", OdbcType.VarChar, 24, false),
+                    new TTypedColumnInfo(21, "GiftCommentTwo", "a_gift_comment_two_c", "Comment Two", OdbcType.VarChar, 160, false),
+                    new TTypedColumnInfo(22, "CommentThreeType", "a_comment_three_type_c", "Comment Type", OdbcType.VarChar, 24, false),
+                    new TTypedColumnInfo(23, "GiftCommentThree", "a_gift_comment_three_c", "Comment Three", OdbcType.VarChar, 160, false),
+                    new TTypedColumnInfo(24, "DateCreated", "s_date_created_d", "Created Date", OdbcType.Date, -1, false),
+                    new TTypedColumnInfo(25, "CreatedBy", "s_created_by_c", "Created By", OdbcType.VarChar, 20, false),
+                    new TTypedColumnInfo(26, "DateModified", "s_date_modified_d", "Modified Date", OdbcType.Date, -1, false),
+                    new TTypedColumnInfo(27, "ModifiedBy", "s_modified_by_c", "Modified By", OdbcType.VarChar, 20, false),
+                    new TTypedColumnInfo(28, "ModificationId", "s_modification_id_c", "", OdbcType.VarChar, 150, false)
+                },
+                new int[] {
+                    0, 1, 2, 3
+                }));
+            return true;
+        }
+
+        /// constructor
+        public AGiftDetailTable() :
+                base("AGiftDetail")
+        {
+        }
+
+        /// constructor
+        public AGiftDetailTable(string ATablename) :
+                base(ATablename)
+        {
+        }
+
+        /// constructor for serialization
+        public AGiftDetailTable(System.Runtime.Serialization.SerializationInfo info, System.Runtime.Serialization.StreamingContext context) :
+                base(info, context)
+        {
+        }
+
         /// The four digit ledger number of the gift.
         public DataColumn ColumnLedgerNumber;
         /// Number of the gift batch containing this detail.
@@ -10525,68 +11089,6 @@ namespace Ict.Petra.Shared.MFinance.Gift.Data
         public DataColumn ColumnModifiedBy;
         /// This identifies the current version of the record.
         public DataColumn ColumnModificationId;
-
-        /// TableId for Ict.Common.Data generic functions
-        public static short TableId = 166;
-
-        private static bool FInitInfoValues = InitInfoValues();
-        private static bool InitInfoValues()
-        {
-            TableInfo.Add(TableId, new TTypedTableInfo(TableId, "AGiftDetail", "a_gift_detail",
-                new TTypedColumnInfo[] {
-                    new TTypedColumnInfo(0, "LedgerNumber", "a_ledger_number_i", OdbcType.Int, -1, true),
-                    new TTypedColumnInfo(1, "BatchNumber", "a_batch_number_i", OdbcType.Int, -1, true),
-                    new TTypedColumnInfo(2, "GiftTransactionNumber", "a_gift_transaction_number_i", OdbcType.Int, -1, true),
-                    new TTypedColumnInfo(3, "DetailNumber", "a_detail_number_i", OdbcType.Int, -1, true),
-                    new TTypedColumnInfo(4, "RecipientLedgerNumber", "a_recipient_ledger_number_n", OdbcType.Decimal, 10, true),
-                    new TTypedColumnInfo(5, "GiftAmount", "a_gift_amount_n", OdbcType.Decimal, 24, false),
-                    new TTypedColumnInfo(6, "MotivationGroupCode", "a_motivation_group_code_c", OdbcType.VarChar, 16, true),
-                    new TTypedColumnInfo(7, "MotivationDetailCode", "a_motivation_detail_code_c", OdbcType.VarChar, 16, true),
-                    new TTypedColumnInfo(8, "CommentOneType", "a_comment_one_type_c", OdbcType.VarChar, 24, false),
-                    new TTypedColumnInfo(9, "GiftCommentOne", "a_gift_comment_one_c", OdbcType.VarChar, 160, false),
-                    new TTypedColumnInfo(10, "ConfidentialGiftFlag", "a_confidential_gift_flag_l", OdbcType.Bit, -1, true),
-                    new TTypedColumnInfo(11, "TaxDeductable", "a_tax_deductable_l", OdbcType.Bit, -1, false),
-                    new TTypedColumnInfo(12, "RecipientKey", "p_recipient_key_n", OdbcType.Decimal, 10, true),
-                    new TTypedColumnInfo(13, "ChargeFlag", "a_charge_flag_l", OdbcType.Bit, -1, false),
-                    new TTypedColumnInfo(14, "CostCentreCode", "a_cost_centre_code_c", OdbcType.VarChar, 24, false),
-                    new TTypedColumnInfo(15, "GiftAmountIntl", "a_gift_amount_intl_n", OdbcType.Decimal, 24, false),
-                    new TTypedColumnInfo(16, "ModifiedDetail", "a_modified_detail_l", OdbcType.Bit, -1, false),
-                    new TTypedColumnInfo(17, "GiftTransactionAmount", "a_gift_transaction_amount_n", OdbcType.Decimal, 24, true),
-                    new TTypedColumnInfo(18, "IchNumber", "a_ich_number_i", OdbcType.Int, -1, true),
-                    new TTypedColumnInfo(19, "MailingCode", "p_mailing_code_c", OdbcType.VarChar, 50, false),
-                    new TTypedColumnInfo(20, "CommentTwoType", "a_comment_two_type_c", OdbcType.VarChar, 24, false),
-                    new TTypedColumnInfo(21, "GiftCommentTwo", "a_gift_comment_two_c", OdbcType.VarChar, 160, false),
-                    new TTypedColumnInfo(22, "CommentThreeType", "a_comment_three_type_c", OdbcType.VarChar, 24, false),
-                    new TTypedColumnInfo(23, "GiftCommentThree", "a_gift_comment_three_c", OdbcType.VarChar, 160, false),
-                    new TTypedColumnInfo(24, "DateCreated", "s_date_created_d", OdbcType.Date, -1, false),
-                    new TTypedColumnInfo(25, "CreatedBy", "s_created_by_c", OdbcType.VarChar, 20, false),
-                    new TTypedColumnInfo(26, "DateModified", "s_date_modified_d", OdbcType.Date, -1, false),
-                    new TTypedColumnInfo(27, "ModifiedBy", "s_modified_by_c", OdbcType.VarChar, 20, false),
-                    new TTypedColumnInfo(28, "ModificationId", "s_modification_id_c", OdbcType.VarChar, 150, false)
-                },
-                new int[] {
-                    0, 1, 2, 3
-                }));
-            return true;
-        }
-
-        /// constructor
-        public AGiftDetailTable() :
-                base("AGiftDetail")
-        {
-        }
-
-        /// constructor
-        public AGiftDetailTable(string ATablename) :
-                base(ATablename)
-        {
-        }
-
-        /// constructor for serialization
-        public AGiftDetailTable(System.Runtime.Serialization.SerializationInfo info, System.Runtime.Serialization.StreamingContext context) :
-                base(info, context)
-        {
-        }
 
         /// create the columns
         protected override void InitClass()
@@ -10692,6 +11194,18 @@ namespace Ict.Petra.Shared.MFinance.Gift.Data
         public AGiftDetailTable GetChangesTyped()
         {
             return ((AGiftDetailTable)(base.GetChangesTypedInternal()));
+        }
+
+        /// return the CamelCase name of the table
+        public static string GetTableName()
+        {
+            return "AGiftDetail";
+        }
+
+        /// return the name of the table as it is used in the database
+        public static string GetTableDBName()
+        {
+            return "a_gift_detail";
         }
 
         /// get an odbc parameter for the given column

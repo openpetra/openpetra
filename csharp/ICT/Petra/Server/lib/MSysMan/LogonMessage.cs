@@ -97,7 +97,7 @@ namespace Ict.Petra.Server.MSysMan.Maintenance
                     out NewTransaction);
                 try
                 {
-                    if (SLogonMessageAccess.CountByPrimaryKey(ALanguageCode, ReadTransaction) != 0)
+                    if (SLogonMessageAccess.Exists(ALanguageCode, ReadTransaction))
                     {
                         SLogonMessageAccess.LoadByPrimaryKey(out LogonMessageTable, ALanguageCode, ReadTransaction);
                         ReturnValue = LogonMessageTable[0].LogonMessage;

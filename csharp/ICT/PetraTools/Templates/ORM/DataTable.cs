@@ -23,10 +23,9 @@ namespace {#NAMESPACE}
 [Serializable()]
 public class {#TABLENAME}Table : TTypedDataTable
 {
-    {#DATACOLUMNS}
-    
     /// TableId for Ict.Common.Data generic functions
     public static short TableId = {#TABLEID};
+    {#COLUMNIDS}
     
     private static bool FInitInfoValues = InitInfoValues();
     private static bool InitInfoValues()
@@ -58,6 +57,8 @@ public class {#TABLENAME}Table : TTypedDataTable
             base(info, context)
     {
     }
+
+    {#DATACOLUMNS}
 
     /// create the columns
     protected override void InitClass()
@@ -113,6 +114,18 @@ public class {#TABLENAME}Table : TTypedDataTable
         return (({#TABLENAME}Table)(base.GetChangesTypedInternal()));
     }
 
+    /// return the CamelCase name of the table
+    public static string GetTableName()
+    {
+        return "{#TABLENAME}";
+    }
+
+    /// return the name of the table as it is used in the database
+    public static string GetTableDBName()
+    {
+        return "{#DBTABLENAME}";
+    }
+
     /// get an odbc parameter for the given column
     public override OdbcParameter CreateOdbcParameter(Int32 AColumnNr)
     {
@@ -123,12 +136,16 @@ public class {#TABLENAME}Table : TTypedDataTable
 
 }
 
+{##COLUMNIDS}
+/// used for generic TTypedDataTable functions
+public static short Column{#COLUMNNAME}Id = {#COLUMNORDERNUMBER};
+
 {##DATACOLUMN}
 {#COLUMN_DESCRIPTION}
 public DataColumn Column{#COLUMNNAME};
 
 {##COLUMNINFO}
-new TTypedColumnInfo({#COLUMNORDERNUMBER}, "{#COLUMNNAME}", "{#COLUMNDBNAME}", {#COLUMNODBCTYPE}, {#COLUMNLENGTH}, {#COLUMNNOTNULL}){#COLUMNCOMMA}
+new TTypedColumnInfo({#COLUMNORDERNUMBER}, "{#COLUMNNAME}", "{#COLUMNDBNAME}", "{#COLUMNLABEL}", {#COLUMNODBCTYPE}, {#COLUMNLENGTH}, {#COLUMNNOTNULL}){#COLUMNCOMMA}
 
 {##INITCLASSADDCOLUMN}
 this.Columns.Add(new System.Data.DataColumn("{#COLUMNDBNAME}", typeof({#COLUMNDOTNETTYPE})));

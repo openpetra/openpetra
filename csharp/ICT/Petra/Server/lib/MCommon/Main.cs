@@ -958,84 +958,68 @@ namespace Ict.Petra.Server.MCommon
         /// <summary>
         /// constructor
         /// </summary>
-        /// <param name="ADBTable"></param>
-        /// <param name="ATableName"></param>
-        /// <param name="ADBColumn"></param>
+        /// <param name="ATableId"></param>
+        /// <param name="AColumnNr"></param>
         /// <param name="ACriteriaDataRow"></param>
         /// <param name="ACriteriaField"></param>
         /// <param name="ACriteriaMatchField"></param>
         /// <param name="AWhereClause"></param>
         /// <param name="AIntParamArray"></param>
-        public TDynamicSearchHelper(TTypedDataTable ADBTable,
-            string ATableName,
-            DataColumn ADBColumn,
+        public TDynamicSearchHelper(
+            short ATableId,
+            short AColumnNr,
             DataRow ACriteriaDataRow,
             String ACriteriaField,
             String ACriteriaMatchField,
             ref String AWhereClause,
             ref ArrayList AIntParamArray)
         {
-            object ParameterValue;
-            OdbcParameter miParam;
-
-            FDBFieldName = "PUB_" + ATableName + "." + ADBColumn.ColumnName;
             FDataRow = ACriteriaDataRow;
             FCriteriaField = ACriteriaField;
             FMatchField = ACriteriaMatchField;
 
-            ParameterValue = GetParameterValue();
+            FDBFieldName = "PUB_" + 
+                TTypedDataTable.GetTableNameSQL(ATableId) + 
+                "." + 
+                TTypedDataTable.GetColumnNameSQL(ATableId, AColumnNr);
+
+            object ParameterValue = GetParameterValue();
 
             if (ParameterValue.ToString() != String.Empty)
             {
-                miParam = ADBTable.CreateOdbcParameter(ADBColumn);
+                OdbcParameter miParam = TTypedDataTable.CreateOdbcParameter(ATableId, AColumnNr);
                 miParam.Value = ParameterValue;
 
                 AIntParamArray.Add(miParam);
                 AWhereClause = AWhereClause + GetWhereString();
             }
+            
         }
 
         /// <summary>
         /// constructor
         /// </summary>
-        /// <param name="ADBTable"></param>
-        /// <param name="ATableName"></param>
-        /// <param name="ADBColumn"></param>
+        /// <param name="ATableId"></param>
+        /// <param name="AColumnNr"></param>
         /// <param name="ACriteriaDataRow"></param>
         /// <param name="ACriteriaField"></param>
         /// <param name="ACriteriaMatchField"></param>
         /// <param name="AWhereClause"></param>
         /// <param name="AIntParamArray"></param>
         /// <param name="ASearchDelimiter"></param>
-        public TDynamicSearchHelper(TTypedDataTable ADBTable,
-            string ATableName,
-            DataColumn ADBColumn,
+        public TDynamicSearchHelper(
+            short ATableId,
+            short AColumnNr,
             DataRow ACriteriaDataRow,
             String ACriteriaField,
             String ACriteriaMatchField,
             ref String AWhereClause,
             ref ArrayList AIntParamArray,
             String ASearchDelimiter)
+            : this(ATableId, AColumnNr, ACriteriaDataRow, ACriteriaField, 
+                   ACriteriaMatchField, ref AWhereClause, ref AIntParamArray)
         {
-            object ParameterValue;
-            OdbcParameter miParam;
-
-            FDBFieldName = "PUB_" + ATableName + "." + ADBColumn.ColumnName;
-            FDataRow = ACriteriaDataRow;
-            FCriteriaField = ACriteriaField;
-            FMatchField = ACriteriaMatchField;
             FSearchDelimiter = ASearchDelimiter;
-
-            ParameterValue = GetParameterValue();
-
-            if (ParameterValue.ToString() != String.Empty)
-            {
-                miParam = ADBTable.CreateOdbcParameter(ADBColumn);
-                miParam.Value = GetParameterValue();
-
-                AIntParamArray.Add(miParam);
-                AWhereClause = AWhereClause + GetWhereString();
-            }
         }
 
         /// <summary>

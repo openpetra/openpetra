@@ -476,18 +476,24 @@ namespace Ict.Petra.Server.MCommon.UIConnectors
                     SubmissionResult = SubmitChangesServerSide(ref ValueTable, SubmitChangesTransaction, out AVerificationResult);
                 }
             }
+#if DEBUGMODE
             catch (Exception Exp)
             {
                 DBAccess.GDBAccessObj.RollbackTransaction();
-#if DEBUGMODE
                 if (TSrvSetting.DL >= 8)
                 {
                     Console.WriteLine(
                         this.GetType().FullName + ".SubmitChanges: Exception occured, Transaction ROLLED BACK. Exception: " + Exp.ToString());
                 }
-#endif
                 throw;
             }
+#else
+            catch (Exception)
+            {
+                DBAccess.GDBAccessObj.RollbackTransaction();
+                throw;
+            }
+#endif
 
             if (SubmissionResult == TSubmitChangesResult.scrOK)
             {

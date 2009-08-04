@@ -32,6 +32,7 @@ using System.Collections;
 using Ict.Petra.Shared;
 using Ict.Common;
 using Ict.Common.DB;
+using Ict.Common.Data;
 using Ict.Common.Verification;
 using Ict.Petra.Server.MCommon;
 using Ict.Petra.Shared.Interfaces.AsynchronousExecution;
@@ -299,8 +300,7 @@ namespace Ict.Petra.Server.MFinance.AccountsPayable.UIConnectors
                 // search by partner key
                 Int64 SupplierPartnerKey = Convert.ToInt64(ACriteriaRow["PartnerKey"]);
                 WhereClause += String.Format(" AND PUB_{0}.{1} = ?", AApSupplierTable.GetTableDBName(), AApSupplierTable.GetPartnerKeyDBName());
-                AApSupplierTable Table = new AApSupplierTable();
-                OdbcParameter Param = Table.CreateOdbcParameter(Table.ColumnPartnerKey);
+                OdbcParameter Param = TTypedDataTable.CreateOdbcParameter(AApSupplierTable.TableId, AApSupplierTable.ColumnPartnerKeyId);
                 Param.Value = SupplierPartnerKey;
                 InternalParameters.Add(Param);
             }
@@ -308,8 +308,7 @@ namespace Ict.Petra.Server.MFinance.AccountsPayable.UIConnectors
             {
                 // search by supplier name
                 WhereClause += String.Format(" AND {0} LIKE ?", PPartnerTable.GetPartnerShortNameDBName());
-                PPartnerTable Table = new PPartnerTable();
-                OdbcParameter Param = Table.CreateOdbcParameter(Table.ColumnPartnerShortName);
+                OdbcParameter Param = TTypedDataTable.CreateOdbcParameter(PPartnerTable.TableId, PPartnerTable.ColumnPartnerShortNameId);
 
                 // TODO: add LIKE % in the right place, defined by user
                 Param.Value = ACriteriaRow["SupplierId"] + "%";

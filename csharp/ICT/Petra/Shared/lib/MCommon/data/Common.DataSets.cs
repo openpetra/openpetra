@@ -338,39 +338,38 @@ namespace Ict.Petra.Shared.MCommon.Data
     [Serializable()]
     public class CacheableTablesTDSContentsTable : TTypedDataTable
     {
-        /// Name of the Cached DataTable
-        public DataColumn ColumnTableName;
-        /// Tells whether the data in the Cached DataTable is the same than the external source of the data
-        public DataColumn ColumnDataUpToDate;
-        /// Tells whether data in the Cached DataTable was changed
-        public DataColumn ColumnDataChanged;
-        /// Tells whether changed data in the CachedDataTable was saved externally
-        public DataColumn ColumnChangesSavedExternally;
-        /// Date and Time when the DataTable was added to the Cache
-        public DataColumn ColumnCachedSince;
-        /// Date and Time when the DataTable was last handed out of the Cache
-        public DataColumn ColumnLastAccessed;
-        /// HashCode of the Cached DataTable
-        public DataColumn ColumnHashCode;
-        /// Size of the contents of the Cached DataTable (in Bytes)
-        public DataColumn ColumnTableSize;
-
         /// TableId for Ict.Common.Data generic functions
         public static short TableId = 5000;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnTableNameId = 0;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnDataUpToDateId = 1;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnDataChangedId = 2;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnChangesSavedExternallyId = 3;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnCachedSinceId = 4;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnLastAccessedId = 5;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnHashCodeId = 6;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnTableSizeId = 7;
 
         private static bool FInitInfoValues = InitInfoValues();
         private static bool InitInfoValues()
         {
             TableInfo.Add(TableId, new TTypedTableInfo(TableId, "CacheableTablesTDSContents", "CacheableTablesTDSContents",
                 new TTypedColumnInfo[] {
-                    new TTypedColumnInfo(0, "TableName", "TableName", OdbcType.Int, -1, false),
-                    new TTypedColumnInfo(1, "DataUpToDate", "DataUpToDate", OdbcType.Int, -1, false),
-                    new TTypedColumnInfo(2, "DataChanged", "DataChanged", OdbcType.Int, -1, false),
-                    new TTypedColumnInfo(3, "ChangesSavedExternally", "ChangesSavedExternally", OdbcType.Int, -1, false),
-                    new TTypedColumnInfo(4, "CachedSince", "CachedSince", OdbcType.Int, -1, false),
-                    new TTypedColumnInfo(5, "LastAccessed", "LastAccessed", OdbcType.Int, -1, false),
-                    new TTypedColumnInfo(6, "HashCode", "HashCode", OdbcType.Int, -1, false),
-                    new TTypedColumnInfo(7, "TableSize", "TableSize", OdbcType.Int, -1, false)
+                    new TTypedColumnInfo(0, "TableName", "TableName", "", OdbcType.Int, -1, false),
+                    new TTypedColumnInfo(1, "DataUpToDate", "DataUpToDate", "", OdbcType.Int, -1, false),
+                    new TTypedColumnInfo(2, "DataChanged", "DataChanged", "", OdbcType.Int, -1, false),
+                    new TTypedColumnInfo(3, "ChangesSavedExternally", "ChangesSavedExternally", "", OdbcType.Int, -1, false),
+                    new TTypedColumnInfo(4, "CachedSince", "CachedSince", "", OdbcType.Int, -1, false),
+                    new TTypedColumnInfo(5, "LastAccessed", "LastAccessed", "", OdbcType.Int, -1, false),
+                    new TTypedColumnInfo(6, "HashCode", "HashCode", "", OdbcType.Int, -1, false),
+                    new TTypedColumnInfo(7, "TableSize", "TableSize", "", OdbcType.Int, -1, false)
                 },
                 new int[] {
 
@@ -395,6 +394,23 @@ namespace Ict.Petra.Shared.MCommon.Data
                 base(info, context)
         {
         }
+
+        /// Name of the Cached DataTable
+        public DataColumn ColumnTableName;
+        /// Tells whether the data in the Cached DataTable is the same than the external source of the data
+        public DataColumn ColumnDataUpToDate;
+        /// Tells whether data in the Cached DataTable was changed
+        public DataColumn ColumnDataChanged;
+        /// Tells whether changed data in the CachedDataTable was saved externally
+        public DataColumn ColumnChangesSavedExternally;
+        /// Date and Time when the DataTable was added to the Cache
+        public DataColumn ColumnCachedSince;
+        /// Date and Time when the DataTable was last handed out of the Cache
+        public DataColumn ColumnLastAccessed;
+        /// HashCode of the Cached DataTable
+        public DataColumn ColumnHashCode;
+        /// Size of the contents of the Cached DataTable (in Bytes)
+        public DataColumn ColumnTableSize;
 
         /// create the columns
         protected override void InitClass()
@@ -458,6 +474,18 @@ namespace Ict.Petra.Shared.MCommon.Data
         public CacheableTablesTDSContentsTable GetChangesTyped()
         {
             return ((CacheableTablesTDSContentsTable)(base.GetChangesTypedInternal()));
+        }
+
+        /// return the CamelCase name of the table
+        public static string GetTableName()
+        {
+            return "CacheableTablesTDSContents";
+        }
+
+        /// return the name of the table as it is used in the database
+        public static string GetTableDBName()
+        {
+            return "CacheableTablesTDSContents";
         }
 
         /// get an odbc parameter for the given column

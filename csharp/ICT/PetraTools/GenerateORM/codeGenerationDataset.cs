@@ -266,13 +266,16 @@ namespace Ict.Tools.CodeGeneration.DataStore
                                 tableNodes = tableNodes.NextSibling;
                             }
 
-                            tables.Add(TXMLParser.GetAttribute(curChild, "sqltable"), table);
-
                             if (OverloadTable)
                             {
                                 tabletype = datasetname + TTable.NiceTableName(table.strName);
+                                if (TXMLParser.HasAttribute(curChild, "name"))
+                                {
+                                    tabletype = datasetname + TXMLParser.GetAttribute(curChild, "name");
+                                }
 
-                                table.strName = tabletype;
+                                table.strDotNetName = tabletype;
+
                                 // set tableid
                                 table.order = DataSetTableIdCounter++;
 
@@ -281,6 +284,8 @@ namespace Ict.Tools.CodeGeneration.DataStore
                                 codeGenerationTable.InsertRowDefinition(snippetDataset, table, "TABLELOOP");
                             }
 
+                            tables.Add(table.tableorig, table);
+                            
                             AddTableToDataset(tabletype, variablename, snippetDataset);
                         }
 
@@ -316,6 +321,7 @@ namespace Ict.Tools.CodeGeneration.DataStore
                             customTable.order = DataSetTableIdCounter++;
                             customTable.strDescription = TXMLParser.GetAttribute(curChild, "comment");
                             customTable.strName = tabletype;
+                            customTable.strDotNetName = tabletype;
 
                             while (customTableNodes != null)
                             {

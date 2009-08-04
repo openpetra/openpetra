@@ -42,36 +42,35 @@ namespace Ict.Petra.Shared.MFinance.AR.Data
     [Serializable()]
     public class ATaxTypeTable : TTypedDataTable
     {
-        /// This is whether it is GST, VAT
-        public DataColumn ColumnTaxTypeCode;
-        /// This is a short description which is 32 characters long
-        public DataColumn ColumnTaxTypeDescription;
-        /// The date the record was created.
-        public DataColumn ColumnDateCreated;
-        /// User ID of who created this record.
-        public DataColumn ColumnCreatedBy;
-        /// The date the record was modified.
-        public DataColumn ColumnDateModified;
-        /// User ID of who last modified this record.
-        public DataColumn ColumnModifiedBy;
-        /// This identifies the current version of the record.
-        public DataColumn ColumnModificationId;
-
         /// TableId for Ict.Common.Data generic functions
         public static short TableId = 106;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnTaxTypeCodeId = 0;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnTaxTypeDescriptionId = 1;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnDateCreatedId = 2;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnCreatedById = 3;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnDateModifiedId = 4;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnModifiedById = 5;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnModificationIdId = 6;
 
         private static bool FInitInfoValues = InitInfoValues();
         private static bool InitInfoValues()
         {
             TableInfo.Add(TableId, new TTypedTableInfo(TableId, "ATaxType", "a_tax_type",
                 new TTypedColumnInfo[] {
-                    new TTypedColumnInfo(0, "TaxTypeCode", "a_tax_type_code_c", OdbcType.VarChar, 16, true),
-                    new TTypedColumnInfo(1, "TaxTypeDescription", "a_tax_type_description_c", OdbcType.VarChar, 64, false),
-                    new TTypedColumnInfo(2, "DateCreated", "s_date_created_d", OdbcType.Date, -1, false),
-                    new TTypedColumnInfo(3, "CreatedBy", "s_created_by_c", OdbcType.VarChar, 20, false),
-                    new TTypedColumnInfo(4, "DateModified", "s_date_modified_d", OdbcType.Date, -1, false),
-                    new TTypedColumnInfo(5, "ModifiedBy", "s_modified_by_c", OdbcType.VarChar, 20, false),
-                    new TTypedColumnInfo(6, "ModificationId", "s_modification_id_c", OdbcType.VarChar, 150, false)
+                    new TTypedColumnInfo(0, "TaxTypeCode", "a_tax_type_code_c", "Tax Type Code", OdbcType.VarChar, 16, true),
+                    new TTypedColumnInfo(1, "TaxTypeDescription", "a_tax_type_description_c", "Description", OdbcType.VarChar, 64, false),
+                    new TTypedColumnInfo(2, "DateCreated", "s_date_created_d", "Created Date", OdbcType.Date, -1, false),
+                    new TTypedColumnInfo(3, "CreatedBy", "s_created_by_c", "Created By", OdbcType.VarChar, 20, false),
+                    new TTypedColumnInfo(4, "DateModified", "s_date_modified_d", "Modified Date", OdbcType.Date, -1, false),
+                    new TTypedColumnInfo(5, "ModifiedBy", "s_modified_by_c", "Modified By", OdbcType.VarChar, 20, false),
+                    new TTypedColumnInfo(6, "ModificationId", "s_modification_id_c", "", OdbcType.VarChar, 150, false)
                 },
                 new int[] {
                     0
@@ -96,6 +95,21 @@ namespace Ict.Petra.Shared.MFinance.AR.Data
                 base(info, context)
         {
         }
+
+        /// This is whether it is GST, VAT
+        public DataColumn ColumnTaxTypeCode;
+        /// This is a short description which is 32 characters long
+        public DataColumn ColumnTaxTypeDescription;
+        /// The date the record was created.
+        public DataColumn ColumnDateCreated;
+        /// User ID of who created this record.
+        public DataColumn ColumnCreatedBy;
+        /// The date the record was modified.
+        public DataColumn ColumnDateModified;
+        /// User ID of who last modified this record.
+        public DataColumn ColumnModifiedBy;
+        /// This identifies the current version of the record.
+        public DataColumn ColumnModificationId;
 
         /// create the columns
         protected override void InitClass()
@@ -157,6 +171,18 @@ namespace Ict.Petra.Shared.MFinance.AR.Data
         public ATaxTypeTable GetChangesTyped()
         {
             return ((ATaxTypeTable)(base.GetChangesTypedInternal()));
+        }
+
+        /// return the CamelCase name of the table
+        public static string GetTableName()
+        {
+            return "ATaxType";
+        }
+
+        /// return the name of the table as it is used in the database
+        public static string GetTableDBName()
+        {
+            return "a_tax_type";
         }
 
         /// get an odbc parameter for the given column
@@ -547,51 +573,50 @@ namespace Ict.Petra.Shared.MFinance.AR.Data
     [Serializable()]
     public class ATaxTableTable : TTypedDataTable
     {
-        /// This is used as a key field in most of the accounting system files
-        public DataColumn ColumnLedgerNumber;
-        /// The tax type is always the same, e.g. VAT
-        public DataColumn ColumnTaxTypeCode;
-        /// this describes whether it is e.g. the standard, reduced or zero rate of VAT
-        public DataColumn ColumnTaxRateCode;
-        /// this describes when this particular percentage rate has become valid by law
-        public DataColumn ColumnTaxValidFrom;
-        /// This is a short description which is 32 charcters long
-        public DataColumn ColumnTaxRateDescription;
-        /// Tax rate
-        public DataColumn ColumnTaxRate;
-        /// flag that prevents this rate from being used, e.g. if it has been replaced by another rate
-        public DataColumn ColumnActive;
-        /// The date the record was created.
-        public DataColumn ColumnDateCreated;
-        /// User ID of who created this record.
-        public DataColumn ColumnCreatedBy;
-        /// The date the record was modified.
-        public DataColumn ColumnDateModified;
-        /// User ID of who last modified this record.
-        public DataColumn ColumnModifiedBy;
-        /// This identifies the current version of the record.
-        public DataColumn ColumnModificationId;
-
         /// TableId for Ict.Common.Data generic functions
         public static short TableId = 108;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnLedgerNumberId = 0;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnTaxTypeCodeId = 1;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnTaxRateCodeId = 2;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnTaxValidFromId = 3;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnTaxRateDescriptionId = 4;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnTaxRateId = 5;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnActiveId = 6;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnDateCreatedId = 7;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnCreatedById = 8;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnDateModifiedId = 9;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnModifiedById = 10;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnModificationIdId = 11;
 
         private static bool FInitInfoValues = InitInfoValues();
         private static bool InitInfoValues()
         {
             TableInfo.Add(TableId, new TTypedTableInfo(TableId, "ATaxTable", "a_tax_table",
                 new TTypedColumnInfo[] {
-                    new TTypedColumnInfo(0, "LedgerNumber", "a_ledger_number_i", OdbcType.Int, -1, true),
-                    new TTypedColumnInfo(1, "TaxTypeCode", "a_tax_type_code_c", OdbcType.VarChar, 16, true),
-                    new TTypedColumnInfo(2, "TaxRateCode", "a_tax_rate_code_c", OdbcType.VarChar, 16, true),
-                    new TTypedColumnInfo(3, "TaxValidFrom", "a_tax_valid_from_d", OdbcType.Date, -1, true),
-                    new TTypedColumnInfo(4, "TaxRateDescription", "a_tax_rate_description_c", OdbcType.VarChar, 64, false),
-                    new TTypedColumnInfo(5, "TaxRate", "a_tax_rate_n", OdbcType.Decimal, 24, false),
-                    new TTypedColumnInfo(6, "Active", "a_active_l", OdbcType.Bit, -1, false),
-                    new TTypedColumnInfo(7, "DateCreated", "s_date_created_d", OdbcType.Date, -1, false),
-                    new TTypedColumnInfo(8, "CreatedBy", "s_created_by_c", OdbcType.VarChar, 20, false),
-                    new TTypedColumnInfo(9, "DateModified", "s_date_modified_d", OdbcType.Date, -1, false),
-                    new TTypedColumnInfo(10, "ModifiedBy", "s_modified_by_c", OdbcType.VarChar, 20, false),
-                    new TTypedColumnInfo(11, "ModificationId", "s_modification_id_c", OdbcType.VarChar, 150, false)
+                    new TTypedColumnInfo(0, "LedgerNumber", "a_ledger_number_i", "Ledger Number", OdbcType.Int, -1, true),
+                    new TTypedColumnInfo(1, "TaxTypeCode", "a_tax_type_code_c", "Tax Type Code", OdbcType.VarChar, 16, true),
+                    new TTypedColumnInfo(2, "TaxRateCode", "a_tax_rate_code_c", "Tax Rate Code", OdbcType.VarChar, 16, true),
+                    new TTypedColumnInfo(3, "TaxValidFrom", "a_tax_valid_from_d", "a_tax_valid_from_d", OdbcType.Date, -1, true),
+                    new TTypedColumnInfo(4, "TaxRateDescription", "a_tax_rate_description_c", "Description", OdbcType.VarChar, 64, false),
+                    new TTypedColumnInfo(5, "TaxRate", "a_tax_rate_n", "Tax Rate", OdbcType.Decimal, 24, false),
+                    new TTypedColumnInfo(6, "Active", "a_active_l", "a_active_l", OdbcType.Bit, -1, false),
+                    new TTypedColumnInfo(7, "DateCreated", "s_date_created_d", "Created Date", OdbcType.Date, -1, false),
+                    new TTypedColumnInfo(8, "CreatedBy", "s_created_by_c", "Created By", OdbcType.VarChar, 20, false),
+                    new TTypedColumnInfo(9, "DateModified", "s_date_modified_d", "Modified Date", OdbcType.Date, -1, false),
+                    new TTypedColumnInfo(10, "ModifiedBy", "s_modified_by_c", "Modified By", OdbcType.VarChar, 20, false),
+                    new TTypedColumnInfo(11, "ModificationId", "s_modification_id_c", "", OdbcType.VarChar, 150, false)
                 },
                 new int[] {
                     0, 1, 2, 3
@@ -616,6 +641,31 @@ namespace Ict.Petra.Shared.MFinance.AR.Data
                 base(info, context)
         {
         }
+
+        /// This is used as a key field in most of the accounting system files
+        public DataColumn ColumnLedgerNumber;
+        /// The tax type is always the same, e.g. VAT
+        public DataColumn ColumnTaxTypeCode;
+        /// this describes whether it is e.g. the standard, reduced or zero rate of VAT
+        public DataColumn ColumnTaxRateCode;
+        /// this describes when this particular percentage rate has become valid by law
+        public DataColumn ColumnTaxValidFrom;
+        /// This is a short description which is 32 charcters long
+        public DataColumn ColumnTaxRateDescription;
+        /// Tax rate
+        public DataColumn ColumnTaxRate;
+        /// flag that prevents this rate from being used, e.g. if it has been replaced by another rate
+        public DataColumn ColumnActive;
+        /// The date the record was created.
+        public DataColumn ColumnDateCreated;
+        /// User ID of who created this record.
+        public DataColumn ColumnCreatedBy;
+        /// The date the record was modified.
+        public DataColumn ColumnDateModified;
+        /// User ID of who last modified this record.
+        public DataColumn ColumnModifiedBy;
+        /// This identifies the current version of the record.
+        public DataColumn ColumnModificationId;
 
         /// create the columns
         protected override void InitClass()
@@ -687,6 +737,18 @@ namespace Ict.Petra.Shared.MFinance.AR.Data
         public ATaxTableTable GetChangesTyped()
         {
             return ((ATaxTableTable)(base.GetChangesTypedInternal()));
+        }
+
+        /// return the CamelCase name of the table
+        public static string GetTableName()
+        {
+            return "ATaxTable";
+        }
+
+        /// return the name of the table as it is used in the database
+        public static string GetTableDBName()
+        {
+            return "a_tax_table";
         }
 
         /// get an odbc parameter for the given column
@@ -1332,39 +1394,38 @@ namespace Ict.Petra.Shared.MFinance.AR.Data
     [Serializable()]
     public class AArCategoryTable : TTypedDataTable
     {
-        /// categories help to specify certain discounts and group articles etc
-        public DataColumn ColumnArCategoryCode;
-        /// description of this category
-        public DataColumn ColumnArDescription;
-        /// description of this category in the local language
-        public DataColumn ColumnArLocalDescription;
-        /// The date the record was created.
-        public DataColumn ColumnDateCreated;
-        /// User ID of who created this record.
-        public DataColumn ColumnCreatedBy;
-        /// The date the record was modified.
-        public DataColumn ColumnDateModified;
-        /// User ID of who last modified this record.
-        public DataColumn ColumnModifiedBy;
-        /// This identifies the current version of the record.
-        public DataColumn ColumnModificationId;
-
         /// TableId for Ict.Common.Data generic functions
         public static short TableId = 184;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnArCategoryCodeId = 0;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnArDescriptionId = 1;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnArLocalDescriptionId = 2;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnDateCreatedId = 3;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnCreatedById = 4;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnDateModifiedId = 5;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnModifiedById = 6;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnModificationIdId = 7;
 
         private static bool FInitInfoValues = InitInfoValues();
         private static bool InitInfoValues()
         {
             TableInfo.Add(TableId, new TTypedTableInfo(TableId, "AArCategory", "a_ar_category",
                 new TTypedColumnInfo[] {
-                    new TTypedColumnInfo(0, "ArCategoryCode", "a_ar_category_code_c", OdbcType.VarChar, 100, true),
-                    new TTypedColumnInfo(1, "ArDescription", "a_ar_description_c", OdbcType.VarChar, 300, false),
-                    new TTypedColumnInfo(2, "ArLocalDescription", "a_ar_local_description_c", OdbcType.VarChar, 300, false),
-                    new TTypedColumnInfo(3, "DateCreated", "s_date_created_d", OdbcType.Date, -1, false),
-                    new TTypedColumnInfo(4, "CreatedBy", "s_created_by_c", OdbcType.VarChar, 20, false),
-                    new TTypedColumnInfo(5, "DateModified", "s_date_modified_d", OdbcType.Date, -1, false),
-                    new TTypedColumnInfo(6, "ModifiedBy", "s_modified_by_c", OdbcType.VarChar, 20, false),
-                    new TTypedColumnInfo(7, "ModificationId", "s_modification_id_c", OdbcType.VarChar, 150, false)
+                    new TTypedColumnInfo(0, "ArCategoryCode", "a_ar_category_code_c", "a_ar_category_code_c", OdbcType.VarChar, 100, true),
+                    new TTypedColumnInfo(1, "ArDescription", "a_ar_description_c", "a_ar_description_c", OdbcType.VarChar, 300, false),
+                    new TTypedColumnInfo(2, "ArLocalDescription", "a_ar_local_description_c", "a_ar_local_description_c", OdbcType.VarChar, 300, false),
+                    new TTypedColumnInfo(3, "DateCreated", "s_date_created_d", "Created Date", OdbcType.Date, -1, false),
+                    new TTypedColumnInfo(4, "CreatedBy", "s_created_by_c", "Created By", OdbcType.VarChar, 20, false),
+                    new TTypedColumnInfo(5, "DateModified", "s_date_modified_d", "Modified Date", OdbcType.Date, -1, false),
+                    new TTypedColumnInfo(6, "ModifiedBy", "s_modified_by_c", "Modified By", OdbcType.VarChar, 20, false),
+                    new TTypedColumnInfo(7, "ModificationId", "s_modification_id_c", "", OdbcType.VarChar, 150, false)
                 },
                 new int[] {
                     0
@@ -1389,6 +1450,23 @@ namespace Ict.Petra.Shared.MFinance.AR.Data
                 base(info, context)
         {
         }
+
+        /// categories help to specify certain discounts and group articles etc
+        public DataColumn ColumnArCategoryCode;
+        /// description of this category
+        public DataColumn ColumnArDescription;
+        /// description of this category in the local language
+        public DataColumn ColumnArLocalDescription;
+        /// The date the record was created.
+        public DataColumn ColumnDateCreated;
+        /// User ID of who created this record.
+        public DataColumn ColumnCreatedBy;
+        /// The date the record was modified.
+        public DataColumn ColumnDateModified;
+        /// User ID of who last modified this record.
+        public DataColumn ColumnModifiedBy;
+        /// This identifies the current version of the record.
+        public DataColumn ColumnModificationId;
 
         /// create the columns
         protected override void InitClass()
@@ -1452,6 +1530,18 @@ namespace Ict.Petra.Shared.MFinance.AR.Data
         public AArCategoryTable GetChangesTyped()
         {
             return ((AArCategoryTable)(base.GetChangesTypedInternal()));
+        }
+
+        /// return the CamelCase name of the table
+        public static string GetTableName()
+        {
+            return "AArCategory";
+        }
+
+        /// return the name of the table as it is used in the database
+        public static string GetTableDBName()
+        {
+            return "a_ar_category";
         }
 
         /// get an odbc parameter for the given column
@@ -1893,48 +1983,47 @@ namespace Ict.Petra.Shared.MFinance.AR.Data
     [Serializable()]
     public class AArArticleTable : TTypedDataTable
     {
-        /// code that uniquely identifies the item; can also be a code of a group of equally priced items
-        public DataColumn ColumnArArticleCode;
-        /// this article belongs to a certain category (catering, hospitality, store, fees)
-        public DataColumn ColumnArCategoryCode;
-        /// this article falls into a special tax/VAT category
-        public DataColumn ColumnTaxTypeCode;
-        /// describes whether this describes a specific item, e.g. book, or a group of equally priced items
-        public DataColumn ColumnArSpecificArticle;
-        /// description of this article
-        public DataColumn ColumnArDescription;
-        /// description of this article in the local language
-        public DataColumn ColumnArLocalDescription;
-        /// The date the record was created.
-        public DataColumn ColumnDateCreated;
-        /// User ID of who created this record.
-        public DataColumn ColumnCreatedBy;
-        /// The date the record was modified.
-        public DataColumn ColumnDateModified;
-        /// User ID of who last modified this record.
-        public DataColumn ColumnModifiedBy;
-        /// This identifies the current version of the record.
-        public DataColumn ColumnModificationId;
-
         /// TableId for Ict.Common.Data generic functions
         public static short TableId = 185;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnArArticleCodeId = 0;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnArCategoryCodeId = 1;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnTaxTypeCodeId = 2;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnArSpecificArticleId = 3;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnArDescriptionId = 4;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnArLocalDescriptionId = 5;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnDateCreatedId = 6;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnCreatedById = 7;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnDateModifiedId = 8;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnModifiedById = 9;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnModificationIdId = 10;
 
         private static bool FInitInfoValues = InitInfoValues();
         private static bool InitInfoValues()
         {
             TableInfo.Add(TableId, new TTypedTableInfo(TableId, "AArArticle", "a_ar_article",
                 new TTypedColumnInfo[] {
-                    new TTypedColumnInfo(0, "ArArticleCode", "a_ar_article_code_c", OdbcType.VarChar, 100, true),
-                    new TTypedColumnInfo(1, "ArCategoryCode", "a_ar_category_code_c", OdbcType.VarChar, 100, true),
-                    new TTypedColumnInfo(2, "TaxTypeCode", "a_tax_type_code_c", OdbcType.VarChar, 100, true),
-                    new TTypedColumnInfo(3, "ArSpecificArticle", "a_ar_specific_article_l", OdbcType.Bit, -1, false),
-                    new TTypedColumnInfo(4, "ArDescription", "a_ar_description_c", OdbcType.VarChar, 300, false),
-                    new TTypedColumnInfo(5, "ArLocalDescription", "a_ar_local_description_c", OdbcType.VarChar, 300, false),
-                    new TTypedColumnInfo(6, "DateCreated", "s_date_created_d", OdbcType.Date, -1, false),
-                    new TTypedColumnInfo(7, "CreatedBy", "s_created_by_c", OdbcType.VarChar, 20, false),
-                    new TTypedColumnInfo(8, "DateModified", "s_date_modified_d", OdbcType.Date, -1, false),
-                    new TTypedColumnInfo(9, "ModifiedBy", "s_modified_by_c", OdbcType.VarChar, 20, false),
-                    new TTypedColumnInfo(10, "ModificationId", "s_modification_id_c", OdbcType.VarChar, 150, false)
+                    new TTypedColumnInfo(0, "ArArticleCode", "a_ar_article_code_c", "a_ar_article_code_c", OdbcType.VarChar, 100, true),
+                    new TTypedColumnInfo(1, "ArCategoryCode", "a_ar_category_code_c", "a_ar_category_code_c", OdbcType.VarChar, 100, true),
+                    new TTypedColumnInfo(2, "TaxTypeCode", "a_tax_type_code_c", "a_tax_type_code_c", OdbcType.VarChar, 100, true),
+                    new TTypedColumnInfo(3, "ArSpecificArticle", "a_ar_specific_article_l", "a_ar_specific_article_l", OdbcType.Bit, -1, false),
+                    new TTypedColumnInfo(4, "ArDescription", "a_ar_description_c", "a_ar_description_c", OdbcType.VarChar, 300, false),
+                    new TTypedColumnInfo(5, "ArLocalDescription", "a_ar_local_description_c", "a_ar_local_description_c", OdbcType.VarChar, 300, false),
+                    new TTypedColumnInfo(6, "DateCreated", "s_date_created_d", "Created Date", OdbcType.Date, -1, false),
+                    new TTypedColumnInfo(7, "CreatedBy", "s_created_by_c", "Created By", OdbcType.VarChar, 20, false),
+                    new TTypedColumnInfo(8, "DateModified", "s_date_modified_d", "Modified Date", OdbcType.Date, -1, false),
+                    new TTypedColumnInfo(9, "ModifiedBy", "s_modified_by_c", "Modified By", OdbcType.VarChar, 20, false),
+                    new TTypedColumnInfo(10, "ModificationId", "s_modification_id_c", "", OdbcType.VarChar, 150, false)
                 },
                 new int[] {
                     0
@@ -1959,6 +2048,29 @@ namespace Ict.Petra.Shared.MFinance.AR.Data
                 base(info, context)
         {
         }
+
+        /// code that uniquely identifies the item; can also be a code of a group of equally priced items
+        public DataColumn ColumnArArticleCode;
+        /// this article belongs to a certain category (catering, hospitality, store, fees)
+        public DataColumn ColumnArCategoryCode;
+        /// this article falls into a special tax/VAT category
+        public DataColumn ColumnTaxTypeCode;
+        /// describes whether this describes a specific item, e.g. book, or a group of equally priced items
+        public DataColumn ColumnArSpecificArticle;
+        /// description of this article
+        public DataColumn ColumnArDescription;
+        /// description of this article in the local language
+        public DataColumn ColumnArLocalDescription;
+        /// The date the record was created.
+        public DataColumn ColumnDateCreated;
+        /// User ID of who created this record.
+        public DataColumn ColumnCreatedBy;
+        /// The date the record was modified.
+        public DataColumn ColumnDateModified;
+        /// User ID of who last modified this record.
+        public DataColumn ColumnModifiedBy;
+        /// This identifies the current version of the record.
+        public DataColumn ColumnModificationId;
 
         /// create the columns
         protected override void InitClass()
@@ -2028,6 +2140,18 @@ namespace Ict.Petra.Shared.MFinance.AR.Data
         public AArArticleTable GetChangesTyped()
         {
             return ((AArArticleTable)(base.GetChangesTypedInternal()));
+        }
+
+        /// return the CamelCase name of the table
+        public static string GetTableName()
+        {
+            return "AArArticle";
+        }
+
+        /// return the name of the table as it is used in the database
+        public static string GetTableDBName()
+        {
+            return "a_ar_article";
         }
 
         /// get an odbc parameter for the given column
@@ -2622,42 +2746,41 @@ namespace Ict.Petra.Shared.MFinance.AR.Data
     [Serializable()]
     public class AArArticlePriceTable : TTypedDataTable
     {
-        /// code that identifies the item to be sold or service to be charged
-        public DataColumn ColumnArArticleCode;
-        /// date from which this price is valid
-        public DataColumn ColumnArDateValidFrom;
-        /// the value of the item in base currency
-        public DataColumn ColumnArAmount;
-        /// the currency in which the price is given
-        public DataColumn ColumnCurrencyCode;
-        /// The date the record was created.
-        public DataColumn ColumnDateCreated;
-        /// User ID of who created this record.
-        public DataColumn ColumnCreatedBy;
-        /// The date the record was modified.
-        public DataColumn ColumnDateModified;
-        /// User ID of who last modified this record.
-        public DataColumn ColumnModifiedBy;
-        /// This identifies the current version of the record.
-        public DataColumn ColumnModificationId;
-
         /// TableId for Ict.Common.Data generic functions
         public static short TableId = 186;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnArArticleCodeId = 0;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnArDateValidFromId = 1;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnArAmountId = 2;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnCurrencyCodeId = 3;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnDateCreatedId = 4;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnCreatedById = 5;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnDateModifiedId = 6;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnModifiedById = 7;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnModificationIdId = 8;
 
         private static bool FInitInfoValues = InitInfoValues();
         private static bool InitInfoValues()
         {
             TableInfo.Add(TableId, new TTypedTableInfo(TableId, "AArArticlePrice", "a_ar_article_price",
                 new TTypedColumnInfo[] {
-                    new TTypedColumnInfo(0, "ArArticleCode", "a_ar_article_code_c", OdbcType.VarChar, 100, true),
-                    new TTypedColumnInfo(1, "ArDateValidFrom", "a_ar_date_valid_from_d", OdbcType.Date, -1, true),
-                    new TTypedColumnInfo(2, "ArAmount", "a_ar_amount_n", OdbcType.Decimal, 24, true),
-                    new TTypedColumnInfo(3, "CurrencyCode", "a_currency_code_c", OdbcType.VarChar, 16, true),
-                    new TTypedColumnInfo(4, "DateCreated", "s_date_created_d", OdbcType.Date, -1, false),
-                    new TTypedColumnInfo(5, "CreatedBy", "s_created_by_c", OdbcType.VarChar, 20, false),
-                    new TTypedColumnInfo(6, "DateModified", "s_date_modified_d", OdbcType.Date, -1, false),
-                    new TTypedColumnInfo(7, "ModifiedBy", "s_modified_by_c", OdbcType.VarChar, 20, false),
-                    new TTypedColumnInfo(8, "ModificationId", "s_modification_id_c", OdbcType.VarChar, 150, false)
+                    new TTypedColumnInfo(0, "ArArticleCode", "a_ar_article_code_c", "a_ar_article_code_c", OdbcType.VarChar, 100, true),
+                    new TTypedColumnInfo(1, "ArDateValidFrom", "a_ar_date_valid_from_d", "a_ar_date_valid_from_d", OdbcType.Date, -1, true),
+                    new TTypedColumnInfo(2, "ArAmount", "a_ar_amount_n", "Amount in Base Currency", OdbcType.Decimal, 24, true),
+                    new TTypedColumnInfo(3, "CurrencyCode", "a_currency_code_c", "a_currency_code_c", OdbcType.VarChar, 16, true),
+                    new TTypedColumnInfo(4, "DateCreated", "s_date_created_d", "Created Date", OdbcType.Date, -1, false),
+                    new TTypedColumnInfo(5, "CreatedBy", "s_created_by_c", "Created By", OdbcType.VarChar, 20, false),
+                    new TTypedColumnInfo(6, "DateModified", "s_date_modified_d", "Modified Date", OdbcType.Date, -1, false),
+                    new TTypedColumnInfo(7, "ModifiedBy", "s_modified_by_c", "Modified By", OdbcType.VarChar, 20, false),
+                    new TTypedColumnInfo(8, "ModificationId", "s_modification_id_c", "", OdbcType.VarChar, 150, false)
                 },
                 new int[] {
                     0, 1
@@ -2682,6 +2805,25 @@ namespace Ict.Petra.Shared.MFinance.AR.Data
                 base(info, context)
         {
         }
+
+        /// code that identifies the item to be sold or service to be charged
+        public DataColumn ColumnArArticleCode;
+        /// date from which this price is valid
+        public DataColumn ColumnArDateValidFrom;
+        /// the value of the item in base currency
+        public DataColumn ColumnArAmount;
+        /// the currency in which the price is given
+        public DataColumn ColumnCurrencyCode;
+        /// The date the record was created.
+        public DataColumn ColumnDateCreated;
+        /// User ID of who created this record.
+        public DataColumn ColumnCreatedBy;
+        /// The date the record was modified.
+        public DataColumn ColumnDateModified;
+        /// User ID of who last modified this record.
+        public DataColumn ColumnModifiedBy;
+        /// This identifies the current version of the record.
+        public DataColumn ColumnModificationId;
 
         /// create the columns
         protected override void InitClass()
@@ -2747,6 +2889,18 @@ namespace Ict.Petra.Shared.MFinance.AR.Data
         public AArArticlePriceTable GetChangesTyped()
         {
             return ((AArArticlePriceTable)(base.GetChangesTypedInternal()));
+        }
+
+        /// return the CamelCase name of the table
+        public static string GetTableName()
+        {
+            return "AArArticlePrice";
+        }
+
+        /// return the name of the table as it is used in the database
+        public static string GetTableDBName()
+        {
+            return "a_ar_article_price";
         }
 
         /// get an odbc parameter for the given column
@@ -3239,6 +3393,108 @@ namespace Ict.Petra.Shared.MFinance.AR.Data
     [Serializable()]
     public class AArDiscountTable : TTypedDataTable
     {
+        /// TableId for Ict.Common.Data generic functions
+        public static short TableId = 187;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnArDiscountCodeId = 0;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnArDateValidFromId = 1;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnArAdhocId = 2;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnActiveId = 3;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnArDiscountPercentageId = 4;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnArDiscountAbsoluteId = 5;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnArAbsoluteAmountId = 6;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnCurrencyCodeId = 7;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnArNumberOfItemsId = 8;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnArMinimumNumberOfItemsId = 9;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnArNumberOfNightsId = 10;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnArMinimumNumberOfNightsId = 11;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnArWholeRoomId = 12;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnArChildrenId = 13;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnArEarlyBookingDaysId = 14;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnArEarlyPaymentDaysId = 15;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnArArticleCodeId = 16;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnPartnerTypeCodeId = 17;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnDateCreatedId = 18;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnCreatedById = 19;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnDateModifiedId = 20;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnModifiedById = 21;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnModificationIdId = 22;
+
+        private static bool FInitInfoValues = InitInfoValues();
+        private static bool InitInfoValues()
+        {
+            TableInfo.Add(TableId, new TTypedTableInfo(TableId, "AArDiscount", "a_ar_discount",
+                new TTypedColumnInfo[] {
+                    new TTypedColumnInfo(0, "ArDiscountCode", "a_ar_discount_code_c", "a_ar_discount_code_c", OdbcType.VarChar, 100, true),
+                    new TTypedColumnInfo(1, "ArDateValidFrom", "a_ar_date_valid_from_d", "a_ar_date_valid_from_d", OdbcType.Date, -1, true),
+                    new TTypedColumnInfo(2, "ArAdhoc", "a_ar_adhoc_l", "a_ar_adhoc_l", OdbcType.Bit, -1, false),
+                    new TTypedColumnInfo(3, "Active", "a_active_l", "a_active_l", OdbcType.Bit, -1, false),
+                    new TTypedColumnInfo(4, "ArDiscountPercentage", "a_ar_discount_percentage_n", "a_ar_discount_percentage_n", OdbcType.Decimal, 5, false),
+                    new TTypedColumnInfo(5, "ArDiscountAbsolute", "a_ar_discount_absolute_n", "a_ar_discount_absolute_n", OdbcType.Decimal, 24, false),
+                    new TTypedColumnInfo(6, "ArAbsoluteAmount", "a_ar_absolute_amount_n", "a_ar_absolute_amount_n", OdbcType.Decimal, 24, false),
+                    new TTypedColumnInfo(7, "CurrencyCode", "a_currency_code_c", "a_currency_code_c", OdbcType.VarChar, 16, true),
+                    new TTypedColumnInfo(8, "ArNumberOfItems", "a_ar_number_of_items_i", "a_ar_number_of_items_i", OdbcType.Int, -1, false),
+                    new TTypedColumnInfo(9, "ArMinimumNumberOfItems", "a_ar_minimum_number_of_items_i", "a_ar_minimum_number_of_items_i", OdbcType.Int, -1, false),
+                    new TTypedColumnInfo(10, "ArNumberOfNights", "a_ar_number_of_nights_i", "a_ar_number_of_nights_i", OdbcType.Int, -1, false),
+                    new TTypedColumnInfo(11, "ArMinimumNumberOfNights", "a_ar_minimum_number_of_nights_i", "a_ar_minimum_number_of_nights_i", OdbcType.Int, -1, false),
+                    new TTypedColumnInfo(12, "ArWholeRoom", "a_ar_whole_room_l", "a_ar_whole_room_l", OdbcType.Bit, -1, false),
+                    new TTypedColumnInfo(13, "ArChildren", "a_ar_children_l", "a_ar_children_l", OdbcType.Bit, -1, false),
+                    new TTypedColumnInfo(14, "ArEarlyBookingDays", "a_ar_early_booking_days_i", "a_ar_early_booking_days_i", OdbcType.Int, -1, false),
+                    new TTypedColumnInfo(15, "ArEarlyPaymentDays", "a_ar_early_payment_days_i", "a_ar_early_payment_days_i", OdbcType.Int, -1, false),
+                    new TTypedColumnInfo(16, "ArArticleCode", "a_ar_article_code_c", "a_ar_article_code_c", OdbcType.VarChar, 100, false),
+                    new TTypedColumnInfo(17, "PartnerTypeCode", "p_partner_type_code_c", "p_partner_type_code_c", OdbcType.VarChar, 20, false),
+                    new TTypedColumnInfo(18, "DateCreated", "s_date_created_d", "Created Date", OdbcType.Date, -1, false),
+                    new TTypedColumnInfo(19, "CreatedBy", "s_created_by_c", "Created By", OdbcType.VarChar, 20, false),
+                    new TTypedColumnInfo(20, "DateModified", "s_date_modified_d", "Modified Date", OdbcType.Date, -1, false),
+                    new TTypedColumnInfo(21, "ModifiedBy", "s_modified_by_c", "Modified By", OdbcType.VarChar, 20, false),
+                    new TTypedColumnInfo(22, "ModificationId", "s_modification_id_c", "", OdbcType.VarChar, 150, false)
+                },
+                new int[] {
+                    0, 1
+                }));
+            return true;
+        }
+
+        /// constructor
+        public AArDiscountTable() :
+                base("AArDiscount")
+        {
+        }
+
+        /// constructor
+        public AArDiscountTable(string ATablename) :
+                base(ATablename)
+        {
+        }
+
+        /// constructor for serialization
+        public AArDiscountTable(System.Runtime.Serialization.SerializationInfo info, System.Runtime.Serialization.StreamingContext context) :
+                base(info, context)
+        {
+        }
+
         /// code that identifies the discount
         public DataColumn ColumnArDiscountCode;
         /// date from which this discount is valid
@@ -3285,62 +3541,6 @@ namespace Ict.Petra.Shared.MFinance.AR.Data
         public DataColumn ColumnModifiedBy;
         /// This identifies the current version of the record.
         public DataColumn ColumnModificationId;
-
-        /// TableId for Ict.Common.Data generic functions
-        public static short TableId = 187;
-
-        private static bool FInitInfoValues = InitInfoValues();
-        private static bool InitInfoValues()
-        {
-            TableInfo.Add(TableId, new TTypedTableInfo(TableId, "AArDiscount", "a_ar_discount",
-                new TTypedColumnInfo[] {
-                    new TTypedColumnInfo(0, "ArDiscountCode", "a_ar_discount_code_c", OdbcType.VarChar, 100, true),
-                    new TTypedColumnInfo(1, "ArDateValidFrom", "a_ar_date_valid_from_d", OdbcType.Date, -1, true),
-                    new TTypedColumnInfo(2, "ArAdhoc", "a_ar_adhoc_l", OdbcType.Bit, -1, false),
-                    new TTypedColumnInfo(3, "Active", "a_active_l", OdbcType.Bit, -1, false),
-                    new TTypedColumnInfo(4, "ArDiscountPercentage", "a_ar_discount_percentage_n", OdbcType.Decimal, 5, false),
-                    new TTypedColumnInfo(5, "ArDiscountAbsolute", "a_ar_discount_absolute_n", OdbcType.Decimal, 24, false),
-                    new TTypedColumnInfo(6, "ArAbsoluteAmount", "a_ar_absolute_amount_n", OdbcType.Decimal, 24, false),
-                    new TTypedColumnInfo(7, "CurrencyCode", "a_currency_code_c", OdbcType.VarChar, 16, true),
-                    new TTypedColumnInfo(8, "ArNumberOfItems", "a_ar_number_of_items_i", OdbcType.Int, -1, false),
-                    new TTypedColumnInfo(9, "ArMinimumNumberOfItems", "a_ar_minimum_number_of_items_i", OdbcType.Int, -1, false),
-                    new TTypedColumnInfo(10, "ArNumberOfNights", "a_ar_number_of_nights_i", OdbcType.Int, -1, false),
-                    new TTypedColumnInfo(11, "ArMinimumNumberOfNights", "a_ar_minimum_number_of_nights_i", OdbcType.Int, -1, false),
-                    new TTypedColumnInfo(12, "ArWholeRoom", "a_ar_whole_room_l", OdbcType.Bit, -1, false),
-                    new TTypedColumnInfo(13, "ArChildren", "a_ar_children_l", OdbcType.Bit, -1, false),
-                    new TTypedColumnInfo(14, "ArEarlyBookingDays", "a_ar_early_booking_days_i", OdbcType.Int, -1, false),
-                    new TTypedColumnInfo(15, "ArEarlyPaymentDays", "a_ar_early_payment_days_i", OdbcType.Int, -1, false),
-                    new TTypedColumnInfo(16, "ArArticleCode", "a_ar_article_code_c", OdbcType.VarChar, 100, false),
-                    new TTypedColumnInfo(17, "PartnerTypeCode", "p_partner_type_code_c", OdbcType.VarChar, 20, false),
-                    new TTypedColumnInfo(18, "DateCreated", "s_date_created_d", OdbcType.Date, -1, false),
-                    new TTypedColumnInfo(19, "CreatedBy", "s_created_by_c", OdbcType.VarChar, 20, false),
-                    new TTypedColumnInfo(20, "DateModified", "s_date_modified_d", OdbcType.Date, -1, false),
-                    new TTypedColumnInfo(21, "ModifiedBy", "s_modified_by_c", OdbcType.VarChar, 20, false),
-                    new TTypedColumnInfo(22, "ModificationId", "s_modification_id_c", OdbcType.VarChar, 150, false)
-                },
-                new int[] {
-                    0, 1
-                }));
-            return true;
-        }
-
-        /// constructor
-        public AArDiscountTable() :
-                base("AArDiscount")
-        {
-        }
-
-        /// constructor
-        public AArDiscountTable(string ATablename) :
-                base(ATablename)
-        {
-        }
-
-        /// constructor for serialization
-        public AArDiscountTable(System.Runtime.Serialization.SerializationInfo info, System.Runtime.Serialization.StreamingContext context) :
-                base(info, context)
-        {
-        }
 
         /// create the columns
         protected override void InitClass()
@@ -3434,6 +3634,18 @@ namespace Ict.Petra.Shared.MFinance.AR.Data
         public AArDiscountTable GetChangesTyped()
         {
             return ((AArDiscountTable)(base.GetChangesTypedInternal()));
+        }
+
+        /// return the CamelCase name of the table
+        public static string GetTableName()
+        {
+            return "AArDiscount";
+        }
+
+        /// return the name of the table as it is used in the database
+        public static string GetTableDBName()
+        {
+            return "a_ar_discount";
         }
 
         /// get an odbc parameter for the given column
@@ -4640,39 +4852,38 @@ namespace Ict.Petra.Shared.MFinance.AR.Data
     [Serializable()]
     public class AArDiscountPerCategoryTable : TTypedDataTable
     {
-        /// refers to a certain category (catering, hospitality, store, fees)
-        public DataColumn ColumnArCategoryCode;
-        /// code that identifies the discount
-        public DataColumn ColumnArDiscountCode;
-        /// date is only required for foreign key; this applies to all of that discount code; therefore the primary key of this table does not include the date
-        public DataColumn ColumnArDateValidFrom;
-        /// The date the record was created.
-        public DataColumn ColumnDateCreated;
-        /// User ID of who created this record.
-        public DataColumn ColumnCreatedBy;
-        /// The date the record was modified.
-        public DataColumn ColumnDateModified;
-        /// User ID of who last modified this record.
-        public DataColumn ColumnModifiedBy;
-        /// This identifies the current version of the record.
-        public DataColumn ColumnModificationId;
-
         /// TableId for Ict.Common.Data generic functions
         public static short TableId = 188;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnArCategoryCodeId = 0;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnArDiscountCodeId = 1;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnArDateValidFromId = 2;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnDateCreatedId = 3;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnCreatedById = 4;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnDateModifiedId = 5;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnModifiedById = 6;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnModificationIdId = 7;
 
         private static bool FInitInfoValues = InitInfoValues();
         private static bool InitInfoValues()
         {
             TableInfo.Add(TableId, new TTypedTableInfo(TableId, "AArDiscountPerCategory", "a_ar_discount_per_category",
                 new TTypedColumnInfo[] {
-                    new TTypedColumnInfo(0, "ArCategoryCode", "a_ar_category_code_c", OdbcType.VarChar, 100, true),
-                    new TTypedColumnInfo(1, "ArDiscountCode", "a_ar_discount_code_c", OdbcType.VarChar, 100, true),
-                    new TTypedColumnInfo(2, "ArDateValidFrom", "a_ar_date_valid_from_d", OdbcType.Date, -1, true),
-                    new TTypedColumnInfo(3, "DateCreated", "s_date_created_d", OdbcType.Date, -1, false),
-                    new TTypedColumnInfo(4, "CreatedBy", "s_created_by_c", OdbcType.VarChar, 20, false),
-                    new TTypedColumnInfo(5, "DateModified", "s_date_modified_d", OdbcType.Date, -1, false),
-                    new TTypedColumnInfo(6, "ModifiedBy", "s_modified_by_c", OdbcType.VarChar, 20, false),
-                    new TTypedColumnInfo(7, "ModificationId", "s_modification_id_c", OdbcType.VarChar, 150, false)
+                    new TTypedColumnInfo(0, "ArCategoryCode", "a_ar_category_code_c", "a_ar_category_code_c", OdbcType.VarChar, 100, true),
+                    new TTypedColumnInfo(1, "ArDiscountCode", "a_ar_discount_code_c", "a_ar_discount_code_c", OdbcType.VarChar, 100, true),
+                    new TTypedColumnInfo(2, "ArDateValidFrom", "a_ar_date_valid_from_d", "a_ar_date_valid_from_d", OdbcType.Date, -1, true),
+                    new TTypedColumnInfo(3, "DateCreated", "s_date_created_d", "Created Date", OdbcType.Date, -1, false),
+                    new TTypedColumnInfo(4, "CreatedBy", "s_created_by_c", "Created By", OdbcType.VarChar, 20, false),
+                    new TTypedColumnInfo(5, "DateModified", "s_date_modified_d", "Modified Date", OdbcType.Date, -1, false),
+                    new TTypedColumnInfo(6, "ModifiedBy", "s_modified_by_c", "Modified By", OdbcType.VarChar, 20, false),
+                    new TTypedColumnInfo(7, "ModificationId", "s_modification_id_c", "", OdbcType.VarChar, 150, false)
                 },
                 new int[] {
                     0, 1
@@ -4697,6 +4908,23 @@ namespace Ict.Petra.Shared.MFinance.AR.Data
                 base(info, context)
         {
         }
+
+        /// refers to a certain category (catering, hospitality, store, fees)
+        public DataColumn ColumnArCategoryCode;
+        /// code that identifies the discount
+        public DataColumn ColumnArDiscountCode;
+        /// date is only required for foreign key; this applies to all of that discount code; therefore the primary key of this table does not include the date
+        public DataColumn ColumnArDateValidFrom;
+        /// The date the record was created.
+        public DataColumn ColumnDateCreated;
+        /// User ID of who created this record.
+        public DataColumn ColumnCreatedBy;
+        /// The date the record was modified.
+        public DataColumn ColumnDateModified;
+        /// User ID of who last modified this record.
+        public DataColumn ColumnModifiedBy;
+        /// This identifies the current version of the record.
+        public DataColumn ColumnModificationId;
 
         /// create the columns
         protected override void InitClass()
@@ -4760,6 +4988,18 @@ namespace Ict.Petra.Shared.MFinance.AR.Data
         public AArDiscountPerCategoryTable GetChangesTyped()
         {
             return ((AArDiscountPerCategoryTable)(base.GetChangesTypedInternal()));
+        }
+
+        /// return the CamelCase name of the table
+        public static string GetTableName()
+        {
+            return "AArDiscountPerCategory";
+        }
+
+        /// return the name of the table as it is used in the database
+        public static string GetTableDBName()
+        {
+            return "a_ar_discount_per_category";
         }
 
         /// get an odbc parameter for the given column
@@ -5201,45 +5441,44 @@ namespace Ict.Petra.Shared.MFinance.AR.Data
     [Serializable()]
     public class AArDefaultDiscountTable : TTypedDataTable
     {
-        /// refers to a certain category (catering, hospitality, store, fees)
-        public DataColumn ColumnArCategoryCode;
-        /// code that identifies the discount
-        public DataColumn ColumnArDiscountCode;
-        /// this clearly specifies which version of the discount is meant
-        public DataColumn ColumnArDiscountDateValidFrom;
-        /// this default discount is only applied during this time period
-        public DataColumn ColumnArDateValidFrom;
-        /// this default discount is only applied during this time period; can be null for ongoing default discounts
-        public DataColumn ColumnArDateValidTo;
-        /// The date the record was created.
-        public DataColumn ColumnDateCreated;
-        /// User ID of who created this record.
-        public DataColumn ColumnCreatedBy;
-        /// The date the record was modified.
-        public DataColumn ColumnDateModified;
-        /// User ID of who last modified this record.
-        public DataColumn ColumnModifiedBy;
-        /// This identifies the current version of the record.
-        public DataColumn ColumnModificationId;
-
         /// TableId for Ict.Common.Data generic functions
         public static short TableId = 189;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnArCategoryCodeId = 0;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnArDiscountCodeId = 1;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnArDiscountDateValidFromId = 2;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnArDateValidFromId = 3;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnArDateValidToId = 4;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnDateCreatedId = 5;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnCreatedById = 6;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnDateModifiedId = 7;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnModifiedById = 8;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnModificationIdId = 9;
 
         private static bool FInitInfoValues = InitInfoValues();
         private static bool InitInfoValues()
         {
             TableInfo.Add(TableId, new TTypedTableInfo(TableId, "AArDefaultDiscount", "a_ar_default_discount",
                 new TTypedColumnInfo[] {
-                    new TTypedColumnInfo(0, "ArCategoryCode", "a_ar_category_code_c", OdbcType.VarChar, 100, true),
-                    new TTypedColumnInfo(1, "ArDiscountCode", "a_ar_discount_code_c", OdbcType.VarChar, 100, true),
-                    new TTypedColumnInfo(2, "ArDiscountDateValidFrom", "a_ar_discount_date_valid_from_d", OdbcType.Date, -1, true),
-                    new TTypedColumnInfo(3, "ArDateValidFrom", "a_ar_date_valid_from_d", OdbcType.Date, -1, true),
-                    new TTypedColumnInfo(4, "ArDateValidTo", "a_ar_date_valid_to_d", OdbcType.Date, -1, false),
-                    new TTypedColumnInfo(5, "DateCreated", "s_date_created_d", OdbcType.Date, -1, false),
-                    new TTypedColumnInfo(6, "CreatedBy", "s_created_by_c", OdbcType.VarChar, 20, false),
-                    new TTypedColumnInfo(7, "DateModified", "s_date_modified_d", OdbcType.Date, -1, false),
-                    new TTypedColumnInfo(8, "ModifiedBy", "s_modified_by_c", OdbcType.VarChar, 20, false),
-                    new TTypedColumnInfo(9, "ModificationId", "s_modification_id_c", OdbcType.VarChar, 150, false)
+                    new TTypedColumnInfo(0, "ArCategoryCode", "a_ar_category_code_c", "a_ar_category_code_c", OdbcType.VarChar, 100, true),
+                    new TTypedColumnInfo(1, "ArDiscountCode", "a_ar_discount_code_c", "a_ar_discount_code_c", OdbcType.VarChar, 100, true),
+                    new TTypedColumnInfo(2, "ArDiscountDateValidFrom", "a_ar_discount_date_valid_from_d", "a_ar_discount_date_valid_from_d", OdbcType.Date, -1, true),
+                    new TTypedColumnInfo(3, "ArDateValidFrom", "a_ar_date_valid_from_d", "a_ar_date_valid_from_d", OdbcType.Date, -1, true),
+                    new TTypedColumnInfo(4, "ArDateValidTo", "a_ar_date_valid_to_d", "a_ar_date_valid_to_d", OdbcType.Date, -1, false),
+                    new TTypedColumnInfo(5, "DateCreated", "s_date_created_d", "Created Date", OdbcType.Date, -1, false),
+                    new TTypedColumnInfo(6, "CreatedBy", "s_created_by_c", "Created By", OdbcType.VarChar, 20, false),
+                    new TTypedColumnInfo(7, "DateModified", "s_date_modified_d", "Modified Date", OdbcType.Date, -1, false),
+                    new TTypedColumnInfo(8, "ModifiedBy", "s_modified_by_c", "Modified By", OdbcType.VarChar, 20, false),
+                    new TTypedColumnInfo(9, "ModificationId", "s_modification_id_c", "", OdbcType.VarChar, 150, false)
                 },
                 new int[] {
                     0, 1, 3
@@ -5264,6 +5503,27 @@ namespace Ict.Petra.Shared.MFinance.AR.Data
                 base(info, context)
         {
         }
+
+        /// refers to a certain category (catering, hospitality, store, fees)
+        public DataColumn ColumnArCategoryCode;
+        /// code that identifies the discount
+        public DataColumn ColumnArDiscountCode;
+        /// this clearly specifies which version of the discount is meant
+        public DataColumn ColumnArDiscountDateValidFrom;
+        /// this default discount is only applied during this time period
+        public DataColumn ColumnArDateValidFrom;
+        /// this default discount is only applied during this time period; can be null for ongoing default discounts
+        public DataColumn ColumnArDateValidTo;
+        /// The date the record was created.
+        public DataColumn ColumnDateCreated;
+        /// User ID of who created this record.
+        public DataColumn ColumnCreatedBy;
+        /// The date the record was modified.
+        public DataColumn ColumnDateModified;
+        /// User ID of who last modified this record.
+        public DataColumn ColumnModifiedBy;
+        /// This identifies the current version of the record.
+        public DataColumn ColumnModificationId;
 
         /// create the columns
         protected override void InitClass()
@@ -5331,6 +5591,18 @@ namespace Ict.Petra.Shared.MFinance.AR.Data
         public AArDefaultDiscountTable GetChangesTyped()
         {
             return ((AArDefaultDiscountTable)(base.GetChangesTypedInternal()));
+        }
+
+        /// return the CamelCase name of the table
+        public static string GetTableName()
+        {
+            return "AArDefaultDiscount";
+        }
+
+        /// return the name of the table as it is used in the database
+        public static string GetTableDBName()
+        {
+            return "a_ar_default_discount";
         }
 
         /// get an odbc parameter for the given column
@@ -5874,6 +6146,90 @@ namespace Ict.Petra.Shared.MFinance.AR.Data
     [Serializable()]
     public class AArInvoiceTable : TTypedDataTable
     {
+        /// TableId for Ict.Common.Data generic functions
+        public static short TableId = 190;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnLedgerNumberId = 0;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnKeyId = 1;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnStatusId = 2;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnPartnerKeyId = 3;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnDateEffectiveId = 4;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnOfferId = 5;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnTaxingId = 6;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnSpecialTaxTypeCodeId = 7;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnSpecialTaxRateCodeId = 8;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnSpecialTaxValidFromId = 9;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnTotalAmountId = 10;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnCurrencyCodeId = 11;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnDateCreatedId = 12;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnCreatedById = 13;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnDateModifiedId = 14;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnModifiedById = 15;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnModificationIdId = 16;
+
+        private static bool FInitInfoValues = InitInfoValues();
+        private static bool InitInfoValues()
+        {
+            TableInfo.Add(TableId, new TTypedTableInfo(TableId, "AArInvoice", "a_ar_invoice",
+                new TTypedColumnInfo[] {
+                    new TTypedColumnInfo(0, "LedgerNumber", "a_ledger_number_i", "Ledger Number", OdbcType.Int, -1, true),
+                    new TTypedColumnInfo(1, "Key", "a_key_i", "Invoice Key", OdbcType.Int, -1, false),
+                    new TTypedColumnInfo(2, "Status", "a_status_c", "a_status_c", OdbcType.VarChar, 32, true),
+                    new TTypedColumnInfo(3, "PartnerKey", "p_partner_key_n", "p_partner_key_n", OdbcType.Decimal, 10, false),
+                    new TTypedColumnInfo(4, "DateEffective", "a_date_effective_d", "a_date_effective_d", OdbcType.Date, -1, false),
+                    new TTypedColumnInfo(5, "Offer", "a_offer_i", "a_offer_i", OdbcType.Int, -1, false),
+                    new TTypedColumnInfo(6, "Taxing", "a_taxing_c", "a_taxing_c", OdbcType.VarChar, 20, true),
+                    new TTypedColumnInfo(7, "SpecialTaxTypeCode", "a_special_tax_type_code_c", "Tax Type Code", OdbcType.VarChar, 16, false),
+                    new TTypedColumnInfo(8, "SpecialTaxRateCode", "a_special_tax_rate_code_c", "Tax Rate Code", OdbcType.VarChar, 16, false),
+                    new TTypedColumnInfo(9, "SpecialTaxValidFrom", "a_special_tax_valid_from_d", "Tax Rate Code", OdbcType.Date, -1, false),
+                    new TTypedColumnInfo(10, "TotalAmount", "a_total_amount_n", "Total Amount", OdbcType.Decimal, 24, false),
+                    new TTypedColumnInfo(11, "CurrencyCode", "a_currency_code_c", "a_currency_code_c", OdbcType.VarChar, 16, true),
+                    new TTypedColumnInfo(12, "DateCreated", "s_date_created_d", "Created Date", OdbcType.Date, -1, false),
+                    new TTypedColumnInfo(13, "CreatedBy", "s_created_by_c", "Created By", OdbcType.VarChar, 20, false),
+                    new TTypedColumnInfo(14, "DateModified", "s_date_modified_d", "Modified Date", OdbcType.Date, -1, false),
+                    new TTypedColumnInfo(15, "ModifiedBy", "s_modified_by_c", "Modified By", OdbcType.VarChar, 20, false),
+                    new TTypedColumnInfo(16, "ModificationId", "s_modification_id_c", "", OdbcType.VarChar, 150, false)
+                },
+                new int[] {
+                    0, 1
+                }));
+            return true;
+        }
+
+        /// constructor
+        public AArInvoiceTable() :
+                base("AArInvoice")
+        {
+        }
+
+        /// constructor
+        public AArInvoiceTable(string ATablename) :
+                base(ATablename)
+        {
+        }
+
+        /// constructor for serialization
+        public AArInvoiceTable(System.Runtime.Serialization.SerializationInfo info, System.Runtime.Serialization.StreamingContext context) :
+                base(info, context)
+        {
+        }
+
         /// This is used as a key field in most of the accounting system files
         public DataColumn ColumnLedgerNumber;
         /// Key to uniquely identify invoice
@@ -5908,56 +6264,6 @@ namespace Ict.Petra.Shared.MFinance.AR.Data
         public DataColumn ColumnModifiedBy;
         /// This identifies the current version of the record.
         public DataColumn ColumnModificationId;
-
-        /// TableId for Ict.Common.Data generic functions
-        public static short TableId = 190;
-
-        private static bool FInitInfoValues = InitInfoValues();
-        private static bool InitInfoValues()
-        {
-            TableInfo.Add(TableId, new TTypedTableInfo(TableId, "AArInvoice", "a_ar_invoice",
-                new TTypedColumnInfo[] {
-                    new TTypedColumnInfo(0, "LedgerNumber", "a_ledger_number_i", OdbcType.Int, -1, true),
-                    new TTypedColumnInfo(1, "Key", "a_key_i", OdbcType.Int, -1, false),
-                    new TTypedColumnInfo(2, "Status", "a_status_c", OdbcType.VarChar, 32, true),
-                    new TTypedColumnInfo(3, "PartnerKey", "p_partner_key_n", OdbcType.Decimal, 10, false),
-                    new TTypedColumnInfo(4, "DateEffective", "a_date_effective_d", OdbcType.Date, -1, false),
-                    new TTypedColumnInfo(5, "Offer", "a_offer_i", OdbcType.Int, -1, false),
-                    new TTypedColumnInfo(6, "Taxing", "a_taxing_c", OdbcType.VarChar, 20, true),
-                    new TTypedColumnInfo(7, "SpecialTaxTypeCode", "a_special_tax_type_code_c", OdbcType.VarChar, 16, false),
-                    new TTypedColumnInfo(8, "SpecialTaxRateCode", "a_special_tax_rate_code_c", OdbcType.VarChar, 16, false),
-                    new TTypedColumnInfo(9, "SpecialTaxValidFrom", "a_special_tax_valid_from_d", OdbcType.Date, -1, false),
-                    new TTypedColumnInfo(10, "TotalAmount", "a_total_amount_n", OdbcType.Decimal, 24, false),
-                    new TTypedColumnInfo(11, "CurrencyCode", "a_currency_code_c", OdbcType.VarChar, 16, true),
-                    new TTypedColumnInfo(12, "DateCreated", "s_date_created_d", OdbcType.Date, -1, false),
-                    new TTypedColumnInfo(13, "CreatedBy", "s_created_by_c", OdbcType.VarChar, 20, false),
-                    new TTypedColumnInfo(14, "DateModified", "s_date_modified_d", OdbcType.Date, -1, false),
-                    new TTypedColumnInfo(15, "ModifiedBy", "s_modified_by_c", OdbcType.VarChar, 20, false),
-                    new TTypedColumnInfo(16, "ModificationId", "s_modification_id_c", OdbcType.VarChar, 150, false)
-                },
-                new int[] {
-                    0, 1
-                }));
-            return true;
-        }
-
-        /// constructor
-        public AArInvoiceTable() :
-                base("AArInvoice")
-        {
-        }
-
-        /// constructor
-        public AArInvoiceTable(string ATablename) :
-                base(ATablename)
-        {
-        }
-
-        /// constructor for serialization
-        public AArInvoiceTable(System.Runtime.Serialization.SerializationInfo info, System.Runtime.Serialization.StreamingContext context) :
-                base(info, context)
-        {
-        }
 
         /// create the columns
         protected override void InitClass()
@@ -6039,6 +6345,18 @@ namespace Ict.Petra.Shared.MFinance.AR.Data
         public AArInvoiceTable GetChangesTyped()
         {
             return ((AArInvoiceTable)(base.GetChangesTypedInternal()));
+        }
+
+        /// return the CamelCase name of the table
+        public static string GetTableName()
+        {
+            return "AArInvoice";
+        }
+
+        /// return the name of the table as it is used in the database
+        public static string GetTableDBName()
+        {
+            return "a_ar_invoice";
         }
 
         /// get an odbc parameter for the given column
@@ -6939,6 +7257,90 @@ namespace Ict.Petra.Shared.MFinance.AR.Data
     [Serializable()]
     public class AArInvoiceDetailTable : TTypedDataTable
     {
+        /// TableId for Ict.Common.Data generic functions
+        public static short TableId = 191;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnLedgerNumberId = 0;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnInvoiceKeyId = 1;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnDetailNumberId = 2;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnArArticleCodeId = 3;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnArReferenceId = 4;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnArNumberOfItemId = 5;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnArArticlePriceId = 6;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnCalculatedAmountId = 7;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnCurrencyCodeId = 8;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnTaxTypeCodeId = 9;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnTaxRateCodeId = 10;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnTaxValidFromId = 11;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnDateCreatedId = 12;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnCreatedById = 13;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnDateModifiedId = 14;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnModifiedById = 15;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnModificationIdId = 16;
+
+        private static bool FInitInfoValues = InitInfoValues();
+        private static bool InitInfoValues()
+        {
+            TableInfo.Add(TableId, new TTypedTableInfo(TableId, "AArInvoiceDetail", "a_ar_invoice_detail",
+                new TTypedColumnInfo[] {
+                    new TTypedColumnInfo(0, "LedgerNumber", "a_ledger_number_i", "Ledger Number", OdbcType.Int, -1, true),
+                    new TTypedColumnInfo(1, "InvoiceKey", "a_invoice_key_i", "Invoice Key", OdbcType.Int, -1, false),
+                    new TTypedColumnInfo(2, "DetailNumber", "a_detail_number_i", "Invoice Key", OdbcType.Int, -1, false),
+                    new TTypedColumnInfo(3, "ArArticleCode", "a_ar_article_code_c", "a_ar_article_code_c", OdbcType.VarChar, 100, true),
+                    new TTypedColumnInfo(4, "ArReference", "a_ar_reference_c", "a_ar_reference_c", OdbcType.VarChar, 100, false),
+                    new TTypedColumnInfo(5, "ArNumberOfItem", "a_ar_number_of_item_i", "a_ar_number_of_item_i", OdbcType.Int, -1, true),
+                    new TTypedColumnInfo(6, "ArArticlePrice", "a_ar_article_price_d", "a_ar_article_price_d", OdbcType.Date, -1, true),
+                    new TTypedColumnInfo(7, "CalculatedAmount", "a_calculated_amount_n", "a_calculated_amount_n", OdbcType.Decimal, 24, false),
+                    new TTypedColumnInfo(8, "CurrencyCode", "a_currency_code_c", "a_currency_code_c", OdbcType.VarChar, 16, true),
+                    new TTypedColumnInfo(9, "TaxTypeCode", "a_tax_type_code_c", "Tax Type Code", OdbcType.VarChar, 16, true),
+                    new TTypedColumnInfo(10, "TaxRateCode", "a_tax_rate_code_c", "Tax Rate Code", OdbcType.VarChar, 16, true),
+                    new TTypedColumnInfo(11, "TaxValidFrom", "a_tax_valid_from_d", "a_tax_valid_from_d", OdbcType.Date, -1, true),
+                    new TTypedColumnInfo(12, "DateCreated", "s_date_created_d", "Created Date", OdbcType.Date, -1, false),
+                    new TTypedColumnInfo(13, "CreatedBy", "s_created_by_c", "Created By", OdbcType.VarChar, 20, false),
+                    new TTypedColumnInfo(14, "DateModified", "s_date_modified_d", "Modified Date", OdbcType.Date, -1, false),
+                    new TTypedColumnInfo(15, "ModifiedBy", "s_modified_by_c", "Modified By", OdbcType.VarChar, 20, false),
+                    new TTypedColumnInfo(16, "ModificationId", "s_modification_id_c", "", OdbcType.VarChar, 150, false)
+                },
+                new int[] {
+                    0, 1, 2
+                }));
+            return true;
+        }
+
+        /// constructor
+        public AArInvoiceDetailTable() :
+                base("AArInvoiceDetail")
+        {
+        }
+
+        /// constructor
+        public AArInvoiceDetailTable(string ATablename) :
+                base(ATablename)
+        {
+        }
+
+        /// constructor for serialization
+        public AArInvoiceDetailTable(System.Runtime.Serialization.SerializationInfo info, System.Runtime.Serialization.StreamingContext context) :
+                base(info, context)
+        {
+        }
+
         /// This is used as a key field in most of the accounting system files
         public DataColumn ColumnLedgerNumber;
         /// this invoice detail belongs to the invoice with this key
@@ -6973,56 +7375,6 @@ namespace Ict.Petra.Shared.MFinance.AR.Data
         public DataColumn ColumnModifiedBy;
         /// This identifies the current version of the record.
         public DataColumn ColumnModificationId;
-
-        /// TableId for Ict.Common.Data generic functions
-        public static short TableId = 191;
-
-        private static bool FInitInfoValues = InitInfoValues();
-        private static bool InitInfoValues()
-        {
-            TableInfo.Add(TableId, new TTypedTableInfo(TableId, "AArInvoiceDetail", "a_ar_invoice_detail",
-                new TTypedColumnInfo[] {
-                    new TTypedColumnInfo(0, "LedgerNumber", "a_ledger_number_i", OdbcType.Int, -1, true),
-                    new TTypedColumnInfo(1, "InvoiceKey", "a_invoice_key_i", OdbcType.Int, -1, false),
-                    new TTypedColumnInfo(2, "DetailNumber", "a_detail_number_i", OdbcType.Int, -1, false),
-                    new TTypedColumnInfo(3, "ArArticleCode", "a_ar_article_code_c", OdbcType.VarChar, 100, true),
-                    new TTypedColumnInfo(4, "ArReference", "a_ar_reference_c", OdbcType.VarChar, 100, false),
-                    new TTypedColumnInfo(5, "ArNumberOfItem", "a_ar_number_of_item_i", OdbcType.Int, -1, true),
-                    new TTypedColumnInfo(6, "ArArticlePrice", "a_ar_article_price_d", OdbcType.Date, -1, true),
-                    new TTypedColumnInfo(7, "CalculatedAmount", "a_calculated_amount_n", OdbcType.Decimal, 24, false),
-                    new TTypedColumnInfo(8, "CurrencyCode", "a_currency_code_c", OdbcType.VarChar, 16, true),
-                    new TTypedColumnInfo(9, "TaxTypeCode", "a_tax_type_code_c", OdbcType.VarChar, 16, true),
-                    new TTypedColumnInfo(10, "TaxRateCode", "a_tax_rate_code_c", OdbcType.VarChar, 16, true),
-                    new TTypedColumnInfo(11, "TaxValidFrom", "a_tax_valid_from_d", OdbcType.Date, -1, true),
-                    new TTypedColumnInfo(12, "DateCreated", "s_date_created_d", OdbcType.Date, -1, false),
-                    new TTypedColumnInfo(13, "CreatedBy", "s_created_by_c", OdbcType.VarChar, 20, false),
-                    new TTypedColumnInfo(14, "DateModified", "s_date_modified_d", OdbcType.Date, -1, false),
-                    new TTypedColumnInfo(15, "ModifiedBy", "s_modified_by_c", OdbcType.VarChar, 20, false),
-                    new TTypedColumnInfo(16, "ModificationId", "s_modification_id_c", OdbcType.VarChar, 150, false)
-                },
-                new int[] {
-                    0, 1, 2
-                }));
-            return true;
-        }
-
-        /// constructor
-        public AArInvoiceDetailTable() :
-                base("AArInvoiceDetail")
-        {
-        }
-
-        /// constructor
-        public AArInvoiceDetailTable(string ATablename) :
-                base(ATablename)
-        {
-        }
-
-        /// constructor for serialization
-        public AArInvoiceDetailTable(System.Runtime.Serialization.SerializationInfo info, System.Runtime.Serialization.StreamingContext context) :
-                base(info, context)
-        {
-        }
 
         /// create the columns
         protected override void InitClass()
@@ -7104,6 +7456,18 @@ namespace Ict.Petra.Shared.MFinance.AR.Data
         public AArInvoiceDetailTable GetChangesTyped()
         {
             return ((AArInvoiceDetailTable)(base.GetChangesTypedInternal()));
+        }
+
+        /// return the CamelCase name of the table
+        public static string GetTableName()
+        {
+            return "AArInvoiceDetail";
+        }
+
+        /// return the name of the table as it is used in the database
+        public static string GetTableDBName()
+        {
+            return "a_ar_invoice_detail";
         }
 
         /// get an odbc parameter for the given column
@@ -8004,42 +8368,41 @@ namespace Ict.Petra.Shared.MFinance.AR.Data
     [Serializable()]
     public class AArInvoiceDiscountTable : TTypedDataTable
     {
-        /// This is used as a key field in most of the accounting system files
-        public DataColumn ColumnLedgerNumber;
-        /// Key to uniquely identify invoice
-        public DataColumn ColumnInvoiceKey;
-        /// code that identifies the discount
-        public DataColumn ColumnArDiscountCode;
-        /// this clearly specifies which version of the discount is meant
-        public DataColumn ColumnArDiscountDateValidFrom;
-        /// The date the record was created.
-        public DataColumn ColumnDateCreated;
-        /// User ID of who created this record.
-        public DataColumn ColumnCreatedBy;
-        /// The date the record was modified.
-        public DataColumn ColumnDateModified;
-        /// User ID of who last modified this record.
-        public DataColumn ColumnModifiedBy;
-        /// This identifies the current version of the record.
-        public DataColumn ColumnModificationId;
-
         /// TableId for Ict.Common.Data generic functions
         public static short TableId = 192;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnLedgerNumberId = 0;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnInvoiceKeyId = 1;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnArDiscountCodeId = 2;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnArDiscountDateValidFromId = 3;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnDateCreatedId = 4;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnCreatedById = 5;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnDateModifiedId = 6;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnModifiedById = 7;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnModificationIdId = 8;
 
         private static bool FInitInfoValues = InitInfoValues();
         private static bool InitInfoValues()
         {
             TableInfo.Add(TableId, new TTypedTableInfo(TableId, "AArInvoiceDiscount", "a_ar_invoice_discount",
                 new TTypedColumnInfo[] {
-                    new TTypedColumnInfo(0, "LedgerNumber", "a_ledger_number_i", OdbcType.Int, -1, true),
-                    new TTypedColumnInfo(1, "InvoiceKey", "a_invoice_key_i", OdbcType.Int, -1, false),
-                    new TTypedColumnInfo(2, "ArDiscountCode", "a_ar_discount_code_c", OdbcType.VarChar, 100, true),
-                    new TTypedColumnInfo(3, "ArDiscountDateValidFrom", "a_ar_discount_date_valid_from_d", OdbcType.Date, -1, true),
-                    new TTypedColumnInfo(4, "DateCreated", "s_date_created_d", OdbcType.Date, -1, false),
-                    new TTypedColumnInfo(5, "CreatedBy", "s_created_by_c", OdbcType.VarChar, 20, false),
-                    new TTypedColumnInfo(6, "DateModified", "s_date_modified_d", OdbcType.Date, -1, false),
-                    new TTypedColumnInfo(7, "ModifiedBy", "s_modified_by_c", OdbcType.VarChar, 20, false),
-                    new TTypedColumnInfo(8, "ModificationId", "s_modification_id_c", OdbcType.VarChar, 150, false)
+                    new TTypedColumnInfo(0, "LedgerNumber", "a_ledger_number_i", "Ledger Number", OdbcType.Int, -1, true),
+                    new TTypedColumnInfo(1, "InvoiceKey", "a_invoice_key_i", "Invoice Key", OdbcType.Int, -1, false),
+                    new TTypedColumnInfo(2, "ArDiscountCode", "a_ar_discount_code_c", "a_ar_discount_code_c", OdbcType.VarChar, 100, true),
+                    new TTypedColumnInfo(3, "ArDiscountDateValidFrom", "a_ar_discount_date_valid_from_d", "a_ar_discount_date_valid_from_d", OdbcType.Date, -1, true),
+                    new TTypedColumnInfo(4, "DateCreated", "s_date_created_d", "Created Date", OdbcType.Date, -1, false),
+                    new TTypedColumnInfo(5, "CreatedBy", "s_created_by_c", "Created By", OdbcType.VarChar, 20, false),
+                    new TTypedColumnInfo(6, "DateModified", "s_date_modified_d", "Modified Date", OdbcType.Date, -1, false),
+                    new TTypedColumnInfo(7, "ModifiedBy", "s_modified_by_c", "Modified By", OdbcType.VarChar, 20, false),
+                    new TTypedColumnInfo(8, "ModificationId", "s_modification_id_c", "", OdbcType.VarChar, 150, false)
                 },
                 new int[] {
                     0, 1, 2, 3
@@ -8064,6 +8427,25 @@ namespace Ict.Petra.Shared.MFinance.AR.Data
                 base(info, context)
         {
         }
+
+        /// This is used as a key field in most of the accounting system files
+        public DataColumn ColumnLedgerNumber;
+        /// Key to uniquely identify invoice
+        public DataColumn ColumnInvoiceKey;
+        /// code that identifies the discount
+        public DataColumn ColumnArDiscountCode;
+        /// this clearly specifies which version of the discount is meant
+        public DataColumn ColumnArDiscountDateValidFrom;
+        /// The date the record was created.
+        public DataColumn ColumnDateCreated;
+        /// User ID of who created this record.
+        public DataColumn ColumnCreatedBy;
+        /// The date the record was modified.
+        public DataColumn ColumnDateModified;
+        /// User ID of who last modified this record.
+        public DataColumn ColumnModifiedBy;
+        /// This identifies the current version of the record.
+        public DataColumn ColumnModificationId;
 
         /// create the columns
         protected override void InitClass()
@@ -8129,6 +8511,18 @@ namespace Ict.Petra.Shared.MFinance.AR.Data
         public AArInvoiceDiscountTable GetChangesTyped()
         {
             return ((AArInvoiceDiscountTable)(base.GetChangesTypedInternal()));
+        }
+
+        /// return the CamelCase name of the table
+        public static string GetTableName()
+        {
+            return "AArInvoiceDiscount";
+        }
+
+        /// return the name of the table as it is used in the database
+        public static string GetTableDBName()
+        {
+            return "a_ar_invoice_discount";
         }
 
         /// get an odbc parameter for the given column
@@ -8621,45 +9015,44 @@ namespace Ict.Petra.Shared.MFinance.AR.Data
     [Serializable()]
     public class AArInvoiceDetailDiscountTable : TTypedDataTable
     {
-        /// This is used as a key field in most of the accounting system files
-        public DataColumn ColumnLedgerNumber;
-        /// Key to uniquely identify invoice
-        public DataColumn ColumnInvoiceKey;
-        /// A unique number for this detail for its invoice.
-        public DataColumn ColumnDetailNumber;
-        /// code that identifies the discount
-        public DataColumn ColumnArDiscountCode;
-        /// this clearly specifies which version of the discount is meant
-        public DataColumn ColumnArDiscountDateValidFrom;
-        /// The date the record was created.
-        public DataColumn ColumnDateCreated;
-        /// User ID of who created this record.
-        public DataColumn ColumnCreatedBy;
-        /// The date the record was modified.
-        public DataColumn ColumnDateModified;
-        /// User ID of who last modified this record.
-        public DataColumn ColumnModifiedBy;
-        /// This identifies the current version of the record.
-        public DataColumn ColumnModificationId;
-
         /// TableId for Ict.Common.Data generic functions
         public static short TableId = 193;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnLedgerNumberId = 0;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnInvoiceKeyId = 1;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnDetailNumberId = 2;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnArDiscountCodeId = 3;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnArDiscountDateValidFromId = 4;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnDateCreatedId = 5;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnCreatedById = 6;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnDateModifiedId = 7;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnModifiedById = 8;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnModificationIdId = 9;
 
         private static bool FInitInfoValues = InitInfoValues();
         private static bool InitInfoValues()
         {
             TableInfo.Add(TableId, new TTypedTableInfo(TableId, "AArInvoiceDetailDiscount", "a_ar_invoice_detail_discount",
                 new TTypedColumnInfo[] {
-                    new TTypedColumnInfo(0, "LedgerNumber", "a_ledger_number_i", OdbcType.Int, -1, true),
-                    new TTypedColumnInfo(1, "InvoiceKey", "a_invoice_key_i", OdbcType.Int, -1, false),
-                    new TTypedColumnInfo(2, "DetailNumber", "a_detail_number_i", OdbcType.Int, -1, false),
-                    new TTypedColumnInfo(3, "ArDiscountCode", "a_ar_discount_code_c", OdbcType.VarChar, 100, true),
-                    new TTypedColumnInfo(4, "ArDiscountDateValidFrom", "a_ar_discount_date_valid_from_d", OdbcType.Date, -1, true),
-                    new TTypedColumnInfo(5, "DateCreated", "s_date_created_d", OdbcType.Date, -1, false),
-                    new TTypedColumnInfo(6, "CreatedBy", "s_created_by_c", OdbcType.VarChar, 20, false),
-                    new TTypedColumnInfo(7, "DateModified", "s_date_modified_d", OdbcType.Date, -1, false),
-                    new TTypedColumnInfo(8, "ModifiedBy", "s_modified_by_c", OdbcType.VarChar, 20, false),
-                    new TTypedColumnInfo(9, "ModificationId", "s_modification_id_c", OdbcType.VarChar, 150, false)
+                    new TTypedColumnInfo(0, "LedgerNumber", "a_ledger_number_i", "Ledger Number", OdbcType.Int, -1, true),
+                    new TTypedColumnInfo(1, "InvoiceKey", "a_invoice_key_i", "Invoice Key", OdbcType.Int, -1, false),
+                    new TTypedColumnInfo(2, "DetailNumber", "a_detail_number_i", "Invoice Key", OdbcType.Int, -1, false),
+                    new TTypedColumnInfo(3, "ArDiscountCode", "a_ar_discount_code_c", "a_ar_discount_code_c", OdbcType.VarChar, 100, true),
+                    new TTypedColumnInfo(4, "ArDiscountDateValidFrom", "a_ar_discount_date_valid_from_d", "a_ar_discount_date_valid_from_d", OdbcType.Date, -1, true),
+                    new TTypedColumnInfo(5, "DateCreated", "s_date_created_d", "Created Date", OdbcType.Date, -1, false),
+                    new TTypedColumnInfo(6, "CreatedBy", "s_created_by_c", "Created By", OdbcType.VarChar, 20, false),
+                    new TTypedColumnInfo(7, "DateModified", "s_date_modified_d", "Modified Date", OdbcType.Date, -1, false),
+                    new TTypedColumnInfo(8, "ModifiedBy", "s_modified_by_c", "Modified By", OdbcType.VarChar, 20, false),
+                    new TTypedColumnInfo(9, "ModificationId", "s_modification_id_c", "", OdbcType.VarChar, 150, false)
                 },
                 new int[] {
                     0, 1, 2, 3, 4
@@ -8684,6 +9077,27 @@ namespace Ict.Petra.Shared.MFinance.AR.Data
                 base(info, context)
         {
         }
+
+        /// This is used as a key field in most of the accounting system files
+        public DataColumn ColumnLedgerNumber;
+        /// Key to uniquely identify invoice
+        public DataColumn ColumnInvoiceKey;
+        /// A unique number for this detail for its invoice.
+        public DataColumn ColumnDetailNumber;
+        /// code that identifies the discount
+        public DataColumn ColumnArDiscountCode;
+        /// this clearly specifies which version of the discount is meant
+        public DataColumn ColumnArDiscountDateValidFrom;
+        /// The date the record was created.
+        public DataColumn ColumnDateCreated;
+        /// User ID of who created this record.
+        public DataColumn ColumnCreatedBy;
+        /// The date the record was modified.
+        public DataColumn ColumnDateModified;
+        /// User ID of who last modified this record.
+        public DataColumn ColumnModifiedBy;
+        /// This identifies the current version of the record.
+        public DataColumn ColumnModificationId;
 
         /// create the columns
         protected override void InitClass()
@@ -8751,6 +9165,18 @@ namespace Ict.Petra.Shared.MFinance.AR.Data
         public AArInvoiceDetailDiscountTable GetChangesTyped()
         {
             return ((AArInvoiceDetailDiscountTable)(base.GetChangesTypedInternal()));
+        }
+
+        /// return the CamelCase name of the table
+        public static string GetTableName()
+        {
+            return "AArInvoiceDetailDiscount";
+        }
+
+        /// return the name of the table as it is used in the database
+        public static string GetTableDBName()
+        {
+            return "a_ar_invoice_detail_discount";
         }
 
         /// get an odbc parameter for the given column

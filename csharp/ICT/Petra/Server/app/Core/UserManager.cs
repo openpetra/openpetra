@@ -121,7 +121,7 @@ namespace Ict.Petra.Server.App.Core.Security
             // Check if user exists in s_user DB Table
             try
             {
-                UserExists = SUserAccess.CountByPrimaryKey(AUserID, ReadWriteTransaction) != 0;
+                UserExists = SUserAccess.Exists(AUserID, ReadWriteTransaction);
             }
             catch
             {
@@ -327,8 +327,8 @@ namespace Ict.Petra.Server.App.Core.Security
 
                     throw new ESystemDisabledException(String.Format(StrSystemDisabled1,
                             SystemStatusDT[0].SystemDisabledReason) + Environment.NewLine + Environment.NewLine +
-                        String.Format(StrSystemDisabled2, StringHelper.DateToLocalizedString(SystemStatusDT[0].SystemAvailableDateLowNull),
-                            SystemStatusDT[0].SystemAvailableDateLowNull.AddSeconds(SystemStatusDT[0].SystemAvailableTime).ToShortTimeString()));
+                        String.Format(StrSystemDisabled2, StringHelper.DateToLocalizedString(SystemStatusDT[0].SystemAvailableDate),
+                            SystemStatusDT[0].SystemAvailableDate.AddSeconds(SystemStatusDT[0].SystemAvailableTime).ToShortTimeString()));
                 }
             }
 

@@ -1776,7 +1776,7 @@ namespace Ict.Petra.Server.MPartner.DataAggregates
                     != (TTypedDataAccess.GetSafeValue(ADataRow, PPartnerLocationTable.GetTelephoneNumberDBName(), DataRowVersion.Current)).ToString())
                 {
                     AChangedDetails.Add(PPartnerLocationTable.GetTelephoneNumberDBName());
-                    AChangedDetails.Add(PPartnerLocationTable.GetTelephoneNumberLabel());
+                    AChangedDetails.Add(TTypedDataTable.GetLabel(PPartnerLocationTable.TableId, PPartnerLocationTable.ColumnTelephoneNumberId));
                     AChangedDetails.Add(TTypedDataAccess.GetSafeValue(ADataRow, PPartnerLocationTable.GetTelephoneNumberDBName(),
                             DataRowVersion.Original).ToString());
                     AChangedDetails.Add(TTypedDataAccess.GetSafeValue(ADataRow, PPartnerLocationTable.GetTelephoneNumberDBName(),
@@ -1788,7 +1788,7 @@ namespace Ict.Petra.Server.MPartner.DataAggregates
                     != (TTypedDataAccess.GetSafeValue(ADataRow, PPartnerLocationTable.GetExtensionDBName(), DataRowVersion.Current)).ToString())
                 {
                     AChangedDetails.Add(PPartnerLocationTable.GetExtensionDBName());
-                    AChangedDetails.Add(PPartnerLocationTable.GetExtensionLabel());
+                    AChangedDetails.Add(TTypedDataTable.GetLabel(PPartnerLocationTable.TableId, PPartnerLocationTable.ColumnExtensionId));
                     AChangedDetails.Add(TTypedDataAccess.GetSafeValue(ADataRow,
                             PPartnerLocationTable.GetExtensionDBName(), DataRowVersion.Original).ToString());
                     AChangedDetails.Add(TTypedDataAccess.GetSafeValue(ADataRow,
@@ -1800,7 +1800,7 @@ namespace Ict.Petra.Server.MPartner.DataAggregates
                     != (TTypedDataAccess.GetSafeValue(ADataRow, PPartnerLocationTable.GetFaxNumberDBName(), DataRowVersion.Current)).ToString())
                 {
                     AChangedDetails.Add(PPartnerLocationTable.GetFaxNumberDBName());
-                    AChangedDetails.Add(PPartnerLocationTable.GetFaxNumberLabel());
+                    AChangedDetails.Add(TTypedDataTable.GetLabel(PPartnerLocationTable.TableId, PPartnerLocationTable.ColumnFaxNumberId));
                     AChangedDetails.Add(TTypedDataAccess.GetSafeValue(ADataRow,
                             PPartnerLocationTable.GetFaxNumberDBName(), DataRowVersion.Original).ToString());
                     AChangedDetails.Add(TTypedDataAccess.GetSafeValue(ADataRow,
@@ -1812,7 +1812,7 @@ namespace Ict.Petra.Server.MPartner.DataAggregates
                     != (TTypedDataAccess.GetSafeValue(ADataRow, PPartnerLocationTable.GetFaxExtensionDBName(), DataRowVersion.Current)).ToString())
                 {
                     AChangedDetails.Add(PPartnerLocationTable.GetFaxExtensionDBName());
-                    AChangedDetails.Add(PPartnerLocationTable.GetFaxExtensionLabel());
+                    AChangedDetails.Add(TTypedDataTable.GetLabel(PPartnerLocationTable.TableId, PPartnerLocationTable.ColumnFaxExtensionId));
                     AChangedDetails.Add(TTypedDataAccess.GetSafeValue(ADataRow, PPartnerLocationTable.GetFaxExtensionDBName(),
                             DataRowVersion.Original).ToString());
                     AChangedDetails.Add(TTypedDataAccess.GetSafeValue(ADataRow,
@@ -1825,7 +1825,7 @@ namespace Ict.Petra.Server.MPartner.DataAggregates
                             DataRowVersion.Current)).ToString())
                 {
                     AChangedDetails.Add(PPartnerLocationTable.GetAlternateTelephoneDBName());
-                    AChangedDetails.Add(PPartnerLocationTable.GetAlternateTelephoneLabel());
+                    AChangedDetails.Add(TTypedDataTable.GetLabel(PPartnerLocationTable.TableId, PPartnerLocationTable.ColumnAlternateTelephoneId));
                     AChangedDetails.Add(TTypedDataAccess.GetSafeValue(ADataRow, PPartnerLocationTable.GetAlternateTelephoneDBName(),
                             DataRowVersion.Original).ToString());
                     AChangedDetails.Add(TTypedDataAccess.GetSafeValue(ADataRow, PPartnerLocationTable.GetAlternateTelephoneDBName(),
@@ -1837,7 +1837,7 @@ namespace Ict.Petra.Server.MPartner.DataAggregates
                     != (TTypedDataAccess.GetSafeValue(ADataRow, PPartnerLocationTable.GetMobileNumberDBName(), DataRowVersion.Current)).ToString())
                 {
                     AChangedDetails.Add(PPartnerLocationTable.GetMobileNumberDBName());
-                    AChangedDetails.Add(PPartnerLocationTable.GetMobileNumberLabel());
+                    AChangedDetails.Add(TTypedDataTable.GetLabel(PPartnerLocationTable.TableId, PPartnerLocationTable.ColumnMobileNumberId));
                     AChangedDetails.Add(TTypedDataAccess.GetSafeValue(ADataRow, PPartnerLocationTable.GetMobileNumberDBName(),
                             DataRowVersion.Original).ToString());
                     AChangedDetails.Add(TTypedDataAccess.GetSafeValue(ADataRow,
@@ -1849,7 +1849,7 @@ namespace Ict.Petra.Server.MPartner.DataAggregates
                     != (TTypedDataAccess.GetSafeValue(ADataRow, PPartnerLocationTable.GetEmailAddressDBName(), DataRowVersion.Current)).ToString())
                 {
                     AChangedDetails.Add(PPartnerLocationTable.GetEmailAddressDBName());
-                    AChangedDetails.Add(PPartnerLocationTable.GetEmailAddressLabel());
+                    AChangedDetails.Add(TTypedDataTable.GetLabel(PPartnerLocationTable.TableId, PPartnerLocationTable.ColumnEmailAddressId));
                     AChangedDetails.Add(TTypedDataAccess.GetSafeValue(ADataRow, PPartnerLocationTable.GetEmailAddressDBName(),
                             DataRowVersion.Original).ToString());
                     AChangedDetails.Add(TTypedDataAccess.GetSafeValue(ADataRow,
@@ -1861,7 +1861,7 @@ namespace Ict.Petra.Server.MPartner.DataAggregates
                     != (TTypedDataAccess.GetSafeValue(ADataRow, PPartnerLocationTable.GetUrlDBName(), DataRowVersion.Current)).ToString())
                 {
                     AChangedDetails.Add(PPartnerLocationTable.GetUrlDBName());
-                    AChangedDetails.Add(PPartnerLocationTable.GetUrlLabel());
+                    AChangedDetails.Add(TTypedDataTable.GetLabel(PPartnerLocationTable.TableId, PPartnerLocationTable.ColumnUrlId));
                     AChangedDetails.Add(TTypedDataAccess.GetSafeValue(ADataRow,
                             PPartnerLocationTable.GetUrlDBName(), DataRowVersion.Original).ToString());
                     AChangedDetails.Add(TTypedDataAccess.GetSafeValue(ADataRow,
@@ -3563,7 +3563,7 @@ namespace Ict.Petra.Server.MPartner.DataAggregates
                     }
 #endif
 
-                    if (PPartnerLocationAccess.CountByPrimaryKey(APartnerKey, APartnerLocationRow.SiteKey, 0, ASubmitChangesTransaction) != 0)
+                    if (PPartnerLocationAccess.Exists(APartnerKey, APartnerLocationRow.SiteKey, 0, ASubmitChangesTransaction))
                     {
                         throw new ApplicationException(
                             "A new PPartnerLocation DataRow with LocationKey 0 was added, but the Partner already has a PPartnerLocation with LocationKey 0");
@@ -4204,8 +4204,8 @@ namespace Ict.Petra.Server.MPartner.DataAggregates
 #endif
 
                             // Check if Person doesn't already have the Location
-                            if (PPartnerLocationAccess.CountByPrimaryKey(ProcessedPersonRow.PartnerKey, SubmittedLocationPK.SiteKey,
-                                    SubmittedLocationPK.LocationKey, ASubmitChangesTransaction) == 0)
+                            if (PPartnerLocationAccess.Exists(ProcessedPersonRow.PartnerKey, SubmittedLocationPK.SiteKey,
+                                    SubmittedLocationPK.LocationKey, ASubmitChangesTransaction))
                             {
 #if DEBUGMODE
                                 if (TSrvSetting.DL >= 9)
@@ -4236,8 +4236,8 @@ namespace Ict.Petra.Server.MPartner.DataAggregates
                                  * means that this was the only PartnerLocation so far), delete the
                                  * PartnerLocation with LocationKey 0.
                                  */
-                                if (PPartnerLocationAccess.CountByPrimaryKey(ProcessedPersonRow.PartnerKey, SubmittedLocationPK.SiteKey, 0,
-                                        ASubmitChangesTransaction) != 0)
+                                if (PPartnerLocationAccess.Exists(ProcessedPersonRow.PartnerKey, SubmittedLocationPK.SiteKey, 0,
+                                        ASubmitChangesTransaction))
                                 {
 #if DEBUGMODE
                                     if (TSrvSetting.DL >= 9)
@@ -4472,8 +4472,8 @@ namespace Ict.Petra.Server.MPartner.DataAggregates
                                          PPartnerLocationTable.GetSiteKeyDBName() + " = " + ExistingSiteKey.ToString() + " AND " +
                                          PPartnerLocationTable.GetLocationKeyDBName() + " = " + ExistingLocationKey.ToString(), "",
                                          DataViewRowState.Deleted).Length == 0)
-                                    && (Convert.ToInt16(PPartnerLocationAccess.CountByPrimaryKey(APartnerKey, ExistingSiteKey, ExistingLocationKey,
-                                                ASubmitChangesTransaction)) != 0)))
+                                    && (PPartnerLocationAccess.Exists(APartnerKey, ExistingSiteKey, ExistingLocationKey,
+                                                ASubmitChangesTransaction))))
                             {
                                 AVerificationResult.Add(new TVerificationResult("[Partner Address Save]", "Partner " + APartnerKey.ToString() +
                                         " already has a " + "record linked with Location " + ExistingLocationKey.ToString() + Environment.NewLine +

@@ -42,39 +42,38 @@ namespace Ict.Petra.Shared.MHospitality.Data
     [Serializable()]
     public class PcBuildingTable : TTypedDataTable
     {
-        ///
-        public DataColumn ColumnVenueKey;
-        ///
-        public DataColumn ColumnBuildingCode;
-        /// This is a long description and is 80 characters long.
-        public DataColumn ColumnBuildingDesc;
-        /// The date the record was created.
-        public DataColumn ColumnDateCreated;
-        /// User ID of who created this record.
-        public DataColumn ColumnCreatedBy;
-        /// The date the record was modified.
-        public DataColumn ColumnDateModified;
-        /// User ID of who last modified this record.
-        public DataColumn ColumnModifiedBy;
-        /// This identifies the current version of the record.
-        public DataColumn ColumnModificationId;
-
         /// TableId for Ict.Common.Data generic functions
         public static short TableId = 278;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnVenueKeyId = 0;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnBuildingCodeId = 1;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnBuildingDescId = 2;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnDateCreatedId = 3;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnCreatedById = 4;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnDateModifiedId = 5;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnModifiedById = 6;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnModificationIdId = 7;
 
         private static bool FInitInfoValues = InitInfoValues();
         private static bool InitInfoValues()
         {
             TableInfo.Add(TableId, new TTypedTableInfo(TableId, "PcBuilding", "pc_building",
                 new TTypedColumnInfo[] {
-                    new TTypedColumnInfo(0, "VenueKey", "p_venue_key_n", OdbcType.Decimal, 10, true),
-                    new TTypedColumnInfo(1, "BuildingCode", "pc_building_code_c", OdbcType.VarChar, 16, true),
-                    new TTypedColumnInfo(2, "BuildingDesc", "pc_building_desc_c", OdbcType.VarChar, 160, false),
-                    new TTypedColumnInfo(3, "DateCreated", "s_date_created_d", OdbcType.Date, -1, false),
-                    new TTypedColumnInfo(4, "CreatedBy", "s_created_by_c", OdbcType.VarChar, 20, false),
-                    new TTypedColumnInfo(5, "DateModified", "s_date_modified_d", OdbcType.Date, -1, false),
-                    new TTypedColumnInfo(6, "ModifiedBy", "s_modified_by_c", OdbcType.VarChar, 20, false),
-                    new TTypedColumnInfo(7, "ModificationId", "s_modification_id_c", OdbcType.VarChar, 150, false)
+                    new TTypedColumnInfo(0, "VenueKey", "p_venue_key_n", "Venue Key", OdbcType.Decimal, 10, true),
+                    new TTypedColumnInfo(1, "BuildingCode", "pc_building_code_c", "Building Code", OdbcType.VarChar, 16, true),
+                    new TTypedColumnInfo(2, "BuildingDesc", "pc_building_desc_c", "Description", OdbcType.VarChar, 160, false),
+                    new TTypedColumnInfo(3, "DateCreated", "s_date_created_d", "Created Date", OdbcType.Date, -1, false),
+                    new TTypedColumnInfo(4, "CreatedBy", "s_created_by_c", "Created By", OdbcType.VarChar, 20, false),
+                    new TTypedColumnInfo(5, "DateModified", "s_date_modified_d", "Modified Date", OdbcType.Date, -1, false),
+                    new TTypedColumnInfo(6, "ModifiedBy", "s_modified_by_c", "Modified By", OdbcType.VarChar, 20, false),
+                    new TTypedColumnInfo(7, "ModificationId", "s_modification_id_c", "", OdbcType.VarChar, 150, false)
                 },
                 new int[] {
                     0, 1
@@ -99,6 +98,23 @@ namespace Ict.Petra.Shared.MHospitality.Data
                 base(info, context)
         {
         }
+
+        ///
+        public DataColumn ColumnVenueKey;
+        ///
+        public DataColumn ColumnBuildingCode;
+        /// This is a long description and is 80 characters long.
+        public DataColumn ColumnBuildingDesc;
+        /// The date the record was created.
+        public DataColumn ColumnDateCreated;
+        /// User ID of who created this record.
+        public DataColumn ColumnCreatedBy;
+        /// The date the record was modified.
+        public DataColumn ColumnDateModified;
+        /// User ID of who last modified this record.
+        public DataColumn ColumnModifiedBy;
+        /// This identifies the current version of the record.
+        public DataColumn ColumnModificationId;
 
         /// create the columns
         protected override void InitClass()
@@ -162,6 +178,18 @@ namespace Ict.Petra.Shared.MHospitality.Data
         public PcBuildingTable GetChangesTyped()
         {
             return ((PcBuildingTable)(base.GetChangesTypedInternal()));
+        }
+
+        /// return the CamelCase name of the table
+        public static string GetTableName()
+        {
+            return "PcBuilding";
+        }
+
+        /// return the name of the table as it is used in the database
+        public static string GetTableDBName()
+        {
+            return "pc_building";
         }
 
         /// get an odbc parameter for the given column
@@ -603,6 +631,96 @@ namespace Ict.Petra.Shared.MHospitality.Data
     [Serializable()]
     public class PcRoomTable : TTypedDataTable
     {
+        /// TableId for Ict.Common.Data generic functions
+        public static short TableId = 279;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnVenueKeyId = 0;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnBuildingCodeId = 1;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnRoomNumberId = 2;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnRoomNameId = 3;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnBedsId = 4;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnMaxOccupancyId = 5;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnBedChargeId = 6;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnBedCostId = 7;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnUsageId = 8;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnGenderPreferenceId = 9;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnLayoutXposId = 10;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnLayoutYposId = 11;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnLayoutWidthId = 12;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnLayoutHeightId = 13;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnDateCreatedId = 14;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnCreatedById = 15;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnDateModifiedId = 16;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnModifiedById = 17;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnModificationIdId = 18;
+
+        private static bool FInitInfoValues = InitInfoValues();
+        private static bool InitInfoValues()
+        {
+            TableInfo.Add(TableId, new TTypedTableInfo(TableId, "PcRoom", "pc_room",
+                new TTypedColumnInfo[] {
+                    new TTypedColumnInfo(0, "VenueKey", "p_venue_key_n", "Venue Key", OdbcType.Decimal, 10, true),
+                    new TTypedColumnInfo(1, "BuildingCode", "pc_building_code_c", "Building Code", OdbcType.VarChar, 16, true),
+                    new TTypedColumnInfo(2, "RoomNumber", "pc_room_number_c", "Room Number", OdbcType.VarChar, 16, true),
+                    new TTypedColumnInfo(3, "RoomName", "pc_room_name_c", "Room Name", OdbcType.VarChar, 100, false),
+                    new TTypedColumnInfo(4, "Beds", "pc_beds_i", "Number of Beds", OdbcType.Int, -1, false),
+                    new TTypedColumnInfo(5, "MaxOccupancy", "pc_max_occupancy_i", "Maximum Occupancy", OdbcType.Int, -1, false),
+                    new TTypedColumnInfo(6, "BedCharge", "pc_bed_charge_n", "Charge per night", OdbcType.Decimal, 24, false),
+                    new TTypedColumnInfo(7, "BedCost", "pc_bed_cost_n", "Cost per Night", OdbcType.Decimal, 24, false),
+                    new TTypedColumnInfo(8, "Usage", "pc_usage_c", "Room Usage", OdbcType.VarChar, 32, false),
+                    new TTypedColumnInfo(9, "GenderPreference", "pc_gender_preference_c", "pc_gender_preference_c", OdbcType.VarChar, 6, false),
+                    new TTypedColumnInfo(10, "LayoutXpos", "pc_layout_xpos_i", "pc_layout_xpos_i", OdbcType.Int, -1, false),
+                    new TTypedColumnInfo(11, "LayoutYpos", "pc_layout_ypos_i", "pc_layout_ypos_i", OdbcType.Int, -1, false),
+                    new TTypedColumnInfo(12, "LayoutWidth", "pc_layout_width_i", "pc_layout_width_i", OdbcType.Int, -1, false),
+                    new TTypedColumnInfo(13, "LayoutHeight", "pc_layout_height_i", "pc_layout_height_i", OdbcType.Int, -1, false),
+                    new TTypedColumnInfo(14, "DateCreated", "s_date_created_d", "Created Date", OdbcType.Date, -1, false),
+                    new TTypedColumnInfo(15, "CreatedBy", "s_created_by_c", "Created By", OdbcType.VarChar, 20, false),
+                    new TTypedColumnInfo(16, "DateModified", "s_date_modified_d", "Modified Date", OdbcType.Date, -1, false),
+                    new TTypedColumnInfo(17, "ModifiedBy", "s_modified_by_c", "Modified By", OdbcType.VarChar, 20, false),
+                    new TTypedColumnInfo(18, "ModificationId", "s_modification_id_c", "", OdbcType.VarChar, 150, false)
+                },
+                new int[] {
+                    0, 1, 2
+                }));
+            return true;
+        }
+
+        /// constructor
+        public PcRoomTable() :
+                base("PcRoom")
+        {
+        }
+
+        /// constructor
+        public PcRoomTable(string ATablename) :
+                base(ATablename)
+        {
+        }
+
+        /// constructor for serialization
+        public PcRoomTable(System.Runtime.Serialization.SerializationInfo info, System.Runtime.Serialization.StreamingContext context) :
+                base(info, context)
+        {
+        }
+
         ///
         public DataColumn ColumnVenueKey;
         ///
@@ -641,58 +759,6 @@ namespace Ict.Petra.Shared.MHospitality.Data
         public DataColumn ColumnModifiedBy;
         /// This identifies the current version of the record.
         public DataColumn ColumnModificationId;
-
-        /// TableId for Ict.Common.Data generic functions
-        public static short TableId = 279;
-
-        private static bool FInitInfoValues = InitInfoValues();
-        private static bool InitInfoValues()
-        {
-            TableInfo.Add(TableId, new TTypedTableInfo(TableId, "PcRoom", "pc_room",
-                new TTypedColumnInfo[] {
-                    new TTypedColumnInfo(0, "VenueKey", "p_venue_key_n", OdbcType.Decimal, 10, true),
-                    new TTypedColumnInfo(1, "BuildingCode", "pc_building_code_c", OdbcType.VarChar, 16, true),
-                    new TTypedColumnInfo(2, "RoomNumber", "pc_room_number_c", OdbcType.VarChar, 16, true),
-                    new TTypedColumnInfo(3, "RoomName", "pc_room_name_c", OdbcType.VarChar, 100, false),
-                    new TTypedColumnInfo(4, "Beds", "pc_beds_i", OdbcType.Int, -1, false),
-                    new TTypedColumnInfo(5, "MaxOccupancy", "pc_max_occupancy_i", OdbcType.Int, -1, false),
-                    new TTypedColumnInfo(6, "BedCharge", "pc_bed_charge_n", OdbcType.Decimal, 24, false),
-                    new TTypedColumnInfo(7, "BedCost", "pc_bed_cost_n", OdbcType.Decimal, 24, false),
-                    new TTypedColumnInfo(8, "Usage", "pc_usage_c", OdbcType.VarChar, 32, false),
-                    new TTypedColumnInfo(9, "GenderPreference", "pc_gender_preference_c", OdbcType.VarChar, 6, false),
-                    new TTypedColumnInfo(10, "LayoutXpos", "pc_layout_xpos_i", OdbcType.Int, -1, false),
-                    new TTypedColumnInfo(11, "LayoutYpos", "pc_layout_ypos_i", OdbcType.Int, -1, false),
-                    new TTypedColumnInfo(12, "LayoutWidth", "pc_layout_width_i", OdbcType.Int, -1, false),
-                    new TTypedColumnInfo(13, "LayoutHeight", "pc_layout_height_i", OdbcType.Int, -1, false),
-                    new TTypedColumnInfo(14, "DateCreated", "s_date_created_d", OdbcType.Date, -1, false),
-                    new TTypedColumnInfo(15, "CreatedBy", "s_created_by_c", OdbcType.VarChar, 20, false),
-                    new TTypedColumnInfo(16, "DateModified", "s_date_modified_d", OdbcType.Date, -1, false),
-                    new TTypedColumnInfo(17, "ModifiedBy", "s_modified_by_c", OdbcType.VarChar, 20, false),
-                    new TTypedColumnInfo(18, "ModificationId", "s_modification_id_c", OdbcType.VarChar, 150, false)
-                },
-                new int[] {
-                    0, 1, 2
-                }));
-            return true;
-        }
-
-        /// constructor
-        public PcRoomTable() :
-                base("PcRoom")
-        {
-        }
-
-        /// constructor
-        public PcRoomTable(string ATablename) :
-                base(ATablename)
-        {
-        }
-
-        /// constructor for serialization
-        public PcRoomTable(System.Runtime.Serialization.SerializationInfo info, System.Runtime.Serialization.StreamingContext context) :
-                base(info, context)
-        {
-        }
 
         /// create the columns
         protected override void InitClass()
@@ -778,6 +844,18 @@ namespace Ict.Petra.Shared.MHospitality.Data
         public PcRoomTable GetChangesTyped()
         {
             return ((PcRoomTable)(base.GetChangesTypedInternal()));
+        }
+
+        /// return the CamelCase name of the table
+        public static string GetTableName()
+        {
+            return "PcRoom";
+        }
+
+        /// return the name of the table as it is used in the database
+        public static string GetTableDBName()
+        {
+            return "pc_room";
         }
 
         /// get an odbc parameter for the given column
@@ -1780,6 +1858,90 @@ namespace Ict.Petra.Shared.MHospitality.Data
     [Serializable()]
     public class PcRoomAllocTable : TTypedDataTable
     {
+        /// TableId for Ict.Common.Data generic functions
+        public static short TableId = 280;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnKeyId = 0;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnVenueKeyId = 1;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnBuildingCodeId = 2;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnRoomNumberId = 3;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnConferenceKeyId = 4;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnPartnerKeyId = 5;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnBookWholeRoomId = 6;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnNumberOfBedsId = 7;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnNumberOfOverflowBedsId = 8;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnGenderId = 9;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnInId = 10;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnOutId = 11;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnDateCreatedId = 12;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnCreatedById = 13;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnDateModifiedId = 14;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnModifiedById = 15;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnModificationIdId = 16;
+
+        private static bool FInitInfoValues = InitInfoValues();
+        private static bool InitInfoValues()
+        {
+            TableInfo.Add(TableId, new TTypedTableInfo(TableId, "PcRoomAlloc", "pc_room_alloc",
+                new TTypedColumnInfo[] {
+                    new TTypedColumnInfo(0, "Key", "pc_key_i", "pc_key_i", OdbcType.Int, -1, true),
+                    new TTypedColumnInfo(1, "VenueKey", "p_venue_key_n", "Venue Key", OdbcType.Decimal, 10, true),
+                    new TTypedColumnInfo(2, "BuildingCode", "pc_building_code_c", "Building Code", OdbcType.VarChar, 16, true),
+                    new TTypedColumnInfo(3, "RoomNumber", "pc_room_number_c", "Room Number", OdbcType.VarChar, 16, true),
+                    new TTypedColumnInfo(4, "ConferenceKey", "pc_conference_key_n", "pc_conference_key_n", OdbcType.Decimal, 10, false),
+                    new TTypedColumnInfo(5, "PartnerKey", "p_partner_key_n", "p_partner_key_n", OdbcType.Decimal, 10, false),
+                    new TTypedColumnInfo(6, "BookWholeRoom", "ph_book_whole_room_l", "ph_book_whole_room_l", OdbcType.Bit, -1, true),
+                    new TTypedColumnInfo(7, "NumberOfBeds", "ph_number_of_beds_i", "ph_number_of_beds_i", OdbcType.Int, -1, false),
+                    new TTypedColumnInfo(8, "NumberOfOverflowBeds", "ph_number_of_overflow_beds_i", "ph_number_of_overflow_beds_i", OdbcType.Int, -1, false),
+                    new TTypedColumnInfo(9, "Gender", "ph_gender_c", "ph_gender_c", OdbcType.VarChar, 40, true),
+                    new TTypedColumnInfo(10, "In", "pc_in_d", "Date In", OdbcType.Date, -1, true),
+                    new TTypedColumnInfo(11, "Out", "pc_out_d", "Date Out", OdbcType.Date, -1, false),
+                    new TTypedColumnInfo(12, "DateCreated", "s_date_created_d", "Created Date", OdbcType.Date, -1, false),
+                    new TTypedColumnInfo(13, "CreatedBy", "s_created_by_c", "Created By", OdbcType.VarChar, 20, false),
+                    new TTypedColumnInfo(14, "DateModified", "s_date_modified_d", "Modified Date", OdbcType.Date, -1, false),
+                    new TTypedColumnInfo(15, "ModifiedBy", "s_modified_by_c", "Modified By", OdbcType.VarChar, 20, false),
+                    new TTypedColumnInfo(16, "ModificationId", "s_modification_id_c", "", OdbcType.VarChar, 150, false)
+                },
+                new int[] {
+                    0
+                }));
+            return true;
+        }
+
+        /// constructor
+        public PcRoomAllocTable() :
+                base("PcRoomAlloc")
+        {
+        }
+
+        /// constructor
+        public PcRoomAllocTable(string ATablename) :
+                base(ATablename)
+        {
+        }
+
+        /// constructor for serialization
+        public PcRoomAllocTable(System.Runtime.Serialization.SerializationInfo info, System.Runtime.Serialization.StreamingContext context) :
+                base(info, context)
+        {
+        }
+
         /// Surrogate Primary Key; required because there can be several bookings per room, and not all guests might be linked to a partner
         public DataColumn ColumnKey;
         ///
@@ -1814,56 +1976,6 @@ namespace Ict.Petra.Shared.MHospitality.Data
         public DataColumn ColumnModifiedBy;
         /// This identifies the current version of the record.
         public DataColumn ColumnModificationId;
-
-        /// TableId for Ict.Common.Data generic functions
-        public static short TableId = 280;
-
-        private static bool FInitInfoValues = InitInfoValues();
-        private static bool InitInfoValues()
-        {
-            TableInfo.Add(TableId, new TTypedTableInfo(TableId, "PcRoomAlloc", "pc_room_alloc",
-                new TTypedColumnInfo[] {
-                    new TTypedColumnInfo(0, "Key", "pc_key_i", OdbcType.Int, -1, true),
-                    new TTypedColumnInfo(1, "VenueKey", "p_venue_key_n", OdbcType.Decimal, 10, true),
-                    new TTypedColumnInfo(2, "BuildingCode", "pc_building_code_c", OdbcType.VarChar, 16, true),
-                    new TTypedColumnInfo(3, "RoomNumber", "pc_room_number_c", OdbcType.VarChar, 16, true),
-                    new TTypedColumnInfo(4, "ConferenceKey", "pc_conference_key_n", OdbcType.Decimal, 10, false),
-                    new TTypedColumnInfo(5, "PartnerKey", "p_partner_key_n", OdbcType.Decimal, 10, false),
-                    new TTypedColumnInfo(6, "BookWholeRoom", "ph_book_whole_room_l", OdbcType.Bit, -1, true),
-                    new TTypedColumnInfo(7, "NumberOfBeds", "ph_number_of_beds_i", OdbcType.Int, -1, false),
-                    new TTypedColumnInfo(8, "NumberOfOverflowBeds", "ph_number_of_overflow_beds_i", OdbcType.Int, -1, false),
-                    new TTypedColumnInfo(9, "Gender", "ph_gender_c", OdbcType.VarChar, 40, true),
-                    new TTypedColumnInfo(10, "In", "pc_in_d", OdbcType.Date, -1, true),
-                    new TTypedColumnInfo(11, "Out", "pc_out_d", OdbcType.Date, -1, false),
-                    new TTypedColumnInfo(12, "DateCreated", "s_date_created_d", OdbcType.Date, -1, false),
-                    new TTypedColumnInfo(13, "CreatedBy", "s_created_by_c", OdbcType.VarChar, 20, false),
-                    new TTypedColumnInfo(14, "DateModified", "s_date_modified_d", OdbcType.Date, -1, false),
-                    new TTypedColumnInfo(15, "ModifiedBy", "s_modified_by_c", OdbcType.VarChar, 20, false),
-                    new TTypedColumnInfo(16, "ModificationId", "s_modification_id_c", OdbcType.VarChar, 150, false)
-                },
-                new int[] {
-                    0
-                }));
-            return true;
-        }
-
-        /// constructor
-        public PcRoomAllocTable() :
-                base("PcRoomAlloc")
-        {
-        }
-
-        /// constructor
-        public PcRoomAllocTable(string ATablename) :
-                base(ATablename)
-        {
-        }
-
-        /// constructor for serialization
-        public PcRoomAllocTable(System.Runtime.Serialization.SerializationInfo info, System.Runtime.Serialization.StreamingContext context) :
-                base(info, context)
-        {
-        }
 
         /// create the columns
         protected override void InitClass()
@@ -1945,6 +2057,18 @@ namespace Ict.Petra.Shared.MHospitality.Data
         public PcRoomAllocTable GetChangesTyped()
         {
             return ((PcRoomAllocTable)(base.GetChangesTypedInternal()));
+        }
+
+        /// return the CamelCase name of the table
+        public static string GetTableName()
+        {
+            return "PcRoomAlloc";
+        }
+
+        /// return the name of the table as it is used in the database
+        public static string GetTableDBName()
+        {
+            return "pc_room_alloc";
         }
 
         /// get an odbc parameter for the given column
@@ -2845,42 +2969,41 @@ namespace Ict.Petra.Shared.MHospitality.Data
     [Serializable()]
     public class PcRoomAttributeTypeTable : TTypedDataTable
     {
-        ///
-        public DataColumn ColumnCode;
-        ///
-        public DataColumn ColumnDesc;
-        ///
-        public DataColumn ColumnValid;
-        ///
-        public DataColumn ColumnDeletable;
-        /// The date the record was created.
-        public DataColumn ColumnDateCreated;
-        /// User ID of who created this record.
-        public DataColumn ColumnCreatedBy;
-        /// The date the record was modified.
-        public DataColumn ColumnDateModified;
-        /// User ID of who last modified this record.
-        public DataColumn ColumnModifiedBy;
-        /// This identifies the current version of the record.
-        public DataColumn ColumnModificationId;
-
         /// TableId for Ict.Common.Data generic functions
         public static short TableId = 281;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnCodeId = 0;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnDescId = 1;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnValidId = 2;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnDeletableId = 3;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnDateCreatedId = 4;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnCreatedById = 5;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnDateModifiedId = 6;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnModifiedById = 7;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnModificationIdId = 8;
 
         private static bool FInitInfoValues = InitInfoValues();
         private static bool InitInfoValues()
         {
             TableInfo.Add(TableId, new TTypedTableInfo(TableId, "PcRoomAttributeType", "pc_room_attribute_type",
                 new TTypedColumnInfo[] {
-                    new TTypedColumnInfo(0, "Code", "pc_code_c", OdbcType.VarChar, 40, false),
-                    new TTypedColumnInfo(1, "Desc", "pc_desc_c", OdbcType.VarChar, 100, false),
-                    new TTypedColumnInfo(2, "Valid", "pc_valid_l", OdbcType.Bit, -1, false),
-                    new TTypedColumnInfo(3, "Deletable", "pc_deletable_l", OdbcType.Bit, -1, false),
-                    new TTypedColumnInfo(4, "DateCreated", "s_date_created_d", OdbcType.Date, -1, false),
-                    new TTypedColumnInfo(5, "CreatedBy", "s_created_by_c", OdbcType.VarChar, 20, false),
-                    new TTypedColumnInfo(6, "DateModified", "s_date_modified_d", OdbcType.Date, -1, false),
-                    new TTypedColumnInfo(7, "ModifiedBy", "s_modified_by_c", OdbcType.VarChar, 20, false),
-                    new TTypedColumnInfo(8, "ModificationId", "s_modification_id_c", OdbcType.VarChar, 150, false)
+                    new TTypedColumnInfo(0, "Code", "pc_code_c", "Room Attribute Type", OdbcType.VarChar, 40, false),
+                    new TTypedColumnInfo(1, "Desc", "pc_desc_c", "Description", OdbcType.VarChar, 100, false),
+                    new TTypedColumnInfo(2, "Valid", "pc_valid_l", "Valid Type", OdbcType.Bit, -1, false),
+                    new TTypedColumnInfo(3, "Deletable", "pc_deletable_l", "Deletable", OdbcType.Bit, -1, false),
+                    new TTypedColumnInfo(4, "DateCreated", "s_date_created_d", "Created Date", OdbcType.Date, -1, false),
+                    new TTypedColumnInfo(5, "CreatedBy", "s_created_by_c", "Created By", OdbcType.VarChar, 20, false),
+                    new TTypedColumnInfo(6, "DateModified", "s_date_modified_d", "Modified Date", OdbcType.Date, -1, false),
+                    new TTypedColumnInfo(7, "ModifiedBy", "s_modified_by_c", "Modified By", OdbcType.VarChar, 20, false),
+                    new TTypedColumnInfo(8, "ModificationId", "s_modification_id_c", "", OdbcType.VarChar, 150, false)
                 },
                 new int[] {
                     0
@@ -2905,6 +3028,25 @@ namespace Ict.Petra.Shared.MHospitality.Data
                 base(info, context)
         {
         }
+
+        ///
+        public DataColumn ColumnCode;
+        ///
+        public DataColumn ColumnDesc;
+        ///
+        public DataColumn ColumnValid;
+        ///
+        public DataColumn ColumnDeletable;
+        /// The date the record was created.
+        public DataColumn ColumnDateCreated;
+        /// User ID of who created this record.
+        public DataColumn ColumnCreatedBy;
+        /// The date the record was modified.
+        public DataColumn ColumnDateModified;
+        /// User ID of who last modified this record.
+        public DataColumn ColumnModifiedBy;
+        /// This identifies the current version of the record.
+        public DataColumn ColumnModificationId;
 
         /// create the columns
         protected override void InitClass()
@@ -2970,6 +3112,18 @@ namespace Ict.Petra.Shared.MHospitality.Data
         public PcRoomAttributeTypeTable GetChangesTyped()
         {
             return ((PcRoomAttributeTypeTable)(base.GetChangesTypedInternal()));
+        }
+
+        /// return the CamelCase name of the table
+        public static string GetTableName()
+        {
+            return "PcRoomAttributeType";
+        }
+
+        /// return the name of the table as it is used in the database
+        public static string GetTableDBName()
+        {
+            return "pc_room_attribute_type";
         }
 
         /// get an odbc parameter for the given column
@@ -3462,42 +3616,41 @@ namespace Ict.Petra.Shared.MHospitality.Data
     [Serializable()]
     public class PcRoomAttributeTable : TTypedDataTable
     {
-        ///
-        public DataColumn ColumnVenueKey;
-        ///
-        public DataColumn ColumnBuildingCode;
-        ///
-        public DataColumn ColumnRoomNumber;
-        ///
-        public DataColumn ColumnRoomAttrTypeCode;
-        /// The date the record was created.
-        public DataColumn ColumnDateCreated;
-        /// User ID of who created this record.
-        public DataColumn ColumnCreatedBy;
-        /// The date the record was modified.
-        public DataColumn ColumnDateModified;
-        /// User ID of who last modified this record.
-        public DataColumn ColumnModifiedBy;
-        /// This identifies the current version of the record.
-        public DataColumn ColumnModificationId;
-
         /// TableId for Ict.Common.Data generic functions
         public static short TableId = 282;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnVenueKeyId = 0;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnBuildingCodeId = 1;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnRoomNumberId = 2;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnRoomAttrTypeCodeId = 3;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnDateCreatedId = 4;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnCreatedById = 5;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnDateModifiedId = 6;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnModifiedById = 7;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnModificationIdId = 8;
 
         private static bool FInitInfoValues = InitInfoValues();
         private static bool InitInfoValues()
         {
             TableInfo.Add(TableId, new TTypedTableInfo(TableId, "PcRoomAttribute", "pc_room_attribute",
                 new TTypedColumnInfo[] {
-                    new TTypedColumnInfo(0, "VenueKey", "p_venue_key_n", OdbcType.Decimal, 10, true),
-                    new TTypedColumnInfo(1, "BuildingCode", "pc_building_code_c", OdbcType.VarChar, 16, true),
-                    new TTypedColumnInfo(2, "RoomNumber", "pc_room_number_c", OdbcType.VarChar, 16, true),
-                    new TTypedColumnInfo(3, "RoomAttrTypeCode", "pc_room_attr_type_code_c", OdbcType.VarChar, 40, false),
-                    new TTypedColumnInfo(4, "DateCreated", "s_date_created_d", OdbcType.Date, -1, false),
-                    new TTypedColumnInfo(5, "CreatedBy", "s_created_by_c", OdbcType.VarChar, 20, false),
-                    new TTypedColumnInfo(6, "DateModified", "s_date_modified_d", OdbcType.Date, -1, false),
-                    new TTypedColumnInfo(7, "ModifiedBy", "s_modified_by_c", OdbcType.VarChar, 20, false),
-                    new TTypedColumnInfo(8, "ModificationId", "s_modification_id_c", OdbcType.VarChar, 150, false)
+                    new TTypedColumnInfo(0, "VenueKey", "p_venue_key_n", "Venue Key", OdbcType.Decimal, 10, true),
+                    new TTypedColumnInfo(1, "BuildingCode", "pc_building_code_c", "Building Code", OdbcType.VarChar, 16, true),
+                    new TTypedColumnInfo(2, "RoomNumber", "pc_room_number_c", "Room Number", OdbcType.VarChar, 16, true),
+                    new TTypedColumnInfo(3, "RoomAttrTypeCode", "pc_room_attr_type_code_c", "Room Attribute", OdbcType.VarChar, 40, false),
+                    new TTypedColumnInfo(4, "DateCreated", "s_date_created_d", "Created Date", OdbcType.Date, -1, false),
+                    new TTypedColumnInfo(5, "CreatedBy", "s_created_by_c", "Created By", OdbcType.VarChar, 20, false),
+                    new TTypedColumnInfo(6, "DateModified", "s_date_modified_d", "Modified Date", OdbcType.Date, -1, false),
+                    new TTypedColumnInfo(7, "ModifiedBy", "s_modified_by_c", "Modified By", OdbcType.VarChar, 20, false),
+                    new TTypedColumnInfo(8, "ModificationId", "s_modification_id_c", "", OdbcType.VarChar, 150, false)
                 },
                 new int[] {
                     0, 1, 2, 3
@@ -3522,6 +3675,25 @@ namespace Ict.Petra.Shared.MHospitality.Data
                 base(info, context)
         {
         }
+
+        ///
+        public DataColumn ColumnVenueKey;
+        ///
+        public DataColumn ColumnBuildingCode;
+        ///
+        public DataColumn ColumnRoomNumber;
+        ///
+        public DataColumn ColumnRoomAttrTypeCode;
+        /// The date the record was created.
+        public DataColumn ColumnDateCreated;
+        /// User ID of who created this record.
+        public DataColumn ColumnCreatedBy;
+        /// The date the record was modified.
+        public DataColumn ColumnDateModified;
+        /// User ID of who last modified this record.
+        public DataColumn ColumnModifiedBy;
+        /// This identifies the current version of the record.
+        public DataColumn ColumnModificationId;
 
         /// create the columns
         protected override void InitClass()
@@ -3587,6 +3759,18 @@ namespace Ict.Petra.Shared.MHospitality.Data
         public PcRoomAttributeTable GetChangesTyped()
         {
             return ((PcRoomAttributeTable)(base.GetChangesTypedInternal()));
+        }
+
+        /// return the CamelCase name of the table
+        public static string GetTableName()
+        {
+            return "PcRoomAttribute";
+        }
+
+        /// return the name of the table as it is used in the database
+        public static string GetTableDBName()
+        {
+            return "pc_room_attribute";
         }
 
         /// get an odbc parameter for the given column
@@ -4079,36 +4263,35 @@ namespace Ict.Petra.Shared.MHospitality.Data
     [Serializable()]
     public class PhRoomBookingTable : TTypedDataTable
     {
-        /// details of the booking
-        public DataColumn ColumnBookingKey;
-        /// which room/beds are booked
-        public DataColumn ColumnRoomAllocKey;
-        /// The date the record was created.
-        public DataColumn ColumnDateCreated;
-        /// User ID of who created this record.
-        public DataColumn ColumnCreatedBy;
-        /// The date the record was modified.
-        public DataColumn ColumnDateModified;
-        /// User ID of who last modified this record.
-        public DataColumn ColumnModifiedBy;
-        /// This identifies the current version of the record.
-        public DataColumn ColumnModificationId;
-
         /// TableId for Ict.Common.Data generic functions
         public static short TableId = 284;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnBookingKeyId = 0;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnRoomAllocKeyId = 1;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnDateCreatedId = 2;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnCreatedById = 3;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnDateModifiedId = 4;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnModifiedById = 5;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnModificationIdId = 6;
 
         private static bool FInitInfoValues = InitInfoValues();
         private static bool InitInfoValues()
         {
             TableInfo.Add(TableId, new TTypedTableInfo(TableId, "PhRoomBooking", "ph_room_booking",
                 new TTypedColumnInfo[] {
-                    new TTypedColumnInfo(0, "BookingKey", "ph_booking_key_i", OdbcType.Int, -1, true),
-                    new TTypedColumnInfo(1, "RoomAllocKey", "ph_room_alloc_key_i", OdbcType.Int, -1, true),
-                    new TTypedColumnInfo(2, "DateCreated", "s_date_created_d", OdbcType.Date, -1, false),
-                    new TTypedColumnInfo(3, "CreatedBy", "s_created_by_c", OdbcType.VarChar, 20, false),
-                    new TTypedColumnInfo(4, "DateModified", "s_date_modified_d", OdbcType.Date, -1, false),
-                    new TTypedColumnInfo(5, "ModifiedBy", "s_modified_by_c", OdbcType.VarChar, 20, false),
-                    new TTypedColumnInfo(6, "ModificationId", "s_modification_id_c", OdbcType.VarChar, 150, false)
+                    new TTypedColumnInfo(0, "BookingKey", "ph_booking_key_i", "ph_booking_key_i", OdbcType.Int, -1, true),
+                    new TTypedColumnInfo(1, "RoomAllocKey", "ph_room_alloc_key_i", "ph_room_alloc_key_i", OdbcType.Int, -1, true),
+                    new TTypedColumnInfo(2, "DateCreated", "s_date_created_d", "Created Date", OdbcType.Date, -1, false),
+                    new TTypedColumnInfo(3, "CreatedBy", "s_created_by_c", "Created By", OdbcType.VarChar, 20, false),
+                    new TTypedColumnInfo(4, "DateModified", "s_date_modified_d", "Modified Date", OdbcType.Date, -1, false),
+                    new TTypedColumnInfo(5, "ModifiedBy", "s_modified_by_c", "Modified By", OdbcType.VarChar, 20, false),
+                    new TTypedColumnInfo(6, "ModificationId", "s_modification_id_c", "", OdbcType.VarChar, 150, false)
                 },
                 new int[] {
                     0, 1
@@ -4133,6 +4316,21 @@ namespace Ict.Petra.Shared.MHospitality.Data
                 base(info, context)
         {
         }
+
+        /// details of the booking
+        public DataColumn ColumnBookingKey;
+        /// which room/beds are booked
+        public DataColumn ColumnRoomAllocKey;
+        /// The date the record was created.
+        public DataColumn ColumnDateCreated;
+        /// User ID of who created this record.
+        public DataColumn ColumnCreatedBy;
+        /// The date the record was modified.
+        public DataColumn ColumnDateModified;
+        /// User ID of who last modified this record.
+        public DataColumn ColumnModifiedBy;
+        /// This identifies the current version of the record.
+        public DataColumn ColumnModificationId;
 
         /// create the columns
         protected override void InitClass()
@@ -4194,6 +4392,18 @@ namespace Ict.Petra.Shared.MHospitality.Data
         public PhRoomBookingTable GetChangesTyped()
         {
             return ((PhRoomBookingTable)(base.GetChangesTypedInternal()));
+        }
+
+        /// return the CamelCase name of the table
+        public static string GetTableName()
+        {
+            return "PhRoomBooking";
+        }
+
+        /// return the name of the table as it is used in the database
+        public static string GetTableDBName()
+        {
+            return "ph_room_booking";
         }
 
         /// get an odbc parameter for the given column
@@ -4584,6 +4794,102 @@ namespace Ict.Petra.Shared.MHospitality.Data
     [Serializable()]
     public class PhBookingTable : TTypedDataTable
     {
+        /// TableId for Ict.Common.Data generic functions
+        public static short TableId = 285;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnKeyId = 0;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnContactKeyId = 1;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnLedgerNumberForInvoiceId = 2;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnArInvoiceKeyId = 3;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnNumberOfAdultsId = 4;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnNumberOfChildrenId = 5;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnNumberOfBreakfastId = 6;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnNumberOfLunchId = 7;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnNumberOfSupperId = 8;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnNumberOfLinenNeededId = 9;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnConfirmedId = 10;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnInId = 11;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnOutId = 12;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnTimeArrivalId = 13;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnTimeDepartureId = 14;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnNotesId = 15;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnDateCreatedId = 16;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnCreatedById = 17;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnDateModifiedId = 18;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnModifiedById = 19;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnModificationIdId = 20;
+
+        private static bool FInitInfoValues = InitInfoValues();
+        private static bool InitInfoValues()
+        {
+            TableInfo.Add(TableId, new TTypedTableInfo(TableId, "PhBooking", "ph_booking",
+                new TTypedColumnInfo[] {
+                    new TTypedColumnInfo(0, "Key", "ph_key_i", "ph_key_i", OdbcType.Int, -1, true),
+                    new TTypedColumnInfo(1, "ContactKey", "p_contact_key_n", "p_contact_key_n", OdbcType.Decimal, 10, false),
+                    new TTypedColumnInfo(2, "LedgerNumberForInvoice", "a_ledger_number_for_invoice_i", "Ledger Number for Invoice", OdbcType.Int, -1, false),
+                    new TTypedColumnInfo(3, "ArInvoiceKey", "a_ar_invoice_key_i", "a_ar_invoice_key_i", OdbcType.Int, -1, false),
+                    new TTypedColumnInfo(4, "NumberOfAdults", "ph_number_of_adults_i", "ph_number_of_adults_i", OdbcType.Int, -1, false),
+                    new TTypedColumnInfo(5, "NumberOfChildren", "ph_number_of_children_i", "ph_number_of_children_i", OdbcType.Int, -1, false),
+                    new TTypedColumnInfo(6, "NumberOfBreakfast", "ph_number_of_breakfast_i", "ph_number_of_breakfast_i", OdbcType.Int, -1, false),
+                    new TTypedColumnInfo(7, "NumberOfLunch", "ph_number_of_lunch_i", "ph_number_of_lunch_i", OdbcType.Int, -1, false),
+                    new TTypedColumnInfo(8, "NumberOfSupper", "ph_number_of_supper_i", "ph_number_of_supper_i", OdbcType.Int, -1, false),
+                    new TTypedColumnInfo(9, "NumberOfLinenNeeded", "ph_number_of_linen_needed_i", "ph_number_of_linen_needed_i", OdbcType.Int, -1, false),
+                    new TTypedColumnInfo(10, "Confirmed", "ph_confirmed_d", "ph_confirmed_d", OdbcType.Date, -1, false),
+                    new TTypedColumnInfo(11, "In", "ph_in_d", "Date In", OdbcType.Date, -1, true),
+                    new TTypedColumnInfo(12, "Out", "ph_out_d", "Date Out", OdbcType.Date, -1, false),
+                    new TTypedColumnInfo(13, "TimeArrival", "ph_time_arrival_i", "Time of Arrival", OdbcType.Int, -1, false),
+                    new TTypedColumnInfo(14, "TimeDeparture", "ph_time_departure_i", "Time of Departure", OdbcType.Int, -1, false),
+                    new TTypedColumnInfo(15, "Notes", "ph_notes_c", "ph_notes_c", OdbcType.VarChar, 1000, false),
+                    new TTypedColumnInfo(16, "DateCreated", "s_date_created_d", "Created Date", OdbcType.Date, -1, false),
+                    new TTypedColumnInfo(17, "CreatedBy", "s_created_by_c", "Created By", OdbcType.VarChar, 20, false),
+                    new TTypedColumnInfo(18, "DateModified", "s_date_modified_d", "Modified Date", OdbcType.Date, -1, false),
+                    new TTypedColumnInfo(19, "ModifiedBy", "s_modified_by_c", "Modified By", OdbcType.VarChar, 20, false),
+                    new TTypedColumnInfo(20, "ModificationId", "s_modification_id_c", "", OdbcType.VarChar, 150, false)
+                },
+                new int[] {
+                    0
+                }));
+            return true;
+        }
+
+        /// constructor
+        public PhBookingTable() :
+                base("PhBooking")
+        {
+        }
+
+        /// constructor
+        public PhBookingTable(string ATablename) :
+                base(ATablename)
+        {
+        }
+
+        /// constructor for serialization
+        public PhBookingTable(System.Runtime.Serialization.SerializationInfo info, System.Runtime.Serialization.StreamingContext context) :
+                base(info, context)
+        {
+        }
+
         /// Surrogate Primary Key; required because there can be several bookings per room and per group
         public DataColumn ColumnKey;
         /// the partner key of the visitor or the partner key of the organisation or group that is visiting; each room allocation can refer to the individual guest as well; this can be different from the partner that is charged in the invoice
@@ -4626,60 +4932,6 @@ namespace Ict.Petra.Shared.MHospitality.Data
         public DataColumn ColumnModifiedBy;
         /// This identifies the current version of the record.
         public DataColumn ColumnModificationId;
-
-        /// TableId for Ict.Common.Data generic functions
-        public static short TableId = 285;
-
-        private static bool FInitInfoValues = InitInfoValues();
-        private static bool InitInfoValues()
-        {
-            TableInfo.Add(TableId, new TTypedTableInfo(TableId, "PhBooking", "ph_booking",
-                new TTypedColumnInfo[] {
-                    new TTypedColumnInfo(0, "Key", "ph_key_i", OdbcType.Int, -1, true),
-                    new TTypedColumnInfo(1, "ContactKey", "p_contact_key_n", OdbcType.Decimal, 10, false),
-                    new TTypedColumnInfo(2, "LedgerNumberForInvoice", "a_ledger_number_for_invoice_i", OdbcType.Int, -1, false),
-                    new TTypedColumnInfo(3, "ArInvoiceKey", "a_ar_invoice_key_i", OdbcType.Int, -1, false),
-                    new TTypedColumnInfo(4, "NumberOfAdults", "ph_number_of_adults_i", OdbcType.Int, -1, false),
-                    new TTypedColumnInfo(5, "NumberOfChildren", "ph_number_of_children_i", OdbcType.Int, -1, false),
-                    new TTypedColumnInfo(6, "NumberOfBreakfast", "ph_number_of_breakfast_i", OdbcType.Int, -1, false),
-                    new TTypedColumnInfo(7, "NumberOfLunch", "ph_number_of_lunch_i", OdbcType.Int, -1, false),
-                    new TTypedColumnInfo(8, "NumberOfSupper", "ph_number_of_supper_i", OdbcType.Int, -1, false),
-                    new TTypedColumnInfo(9, "NumberOfLinenNeeded", "ph_number_of_linen_needed_i", OdbcType.Int, -1, false),
-                    new TTypedColumnInfo(10, "Confirmed", "ph_confirmed_d", OdbcType.Date, -1, false),
-                    new TTypedColumnInfo(11, "In", "ph_in_d", OdbcType.Date, -1, true),
-                    new TTypedColumnInfo(12, "Out", "ph_out_d", OdbcType.Date, -1, false),
-                    new TTypedColumnInfo(13, "TimeArrival", "ph_time_arrival_i", OdbcType.Int, -1, false),
-                    new TTypedColumnInfo(14, "TimeDeparture", "ph_time_departure_i", OdbcType.Int, -1, false),
-                    new TTypedColumnInfo(15, "Notes", "ph_notes_c", OdbcType.VarChar, 1000, false),
-                    new TTypedColumnInfo(16, "DateCreated", "s_date_created_d", OdbcType.Date, -1, false),
-                    new TTypedColumnInfo(17, "CreatedBy", "s_created_by_c", OdbcType.VarChar, 20, false),
-                    new TTypedColumnInfo(18, "DateModified", "s_date_modified_d", OdbcType.Date, -1, false),
-                    new TTypedColumnInfo(19, "ModifiedBy", "s_modified_by_c", OdbcType.VarChar, 20, false),
-                    new TTypedColumnInfo(20, "ModificationId", "s_modification_id_c", OdbcType.VarChar, 150, false)
-                },
-                new int[] {
-                    0
-                }));
-            return true;
-        }
-
-        /// constructor
-        public PhBookingTable() :
-                base("PhBooking")
-        {
-        }
-
-        /// constructor
-        public PhBookingTable(string ATablename) :
-                base(ATablename)
-        {
-        }
-
-        /// constructor for serialization
-        public PhBookingTable(System.Runtime.Serialization.SerializationInfo info, System.Runtime.Serialization.StreamingContext context) :
-                base(info, context)
-        {
-        }
 
         /// create the columns
         protected override void InitClass()
@@ -4769,6 +5021,18 @@ namespace Ict.Petra.Shared.MHospitality.Data
         public PhBookingTable GetChangesTyped()
         {
             return ((PhBookingTable)(base.GetChangesTypedInternal()));
+        }
+
+        /// return the CamelCase name of the table
+        public static string GetTableName()
+        {
+            return "PhBooking";
+        }
+
+        /// return the name of the table as it is used in the database
+        public static string GetTableDBName()
+        {
+            return "ph_booking";
         }
 
         /// get an odbc parameter for the given column

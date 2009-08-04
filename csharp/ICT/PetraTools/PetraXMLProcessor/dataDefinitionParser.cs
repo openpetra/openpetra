@@ -229,6 +229,7 @@ namespace Ict.Tools.DBXML
             table = new TTable();
             table.order = tableCounter++;
             table.strName = GetAttribute(cur, "name");
+            table.strDotNetName = TTable.NiceTableName(table.strName);
             table.strDumpName = GetAttribute(cur, "dumpname");
             table.strDescription = GetAttribute(cur, "descr");
             table.strArea = GetAttribute(cur, "area");

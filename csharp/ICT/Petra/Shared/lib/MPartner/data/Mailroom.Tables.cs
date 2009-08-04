@@ -42,6 +42,96 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data
     [Serializable()]
     public class MExtractMasterTable : TTypedDataTable
     {
+        /// TableId for Ict.Common.Data generic functions
+        public static short TableId = 75;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnExtractIdId = 0;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnExtractNameId = 1;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnExtractDescId = 2;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnLastRefId = 3;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnDeletableId = 4;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnFrozenId = 5;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnKeyCountId = 6;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnPublicId = 7;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnManualModicationId = 8;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnManualModicationDateId = 9;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnManualModById = 10;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnExtractTypeCodeId = 11;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnTemplateId = 12;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnRestrictedId = 13;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnDateCreatedId = 14;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnCreatedById = 15;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnDateModifiedId = 16;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnModifiedById = 17;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnModificationIdId = 18;
+
+        private static bool FInitInfoValues = InitInfoValues();
+        private static bool InitInfoValues()
+        {
+            TableInfo.Add(TableId, new TTypedTableInfo(TableId, "MExtractMaster", "m_extract_master",
+                new TTypedColumnInfo[] {
+                    new TTypedColumnInfo(0, "ExtractId", "m_extract_id_i", "Extract Id", OdbcType.Int, -1, true),
+                    new TTypedColumnInfo(1, "ExtractName", "m_extract_name_c", "Extract Name", OdbcType.VarChar, 50, false),
+                    new TTypedColumnInfo(2, "ExtractDesc", "m_extract_desc_c", "Description", OdbcType.VarChar, 160, false),
+                    new TTypedColumnInfo(3, "LastRef", "m_last_ref_d", "Last Referenced", OdbcType.Date, -1, false),
+                    new TTypedColumnInfo(4, "Deletable", "m_deletable_l", "Deletable", OdbcType.Bit, -1, true),
+                    new TTypedColumnInfo(5, "Frozen", "m_frozen_l", "Frozen", OdbcType.Bit, -1, true),
+                    new TTypedColumnInfo(6, "KeyCount", "m_key_count_i", "Key Count", OdbcType.Int, -1, false),
+                    new TTypedColumnInfo(7, "Public", "m_public_l", "Public", OdbcType.Bit, -1, true),
+                    new TTypedColumnInfo(8, "ManualModication", "m_manual_mod_l", "m_manual_mod_l", OdbcType.Bit, -1, true),
+                    new TTypedColumnInfo(9, "ManualModicationDate", "m_manual_mod_d", "Date Edited", OdbcType.Date, -1, false),
+                    new TTypedColumnInfo(10, "ManualModBy", "m_manual_mod_by_c", "Edited By", OdbcType.VarChar, 20, false),
+                    new TTypedColumnInfo(11, "ExtractTypeCode", "m_extract_type_code_c", "Extract Type", OdbcType.VarChar, 50, false),
+                    new TTypedColumnInfo(12, "Template", "m_template_l", "Template", OdbcType.Bit, -1, false),
+                    new TTypedColumnInfo(13, "Restricted", "m_restricted_l", "Extract Restricted", OdbcType.Bit, -1, false),
+                    new TTypedColumnInfo(14, "DateCreated", "s_date_created_d", "Created Date", OdbcType.Date, -1, false),
+                    new TTypedColumnInfo(15, "CreatedBy", "s_created_by_c", "Created By", OdbcType.VarChar, 20, false),
+                    new TTypedColumnInfo(16, "DateModified", "s_date_modified_d", "Modified Date", OdbcType.Date, -1, false),
+                    new TTypedColumnInfo(17, "ModifiedBy", "s_modified_by_c", "Modified By", OdbcType.VarChar, 20, false),
+                    new TTypedColumnInfo(18, "ModificationId", "s_modification_id_c", "", OdbcType.VarChar, 150, false)
+                },
+                new int[] {
+                    0
+                }));
+            return true;
+        }
+
+        /// constructor
+        public MExtractMasterTable() :
+                base("MExtractMaster")
+        {
+        }
+
+        /// constructor
+        public MExtractMasterTable(string ATablename) :
+                base(ATablename)
+        {
+        }
+
+        /// constructor for serialization
+        public MExtractMasterTable(System.Runtime.Serialization.SerializationInfo info, System.Runtime.Serialization.StreamingContext context) :
+                base(info, context)
+        {
+        }
+
         /// Identifier for the extract
         public DataColumn ColumnExtractId;
         /// Short name for the extract to be used in filenames
@@ -80,58 +170,6 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data
         public DataColumn ColumnModifiedBy;
         /// This identifies the current version of the record.
         public DataColumn ColumnModificationId;
-
-        /// TableId for Ict.Common.Data generic functions
-        public static short TableId = 75;
-
-        private static bool FInitInfoValues = InitInfoValues();
-        private static bool InitInfoValues()
-        {
-            TableInfo.Add(TableId, new TTypedTableInfo(TableId, "MExtractMaster", "m_extract_master",
-                new TTypedColumnInfo[] {
-                    new TTypedColumnInfo(0, "ExtractId", "m_extract_id_i", OdbcType.Int, -1, true),
-                    new TTypedColumnInfo(1, "ExtractName", "m_extract_name_c", OdbcType.VarChar, 50, false),
-                    new TTypedColumnInfo(2, "ExtractDesc", "m_extract_desc_c", OdbcType.VarChar, 160, false),
-                    new TTypedColumnInfo(3, "LastRef", "m_last_ref_d", OdbcType.Date, -1, false),
-                    new TTypedColumnInfo(4, "Deletable", "m_deletable_l", OdbcType.Bit, -1, true),
-                    new TTypedColumnInfo(5, "Frozen", "m_frozen_l", OdbcType.Bit, -1, true),
-                    new TTypedColumnInfo(6, "KeyCount", "m_key_count_i", OdbcType.Int, -1, false),
-                    new TTypedColumnInfo(7, "Public", "m_public_l", OdbcType.Bit, -1, true),
-                    new TTypedColumnInfo(8, "ManualModication", "m_manual_mod_l", OdbcType.Bit, -1, true),
-                    new TTypedColumnInfo(9, "ManualModicationDate", "m_manual_mod_d", OdbcType.Date, -1, false),
-                    new TTypedColumnInfo(10, "ManualModBy", "m_manual_mod_by_c", OdbcType.VarChar, 20, false),
-                    new TTypedColumnInfo(11, "ExtractTypeCode", "m_extract_type_code_c", OdbcType.VarChar, 50, false),
-                    new TTypedColumnInfo(12, "Template", "m_template_l", OdbcType.Bit, -1, false),
-                    new TTypedColumnInfo(13, "Restricted", "m_restricted_l", OdbcType.Bit, -1, false),
-                    new TTypedColumnInfo(14, "DateCreated", "s_date_created_d", OdbcType.Date, -1, false),
-                    new TTypedColumnInfo(15, "CreatedBy", "s_created_by_c", OdbcType.VarChar, 20, false),
-                    new TTypedColumnInfo(16, "DateModified", "s_date_modified_d", OdbcType.Date, -1, false),
-                    new TTypedColumnInfo(17, "ModifiedBy", "s_modified_by_c", OdbcType.VarChar, 20, false),
-                    new TTypedColumnInfo(18, "ModificationId", "s_modification_id_c", OdbcType.VarChar, 150, false)
-                },
-                new int[] {
-                    0
-                }));
-            return true;
-        }
-
-        /// constructor
-        public MExtractMasterTable() :
-                base("MExtractMaster")
-        {
-        }
-
-        /// constructor
-        public MExtractMasterTable(string ATablename) :
-                base(ATablename)
-        {
-        }
-
-        /// constructor for serialization
-        public MExtractMasterTable(System.Runtime.Serialization.SerializationInfo info, System.Runtime.Serialization.StreamingContext context) :
-                base(info, context)
-        {
-        }
 
         /// create the columns
         protected override void InitClass()
@@ -217,6 +255,18 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data
         public MExtractMasterTable GetChangesTyped()
         {
             return ((MExtractMasterTable)(base.GetChangesTypedInternal()));
+        }
+
+        /// return the CamelCase name of the table
+        public static string GetTableName()
+        {
+            return "MExtractMaster";
+        }
+
+        /// return the name of the table as it is used in the database
+        public static string GetTableDBName()
+        {
+            return "m_extract_master";
         }
 
         /// get an odbc parameter for the given column
@@ -1219,42 +1269,41 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data
     [Serializable()]
     public class MExtractTable : TTypedDataTable
     {
-        /// Identifier for the extract
-        public DataColumn ColumnExtractId;
-        /// This is the partner key assigned to each partner. It consists of the fund id followed by a computer generated six digit number.
-        public DataColumn ColumnPartnerKey;
-        /// This is the key that tell what site created the linked location
-        public DataColumn ColumnSiteKey;
-        ///
-        public DataColumn ColumnLocationKey;
-        /// The date the record was created.
-        public DataColumn ColumnDateCreated;
-        /// User ID of who created this record.
-        public DataColumn ColumnCreatedBy;
-        /// The date the record was modified.
-        public DataColumn ColumnDateModified;
-        /// User ID of who last modified this record.
-        public DataColumn ColumnModifiedBy;
-        /// This identifies the current version of the record.
-        public DataColumn ColumnModificationId;
-
         /// TableId for Ict.Common.Data generic functions
         public static short TableId = 76;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnExtractIdId = 0;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnPartnerKeyId = 1;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnSiteKeyId = 2;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnLocationKeyId = 3;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnDateCreatedId = 4;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnCreatedById = 5;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnDateModifiedId = 6;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnModifiedById = 7;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnModificationIdId = 8;
 
         private static bool FInitInfoValues = InitInfoValues();
         private static bool InitInfoValues()
         {
             TableInfo.Add(TableId, new TTypedTableInfo(TableId, "MExtract", "m_extract",
                 new TTypedColumnInfo[] {
-                    new TTypedColumnInfo(0, "ExtractId", "m_extract_id_i", OdbcType.Int, -1, true),
-                    new TTypedColumnInfo(1, "PartnerKey", "p_partner_key_n", OdbcType.Decimal, 10, true),
-                    new TTypedColumnInfo(2, "SiteKey", "p_site_key_n", OdbcType.Decimal, 10, true),
-                    new TTypedColumnInfo(3, "LocationKey", "p_location_key_i", OdbcType.Int, -1, false),
-                    new TTypedColumnInfo(4, "DateCreated", "s_date_created_d", OdbcType.Date, -1, false),
-                    new TTypedColumnInfo(5, "CreatedBy", "s_created_by_c", OdbcType.VarChar, 20, false),
-                    new TTypedColumnInfo(6, "DateModified", "s_date_modified_d", OdbcType.Date, -1, false),
-                    new TTypedColumnInfo(7, "ModifiedBy", "s_modified_by_c", OdbcType.VarChar, 20, false),
-                    new TTypedColumnInfo(8, "ModificationId", "s_modification_id_c", OdbcType.VarChar, 150, false)
+                    new TTypedColumnInfo(0, "ExtractId", "m_extract_id_i", "Extract Id", OdbcType.Int, -1, true),
+                    new TTypedColumnInfo(1, "PartnerKey", "p_partner_key_n", "Partner Key", OdbcType.Decimal, 10, true),
+                    new TTypedColumnInfo(2, "SiteKey", "p_site_key_n", "Site Key", OdbcType.Decimal, 10, true),
+                    new TTypedColumnInfo(3, "LocationKey", "p_location_key_i", "Location Key", OdbcType.Int, -1, false),
+                    new TTypedColumnInfo(4, "DateCreated", "s_date_created_d", "Created Date", OdbcType.Date, -1, false),
+                    new TTypedColumnInfo(5, "CreatedBy", "s_created_by_c", "Created By", OdbcType.VarChar, 20, false),
+                    new TTypedColumnInfo(6, "DateModified", "s_date_modified_d", "Modified Date", OdbcType.Date, -1, false),
+                    new TTypedColumnInfo(7, "ModifiedBy", "s_modified_by_c", "Modified By", OdbcType.VarChar, 20, false),
+                    new TTypedColumnInfo(8, "ModificationId", "s_modification_id_c", "", OdbcType.VarChar, 150, false)
                 },
                 new int[] {
                     0, 1, 2
@@ -1279,6 +1328,25 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data
                 base(info, context)
         {
         }
+
+        /// Identifier for the extract
+        public DataColumn ColumnExtractId;
+        /// This is the partner key assigned to each partner. It consists of the fund id followed by a computer generated six digit number.
+        public DataColumn ColumnPartnerKey;
+        /// This is the key that tell what site created the linked location
+        public DataColumn ColumnSiteKey;
+        ///
+        public DataColumn ColumnLocationKey;
+        /// The date the record was created.
+        public DataColumn ColumnDateCreated;
+        /// User ID of who created this record.
+        public DataColumn ColumnCreatedBy;
+        /// The date the record was modified.
+        public DataColumn ColumnDateModified;
+        /// User ID of who last modified this record.
+        public DataColumn ColumnModifiedBy;
+        /// This identifies the current version of the record.
+        public DataColumn ColumnModificationId;
 
         /// create the columns
         protected override void InitClass()
@@ -1344,6 +1412,18 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data
         public MExtractTable GetChangesTyped()
         {
             return ((MExtractTable)(base.GetChangesTypedInternal()));
+        }
+
+        /// return the CamelCase name of the table
+        public static string GetTableName()
+        {
+            return "MExtract";
+        }
+
+        /// return the name of the table as it is used in the database
+        public static string GetTableDBName()
+        {
+            return "m_extract";
         }
 
         /// get an odbc parameter for the given column
@@ -1836,39 +1916,38 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data
     [Serializable()]
     public class MExtractTypeTable : TTypedDataTable
     {
-        /// Extract Type Code
-        public DataColumn ColumnCode;
-        /// Function that is run to create the extract (4GL function, Delphi, etc.)
-        public DataColumn ColumnFunction;
-        /// Description of Extract Type
-        public DataColumn ColumnDescription;
-        /// The date the record was created.
-        public DataColumn ColumnDateCreated;
-        /// User ID of who created this record.
-        public DataColumn ColumnCreatedBy;
-        /// The date the record was modified.
-        public DataColumn ColumnDateModified;
-        /// User ID of who last modified this record.
-        public DataColumn ColumnModifiedBy;
-        /// This identifies the current version of the record.
-        public DataColumn ColumnModificationId;
-
         /// TableId for Ict.Common.Data generic functions
         public static short TableId = 77;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnCodeId = 0;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnFunctionId = 1;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnDescriptionId = 2;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnDateCreatedId = 3;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnCreatedById = 4;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnDateModifiedId = 5;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnModifiedById = 6;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnModificationIdId = 7;
 
         private static bool FInitInfoValues = InitInfoValues();
         private static bool InitInfoValues()
         {
             TableInfo.Add(TableId, new TTypedTableInfo(TableId, "MExtractType", "m_extract_type",
                 new TTypedColumnInfo[] {
-                    new TTypedColumnInfo(0, "Code", "m_code_c", OdbcType.VarChar, 50, true),
-                    new TTypedColumnInfo(1, "Function", "m_function_c", OdbcType.VarChar, 500, false),
-                    new TTypedColumnInfo(2, "Description", "m_description_c", OdbcType.VarChar, 200, false),
-                    new TTypedColumnInfo(3, "DateCreated", "s_date_created_d", OdbcType.Date, -1, false),
-                    new TTypedColumnInfo(4, "CreatedBy", "s_created_by_c", OdbcType.VarChar, 20, false),
-                    new TTypedColumnInfo(5, "DateModified", "s_date_modified_d", OdbcType.Date, -1, false),
-                    new TTypedColumnInfo(6, "ModifiedBy", "s_modified_by_c", OdbcType.VarChar, 20, false),
-                    new TTypedColumnInfo(7, "ModificationId", "s_modification_id_c", OdbcType.VarChar, 150, false)
+                    new TTypedColumnInfo(0, "Code", "m_code_c", "Code", OdbcType.VarChar, 50, true),
+                    new TTypedColumnInfo(1, "Function", "m_function_c", "Function", OdbcType.VarChar, 500, false),
+                    new TTypedColumnInfo(2, "Description", "m_description_c", "Description", OdbcType.VarChar, 200, false),
+                    new TTypedColumnInfo(3, "DateCreated", "s_date_created_d", "Created Date", OdbcType.Date, -1, false),
+                    new TTypedColumnInfo(4, "CreatedBy", "s_created_by_c", "Created By", OdbcType.VarChar, 20, false),
+                    new TTypedColumnInfo(5, "DateModified", "s_date_modified_d", "Modified Date", OdbcType.Date, -1, false),
+                    new TTypedColumnInfo(6, "ModifiedBy", "s_modified_by_c", "Modified By", OdbcType.VarChar, 20, false),
+                    new TTypedColumnInfo(7, "ModificationId", "s_modification_id_c", "", OdbcType.VarChar, 150, false)
                 },
                 new int[] {
                     0
@@ -1893,6 +1972,23 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data
                 base(info, context)
         {
         }
+
+        /// Extract Type Code
+        public DataColumn ColumnCode;
+        /// Function that is run to create the extract (4GL function, Delphi, etc.)
+        public DataColumn ColumnFunction;
+        /// Description of Extract Type
+        public DataColumn ColumnDescription;
+        /// The date the record was created.
+        public DataColumn ColumnDateCreated;
+        /// User ID of who created this record.
+        public DataColumn ColumnCreatedBy;
+        /// The date the record was modified.
+        public DataColumn ColumnDateModified;
+        /// User ID of who last modified this record.
+        public DataColumn ColumnModifiedBy;
+        /// This identifies the current version of the record.
+        public DataColumn ColumnModificationId;
 
         /// create the columns
         protected override void InitClass()
@@ -1956,6 +2052,18 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data
         public MExtractTypeTable GetChangesTyped()
         {
             return ((MExtractTypeTable)(base.GetChangesTypedInternal()));
+        }
+
+        /// return the CamelCase name of the table
+        public static string GetTableName()
+        {
+            return "MExtractType";
+        }
+
+        /// return the name of the table as it is used in the database
+        public static string GetTableDBName()
+        {
+            return "m_extract_type";
         }
 
         /// get an odbc parameter for the given column
@@ -2397,42 +2505,41 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data
     [Serializable()]
     public class MExtractParameterTable : TTypedDataTable
     {
-        /// Identifier for the extract
-        public DataColumn ColumnExtractId;
-        /// Extract Parameter Code
-        public DataColumn ColumnParameterCode;
-        /// Index for Parameter Value. Only relevant if a parameter is a list of values in which case a new index is used for each list item.
-        public DataColumn ColumnValueIndex;
-        /// Extract Parameter Value
-        public DataColumn ColumnParameterValue;
-        /// The date the record was created.
-        public DataColumn ColumnDateCreated;
-        /// User ID of who created this record.
-        public DataColumn ColumnCreatedBy;
-        /// The date the record was modified.
-        public DataColumn ColumnDateModified;
-        /// User ID of who last modified this record.
-        public DataColumn ColumnModifiedBy;
-        /// This identifies the current version of the record.
-        public DataColumn ColumnModificationId;
-
         /// TableId for Ict.Common.Data generic functions
         public static short TableId = 78;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnExtractIdId = 0;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnParameterCodeId = 1;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnValueIndexId = 2;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnParameterValueId = 3;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnDateCreatedId = 4;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnCreatedById = 5;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnDateModifiedId = 6;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnModifiedById = 7;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnModificationIdId = 8;
 
         private static bool FInitInfoValues = InitInfoValues();
         private static bool InitInfoValues()
         {
             TableInfo.Add(TableId, new TTypedTableInfo(TableId, "MExtractParameter", "m_extract_parameter",
                 new TTypedColumnInfo[] {
-                    new TTypedColumnInfo(0, "ExtractId", "m_extract_id_i", OdbcType.Int, -1, true),
-                    new TTypedColumnInfo(1, "ParameterCode", "m_parameter_code_c", OdbcType.VarChar, 50, true),
-                    new TTypedColumnInfo(2, "ValueIndex", "m_value_index_i", OdbcType.Int, -1, true),
-                    new TTypedColumnInfo(3, "ParameterValue", "m_parameter_value_c", OdbcType.VarChar, 200, false),
-                    new TTypedColumnInfo(4, "DateCreated", "s_date_created_d", OdbcType.Date, -1, false),
-                    new TTypedColumnInfo(5, "CreatedBy", "s_created_by_c", OdbcType.VarChar, 20, false),
-                    new TTypedColumnInfo(6, "DateModified", "s_date_modified_d", OdbcType.Date, -1, false),
-                    new TTypedColumnInfo(7, "ModifiedBy", "s_modified_by_c", OdbcType.VarChar, 20, false),
-                    new TTypedColumnInfo(8, "ModificationId", "s_modification_id_c", OdbcType.VarChar, 150, false)
+                    new TTypedColumnInfo(0, "ExtractId", "m_extract_id_i", "Extract Id", OdbcType.Int, -1, true),
+                    new TTypedColumnInfo(1, "ParameterCode", "m_parameter_code_c", "Code", OdbcType.VarChar, 50, true),
+                    new TTypedColumnInfo(2, "ValueIndex", "m_value_index_i", "Value Index", OdbcType.Int, -1, true),
+                    new TTypedColumnInfo(3, "ParameterValue", "m_parameter_value_c", "Value", OdbcType.VarChar, 200, false),
+                    new TTypedColumnInfo(4, "DateCreated", "s_date_created_d", "Created Date", OdbcType.Date, -1, false),
+                    new TTypedColumnInfo(5, "CreatedBy", "s_created_by_c", "Created By", OdbcType.VarChar, 20, false),
+                    new TTypedColumnInfo(6, "DateModified", "s_date_modified_d", "Modified Date", OdbcType.Date, -1, false),
+                    new TTypedColumnInfo(7, "ModifiedBy", "s_modified_by_c", "Modified By", OdbcType.VarChar, 20, false),
+                    new TTypedColumnInfo(8, "ModificationId", "s_modification_id_c", "", OdbcType.VarChar, 150, false)
                 },
                 new int[] {
                     0, 1, 2
@@ -2457,6 +2564,25 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data
                 base(info, context)
         {
         }
+
+        /// Identifier for the extract
+        public DataColumn ColumnExtractId;
+        /// Extract Parameter Code
+        public DataColumn ColumnParameterCode;
+        /// Index for Parameter Value. Only relevant if a parameter is a list of values in which case a new index is used for each list item.
+        public DataColumn ColumnValueIndex;
+        /// Extract Parameter Value
+        public DataColumn ColumnParameterValue;
+        /// The date the record was created.
+        public DataColumn ColumnDateCreated;
+        /// User ID of who created this record.
+        public DataColumn ColumnCreatedBy;
+        /// The date the record was modified.
+        public DataColumn ColumnDateModified;
+        /// User ID of who last modified this record.
+        public DataColumn ColumnModifiedBy;
+        /// This identifies the current version of the record.
+        public DataColumn ColumnModificationId;
 
         /// create the columns
         protected override void InitClass()
@@ -2522,6 +2648,18 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data
         public MExtractParameterTable GetChangesTyped()
         {
             return ((MExtractParameterTable)(base.GetChangesTypedInternal()));
+        }
+
+        /// return the CamelCase name of the table
+        public static string GetTableName()
+        {
+            return "MExtractParameter";
+        }
+
+        /// return the name of the table as it is used in the database
+        public static string GetTableDBName()
+        {
+            return "m_extract_parameter";
         }
 
         /// get an odbc parameter for the given column
@@ -3014,6 +3152,81 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data
     [Serializable()]
     public class PMailingTable : TTypedDataTable
     {
+        /// TableId for Ict.Common.Data generic functions
+        public static short TableId = 79;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnMailingCodeId = 0;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnMailingDescriptionId = 1;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnMailingDateId = 2;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnMotivationGroupCodeId = 3;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnMotivationDetailCodeId = 4;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnMailingCostId = 5;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnMailingAttributedAmountId = 6;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnViewableId = 7;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnViewableUntilId = 8;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnDateCreatedId = 9;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnCreatedById = 10;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnDateModifiedId = 11;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnModifiedById = 12;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnModificationIdId = 13;
+
+        private static bool FInitInfoValues = InitInfoValues();
+        private static bool InitInfoValues()
+        {
+            TableInfo.Add(TableId, new TTypedTableInfo(TableId, "PMailing", "p_mailing",
+                new TTypedColumnInfo[] {
+                    new TTypedColumnInfo(0, "MailingCode", "p_mailing_code_c", "Mailing Code", OdbcType.VarChar, 50, true),
+                    new TTypedColumnInfo(1, "MailingDescription", "p_mailing_description_c", "Mailing Description", OdbcType.VarChar, 160, false),
+                    new TTypedColumnInfo(2, "MailingDate", "p_mailing_date_d", "Mailing Date", OdbcType.Date, -1, false),
+                    new TTypedColumnInfo(3, "MotivationGroupCode", "a_motivation_group_code_c", "Motivation Group Code", OdbcType.VarChar, 16, false),
+                    new TTypedColumnInfo(4, "MotivationDetailCode", "a_motivation_detail_code_c", "Motivation Detail Code", OdbcType.VarChar, 16, false),
+                    new TTypedColumnInfo(5, "MailingCost", "p_mailing_cost_n", "Mailing Cost", OdbcType.Decimal, 19, false),
+                    new TTypedColumnInfo(6, "MailingAttributedAmount", "p_mailing_attributed_amount_n", "Attributed Amount", OdbcType.Decimal, 19, false),
+                    new TTypedColumnInfo(7, "Viewable", "p_viewable_l", "Viewable", OdbcType.Bit, -1, false),
+                    new TTypedColumnInfo(8, "ViewableUntil", "p_viewable_until_d", "Viewable until Date", OdbcType.Date, -1, false),
+                    new TTypedColumnInfo(9, "DateCreated", "s_date_created_d", "Created Date", OdbcType.Date, -1, false),
+                    new TTypedColumnInfo(10, "CreatedBy", "s_created_by_c", "Created By", OdbcType.VarChar, 20, false),
+                    new TTypedColumnInfo(11, "DateModified", "s_date_modified_d", "Modified Date", OdbcType.Date, -1, false),
+                    new TTypedColumnInfo(12, "ModifiedBy", "s_modified_by_c", "Modified By", OdbcType.VarChar, 20, false),
+                    new TTypedColumnInfo(13, "ModificationId", "s_modification_id_c", "", OdbcType.VarChar, 150, false)
+                },
+                new int[] {
+                    0
+                }));
+            return true;
+        }
+
+        /// constructor
+        public PMailingTable() :
+                base("PMailing")
+        {
+        }
+
+        /// constructor
+        public PMailingTable(string ATablename) :
+                base(ATablename)
+        {
+        }
+
+        /// constructor for serialization
+        public PMailingTable(System.Runtime.Serialization.SerializationInfo info, System.Runtime.Serialization.StreamingContext context) :
+                base(info, context)
+        {
+        }
+
         /// Mailing Code
         public DataColumn ColumnMailingCode;
         /// Mailing Description
@@ -3042,53 +3255,6 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data
         public DataColumn ColumnModifiedBy;
         /// This identifies the current version of the record.
         public DataColumn ColumnModificationId;
-
-        /// TableId for Ict.Common.Data generic functions
-        public static short TableId = 79;
-
-        private static bool FInitInfoValues = InitInfoValues();
-        private static bool InitInfoValues()
-        {
-            TableInfo.Add(TableId, new TTypedTableInfo(TableId, "PMailing", "p_mailing",
-                new TTypedColumnInfo[] {
-                    new TTypedColumnInfo(0, "MailingCode", "p_mailing_code_c", OdbcType.VarChar, 50, true),
-                    new TTypedColumnInfo(1, "MailingDescription", "p_mailing_description_c", OdbcType.VarChar, 160, false),
-                    new TTypedColumnInfo(2, "MailingDate", "p_mailing_date_d", OdbcType.Date, -1, false),
-                    new TTypedColumnInfo(3, "MotivationGroupCode", "a_motivation_group_code_c", OdbcType.VarChar, 16, false),
-                    new TTypedColumnInfo(4, "MotivationDetailCode", "a_motivation_detail_code_c", OdbcType.VarChar, 16, false),
-                    new TTypedColumnInfo(5, "MailingCost", "p_mailing_cost_n", OdbcType.Decimal, 19, false),
-                    new TTypedColumnInfo(6, "MailingAttributedAmount", "p_mailing_attributed_amount_n", OdbcType.Decimal, 19, false),
-                    new TTypedColumnInfo(7, "Viewable", "p_viewable_l", OdbcType.Bit, -1, false),
-                    new TTypedColumnInfo(8, "ViewableUntil", "p_viewable_until_d", OdbcType.Date, -1, false),
-                    new TTypedColumnInfo(9, "DateCreated", "s_date_created_d", OdbcType.Date, -1, false),
-                    new TTypedColumnInfo(10, "CreatedBy", "s_created_by_c", OdbcType.VarChar, 20, false),
-                    new TTypedColumnInfo(11, "DateModified", "s_date_modified_d", OdbcType.Date, -1, false),
-                    new TTypedColumnInfo(12, "ModifiedBy", "s_modified_by_c", OdbcType.VarChar, 20, false),
-                    new TTypedColumnInfo(13, "ModificationId", "s_modification_id_c", OdbcType.VarChar, 150, false)
-                },
-                new int[] {
-                    0
-                }));
-            return true;
-        }
-
-        /// constructor
-        public PMailingTable() :
-                base("PMailing")
-        {
-        }
-
-        /// constructor
-        public PMailingTable(string ATablename) :
-                base(ATablename)
-        {
-        }
-
-        /// constructor for serialization
-        public PMailingTable(System.Runtime.Serialization.SerializationInfo info, System.Runtime.Serialization.StreamingContext context) :
-                base(info, context)
-        {
-        }
 
         /// create the columns
         protected override void InitClass()
@@ -3164,6 +3330,18 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data
         public PMailingTable GetChangesTyped()
         {
             return ((PMailingTable)(base.GetChangesTypedInternal()));
+        }
+
+        /// return the CamelCase name of the table
+        public static string GetTableName()
+        {
+            return "PMailing";
+        }
+
+        /// return the name of the table as it is used in the database
+        public static string GetTableDBName()
+        {
+            return "p_mailing";
         }
 
         /// get an odbc parameter for the given column
@@ -3911,42 +4089,41 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data
     [Serializable()]
     public class PAddressLayoutCodeTable : TTypedDataTable
     {
-        /// Address Layout Code
-        public DataColumn ColumnCode;
-        /// Description for Address Layout Code
-        public DataColumn ColumnDescription;
-        /// Index for Display Order (to determine the display position of the layout in a list)
-        public DataColumn ColumnDisplayIndex;
-        /// Comment for Address Layout Code
-        public DataColumn ColumnComment;
-        /// The date the record was created.
-        public DataColumn ColumnDateCreated;
-        /// User ID of who created this record.
-        public DataColumn ColumnCreatedBy;
-        /// The date the record was modified.
-        public DataColumn ColumnDateModified;
-        /// User ID of who last modified this record.
-        public DataColumn ColumnModifiedBy;
-        /// This identifies the current version of the record.
-        public DataColumn ColumnModificationId;
-
         /// TableId for Ict.Common.Data generic functions
         public static short TableId = 80;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnCodeId = 0;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnDescriptionId = 1;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnDisplayIndexId = 2;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnCommentId = 3;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnDateCreatedId = 4;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnCreatedById = 5;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnDateModifiedId = 6;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnModifiedById = 7;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnModificationIdId = 8;
 
         private static bool FInitInfoValues = InitInfoValues();
         private static bool InitInfoValues()
         {
             TableInfo.Add(TableId, new TTypedTableInfo(TableId, "PAddressLayoutCode", "p_address_layout_code",
                 new TTypedColumnInfo[] {
-                    new TTypedColumnInfo(0, "Code", "p_code_c", OdbcType.VarChar, 32, true),
-                    new TTypedColumnInfo(1, "Description", "p_description_c", OdbcType.VarChar, 100, false),
-                    new TTypedColumnInfo(2, "DisplayIndex", "p_display_index_i", OdbcType.Int, -1, true),
-                    new TTypedColumnInfo(3, "Comment", "p_comment_c", OdbcType.VarChar, 600, false),
-                    new TTypedColumnInfo(4, "DateCreated", "s_date_created_d", OdbcType.Date, -1, false),
-                    new TTypedColumnInfo(5, "CreatedBy", "s_created_by_c", OdbcType.VarChar, 20, false),
-                    new TTypedColumnInfo(6, "DateModified", "s_date_modified_d", OdbcType.Date, -1, false),
-                    new TTypedColumnInfo(7, "ModifiedBy", "s_modified_by_c", OdbcType.VarChar, 20, false),
-                    new TTypedColumnInfo(8, "ModificationId", "s_modification_id_c", OdbcType.VarChar, 150, false)
+                    new TTypedColumnInfo(0, "Code", "p_code_c", "Address Layout Code", OdbcType.VarChar, 32, true),
+                    new TTypedColumnInfo(1, "Description", "p_description_c", "Description", OdbcType.VarChar, 100, false),
+                    new TTypedColumnInfo(2, "DisplayIndex", "p_display_index_i", "Display Order Index", OdbcType.Int, -1, true),
+                    new TTypedColumnInfo(3, "Comment", "p_comment_c", "Comment", OdbcType.VarChar, 600, false),
+                    new TTypedColumnInfo(4, "DateCreated", "s_date_created_d", "Created Date", OdbcType.Date, -1, false),
+                    new TTypedColumnInfo(5, "CreatedBy", "s_created_by_c", "Created By", OdbcType.VarChar, 20, false),
+                    new TTypedColumnInfo(6, "DateModified", "s_date_modified_d", "Modified Date", OdbcType.Date, -1, false),
+                    new TTypedColumnInfo(7, "ModifiedBy", "s_modified_by_c", "Modified By", OdbcType.VarChar, 20, false),
+                    new TTypedColumnInfo(8, "ModificationId", "s_modification_id_c", "", OdbcType.VarChar, 150, false)
                 },
                 new int[] {
                     0
@@ -3971,6 +4148,25 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data
                 base(info, context)
         {
         }
+
+        /// Address Layout Code
+        public DataColumn ColumnCode;
+        /// Description for Address Layout Code
+        public DataColumn ColumnDescription;
+        /// Index for Display Order (to determine the display position of the layout in a list)
+        public DataColumn ColumnDisplayIndex;
+        /// Comment for Address Layout Code
+        public DataColumn ColumnComment;
+        /// The date the record was created.
+        public DataColumn ColumnDateCreated;
+        /// User ID of who created this record.
+        public DataColumn ColumnCreatedBy;
+        /// The date the record was modified.
+        public DataColumn ColumnDateModified;
+        /// User ID of who last modified this record.
+        public DataColumn ColumnModifiedBy;
+        /// This identifies the current version of the record.
+        public DataColumn ColumnModificationId;
 
         /// create the columns
         protected override void InitClass()
@@ -4036,6 +4232,18 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data
         public PAddressLayoutCodeTable GetChangesTyped()
         {
             return ((PAddressLayoutCodeTable)(base.GetChangesTypedInternal()));
+        }
+
+        /// return the CamelCase name of the table
+        public static string GetTableName()
+        {
+            return "PAddressLayoutCode";
+        }
+
+        /// return the name of the table as it is used in the database
+        public static string GetTableDBName()
+        {
+            return "p_address_layout_code";
         }
 
         /// get an odbc parameter for the given column
@@ -4528,48 +4736,47 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data
     [Serializable()]
     public class PAddressLayoutTable : TTypedDataTable
     {
-        ///
-        public DataColumn ColumnCountryCode;
-        ///
-        public DataColumn ColumnAddressLayoutCode;
-        ///
-        public DataColumn ColumnAddressLineNumber;
-        ///
-        public DataColumn ColumnAddressLineCode;
-        /// This field is a short description of the Address Line Code record
-        public DataColumn ColumnAddressPrompt;
-        /// System flag indicates a lock is on the record
-        public DataColumn ColumnLocked;
-        /// The date the record was created.
-        public DataColumn ColumnDateCreated;
-        /// User ID of who created this record.
-        public DataColumn ColumnCreatedBy;
-        /// The date the record was modified.
-        public DataColumn ColumnDateModified;
-        /// User ID of who last modified this record.
-        public DataColumn ColumnModifiedBy;
-        /// This identifies the current version of the record.
-        public DataColumn ColumnModificationId;
-
         /// TableId for Ict.Common.Data generic functions
         public static short TableId = 81;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnCountryCodeId = 0;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnAddressLayoutCodeId = 1;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnAddressLineNumberId = 2;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnAddressLineCodeId = 3;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnAddressPromptId = 4;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnLockedId = 5;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnDateCreatedId = 6;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnCreatedById = 7;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnDateModifiedId = 8;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnModifiedById = 9;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnModificationIdId = 10;
 
         private static bool FInitInfoValues = InitInfoValues();
         private static bool InitInfoValues()
         {
             TableInfo.Add(TableId, new TTypedTableInfo(TableId, "PAddressLayout", "p_address_layout",
                 new TTypedColumnInfo[] {
-                    new TTypedColumnInfo(0, "CountryCode", "p_country_code_c", OdbcType.VarChar, 8, true),
-                    new TTypedColumnInfo(1, "AddressLayoutCode", "p_address_layout_code_c", OdbcType.VarChar, 32, true),
-                    new TTypedColumnInfo(2, "AddressLineNumber", "p_address_line_number_i", OdbcType.Int, -1, true),
-                    new TTypedColumnInfo(3, "AddressLineCode", "p_address_line_code_c", OdbcType.VarChar, 16, true),
-                    new TTypedColumnInfo(4, "AddressPrompt", "p_address_prompt_c", OdbcType.VarChar, 30, false),
-                    new TTypedColumnInfo(5, "Locked", "p_locked_l", OdbcType.Bit, -1, false),
-                    new TTypedColumnInfo(6, "DateCreated", "s_date_created_d", OdbcType.Date, -1, false),
-                    new TTypedColumnInfo(7, "CreatedBy", "s_created_by_c", OdbcType.VarChar, 20, false),
-                    new TTypedColumnInfo(8, "DateModified", "s_date_modified_d", OdbcType.Date, -1, false),
-                    new TTypedColumnInfo(9, "ModifiedBy", "s_modified_by_c", OdbcType.VarChar, 20, false),
-                    new TTypedColumnInfo(10, "ModificationId", "s_modification_id_c", OdbcType.VarChar, 150, false)
+                    new TTypedColumnInfo(0, "CountryCode", "p_country_code_c", "Country Code", OdbcType.VarChar, 8, true),
+                    new TTypedColumnInfo(1, "AddressLayoutCode", "p_address_layout_code_c", "Address Layout Code", OdbcType.VarChar, 32, true),
+                    new TTypedColumnInfo(2, "AddressLineNumber", "p_address_line_number_i", "Line Number", OdbcType.Int, -1, true),
+                    new TTypedColumnInfo(3, "AddressLineCode", "p_address_line_code_c", "Address Line Code", OdbcType.VarChar, 16, true),
+                    new TTypedColumnInfo(4, "AddressPrompt", "p_address_prompt_c", "Address Prompt", OdbcType.VarChar, 30, false),
+                    new TTypedColumnInfo(5, "Locked", "p_locked_l", "p_locked_l", OdbcType.Bit, -1, false),
+                    new TTypedColumnInfo(6, "DateCreated", "s_date_created_d", "Created Date", OdbcType.Date, -1, false),
+                    new TTypedColumnInfo(7, "CreatedBy", "s_created_by_c", "Created By", OdbcType.VarChar, 20, false),
+                    new TTypedColumnInfo(8, "DateModified", "s_date_modified_d", "Modified Date", OdbcType.Date, -1, false),
+                    new TTypedColumnInfo(9, "ModifiedBy", "s_modified_by_c", "Modified By", OdbcType.VarChar, 20, false),
+                    new TTypedColumnInfo(10, "ModificationId", "s_modification_id_c", "", OdbcType.VarChar, 150, false)
                 },
                 new int[] {
                     0, 1, 2, 3
@@ -4594,6 +4801,29 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data
                 base(info, context)
         {
         }
+
+        ///
+        public DataColumn ColumnCountryCode;
+        ///
+        public DataColumn ColumnAddressLayoutCode;
+        ///
+        public DataColumn ColumnAddressLineNumber;
+        ///
+        public DataColumn ColumnAddressLineCode;
+        /// This field is a short description of the Address Line Code record
+        public DataColumn ColumnAddressPrompt;
+        /// System flag indicates a lock is on the record
+        public DataColumn ColumnLocked;
+        /// The date the record was created.
+        public DataColumn ColumnDateCreated;
+        /// User ID of who created this record.
+        public DataColumn ColumnCreatedBy;
+        /// The date the record was modified.
+        public DataColumn ColumnDateModified;
+        /// User ID of who last modified this record.
+        public DataColumn ColumnModifiedBy;
+        /// This identifies the current version of the record.
+        public DataColumn ColumnModificationId;
 
         /// create the columns
         protected override void InitClass()
@@ -4663,6 +4893,18 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data
         public PAddressLayoutTable GetChangesTyped()
         {
             return ((PAddressLayoutTable)(base.GetChangesTypedInternal()));
+        }
+
+        /// return the CamelCase name of the table
+        public static string GetTableName()
+        {
+            return "PAddressLayout";
+        }
+
+        /// return the name of the table as it is used in the database
+        public static string GetTableDBName()
+        {
+            return "p_address_layout";
         }
 
         /// get an odbc parameter for the given column
@@ -5257,42 +5499,41 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data
     [Serializable()]
     public class PAddressElementTable : TTypedDataTable
     {
-        /// This Code is used to identify the address element.
-        public DataColumn ColumnAddressElementCode;
-        ///
-        public DataColumn ColumnAddressElementDescription;
-        /// Address element field name
-        public DataColumn ColumnAddressElementFieldName;
-        /// This is usually a ""."" or a "";"" or a "","" etc
-        public DataColumn ColumnAddressElementText;
-        /// The date the record was created.
-        public DataColumn ColumnDateCreated;
-        /// User ID of who created this record.
-        public DataColumn ColumnCreatedBy;
-        /// The date the record was modified.
-        public DataColumn ColumnDateModified;
-        /// User ID of who last modified this record.
-        public DataColumn ColumnModifiedBy;
-        /// This identifies the current version of the record.
-        public DataColumn ColumnModificationId;
-
         /// TableId for Ict.Common.Data generic functions
         public static short TableId = 82;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnAddressElementCodeId = 0;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnAddressElementDescriptionId = 1;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnAddressElementFieldNameId = 2;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnAddressElementTextId = 3;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnDateCreatedId = 4;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnCreatedById = 5;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnDateModifiedId = 6;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnModifiedById = 7;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnModificationIdId = 8;
 
         private static bool FInitInfoValues = InitInfoValues();
         private static bool InitInfoValues()
         {
             TableInfo.Add(TableId, new TTypedTableInfo(TableId, "PAddressElement", "p_address_element",
                 new TTypedColumnInfo[] {
-                    new TTypedColumnInfo(0, "AddressElementCode", "p_address_element_code_c", OdbcType.VarChar, 24, true),
-                    new TTypedColumnInfo(1, "AddressElementDescription", "p_address_element_description_c", OdbcType.VarChar, 160, false),
-                    new TTypedColumnInfo(2, "AddressElementFieldName", "p_address_element_field_name_c", OdbcType.VarChar, 60, false),
-                    new TTypedColumnInfo(3, "AddressElementText", "p_address_element_text_c", OdbcType.VarChar, 2, false),
-                    new TTypedColumnInfo(4, "DateCreated", "s_date_created_d", OdbcType.Date, -1, false),
-                    new TTypedColumnInfo(5, "CreatedBy", "s_created_by_c", OdbcType.VarChar, 20, false),
-                    new TTypedColumnInfo(6, "DateModified", "s_date_modified_d", OdbcType.Date, -1, false),
-                    new TTypedColumnInfo(7, "ModifiedBy", "s_modified_by_c", OdbcType.VarChar, 20, false),
-                    new TTypedColumnInfo(8, "ModificationId", "s_modification_id_c", OdbcType.VarChar, 150, false)
+                    new TTypedColumnInfo(0, "AddressElementCode", "p_address_element_code_c", "Element Code", OdbcType.VarChar, 24, true),
+                    new TTypedColumnInfo(1, "AddressElementDescription", "p_address_element_description_c", "Description", OdbcType.VarChar, 160, false),
+                    new TTypedColumnInfo(2, "AddressElementFieldName", "p_address_element_field_name_c", "Field Name", OdbcType.VarChar, 60, false),
+                    new TTypedColumnInfo(3, "AddressElementText", "p_address_element_text_c", "Element Text", OdbcType.VarChar, 2, false),
+                    new TTypedColumnInfo(4, "DateCreated", "s_date_created_d", "Created Date", OdbcType.Date, -1, false),
+                    new TTypedColumnInfo(5, "CreatedBy", "s_created_by_c", "Created By", OdbcType.VarChar, 20, false),
+                    new TTypedColumnInfo(6, "DateModified", "s_date_modified_d", "Modified Date", OdbcType.Date, -1, false),
+                    new TTypedColumnInfo(7, "ModifiedBy", "s_modified_by_c", "Modified By", OdbcType.VarChar, 20, false),
+                    new TTypedColumnInfo(8, "ModificationId", "s_modification_id_c", "", OdbcType.VarChar, 150, false)
                 },
                 new int[] {
                     0
@@ -5317,6 +5558,25 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data
                 base(info, context)
         {
         }
+
+        /// This Code is used to identify the address element.
+        public DataColumn ColumnAddressElementCode;
+        ///
+        public DataColumn ColumnAddressElementDescription;
+        /// Address element field name
+        public DataColumn ColumnAddressElementFieldName;
+        /// This is usually a ""."" or a "";"" or a "","" etc
+        public DataColumn ColumnAddressElementText;
+        /// The date the record was created.
+        public DataColumn ColumnDateCreated;
+        /// User ID of who created this record.
+        public DataColumn ColumnCreatedBy;
+        /// The date the record was modified.
+        public DataColumn ColumnDateModified;
+        /// User ID of who last modified this record.
+        public DataColumn ColumnModifiedBy;
+        /// This identifies the current version of the record.
+        public DataColumn ColumnModificationId;
 
         /// create the columns
         protected override void InitClass()
@@ -5382,6 +5642,18 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data
         public PAddressElementTable GetChangesTyped()
         {
             return ((PAddressElementTable)(base.GetChangesTypedInternal()));
+        }
+
+        /// return the CamelCase name of the table
+        public static string GetTableName()
+        {
+            return "PAddressElement";
+        }
+
+        /// return the name of the table as it is used in the database
+        public static string GetTableDBName()
+        {
+            return "p_address_element";
         }
 
         /// get an odbc parameter for the given column
@@ -5874,39 +6146,38 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data
     [Serializable()]
     public class PAddressLineTable : TTypedDataTable
     {
-        ///
-        public DataColumn ColumnAddressLineCode;
-        /// This is the column number where the element field or text should be placed.
-        public DataColumn ColumnAddressElementPosition;
-        /// This Code is used to identify the address element.
-        public DataColumn ColumnAddressElementCode;
-        /// The date the record was created.
-        public DataColumn ColumnDateCreated;
-        /// User ID of who created this record.
-        public DataColumn ColumnCreatedBy;
-        /// The date the record was modified.
-        public DataColumn ColumnDateModified;
-        /// User ID of who last modified this record.
-        public DataColumn ColumnModifiedBy;
-        /// This identifies the current version of the record.
-        public DataColumn ColumnModificationId;
-
         /// TableId for Ict.Common.Data generic functions
         public static short TableId = 83;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnAddressLineCodeId = 0;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnAddressElementPositionId = 1;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnAddressElementCodeId = 2;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnDateCreatedId = 3;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnCreatedById = 4;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnDateModifiedId = 5;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnModifiedById = 6;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnModificationIdId = 7;
 
         private static bool FInitInfoValues = InitInfoValues();
         private static bool InitInfoValues()
         {
             TableInfo.Add(TableId, new TTypedTableInfo(TableId, "PAddressLine", "p_address_line",
                 new TTypedColumnInfo[] {
-                    new TTypedColumnInfo(0, "AddressLineCode", "p_address_line_code_c", OdbcType.VarChar, 16, true),
-                    new TTypedColumnInfo(1, "AddressElementPosition", "p_address_element_position_i", OdbcType.Int, -1, true),
-                    new TTypedColumnInfo(2, "AddressElementCode", "p_address_element_code_c", OdbcType.VarChar, 24, true),
-                    new TTypedColumnInfo(3, "DateCreated", "s_date_created_d", OdbcType.Date, -1, false),
-                    new TTypedColumnInfo(4, "CreatedBy", "s_created_by_c", OdbcType.VarChar, 20, false),
-                    new TTypedColumnInfo(5, "DateModified", "s_date_modified_d", OdbcType.Date, -1, false),
-                    new TTypedColumnInfo(6, "ModifiedBy", "s_modified_by_c", OdbcType.VarChar, 20, false),
-                    new TTypedColumnInfo(7, "ModificationId", "s_modification_id_c", OdbcType.VarChar, 150, false)
+                    new TTypedColumnInfo(0, "AddressLineCode", "p_address_line_code_c", "Address Line Code", OdbcType.VarChar, 16, true),
+                    new TTypedColumnInfo(1, "AddressElementPosition", "p_address_element_position_i", "Element Postition", OdbcType.Int, -1, true),
+                    new TTypedColumnInfo(2, "AddressElementCode", "p_address_element_code_c", "Element Code", OdbcType.VarChar, 24, true),
+                    new TTypedColumnInfo(3, "DateCreated", "s_date_created_d", "Created Date", OdbcType.Date, -1, false),
+                    new TTypedColumnInfo(4, "CreatedBy", "s_created_by_c", "Created By", OdbcType.VarChar, 20, false),
+                    new TTypedColumnInfo(5, "DateModified", "s_date_modified_d", "Modified Date", OdbcType.Date, -1, false),
+                    new TTypedColumnInfo(6, "ModifiedBy", "s_modified_by_c", "Modified By", OdbcType.VarChar, 20, false),
+                    new TTypedColumnInfo(7, "ModificationId", "s_modification_id_c", "", OdbcType.VarChar, 150, false)
                 },
                 new int[] {
                     0, 1
@@ -5931,6 +6202,23 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data
                 base(info, context)
         {
         }
+
+        ///
+        public DataColumn ColumnAddressLineCode;
+        /// This is the column number where the element field or text should be placed.
+        public DataColumn ColumnAddressElementPosition;
+        /// This Code is used to identify the address element.
+        public DataColumn ColumnAddressElementCode;
+        /// The date the record was created.
+        public DataColumn ColumnDateCreated;
+        /// User ID of who created this record.
+        public DataColumn ColumnCreatedBy;
+        /// The date the record was modified.
+        public DataColumn ColumnDateModified;
+        /// User ID of who last modified this record.
+        public DataColumn ColumnModifiedBy;
+        /// This identifies the current version of the record.
+        public DataColumn ColumnModificationId;
 
         /// create the columns
         protected override void InitClass()
@@ -5994,6 +6282,18 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data
         public PAddressLineTable GetChangesTyped()
         {
             return ((PAddressLineTable)(base.GetChangesTypedInternal()));
+        }
+
+        /// return the CamelCase name of the table
+        public static string GetTableName()
+        {
+            return "PAddressLine";
+        }
+
+        /// return the name of the table as it is used in the database
+        public static string GetTableDBName()
+        {
+            return "p_address_line";
         }
 
         /// get an odbc parameter for the given column
@@ -6437,39 +6737,38 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data
     [Serializable()]
     public class PAddresseeTitleOverrideTable : TTypedDataTable
     {
-        /// This is the code used to identify a language.
-        public DataColumn ColumnLanguageCode;
-        /// The partner's title
-        public DataColumn ColumnTitle;
-        /// The title to override the partner
-        public DataColumn ColumnTitleOverride;
-        /// The date the record was created.
-        public DataColumn ColumnDateCreated;
-        /// User ID of who created this record.
-        public DataColumn ColumnCreatedBy;
-        /// The date the record was modified.
-        public DataColumn ColumnDateModified;
-        /// User ID of who last modified this record.
-        public DataColumn ColumnModifiedBy;
-        /// This identifies the current version of the record.
-        public DataColumn ColumnModificationId;
-
         /// TableId for Ict.Common.Data generic functions
         public static short TableId = 84;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnLanguageCodeId = 0;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnTitleId = 1;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnTitleOverrideId = 2;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnDateCreatedId = 3;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnCreatedById = 4;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnDateModifiedId = 5;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnModifiedById = 6;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnModificationIdId = 7;
 
         private static bool FInitInfoValues = InitInfoValues();
         private static bool InitInfoValues()
         {
             TableInfo.Add(TableId, new TTypedTableInfo(TableId, "PAddresseeTitleOverride", "p_addressee_title_override",
                 new TTypedColumnInfo[] {
-                    new TTypedColumnInfo(0, "LanguageCode", "p_language_code_c", OdbcType.VarChar, 20, true),
-                    new TTypedColumnInfo(1, "Title", "p_title_c", OdbcType.VarChar, 64, true),
-                    new TTypedColumnInfo(2, "TitleOverride", "p_title_override_c", OdbcType.VarChar, 64, true),
-                    new TTypedColumnInfo(3, "DateCreated", "s_date_created_d", OdbcType.Date, -1, false),
-                    new TTypedColumnInfo(4, "CreatedBy", "s_created_by_c", OdbcType.VarChar, 20, false),
-                    new TTypedColumnInfo(5, "DateModified", "s_date_modified_d", OdbcType.Date, -1, false),
-                    new TTypedColumnInfo(6, "ModifiedBy", "s_modified_by_c", OdbcType.VarChar, 20, false),
-                    new TTypedColumnInfo(7, "ModificationId", "s_modification_id_c", OdbcType.VarChar, 150, false)
+                    new TTypedColumnInfo(0, "LanguageCode", "p_language_code_c", "Language Code", OdbcType.VarChar, 20, true),
+                    new TTypedColumnInfo(1, "Title", "p_title_c", "Title", OdbcType.VarChar, 64, true),
+                    new TTypedColumnInfo(2, "TitleOverride", "p_title_override_c", "Title Override", OdbcType.VarChar, 64, true),
+                    new TTypedColumnInfo(3, "DateCreated", "s_date_created_d", "Created Date", OdbcType.Date, -1, false),
+                    new TTypedColumnInfo(4, "CreatedBy", "s_created_by_c", "Created By", OdbcType.VarChar, 20, false),
+                    new TTypedColumnInfo(5, "DateModified", "s_date_modified_d", "Modified Date", OdbcType.Date, -1, false),
+                    new TTypedColumnInfo(6, "ModifiedBy", "s_modified_by_c", "Modified By", OdbcType.VarChar, 20, false),
+                    new TTypedColumnInfo(7, "ModificationId", "s_modification_id_c", "", OdbcType.VarChar, 150, false)
                 },
                 new int[] {
                     0, 1
@@ -6494,6 +6793,23 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data
                 base(info, context)
         {
         }
+
+        /// This is the code used to identify a language.
+        public DataColumn ColumnLanguageCode;
+        /// The partner's title
+        public DataColumn ColumnTitle;
+        /// The title to override the partner
+        public DataColumn ColumnTitleOverride;
+        /// The date the record was created.
+        public DataColumn ColumnDateCreated;
+        /// User ID of who created this record.
+        public DataColumn ColumnCreatedBy;
+        /// The date the record was modified.
+        public DataColumn ColumnDateModified;
+        /// User ID of who last modified this record.
+        public DataColumn ColumnModifiedBy;
+        /// This identifies the current version of the record.
+        public DataColumn ColumnModificationId;
 
         /// create the columns
         protected override void InitClass()
@@ -6557,6 +6873,18 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data
         public PAddresseeTitleOverrideTable GetChangesTyped()
         {
             return ((PAddresseeTitleOverrideTable)(base.GetChangesTypedInternal()));
+        }
+
+        /// return the CamelCase name of the table
+        public static string GetTableName()
+        {
+            return "PAddresseeTitleOverride";
+        }
+
+        /// return the name of the table as it is used in the database
+        public static string GetTableDBName()
+        {
+            return "p_addressee_title_override";
         }
 
         /// get an odbc parameter for the given column
@@ -7000,42 +7328,41 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data
     [Serializable()]
     public class PCustomisedGreetingTable : TTypedDataTable
     {
-        /// This is the partner key assigned to each partner. It consists of the fund id followed by a computer generated six digit number.
-        public DataColumn ColumnPartnerKey;
-        /// This is the system user id. Each user of the system is allocated one
-        public DataColumn ColumnUserId;
-        ///
-        public DataColumn ColumnCustomisedGreetingText;
-        ///
-        public DataColumn ColumnCustomisedClosingText;
-        /// The date the record was created.
-        public DataColumn ColumnDateCreated;
-        /// User ID of who created this record.
-        public DataColumn ColumnCreatedBy;
-        /// The date the record was modified.
-        public DataColumn ColumnDateModified;
-        /// User ID of who last modified this record.
-        public DataColumn ColumnModifiedBy;
-        /// This identifies the current version of the record.
-        public DataColumn ColumnModificationId;
-
         /// TableId for Ict.Common.Data generic functions
         public static short TableId = 85;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnPartnerKeyId = 0;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnUserIdId = 1;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnCustomisedGreetingTextId = 2;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnCustomisedClosingTextId = 3;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnDateCreatedId = 4;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnCreatedById = 5;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnDateModifiedId = 6;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnModifiedById = 7;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnModificationIdId = 8;
 
         private static bool FInitInfoValues = InitInfoValues();
         private static bool InitInfoValues()
         {
             TableInfo.Add(TableId, new TTypedTableInfo(TableId, "PCustomisedGreeting", "p_customised_greeting",
                 new TTypedColumnInfo[] {
-                    new TTypedColumnInfo(0, "PartnerKey", "p_partner_key_n", OdbcType.Decimal, 10, true),
-                    new TTypedColumnInfo(1, "UserId", "s_user_id_c", OdbcType.VarChar, 20, true),
-                    new TTypedColumnInfo(2, "CustomisedGreetingText", "p_customised_greeting_text_c", OdbcType.VarChar, 64, false),
-                    new TTypedColumnInfo(3, "CustomisedClosingText", "p_customised_closing_text_c", OdbcType.VarChar, 64, false),
-                    new TTypedColumnInfo(4, "DateCreated", "s_date_created_d", OdbcType.Date, -1, false),
-                    new TTypedColumnInfo(5, "CreatedBy", "s_created_by_c", OdbcType.VarChar, 20, false),
-                    new TTypedColumnInfo(6, "DateModified", "s_date_modified_d", OdbcType.Date, -1, false),
-                    new TTypedColumnInfo(7, "ModifiedBy", "s_modified_by_c", OdbcType.VarChar, 20, false),
-                    new TTypedColumnInfo(8, "ModificationId", "s_modification_id_c", OdbcType.VarChar, 150, false)
+                    new TTypedColumnInfo(0, "PartnerKey", "p_partner_key_n", "Partner Key", OdbcType.Decimal, 10, true),
+                    new TTypedColumnInfo(1, "UserId", "s_user_id_c", "User ID", OdbcType.VarChar, 20, true),
+                    new TTypedColumnInfo(2, "CustomisedGreetingText", "p_customised_greeting_text_c", "Customised Greeting", OdbcType.VarChar, 64, false),
+                    new TTypedColumnInfo(3, "CustomisedClosingText", "p_customised_closing_text_c", "Customised Closing", OdbcType.VarChar, 64, false),
+                    new TTypedColumnInfo(4, "DateCreated", "s_date_created_d", "Created Date", OdbcType.Date, -1, false),
+                    new TTypedColumnInfo(5, "CreatedBy", "s_created_by_c", "Created By", OdbcType.VarChar, 20, false),
+                    new TTypedColumnInfo(6, "DateModified", "s_date_modified_d", "Modified Date", OdbcType.Date, -1, false),
+                    new TTypedColumnInfo(7, "ModifiedBy", "s_modified_by_c", "Modified By", OdbcType.VarChar, 20, false),
+                    new TTypedColumnInfo(8, "ModificationId", "s_modification_id_c", "", OdbcType.VarChar, 150, false)
                 },
                 new int[] {
                     0, 1
@@ -7060,6 +7387,25 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data
                 base(info, context)
         {
         }
+
+        /// This is the partner key assigned to each partner. It consists of the fund id followed by a computer generated six digit number.
+        public DataColumn ColumnPartnerKey;
+        /// This is the system user id. Each user of the system is allocated one
+        public DataColumn ColumnUserId;
+        ///
+        public DataColumn ColumnCustomisedGreetingText;
+        ///
+        public DataColumn ColumnCustomisedClosingText;
+        /// The date the record was created.
+        public DataColumn ColumnDateCreated;
+        /// User ID of who created this record.
+        public DataColumn ColumnCreatedBy;
+        /// The date the record was modified.
+        public DataColumn ColumnDateModified;
+        /// User ID of who last modified this record.
+        public DataColumn ColumnModifiedBy;
+        /// This identifies the current version of the record.
+        public DataColumn ColumnModificationId;
 
         /// create the columns
         protected override void InitClass()
@@ -7125,6 +7471,18 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data
         public PCustomisedGreetingTable GetChangesTyped()
         {
             return ((PCustomisedGreetingTable)(base.GetChangesTypedInternal()));
+        }
+
+        /// return the CamelCase name of the table
+        public static string GetTableName()
+        {
+            return "PCustomisedGreeting";
+        }
+
+        /// return the name of the table as it is used in the database
+        public static string GetTableDBName()
+        {
+            return "p_customised_greeting";
         }
 
         /// get an odbc parameter for the given column
@@ -7617,6 +7975,78 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data
     [Serializable()]
     public class PFormalityTable : TTypedDataTable
     {
+        /// TableId for Ict.Common.Data generic functions
+        public static short TableId = 86;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnLanguageCodeId = 0;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnCountryCodeId = 1;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnAddresseeTypeCodeId = 2;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnFormalityLevelId = 3;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnSalutationTextId = 4;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnTitleId = 5;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnComplimentaryClosingTextId = 6;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnPersonalPronounId = 7;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnDateCreatedId = 8;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnCreatedById = 9;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnDateModifiedId = 10;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnModifiedById = 11;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnModificationIdId = 12;
+
+        private static bool FInitInfoValues = InitInfoValues();
+        private static bool InitInfoValues()
+        {
+            TableInfo.Add(TableId, new TTypedTableInfo(TableId, "PFormality", "p_formality",
+                new TTypedColumnInfo[] {
+                    new TTypedColumnInfo(0, "LanguageCode", "p_language_code_c", "Language Code", OdbcType.VarChar, 20, true),
+                    new TTypedColumnInfo(1, "CountryCode", "p_country_code_c", "Country Code", OdbcType.VarChar, 8, true),
+                    new TTypedColumnInfo(2, "AddresseeTypeCode", "p_addressee_type_code_c", "Addressee Type Code", OdbcType.VarChar, 24, true),
+                    new TTypedColumnInfo(3, "FormalityLevel", "p_formality_level_i", "Formality Level", OdbcType.Int, -1, true),
+                    new TTypedColumnInfo(4, "SalutationText", "p_salutation_text_c", "Salutation Text", OdbcType.VarChar, 64, false),
+                    new TTypedColumnInfo(5, "Title", "p_title_c", "Title", OdbcType.VarChar, 24, false),
+                    new TTypedColumnInfo(6, "ComplimentaryClosingText", "p_complimentary_closing_text_c", "Closing Text", OdbcType.VarChar, 64, false),
+                    new TTypedColumnInfo(7, "PersonalPronoun", "p_personal_pronoun_c", "Personal Pronoun", OdbcType.VarChar, 24, false),
+                    new TTypedColumnInfo(8, "DateCreated", "s_date_created_d", "Created Date", OdbcType.Date, -1, false),
+                    new TTypedColumnInfo(9, "CreatedBy", "s_created_by_c", "Created By", OdbcType.VarChar, 20, false),
+                    new TTypedColumnInfo(10, "DateModified", "s_date_modified_d", "Modified Date", OdbcType.Date, -1, false),
+                    new TTypedColumnInfo(11, "ModifiedBy", "s_modified_by_c", "Modified By", OdbcType.VarChar, 20, false),
+                    new TTypedColumnInfo(12, "ModificationId", "s_modification_id_c", "", OdbcType.VarChar, 150, false)
+                },
+                new int[] {
+                    0, 1, 2, 3
+                }));
+            return true;
+        }
+
+        /// constructor
+        public PFormalityTable() :
+                base("PFormality")
+        {
+        }
+
+        /// constructor
+        public PFormalityTable(string ATablename) :
+                base(ATablename)
+        {
+        }
+
+        /// constructor for serialization
+        public PFormalityTable(System.Runtime.Serialization.SerializationInfo info, System.Runtime.Serialization.StreamingContext context) :
+                base(info, context)
+        {
+        }
+
         /// This is the code used to identify a language.
         public DataColumn ColumnLanguageCode;
         /// This is a code which identifies a country.
@@ -7644,52 +8074,6 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data
         public DataColumn ColumnModifiedBy;
         /// This identifies the current version of the record.
         public DataColumn ColumnModificationId;
-
-        /// TableId for Ict.Common.Data generic functions
-        public static short TableId = 86;
-
-        private static bool FInitInfoValues = InitInfoValues();
-        private static bool InitInfoValues()
-        {
-            TableInfo.Add(TableId, new TTypedTableInfo(TableId, "PFormality", "p_formality",
-                new TTypedColumnInfo[] {
-                    new TTypedColumnInfo(0, "LanguageCode", "p_language_code_c", OdbcType.VarChar, 20, true),
-                    new TTypedColumnInfo(1, "CountryCode", "p_country_code_c", OdbcType.VarChar, 8, true),
-                    new TTypedColumnInfo(2, "AddresseeTypeCode", "p_addressee_type_code_c", OdbcType.VarChar, 24, true),
-                    new TTypedColumnInfo(3, "FormalityLevel", "p_formality_level_i", OdbcType.Int, -1, true),
-                    new TTypedColumnInfo(4, "SalutationText", "p_salutation_text_c", OdbcType.VarChar, 64, false),
-                    new TTypedColumnInfo(5, "Title", "p_title_c", OdbcType.VarChar, 24, false),
-                    new TTypedColumnInfo(6, "ComplimentaryClosingText", "p_complimentary_closing_text_c", OdbcType.VarChar, 64, false),
-                    new TTypedColumnInfo(7, "PersonalPronoun", "p_personal_pronoun_c", OdbcType.VarChar, 24, false),
-                    new TTypedColumnInfo(8, "DateCreated", "s_date_created_d", OdbcType.Date, -1, false),
-                    new TTypedColumnInfo(9, "CreatedBy", "s_created_by_c", OdbcType.VarChar, 20, false),
-                    new TTypedColumnInfo(10, "DateModified", "s_date_modified_d", OdbcType.Date, -1, false),
-                    new TTypedColumnInfo(11, "ModifiedBy", "s_modified_by_c", OdbcType.VarChar, 20, false),
-                    new TTypedColumnInfo(12, "ModificationId", "s_modification_id_c", OdbcType.VarChar, 150, false)
-                },
-                new int[] {
-                    0, 1, 2, 3
-                }));
-            return true;
-        }
-
-        /// constructor
-        public PFormalityTable() :
-                base("PFormality")
-        {
-        }
-
-        /// constructor
-        public PFormalityTable(string ATablename) :
-                base(ATablename)
-        {
-        }
-
-        /// constructor for serialization
-        public PFormalityTable(System.Runtime.Serialization.SerializationInfo info, System.Runtime.Serialization.StreamingContext context) :
-                base(info, context)
-        {
-        }
 
         /// create the columns
         protected override void InitClass()
@@ -7763,6 +8147,18 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data
         public PFormalityTable GetChangesTyped()
         {
             return ((PFormalityTable)(base.GetChangesTypedInternal()));
+        }
+
+        /// return the CamelCase name of the table
+        public static string GetTableName()
+        {
+            return "PFormality";
+        }
+
+        /// return the name of the table as it is used in the database
+        public static string GetTableDBName()
+        {
+            return "p_formality";
         }
 
         /// get an odbc parameter for the given column
@@ -8460,45 +8856,44 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data
     [Serializable()]
     public class PFormLetterBodyTable : TTypedDataTable
     {
-        ///
-        public DataColumn ColumnBodyName;
-        ///
-        public DataColumn ColumnBodyText;
-        ///
-        public DataColumn ColumnDescription;
-        ///
-        public DataColumn ColumnPhysicalFile;
-        ///
-        public DataColumn ColumnOwner;
-        /// The date the record was created.
-        public DataColumn ColumnDateCreated;
-        /// User ID of who created this record.
-        public DataColumn ColumnCreatedBy;
-        /// The date the record was modified.
-        public DataColumn ColumnDateModified;
-        /// User ID of who last modified this record.
-        public DataColumn ColumnModifiedBy;
-        /// This identifies the current version of the record.
-        public DataColumn ColumnModificationId;
-
         /// TableId for Ict.Common.Data generic functions
         public static short TableId = 87;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnBodyNameId = 0;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnBodyTextId = 1;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnDescriptionId = 2;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnPhysicalFileId = 3;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnOwnerId = 4;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnDateCreatedId = 5;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnCreatedById = 6;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnDateModifiedId = 7;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnModifiedById = 8;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnModificationIdId = 9;
 
         private static bool FInitInfoValues = InitInfoValues();
         private static bool InitInfoValues()
         {
             TableInfo.Add(TableId, new TTypedTableInfo(TableId, "PFormLetterBody", "p_form_letter_body",
                 new TTypedColumnInfo[] {
-                    new TTypedColumnInfo(0, "BodyName", "p_body_name_c", OdbcType.VarChar, 40, true),
-                    new TTypedColumnInfo(1, "BodyText", "p_body_text_c", OdbcType.VarChar, 30000, false),
-                    new TTypedColumnInfo(2, "Description", "p_description_c", OdbcType.VarChar, 160, false),
-                    new TTypedColumnInfo(3, "PhysicalFile", "p_physical_file_c", OdbcType.VarChar, 48, false),
-                    new TTypedColumnInfo(4, "Owner", "p_owner_c", OdbcType.VarChar, 20, false),
-                    new TTypedColumnInfo(5, "DateCreated", "s_date_created_d", OdbcType.Date, -1, false),
-                    new TTypedColumnInfo(6, "CreatedBy", "s_created_by_c", OdbcType.VarChar, 20, false),
-                    new TTypedColumnInfo(7, "DateModified", "s_date_modified_d", OdbcType.Date, -1, false),
-                    new TTypedColumnInfo(8, "ModifiedBy", "s_modified_by_c", OdbcType.VarChar, 20, false),
-                    new TTypedColumnInfo(9, "ModificationId", "s_modification_id_c", OdbcType.VarChar, 150, false)
+                    new TTypedColumnInfo(0, "BodyName", "p_body_name_c", "Body Name", OdbcType.VarChar, 40, true),
+                    new TTypedColumnInfo(1, "BodyText", "p_body_text_c", "Body Text", OdbcType.VarChar, 30000, false),
+                    new TTypedColumnInfo(2, "Description", "p_description_c", "Description", OdbcType.VarChar, 160, false),
+                    new TTypedColumnInfo(3, "PhysicalFile", "p_physical_file_c", "Physical File", OdbcType.VarChar, 48, false),
+                    new TTypedColumnInfo(4, "Owner", "p_owner_c", "Owner", OdbcType.VarChar, 20, false),
+                    new TTypedColumnInfo(5, "DateCreated", "s_date_created_d", "Created Date", OdbcType.Date, -1, false),
+                    new TTypedColumnInfo(6, "CreatedBy", "s_created_by_c", "Created By", OdbcType.VarChar, 20, false),
+                    new TTypedColumnInfo(7, "DateModified", "s_date_modified_d", "Modified Date", OdbcType.Date, -1, false),
+                    new TTypedColumnInfo(8, "ModifiedBy", "s_modified_by_c", "Modified By", OdbcType.VarChar, 20, false),
+                    new TTypedColumnInfo(9, "ModificationId", "s_modification_id_c", "", OdbcType.VarChar, 150, false)
                 },
                 new int[] {
                     0
@@ -8523,6 +8918,27 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data
                 base(info, context)
         {
         }
+
+        ///
+        public DataColumn ColumnBodyName;
+        ///
+        public DataColumn ColumnBodyText;
+        ///
+        public DataColumn ColumnDescription;
+        ///
+        public DataColumn ColumnPhysicalFile;
+        ///
+        public DataColumn ColumnOwner;
+        /// The date the record was created.
+        public DataColumn ColumnDateCreated;
+        /// User ID of who created this record.
+        public DataColumn ColumnCreatedBy;
+        /// The date the record was modified.
+        public DataColumn ColumnDateModified;
+        /// User ID of who last modified this record.
+        public DataColumn ColumnModifiedBy;
+        /// This identifies the current version of the record.
+        public DataColumn ColumnModificationId;
 
         /// create the columns
         protected override void InitClass()
@@ -8590,6 +9006,18 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data
         public PFormLetterBodyTable GetChangesTyped()
         {
             return ((PFormLetterBodyTable)(base.GetChangesTypedInternal()));
+        }
+
+        /// return the CamelCase name of the table
+        public static string GetTableName()
+        {
+            return "PFormLetterBody";
+        }
+
+        /// return the name of the table as it is used in the database
+        public static string GetTableDBName()
+        {
+            return "p_form_letter_body";
         }
 
         /// get an odbc parameter for the given column
@@ -9133,45 +9561,44 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data
     [Serializable()]
     public class PFormLetterDesignTable : TTypedDataTable
     {
-        ///
-        public DataColumn ColumnDesignName;
-        /// The description of this form letter design.
-        public DataColumn ColumnDescription;
-        ///
-        public DataColumn ColumnAddressLayoutCode;
-        ///
-        public DataColumn ColumnFormalityLevel;
-        ///
-        public DataColumn ColumnBodyName;
-        /// The date the record was created.
-        public DataColumn ColumnDateCreated;
-        /// User ID of who created this record.
-        public DataColumn ColumnCreatedBy;
-        /// The date the record was modified.
-        public DataColumn ColumnDateModified;
-        /// User ID of who last modified this record.
-        public DataColumn ColumnModifiedBy;
-        /// This identifies the current version of the record.
-        public DataColumn ColumnModificationId;
-
         /// TableId for Ict.Common.Data generic functions
         public static short TableId = 88;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnDesignNameId = 0;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnDescriptionId = 1;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnAddressLayoutCodeId = 2;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnFormalityLevelId = 3;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnBodyNameId = 4;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnDateCreatedId = 5;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnCreatedById = 6;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnDateModifiedId = 7;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnModifiedById = 8;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnModificationIdId = 9;
 
         private static bool FInitInfoValues = InitInfoValues();
         private static bool InitInfoValues()
         {
             TableInfo.Add(TableId, new TTypedTableInfo(TableId, "PFormLetterDesign", "p_form_letter_design",
                 new TTypedColumnInfo[] {
-                    new TTypedColumnInfo(0, "DesignName", "p_design_name_c", OdbcType.VarChar, 40, true),
-                    new TTypedColumnInfo(1, "Description", "p_description_c", OdbcType.VarChar, 64, false),
-                    new TTypedColumnInfo(2, "AddressLayoutCode", "p_address_layout_code_c", OdbcType.VarChar, 32, true),
-                    new TTypedColumnInfo(3, "FormalityLevel", "p_formality_level_i", OdbcType.Int, -1, true),
-                    new TTypedColumnInfo(4, "BodyName", "p_body_name_c", OdbcType.VarChar, 40, false),
-                    new TTypedColumnInfo(5, "DateCreated", "s_date_created_d", OdbcType.Date, -1, false),
-                    new TTypedColumnInfo(6, "CreatedBy", "s_created_by_c", OdbcType.VarChar, 20, false),
-                    new TTypedColumnInfo(7, "DateModified", "s_date_modified_d", OdbcType.Date, -1, false),
-                    new TTypedColumnInfo(8, "ModifiedBy", "s_modified_by_c", OdbcType.VarChar, 20, false),
-                    new TTypedColumnInfo(9, "ModificationId", "s_modification_id_c", OdbcType.VarChar, 150, false)
+                    new TTypedColumnInfo(0, "DesignName", "p_design_name_c", "Design Name", OdbcType.VarChar, 40, true),
+                    new TTypedColumnInfo(1, "Description", "p_description_c", "Description", OdbcType.VarChar, 64, false),
+                    new TTypedColumnInfo(2, "AddressLayoutCode", "p_address_layout_code_c", "Address Layout Code", OdbcType.VarChar, 32, true),
+                    new TTypedColumnInfo(3, "FormalityLevel", "p_formality_level_i", "Formality Level", OdbcType.Int, -1, true),
+                    new TTypedColumnInfo(4, "BodyName", "p_body_name_c", "Body Name", OdbcType.VarChar, 40, false),
+                    new TTypedColumnInfo(5, "DateCreated", "s_date_created_d", "Created Date", OdbcType.Date, -1, false),
+                    new TTypedColumnInfo(6, "CreatedBy", "s_created_by_c", "Created By", OdbcType.VarChar, 20, false),
+                    new TTypedColumnInfo(7, "DateModified", "s_date_modified_d", "Modified Date", OdbcType.Date, -1, false),
+                    new TTypedColumnInfo(8, "ModifiedBy", "s_modified_by_c", "Modified By", OdbcType.VarChar, 20, false),
+                    new TTypedColumnInfo(9, "ModificationId", "s_modification_id_c", "", OdbcType.VarChar, 150, false)
                 },
                 new int[] {
                     0
@@ -9196,6 +9623,27 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data
                 base(info, context)
         {
         }
+
+        ///
+        public DataColumn ColumnDesignName;
+        /// The description of this form letter design.
+        public DataColumn ColumnDescription;
+        ///
+        public DataColumn ColumnAddressLayoutCode;
+        ///
+        public DataColumn ColumnFormalityLevel;
+        ///
+        public DataColumn ColumnBodyName;
+        /// The date the record was created.
+        public DataColumn ColumnDateCreated;
+        /// User ID of who created this record.
+        public DataColumn ColumnCreatedBy;
+        /// The date the record was modified.
+        public DataColumn ColumnDateModified;
+        /// User ID of who last modified this record.
+        public DataColumn ColumnModifiedBy;
+        /// This identifies the current version of the record.
+        public DataColumn ColumnModificationId;
 
         /// create the columns
         protected override void InitClass()
@@ -9263,6 +9711,18 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data
         public PFormLetterDesignTable GetChangesTyped()
         {
             return ((PFormLetterDesignTable)(base.GetChangesTypedInternal()));
+        }
+
+        /// return the CamelCase name of the table
+        public static string GetTableName()
+        {
+            return "PFormLetterDesign";
+        }
+
+        /// return the name of the table as it is used in the database
+        public static string GetTableDBName()
+        {
+            return "p_form_letter_design";
         }
 
         /// get an odbc parameter for the given column
@@ -9806,45 +10266,44 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data
     [Serializable()]
     public class PFormLetterInsertTable : TTypedDataTable
     {
-        /// Surrogate key
-        public DataColumn ColumnSequence;
-        /// This is the partner key assigned to each partner. It consists of the fund id followed by a computer generated six digit number.
-        public DataColumn ColumnPartnerKey;
-        /// Identifier for the extract
-        public DataColumn ColumnExtractId;
-        ///
-        public DataColumn ColumnBodyName;
-        /// This field should never be displaywed using the default format statement.
-        public DataColumn ColumnInsert;
-        /// The date the record was created.
-        public DataColumn ColumnDateCreated;
-        /// User ID of who created this record.
-        public DataColumn ColumnCreatedBy;
-        /// The date the record was modified.
-        public DataColumn ColumnDateModified;
-        /// User ID of who last modified this record.
-        public DataColumn ColumnModifiedBy;
-        /// This identifies the current version of the record.
-        public DataColumn ColumnModificationId;
-
         /// TableId for Ict.Common.Data generic functions
         public static short TableId = 89;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnSequenceId = 0;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnPartnerKeyId = 1;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnExtractIdId = 2;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnBodyNameId = 3;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnInsertId = 4;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnDateCreatedId = 5;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnCreatedById = 6;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnDateModifiedId = 7;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnModifiedById = 8;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnModificationIdId = 9;
 
         private static bool FInitInfoValues = InitInfoValues();
         private static bool InitInfoValues()
         {
             TableInfo.Add(TableId, new TTypedTableInfo(TableId, "PFormLetterInsert", "p_form_letter_insert",
                 new TTypedColumnInfo[] {
-                    new TTypedColumnInfo(0, "Sequence", "p_sequence_i", OdbcType.Int, -1, true),
-                    new TTypedColumnInfo(1, "PartnerKey", "p_partner_key_n", OdbcType.Decimal, 10, true),
-                    new TTypedColumnInfo(2, "ExtractId", "m_extract_id_i", OdbcType.Int, -1, true),
-                    new TTypedColumnInfo(3, "BodyName", "p_body_name_c", OdbcType.VarChar, 40, true),
-                    new TTypedColumnInfo(4, "Insert", "p_insert_c", OdbcType.VarChar, 512, false),
-                    new TTypedColumnInfo(5, "DateCreated", "s_date_created_d", OdbcType.Date, -1, false),
-                    new TTypedColumnInfo(6, "CreatedBy", "s_created_by_c", OdbcType.VarChar, 20, false),
-                    new TTypedColumnInfo(7, "DateModified", "s_date_modified_d", OdbcType.Date, -1, false),
-                    new TTypedColumnInfo(8, "ModifiedBy", "s_modified_by_c", OdbcType.VarChar, 20, false),
-                    new TTypedColumnInfo(9, "ModificationId", "s_modification_id_c", OdbcType.VarChar, 150, false)
+                    new TTypedColumnInfo(0, "Sequence", "p_sequence_i", "p_sequence_i", OdbcType.Int, -1, true),
+                    new TTypedColumnInfo(1, "PartnerKey", "p_partner_key_n", "Partner Key", OdbcType.Decimal, 10, true),
+                    new TTypedColumnInfo(2, "ExtractId", "m_extract_id_i", "Extract Id", OdbcType.Int, -1, true),
+                    new TTypedColumnInfo(3, "BodyName", "p_body_name_c", "Body Name", OdbcType.VarChar, 40, true),
+                    new TTypedColumnInfo(4, "Insert", "p_insert_c", "Inserts", OdbcType.VarChar, 512, false),
+                    new TTypedColumnInfo(5, "DateCreated", "s_date_created_d", "Created Date", OdbcType.Date, -1, false),
+                    new TTypedColumnInfo(6, "CreatedBy", "s_created_by_c", "Created By", OdbcType.VarChar, 20, false),
+                    new TTypedColumnInfo(7, "DateModified", "s_date_modified_d", "Modified Date", OdbcType.Date, -1, false),
+                    new TTypedColumnInfo(8, "ModifiedBy", "s_modified_by_c", "Modified By", OdbcType.VarChar, 20, false),
+                    new TTypedColumnInfo(9, "ModificationId", "s_modification_id_c", "", OdbcType.VarChar, 150, false)
                 },
                 new int[] {
                     0
@@ -9869,6 +10328,27 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data
                 base(info, context)
         {
         }
+
+        /// Surrogate key
+        public DataColumn ColumnSequence;
+        /// This is the partner key assigned to each partner. It consists of the fund id followed by a computer generated six digit number.
+        public DataColumn ColumnPartnerKey;
+        /// Identifier for the extract
+        public DataColumn ColumnExtractId;
+        ///
+        public DataColumn ColumnBodyName;
+        /// This field should never be displaywed using the default format statement.
+        public DataColumn ColumnInsert;
+        /// The date the record was created.
+        public DataColumn ColumnDateCreated;
+        /// User ID of who created this record.
+        public DataColumn ColumnCreatedBy;
+        /// The date the record was modified.
+        public DataColumn ColumnDateModified;
+        /// User ID of who last modified this record.
+        public DataColumn ColumnModifiedBy;
+        /// This identifies the current version of the record.
+        public DataColumn ColumnModificationId;
 
         /// create the columns
         protected override void InitClass()
@@ -9936,6 +10416,18 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data
         public PFormLetterInsertTable GetChangesTyped()
         {
             return ((PFormLetterInsertTable)(base.GetChangesTypedInternal()));
+        }
+
+        /// return the CamelCase name of the table
+        public static string GetTableName()
+        {
+            return "PFormLetterInsert";
+        }
+
+        /// return the name of the table as it is used in the database
+        public static string GetTableDBName()
+        {
+            return "p_form_letter_insert";
         }
 
         /// get an odbc parameter for the given column
@@ -10479,6 +10971,87 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data
     [Serializable()]
     public class PLabelTable : TTypedDataTable
     {
+        /// TableId for Ict.Common.Data generic functions
+        public static short TableId = 90;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnCodeId = 0;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnFormNameId = 1;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnGapLinesId = 2;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnHeightId = 3;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnWidthId = 4;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnGapColumnsId = 5;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnLabelsAcrossId = 6;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnLabelsDownId = 7;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnDescriptionId = 8;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnStartColumnId = 9;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnStartLineId = 10;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnDateCreatedId = 11;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnCreatedById = 12;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnDateModifiedId = 13;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnModifiedById = 14;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnModificationIdId = 15;
+
+        private static bool FInitInfoValues = InitInfoValues();
+        private static bool InitInfoValues()
+        {
+            TableInfo.Add(TableId, new TTypedTableInfo(TableId, "PLabel", "p_label",
+                new TTypedColumnInfo[] {
+                    new TTypedColumnInfo(0, "Code", "p_code_c", "Label Code", OdbcType.VarChar, 16, true),
+                    new TTypedColumnInfo(1, "FormName", "s_form_name_c", "Form Name", OdbcType.VarChar, 20, true),
+                    new TTypedColumnInfo(2, "GapLines", "p_gap_lines_i", "Lines between labels", OdbcType.Int, -1, false),
+                    new TTypedColumnInfo(3, "Height", "p_height_i", "Height in Lines", OdbcType.Int, -1, true),
+                    new TTypedColumnInfo(4, "Width", "p_width_i", "Width in Characters", OdbcType.Int, -1, true),
+                    new TTypedColumnInfo(5, "GapColumns", "p_gap_columns_i", "Columns between Labels", OdbcType.Int, -1, false),
+                    new TTypedColumnInfo(6, "LabelsAcross", "p_labels_across_i", "Number of labels across", OdbcType.Int, -1, true),
+                    new TTypedColumnInfo(7, "LabelsDown", "p_labels_down_i", "Number of labels down", OdbcType.Int, -1, true),
+                    new TTypedColumnInfo(8, "Description", "p_description_c", "Label Description", OdbcType.VarChar, 70, true),
+                    new TTypedColumnInfo(9, "StartColumn", "p_start_column_i", "Column to start printing in", OdbcType.Int, -1, false),
+                    new TTypedColumnInfo(10, "StartLine", "p_start_line_i", "Line to start printing on", OdbcType.Int, -1, false),
+                    new TTypedColumnInfo(11, "DateCreated", "s_date_created_d", "Created Date", OdbcType.Date, -1, false),
+                    new TTypedColumnInfo(12, "CreatedBy", "s_created_by_c", "Created By", OdbcType.VarChar, 20, false),
+                    new TTypedColumnInfo(13, "DateModified", "s_date_modified_d", "Modified Date", OdbcType.Date, -1, false),
+                    new TTypedColumnInfo(14, "ModifiedBy", "s_modified_by_c", "Modified By", OdbcType.VarChar, 20, false),
+                    new TTypedColumnInfo(15, "ModificationId", "s_modification_id_c", "", OdbcType.VarChar, 150, false)
+                },
+                new int[] {
+                    0
+                }));
+            return true;
+        }
+
+        /// constructor
+        public PLabelTable() :
+                base("PLabel")
+        {
+        }
+
+        /// constructor
+        public PLabelTable(string ATablename) :
+                base(ATablename)
+        {
+        }
+
+        /// constructor for serialization
+        public PLabelTable(System.Runtime.Serialization.SerializationInfo info, System.Runtime.Serialization.StreamingContext context) :
+                base(info, context)
+        {
+        }
+
         ///
         public DataColumn ColumnCode;
         /// This identifies the form
@@ -10511,55 +11084,6 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data
         public DataColumn ColumnModifiedBy;
         /// This identifies the current version of the record.
         public DataColumn ColumnModificationId;
-
-        /// TableId for Ict.Common.Data generic functions
-        public static short TableId = 90;
-
-        private static bool FInitInfoValues = InitInfoValues();
-        private static bool InitInfoValues()
-        {
-            TableInfo.Add(TableId, new TTypedTableInfo(TableId, "PLabel", "p_label",
-                new TTypedColumnInfo[] {
-                    new TTypedColumnInfo(0, "Code", "p_code_c", OdbcType.VarChar, 16, true),
-                    new TTypedColumnInfo(1, "FormName", "s_form_name_c", OdbcType.VarChar, 20, true),
-                    new TTypedColumnInfo(2, "GapLines", "p_gap_lines_i", OdbcType.Int, -1, false),
-                    new TTypedColumnInfo(3, "Height", "p_height_i", OdbcType.Int, -1, true),
-                    new TTypedColumnInfo(4, "Width", "p_width_i", OdbcType.Int, -1, true),
-                    new TTypedColumnInfo(5, "GapColumns", "p_gap_columns_i", OdbcType.Int, -1, false),
-                    new TTypedColumnInfo(6, "LabelsAcross", "p_labels_across_i", OdbcType.Int, -1, true),
-                    new TTypedColumnInfo(7, "LabelsDown", "p_labels_down_i", OdbcType.Int, -1, true),
-                    new TTypedColumnInfo(8, "Description", "p_description_c", OdbcType.VarChar, 70, true),
-                    new TTypedColumnInfo(9, "StartColumn", "p_start_column_i", OdbcType.Int, -1, false),
-                    new TTypedColumnInfo(10, "StartLine", "p_start_line_i", OdbcType.Int, -1, false),
-                    new TTypedColumnInfo(11, "DateCreated", "s_date_created_d", OdbcType.Date, -1, false),
-                    new TTypedColumnInfo(12, "CreatedBy", "s_created_by_c", OdbcType.VarChar, 20, false),
-                    new TTypedColumnInfo(13, "DateModified", "s_date_modified_d", OdbcType.Date, -1, false),
-                    new TTypedColumnInfo(14, "ModifiedBy", "s_modified_by_c", OdbcType.VarChar, 20, false),
-                    new TTypedColumnInfo(15, "ModificationId", "s_modification_id_c", OdbcType.VarChar, 150, false)
-                },
-                new int[] {
-                    0
-                }));
-            return true;
-        }
-
-        /// constructor
-        public PLabelTable() :
-                base("PLabel")
-        {
-        }
-
-        /// constructor
-        public PLabelTable(string ATablename) :
-                base(ATablename)
-        {
-        }
-
-        /// constructor for serialization
-        public PLabelTable(System.Runtime.Serialization.SerializationInfo info, System.Runtime.Serialization.StreamingContext context) :
-                base(info, context)
-        {
-        }
 
         /// create the columns
         protected override void InitClass()
@@ -10639,6 +11163,18 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data
         public PLabelTable GetChangesTyped()
         {
             return ((PLabelTable)(base.GetChangesTypedInternal()));
+        }
+
+        /// return the CamelCase name of the table
+        public static string GetTableName()
+        {
+            return "PLabel";
+        }
+
+        /// return the name of the table as it is used in the database
+        public static string GetTableDBName()
+        {
+            return "p_label";
         }
 
         /// get an odbc parameter for the given column
@@ -11488,36 +12024,35 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data
     [Serializable()]
     public class PMergeFormTable : TTypedDataTable
     {
-        /// Name of Merge Form
-        public DataColumn ColumnMergeFormName;
-        /// Form description
-        public DataColumn ColumnMergeFormDescription;
-        /// The date the record was created.
-        public DataColumn ColumnDateCreated;
-        /// User ID of who created this record.
-        public DataColumn ColumnCreatedBy;
-        /// The date the record was modified.
-        public DataColumn ColumnDateModified;
-        /// User ID of who last modified this record.
-        public DataColumn ColumnModifiedBy;
-        /// This identifies the current version of the record.
-        public DataColumn ColumnModificationId;
-
         /// TableId for Ict.Common.Data generic functions
         public static short TableId = 91;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnMergeFormNameId = 0;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnMergeFormDescriptionId = 1;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnDateCreatedId = 2;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnCreatedById = 3;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnDateModifiedId = 4;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnModifiedById = 5;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnModificationIdId = 6;
 
         private static bool FInitInfoValues = InitInfoValues();
         private static bool InitInfoValues()
         {
             TableInfo.Add(TableId, new TTypedTableInfo(TableId, "PMergeForm", "p_merge_form",
                 new TTypedColumnInfo[] {
-                    new TTypedColumnInfo(0, "MergeFormName", "p_merge_form_name_c", OdbcType.VarChar, 16, true),
-                    new TTypedColumnInfo(1, "MergeFormDescription", "p_merge_form_description_c", OdbcType.VarChar, 64, false),
-                    new TTypedColumnInfo(2, "DateCreated", "s_date_created_d", OdbcType.Date, -1, false),
-                    new TTypedColumnInfo(3, "CreatedBy", "s_created_by_c", OdbcType.VarChar, 20, false),
-                    new TTypedColumnInfo(4, "DateModified", "s_date_modified_d", OdbcType.Date, -1, false),
-                    new TTypedColumnInfo(5, "ModifiedBy", "s_modified_by_c", OdbcType.VarChar, 20, false),
-                    new TTypedColumnInfo(6, "ModificationId", "s_modification_id_c", OdbcType.VarChar, 150, false)
+                    new TTypedColumnInfo(0, "MergeFormName", "p_merge_form_name_c", "Merge Form", OdbcType.VarChar, 16, true),
+                    new TTypedColumnInfo(1, "MergeFormDescription", "p_merge_form_description_c", "Description", OdbcType.VarChar, 64, false),
+                    new TTypedColumnInfo(2, "DateCreated", "s_date_created_d", "Created Date", OdbcType.Date, -1, false),
+                    new TTypedColumnInfo(3, "CreatedBy", "s_created_by_c", "Created By", OdbcType.VarChar, 20, false),
+                    new TTypedColumnInfo(4, "DateModified", "s_date_modified_d", "Modified Date", OdbcType.Date, -1, false),
+                    new TTypedColumnInfo(5, "ModifiedBy", "s_modified_by_c", "Modified By", OdbcType.VarChar, 20, false),
+                    new TTypedColumnInfo(6, "ModificationId", "s_modification_id_c", "", OdbcType.VarChar, 150, false)
                 },
                 new int[] {
                     0
@@ -11542,6 +12077,21 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data
                 base(info, context)
         {
         }
+
+        /// Name of Merge Form
+        public DataColumn ColumnMergeFormName;
+        /// Form description
+        public DataColumn ColumnMergeFormDescription;
+        /// The date the record was created.
+        public DataColumn ColumnDateCreated;
+        /// User ID of who created this record.
+        public DataColumn ColumnCreatedBy;
+        /// The date the record was modified.
+        public DataColumn ColumnDateModified;
+        /// User ID of who last modified this record.
+        public DataColumn ColumnModifiedBy;
+        /// This identifies the current version of the record.
+        public DataColumn ColumnModificationId;
 
         /// create the columns
         protected override void InitClass()
@@ -11603,6 +12153,18 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data
         public PMergeFormTable GetChangesTyped()
         {
             return ((PMergeFormTable)(base.GetChangesTypedInternal()));
+        }
+
+        /// return the CamelCase name of the table
+        public static string GetTableName()
+        {
+            return "PMergeForm";
+        }
+
+        /// return the name of the table as it is used in the database
+        public static string GetTableDBName()
+        {
+            return "p_merge_form";
         }
 
         /// get an odbc parameter for the given column
@@ -11993,45 +12555,44 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data
     [Serializable()]
     public class PMergeFieldTable : TTypedDataTable
     {
-        /// Name of Merge Form
-        public DataColumn ColumnMergeFormName;
-        /// Name of the field in the Word document which will be filled with the data
-        public DataColumn ColumnMergeFieldName;
-        /// Position to define order of merge fields
-        public DataColumn ColumnMergeFieldPosition;
-        /// Type of this field.  This defines the parameters which are required to generate the insert
-        public DataColumn ColumnMergeType;
-        /// List of parameters required to create the actual insert
-        public DataColumn ColumnMergeParameters;
-        /// The date the record was created.
-        public DataColumn ColumnDateCreated;
-        /// User ID of who created this record.
-        public DataColumn ColumnCreatedBy;
-        /// The date the record was modified.
-        public DataColumn ColumnDateModified;
-        /// User ID of who last modified this record.
-        public DataColumn ColumnModifiedBy;
-        /// This identifies the current version of the record.
-        public DataColumn ColumnModificationId;
-
         /// TableId for Ict.Common.Data generic functions
         public static short TableId = 92;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnMergeFormNameId = 0;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnMergeFieldNameId = 1;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnMergeFieldPositionId = 2;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnMergeTypeId = 3;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnMergeParametersId = 4;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnDateCreatedId = 5;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnCreatedById = 6;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnDateModifiedId = 7;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnModifiedById = 8;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnModificationIdId = 9;
 
         private static bool FInitInfoValues = InitInfoValues();
         private static bool InitInfoValues()
         {
             TableInfo.Add(TableId, new TTypedTableInfo(TableId, "PMergeField", "p_merge_field",
                 new TTypedColumnInfo[] {
-                    new TTypedColumnInfo(0, "MergeFormName", "p_merge_form_name_c", OdbcType.VarChar, 16, true),
-                    new TTypedColumnInfo(1, "MergeFieldName", "p_merge_field_name_c", OdbcType.VarChar, 32, true),
-                    new TTypedColumnInfo(2, "MergeFieldPosition", "p_merge_field_position_i", OdbcType.Int, -1, false),
-                    new TTypedColumnInfo(3, "MergeType", "p_merge_type_c", OdbcType.VarChar, 32, false),
-                    new TTypedColumnInfo(4, "MergeParameters", "p_merge_parameters_c", OdbcType.VarChar, 512, false),
-                    new TTypedColumnInfo(5, "DateCreated", "s_date_created_d", OdbcType.Date, -1, false),
-                    new TTypedColumnInfo(6, "CreatedBy", "s_created_by_c", OdbcType.VarChar, 20, false),
-                    new TTypedColumnInfo(7, "DateModified", "s_date_modified_d", OdbcType.Date, -1, false),
-                    new TTypedColumnInfo(8, "ModifiedBy", "s_modified_by_c", OdbcType.VarChar, 20, false),
-                    new TTypedColumnInfo(9, "ModificationId", "s_modification_id_c", OdbcType.VarChar, 150, false)
+                    new TTypedColumnInfo(0, "MergeFormName", "p_merge_form_name_c", "Merge Form", OdbcType.VarChar, 16, true),
+                    new TTypedColumnInfo(1, "MergeFieldName", "p_merge_field_name_c", "Field Name", OdbcType.VarChar, 32, true),
+                    new TTypedColumnInfo(2, "MergeFieldPosition", "p_merge_field_position_i", "p_merge_field_position_i", OdbcType.Int, -1, false),
+                    new TTypedColumnInfo(3, "MergeType", "p_merge_type_c", "Merge Type", OdbcType.VarChar, 32, false),
+                    new TTypedColumnInfo(4, "MergeParameters", "p_merge_parameters_c", "Parameters", OdbcType.VarChar, 512, false),
+                    new TTypedColumnInfo(5, "DateCreated", "s_date_created_d", "Created Date", OdbcType.Date, -1, false),
+                    new TTypedColumnInfo(6, "CreatedBy", "s_created_by_c", "Created By", OdbcType.VarChar, 20, false),
+                    new TTypedColumnInfo(7, "DateModified", "s_date_modified_d", "Modified Date", OdbcType.Date, -1, false),
+                    new TTypedColumnInfo(8, "ModifiedBy", "s_modified_by_c", "Modified By", OdbcType.VarChar, 20, false),
+                    new TTypedColumnInfo(9, "ModificationId", "s_modification_id_c", "", OdbcType.VarChar, 150, false)
                 },
                 new int[] {
                     0, 1
@@ -12056,6 +12617,27 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data
                 base(info, context)
         {
         }
+
+        /// Name of Merge Form
+        public DataColumn ColumnMergeFormName;
+        /// Name of the field in the Word document which will be filled with the data
+        public DataColumn ColumnMergeFieldName;
+        /// Position to define order of merge fields
+        public DataColumn ColumnMergeFieldPosition;
+        /// Type of this field.  This defines the parameters which are required to generate the insert
+        public DataColumn ColumnMergeType;
+        /// List of parameters required to create the actual insert
+        public DataColumn ColumnMergeParameters;
+        /// The date the record was created.
+        public DataColumn ColumnDateCreated;
+        /// User ID of who created this record.
+        public DataColumn ColumnCreatedBy;
+        /// The date the record was modified.
+        public DataColumn ColumnDateModified;
+        /// User ID of who last modified this record.
+        public DataColumn ColumnModifiedBy;
+        /// This identifies the current version of the record.
+        public DataColumn ColumnModificationId;
 
         /// create the columns
         protected override void InitClass()
@@ -12123,6 +12705,18 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data
         public PMergeFieldTable GetChangesTyped()
         {
             return ((PMergeFieldTable)(base.GetChangesTypedInternal()));
+        }
+
+        /// return the CamelCase name of the table
+        public static string GetTableName()
+        {
+            return "PMergeField";
+        }
+
+        /// return the name of the table as it is used in the database
+        public static string GetTableDBName()
+        {
+            return "p_merge_field";
         }
 
         /// get an odbc parameter for the given column
@@ -12666,39 +13260,38 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data
     [Serializable()]
     public class PPostcodeRangeTable : TTypedDataTable
     {
-        /// Name of the postcode range
-        public DataColumn ColumnRange;
-        /// Start of postcode range
-        public DataColumn ColumnFrom;
-        /// End of postcode range
-        public DataColumn ColumnTo;
-        /// The date the record was created.
-        public DataColumn ColumnDateCreated;
-        /// User ID of who created this record.
-        public DataColumn ColumnCreatedBy;
-        /// The date the record was modified.
-        public DataColumn ColumnDateModified;
-        /// User ID of who last modified this record.
-        public DataColumn ColumnModifiedBy;
-        /// This identifies the current version of the record.
-        public DataColumn ColumnModificationId;
-
         /// TableId for Ict.Common.Data generic functions
         public static short TableId = 93;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnRangeId = 0;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnFromId = 1;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnToId = 2;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnDateCreatedId = 3;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnCreatedById = 4;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnDateModifiedId = 5;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnModifiedById = 6;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnModificationIdId = 7;
 
         private static bool FInitInfoValues = InitInfoValues();
         private static bool InitInfoValues()
         {
             TableInfo.Add(TableId, new TTypedTableInfo(TableId, "PPostcodeRange", "p_postcode_range",
                 new TTypedColumnInfo[] {
-                    new TTypedColumnInfo(0, "Range", "p_range_c", OdbcType.VarChar, 64, true),
-                    new TTypedColumnInfo(1, "From", "p_from_c", OdbcType.VarChar, 40, false),
-                    new TTypedColumnInfo(2, "To", "p_to_c", OdbcType.VarChar, 40, false),
-                    new TTypedColumnInfo(3, "DateCreated", "s_date_created_d", OdbcType.Date, -1, false),
-                    new TTypedColumnInfo(4, "CreatedBy", "s_created_by_c", OdbcType.VarChar, 20, false),
-                    new TTypedColumnInfo(5, "DateModified", "s_date_modified_d", OdbcType.Date, -1, false),
-                    new TTypedColumnInfo(6, "ModifiedBy", "s_modified_by_c", OdbcType.VarChar, 20, false),
-                    new TTypedColumnInfo(7, "ModificationId", "s_modification_id_c", OdbcType.VarChar, 150, false)
+                    new TTypedColumnInfo(0, "Range", "p_range_c", "Range Name", OdbcType.VarChar, 64, true),
+                    new TTypedColumnInfo(1, "From", "p_from_c", "From", OdbcType.VarChar, 40, false),
+                    new TTypedColumnInfo(2, "To", "p_to_c", "To", OdbcType.VarChar, 40, false),
+                    new TTypedColumnInfo(3, "DateCreated", "s_date_created_d", "Created Date", OdbcType.Date, -1, false),
+                    new TTypedColumnInfo(4, "CreatedBy", "s_created_by_c", "Created By", OdbcType.VarChar, 20, false),
+                    new TTypedColumnInfo(5, "DateModified", "s_date_modified_d", "Modified Date", OdbcType.Date, -1, false),
+                    new TTypedColumnInfo(6, "ModifiedBy", "s_modified_by_c", "Modified By", OdbcType.VarChar, 20, false),
+                    new TTypedColumnInfo(7, "ModificationId", "s_modification_id_c", "", OdbcType.VarChar, 150, false)
                 },
                 new int[] {
                     0
@@ -12723,6 +13316,23 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data
                 base(info, context)
         {
         }
+
+        /// Name of the postcode range
+        public DataColumn ColumnRange;
+        /// Start of postcode range
+        public DataColumn ColumnFrom;
+        /// End of postcode range
+        public DataColumn ColumnTo;
+        /// The date the record was created.
+        public DataColumn ColumnDateCreated;
+        /// User ID of who created this record.
+        public DataColumn ColumnCreatedBy;
+        /// The date the record was modified.
+        public DataColumn ColumnDateModified;
+        /// User ID of who last modified this record.
+        public DataColumn ColumnModifiedBy;
+        /// This identifies the current version of the record.
+        public DataColumn ColumnModificationId;
 
         /// create the columns
         protected override void InitClass()
@@ -12786,6 +13396,18 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data
         public PPostcodeRangeTable GetChangesTyped()
         {
             return ((PPostcodeRangeTable)(base.GetChangesTypedInternal()));
+        }
+
+        /// return the CamelCase name of the table
+        public static string GetTableName()
+        {
+            return "PPostcodeRange";
+        }
+
+        /// return the name of the table as it is used in the database
+        public static string GetTableDBName()
+        {
+            return "p_postcode_range";
         }
 
         /// get an odbc parameter for the given column
@@ -13227,36 +13849,35 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data
     [Serializable()]
     public class PPostcodeRegionTable : TTypedDataTable
     {
-        /// Name of a postcode region
-        public DataColumn ColumnRegion;
-        /// A range for a postcode region
-        public DataColumn ColumnRange;
-        /// The date the record was created.
-        public DataColumn ColumnDateCreated;
-        /// User ID of who created this record.
-        public DataColumn ColumnCreatedBy;
-        /// The date the record was modified.
-        public DataColumn ColumnDateModified;
-        /// User ID of who last modified this record.
-        public DataColumn ColumnModifiedBy;
-        /// This identifies the current version of the record.
-        public DataColumn ColumnModificationId;
-
         /// TableId for Ict.Common.Data generic functions
         public static short TableId = 94;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnRegionId = 0;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnRangeId = 1;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnDateCreatedId = 2;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnCreatedById = 3;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnDateModifiedId = 4;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnModifiedById = 5;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnModificationIdId = 6;
 
         private static bool FInitInfoValues = InitInfoValues();
         private static bool InitInfoValues()
         {
             TableInfo.Add(TableId, new TTypedTableInfo(TableId, "PPostcodeRegion", "p_postcode_region",
                 new TTypedColumnInfo[] {
-                    new TTypedColumnInfo(0, "Region", "p_region_c", OdbcType.VarChar, 64, true),
-                    new TTypedColumnInfo(1, "Range", "p_range_c", OdbcType.VarChar, 64, true),
-                    new TTypedColumnInfo(2, "DateCreated", "s_date_created_d", OdbcType.Date, -1, false),
-                    new TTypedColumnInfo(3, "CreatedBy", "s_created_by_c", OdbcType.VarChar, 20, false),
-                    new TTypedColumnInfo(4, "DateModified", "s_date_modified_d", OdbcType.Date, -1, false),
-                    new TTypedColumnInfo(5, "ModifiedBy", "s_modified_by_c", OdbcType.VarChar, 20, false),
-                    new TTypedColumnInfo(6, "ModificationId", "s_modification_id_c", OdbcType.VarChar, 150, false)
+                    new TTypedColumnInfo(0, "Region", "p_region_c", "Region Name", OdbcType.VarChar, 64, true),
+                    new TTypedColumnInfo(1, "Range", "p_range_c", "Range Name", OdbcType.VarChar, 64, true),
+                    new TTypedColumnInfo(2, "DateCreated", "s_date_created_d", "Created Date", OdbcType.Date, -1, false),
+                    new TTypedColumnInfo(3, "CreatedBy", "s_created_by_c", "Created By", OdbcType.VarChar, 20, false),
+                    new TTypedColumnInfo(4, "DateModified", "s_date_modified_d", "Modified Date", OdbcType.Date, -1, false),
+                    new TTypedColumnInfo(5, "ModifiedBy", "s_modified_by_c", "Modified By", OdbcType.VarChar, 20, false),
+                    new TTypedColumnInfo(6, "ModificationId", "s_modification_id_c", "", OdbcType.VarChar, 150, false)
                 },
                 new int[] {
                     0, 1
@@ -13281,6 +13902,21 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data
                 base(info, context)
         {
         }
+
+        /// Name of a postcode region
+        public DataColumn ColumnRegion;
+        /// A range for a postcode region
+        public DataColumn ColumnRange;
+        /// The date the record was created.
+        public DataColumn ColumnDateCreated;
+        /// User ID of who created this record.
+        public DataColumn ColumnCreatedBy;
+        /// The date the record was modified.
+        public DataColumn ColumnDateModified;
+        /// User ID of who last modified this record.
+        public DataColumn ColumnModifiedBy;
+        /// This identifies the current version of the record.
+        public DataColumn ColumnModificationId;
 
         /// create the columns
         protected override void InitClass()
@@ -13342,6 +13978,18 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data
         public PPostcodeRegionTable GetChangesTyped()
         {
             return ((PPostcodeRegionTable)(base.GetChangesTypedInternal()));
+        }
+
+        /// return the CamelCase name of the table
+        public static string GetTableName()
+        {
+            return "PPostcodeRegion";
+        }
+
+        /// return the name of the table as it is used in the database
+        public static string GetTableDBName()
+        {
+            return "p_postcode_region";
         }
 
         /// get an odbc parameter for the given column
@@ -13732,6 +14380,78 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data
     [Serializable()]
     public class PPublicationTable : TTypedDataTable
     {
+        /// TableId for Ict.Common.Data generic functions
+        public static short TableId = 95;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnPublicationCodeId = 0;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnNumberOfIssuesId = 1;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnNumberOfRemindersId = 2;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnPublicationDescriptionId = 3;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnValidPublicationId = 4;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnFrequencyCodeId = 5;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnPublicationLabelCodeId = 6;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnPublicationLanguageId = 7;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnDateCreatedId = 8;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnCreatedById = 9;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnDateModifiedId = 10;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnModifiedById = 11;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnModificationIdId = 12;
+
+        private static bool FInitInfoValues = InitInfoValues();
+        private static bool InitInfoValues()
+        {
+            TableInfo.Add(TableId, new TTypedTableInfo(TableId, "PPublication", "p_publication",
+                new TTypedColumnInfo[] {
+                    new TTypedColumnInfo(0, "PublicationCode", "p_publication_code_c", "Publication Code", OdbcType.VarChar, 20, true),
+                    new TTypedColumnInfo(1, "NumberOfIssues", "p_number_of_issues_i", "Number of Issues", OdbcType.Int, -1, false),
+                    new TTypedColumnInfo(2, "NumberOfReminders", "p_number_of_reminders_i", "Reminders", OdbcType.Int, -1, false),
+                    new TTypedColumnInfo(3, "PublicationDescription", "p_publication_description_c", "Description", OdbcType.VarChar, 80, false),
+                    new TTypedColumnInfo(4, "ValidPublication", "p_valid_publication_l", "Valid Publication", OdbcType.Bit, -1, false),
+                    new TTypedColumnInfo(5, "FrequencyCode", "a_frequency_code_c", "Frequency", OdbcType.VarChar, 24, true),
+                    new TTypedColumnInfo(6, "PublicationLabelCode", "p_publication_label_code_c", "Publication Label Code", OdbcType.VarChar, 6, false),
+                    new TTypedColumnInfo(7, "PublicationLanguage", "p_publication_language_c", "Language", OdbcType.VarChar, 20, false),
+                    new TTypedColumnInfo(8, "DateCreated", "s_date_created_d", "Created Date", OdbcType.Date, -1, false),
+                    new TTypedColumnInfo(9, "CreatedBy", "s_created_by_c", "Created By", OdbcType.VarChar, 20, false),
+                    new TTypedColumnInfo(10, "DateModified", "s_date_modified_d", "Modified Date", OdbcType.Date, -1, false),
+                    new TTypedColumnInfo(11, "ModifiedBy", "s_modified_by_c", "Modified By", OdbcType.VarChar, 20, false),
+                    new TTypedColumnInfo(12, "ModificationId", "s_modification_id_c", "", OdbcType.VarChar, 150, false)
+                },
+                new int[] {
+                    0
+                }));
+            return true;
+        }
+
+        /// constructor
+        public PPublicationTable() :
+                base("PPublication")
+        {
+        }
+
+        /// constructor
+        public PPublicationTable(string ATablename) :
+                base(ATablename)
+        {
+        }
+
+        /// constructor for serialization
+        public PPublicationTable(System.Runtime.Serialization.SerializationInfo info, System.Runtime.Serialization.StreamingContext context) :
+                base(info, context)
+        {
+        }
+
         /// This is the key to the publication table
         public DataColumn ColumnPublicationCode;
         ///
@@ -13758,52 +14478,6 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data
         public DataColumn ColumnModifiedBy;
         /// This identifies the current version of the record.
         public DataColumn ColumnModificationId;
-
-        /// TableId for Ict.Common.Data generic functions
-        public static short TableId = 95;
-
-        private static bool FInitInfoValues = InitInfoValues();
-        private static bool InitInfoValues()
-        {
-            TableInfo.Add(TableId, new TTypedTableInfo(TableId, "PPublication", "p_publication",
-                new TTypedColumnInfo[] {
-                    new TTypedColumnInfo(0, "PublicationCode", "p_publication_code_c", OdbcType.VarChar, 20, true),
-                    new TTypedColumnInfo(1, "NumberOfIssues", "p_number_of_issues_i", OdbcType.Int, -1, false),
-                    new TTypedColumnInfo(2, "NumberOfReminders", "p_number_of_reminders_i", OdbcType.Int, -1, false),
-                    new TTypedColumnInfo(3, "PublicationDescription", "p_publication_description_c", OdbcType.VarChar, 80, false),
-                    new TTypedColumnInfo(4, "ValidPublication", "p_valid_publication_l", OdbcType.Bit, -1, false),
-                    new TTypedColumnInfo(5, "FrequencyCode", "a_frequency_code_c", OdbcType.VarChar, 24, true),
-                    new TTypedColumnInfo(6, "PublicationLabelCode", "p_publication_label_code_c", OdbcType.VarChar, 6, false),
-                    new TTypedColumnInfo(7, "PublicationLanguage", "p_publication_language_c", OdbcType.VarChar, 20, false),
-                    new TTypedColumnInfo(8, "DateCreated", "s_date_created_d", OdbcType.Date, -1, false),
-                    new TTypedColumnInfo(9, "CreatedBy", "s_created_by_c", OdbcType.VarChar, 20, false),
-                    new TTypedColumnInfo(10, "DateModified", "s_date_modified_d", OdbcType.Date, -1, false),
-                    new TTypedColumnInfo(11, "ModifiedBy", "s_modified_by_c", OdbcType.VarChar, 20, false),
-                    new TTypedColumnInfo(12, "ModificationId", "s_modification_id_c", OdbcType.VarChar, 150, false)
-                },
-                new int[] {
-                    0
-                }));
-            return true;
-        }
-
-        /// constructor
-        public PPublicationTable() :
-                base("PPublication")
-        {
-        }
-
-        /// constructor
-        public PPublicationTable(string ATablename) :
-                base(ATablename)
-        {
-        }
-
-        /// constructor for serialization
-        public PPublicationTable(System.Runtime.Serialization.SerializationInfo info, System.Runtime.Serialization.StreamingContext context) :
-                base(info, context)
-        {
-        }
 
         /// create the columns
         protected override void InitClass()
@@ -13877,6 +14551,18 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data
         public PPublicationTable GetChangesTyped()
         {
             return ((PPublicationTable)(base.GetChangesTypedInternal()));
+        }
+
+        /// return the CamelCase name of the table
+        public static string GetTableName()
+        {
+            return "PPublication";
+        }
+
+        /// return the name of the table as it is used in the database
+        public static string GetTableDBName()
+        {
+            return "p_publication";
         }
 
         /// get an odbc parameter for the given column
@@ -14573,45 +15259,44 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data
     [Serializable()]
     public class PPublicationCostTable : TTypedDataTable
     {
-        /// The is the key to the publication table
-        public DataColumn ColumnPublicationCode;
-        ///
-        public DataColumn ColumnDateEffective;
-        /// This is a number of currency units
-        public DataColumn ColumnPublicationCost;
-        /// The cost of posting each item
-        public DataColumn ColumnPostageCost;
-        /// This defines which currency is being used
-        public DataColumn ColumnCurrencyCode;
-        /// The date the record was created.
-        public DataColumn ColumnDateCreated;
-        /// User ID of who created this record.
-        public DataColumn ColumnCreatedBy;
-        /// The date the record was modified.
-        public DataColumn ColumnDateModified;
-        /// User ID of who last modified this record.
-        public DataColumn ColumnModifiedBy;
-        /// This identifies the current version of the record.
-        public DataColumn ColumnModificationId;
-
         /// TableId for Ict.Common.Data generic functions
         public static short TableId = 96;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnPublicationCodeId = 0;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnDateEffectiveId = 1;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnPublicationCostId = 2;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnPostageCostId = 3;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnCurrencyCodeId = 4;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnDateCreatedId = 5;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnCreatedById = 6;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnDateModifiedId = 7;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnModifiedById = 8;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnModificationIdId = 9;
 
         private static bool FInitInfoValues = InitInfoValues();
         private static bool InitInfoValues()
         {
             TableInfo.Add(TableId, new TTypedTableInfo(TableId, "PPublicationCost", "p_publication_cost",
                 new TTypedColumnInfo[] {
-                    new TTypedColumnInfo(0, "PublicationCode", "p_publication_code_c", OdbcType.VarChar, 20, true),
-                    new TTypedColumnInfo(1, "DateEffective", "p_date_effective_d", OdbcType.Date, -1, true),
-                    new TTypedColumnInfo(2, "PublicationCost", "p_publication_cost_n", OdbcType.Decimal, 24, true),
-                    new TTypedColumnInfo(3, "PostageCost", "p_postage_cost_n", OdbcType.Decimal, 24, false),
-                    new TTypedColumnInfo(4, "CurrencyCode", "p_currency_code_c", OdbcType.VarChar, 16, true),
-                    new TTypedColumnInfo(5, "DateCreated", "s_date_created_d", OdbcType.Date, -1, false),
-                    new TTypedColumnInfo(6, "CreatedBy", "s_created_by_c", OdbcType.VarChar, 20, false),
-                    new TTypedColumnInfo(7, "DateModified", "s_date_modified_d", OdbcType.Date, -1, false),
-                    new TTypedColumnInfo(8, "ModifiedBy", "s_modified_by_c", OdbcType.VarChar, 20, false),
-                    new TTypedColumnInfo(9, "ModificationId", "s_modification_id_c", OdbcType.VarChar, 150, false)
+                    new TTypedColumnInfo(0, "PublicationCode", "p_publication_code_c", "Publication Code", OdbcType.VarChar, 20, true),
+                    new TTypedColumnInfo(1, "DateEffective", "p_date_effective_d", "Date Effective", OdbcType.Date, -1, true),
+                    new TTypedColumnInfo(2, "PublicationCost", "p_publication_cost_n", "Publication Cost", OdbcType.Decimal, 24, true),
+                    new TTypedColumnInfo(3, "PostageCost", "p_postage_cost_n", "Postage", OdbcType.Decimal, 24, false),
+                    new TTypedColumnInfo(4, "CurrencyCode", "p_currency_code_c", "Currency Code", OdbcType.VarChar, 16, true),
+                    new TTypedColumnInfo(5, "DateCreated", "s_date_created_d", "Created Date", OdbcType.Date, -1, false),
+                    new TTypedColumnInfo(6, "CreatedBy", "s_created_by_c", "Created By", OdbcType.VarChar, 20, false),
+                    new TTypedColumnInfo(7, "DateModified", "s_date_modified_d", "Modified Date", OdbcType.Date, -1, false),
+                    new TTypedColumnInfo(8, "ModifiedBy", "s_modified_by_c", "Modified By", OdbcType.VarChar, 20, false),
+                    new TTypedColumnInfo(9, "ModificationId", "s_modification_id_c", "", OdbcType.VarChar, 150, false)
                 },
                 new int[] {
                     0, 1
@@ -14636,6 +15321,27 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data
                 base(info, context)
         {
         }
+
+        /// The is the key to the publication table
+        public DataColumn ColumnPublicationCode;
+        ///
+        public DataColumn ColumnDateEffective;
+        /// This is a number of currency units
+        public DataColumn ColumnPublicationCost;
+        /// The cost of posting each item
+        public DataColumn ColumnPostageCost;
+        /// This defines which currency is being used
+        public DataColumn ColumnCurrencyCode;
+        /// The date the record was created.
+        public DataColumn ColumnDateCreated;
+        /// User ID of who created this record.
+        public DataColumn ColumnCreatedBy;
+        /// The date the record was modified.
+        public DataColumn ColumnDateModified;
+        /// User ID of who last modified this record.
+        public DataColumn ColumnModifiedBy;
+        /// This identifies the current version of the record.
+        public DataColumn ColumnModificationId;
 
         /// create the columns
         protected override void InitClass()
@@ -14703,6 +15409,18 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data
         public PPublicationCostTable GetChangesTyped()
         {
             return ((PPublicationCostTable)(base.GetChangesTypedInternal()));
+        }
+
+        /// return the CamelCase name of the table
+        public static string GetTableName()
+        {
+            return "PPublicationCost";
+        }
+
+        /// return the name of the table as it is used in the database
+        public static string GetTableDBName()
+        {
+            return "p_publication_cost";
         }
 
         /// get an odbc parameter for the given column
@@ -15246,36 +15964,35 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data
     [Serializable()]
     public class PReasonSubscriptionGivenTable : TTypedDataTable
     {
-        ///
-        public DataColumn ColumnCode;
-        ///
-        public DataColumn ColumnDescription;
-        /// The date the record was created.
-        public DataColumn ColumnDateCreated;
-        /// User ID of who created this record.
-        public DataColumn ColumnCreatedBy;
-        /// The date the record was modified.
-        public DataColumn ColumnDateModified;
-        /// User ID of who last modified this record.
-        public DataColumn ColumnModifiedBy;
-        /// This identifies the current version of the record.
-        public DataColumn ColumnModificationId;
-
         /// TableId for Ict.Common.Data generic functions
         public static short TableId = 97;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnCodeId = 0;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnDescriptionId = 1;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnDateCreatedId = 2;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnCreatedById = 3;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnDateModifiedId = 4;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnModifiedById = 5;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnModificationIdId = 6;
 
         private static bool FInitInfoValues = InitInfoValues();
         private static bool InitInfoValues()
         {
             TableInfo.Add(TableId, new TTypedTableInfo(TableId, "PReasonSubscriptionGiven", "p_reason_subscription_given",
                 new TTypedColumnInfo[] {
-                    new TTypedColumnInfo(0, "Code", "p_code_c", OdbcType.VarChar, 24, true),
-                    new TTypedColumnInfo(1, "Description", "p_description_c", OdbcType.VarChar, 160, true),
-                    new TTypedColumnInfo(2, "DateCreated", "s_date_created_d", OdbcType.Date, -1, false),
-                    new TTypedColumnInfo(3, "CreatedBy", "s_created_by_c", OdbcType.VarChar, 20, false),
-                    new TTypedColumnInfo(4, "DateModified", "s_date_modified_d", OdbcType.Date, -1, false),
-                    new TTypedColumnInfo(5, "ModifiedBy", "s_modified_by_c", OdbcType.VarChar, 20, false),
-                    new TTypedColumnInfo(6, "ModificationId", "s_modification_id_c", OdbcType.VarChar, 150, false)
+                    new TTypedColumnInfo(0, "Code", "p_code_c", "Reason Given Code", OdbcType.VarChar, 24, true),
+                    new TTypedColumnInfo(1, "Description", "p_description_c", "Description", OdbcType.VarChar, 160, true),
+                    new TTypedColumnInfo(2, "DateCreated", "s_date_created_d", "Created Date", OdbcType.Date, -1, false),
+                    new TTypedColumnInfo(3, "CreatedBy", "s_created_by_c", "Created By", OdbcType.VarChar, 20, false),
+                    new TTypedColumnInfo(4, "DateModified", "s_date_modified_d", "Modified Date", OdbcType.Date, -1, false),
+                    new TTypedColumnInfo(5, "ModifiedBy", "s_modified_by_c", "Modified By", OdbcType.VarChar, 20, false),
+                    new TTypedColumnInfo(6, "ModificationId", "s_modification_id_c", "", OdbcType.VarChar, 150, false)
                 },
                 new int[] {
                     0
@@ -15300,6 +16017,21 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data
                 base(info, context)
         {
         }
+
+        ///
+        public DataColumn ColumnCode;
+        ///
+        public DataColumn ColumnDescription;
+        /// The date the record was created.
+        public DataColumn ColumnDateCreated;
+        /// User ID of who created this record.
+        public DataColumn ColumnCreatedBy;
+        /// The date the record was modified.
+        public DataColumn ColumnDateModified;
+        /// User ID of who last modified this record.
+        public DataColumn ColumnModifiedBy;
+        /// This identifies the current version of the record.
+        public DataColumn ColumnModificationId;
 
         /// create the columns
         protected override void InitClass()
@@ -15361,6 +16093,18 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data
         public PReasonSubscriptionGivenTable GetChangesTyped()
         {
             return ((PReasonSubscriptionGivenTable)(base.GetChangesTypedInternal()));
+        }
+
+        /// return the CamelCase name of the table
+        public static string GetTableName()
+        {
+            return "PReasonSubscriptionGiven";
+        }
+
+        /// return the name of the table as it is used in the database
+        public static string GetTableDBName()
+        {
+            return "p_reason_subscription_given";
         }
 
         /// get an odbc parameter for the given column
@@ -15751,36 +16495,35 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data
     [Serializable()]
     public class PReasonSubscriptionCancelledTable : TTypedDataTable
     {
-        ///
-        public DataColumn ColumnCode;
-        ///
-        public DataColumn ColumnDescription;
-        /// The date the record was created.
-        public DataColumn ColumnDateCreated;
-        /// User ID of who created this record.
-        public DataColumn ColumnCreatedBy;
-        /// The date the record was modified.
-        public DataColumn ColumnDateModified;
-        /// User ID of who last modified this record.
-        public DataColumn ColumnModifiedBy;
-        /// This identifies the current version of the record.
-        public DataColumn ColumnModificationId;
-
         /// TableId for Ict.Common.Data generic functions
         public static short TableId = 98;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnCodeId = 0;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnDescriptionId = 1;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnDateCreatedId = 2;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnCreatedById = 3;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnDateModifiedId = 4;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnModifiedById = 5;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnModificationIdId = 6;
 
         private static bool FInitInfoValues = InitInfoValues();
         private static bool InitInfoValues()
         {
             TableInfo.Add(TableId, new TTypedTableInfo(TableId, "PReasonSubscriptionCancelled", "p_reason_subscription_cancelled",
                 new TTypedColumnInfo[] {
-                    new TTypedColumnInfo(0, "Code", "p_code_c", OdbcType.VarChar, 24, true),
-                    new TTypedColumnInfo(1, "Description", "p_description_c", OdbcType.VarChar, 160, true),
-                    new TTypedColumnInfo(2, "DateCreated", "s_date_created_d", OdbcType.Date, -1, false),
-                    new TTypedColumnInfo(3, "CreatedBy", "s_created_by_c", OdbcType.VarChar, 20, false),
-                    new TTypedColumnInfo(4, "DateModified", "s_date_modified_d", OdbcType.Date, -1, false),
-                    new TTypedColumnInfo(5, "ModifiedBy", "s_modified_by_c", OdbcType.VarChar, 20, false),
-                    new TTypedColumnInfo(6, "ModificationId", "s_modification_id_c", OdbcType.VarChar, 150, false)
+                    new TTypedColumnInfo(0, "Code", "p_code_c", "Reason Cancelled Code", OdbcType.VarChar, 24, true),
+                    new TTypedColumnInfo(1, "Description", "p_description_c", "Reason", OdbcType.VarChar, 160, true),
+                    new TTypedColumnInfo(2, "DateCreated", "s_date_created_d", "Created Date", OdbcType.Date, -1, false),
+                    new TTypedColumnInfo(3, "CreatedBy", "s_created_by_c", "Created By", OdbcType.VarChar, 20, false),
+                    new TTypedColumnInfo(4, "DateModified", "s_date_modified_d", "Modified Date", OdbcType.Date, -1, false),
+                    new TTypedColumnInfo(5, "ModifiedBy", "s_modified_by_c", "Modified By", OdbcType.VarChar, 20, false),
+                    new TTypedColumnInfo(6, "ModificationId", "s_modification_id_c", "", OdbcType.VarChar, 150, false)
                 },
                 new int[] {
                     0
@@ -15805,6 +16548,21 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data
                 base(info, context)
         {
         }
+
+        ///
+        public DataColumn ColumnCode;
+        ///
+        public DataColumn ColumnDescription;
+        /// The date the record was created.
+        public DataColumn ColumnDateCreated;
+        /// User ID of who created this record.
+        public DataColumn ColumnCreatedBy;
+        /// The date the record was modified.
+        public DataColumn ColumnDateModified;
+        /// User ID of who last modified this record.
+        public DataColumn ColumnModifiedBy;
+        /// This identifies the current version of the record.
+        public DataColumn ColumnModificationId;
 
         /// create the columns
         protected override void InitClass()
@@ -15866,6 +16624,18 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data
         public PReasonSubscriptionCancelledTable GetChangesTyped()
         {
             return ((PReasonSubscriptionCancelledTable)(base.GetChangesTypedInternal()));
+        }
+
+        /// return the CamelCase name of the table
+        public static string GetTableName()
+        {
+            return "PReasonSubscriptionCancelled";
+        }
+
+        /// return the name of the table as it is used in the database
+        public static string GetTableDBName()
+        {
+            return "p_reason_subscription_cancelled";
         }
 
         /// get an odbc parameter for the given column
@@ -16256,6 +17026,108 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data
     [Serializable()]
     public class PSubscriptionTable : TTypedDataTable
     {
+        /// TableId for Ict.Common.Data generic functions
+        public static short TableId = 99;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnPublicationCodeId = 0;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnPartnerKeyId = 1;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnPublicationCopiesId = 2;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnReasonSubsGivenCodeId = 3;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnReasonSubsCancelledCodeId = 4;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnExpiryDateId = 5;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnProvisionalExpiryDateId = 6;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnGratisSubscriptionId = 7;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnDateNoticeSentId = 8;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnDateCancelledId = 9;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnStartDateId = 10;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnNumberIssuesReceivedId = 11;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnNumberComplimentaryId = 12;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnSubscriptionRenewalDateId = 13;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnSubscriptionStatusId = 14;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnFirstIssueId = 15;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnLastIssueId = 16;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnGiftFromKeyId = 17;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnDateCreatedId = 18;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnCreatedById = 19;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnDateModifiedId = 20;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnModifiedById = 21;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnModificationIdId = 22;
+
+        private static bool FInitInfoValues = InitInfoValues();
+        private static bool InitInfoValues()
+        {
+            TableInfo.Add(TableId, new TTypedTableInfo(TableId, "PSubscription", "p_subscription",
+                new TTypedColumnInfo[] {
+                    new TTypedColumnInfo(0, "PublicationCode", "p_publication_code_c", "Publication Code", OdbcType.VarChar, 20, true),
+                    new TTypedColumnInfo(1, "PartnerKey", "p_partner_key_n", "Partner Key", OdbcType.Decimal, 10, true),
+                    new TTypedColumnInfo(2, "PublicationCopies", "p_publication_copies_i", "Copies", OdbcType.Int, -1, false),
+                    new TTypedColumnInfo(3, "ReasonSubsGivenCode", "p_reason_subs_given_code_c", "Reason Given", OdbcType.VarChar, 24, true),
+                    new TTypedColumnInfo(4, "ReasonSubsCancelledCode", "p_reason_subs_cancelled_code_c", "Reason Cancelled", OdbcType.VarChar, 24, false),
+                    new TTypedColumnInfo(5, "ExpiryDate", "p_expiry_date_d", "Expiry Date", OdbcType.Date, -1, false),
+                    new TTypedColumnInfo(6, "ProvisionalExpiryDate", "p_provisional_expiry_date_d", "Provisional Expiry Date", OdbcType.Date, -1, false),
+                    new TTypedColumnInfo(7, "GratisSubscription", "p_gratis_subscription_l", "Free Subscription", OdbcType.Bit, -1, true),
+                    new TTypedColumnInfo(8, "DateNoticeSent", "p_date_notice_sent_d", "Date Notice Sent", OdbcType.Date, -1, false),
+                    new TTypedColumnInfo(9, "DateCancelled", "p_date_cancelled_d", "Date Cancelled", OdbcType.Date, -1, false),
+                    new TTypedColumnInfo(10, "StartDate", "p_start_date_d", "Start Date", OdbcType.Date, -1, true),
+                    new TTypedColumnInfo(11, "NumberIssuesReceived", "p_number_issues_received_i", "Issues Received", OdbcType.Int, -1, true),
+                    new TTypedColumnInfo(12, "NumberComplimentary", "p_number_complimentary_i", "Complimentary", OdbcType.Int, -1, true),
+                    new TTypedColumnInfo(13, "SubscriptionRenewalDate", "p_subscription_renewal_date_d", "Renewal Date", OdbcType.Date, -1, false),
+                    new TTypedColumnInfo(14, "SubscriptionStatus", "p_subscription_status_c", "Status", OdbcType.VarChar, 24, false),
+                    new TTypedColumnInfo(15, "FirstIssue", "p_first_issue_d", "First Issue", OdbcType.Date, -1, false),
+                    new TTypedColumnInfo(16, "LastIssue", "p_last_issue_d", "Last Issue", OdbcType.Date, -1, false),
+                    new TTypedColumnInfo(17, "GiftFromKey", "p_gift_from_key_n", "Gift Given By", OdbcType.Decimal, 10, false),
+                    new TTypedColumnInfo(18, "DateCreated", "s_date_created_d", "Created Date", OdbcType.Date, -1, false),
+                    new TTypedColumnInfo(19, "CreatedBy", "s_created_by_c", "Created By", OdbcType.VarChar, 20, false),
+                    new TTypedColumnInfo(20, "DateModified", "s_date_modified_d", "Modified Date", OdbcType.Date, -1, false),
+                    new TTypedColumnInfo(21, "ModifiedBy", "s_modified_by_c", "Modified By", OdbcType.VarChar, 20, false),
+                    new TTypedColumnInfo(22, "ModificationId", "s_modification_id_c", "", OdbcType.VarChar, 150, false)
+                },
+                new int[] {
+                    0, 1
+                }));
+            return true;
+        }
+
+        /// constructor
+        public PSubscriptionTable() :
+                base("PSubscription")
+        {
+        }
+
+        /// constructor
+        public PSubscriptionTable(string ATablename) :
+                base(ATablename)
+        {
+        }
+
+        /// constructor for serialization
+        public PSubscriptionTable(System.Runtime.Serialization.SerializationInfo info, System.Runtime.Serialization.StreamingContext context) :
+                base(info, context)
+        {
+        }
+
         /// The is the key to the publication table
         public DataColumn ColumnPublicationCode;
         /// This is the partner key assigned to each partner. It consists of the fund id followed by a computer generated six digit number.
@@ -16302,62 +17174,6 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data
         public DataColumn ColumnModifiedBy;
         /// This identifies the current version of the record.
         public DataColumn ColumnModificationId;
-
-        /// TableId for Ict.Common.Data generic functions
-        public static short TableId = 99;
-
-        private static bool FInitInfoValues = InitInfoValues();
-        private static bool InitInfoValues()
-        {
-            TableInfo.Add(TableId, new TTypedTableInfo(TableId, "PSubscription", "p_subscription",
-                new TTypedColumnInfo[] {
-                    new TTypedColumnInfo(0, "PublicationCode", "p_publication_code_c", OdbcType.VarChar, 20, true),
-                    new TTypedColumnInfo(1, "PartnerKey", "p_partner_key_n", OdbcType.Decimal, 10, true),
-                    new TTypedColumnInfo(2, "PublicationCopies", "p_publication_copies_i", OdbcType.Int, -1, false),
-                    new TTypedColumnInfo(3, "ReasonSubsGivenCode", "p_reason_subs_given_code_c", OdbcType.VarChar, 24, true),
-                    new TTypedColumnInfo(4, "ReasonSubsCancelledCode", "p_reason_subs_cancelled_code_c", OdbcType.VarChar, 24, false),
-                    new TTypedColumnInfo(5, "ExpiryDate", "p_expiry_date_d", OdbcType.Date, -1, false),
-                    new TTypedColumnInfo(6, "ProvisionalExpiryDate", "p_provisional_expiry_date_d", OdbcType.Date, -1, false),
-                    new TTypedColumnInfo(7, "GratisSubscription", "p_gratis_subscription_l", OdbcType.Bit, -1, true),
-                    new TTypedColumnInfo(8, "DateNoticeSent", "p_date_notice_sent_d", OdbcType.Date, -1, false),
-                    new TTypedColumnInfo(9, "DateCancelled", "p_date_cancelled_d", OdbcType.Date, -1, false),
-                    new TTypedColumnInfo(10, "StartDate", "p_start_date_d", OdbcType.Date, -1, true),
-                    new TTypedColumnInfo(11, "NumberIssuesReceived", "p_number_issues_received_i", OdbcType.Int, -1, true),
-                    new TTypedColumnInfo(12, "NumberComplimentary", "p_number_complimentary_i", OdbcType.Int, -1, true),
-                    new TTypedColumnInfo(13, "SubscriptionRenewalDate", "p_subscription_renewal_date_d", OdbcType.Date, -1, false),
-                    new TTypedColumnInfo(14, "SubscriptionStatus", "p_subscription_status_c", OdbcType.VarChar, 24, false),
-                    new TTypedColumnInfo(15, "FirstIssue", "p_first_issue_d", OdbcType.Date, -1, false),
-                    new TTypedColumnInfo(16, "LastIssue", "p_last_issue_d", OdbcType.Date, -1, false),
-                    new TTypedColumnInfo(17, "GiftFromKey", "p_gift_from_key_n", OdbcType.Decimal, 10, false),
-                    new TTypedColumnInfo(18, "DateCreated", "s_date_created_d", OdbcType.Date, -1, false),
-                    new TTypedColumnInfo(19, "CreatedBy", "s_created_by_c", OdbcType.VarChar, 20, false),
-                    new TTypedColumnInfo(20, "DateModified", "s_date_modified_d", OdbcType.Date, -1, false),
-                    new TTypedColumnInfo(21, "ModifiedBy", "s_modified_by_c", OdbcType.VarChar, 20, false),
-                    new TTypedColumnInfo(22, "ModificationId", "s_modification_id_c", OdbcType.VarChar, 150, false)
-                },
-                new int[] {
-                    0, 1
-                }));
-            return true;
-        }
-
-        /// constructor
-        public PSubscriptionTable() :
-                base("PSubscription")
-        {
-        }
-
-        /// constructor
-        public PSubscriptionTable(string ATablename) :
-                base(ATablename)
-        {
-        }
-
-        /// constructor for serialization
-        public PSubscriptionTable(System.Runtime.Serialization.SerializationInfo info, System.Runtime.Serialization.StreamingContext context) :
-                base(info, context)
-        {
-        }
 
         /// create the columns
         protected override void InitClass()
@@ -16451,6 +17267,18 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data
         public PSubscriptionTable GetChangesTyped()
         {
             return ((PSubscriptionTable)(base.GetChangesTypedInternal()));
+        }
+
+        /// return the CamelCase name of the table
+        public static string GetTableName()
+        {
+            return "PSubscription";
+        }
+
+        /// return the name of the table as it is used in the database
+        public static string GetTableDBName()
+        {
+            return "p_subscription";
         }
 
         /// get an odbc parameter for the given column
@@ -17657,39 +18485,38 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data
     [Serializable()]
     public class PContactAttributeTable : TTypedDataTable
     {
-        /// Contact Attribute Code
-        public DataColumn ColumnContactAttributeCode;
-        /// This is a contact attribute description.
-        public DataColumn ColumnContactAttributeDescr;
-        /// allowed to use this attribute for new contacts?
-        public DataColumn ColumnActive;
-        /// The date the record was created.
-        public DataColumn ColumnDateCreated;
-        /// User ID of who created this record.
-        public DataColumn ColumnCreatedBy;
-        /// The date the record was modified.
-        public DataColumn ColumnDateModified;
-        /// User ID of who last modified this record.
-        public DataColumn ColumnModifiedBy;
-        /// This identifies the current version of the record.
-        public DataColumn ColumnModificationId;
-
         /// TableId for Ict.Common.Data generic functions
         public static short TableId = 100;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnContactAttributeCodeId = 0;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnContactAttributeDescrId = 1;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnActiveId = 2;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnDateCreatedId = 3;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnCreatedById = 4;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnDateModifiedId = 5;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnModifiedById = 6;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnModificationIdId = 7;
 
         private static bool FInitInfoValues = InitInfoValues();
         private static bool InitInfoValues()
         {
             TableInfo.Add(TableId, new TTypedTableInfo(TableId, "PContactAttribute", "p_contact_attribute",
                 new TTypedColumnInfo[] {
-                    new TTypedColumnInfo(0, "ContactAttributeCode", "p_contact_attribute_code_c", OdbcType.VarChar, 32, true),
-                    new TTypedColumnInfo(1, "ContactAttributeDescr", "p_contact_attribute_descr_c", OdbcType.VarChar, 64, false),
-                    new TTypedColumnInfo(2, "Active", "p_active_l", OdbcType.Bit, -1, true),
-                    new TTypedColumnInfo(3, "DateCreated", "s_date_created_d", OdbcType.Date, -1, false),
-                    new TTypedColumnInfo(4, "CreatedBy", "s_created_by_c", OdbcType.VarChar, 20, false),
-                    new TTypedColumnInfo(5, "DateModified", "s_date_modified_d", OdbcType.Date, -1, false),
-                    new TTypedColumnInfo(6, "ModifiedBy", "s_modified_by_c", OdbcType.VarChar, 20, false),
-                    new TTypedColumnInfo(7, "ModificationId", "s_modification_id_c", OdbcType.VarChar, 150, false)
+                    new TTypedColumnInfo(0, "ContactAttributeCode", "p_contact_attribute_code_c", "Contact Attribute Code", OdbcType.VarChar, 32, true),
+                    new TTypedColumnInfo(1, "ContactAttributeDescr", "p_contact_attribute_descr_c", "Description", OdbcType.VarChar, 64, false),
+                    new TTypedColumnInfo(2, "Active", "p_active_l", "Active", OdbcType.Bit, -1, true),
+                    new TTypedColumnInfo(3, "DateCreated", "s_date_created_d", "Created Date", OdbcType.Date, -1, false),
+                    new TTypedColumnInfo(4, "CreatedBy", "s_created_by_c", "Created By", OdbcType.VarChar, 20, false),
+                    new TTypedColumnInfo(5, "DateModified", "s_date_modified_d", "Modified Date", OdbcType.Date, -1, false),
+                    new TTypedColumnInfo(6, "ModifiedBy", "s_modified_by_c", "Modified By", OdbcType.VarChar, 20, false),
+                    new TTypedColumnInfo(7, "ModificationId", "s_modification_id_c", "", OdbcType.VarChar, 150, false)
                 },
                 new int[] {
                     0
@@ -17714,6 +18541,23 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data
                 base(info, context)
         {
         }
+
+        /// Contact Attribute Code
+        public DataColumn ColumnContactAttributeCode;
+        /// This is a contact attribute description.
+        public DataColumn ColumnContactAttributeDescr;
+        /// allowed to use this attribute for new contacts?
+        public DataColumn ColumnActive;
+        /// The date the record was created.
+        public DataColumn ColumnDateCreated;
+        /// User ID of who created this record.
+        public DataColumn ColumnCreatedBy;
+        /// The date the record was modified.
+        public DataColumn ColumnDateModified;
+        /// User ID of who last modified this record.
+        public DataColumn ColumnModifiedBy;
+        /// This identifies the current version of the record.
+        public DataColumn ColumnModificationId;
 
         /// create the columns
         protected override void InitClass()
@@ -17777,6 +18621,18 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data
         public PContactAttributeTable GetChangesTyped()
         {
             return ((PContactAttributeTable)(base.GetChangesTypedInternal()));
+        }
+
+        /// return the CamelCase name of the table
+        public static string GetTableName()
+        {
+            return "PContactAttribute";
+        }
+
+        /// return the name of the table as it is used in the database
+        public static string GetTableDBName()
+        {
+            return "p_contact_attribute";
         }
 
         /// get an odbc parameter for the given column
@@ -18218,45 +19074,44 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data
     [Serializable()]
     public class PContactAttributeDetailTable : TTypedDataTable
     {
-        /// Contact Attribute Code
-        public DataColumn ColumnContactAttributeCode;
-        /// code for attribute detail
-        public DataColumn ColumnContactAttrDetailCode;
-        /// This is a contact attribute detail description.
-        public DataColumn ColumnContactAttrDetailDescr;
-        /// allowed to use this attribute detail for new contacts?
-        public DataColumn ColumnActive;
-        /// Contact attribute detail comment
-        public DataColumn ColumnComment;
-        /// The date the record was created.
-        public DataColumn ColumnDateCreated;
-        /// User ID of who created this record.
-        public DataColumn ColumnCreatedBy;
-        /// The date the record was modified.
-        public DataColumn ColumnDateModified;
-        /// User ID of who last modified this record.
-        public DataColumn ColumnModifiedBy;
-        /// This identifies the current version of the record.
-        public DataColumn ColumnModificationId;
-
         /// TableId for Ict.Common.Data generic functions
         public static short TableId = 101;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnContactAttributeCodeId = 0;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnContactAttrDetailCodeId = 1;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnContactAttrDetailDescrId = 2;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnActiveId = 3;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnCommentId = 4;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnDateCreatedId = 5;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnCreatedById = 6;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnDateModifiedId = 7;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnModifiedById = 8;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnModificationIdId = 9;
 
         private static bool FInitInfoValues = InitInfoValues();
         private static bool InitInfoValues()
         {
             TableInfo.Add(TableId, new TTypedTableInfo(TableId, "PContactAttributeDetail", "p_contact_attribute_detail",
                 new TTypedColumnInfo[] {
-                    new TTypedColumnInfo(0, "ContactAttributeCode", "p_contact_attribute_code_c", OdbcType.VarChar, 32, true),
-                    new TTypedColumnInfo(1, "ContactAttrDetailCode", "p_contact_attr_detail_code_c", OdbcType.VarChar, 32, true),
-                    new TTypedColumnInfo(2, "ContactAttrDetailDescr", "p_contact_attr_detail_descr_c", OdbcType.VarChar, 64, false),
-                    new TTypedColumnInfo(3, "Active", "p_active_l", OdbcType.Bit, -1, true),
-                    new TTypedColumnInfo(4, "Comment", "p_comment_c", OdbcType.VarChar, 8000, false),
-                    new TTypedColumnInfo(5, "DateCreated", "s_date_created_d", OdbcType.Date, -1, false),
-                    new TTypedColumnInfo(6, "CreatedBy", "s_created_by_c", OdbcType.VarChar, 20, false),
-                    new TTypedColumnInfo(7, "DateModified", "s_date_modified_d", OdbcType.Date, -1, false),
-                    new TTypedColumnInfo(8, "ModifiedBy", "s_modified_by_c", OdbcType.VarChar, 20, false),
-                    new TTypedColumnInfo(9, "ModificationId", "s_modification_id_c", OdbcType.VarChar, 150, false)
+                    new TTypedColumnInfo(0, "ContactAttributeCode", "p_contact_attribute_code_c", "Contact Attribute Code", OdbcType.VarChar, 32, true),
+                    new TTypedColumnInfo(1, "ContactAttrDetailCode", "p_contact_attr_detail_code_c", "Attribute Detail Code", OdbcType.VarChar, 32, true),
+                    new TTypedColumnInfo(2, "ContactAttrDetailDescr", "p_contact_attr_detail_descr_c", "Description", OdbcType.VarChar, 64, false),
+                    new TTypedColumnInfo(3, "Active", "p_active_l", "Active", OdbcType.Bit, -1, true),
+                    new TTypedColumnInfo(4, "Comment", "p_comment_c", "Comment", OdbcType.VarChar, 8000, false),
+                    new TTypedColumnInfo(5, "DateCreated", "s_date_created_d", "Created Date", OdbcType.Date, -1, false),
+                    new TTypedColumnInfo(6, "CreatedBy", "s_created_by_c", "Created By", OdbcType.VarChar, 20, false),
+                    new TTypedColumnInfo(7, "DateModified", "s_date_modified_d", "Modified Date", OdbcType.Date, -1, false),
+                    new TTypedColumnInfo(8, "ModifiedBy", "s_modified_by_c", "Modified By", OdbcType.VarChar, 20, false),
+                    new TTypedColumnInfo(9, "ModificationId", "s_modification_id_c", "", OdbcType.VarChar, 150, false)
                 },
                 new int[] {
                     0, 1
@@ -18281,6 +19136,27 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data
                 base(info, context)
         {
         }
+
+        /// Contact Attribute Code
+        public DataColumn ColumnContactAttributeCode;
+        /// code for attribute detail
+        public DataColumn ColumnContactAttrDetailCode;
+        /// This is a contact attribute detail description.
+        public DataColumn ColumnContactAttrDetailDescr;
+        /// allowed to use this attribute detail for new contacts?
+        public DataColumn ColumnActive;
+        /// Contact attribute detail comment
+        public DataColumn ColumnComment;
+        /// The date the record was created.
+        public DataColumn ColumnDateCreated;
+        /// User ID of who created this record.
+        public DataColumn ColumnCreatedBy;
+        /// The date the record was modified.
+        public DataColumn ColumnDateModified;
+        /// User ID of who last modified this record.
+        public DataColumn ColumnModifiedBy;
+        /// This identifies the current version of the record.
+        public DataColumn ColumnModificationId;
 
         /// create the columns
         protected override void InitClass()
@@ -18348,6 +19224,18 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data
         public PContactAttributeDetailTable GetChangesTyped()
         {
             return ((PContactAttributeDetailTable)(base.GetChangesTypedInternal()));
+        }
+
+        /// return the CamelCase name of the table
+        public static string GetTableName()
+        {
+            return "PContactAttributeDetail";
+        }
+
+        /// return the name of the table as it is used in the database
+        public static string GetTableDBName()
+        {
+            return "p_contact_attribute_detail";
         }
 
         /// get an odbc parameter for the given column
@@ -18891,48 +19779,44 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data
     [Serializable()]
     public class PMethodOfContactTable : TTypedDataTable
     {
-        ///
-        public DataColumn ColumnMethodOfContactCode;
-        ///
-        public DataColumn ColumnDescription;
-        ///
-        public DataColumn ColumnContactType;
-        ///
-        public DataColumn ColumnValidMethod;
-        /// This defines if the method of contact code can be deleted.
-        /// This can only be updated by the system manager.
-        /// At the risk of serious operational integrity.
-        /// Default to Yes
-        public DataColumn ColumnDeletable;
-        /// The date the record was created.
-        public DataColumn ColumnDateCreated;
-        /// User ID of who created this record.
-        public DataColumn ColumnCreatedBy;
-        /// The date the record was modified.
-        public DataColumn ColumnDateModified;
-        /// User ID of who last modified this record.
-        public DataColumn ColumnModifiedBy;
-        /// This identifies the current version of the record.
-        public DataColumn ColumnModificationId;
-
         /// TableId for Ict.Common.Data generic functions
         public static short TableId = 102;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnMethodOfContactCodeId = 0;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnDescriptionId = 1;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnContactTypeId = 2;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnValidMethodId = 3;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnDeletableId = 4;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnDateCreatedId = 5;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnCreatedById = 6;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnDateModifiedId = 7;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnModifiedById = 8;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnModificationIdId = 9;
 
         private static bool FInitInfoValues = InitInfoValues();
         private static bool InitInfoValues()
         {
             TableInfo.Add(TableId, new TTypedTableInfo(TableId, "PMethodOfContact", "p_method_of_contact",
                 new TTypedColumnInfo[] {
-                    new TTypedColumnInfo(0, "MethodOfContactCode", "p_method_of_contact_code_c", OdbcType.VarChar, 16, true),
-                    new TTypedColumnInfo(1, "Description", "p_description_c", OdbcType.VarChar, 64, false),
-                    new TTypedColumnInfo(2, "ContactType", "p_contact_type_c", OdbcType.VarChar, 16, false),
-                    new TTypedColumnInfo(3, "ValidMethod", "p_valid_method_l", OdbcType.Bit, -1, true),
-                    new TTypedColumnInfo(4, "Deletable", "p_deletable_l", OdbcType.Bit, -1, true),
-                    new TTypedColumnInfo(5, "DateCreated", "s_date_created_d", OdbcType.Date, -1, false),
-                    new TTypedColumnInfo(6, "CreatedBy", "s_created_by_c", OdbcType.VarChar, 20, false),
-                    new TTypedColumnInfo(7, "DateModified", "s_date_modified_d", OdbcType.Date, -1, false),
-                    new TTypedColumnInfo(8, "ModifiedBy", "s_modified_by_c", OdbcType.VarChar, 20, false),
-                    new TTypedColumnInfo(9, "ModificationId", "s_modification_id_c", OdbcType.VarChar, 150, false)
+                    new TTypedColumnInfo(0, "MethodOfContactCode", "p_method_of_contact_code_c", "Method of Contact", OdbcType.VarChar, 16, true),
+                    new TTypedColumnInfo(1, "Description", "p_description_c", "Description", OdbcType.VarChar, 64, false),
+                    new TTypedColumnInfo(2, "ContactType", "p_contact_type_c", "Contact Type", OdbcType.VarChar, 16, false),
+                    new TTypedColumnInfo(3, "ValidMethod", "p_valid_method_l", "Valid Method", OdbcType.Bit, -1, true),
+                    new TTypedColumnInfo(4, "Deletable", "p_deletable_l", "Deletable", OdbcType.Bit, -1, true),
+                    new TTypedColumnInfo(5, "DateCreated", "s_date_created_d", "Created Date", OdbcType.Date, -1, false),
+                    new TTypedColumnInfo(6, "CreatedBy", "s_created_by_c", "Created By", OdbcType.VarChar, 20, false),
+                    new TTypedColumnInfo(7, "DateModified", "s_date_modified_d", "Modified Date", OdbcType.Date, -1, false),
+                    new TTypedColumnInfo(8, "ModifiedBy", "s_modified_by_c", "Modified By", OdbcType.VarChar, 20, false),
+                    new TTypedColumnInfo(9, "ModificationId", "s_modification_id_c", "", OdbcType.VarChar, 150, false)
                 },
                 new int[] {
                     0
@@ -18957,6 +19841,30 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data
                 base(info, context)
         {
         }
+
+        ///
+        public DataColumn ColumnMethodOfContactCode;
+        ///
+        public DataColumn ColumnDescription;
+        ///
+        public DataColumn ColumnContactType;
+        ///
+        public DataColumn ColumnValidMethod;
+        /// This defines if the method of contact code can be deleted.
+        /// This can only be updated by the system manager.
+        /// At the risk of serious operational integrity.
+        /// Default to Yes
+        public DataColumn ColumnDeletable;
+        /// The date the record was created.
+        public DataColumn ColumnDateCreated;
+        /// User ID of who created this record.
+        public DataColumn ColumnCreatedBy;
+        /// The date the record was modified.
+        public DataColumn ColumnDateModified;
+        /// User ID of who last modified this record.
+        public DataColumn ColumnModifiedBy;
+        /// This identifies the current version of the record.
+        public DataColumn ColumnModificationId;
 
         /// create the columns
         protected override void InitClass()
@@ -19024,6 +19932,18 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data
         public PMethodOfContactTable GetChangesTyped()
         {
             return ((PMethodOfContactTable)(base.GetChangesTypedInternal()));
+        }
+
+        /// return the CamelCase name of the table
+        public static string GetTableName()
+        {
+            return "PMethodOfContact";
+        }
+
+        /// return the name of the table as it is used in the database
+        public static string GetTableDBName()
+        {
+            return "p_method_of_contact";
         }
 
         /// get an odbc parameter for the given column
@@ -19570,6 +20490,93 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data
     [Serializable()]
     public class PPartnerContactTable : TTypedDataTable
     {
+        /// TableId for Ict.Common.Data generic functions
+        public static short TableId = 103;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnContactIdId = 0;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnPartnerKeyId = 1;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnContactDateId = 2;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnContactTimeId = 3;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnContactCodeId = 4;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnContactorId = 5;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnContactMessageIdId = 6;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnContactCommentId = 7;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnModuleIdId = 8;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnUserIdId = 9;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnMailingCodeId = 10;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnRestrictedId = 11;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnContactLocationId = 12;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnDateCreatedId = 13;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnCreatedById = 14;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnDateModifiedId = 15;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnModifiedById = 16;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnModificationIdId = 17;
+
+        private static bool FInitInfoValues = InitInfoValues();
+        private static bool InitInfoValues()
+        {
+            TableInfo.Add(TableId, new TTypedTableInfo(TableId, "PPartnerContact", "p_partner_contact",
+                new TTypedColumnInfo[] {
+                    new TTypedColumnInfo(0, "ContactId", "p_contact_id_i", "Number", OdbcType.Int, -1, true),
+                    new TTypedColumnInfo(1, "PartnerKey", "p_partner_key_n", "Partner Key", OdbcType.Decimal, 10, true),
+                    new TTypedColumnInfo(2, "ContactDate", "s_contact_date_d", "Contact Date", OdbcType.Date, -1, true),
+                    new TTypedColumnInfo(3, "ContactTime", "s_contact_time_i", "s_contact_time_i", OdbcType.Int, -1, true),
+                    new TTypedColumnInfo(4, "ContactCode", "p_contact_code_c", "Contact Code", OdbcType.VarChar, 16, true),
+                    new TTypedColumnInfo(5, "Contactor", "p_contactor_c", "User ID", OdbcType.VarChar, 20, false),
+                    new TTypedColumnInfo(6, "ContactMessageId", "p_contact_message_id_c", "Message ID", OdbcType.VarChar, 200, false),
+                    new TTypedColumnInfo(7, "ContactComment", "p_contact_comment_c", "Description", OdbcType.VarChar, 30000, false),
+                    new TTypedColumnInfo(8, "ModuleId", "s_module_id_c", "Module ID", OdbcType.VarChar, 20, false),
+                    new TTypedColumnInfo(9, "UserId", "s_user_id_c", "", OdbcType.VarChar, 20, false),
+                    new TTypedColumnInfo(10, "MailingCode", "p_mailing_code_c", "Mailing Code", OdbcType.VarChar, 50, false),
+                    new TTypedColumnInfo(11, "Restricted", "p_restricted_l", "Contact Restricted", OdbcType.Bit, -1, false),
+                    new TTypedColumnInfo(12, "ContactLocation", "p_contact_location_c", "Location", OdbcType.VarChar, 8000, false),
+                    new TTypedColumnInfo(13, "DateCreated", "s_date_created_d", "Created Date", OdbcType.Date, -1, false),
+                    new TTypedColumnInfo(14, "CreatedBy", "s_created_by_c", "Created By", OdbcType.VarChar, 20, false),
+                    new TTypedColumnInfo(15, "DateModified", "s_date_modified_d", "Modified Date", OdbcType.Date, -1, false),
+                    new TTypedColumnInfo(16, "ModifiedBy", "s_modified_by_c", "Modified By", OdbcType.VarChar, 20, false),
+                    new TTypedColumnInfo(17, "ModificationId", "s_modification_id_c", "", OdbcType.VarChar, 150, false)
+                },
+                new int[] {
+                    0
+                }));
+            return true;
+        }
+
+        /// constructor
+        public PPartnerContactTable() :
+                base("PPartnerContact")
+        {
+        }
+
+        /// constructor
+        public PPartnerContactTable(string ATablename) :
+                base(ATablename)
+        {
+        }
+
+        /// constructor for serialization
+        public PPartnerContactTable(System.Runtime.Serialization.SerializationInfo info, System.Runtime.Serialization.StreamingContext context) :
+                base(info, context)
+        {
+        }
+
         /// identifying key for p_partner_contact
         public DataColumn ColumnContactId;
         /// This is the partner key assigned to each partner. It consists of the fund id followed by a computer generated six digit number.
@@ -19606,57 +20613,6 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data
         public DataColumn ColumnModifiedBy;
         /// This identifies the current version of the record.
         public DataColumn ColumnModificationId;
-
-        /// TableId for Ict.Common.Data generic functions
-        public static short TableId = 103;
-
-        private static bool FInitInfoValues = InitInfoValues();
-        private static bool InitInfoValues()
-        {
-            TableInfo.Add(TableId, new TTypedTableInfo(TableId, "PPartnerContact", "p_partner_contact",
-                new TTypedColumnInfo[] {
-                    new TTypedColumnInfo(0, "ContactId", "p_contact_id_i", OdbcType.Int, -1, true),
-                    new TTypedColumnInfo(1, "PartnerKey", "p_partner_key_n", OdbcType.Decimal, 10, true),
-                    new TTypedColumnInfo(2, "ContactDate", "s_contact_date_d", OdbcType.Date, -1, true),
-                    new TTypedColumnInfo(3, "ContactTime", "s_contact_time_i", OdbcType.Int, -1, true),
-                    new TTypedColumnInfo(4, "ContactCode", "p_contact_code_c", OdbcType.VarChar, 16, true),
-                    new TTypedColumnInfo(5, "Contactor", "p_contactor_c", OdbcType.VarChar, 20, false),
-                    new TTypedColumnInfo(6, "ContactMessageId", "p_contact_message_id_c", OdbcType.VarChar, 200, false),
-                    new TTypedColumnInfo(7, "ContactComment", "p_contact_comment_c", OdbcType.VarChar, 30000, false),
-                    new TTypedColumnInfo(8, "ModuleId", "s_module_id_c", OdbcType.VarChar, 20, false),
-                    new TTypedColumnInfo(9, "UserId", "s_user_id_c", OdbcType.VarChar, 20, false),
-                    new TTypedColumnInfo(10, "MailingCode", "p_mailing_code_c", OdbcType.VarChar, 50, false),
-                    new TTypedColumnInfo(11, "Restricted", "p_restricted_l", OdbcType.Bit, -1, false),
-                    new TTypedColumnInfo(12, "ContactLocation", "p_contact_location_c", OdbcType.VarChar, 8000, false),
-                    new TTypedColumnInfo(13, "DateCreated", "s_date_created_d", OdbcType.Date, -1, false),
-                    new TTypedColumnInfo(14, "CreatedBy", "s_created_by_c", OdbcType.VarChar, 20, false),
-                    new TTypedColumnInfo(15, "DateModified", "s_date_modified_d", OdbcType.Date, -1, false),
-                    new TTypedColumnInfo(16, "ModifiedBy", "s_modified_by_c", OdbcType.VarChar, 20, false),
-                    new TTypedColumnInfo(17, "ModificationId", "s_modification_id_c", OdbcType.VarChar, 150, false)
-                },
-                new int[] {
-                    0
-                }));
-            return true;
-        }
-
-        /// constructor
-        public PPartnerContactTable() :
-                base("PPartnerContact")
-        {
-        }
-
-        /// constructor
-        public PPartnerContactTable(string ATablename) :
-                base(ATablename)
-        {
-        }
-
-        /// constructor for serialization
-        public PPartnerContactTable(System.Runtime.Serialization.SerializationInfo info, System.Runtime.Serialization.StreamingContext context) :
-                base(info, context)
-        {
-        }
 
         /// create the columns
         protected override void InitClass()
@@ -19740,6 +20696,18 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data
         public PPartnerContactTable GetChangesTyped()
         {
             return ((PPartnerContactTable)(base.GetChangesTypedInternal()));
+        }
+
+        /// return the CamelCase name of the table
+        public static string GetTableName()
+        {
+            return "PPartnerContact";
+        }
+
+        /// return the name of the table as it is used in the database
+        public static string GetTableDBName()
+        {
+            return "p_partner_contact";
         }
 
         /// get an odbc parameter for the given column
@@ -20691,39 +21659,38 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data
     [Serializable()]
     public class PPartnerContactAttributeTable : TTypedDataTable
     {
-        /// identifying key for p_partner_contact
-        public DataColumn ColumnContactId;
-        /// Contact Attribute Code
-        public DataColumn ColumnContactAttributeCode;
-        /// code for attribute detail
-        public DataColumn ColumnContactAttrDetailCode;
-        /// The date the record was created.
-        public DataColumn ColumnDateCreated;
-        /// User ID of who created this record.
-        public DataColumn ColumnCreatedBy;
-        /// The date the record was modified.
-        public DataColumn ColumnDateModified;
-        /// User ID of who last modified this record.
-        public DataColumn ColumnModifiedBy;
-        /// This identifies the current version of the record.
-        public DataColumn ColumnModificationId;
-
         /// TableId for Ict.Common.Data generic functions
         public static short TableId = 104;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnContactIdId = 0;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnContactAttributeCodeId = 1;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnContactAttrDetailCodeId = 2;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnDateCreatedId = 3;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnCreatedById = 4;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnDateModifiedId = 5;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnModifiedById = 6;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnModificationIdId = 7;
 
         private static bool FInitInfoValues = InitInfoValues();
         private static bool InitInfoValues()
         {
             TableInfo.Add(TableId, new TTypedTableInfo(TableId, "PPartnerContactAttribute", "p_partner_contact_attribute",
                 new TTypedColumnInfo[] {
-                    new TTypedColumnInfo(0, "ContactId", "p_contact_id_i", OdbcType.Int, -1, true),
-                    new TTypedColumnInfo(1, "ContactAttributeCode", "p_contact_attribute_code_c", OdbcType.VarChar, 32, true),
-                    new TTypedColumnInfo(2, "ContactAttrDetailCode", "p_contact_attr_detail_code_c", OdbcType.VarChar, 32, true),
-                    new TTypedColumnInfo(3, "DateCreated", "s_date_created_d", OdbcType.Date, -1, false),
-                    new TTypedColumnInfo(4, "CreatedBy", "s_created_by_c", OdbcType.VarChar, 20, false),
-                    new TTypedColumnInfo(5, "DateModified", "s_date_modified_d", OdbcType.Date, -1, false),
-                    new TTypedColumnInfo(6, "ModifiedBy", "s_modified_by_c", OdbcType.VarChar, 20, false),
-                    new TTypedColumnInfo(7, "ModificationId", "s_modification_id_c", OdbcType.VarChar, 150, false)
+                    new TTypedColumnInfo(0, "ContactId", "p_contact_id_i", "Number", OdbcType.Int, -1, true),
+                    new TTypedColumnInfo(1, "ContactAttributeCode", "p_contact_attribute_code_c", "Contact Attribute Code", OdbcType.VarChar, 32, true),
+                    new TTypedColumnInfo(2, "ContactAttrDetailCode", "p_contact_attr_detail_code_c", "Attribute Detail Code", OdbcType.VarChar, 32, true),
+                    new TTypedColumnInfo(3, "DateCreated", "s_date_created_d", "Created Date", OdbcType.Date, -1, false),
+                    new TTypedColumnInfo(4, "CreatedBy", "s_created_by_c", "Created By", OdbcType.VarChar, 20, false),
+                    new TTypedColumnInfo(5, "DateModified", "s_date_modified_d", "Modified Date", OdbcType.Date, -1, false),
+                    new TTypedColumnInfo(6, "ModifiedBy", "s_modified_by_c", "Modified By", OdbcType.VarChar, 20, false),
+                    new TTypedColumnInfo(7, "ModificationId", "s_modification_id_c", "", OdbcType.VarChar, 150, false)
                 },
                 new int[] {
                     0, 1, 2
@@ -20748,6 +21715,23 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data
                 base(info, context)
         {
         }
+
+        /// identifying key for p_partner_contact
+        public DataColumn ColumnContactId;
+        /// Contact Attribute Code
+        public DataColumn ColumnContactAttributeCode;
+        /// code for attribute detail
+        public DataColumn ColumnContactAttrDetailCode;
+        /// The date the record was created.
+        public DataColumn ColumnDateCreated;
+        /// User ID of who created this record.
+        public DataColumn ColumnCreatedBy;
+        /// The date the record was modified.
+        public DataColumn ColumnDateModified;
+        /// User ID of who last modified this record.
+        public DataColumn ColumnModifiedBy;
+        /// This identifies the current version of the record.
+        public DataColumn ColumnModificationId;
 
         /// create the columns
         protected override void InitClass()
@@ -20811,6 +21795,18 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data
         public PPartnerContactAttributeTable GetChangesTyped()
         {
             return ((PPartnerContactAttributeTable)(base.GetChangesTypedInternal()));
+        }
+
+        /// return the CamelCase name of the table
+        public static string GetTableName()
+        {
+            return "PPartnerContactAttribute";
+        }
+
+        /// return the name of the table as it is used in the database
+        public static string GetTableDBName()
+        {
+            return "p_partner_contact_attribute";
         }
 
         /// get an odbc parameter for the given column

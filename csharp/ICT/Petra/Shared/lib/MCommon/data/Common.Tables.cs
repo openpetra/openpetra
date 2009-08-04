@@ -42,45 +42,41 @@ namespace Ict.Petra.Shared.MCommon.Data
     [Serializable()]
     public class PLanguageTable : TTypedDataTable
     {
-        /// This is the code used to identify a language.
-        public DataColumn ColumnLanguageCode;
-        ///
-        public DataColumn ColumnLanguageDescription;
-        /// This field indicates whether or not the language is one that is 'officially' used at conferences. These are the languages for which translation could be provided.
-        public DataColumn ColumnCongressLanguage;
-        /// This defines if the language code can be deleted.
-        /// This can only be updated by the system manager.
-        /// At the risk of serious operational integrity.
-        /// Default to Yes
-        public DataColumn ColumnDeletable;
-        /// The date the record was created.
-        public DataColumn ColumnDateCreated;
-        /// User ID of who created this record.
-        public DataColumn ColumnCreatedBy;
-        /// The date the record was modified.
-        public DataColumn ColumnDateModified;
-        /// User ID of who last modified this record.
-        public DataColumn ColumnModifiedBy;
-        /// This identifies the current version of the record.
-        public DataColumn ColumnModificationId;
-
         /// TableId for Ict.Common.Data generic functions
         public static short TableId = 0;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnLanguageCodeId = 0;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnLanguageDescriptionId = 1;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnCongressLanguageId = 2;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnDeletableId = 3;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnDateCreatedId = 4;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnCreatedById = 5;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnDateModifiedId = 6;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnModifiedById = 7;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnModificationIdId = 8;
 
         private static bool FInitInfoValues = InitInfoValues();
         private static bool InitInfoValues()
         {
             TableInfo.Add(TableId, new TTypedTableInfo(TableId, "PLanguage", "p_language",
                 new TTypedColumnInfo[] {
-                    new TTypedColumnInfo(0, "LanguageCode", "p_language_code_c", OdbcType.VarChar, 20, true),
-                    new TTypedColumnInfo(1, "LanguageDescription", "p_language_description_c", OdbcType.VarChar, 80, true),
-                    new TTypedColumnInfo(2, "CongressLanguage", "p_congress_language_l", OdbcType.Bit, -1, false),
-                    new TTypedColumnInfo(3, "Deletable", "p_deletable_l", OdbcType.Bit, -1, false),
-                    new TTypedColumnInfo(4, "DateCreated", "s_date_created_d", OdbcType.Date, -1, false),
-                    new TTypedColumnInfo(5, "CreatedBy", "s_created_by_c", OdbcType.VarChar, 20, false),
-                    new TTypedColumnInfo(6, "DateModified", "s_date_modified_d", OdbcType.Date, -1, false),
-                    new TTypedColumnInfo(7, "ModifiedBy", "s_modified_by_c", OdbcType.VarChar, 20, false),
-                    new TTypedColumnInfo(8, "ModificationId", "s_modification_id_c", OdbcType.VarChar, 150, false)
+                    new TTypedColumnInfo(0, "LanguageCode", "p_language_code_c", "Language Code", OdbcType.VarChar, 20, true),
+                    new TTypedColumnInfo(1, "LanguageDescription", "p_language_description_c", "Description", OdbcType.VarChar, 80, true),
+                    new TTypedColumnInfo(2, "CongressLanguage", "p_congress_language_l", "Congress Language", OdbcType.Bit, -1, false),
+                    new TTypedColumnInfo(3, "Deletable", "p_deletable_l", "Deletable", OdbcType.Bit, -1, false),
+                    new TTypedColumnInfo(4, "DateCreated", "s_date_created_d", "Created Date", OdbcType.Date, -1, false),
+                    new TTypedColumnInfo(5, "CreatedBy", "s_created_by_c", "Created By", OdbcType.VarChar, 20, false),
+                    new TTypedColumnInfo(6, "DateModified", "s_date_modified_d", "Modified Date", OdbcType.Date, -1, false),
+                    new TTypedColumnInfo(7, "ModifiedBy", "s_modified_by_c", "Modified By", OdbcType.VarChar, 20, false),
+                    new TTypedColumnInfo(8, "ModificationId", "s_modification_id_c", "", OdbcType.VarChar, 150, false)
                 },
                 new int[] {
                     0
@@ -105,6 +101,28 @@ namespace Ict.Petra.Shared.MCommon.Data
                 base(info, context)
         {
         }
+
+        /// This is the code used to identify a language.
+        public DataColumn ColumnLanguageCode;
+        ///
+        public DataColumn ColumnLanguageDescription;
+        /// This field indicates whether or not the language is one that is 'officially' used at conferences. These are the languages for which translation could be provided.
+        public DataColumn ColumnCongressLanguage;
+        /// This defines if the language code can be deleted.
+        /// This can only be updated by the system manager.
+        /// At the risk of serious operational integrity.
+        /// Default to Yes
+        public DataColumn ColumnDeletable;
+        /// The date the record was created.
+        public DataColumn ColumnDateCreated;
+        /// User ID of who created this record.
+        public DataColumn ColumnCreatedBy;
+        /// The date the record was modified.
+        public DataColumn ColumnDateModified;
+        /// User ID of who last modified this record.
+        public DataColumn ColumnModifiedBy;
+        /// This identifies the current version of the record.
+        public DataColumn ColumnModificationId;
 
         /// create the columns
         protected override void InitClass()
@@ -170,6 +188,18 @@ namespace Ict.Petra.Shared.MCommon.Data
         public PLanguageTable GetChangesTyped()
         {
             return ((PLanguageTable)(base.GetChangesTypedInternal()));
+        }
+
+        /// return the CamelCase name of the table
+        public static string GetTableName()
+        {
+            return "PLanguage";
+        }
+
+        /// return the name of the table as it is used in the database
+        public static string GetTableDBName()
+        {
+            return "p_language";
         }
 
         /// get an odbc parameter for the given column
@@ -665,51 +695,50 @@ namespace Ict.Petra.Shared.MCommon.Data
     [Serializable()]
     public class AFrequencyTable : TTypedDataTable
     {
-        ///
-        public DataColumn ColumnFrequencyCode;
-        ///
-        public DataColumn ColumnFrequencyDescription;
-        ///
-        public DataColumn ColumnNumberOfYears;
-        ///
-        public DataColumn ColumnNumberOfMonths;
-        ///
-        public DataColumn ColumnNumberOfDays;
-        ///
-        public DataColumn ColumnNumberOfHours;
-        ///
-        public DataColumn ColumnNumberOfMinutes;
-        /// The date the record was created.
-        public DataColumn ColumnDateCreated;
-        /// User ID of who created this record.
-        public DataColumn ColumnCreatedBy;
-        /// The date the record was modified.
-        public DataColumn ColumnDateModified;
-        /// User ID of who last modified this record.
-        public DataColumn ColumnModifiedBy;
-        /// This identifies the current version of the record.
-        public DataColumn ColumnModificationId;
-
         /// TableId for Ict.Common.Data generic functions
         public static short TableId = 1;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnFrequencyCodeId = 0;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnFrequencyDescriptionId = 1;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnNumberOfYearsId = 2;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnNumberOfMonthsId = 3;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnNumberOfDaysId = 4;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnNumberOfHoursId = 5;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnNumberOfMinutesId = 6;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnDateCreatedId = 7;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnCreatedById = 8;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnDateModifiedId = 9;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnModifiedById = 10;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnModificationIdId = 11;
 
         private static bool FInitInfoValues = InitInfoValues();
         private static bool InitInfoValues()
         {
             TableInfo.Add(TableId, new TTypedTableInfo(TableId, "AFrequency", "a_frequency",
                 new TTypedColumnInfo[] {
-                    new TTypedColumnInfo(0, "FrequencyCode", "a_frequency_code_c", OdbcType.VarChar, 24, true),
-                    new TTypedColumnInfo(1, "FrequencyDescription", "a_frequency_description_c", OdbcType.VarChar, 64, true),
-                    new TTypedColumnInfo(2, "NumberOfYears", "a_number_of_years_i", OdbcType.Int, -1, true),
-                    new TTypedColumnInfo(3, "NumberOfMonths", "a_number_of_months_i", OdbcType.Int, -1, false),
-                    new TTypedColumnInfo(4, "NumberOfDays", "a_number_of_days_i", OdbcType.Int, -1, false),
-                    new TTypedColumnInfo(5, "NumberOfHours", "a_number_of_hours_i", OdbcType.Int, -1, false),
-                    new TTypedColumnInfo(6, "NumberOfMinutes", "a_number_of_minutes_i", OdbcType.Int, -1, false),
-                    new TTypedColumnInfo(7, "DateCreated", "s_date_created_d", OdbcType.Date, -1, false),
-                    new TTypedColumnInfo(8, "CreatedBy", "s_created_by_c", OdbcType.VarChar, 20, false),
-                    new TTypedColumnInfo(9, "DateModified", "s_date_modified_d", OdbcType.Date, -1, false),
-                    new TTypedColumnInfo(10, "ModifiedBy", "s_modified_by_c", OdbcType.VarChar, 20, false),
-                    new TTypedColumnInfo(11, "ModificationId", "s_modification_id_c", OdbcType.VarChar, 150, false)
+                    new TTypedColumnInfo(0, "FrequencyCode", "a_frequency_code_c", "Frequency", OdbcType.VarChar, 24, true),
+                    new TTypedColumnInfo(1, "FrequencyDescription", "a_frequency_description_c", "Description", OdbcType.VarChar, 64, true),
+                    new TTypedColumnInfo(2, "NumberOfYears", "a_number_of_years_i", "Number of Years", OdbcType.Int, -1, true),
+                    new TTypedColumnInfo(3, "NumberOfMonths", "a_number_of_months_i", "Number of Months", OdbcType.Int, -1, false),
+                    new TTypedColumnInfo(4, "NumberOfDays", "a_number_of_days_i", "Number of Days", OdbcType.Int, -1, false),
+                    new TTypedColumnInfo(5, "NumberOfHours", "a_number_of_hours_i", "Number of Hours", OdbcType.Int, -1, false),
+                    new TTypedColumnInfo(6, "NumberOfMinutes", "a_number_of_minutes_i", "Number of Minutes", OdbcType.Int, -1, false),
+                    new TTypedColumnInfo(7, "DateCreated", "s_date_created_d", "Created Date", OdbcType.Date, -1, false),
+                    new TTypedColumnInfo(8, "CreatedBy", "s_created_by_c", "Created By", OdbcType.VarChar, 20, false),
+                    new TTypedColumnInfo(9, "DateModified", "s_date_modified_d", "Modified Date", OdbcType.Date, -1, false),
+                    new TTypedColumnInfo(10, "ModifiedBy", "s_modified_by_c", "Modified By", OdbcType.VarChar, 20, false),
+                    new TTypedColumnInfo(11, "ModificationId", "s_modification_id_c", "", OdbcType.VarChar, 150, false)
                 },
                 new int[] {
                     0
@@ -734,6 +763,31 @@ namespace Ict.Petra.Shared.MCommon.Data
                 base(info, context)
         {
         }
+
+        ///
+        public DataColumn ColumnFrequencyCode;
+        ///
+        public DataColumn ColumnFrequencyDescription;
+        ///
+        public DataColumn ColumnNumberOfYears;
+        ///
+        public DataColumn ColumnNumberOfMonths;
+        ///
+        public DataColumn ColumnNumberOfDays;
+        ///
+        public DataColumn ColumnNumberOfHours;
+        ///
+        public DataColumn ColumnNumberOfMinutes;
+        /// The date the record was created.
+        public DataColumn ColumnDateCreated;
+        /// User ID of who created this record.
+        public DataColumn ColumnCreatedBy;
+        /// The date the record was modified.
+        public DataColumn ColumnDateModified;
+        /// User ID of who last modified this record.
+        public DataColumn ColumnModifiedBy;
+        /// This identifies the current version of the record.
+        public DataColumn ColumnModificationId;
 
         /// create the columns
         protected override void InitClass()
@@ -805,6 +859,18 @@ namespace Ict.Petra.Shared.MCommon.Data
         public AFrequencyTable GetChangesTyped()
         {
             return ((AFrequencyTable)(base.GetChangesTypedInternal()));
+        }
+
+        /// return the CamelCase name of the table
+        public static string GetTableName()
+        {
+            return "AFrequency";
+        }
+
+        /// return the name of the table as it is used in the database
+        public static string GetTableDBName()
+        {
+            return "a_frequency";
         }
 
         /// get an odbc parameter for the given column
@@ -1450,42 +1516,38 @@ namespace Ict.Petra.Shared.MCommon.Data
     [Serializable()]
     public class PInternationalPostalTypeTable : TTypedDataTable
     {
-        ///
-        public DataColumn ColumnInternatPostalTypeCode;
-        ///
-        public DataColumn ColumnDescription;
-        /// This defines if the international postal type code can be deleted.
-        /// This can only be updated by the system manager.
-        /// At the risk of serious operational integrity.
-        /// Default to Yes
-        public DataColumn ColumnDeletable;
-        /// The date the record was created.
-        public DataColumn ColumnDateCreated;
-        /// User ID of who created this record.
-        public DataColumn ColumnCreatedBy;
-        /// The date the record was modified.
-        public DataColumn ColumnDateModified;
-        /// User ID of who last modified this record.
-        public DataColumn ColumnModifiedBy;
-        /// This identifies the current version of the record.
-        public DataColumn ColumnModificationId;
-
         /// TableId for Ict.Common.Data generic functions
         public static short TableId = 2;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnInternatPostalTypeCodeId = 0;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnDescriptionId = 1;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnDeletableId = 2;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnDateCreatedId = 3;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnCreatedById = 4;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnDateModifiedId = 5;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnModifiedById = 6;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnModificationIdId = 7;
 
         private static bool FInitInfoValues = InitInfoValues();
         private static bool InitInfoValues()
         {
             TableInfo.Add(TableId, new TTypedTableInfo(TableId, "PInternationalPostalType", "p_international_postal_type",
                 new TTypedColumnInfo[] {
-                    new TTypedColumnInfo(0, "InternatPostalTypeCode", "p_internat_postal_type_code_c", OdbcType.VarChar, 16, true),
-                    new TTypedColumnInfo(1, "Description", "p_description_c", OdbcType.VarChar, 64, true),
-                    new TTypedColumnInfo(2, "Deletable", "p_deletable_l", OdbcType.Bit, -1, true),
-                    new TTypedColumnInfo(3, "DateCreated", "s_date_created_d", OdbcType.Date, -1, false),
-                    new TTypedColumnInfo(4, "CreatedBy", "s_created_by_c", OdbcType.VarChar, 20, false),
-                    new TTypedColumnInfo(5, "DateModified", "s_date_modified_d", OdbcType.Date, -1, false),
-                    new TTypedColumnInfo(6, "ModifiedBy", "s_modified_by_c", OdbcType.VarChar, 20, false),
-                    new TTypedColumnInfo(7, "ModificationId", "s_modification_id_c", OdbcType.VarChar, 150, false)
+                    new TTypedColumnInfo(0, "InternatPostalTypeCode", "p_internat_postal_type_code_c", "International Postal Type Code", OdbcType.VarChar, 16, true),
+                    new TTypedColumnInfo(1, "Description", "p_description_c", "Description", OdbcType.VarChar, 64, true),
+                    new TTypedColumnInfo(2, "Deletable", "p_deletable_l", "Deletable", OdbcType.Bit, -1, true),
+                    new TTypedColumnInfo(3, "DateCreated", "s_date_created_d", "Created Date", OdbcType.Date, -1, false),
+                    new TTypedColumnInfo(4, "CreatedBy", "s_created_by_c", "Created By", OdbcType.VarChar, 20, false),
+                    new TTypedColumnInfo(5, "DateModified", "s_date_modified_d", "Modified Date", OdbcType.Date, -1, false),
+                    new TTypedColumnInfo(6, "ModifiedBy", "s_modified_by_c", "Modified By", OdbcType.VarChar, 20, false),
+                    new TTypedColumnInfo(7, "ModificationId", "s_modification_id_c", "", OdbcType.VarChar, 150, false)
                 },
                 new int[] {
                     0
@@ -1510,6 +1572,26 @@ namespace Ict.Petra.Shared.MCommon.Data
                 base(info, context)
         {
         }
+
+        ///
+        public DataColumn ColumnInternatPostalTypeCode;
+        ///
+        public DataColumn ColumnDescription;
+        /// This defines if the international postal type code can be deleted.
+        /// This can only be updated by the system manager.
+        /// At the risk of serious operational integrity.
+        /// Default to Yes
+        public DataColumn ColumnDeletable;
+        /// The date the record was created.
+        public DataColumn ColumnDateCreated;
+        /// User ID of who created this record.
+        public DataColumn ColumnCreatedBy;
+        /// The date the record was modified.
+        public DataColumn ColumnDateModified;
+        /// User ID of who last modified this record.
+        public DataColumn ColumnModifiedBy;
+        /// This identifies the current version of the record.
+        public DataColumn ColumnModificationId;
 
         /// create the columns
         protected override void InitClass()
@@ -1573,6 +1655,18 @@ namespace Ict.Petra.Shared.MCommon.Data
         public PInternationalPostalTypeTable GetChangesTyped()
         {
             return ((PInternationalPostalTypeTable)(base.GetChangesTypedInternal()));
+        }
+
+        /// return the CamelCase name of the table
+        public static string GetTableName()
+        {
+            return "PInternationalPostalType";
+        }
+
+        /// return the name of the table as it is used in the database
+        public static string GetTableDBName()
+        {
+            return "p_international_postal_type";
         }
 
         /// get an odbc parameter for the given column
@@ -2017,6 +2111,90 @@ namespace Ict.Petra.Shared.MCommon.Data
     [Serializable()]
     public class PCountryTable : TTypedDataTable
     {
+        /// TableId for Ict.Common.Data generic functions
+        public static short TableId = 3;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnCountryCodeId = 0;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnCountryNameId = 1;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnNationalityNameId = 2;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnUndercoverId = 3;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnInternatTelephoneCodeId = 4;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnInternatPostalTypeCodeId = 5;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnInternatAccessCodeId = 6;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnTimeZoneMinimumId = 7;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnTimeZoneMaximumId = 8;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnDeletableId = 9;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnAddressOrderId = 10;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnCountryNameLocalId = 11;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnDateCreatedId = 12;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnCreatedById = 13;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnDateModifiedId = 14;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnModifiedById = 15;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnModificationIdId = 16;
+
+        private static bool FInitInfoValues = InitInfoValues();
+        private static bool InitInfoValues()
+        {
+            TableInfo.Add(TableId, new TTypedTableInfo(TableId, "PCountry", "p_country",
+                new TTypedColumnInfo[] {
+                    new TTypedColumnInfo(0, "CountryCode", "p_country_code_c", "Country Code", OdbcType.VarChar, 8, true),
+                    new TTypedColumnInfo(1, "CountryName", "p_country_name_c", "Country Name", OdbcType.VarChar, 80, true),
+                    new TTypedColumnInfo(2, "NationalityName", "p_nationality_name_c", "Nationality Name", OdbcType.VarChar, 80, true),
+                    new TTypedColumnInfo(3, "Undercover", "p_undercover_l", "Undercover", OdbcType.Bit, -1, false),
+                    new TTypedColumnInfo(4, "InternatTelephoneCode", "p_internat_telephone_code_i", "International Dialing Code", OdbcType.Int, -1, false),
+                    new TTypedColumnInfo(5, "InternatPostalTypeCode", "p_internat_postal_type_code_c", "International Postal Type Code", OdbcType.VarChar, 16, false),
+                    new TTypedColumnInfo(6, "InternatAccessCode", "p_internat_access_code_c", "International Access Dialing Code", OdbcType.VarChar, 8, false),
+                    new TTypedColumnInfo(7, "TimeZoneMinimum", "p_time_zone_minimum_n", "Time Zone Range Minimum", OdbcType.Decimal, 6, false),
+                    new TTypedColumnInfo(8, "TimeZoneMaximum", "p_time_zone_maximum_n", "Time Zone Range Maximum", OdbcType.Decimal, 6, false),
+                    new TTypedColumnInfo(9, "Deletable", "p_deletable_l", "Deletable", OdbcType.Bit, -1, true),
+                    new TTypedColumnInfo(10, "AddressOrder", "p_address_order_i", "Address Display Order", OdbcType.Int, -1, false),
+                    new TTypedColumnInfo(11, "CountryNameLocal", "p_country_name_local_c", "Country Name In Local Language", OdbcType.VarChar, 80, false),
+                    new TTypedColumnInfo(12, "DateCreated", "s_date_created_d", "Created Date", OdbcType.Date, -1, false),
+                    new TTypedColumnInfo(13, "CreatedBy", "s_created_by_c", "Created By", OdbcType.VarChar, 20, false),
+                    new TTypedColumnInfo(14, "DateModified", "s_date_modified_d", "Modified Date", OdbcType.Date, -1, false),
+                    new TTypedColumnInfo(15, "ModifiedBy", "s_modified_by_c", "Modified By", OdbcType.VarChar, 20, false),
+                    new TTypedColumnInfo(16, "ModificationId", "s_modification_id_c", "", OdbcType.VarChar, 150, false)
+                },
+                new int[] {
+                    0
+                }));
+            return true;
+        }
+
+        /// constructor
+        public PCountryTable() :
+                base("PCountry")
+        {
+        }
+
+        /// constructor
+        public PCountryTable(string ATablename) :
+                base(ATablename)
+        {
+        }
+
+        /// constructor for serialization
+        public PCountryTable(System.Runtime.Serialization.SerializationInfo info, System.Runtime.Serialization.StreamingContext context) :
+                base(info, context)
+        {
+        }
+
         /// This is a code which identifies a country.
         /// It is the ISO code (ISO 3166)
         public DataColumn ColumnCountryCode;
@@ -2055,56 +2233,6 @@ namespace Ict.Petra.Shared.MCommon.Data
         public DataColumn ColumnModifiedBy;
         /// This identifies the current version of the record.
         public DataColumn ColumnModificationId;
-
-        /// TableId for Ict.Common.Data generic functions
-        public static short TableId = 3;
-
-        private static bool FInitInfoValues = InitInfoValues();
-        private static bool InitInfoValues()
-        {
-            TableInfo.Add(TableId, new TTypedTableInfo(TableId, "PCountry", "p_country",
-                new TTypedColumnInfo[] {
-                    new TTypedColumnInfo(0, "CountryCode", "p_country_code_c", OdbcType.VarChar, 8, true),
-                    new TTypedColumnInfo(1, "CountryName", "p_country_name_c", OdbcType.VarChar, 80, true),
-                    new TTypedColumnInfo(2, "NationalityName", "p_nationality_name_c", OdbcType.VarChar, 80, true),
-                    new TTypedColumnInfo(3, "Undercover", "p_undercover_l", OdbcType.Bit, -1, false),
-                    new TTypedColumnInfo(4, "InternatTelephoneCode", "p_internat_telephone_code_i", OdbcType.Int, -1, false),
-                    new TTypedColumnInfo(5, "InternatPostalTypeCode", "p_internat_postal_type_code_c", OdbcType.VarChar, 16, false),
-                    new TTypedColumnInfo(6, "InternatAccessCode", "p_internat_access_code_c", OdbcType.VarChar, 8, false),
-                    new TTypedColumnInfo(7, "TimeZoneMinimum", "p_time_zone_minimum_n", OdbcType.Decimal, 6, false),
-                    new TTypedColumnInfo(8, "TimeZoneMaximum", "p_time_zone_maximum_n", OdbcType.Decimal, 6, false),
-                    new TTypedColumnInfo(9, "Deletable", "p_deletable_l", OdbcType.Bit, -1, true),
-                    new TTypedColumnInfo(10, "AddressOrder", "p_address_order_i", OdbcType.Int, -1, false),
-                    new TTypedColumnInfo(11, "CountryNameLocal", "p_country_name_local_c", OdbcType.VarChar, 80, false),
-                    new TTypedColumnInfo(12, "DateCreated", "s_date_created_d", OdbcType.Date, -1, false),
-                    new TTypedColumnInfo(13, "CreatedBy", "s_created_by_c", OdbcType.VarChar, 20, false),
-                    new TTypedColumnInfo(14, "DateModified", "s_date_modified_d", OdbcType.Date, -1, false),
-                    new TTypedColumnInfo(15, "ModifiedBy", "s_modified_by_c", OdbcType.VarChar, 20, false),
-                    new TTypedColumnInfo(16, "ModificationId", "s_modification_id_c", OdbcType.VarChar, 150, false)
-                },
-                new int[] {
-                    0
-                }));
-            return true;
-        }
-
-        /// constructor
-        public PCountryTable() :
-                base("PCountry")
-        {
-        }
-
-        /// constructor
-        public PCountryTable(string ATablename) :
-                base(ATablename)
-        {
-        }
-
-        /// constructor for serialization
-        public PCountryTable(System.Runtime.Serialization.SerializationInfo info, System.Runtime.Serialization.StreamingContext context) :
-                base(info, context)
-        {
-        }
 
         /// create the columns
         protected override void InitClass()
@@ -2186,6 +2314,18 @@ namespace Ict.Petra.Shared.MCommon.Data
         public PCountryTable GetChangesTyped()
         {
             return ((PCountryTable)(base.GetChangesTypedInternal()));
+        }
+
+        /// return the CamelCase name of the table
+        public static string GetTableName()
+        {
+            return "PCountry";
+        }
+
+        /// return the name of the table as it is used in the database
+        public static string GetTableDBName()
+        {
+            return "p_country";
         }
 
         /// get an odbc parameter for the given column
@@ -3090,48 +3230,47 @@ namespace Ict.Petra.Shared.MCommon.Data
     [Serializable()]
     public class ACurrencyTable : TTypedDataTable
     {
-        /// This defines which currency is being used
-        public DataColumn ColumnCurrencyCode;
-        /// This is the name of the currency
-        public DataColumn ColumnCurrencyName;
-        /// This is the symbol used to show a currency. Eg $US or £
-        public DataColumn ColumnCurrencySymbol;
-        /// Country code
-        public DataColumn ColumnCountryCode;
-        /// The format in which to display and accept input on a currency (decimal values)
-        public DataColumn ColumnDisplayFormat;
-        /// Indicates whether currency is part of the european exchange rate mechanism/ European Monetary Union
-        public DataColumn ColumnInEmu;
-        /// The date the record was created.
-        public DataColumn ColumnDateCreated;
-        /// User ID of who created this record.
-        public DataColumn ColumnCreatedBy;
-        /// The date the record was modified.
-        public DataColumn ColumnDateModified;
-        /// User ID of who last modified this record.
-        public DataColumn ColumnModifiedBy;
-        /// This identifies the current version of the record.
-        public DataColumn ColumnModificationId;
-
         /// TableId for Ict.Common.Data generic functions
         public static short TableId = 4;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnCurrencyCodeId = 0;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnCurrencyNameId = 1;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnCurrencySymbolId = 2;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnCountryCodeId = 3;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnDisplayFormatId = 4;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnInEmuId = 5;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnDateCreatedId = 6;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnCreatedById = 7;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnDateModifiedId = 8;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnModifiedById = 9;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnModificationIdId = 10;
 
         private static bool FInitInfoValues = InitInfoValues();
         private static bool InitInfoValues()
         {
             TableInfo.Add(TableId, new TTypedTableInfo(TableId, "ACurrency", "a_currency",
                 new TTypedColumnInfo[] {
-                    new TTypedColumnInfo(0, "CurrencyCode", "a_currency_code_c", OdbcType.VarChar, 16, true),
-                    new TTypedColumnInfo(1, "CurrencyName", "a_currency_name_c", OdbcType.VarChar, 64, true),
-                    new TTypedColumnInfo(2, "CurrencySymbol", "a_currency_symbol_c", OdbcType.VarChar, 8, true),
-                    new TTypedColumnInfo(3, "CountryCode", "p_country_code_c", OdbcType.VarChar, 8, true),
-                    new TTypedColumnInfo(4, "DisplayFormat", "a_display_format_c", OdbcType.VarChar, 40, true),
-                    new TTypedColumnInfo(5, "InEmu", "a_in_emu_l", OdbcType.Bit, -1, true),
-                    new TTypedColumnInfo(6, "DateCreated", "s_date_created_d", OdbcType.Date, -1, false),
-                    new TTypedColumnInfo(7, "CreatedBy", "s_created_by_c", OdbcType.VarChar, 20, false),
-                    new TTypedColumnInfo(8, "DateModified", "s_date_modified_d", OdbcType.Date, -1, false),
-                    new TTypedColumnInfo(9, "ModifiedBy", "s_modified_by_c", OdbcType.VarChar, 20, false),
-                    new TTypedColumnInfo(10, "ModificationId", "s_modification_id_c", OdbcType.VarChar, 150, false)
+                    new TTypedColumnInfo(0, "CurrencyCode", "a_currency_code_c", "Currency Code", OdbcType.VarChar, 16, true),
+                    new TTypedColumnInfo(1, "CurrencyName", "a_currency_name_c", "Currency Name", OdbcType.VarChar, 64, true),
+                    new TTypedColumnInfo(2, "CurrencySymbol", "a_currency_symbol_c", "Currency Symbol", OdbcType.VarChar, 8, true),
+                    new TTypedColumnInfo(3, "CountryCode", "p_country_code_c", "Country Code", OdbcType.VarChar, 8, true),
+                    new TTypedColumnInfo(4, "DisplayFormat", "a_display_format_c", "Display Format", OdbcType.VarChar, 40, true),
+                    new TTypedColumnInfo(5, "InEmu", "a_in_emu_l", "In EMU", OdbcType.Bit, -1, true),
+                    new TTypedColumnInfo(6, "DateCreated", "s_date_created_d", "Created Date", OdbcType.Date, -1, false),
+                    new TTypedColumnInfo(7, "CreatedBy", "s_created_by_c", "Created By", OdbcType.VarChar, 20, false),
+                    new TTypedColumnInfo(8, "DateModified", "s_date_modified_d", "Modified Date", OdbcType.Date, -1, false),
+                    new TTypedColumnInfo(9, "ModifiedBy", "s_modified_by_c", "Modified By", OdbcType.VarChar, 20, false),
+                    new TTypedColumnInfo(10, "ModificationId", "s_modification_id_c", "", OdbcType.VarChar, 150, false)
                 },
                 new int[] {
                     0
@@ -3156,6 +3295,29 @@ namespace Ict.Petra.Shared.MCommon.Data
                 base(info, context)
         {
         }
+
+        /// This defines which currency is being used
+        public DataColumn ColumnCurrencyCode;
+        /// This is the name of the currency
+        public DataColumn ColumnCurrencyName;
+        /// This is the symbol used to show a currency. Eg $US or £
+        public DataColumn ColumnCurrencySymbol;
+        /// Country code
+        public DataColumn ColumnCountryCode;
+        /// The format in which to display and accept input on a currency (decimal values)
+        public DataColumn ColumnDisplayFormat;
+        /// Indicates whether currency is part of the european exchange rate mechanism/ European Monetary Union
+        public DataColumn ColumnInEmu;
+        /// The date the record was created.
+        public DataColumn ColumnDateCreated;
+        /// User ID of who created this record.
+        public DataColumn ColumnCreatedBy;
+        /// The date the record was modified.
+        public DataColumn ColumnDateModified;
+        /// User ID of who last modified this record.
+        public DataColumn ColumnModifiedBy;
+        /// This identifies the current version of the record.
+        public DataColumn ColumnModificationId;
 
         /// create the columns
         protected override void InitClass()
@@ -3225,6 +3387,18 @@ namespace Ict.Petra.Shared.MCommon.Data
         public ACurrencyTable GetChangesTyped()
         {
             return ((ACurrencyTable)(base.GetChangesTypedInternal()));
+        }
+
+        /// return the CamelCase name of the table
+        public static string GetTableName()
+        {
+            return "ACurrency";
+        }
+
+        /// return the name of the table as it is used in the database
+        public static string GetTableDBName()
+        {
+            return "a_currency";
         }
 
         /// get an odbc parameter for the given column

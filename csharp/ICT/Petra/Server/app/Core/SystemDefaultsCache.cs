@@ -118,7 +118,9 @@ namespace Ict.Petra.Server.App.Core
                 FTableCached = true;
             }
 
+#if DEBUGMODE
             try
+#endif
             {
                 try
                 {
@@ -139,13 +141,13 @@ namespace Ict.Petra.Server.App.Core
                     // $IFDEF DEBUGMODE Console.WriteLine('TSystemDefaultsCache.GetSystemDefaultsTable released the ReaderLock.');$ENDIF
                 }
             }
+#if DEBUGMODE
             catch (Exception exp)
             {
-#if DEBUGMODE
                 Console.WriteLine("Exception in TSystemDefaultsCache.GetSystemDefaultsTable: " + exp.ToString());
-#endif
                 throw;
             }
+#endif
             return ReturnValue;
         }
 
@@ -174,7 +176,9 @@ namespace Ict.Petra.Server.App.Core
                 FTableCached = true;
             }
 
+#if DEBUGMODE
             try
+#endif
             {
                 try
                 {
@@ -204,13 +208,13 @@ namespace Ict.Petra.Server.App.Core
                     // $IFDEF DEBUGMODE Console.WriteLine('TSystemDefaultsCache.GetSystemDefault released the ReaderLock.');$ENDIF
                 }
             }
+#if DEBUGMODE
             catch (Exception exp)
             {
-#if DEBUGMODE
                 Console.WriteLine("Exception in TSystemDefaultsCache.GetSystemDefaultsTable: " + exp.ToString());
-#endif
                 throw;
             }
+#endif
             return ReturnValue;
         }
 
@@ -416,7 +420,9 @@ namespace Ict.Petra.Server.App.Core
 
             /* $IFDEF DEBUGMODE if TSrvSetting.DL >= 9 then Console.WriteLine(this.GetType.FullName + '.LoadSystemDefaultsTable called in the AppDomain ' + Thread.GetDomain.FriendlyName + '. Instance hash is ' + this.GetHashCode().ToString()); $ENDIF
             **/
+#if DEBUGMODE
             try
+#endif
             {
                 // $IFDEF DEBUGMODE Console.WriteLine('TSystemDefaultsCache.LoadSystemDefaultsTable waiting for a WriterLock...');$ENDIF
                 // Prevent other threads from obtaining a read lock on the cache table while we are (re)loading the cache table!
@@ -464,13 +470,13 @@ namespace Ict.Petra.Server.App.Core
                     // $IFDEF DEBUGMODE Console.WriteLine('TSystemDefaultsCache.LoadSystemDefaultsTable released the WriterLock.');$ENDIF
                 }
             }
+#if DEBUGMODE
             catch (Exception exp)
             {
-#if DEBUGMODE
                 Console.WriteLine("Exception in TSystemDefaultsCache.LoadSystemDefaultsTable: " + exp.ToString());
-#endif
                 throw;
             }
+#endif
         }
 
         /// <summary>

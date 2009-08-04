@@ -42,6 +42,108 @@ namespace Ict.Petra.Shared.MSysMan.Data
     [Serializable()]
     public class SUserTable : TTypedDataTable
     {
+        /// TableId for Ict.Common.Data generic functions
+        public static short TableId = 5;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnUserIdId = 0;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnFirstNameId = 1;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnLastNameId = 2;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnPasswordHashId = 3;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnPasswordSaltId = 4;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnPasswordNeedsChangeId = 5;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnFailedLoginsId = 6;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnRetiredId = 7;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnLastLoginTimeId = 8;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnLastLoginDateId = 9;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnLanguageCodeId = 10;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnCanModifyId = 11;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnRecordDeleteId = 12;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnAcquisitionCodeId = 13;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnDefaultLedgerNumberId = 14;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnFailedLoginTimeId = 15;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnFailedLoginDateId = 16;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnPartnerKeyId = 17;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnDateCreatedId = 18;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnCreatedById = 19;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnDateModifiedId = 20;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnModifiedById = 21;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnModificationIdId = 22;
+
+        private static bool FInitInfoValues = InitInfoValues();
+        private static bool InitInfoValues()
+        {
+            TableInfo.Add(TableId, new TTypedTableInfo(TableId, "SUser", "s_user",
+                new TTypedColumnInfo[] {
+                    new TTypedColumnInfo(0, "UserId", "s_user_id_c", "User ID", OdbcType.VarChar, 20, true),
+                    new TTypedColumnInfo(1, "FirstName", "s_first_name_c", "Personal Name", OdbcType.VarChar, 64, false),
+                    new TTypedColumnInfo(2, "LastName", "s_last_name_c", "Family Name", OdbcType.VarChar, 64, false),
+                    new TTypedColumnInfo(3, "PasswordHash", "s_password_hash_c", "s_password_hash_c", OdbcType.VarChar, 64, false),
+                    new TTypedColumnInfo(4, "PasswordSalt", "s_password_salt_c", "s_password_salt_c", OdbcType.VarChar, 64, false),
+                    new TTypedColumnInfo(5, "PasswordNeedsChange", "s_password_needs_change_l", "Password needs change", OdbcType.Bit, -1, false),
+                    new TTypedColumnInfo(6, "FailedLogins", "s_failed_logins_i", "Failed Logins", OdbcType.Int, -1, false),
+                    new TTypedColumnInfo(7, "Retired", "s_retired_l", "Retired", OdbcType.Bit, -1, false),
+                    new TTypedColumnInfo(8, "LastLoginTime", "s_last_login_time_i", "Last Login Time", OdbcType.Int, -1, false),
+                    new TTypedColumnInfo(9, "LastLoginDate", "s_last_login_date_d", "Last Login Date", OdbcType.Date, -1, false),
+                    new TTypedColumnInfo(10, "LanguageCode", "s_language_code_c", "Language Code", OdbcType.VarChar, 20, false),
+                    new TTypedColumnInfo(11, "CanModify", "s_can_modify_l", "Can Modify", OdbcType.Bit, -1, false),
+                    new TTypedColumnInfo(12, "RecordDelete", "s_record_delete_l", "Delete System Records", OdbcType.Bit, -1, false),
+                    new TTypedColumnInfo(13, "AcquisitionCode", "s_acquisition_code_c", "Acquisition Code", OdbcType.VarChar, 16, false),
+                    new TTypedColumnInfo(14, "DefaultLedgerNumber", "a_default_ledger_number_i", "Ledger Number", OdbcType.Int, -1, false),
+                    new TTypedColumnInfo(15, "FailedLoginTime", "s_failed_login_time_i", "Last Failed Login Time", OdbcType.Int, -1, false),
+                    new TTypedColumnInfo(16, "FailedLoginDate", "s_failed_login_date_d", "Last Failed Login Date", OdbcType.Date, -1, false),
+                    new TTypedColumnInfo(17, "PartnerKey", "p_partner_key_n", "Partner Key", OdbcType.Decimal, 10, false),
+                    new TTypedColumnInfo(18, "DateCreated", "s_date_created_d", "Created Date", OdbcType.Date, -1, false),
+                    new TTypedColumnInfo(19, "CreatedBy", "s_created_by_c", "Created By", OdbcType.VarChar, 20, false),
+                    new TTypedColumnInfo(20, "DateModified", "s_date_modified_d", "Modified Date", OdbcType.Date, -1, false),
+                    new TTypedColumnInfo(21, "ModifiedBy", "s_modified_by_c", "Modified By", OdbcType.VarChar, 20, false),
+                    new TTypedColumnInfo(22, "ModificationId", "s_modification_id_c", "", OdbcType.VarChar, 150, false)
+                },
+                new int[] {
+                    0
+                }));
+            return true;
+        }
+
+        /// constructor
+        public SUserTable() :
+                base("SUser")
+        {
+        }
+
+        /// constructor
+        public SUserTable(string ATablename) :
+                base(ATablename)
+        {
+        }
+
+        /// constructor for serialization
+        public SUserTable(System.Runtime.Serialization.SerializationInfo info, System.Runtime.Serialization.StreamingContext context) :
+                base(info, context)
+        {
+        }
+
         /// This identifies who the current user is
         public DataColumn ColumnUserId;
         ///
@@ -88,62 +190,6 @@ namespace Ict.Petra.Shared.MSysMan.Data
         public DataColumn ColumnModifiedBy;
         /// This identifies the current version of the record.
         public DataColumn ColumnModificationId;
-
-        /// TableId for Ict.Common.Data generic functions
-        public static short TableId = 5;
-
-        private static bool FInitInfoValues = InitInfoValues();
-        private static bool InitInfoValues()
-        {
-            TableInfo.Add(TableId, new TTypedTableInfo(TableId, "SUser", "s_user",
-                new TTypedColumnInfo[] {
-                    new TTypedColumnInfo(0, "UserId", "s_user_id_c", OdbcType.VarChar, 20, true),
-                    new TTypedColumnInfo(1, "FirstName", "s_first_name_c", OdbcType.VarChar, 64, false),
-                    new TTypedColumnInfo(2, "LastName", "s_last_name_c", OdbcType.VarChar, 64, false),
-                    new TTypedColumnInfo(3, "PasswordHash", "s_password_hash_c", OdbcType.VarChar, 64, false),
-                    new TTypedColumnInfo(4, "PasswordSalt", "s_password_salt_c", OdbcType.VarChar, 64, false),
-                    new TTypedColumnInfo(5, "PasswordNeedsChange", "s_password_needs_change_l", OdbcType.Bit, -1, false),
-                    new TTypedColumnInfo(6, "FailedLogins", "s_failed_logins_i", OdbcType.Int, -1, false),
-                    new TTypedColumnInfo(7, "Retired", "s_retired_l", OdbcType.Bit, -1, false),
-                    new TTypedColumnInfo(8, "LastLoginTime", "s_last_login_time_i", OdbcType.Int, -1, false),
-                    new TTypedColumnInfo(9, "LastLoginDate", "s_last_login_date_d", OdbcType.Date, -1, false),
-                    new TTypedColumnInfo(10, "LanguageCode", "s_language_code_c", OdbcType.VarChar, 20, false),
-                    new TTypedColumnInfo(11, "CanModify", "s_can_modify_l", OdbcType.Bit, -1, false),
-                    new TTypedColumnInfo(12, "RecordDelete", "s_record_delete_l", OdbcType.Bit, -1, false),
-                    new TTypedColumnInfo(13, "AcquisitionCode", "s_acquisition_code_c", OdbcType.VarChar, 16, false),
-                    new TTypedColumnInfo(14, "DefaultLedgerNumber", "a_default_ledger_number_i", OdbcType.Int, -1, false),
-                    new TTypedColumnInfo(15, "FailedLoginTime", "s_failed_login_time_i", OdbcType.Int, -1, false),
-                    new TTypedColumnInfo(16, "FailedLoginDate", "s_failed_login_date_d", OdbcType.Date, -1, false),
-                    new TTypedColumnInfo(17, "PartnerKey", "p_partner_key_n", OdbcType.Decimal, 10, false),
-                    new TTypedColumnInfo(18, "DateCreated", "s_date_created_d", OdbcType.Date, -1, false),
-                    new TTypedColumnInfo(19, "CreatedBy", "s_created_by_c", OdbcType.VarChar, 20, false),
-                    new TTypedColumnInfo(20, "DateModified", "s_date_modified_d", OdbcType.Date, -1, false),
-                    new TTypedColumnInfo(21, "ModifiedBy", "s_modified_by_c", OdbcType.VarChar, 20, false),
-                    new TTypedColumnInfo(22, "ModificationId", "s_modification_id_c", OdbcType.VarChar, 150, false)
-                },
-                new int[] {
-                    0
-                }));
-            return true;
-        }
-
-        /// constructor
-        public SUserTable() :
-                base("SUser")
-        {
-        }
-
-        /// constructor
-        public SUserTable(string ATablename) :
-                base(ATablename)
-        {
-        }
-
-        /// constructor for serialization
-        public SUserTable(System.Runtime.Serialization.SerializationInfo info, System.Runtime.Serialization.StreamingContext context) :
-                base(info, context)
-        {
-        }
 
         /// create the columns
         protected override void InitClass()
@@ -237,6 +283,18 @@ namespace Ict.Petra.Shared.MSysMan.Data
         public SUserTable GetChangesTyped()
         {
             return ((SUserTable)(base.GetChangesTypedInternal()));
+        }
+
+        /// return the CamelCase name of the table
+        public static string GetTableName()
+        {
+            return "SUser";
+        }
+
+        /// return the name of the table as it is used in the database
+        public static string GetTableDBName()
+        {
+            return "s_user";
         }
 
         /// get an odbc parameter for the given column
@@ -1443,6 +1501,96 @@ namespace Ict.Petra.Shared.MSysMan.Data
     [Serializable()]
     public class SFormTable : TTypedDataTable
     {
+        /// TableId for Ict.Common.Data generic functions
+        public static short TableId = 6;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnFormNameId = 0;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnFormDescriptionId = 1;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnDefaultFontId = 2;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnDefaultFontSizeId = 3;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnDefaultLpiId = 4;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnDefaultCpiId = 5;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnFormLengthId = 6;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnFormWidthId = 7;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnFormOrientationId = 8;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnUnitOfMeasureId = 9;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnTopMarginId = 10;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnBottomMarginId = 11;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnLeftMarginId = 12;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnRightMarginId = 13;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnDateCreatedId = 14;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnCreatedById = 15;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnDateModifiedId = 16;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnModifiedById = 17;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnModificationIdId = 18;
+
+        private static bool FInitInfoValues = InitInfoValues();
+        private static bool InitInfoValues()
+        {
+            TableInfo.Add(TableId, new TTypedTableInfo(TableId, "SForm", "s_form",
+                new TTypedColumnInfo[] {
+                    new TTypedColumnInfo(0, "FormName", "s_form_name_c", "Form Name", OdbcType.VarChar, 20, true),
+                    new TTypedColumnInfo(1, "FormDescription", "s_form_description_c", "Description", OdbcType.VarChar, 80, true),
+                    new TTypedColumnInfo(2, "DefaultFont", "s_default_font_c", "Font Name", OdbcType.VarChar, 64, false),
+                    new TTypedColumnInfo(3, "DefaultFontSize", "s_default_font_size_i", "Font Size", OdbcType.Int, -1, true),
+                    new TTypedColumnInfo(4, "DefaultLpi", "s_default_lpi_i", "Lines per Unit", OdbcType.Int, -1, true),
+                    new TTypedColumnInfo(5, "DefaultCpi", "s_default_cpi_i", "Characters per Unit", OdbcType.Int, -1, true),
+                    new TTypedColumnInfo(6, "FormLength", "s_form_length_n", "Paper Height", OdbcType.Decimal, 6, true),
+                    new TTypedColumnInfo(7, "FormWidth", "s_form_width_n", "Paper Width", OdbcType.Decimal, 6, true),
+                    new TTypedColumnInfo(8, "FormOrientation", "s_form_orientation_c", "Orientation", OdbcType.VarChar, 2, false),
+                    new TTypedColumnInfo(9, "UnitOfMeasure", "s_unit_of_measure_l", "Unit Measure", OdbcType.Bit, -1, false),
+                    new TTypedColumnInfo(10, "TopMargin", "s_top_margin_n", "Top margin", OdbcType.Decimal, 6, false),
+                    new TTypedColumnInfo(11, "BottomMargin", "s_bottom_margin_n", "Bottom margin", OdbcType.Decimal, 6, false),
+                    new TTypedColumnInfo(12, "LeftMargin", "s_left_margin_n", "Left margin", OdbcType.Decimal, 6, false),
+                    new TTypedColumnInfo(13, "RightMargin", "s_right_margin_n", "Right margin", OdbcType.Decimal, 6, false),
+                    new TTypedColumnInfo(14, "DateCreated", "s_date_created_d", "Created Date", OdbcType.Date, -1, false),
+                    new TTypedColumnInfo(15, "CreatedBy", "s_created_by_c", "Created By", OdbcType.VarChar, 20, false),
+                    new TTypedColumnInfo(16, "DateModified", "s_date_modified_d", "Modified Date", OdbcType.Date, -1, false),
+                    new TTypedColumnInfo(17, "ModifiedBy", "s_modified_by_c", "Modified By", OdbcType.VarChar, 20, false),
+                    new TTypedColumnInfo(18, "ModificationId", "s_modification_id_c", "", OdbcType.VarChar, 150, false)
+                },
+                new int[] {
+                    0
+                }));
+            return true;
+        }
+
+        /// constructor
+        public SFormTable() :
+                base("SForm")
+        {
+        }
+
+        /// constructor
+        public SFormTable(string ATablename) :
+                base(ATablename)
+        {
+        }
+
+        /// constructor for serialization
+        public SFormTable(System.Runtime.Serialization.SerializationInfo info, System.Runtime.Serialization.StreamingContext context) :
+                base(info, context)
+        {
+        }
+
         /// This identifies the form
         public DataColumn ColumnFormName;
         /// This is a description of the form
@@ -1481,58 +1629,6 @@ namespace Ict.Petra.Shared.MSysMan.Data
         public DataColumn ColumnModifiedBy;
         /// This identifies the current version of the record.
         public DataColumn ColumnModificationId;
-
-        /// TableId for Ict.Common.Data generic functions
-        public static short TableId = 6;
-
-        private static bool FInitInfoValues = InitInfoValues();
-        private static bool InitInfoValues()
-        {
-            TableInfo.Add(TableId, new TTypedTableInfo(TableId, "SForm", "s_form",
-                new TTypedColumnInfo[] {
-                    new TTypedColumnInfo(0, "FormName", "s_form_name_c", OdbcType.VarChar, 20, true),
-                    new TTypedColumnInfo(1, "FormDescription", "s_form_description_c", OdbcType.VarChar, 80, true),
-                    new TTypedColumnInfo(2, "DefaultFont", "s_default_font_c", OdbcType.VarChar, 64, false),
-                    new TTypedColumnInfo(3, "DefaultFontSize", "s_default_font_size_i", OdbcType.Int, -1, true),
-                    new TTypedColumnInfo(4, "DefaultLpi", "s_default_lpi_i", OdbcType.Int, -1, true),
-                    new TTypedColumnInfo(5, "DefaultCpi", "s_default_cpi_i", OdbcType.Int, -1, true),
-                    new TTypedColumnInfo(6, "FormLength", "s_form_length_n", OdbcType.Decimal, 6, true),
-                    new TTypedColumnInfo(7, "FormWidth", "s_form_width_n", OdbcType.Decimal, 6, true),
-                    new TTypedColumnInfo(8, "FormOrientation", "s_form_orientation_c", OdbcType.VarChar, 2, false),
-                    new TTypedColumnInfo(9, "UnitOfMeasure", "s_unit_of_measure_l", OdbcType.Bit, -1, false),
-                    new TTypedColumnInfo(10, "TopMargin", "s_top_margin_n", OdbcType.Decimal, 6, false),
-                    new TTypedColumnInfo(11, "BottomMargin", "s_bottom_margin_n", OdbcType.Decimal, 6, false),
-                    new TTypedColumnInfo(12, "LeftMargin", "s_left_margin_n", OdbcType.Decimal, 6, false),
-                    new TTypedColumnInfo(13, "RightMargin", "s_right_margin_n", OdbcType.Decimal, 6, false),
-                    new TTypedColumnInfo(14, "DateCreated", "s_date_created_d", OdbcType.Date, -1, false),
-                    new TTypedColumnInfo(15, "CreatedBy", "s_created_by_c", OdbcType.VarChar, 20, false),
-                    new TTypedColumnInfo(16, "DateModified", "s_date_modified_d", OdbcType.Date, -1, false),
-                    new TTypedColumnInfo(17, "ModifiedBy", "s_modified_by_c", OdbcType.VarChar, 20, false),
-                    new TTypedColumnInfo(18, "ModificationId", "s_modification_id_c", OdbcType.VarChar, 150, false)
-                },
-                new int[] {
-                    0
-                }));
-            return true;
-        }
-
-        /// constructor
-        public SFormTable() :
-                base("SForm")
-        {
-        }
-
-        /// constructor
-        public SFormTable(string ATablename) :
-                base(ATablename)
-        {
-        }
-
-        /// constructor for serialization
-        public SFormTable(System.Runtime.Serialization.SerializationInfo info, System.Runtime.Serialization.StreamingContext context) :
-                base(info, context)
-        {
-        }
 
         /// create the columns
         protected override void InitClass()
@@ -1618,6 +1714,18 @@ namespace Ict.Petra.Shared.MSysMan.Data
         public SFormTable GetChangesTyped()
         {
             return ((SFormTable)(base.GetChangesTypedInternal()));
+        }
+
+        /// return the CamelCase name of the table
+        public static string GetTableName()
+        {
+            return "SForm";
+        }
+
+        /// return the name of the table as it is used in the database
+        public static string GetTableDBName()
+        {
+            return "s_form";
         }
 
         /// get an odbc parameter for the given column
@@ -2620,36 +2728,35 @@ namespace Ict.Petra.Shared.MSysMan.Data
     [Serializable()]
     public class SFileTable : TTypedDataTable
     {
-        /// This is the name of the file
-        public DataColumn ColumnFileName;
-        /// A description of the file
-        public DataColumn ColumnFileDescription;
-        /// The date the record was created.
-        public DataColumn ColumnDateCreated;
-        /// User ID of who created this record.
-        public DataColumn ColumnCreatedBy;
-        /// The date the record was modified.
-        public DataColumn ColumnDateModified;
-        /// User ID of who last modified this record.
-        public DataColumn ColumnModifiedBy;
-        /// This identifies the current version of the record.
-        public DataColumn ColumnModificationId;
-
         /// TableId for Ict.Common.Data generic functions
         public static short TableId = 7;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnFileNameId = 0;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnFileDescriptionId = 1;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnDateCreatedId = 2;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnCreatedById = 3;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnDateModifiedId = 4;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnModifiedById = 5;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnModificationIdId = 6;
 
         private static bool FInitInfoValues = InitInfoValues();
         private static bool InitInfoValues()
         {
             TableInfo.Add(TableId, new TTypedTableInfo(TableId, "SFile", "s_file",
                 new TTypedColumnInfo[] {
-                    new TTypedColumnInfo(0, "FileName", "s_file_name_c", OdbcType.VarChar, 80, true),
-                    new TTypedColumnInfo(1, "FileDescription", "s_file_description_c", OdbcType.VarChar, 100, false),
-                    new TTypedColumnInfo(2, "DateCreated", "s_date_created_d", OdbcType.Date, -1, false),
-                    new TTypedColumnInfo(3, "CreatedBy", "s_created_by_c", OdbcType.VarChar, 20, false),
-                    new TTypedColumnInfo(4, "DateModified", "s_date_modified_d", OdbcType.Date, -1, false),
-                    new TTypedColumnInfo(5, "ModifiedBy", "s_modified_by_c", OdbcType.VarChar, 20, false),
-                    new TTypedColumnInfo(6, "ModificationId", "s_modification_id_c", OdbcType.VarChar, 150, false)
+                    new TTypedColumnInfo(0, "FileName", "s_file_name_c", "File Name", OdbcType.VarChar, 80, true),
+                    new TTypedColumnInfo(1, "FileDescription", "s_file_description_c", "Description", OdbcType.VarChar, 100, false),
+                    new TTypedColumnInfo(2, "DateCreated", "s_date_created_d", "Created Date", OdbcType.Date, -1, false),
+                    new TTypedColumnInfo(3, "CreatedBy", "s_created_by_c", "Created By", OdbcType.VarChar, 20, false),
+                    new TTypedColumnInfo(4, "DateModified", "s_date_modified_d", "Modified Date", OdbcType.Date, -1, false),
+                    new TTypedColumnInfo(5, "ModifiedBy", "s_modified_by_c", "Modified By", OdbcType.VarChar, 20, false),
+                    new TTypedColumnInfo(6, "ModificationId", "s_modification_id_c", "", OdbcType.VarChar, 150, false)
                 },
                 new int[] {
                     0
@@ -2674,6 +2781,21 @@ namespace Ict.Petra.Shared.MSysMan.Data
                 base(info, context)
         {
         }
+
+        /// This is the name of the file
+        public DataColumn ColumnFileName;
+        /// A description of the file
+        public DataColumn ColumnFileDescription;
+        /// The date the record was created.
+        public DataColumn ColumnDateCreated;
+        /// User ID of who created this record.
+        public DataColumn ColumnCreatedBy;
+        /// The date the record was modified.
+        public DataColumn ColumnDateModified;
+        /// User ID of who last modified this record.
+        public DataColumn ColumnModifiedBy;
+        /// This identifies the current version of the record.
+        public DataColumn ColumnModificationId;
 
         /// create the columns
         protected override void InitClass()
@@ -2735,6 +2857,18 @@ namespace Ict.Petra.Shared.MSysMan.Data
         public SFileTable GetChangesTyped()
         {
             return ((SFileTable)(base.GetChangesTypedInternal()));
+        }
+
+        /// return the CamelCase name of the table
+        public static string GetTableName()
+        {
+            return "SFile";
+        }
+
+        /// return the name of the table as it is used in the database
+        public static string GetTableDBName()
+        {
+            return "s_file";
         }
 
         /// get an odbc parameter for the given column
@@ -3125,42 +3259,41 @@ namespace Ict.Petra.Shared.MSysMan.Data
     [Serializable()]
     public class SGroupTable : TTypedDataTable
     {
-        /// identifies a system group
-        public DataColumn ColumnGroupId;
-        /// Field that the group belongs to
-        public DataColumn ColumnUnitKey;
-        /// Describes a group
-        public DataColumn ColumnGroupName;
-        /// This defines if the code can be modified
-        public DataColumn ColumnCanModify;
-        /// The date the record was created.
-        public DataColumn ColumnDateCreated;
-        /// User ID of who created this record.
-        public DataColumn ColumnCreatedBy;
-        /// The date the record was modified.
-        public DataColumn ColumnDateModified;
-        /// User ID of who last modified this record.
-        public DataColumn ColumnModifiedBy;
-        /// This identifies the current version of the record.
-        public DataColumn ColumnModificationId;
-
         /// TableId for Ict.Common.Data generic functions
         public static short TableId = 8;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnGroupIdId = 0;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnUnitKeyId = 1;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnGroupNameId = 2;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnCanModifyId = 3;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnDateCreatedId = 4;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnCreatedById = 5;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnDateModifiedId = 6;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnModifiedById = 7;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnModificationIdId = 8;
 
         private static bool FInitInfoValues = InitInfoValues();
         private static bool InitInfoValues()
         {
             TableInfo.Add(TableId, new TTypedTableInfo(TableId, "SGroup", "s_group",
                 new TTypedColumnInfo[] {
-                    new TTypedColumnInfo(0, "GroupId", "s_group_id_c", OdbcType.VarChar, 20, true),
-                    new TTypedColumnInfo(1, "UnitKey", "s_unit_key_n", OdbcType.Decimal, 10, true),
-                    new TTypedColumnInfo(2, "GroupName", "s_group_name_c", OdbcType.VarChar, 100, false),
-                    new TTypedColumnInfo(3, "CanModify", "s_can_modify_l", OdbcType.Bit, -1, false),
-                    new TTypedColumnInfo(4, "DateCreated", "s_date_created_d", OdbcType.Date, -1, false),
-                    new TTypedColumnInfo(5, "CreatedBy", "s_created_by_c", OdbcType.VarChar, 20, false),
-                    new TTypedColumnInfo(6, "DateModified", "s_date_modified_d", OdbcType.Date, -1, false),
-                    new TTypedColumnInfo(7, "ModifiedBy", "s_modified_by_c", OdbcType.VarChar, 20, false),
-                    new TTypedColumnInfo(8, "ModificationId", "s_modification_id_c", OdbcType.VarChar, 150, false)
+                    new TTypedColumnInfo(0, "GroupId", "s_group_id_c", "Group ID", OdbcType.VarChar, 20, true),
+                    new TTypedColumnInfo(1, "UnitKey", "s_unit_key_n", "Field", OdbcType.Decimal, 10, true),
+                    new TTypedColumnInfo(2, "GroupName", "s_group_name_c", "Group Name", OdbcType.VarChar, 100, false),
+                    new TTypedColumnInfo(3, "CanModify", "s_can_modify_l", "Can Modify", OdbcType.Bit, -1, false),
+                    new TTypedColumnInfo(4, "DateCreated", "s_date_created_d", "Created Date", OdbcType.Date, -1, false),
+                    new TTypedColumnInfo(5, "CreatedBy", "s_created_by_c", "Created By", OdbcType.VarChar, 20, false),
+                    new TTypedColumnInfo(6, "DateModified", "s_date_modified_d", "Modified Date", OdbcType.Date, -1, false),
+                    new TTypedColumnInfo(7, "ModifiedBy", "s_modified_by_c", "Modified By", OdbcType.VarChar, 20, false),
+                    new TTypedColumnInfo(8, "ModificationId", "s_modification_id_c", "", OdbcType.VarChar, 150, false)
                 },
                 new int[] {
                     0, 1
@@ -3185,6 +3318,25 @@ namespace Ict.Petra.Shared.MSysMan.Data
                 base(info, context)
         {
         }
+
+        /// identifies a system group
+        public DataColumn ColumnGroupId;
+        /// Field that the group belongs to
+        public DataColumn ColumnUnitKey;
+        /// Describes a group
+        public DataColumn ColumnGroupName;
+        /// This defines if the code can be modified
+        public DataColumn ColumnCanModify;
+        /// The date the record was created.
+        public DataColumn ColumnDateCreated;
+        /// User ID of who created this record.
+        public DataColumn ColumnCreatedBy;
+        /// The date the record was modified.
+        public DataColumn ColumnDateModified;
+        /// User ID of who last modified this record.
+        public DataColumn ColumnModifiedBy;
+        /// This identifies the current version of the record.
+        public DataColumn ColumnModificationId;
 
         /// create the columns
         protected override void InitClass()
@@ -3250,6 +3402,18 @@ namespace Ict.Petra.Shared.MSysMan.Data
         public SGroupTable GetChangesTyped()
         {
             return ((SGroupTable)(base.GetChangesTypedInternal()));
+        }
+
+        /// return the CamelCase name of the table
+        public static string GetTableName()
+        {
+            return "SGroup";
+        }
+
+        /// return the name of the table as it is used in the database
+        public static string GetTableDBName()
+        {
+            return "s_group";
         }
 
         /// get an odbc parameter for the given column
@@ -3742,39 +3906,38 @@ namespace Ict.Petra.Shared.MSysMan.Data
     [Serializable()]
     public class SUserGroupTable : TTypedDataTable
     {
-        /// This is the system user id. Each user of the system is allocated one
-        public DataColumn ColumnUserId;
-        ///
-        public DataColumn ColumnGroupId;
-        /// Field that the group belongs to
-        public DataColumn ColumnUnitKey;
-        /// The date the record was created.
-        public DataColumn ColumnDateCreated;
-        /// User ID of who created this record.
-        public DataColumn ColumnCreatedBy;
-        /// The date the record was modified.
-        public DataColumn ColumnDateModified;
-        /// User ID of who last modified this record.
-        public DataColumn ColumnModifiedBy;
-        /// This identifies the current version of the record.
-        public DataColumn ColumnModificationId;
-
         /// TableId for Ict.Common.Data generic functions
         public static short TableId = 9;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnUserIdId = 0;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnGroupIdId = 1;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnUnitKeyId = 2;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnDateCreatedId = 3;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnCreatedById = 4;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnDateModifiedId = 5;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnModifiedById = 6;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnModificationIdId = 7;
 
         private static bool FInitInfoValues = InitInfoValues();
         private static bool InitInfoValues()
         {
             TableInfo.Add(TableId, new TTypedTableInfo(TableId, "SUserGroup", "s_user_group",
                 new TTypedColumnInfo[] {
-                    new TTypedColumnInfo(0, "UserId", "s_user_id_c", OdbcType.VarChar, 20, true),
-                    new TTypedColumnInfo(1, "GroupId", "s_group_id_c", OdbcType.VarChar, 20, true),
-                    new TTypedColumnInfo(2, "UnitKey", "s_unit_key_n", OdbcType.Decimal, 10, true),
-                    new TTypedColumnInfo(3, "DateCreated", "s_date_created_d", OdbcType.Date, -1, false),
-                    new TTypedColumnInfo(4, "CreatedBy", "s_created_by_c", OdbcType.VarChar, 20, false),
-                    new TTypedColumnInfo(5, "DateModified", "s_date_modified_d", OdbcType.Date, -1, false),
-                    new TTypedColumnInfo(6, "ModifiedBy", "s_modified_by_c", OdbcType.VarChar, 20, false),
-                    new TTypedColumnInfo(7, "ModificationId", "s_modification_id_c", OdbcType.VarChar, 150, false)
+                    new TTypedColumnInfo(0, "UserId", "s_user_id_c", "User ID", OdbcType.VarChar, 20, true),
+                    new TTypedColumnInfo(1, "GroupId", "s_group_id_c", "Group ID", OdbcType.VarChar, 20, true),
+                    new TTypedColumnInfo(2, "UnitKey", "s_unit_key_n", "Field", OdbcType.Decimal, 10, true),
+                    new TTypedColumnInfo(3, "DateCreated", "s_date_created_d", "Created Date", OdbcType.Date, -1, false),
+                    new TTypedColumnInfo(4, "CreatedBy", "s_created_by_c", "Created By", OdbcType.VarChar, 20, false),
+                    new TTypedColumnInfo(5, "DateModified", "s_date_modified_d", "Modified Date", OdbcType.Date, -1, false),
+                    new TTypedColumnInfo(6, "ModifiedBy", "s_modified_by_c", "Modified By", OdbcType.VarChar, 20, false),
+                    new TTypedColumnInfo(7, "ModificationId", "s_modification_id_c", "", OdbcType.VarChar, 150, false)
                 },
                 new int[] {
                     0, 1, 2
@@ -3799,6 +3962,23 @@ namespace Ict.Petra.Shared.MSysMan.Data
                 base(info, context)
         {
         }
+
+        /// This is the system user id. Each user of the system is allocated one
+        public DataColumn ColumnUserId;
+        ///
+        public DataColumn ColumnGroupId;
+        /// Field that the group belongs to
+        public DataColumn ColumnUnitKey;
+        /// The date the record was created.
+        public DataColumn ColumnDateCreated;
+        /// User ID of who created this record.
+        public DataColumn ColumnCreatedBy;
+        /// The date the record was modified.
+        public DataColumn ColumnDateModified;
+        /// User ID of who last modified this record.
+        public DataColumn ColumnModifiedBy;
+        /// This identifies the current version of the record.
+        public DataColumn ColumnModificationId;
 
         /// create the columns
         protected override void InitClass()
@@ -3862,6 +4042,18 @@ namespace Ict.Petra.Shared.MSysMan.Data
         public SUserGroupTable GetChangesTyped()
         {
             return ((SUserGroupTable)(base.GetChangesTypedInternal()));
+        }
+
+        /// return the CamelCase name of the table
+        public static string GetTableName()
+        {
+            return "SUserGroup";
+        }
+
+        /// return the name of the table as it is used in the database
+        public static string GetTableDBName()
+        {
+            return "s_user_group";
         }
 
         /// get an odbc parameter for the given column
@@ -4303,36 +4495,35 @@ namespace Ict.Petra.Shared.MSysMan.Data
     [Serializable()]
     public class SModuleTable : TTypedDataTable
     {
-        /// Identifies a module. A module is any part of aprogram which is related to each menu entry or to the sub-system. Eg, partner administration, AP, AR etc.
-        public DataColumn ColumnModuleId;
-        /// This is the name of the module
-        public DataColumn ColumnModuleName;
-        /// The date the record was created.
-        public DataColumn ColumnDateCreated;
-        /// User ID of who created this record.
-        public DataColumn ColumnCreatedBy;
-        /// The date the record was modified.
-        public DataColumn ColumnDateModified;
-        /// User ID of who last modified this record.
-        public DataColumn ColumnModifiedBy;
-        /// This identifies the current version of the record.
-        public DataColumn ColumnModificationId;
-
         /// TableId for Ict.Common.Data generic functions
         public static short TableId = 10;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnModuleIdId = 0;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnModuleNameId = 1;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnDateCreatedId = 2;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnCreatedById = 3;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnDateModifiedId = 4;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnModifiedById = 5;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnModificationIdId = 6;
 
         private static bool FInitInfoValues = InitInfoValues();
         private static bool InitInfoValues()
         {
             TableInfo.Add(TableId, new TTypedTableInfo(TableId, "SModule", "s_module",
                 new TTypedColumnInfo[] {
-                    new TTypedColumnInfo(0, "ModuleId", "s_module_id_c", OdbcType.VarChar, 20, true),
-                    new TTypedColumnInfo(1, "ModuleName", "s_module_name_c", OdbcType.VarChar, 64, false),
-                    new TTypedColumnInfo(2, "DateCreated", "s_date_created_d", OdbcType.Date, -1, false),
-                    new TTypedColumnInfo(3, "CreatedBy", "s_created_by_c", OdbcType.VarChar, 20, false),
-                    new TTypedColumnInfo(4, "DateModified", "s_date_modified_d", OdbcType.Date, -1, false),
-                    new TTypedColumnInfo(5, "ModifiedBy", "s_modified_by_c", OdbcType.VarChar, 20, false),
-                    new TTypedColumnInfo(6, "ModificationId", "s_modification_id_c", OdbcType.VarChar, 150, false)
+                    new TTypedColumnInfo(0, "ModuleId", "s_module_id_c", "Module ID", OdbcType.VarChar, 20, true),
+                    new TTypedColumnInfo(1, "ModuleName", "s_module_name_c", "Module Name", OdbcType.VarChar, 64, false),
+                    new TTypedColumnInfo(2, "DateCreated", "s_date_created_d", "Created Date", OdbcType.Date, -1, false),
+                    new TTypedColumnInfo(3, "CreatedBy", "s_created_by_c", "Created By", OdbcType.VarChar, 20, false),
+                    new TTypedColumnInfo(4, "DateModified", "s_date_modified_d", "Modified Date", OdbcType.Date, -1, false),
+                    new TTypedColumnInfo(5, "ModifiedBy", "s_modified_by_c", "Modified By", OdbcType.VarChar, 20, false),
+                    new TTypedColumnInfo(6, "ModificationId", "s_modification_id_c", "", OdbcType.VarChar, 150, false)
                 },
                 new int[] {
                     0
@@ -4357,6 +4548,21 @@ namespace Ict.Petra.Shared.MSysMan.Data
                 base(info, context)
         {
         }
+
+        /// Identifies a module. A module is any part of aprogram which is related to each menu entry or to the sub-system. Eg, partner administration, AP, AR etc.
+        public DataColumn ColumnModuleId;
+        /// This is the name of the module
+        public DataColumn ColumnModuleName;
+        /// The date the record was created.
+        public DataColumn ColumnDateCreated;
+        /// User ID of who created this record.
+        public DataColumn ColumnCreatedBy;
+        /// The date the record was modified.
+        public DataColumn ColumnDateModified;
+        /// User ID of who last modified this record.
+        public DataColumn ColumnModifiedBy;
+        /// This identifies the current version of the record.
+        public DataColumn ColumnModificationId;
 
         /// create the columns
         protected override void InitClass()
@@ -4418,6 +4624,18 @@ namespace Ict.Petra.Shared.MSysMan.Data
         public SModuleTable GetChangesTyped()
         {
             return ((SModuleTable)(base.GetChangesTypedInternal()));
+        }
+
+        /// return the CamelCase name of the table
+        public static string GetTableName()
+        {
+            return "SModule";
+        }
+
+        /// return the name of the table as it is used in the database
+        public static string GetTableDBName()
+        {
+            return "s_module";
         }
 
         /// get an odbc parameter for the given column
@@ -4808,36 +5026,35 @@ namespace Ict.Petra.Shared.MSysMan.Data
     [Serializable()]
     public class SValidOutputFormTable : TTypedDataTable
     {
-        ///
-        public DataColumn ColumnModuleId;
-        ///
-        public DataColumn ColumnFormName;
-        /// The date the record was created.
-        public DataColumn ColumnDateCreated;
-        /// User ID of who created this record.
-        public DataColumn ColumnCreatedBy;
-        /// The date the record was modified.
-        public DataColumn ColumnDateModified;
-        /// User ID of who last modified this record.
-        public DataColumn ColumnModifiedBy;
-        /// This identifies the current version of the record.
-        public DataColumn ColumnModificationId;
-
         /// TableId for Ict.Common.Data generic functions
         public static short TableId = 11;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnModuleIdId = 0;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnFormNameId = 1;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnDateCreatedId = 2;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnCreatedById = 3;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnDateModifiedId = 4;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnModifiedById = 5;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnModificationIdId = 6;
 
         private static bool FInitInfoValues = InitInfoValues();
         private static bool InitInfoValues()
         {
             TableInfo.Add(TableId, new TTypedTableInfo(TableId, "SValidOutputForm", "s_valid_output_form",
                 new TTypedColumnInfo[] {
-                    new TTypedColumnInfo(0, "ModuleId", "s_module_id_c", OdbcType.VarChar, 20, true),
-                    new TTypedColumnInfo(1, "FormName", "s_form_name_c", OdbcType.VarChar, 20, true),
-                    new TTypedColumnInfo(2, "DateCreated", "s_date_created_d", OdbcType.Date, -1, false),
-                    new TTypedColumnInfo(3, "CreatedBy", "s_created_by_c", OdbcType.VarChar, 20, false),
-                    new TTypedColumnInfo(4, "DateModified", "s_date_modified_d", OdbcType.Date, -1, false),
-                    new TTypedColumnInfo(5, "ModifiedBy", "s_modified_by_c", OdbcType.VarChar, 20, false),
-                    new TTypedColumnInfo(6, "ModificationId", "s_modification_id_c", OdbcType.VarChar, 150, false)
+                    new TTypedColumnInfo(0, "ModuleId", "s_module_id_c", "Module ID", OdbcType.VarChar, 20, true),
+                    new TTypedColumnInfo(1, "FormName", "s_form_name_c", "Form Name", OdbcType.VarChar, 20, true),
+                    new TTypedColumnInfo(2, "DateCreated", "s_date_created_d", "Created Date", OdbcType.Date, -1, false),
+                    new TTypedColumnInfo(3, "CreatedBy", "s_created_by_c", "Created By", OdbcType.VarChar, 20, false),
+                    new TTypedColumnInfo(4, "DateModified", "s_date_modified_d", "Modified Date", OdbcType.Date, -1, false),
+                    new TTypedColumnInfo(5, "ModifiedBy", "s_modified_by_c", "Modified By", OdbcType.VarChar, 20, false),
+                    new TTypedColumnInfo(6, "ModificationId", "s_modification_id_c", "", OdbcType.VarChar, 150, false)
                 },
                 new int[] {
                     0, 1
@@ -4862,6 +5079,21 @@ namespace Ict.Petra.Shared.MSysMan.Data
                 base(info, context)
         {
         }
+
+        ///
+        public DataColumn ColumnModuleId;
+        ///
+        public DataColumn ColumnFormName;
+        /// The date the record was created.
+        public DataColumn ColumnDateCreated;
+        /// User ID of who created this record.
+        public DataColumn ColumnCreatedBy;
+        /// The date the record was modified.
+        public DataColumn ColumnDateModified;
+        /// User ID of who last modified this record.
+        public DataColumn ColumnModifiedBy;
+        /// This identifies the current version of the record.
+        public DataColumn ColumnModificationId;
 
         /// create the columns
         protected override void InitClass()
@@ -4923,6 +5155,18 @@ namespace Ict.Petra.Shared.MSysMan.Data
         public SValidOutputFormTable GetChangesTyped()
         {
             return ((SValidOutputFormTable)(base.GetChangesTypedInternal()));
+        }
+
+        /// return the CamelCase name of the table
+        public static string GetTableName()
+        {
+            return "SValidOutputForm";
+        }
+
+        /// return the name of the table as it is used in the database
+        public static string GetTableDBName()
+        {
+            return "s_valid_output_form";
         }
 
         /// get an odbc parameter for the given column
@@ -5313,36 +5557,35 @@ namespace Ict.Petra.Shared.MSysMan.Data
     [Serializable()]
     public class SModuleFileTable : TTypedDataTable
     {
-        /// Identifies a module
-        public DataColumn ColumnModuleId;
-        /// This is the name of the file
-        public DataColumn ColumnFileName;
-        /// The date the record was created.
-        public DataColumn ColumnDateCreated;
-        /// User ID of who created this record.
-        public DataColumn ColumnCreatedBy;
-        /// The date the record was modified.
-        public DataColumn ColumnDateModified;
-        /// User ID of who last modified this record.
-        public DataColumn ColumnModifiedBy;
-        /// This identifies the current version of the record.
-        public DataColumn ColumnModificationId;
-
         /// TableId for Ict.Common.Data generic functions
         public static short TableId = 12;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnModuleIdId = 0;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnFileNameId = 1;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnDateCreatedId = 2;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnCreatedById = 3;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnDateModifiedId = 4;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnModifiedById = 5;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnModificationIdId = 6;
 
         private static bool FInitInfoValues = InitInfoValues();
         private static bool InitInfoValues()
         {
             TableInfo.Add(TableId, new TTypedTableInfo(TableId, "SModuleFile", "s_module_file",
                 new TTypedColumnInfo[] {
-                    new TTypedColumnInfo(0, "ModuleId", "s_module_id_c", OdbcType.VarChar, 20, true),
-                    new TTypedColumnInfo(1, "FileName", "s_file_name_c", OdbcType.VarChar, 80, true),
-                    new TTypedColumnInfo(2, "DateCreated", "s_date_created_d", OdbcType.Date, -1, false),
-                    new TTypedColumnInfo(3, "CreatedBy", "s_created_by_c", OdbcType.VarChar, 20, false),
-                    new TTypedColumnInfo(4, "DateModified", "s_date_modified_d", OdbcType.Date, -1, false),
-                    new TTypedColumnInfo(5, "ModifiedBy", "s_modified_by_c", OdbcType.VarChar, 20, false),
-                    new TTypedColumnInfo(6, "ModificationId", "s_modification_id_c", OdbcType.VarChar, 150, false)
+                    new TTypedColumnInfo(0, "ModuleId", "s_module_id_c", "Module ID", OdbcType.VarChar, 20, true),
+                    new TTypedColumnInfo(1, "FileName", "s_file_name_c", "File Name", OdbcType.VarChar, 80, true),
+                    new TTypedColumnInfo(2, "DateCreated", "s_date_created_d", "Created Date", OdbcType.Date, -1, false),
+                    new TTypedColumnInfo(3, "CreatedBy", "s_created_by_c", "Created By", OdbcType.VarChar, 20, false),
+                    new TTypedColumnInfo(4, "DateModified", "s_date_modified_d", "Modified Date", OdbcType.Date, -1, false),
+                    new TTypedColumnInfo(5, "ModifiedBy", "s_modified_by_c", "Modified By", OdbcType.VarChar, 20, false),
+                    new TTypedColumnInfo(6, "ModificationId", "s_modification_id_c", "", OdbcType.VarChar, 150, false)
                 },
                 new int[] {
                     0, 1
@@ -5367,6 +5610,21 @@ namespace Ict.Petra.Shared.MSysMan.Data
                 base(info, context)
         {
         }
+
+        /// Identifies a module
+        public DataColumn ColumnModuleId;
+        /// This is the name of the file
+        public DataColumn ColumnFileName;
+        /// The date the record was created.
+        public DataColumn ColumnDateCreated;
+        /// User ID of who created this record.
+        public DataColumn ColumnCreatedBy;
+        /// The date the record was modified.
+        public DataColumn ColumnDateModified;
+        /// User ID of who last modified this record.
+        public DataColumn ColumnModifiedBy;
+        /// This identifies the current version of the record.
+        public DataColumn ColumnModificationId;
 
         /// create the columns
         protected override void InitClass()
@@ -5428,6 +5686,18 @@ namespace Ict.Petra.Shared.MSysMan.Data
         public SModuleFileTable GetChangesTyped()
         {
             return ((SModuleFileTable)(base.GetChangesTypedInternal()));
+        }
+
+        /// return the CamelCase name of the table
+        public static string GetTableName()
+        {
+            return "SModuleFile";
+        }
+
+        /// return the name of the table as it is used in the database
+        public static string GetTableDBName()
+        {
+            return "s_module_file";
         }
 
         /// get an odbc parameter for the given column
@@ -5818,42 +6088,41 @@ namespace Ict.Petra.Shared.MSysMan.Data
     [Serializable()]
     public class SGroupModuleAccessPermissionTable : TTypedDataTable
     {
-        ///
-        public DataColumn ColumnGroupId;
-        /// Field that the group belongs to
-        public DataColumn ColumnGroupUnitKey;
-        ///
-        public DataColumn ColumnModuleId;
-        /// Permission to access this module
-        public DataColumn ColumnCanAccess;
-        /// The date the record was created.
-        public DataColumn ColumnDateCreated;
-        /// User ID of who created this record.
-        public DataColumn ColumnCreatedBy;
-        /// The date the record was modified.
-        public DataColumn ColumnDateModified;
-        /// User ID of who last modified this record.
-        public DataColumn ColumnModifiedBy;
-        /// This identifies the current version of the record.
-        public DataColumn ColumnModificationId;
-
         /// TableId for Ict.Common.Data generic functions
         public static short TableId = 13;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnGroupIdId = 0;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnGroupUnitKeyId = 1;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnModuleIdId = 2;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnCanAccessId = 3;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnDateCreatedId = 4;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnCreatedById = 5;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnDateModifiedId = 6;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnModifiedById = 7;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnModificationIdId = 8;
 
         private static bool FInitInfoValues = InitInfoValues();
         private static bool InitInfoValues()
         {
             TableInfo.Add(TableId, new TTypedTableInfo(TableId, "SGroupModuleAccessPermission", "s_group_module_access_permission",
                 new TTypedColumnInfo[] {
-                    new TTypedColumnInfo(0, "GroupId", "s_group_id_c", OdbcType.VarChar, 20, true),
-                    new TTypedColumnInfo(1, "GroupUnitKey", "s_group_unit_key_n", OdbcType.Decimal, 10, true),
-                    new TTypedColumnInfo(2, "ModuleId", "s_module_id_c", OdbcType.VarChar, 20, true),
-                    new TTypedColumnInfo(3, "CanAccess", "s_can_access_l", OdbcType.Bit, -1, false),
-                    new TTypedColumnInfo(4, "DateCreated", "s_date_created_d", OdbcType.Date, -1, false),
-                    new TTypedColumnInfo(5, "CreatedBy", "s_created_by_c", OdbcType.VarChar, 20, false),
-                    new TTypedColumnInfo(6, "DateModified", "s_date_modified_d", OdbcType.Date, -1, false),
-                    new TTypedColumnInfo(7, "ModifiedBy", "s_modified_by_c", OdbcType.VarChar, 20, false),
-                    new TTypedColumnInfo(8, "ModificationId", "s_modification_id_c", OdbcType.VarChar, 150, false)
+                    new TTypedColumnInfo(0, "GroupId", "s_group_id_c", "Group ID", OdbcType.VarChar, 20, true),
+                    new TTypedColumnInfo(1, "GroupUnitKey", "s_group_unit_key_n", "Field of Group", OdbcType.Decimal, 10, true),
+                    new TTypedColumnInfo(2, "ModuleId", "s_module_id_c", "Module ID", OdbcType.VarChar, 20, true),
+                    new TTypedColumnInfo(3, "CanAccess", "s_can_access_l", "Can Access", OdbcType.Bit, -1, false),
+                    new TTypedColumnInfo(4, "DateCreated", "s_date_created_d", "Created Date", OdbcType.Date, -1, false),
+                    new TTypedColumnInfo(5, "CreatedBy", "s_created_by_c", "Created By", OdbcType.VarChar, 20, false),
+                    new TTypedColumnInfo(6, "DateModified", "s_date_modified_d", "Modified Date", OdbcType.Date, -1, false),
+                    new TTypedColumnInfo(7, "ModifiedBy", "s_modified_by_c", "Modified By", OdbcType.VarChar, 20, false),
+                    new TTypedColumnInfo(8, "ModificationId", "s_modification_id_c", "", OdbcType.VarChar, 150, false)
                 },
                 new int[] {
                     0, 1, 2
@@ -5878,6 +6147,25 @@ namespace Ict.Petra.Shared.MSysMan.Data
                 base(info, context)
         {
         }
+
+        ///
+        public DataColumn ColumnGroupId;
+        /// Field that the group belongs to
+        public DataColumn ColumnGroupUnitKey;
+        ///
+        public DataColumn ColumnModuleId;
+        /// Permission to access this module
+        public DataColumn ColumnCanAccess;
+        /// The date the record was created.
+        public DataColumn ColumnDateCreated;
+        /// User ID of who created this record.
+        public DataColumn ColumnCreatedBy;
+        /// The date the record was modified.
+        public DataColumn ColumnDateModified;
+        /// User ID of who last modified this record.
+        public DataColumn ColumnModifiedBy;
+        /// This identifies the current version of the record.
+        public DataColumn ColumnModificationId;
 
         /// create the columns
         protected override void InitClass()
@@ -5943,6 +6231,18 @@ namespace Ict.Petra.Shared.MSysMan.Data
         public SGroupModuleAccessPermissionTable GetChangesTyped()
         {
             return ((SGroupModuleAccessPermissionTable)(base.GetChangesTypedInternal()));
+        }
+
+        /// return the CamelCase name of the table
+        public static string GetTableName()
+        {
+            return "SGroupModuleAccessPermission";
+        }
+
+        /// return the name of the table as it is used in the database
+        public static string GetTableDBName()
+        {
+            return "s_group_module_access_permission";
         }
 
         /// get an odbc parameter for the given column
@@ -6435,51 +6735,50 @@ namespace Ict.Petra.Shared.MSysMan.Data
     [Serializable()]
     public class SGroupTableAccessPermissionTable : TTypedDataTable
     {
-        /// This identifies the system group
-        public DataColumn ColumnGroupId;
-        /// Field that the group belongs to
-        public DataColumn ColumnGroupUnitKey;
-        ///
-        public DataColumn ColumnTableName;
-        /// Permission to allow creation.
-        public DataColumn ColumnCanCreate;
-        /// Permission to allow modification.
-        public DataColumn ColumnCanModify;
-        /// Permission to allow deletion.
-        public DataColumn ColumnCanDelete;
-        /// Permission to allow inquiry.
-        public DataColumn ColumnCanInquire;
-        /// The date the record was created.
-        public DataColumn ColumnDateCreated;
-        /// User ID of who created this record.
-        public DataColumn ColumnCreatedBy;
-        /// The date the record was modified.
-        public DataColumn ColumnDateModified;
-        /// User ID of who last modified this record.
-        public DataColumn ColumnModifiedBy;
-        /// This identifies the current version of the record.
-        public DataColumn ColumnModificationId;
-
         /// TableId for Ict.Common.Data generic functions
         public static short TableId = 14;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnGroupIdId = 0;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnGroupUnitKeyId = 1;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnTableNameId = 2;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnCanCreateId = 3;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnCanModifyId = 4;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnCanDeleteId = 5;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnCanInquireId = 6;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnDateCreatedId = 7;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnCreatedById = 8;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnDateModifiedId = 9;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnModifiedById = 10;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnModificationIdId = 11;
 
         private static bool FInitInfoValues = InitInfoValues();
         private static bool InitInfoValues()
         {
             TableInfo.Add(TableId, new TTypedTableInfo(TableId, "SGroupTableAccessPermission", "s_group_table_access_permission",
                 new TTypedColumnInfo[] {
-                    new TTypedColumnInfo(0, "GroupId", "s_group_id_c", OdbcType.VarChar, 20, true),
-                    new TTypedColumnInfo(1, "GroupUnitKey", "s_group_unit_key_n", OdbcType.Decimal, 10, true),
-                    new TTypedColumnInfo(2, "TableName", "s_table_name_c", OdbcType.VarChar, 64, true),
-                    new TTypedColumnInfo(3, "CanCreate", "s_can_create_l", OdbcType.Bit, -1, false),
-                    new TTypedColumnInfo(4, "CanModify", "s_can_modify_l", OdbcType.Bit, -1, false),
-                    new TTypedColumnInfo(5, "CanDelete", "s_can_delete_l", OdbcType.Bit, -1, false),
-                    new TTypedColumnInfo(6, "CanInquire", "s_can_inquire_l", OdbcType.Bit, -1, false),
-                    new TTypedColumnInfo(7, "DateCreated", "s_date_created_d", OdbcType.Date, -1, false),
-                    new TTypedColumnInfo(8, "CreatedBy", "s_created_by_c", OdbcType.VarChar, 20, false),
-                    new TTypedColumnInfo(9, "DateModified", "s_date_modified_d", OdbcType.Date, -1, false),
-                    new TTypedColumnInfo(10, "ModifiedBy", "s_modified_by_c", OdbcType.VarChar, 20, false),
-                    new TTypedColumnInfo(11, "ModificationId", "s_modification_id_c", OdbcType.VarChar, 150, false)
+                    new TTypedColumnInfo(0, "GroupId", "s_group_id_c", "Group ID", OdbcType.VarChar, 20, true),
+                    new TTypedColumnInfo(1, "GroupUnitKey", "s_group_unit_key_n", "Field of Group", OdbcType.Decimal, 10, true),
+                    new TTypedColumnInfo(2, "TableName", "s_table_name_c", "Table Name", OdbcType.VarChar, 64, true),
+                    new TTypedColumnInfo(3, "CanCreate", "s_can_create_l", "Can create", OdbcType.Bit, -1, false),
+                    new TTypedColumnInfo(4, "CanModify", "s_can_modify_l", "Can modify", OdbcType.Bit, -1, false),
+                    new TTypedColumnInfo(5, "CanDelete", "s_can_delete_l", "Can delete", OdbcType.Bit, -1, false),
+                    new TTypedColumnInfo(6, "CanInquire", "s_can_inquire_l", "Can inquire", OdbcType.Bit, -1, false),
+                    new TTypedColumnInfo(7, "DateCreated", "s_date_created_d", "Created Date", OdbcType.Date, -1, false),
+                    new TTypedColumnInfo(8, "CreatedBy", "s_created_by_c", "Created By", OdbcType.VarChar, 20, false),
+                    new TTypedColumnInfo(9, "DateModified", "s_date_modified_d", "Modified Date", OdbcType.Date, -1, false),
+                    new TTypedColumnInfo(10, "ModifiedBy", "s_modified_by_c", "Modified By", OdbcType.VarChar, 20, false),
+                    new TTypedColumnInfo(11, "ModificationId", "s_modification_id_c", "", OdbcType.VarChar, 150, false)
                 },
                 new int[] {
                     0, 1, 2
@@ -6504,6 +6803,31 @@ namespace Ict.Petra.Shared.MSysMan.Data
                 base(info, context)
         {
         }
+
+        /// This identifies the system group
+        public DataColumn ColumnGroupId;
+        /// Field that the group belongs to
+        public DataColumn ColumnGroupUnitKey;
+        ///
+        public DataColumn ColumnTableName;
+        /// Permission to allow creation.
+        public DataColumn ColumnCanCreate;
+        /// Permission to allow modification.
+        public DataColumn ColumnCanModify;
+        /// Permission to allow deletion.
+        public DataColumn ColumnCanDelete;
+        /// Permission to allow inquiry.
+        public DataColumn ColumnCanInquire;
+        /// The date the record was created.
+        public DataColumn ColumnDateCreated;
+        /// User ID of who created this record.
+        public DataColumn ColumnCreatedBy;
+        /// The date the record was modified.
+        public DataColumn ColumnDateModified;
+        /// User ID of who last modified this record.
+        public DataColumn ColumnModifiedBy;
+        /// This identifies the current version of the record.
+        public DataColumn ColumnModificationId;
 
         /// create the columns
         protected override void InitClass()
@@ -6575,6 +6899,18 @@ namespace Ict.Petra.Shared.MSysMan.Data
         public SGroupTableAccessPermissionTable GetChangesTyped()
         {
             return ((SGroupTableAccessPermissionTable)(base.GetChangesTypedInternal()));
+        }
+
+        /// return the CamelCase name of the table
+        public static string GetTableName()
+        {
+            return "SGroupTableAccessPermission";
+        }
+
+        /// return the name of the table as it is used in the database
+        public static string GetTableDBName()
+        {
+            return "s_group_table_access_permission";
         }
 
         /// get an odbc parameter for the given column
@@ -7220,39 +7556,38 @@ namespace Ict.Petra.Shared.MSysMan.Data
     [Serializable()]
     public class SUserModuleAccessPermissionTable : TTypedDataTable
     {
-        /// This is the system user id. Each user of the system is allocated one
-        public DataColumn ColumnUserId;
-        ///
-        public DataColumn ColumnModuleId;
-        /// Permission to access this module
-        public DataColumn ColumnCanAccess;
-        /// The date the record was created.
-        public DataColumn ColumnDateCreated;
-        /// User ID of who created this record.
-        public DataColumn ColumnCreatedBy;
-        /// The date the record was modified.
-        public DataColumn ColumnDateModified;
-        /// User ID of who last modified this record.
-        public DataColumn ColumnModifiedBy;
-        /// This identifies the current version of the record.
-        public DataColumn ColumnModificationId;
-
         /// TableId for Ict.Common.Data generic functions
         public static short TableId = 15;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnUserIdId = 0;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnModuleIdId = 1;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnCanAccessId = 2;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnDateCreatedId = 3;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnCreatedById = 4;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnDateModifiedId = 5;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnModifiedById = 6;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnModificationIdId = 7;
 
         private static bool FInitInfoValues = InitInfoValues();
         private static bool InitInfoValues()
         {
             TableInfo.Add(TableId, new TTypedTableInfo(TableId, "SUserModuleAccessPermission", "s_user_module_access_permission",
                 new TTypedColumnInfo[] {
-                    new TTypedColumnInfo(0, "UserId", "s_user_id_c", OdbcType.VarChar, 20, true),
-                    new TTypedColumnInfo(1, "ModuleId", "s_module_id_c", OdbcType.VarChar, 20, true),
-                    new TTypedColumnInfo(2, "CanAccess", "s_can_access_l", OdbcType.Bit, -1, false),
-                    new TTypedColumnInfo(3, "DateCreated", "s_date_created_d", OdbcType.Date, -1, false),
-                    new TTypedColumnInfo(4, "CreatedBy", "s_created_by_c", OdbcType.VarChar, 20, false),
-                    new TTypedColumnInfo(5, "DateModified", "s_date_modified_d", OdbcType.Date, -1, false),
-                    new TTypedColumnInfo(6, "ModifiedBy", "s_modified_by_c", OdbcType.VarChar, 20, false),
-                    new TTypedColumnInfo(7, "ModificationId", "s_modification_id_c", OdbcType.VarChar, 150, false)
+                    new TTypedColumnInfo(0, "UserId", "s_user_id_c", "User ID", OdbcType.VarChar, 20, true),
+                    new TTypedColumnInfo(1, "ModuleId", "s_module_id_c", "Module ID", OdbcType.VarChar, 20, true),
+                    new TTypedColumnInfo(2, "CanAccess", "s_can_access_l", "Can Access", OdbcType.Bit, -1, false),
+                    new TTypedColumnInfo(3, "DateCreated", "s_date_created_d", "Created Date", OdbcType.Date, -1, false),
+                    new TTypedColumnInfo(4, "CreatedBy", "s_created_by_c", "Created By", OdbcType.VarChar, 20, false),
+                    new TTypedColumnInfo(5, "DateModified", "s_date_modified_d", "Modified Date", OdbcType.Date, -1, false),
+                    new TTypedColumnInfo(6, "ModifiedBy", "s_modified_by_c", "Modified By", OdbcType.VarChar, 20, false),
+                    new TTypedColumnInfo(7, "ModificationId", "s_modification_id_c", "", OdbcType.VarChar, 150, false)
                 },
                 new int[] {
                     0, 1
@@ -7277,6 +7612,23 @@ namespace Ict.Petra.Shared.MSysMan.Data
                 base(info, context)
         {
         }
+
+        /// This is the system user id. Each user of the system is allocated one
+        public DataColumn ColumnUserId;
+        ///
+        public DataColumn ColumnModuleId;
+        /// Permission to access this module
+        public DataColumn ColumnCanAccess;
+        /// The date the record was created.
+        public DataColumn ColumnDateCreated;
+        /// User ID of who created this record.
+        public DataColumn ColumnCreatedBy;
+        /// The date the record was modified.
+        public DataColumn ColumnDateModified;
+        /// User ID of who last modified this record.
+        public DataColumn ColumnModifiedBy;
+        /// This identifies the current version of the record.
+        public DataColumn ColumnModificationId;
 
         /// create the columns
         protected override void InitClass()
@@ -7340,6 +7692,18 @@ namespace Ict.Petra.Shared.MSysMan.Data
         public SUserModuleAccessPermissionTable GetChangesTyped()
         {
             return ((SUserModuleAccessPermissionTable)(base.GetChangesTypedInternal()));
+        }
+
+        /// return the CamelCase name of the table
+        public static string GetTableName()
+        {
+            return "SUserModuleAccessPermission";
+        }
+
+        /// return the name of the table as it is used in the database
+        public static string GetTableDBName()
+        {
+            return "s_user_module_access_permission";
         }
 
         /// get an odbc parameter for the given column
@@ -7781,48 +8145,47 @@ namespace Ict.Petra.Shared.MSysMan.Data
     [Serializable()]
     public class SUserTableAccessPermissionTable : TTypedDataTable
     {
-        /// This is the system user id. Each user of the system is allocated one
-        public DataColumn ColumnUserId;
-        ///
-        public DataColumn ColumnTableName;
-        /// Permission to allow creation.
-        public DataColumn ColumnCanCreate;
-        /// Permission to allow modification.
-        public DataColumn ColumnCanModify;
-        /// Permission to allow deletion.
-        public DataColumn ColumnCanDelete;
-        /// Permission to allow inquiry.
-        public DataColumn ColumnCanInquire;
-        /// The date the record was created.
-        public DataColumn ColumnDateCreated;
-        /// User ID of who created this record.
-        public DataColumn ColumnCreatedBy;
-        /// The date the record was modified.
-        public DataColumn ColumnDateModified;
-        /// User ID of who last modified this record.
-        public DataColumn ColumnModifiedBy;
-        /// This identifies the current version of the record.
-        public DataColumn ColumnModificationId;
-
         /// TableId for Ict.Common.Data generic functions
         public static short TableId = 16;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnUserIdId = 0;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnTableNameId = 1;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnCanCreateId = 2;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnCanModifyId = 3;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnCanDeleteId = 4;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnCanInquireId = 5;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnDateCreatedId = 6;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnCreatedById = 7;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnDateModifiedId = 8;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnModifiedById = 9;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnModificationIdId = 10;
 
         private static bool FInitInfoValues = InitInfoValues();
         private static bool InitInfoValues()
         {
             TableInfo.Add(TableId, new TTypedTableInfo(TableId, "SUserTableAccessPermission", "s_user_table_access_permission",
                 new TTypedColumnInfo[] {
-                    new TTypedColumnInfo(0, "UserId", "s_user_id_c", OdbcType.VarChar, 20, true),
-                    new TTypedColumnInfo(1, "TableName", "s_table_name_c", OdbcType.VarChar, 64, true),
-                    new TTypedColumnInfo(2, "CanCreate", "s_can_create_l", OdbcType.Bit, -1, false),
-                    new TTypedColumnInfo(3, "CanModify", "s_can_modify_l", OdbcType.Bit, -1, false),
-                    new TTypedColumnInfo(4, "CanDelete", "s_can_delete_l", OdbcType.Bit, -1, false),
-                    new TTypedColumnInfo(5, "CanInquire", "s_can_inquire_l", OdbcType.Bit, -1, false),
-                    new TTypedColumnInfo(6, "DateCreated", "s_date_created_d", OdbcType.Date, -1, false),
-                    new TTypedColumnInfo(7, "CreatedBy", "s_created_by_c", OdbcType.VarChar, 20, false),
-                    new TTypedColumnInfo(8, "DateModified", "s_date_modified_d", OdbcType.Date, -1, false),
-                    new TTypedColumnInfo(9, "ModifiedBy", "s_modified_by_c", OdbcType.VarChar, 20, false),
-                    new TTypedColumnInfo(10, "ModificationId", "s_modification_id_c", OdbcType.VarChar, 150, false)
+                    new TTypedColumnInfo(0, "UserId", "s_user_id_c", "User ID", OdbcType.VarChar, 20, true),
+                    new TTypedColumnInfo(1, "TableName", "s_table_name_c", "Table Name", OdbcType.VarChar, 64, true),
+                    new TTypedColumnInfo(2, "CanCreate", "s_can_create_l", "Can create", OdbcType.Bit, -1, false),
+                    new TTypedColumnInfo(3, "CanModify", "s_can_modify_l", "Can modify", OdbcType.Bit, -1, false),
+                    new TTypedColumnInfo(4, "CanDelete", "s_can_delete_l", "Can delete", OdbcType.Bit, -1, false),
+                    new TTypedColumnInfo(5, "CanInquire", "s_can_inquire_l", "Can inquire", OdbcType.Bit, -1, false),
+                    new TTypedColumnInfo(6, "DateCreated", "s_date_created_d", "Created Date", OdbcType.Date, -1, false),
+                    new TTypedColumnInfo(7, "CreatedBy", "s_created_by_c", "Created By", OdbcType.VarChar, 20, false),
+                    new TTypedColumnInfo(8, "DateModified", "s_date_modified_d", "Modified Date", OdbcType.Date, -1, false),
+                    new TTypedColumnInfo(9, "ModifiedBy", "s_modified_by_c", "Modified By", OdbcType.VarChar, 20, false),
+                    new TTypedColumnInfo(10, "ModificationId", "s_modification_id_c", "", OdbcType.VarChar, 150, false)
                 },
                 new int[] {
                     0, 1
@@ -7847,6 +8210,29 @@ namespace Ict.Petra.Shared.MSysMan.Data
                 base(info, context)
         {
         }
+
+        /// This is the system user id. Each user of the system is allocated one
+        public DataColumn ColumnUserId;
+        ///
+        public DataColumn ColumnTableName;
+        /// Permission to allow creation.
+        public DataColumn ColumnCanCreate;
+        /// Permission to allow modification.
+        public DataColumn ColumnCanModify;
+        /// Permission to allow deletion.
+        public DataColumn ColumnCanDelete;
+        /// Permission to allow inquiry.
+        public DataColumn ColumnCanInquire;
+        /// The date the record was created.
+        public DataColumn ColumnDateCreated;
+        /// User ID of who created this record.
+        public DataColumn ColumnCreatedBy;
+        /// The date the record was modified.
+        public DataColumn ColumnDateModified;
+        /// User ID of who last modified this record.
+        public DataColumn ColumnModifiedBy;
+        /// This identifies the current version of the record.
+        public DataColumn ColumnModificationId;
 
         /// create the columns
         protected override void InitClass()
@@ -7916,6 +8302,18 @@ namespace Ict.Petra.Shared.MSysMan.Data
         public SUserTableAccessPermissionTable GetChangesTyped()
         {
             return ((SUserTableAccessPermissionTable)(base.GetChangesTypedInternal()));
+        }
+
+        /// return the CamelCase name of the table
+        public static string GetTableName()
+        {
+            return "SUserTableAccessPermission";
+        }
+
+        /// return the name of the table as it is used in the database
+        public static string GetTableDBName()
+        {
+            return "s_user_table_access_permission";
         }
 
         /// get an odbc parameter for the given column
@@ -8510,6 +8908,129 @@ namespace Ict.Petra.Shared.MSysMan.Data
     [Serializable()]
     public class SLanguageSpecificTable : TTypedDataTable
     {
+        /// TableId for Ict.Common.Data generic functions
+        public static short TableId = 17;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnLanguageCodeId = 0;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnMonthName1Id = 1;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnMonthName2Id = 2;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnMonthName3Id = 3;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnMonthName4Id = 4;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnMonthName5Id = 5;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnMonthName6Id = 6;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnMonthName7Id = 7;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnMonthName8Id = 8;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnMonthName9Id = 9;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnMonthName10Id = 10;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnMonthName11Id = 11;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnMonthName12Id = 12;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnMonthNameShort1Id = 13;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnMonthNameShort2Id = 14;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnMonthNameShort3Id = 15;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnMonthNameShort4Id = 16;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnMonthNameShort5Id = 17;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnMonthNameShort6Id = 18;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnMonthNameShort7Id = 19;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnMonthNameShort8Id = 20;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnMonthNameShort9Id = 21;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnMonthNameShort10Id = 22;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnMonthNameShort11Id = 23;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnMonthNameShort12Id = 24;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnDateCreatedId = 25;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnCreatedById = 26;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnDateModifiedId = 27;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnModifiedById = 28;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnModificationIdId = 29;
+
+        private static bool FInitInfoValues = InitInfoValues();
+        private static bool InitInfoValues()
+        {
+            TableInfo.Add(TableId, new TTypedTableInfo(TableId, "SLanguageSpecific", "s_language_specific",
+                new TTypedColumnInfo[] {
+                    new TTypedColumnInfo(0, "LanguageCode", "s_language_code_c", "Language Code", OdbcType.VarChar, 20, true),
+                    new TTypedColumnInfo(1, "MonthName1", "s_month_name_c_1", "Month Name", OdbcType.VarChar, 40, true),
+                    new TTypedColumnInfo(2, "MonthName2", "s_month_name_c_2", "s_month_name_c_2", OdbcType.VarChar, 40, true),
+                    new TTypedColumnInfo(3, "MonthName3", "s_month_name_c_3", "s_month_name_c_3", OdbcType.VarChar, 40, true),
+                    new TTypedColumnInfo(4, "MonthName4", "s_month_name_c_4", "s_month_name_c_4", OdbcType.VarChar, 40, true),
+                    new TTypedColumnInfo(5, "MonthName5", "s_month_name_c_5", "s_month_name_c_5", OdbcType.VarChar, 40, true),
+                    new TTypedColumnInfo(6, "MonthName6", "s_month_name_c_6", "s_month_name_c_6", OdbcType.VarChar, 40, true),
+                    new TTypedColumnInfo(7, "MonthName7", "s_month_name_c_7", "s_month_name_c_7", OdbcType.VarChar, 40, true),
+                    new TTypedColumnInfo(8, "MonthName8", "s_month_name_c_8", "s_month_name_c_8", OdbcType.VarChar, 40, true),
+                    new TTypedColumnInfo(9, "MonthName9", "s_month_name_c_9", "s_month_name_c_9", OdbcType.VarChar, 40, true),
+                    new TTypedColumnInfo(10, "MonthName10", "s_month_name_c_10", "s_month_name_c_10", OdbcType.VarChar, 40, true),
+                    new TTypedColumnInfo(11, "MonthName11", "s_month_name_c_11", "s_month_name_c_11", OdbcType.VarChar, 40, true),
+                    new TTypedColumnInfo(12, "MonthName12", "s_month_name_c_12", "s_month_name_c_12", OdbcType.VarChar, 40, true),
+                    new TTypedColumnInfo(13, "MonthNameShort1", "s_month_name_short_c_1", "s_month_name_short_c_1", OdbcType.VarChar, 6, true),
+                    new TTypedColumnInfo(14, "MonthNameShort2", "s_month_name_short_c_2", "s_month_name_short_c_2", OdbcType.VarChar, 6, true),
+                    new TTypedColumnInfo(15, "MonthNameShort3", "s_month_name_short_c_3", "s_month_name_short_c_3", OdbcType.VarChar, 6, true),
+                    new TTypedColumnInfo(16, "MonthNameShort4", "s_month_name_short_c_4", "s_month_name_short_c_4", OdbcType.VarChar, 6, true),
+                    new TTypedColumnInfo(17, "MonthNameShort5", "s_month_name_short_c_5", "s_month_name_short_c_5", OdbcType.VarChar, 6, true),
+                    new TTypedColumnInfo(18, "MonthNameShort6", "s_month_name_short_c_6", "s_month_name_short_c_6", OdbcType.VarChar, 6, true),
+                    new TTypedColumnInfo(19, "MonthNameShort7", "s_month_name_short_c_7", "s_month_name_short_c_7", OdbcType.VarChar, 6, true),
+                    new TTypedColumnInfo(20, "MonthNameShort8", "s_month_name_short_c_8", "s_month_name_short_c_8", OdbcType.VarChar, 6, true),
+                    new TTypedColumnInfo(21, "MonthNameShort9", "s_month_name_short_c_9", "s_month_name_short_c_9", OdbcType.VarChar, 6, true),
+                    new TTypedColumnInfo(22, "MonthNameShort10", "s_month_name_short_c_10", "s_month_name_short_c_10", OdbcType.VarChar, 6, true),
+                    new TTypedColumnInfo(23, "MonthNameShort11", "s_month_name_short_c_11", "s_month_name_short_c_11", OdbcType.VarChar, 6, true),
+                    new TTypedColumnInfo(24, "MonthNameShort12", "s_month_name_short_c_12", "s_month_name_short_c_12", OdbcType.VarChar, 6, true),
+                    new TTypedColumnInfo(25, "DateCreated", "s_date_created_d", "Created Date", OdbcType.Date, -1, false),
+                    new TTypedColumnInfo(26, "CreatedBy", "s_created_by_c", "Created By", OdbcType.VarChar, 20, false),
+                    new TTypedColumnInfo(27, "DateModified", "s_date_modified_d", "Modified Date", OdbcType.Date, -1, false),
+                    new TTypedColumnInfo(28, "ModifiedBy", "s_modified_by_c", "Modified By", OdbcType.VarChar, 20, false),
+                    new TTypedColumnInfo(29, "ModificationId", "s_modification_id_c", "", OdbcType.VarChar, 150, false)
+                },
+                new int[] {
+                    0
+                }));
+            return true;
+        }
+
+        /// constructor
+        public SLanguageSpecificTable() :
+                base("SLanguageSpecific")
+        {
+        }
+
+        /// constructor
+        public SLanguageSpecificTable(string ATablename) :
+                base(ATablename)
+        {
+        }
+
+        /// constructor for serialization
+        public SLanguageSpecificTable(System.Runtime.Serialization.SerializationInfo info, System.Runtime.Serialization.StreamingContext context) :
+                base(info, context)
+        {
+        }
+
         /// This is the code used to identify a language.
         public DataColumn ColumnLanguageCode;
         /// The language specific month name 1.
@@ -8570,69 +9091,6 @@ namespace Ict.Petra.Shared.MSysMan.Data
         public DataColumn ColumnModifiedBy;
         /// This identifies the current version of the record.
         public DataColumn ColumnModificationId;
-
-        /// TableId for Ict.Common.Data generic functions
-        public static short TableId = 17;
-
-        private static bool FInitInfoValues = InitInfoValues();
-        private static bool InitInfoValues()
-        {
-            TableInfo.Add(TableId, new TTypedTableInfo(TableId, "SLanguageSpecific", "s_language_specific",
-                new TTypedColumnInfo[] {
-                    new TTypedColumnInfo(0, "LanguageCode", "s_language_code_c", OdbcType.VarChar, 20, true),
-                    new TTypedColumnInfo(1, "MonthName1", "s_month_name_c_1", OdbcType.VarChar, 40, true),
-                    new TTypedColumnInfo(2, "MonthName2", "s_month_name_c_2", OdbcType.VarChar, 40, true),
-                    new TTypedColumnInfo(3, "MonthName3", "s_month_name_c_3", OdbcType.VarChar, 40, true),
-                    new TTypedColumnInfo(4, "MonthName4", "s_month_name_c_4", OdbcType.VarChar, 40, true),
-                    new TTypedColumnInfo(5, "MonthName5", "s_month_name_c_5", OdbcType.VarChar, 40, true),
-                    new TTypedColumnInfo(6, "MonthName6", "s_month_name_c_6", OdbcType.VarChar, 40, true),
-                    new TTypedColumnInfo(7, "MonthName7", "s_month_name_c_7", OdbcType.VarChar, 40, true),
-                    new TTypedColumnInfo(8, "MonthName8", "s_month_name_c_8", OdbcType.VarChar, 40, true),
-                    new TTypedColumnInfo(9, "MonthName9", "s_month_name_c_9", OdbcType.VarChar, 40, true),
-                    new TTypedColumnInfo(10, "MonthName10", "s_month_name_c_10", OdbcType.VarChar, 40, true),
-                    new TTypedColumnInfo(11, "MonthName11", "s_month_name_c_11", OdbcType.VarChar, 40, true),
-                    new TTypedColumnInfo(12, "MonthName12", "s_month_name_c_12", OdbcType.VarChar, 40, true),
-                    new TTypedColumnInfo(13, "MonthNameShort1", "s_month_name_short_c_1", OdbcType.VarChar, 6, true),
-                    new TTypedColumnInfo(14, "MonthNameShort2", "s_month_name_short_c_2", OdbcType.VarChar, 6, true),
-                    new TTypedColumnInfo(15, "MonthNameShort3", "s_month_name_short_c_3", OdbcType.VarChar, 6, true),
-                    new TTypedColumnInfo(16, "MonthNameShort4", "s_month_name_short_c_4", OdbcType.VarChar, 6, true),
-                    new TTypedColumnInfo(17, "MonthNameShort5", "s_month_name_short_c_5", OdbcType.VarChar, 6, true),
-                    new TTypedColumnInfo(18, "MonthNameShort6", "s_month_name_short_c_6", OdbcType.VarChar, 6, true),
-                    new TTypedColumnInfo(19, "MonthNameShort7", "s_month_name_short_c_7", OdbcType.VarChar, 6, true),
-                    new TTypedColumnInfo(20, "MonthNameShort8", "s_month_name_short_c_8", OdbcType.VarChar, 6, true),
-                    new TTypedColumnInfo(21, "MonthNameShort9", "s_month_name_short_c_9", OdbcType.VarChar, 6, true),
-                    new TTypedColumnInfo(22, "MonthNameShort10", "s_month_name_short_c_10", OdbcType.VarChar, 6, true),
-                    new TTypedColumnInfo(23, "MonthNameShort11", "s_month_name_short_c_11", OdbcType.VarChar, 6, true),
-                    new TTypedColumnInfo(24, "MonthNameShort12", "s_month_name_short_c_12", OdbcType.VarChar, 6, true),
-                    new TTypedColumnInfo(25, "DateCreated", "s_date_created_d", OdbcType.Date, -1, false),
-                    new TTypedColumnInfo(26, "CreatedBy", "s_created_by_c", OdbcType.VarChar, 20, false),
-                    new TTypedColumnInfo(27, "DateModified", "s_date_modified_d", OdbcType.Date, -1, false),
-                    new TTypedColumnInfo(28, "ModifiedBy", "s_modified_by_c", OdbcType.VarChar, 20, false),
-                    new TTypedColumnInfo(29, "ModificationId", "s_modification_id_c", OdbcType.VarChar, 150, false)
-                },
-                new int[] {
-                    0
-                }));
-            return true;
-        }
-
-        /// constructor
-        public SLanguageSpecificTable() :
-                base("SLanguageSpecific")
-        {
-        }
-
-        /// constructor
-        public SLanguageSpecificTable(string ATablename) :
-                base(ATablename)
-        {
-        }
-
-        /// constructor for serialization
-        public SLanguageSpecificTable(System.Runtime.Serialization.SerializationInfo info, System.Runtime.Serialization.StreamingContext context) :
-                base(info, context)
-        {
-        }
 
         /// create the columns
         protected override void InitClass()
@@ -8740,6 +9198,18 @@ namespace Ict.Petra.Shared.MSysMan.Data
         public SLanguageSpecificTable GetChangesTyped()
         {
             return ((SLanguageSpecificTable)(base.GetChangesTypedInternal()));
+        }
+
+        /// return the CamelCase name of the table
+        public static string GetTableName()
+        {
+            return "SLanguageSpecific";
+        }
+
+        /// return the name of the table as it is used in the database
+        public static string GetTableDBName()
+        {
+            return "s_language_specific";
         }
 
         /// get an odbc parameter for the given column
@@ -10303,6 +10773,78 @@ namespace Ict.Petra.Shared.MSysMan.Data
     [Serializable()]
     public class SLoginTable : TTypedDataTable
     {
+        /// TableId for Ict.Common.Data generic functions
+        public static short TableId = 18;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnUserIdId = 0;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnLoginTtyLineId = 1;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnLoginTimeId = 2;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnLoginDateId = 3;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnLoginStatusId = 4;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnLogoutTimeId = 5;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnLogoutDateId = 6;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnLoginProcessIdId = 7;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnDateCreatedId = 8;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnCreatedById = 9;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnDateModifiedId = 10;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnModifiedById = 11;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnModificationIdId = 12;
+
+        private static bool FInitInfoValues = InitInfoValues();
+        private static bool InitInfoValues()
+        {
+            TableInfo.Add(TableId, new TTypedTableInfo(TableId, "SLogin", "s_login",
+                new TTypedColumnInfo[] {
+                    new TTypedColumnInfo(0, "UserId", "s_user_id_c", "User ID", OdbcType.VarChar, 20, false),
+                    new TTypedColumnInfo(1, "LoginTtyLine", "s_login_tty_line_c", "TTY Line", OdbcType.VarChar, 16, false),
+                    new TTypedColumnInfo(2, "LoginTime", "s_login_time_i", "Login Time", OdbcType.Int, -1, true),
+                    new TTypedColumnInfo(3, "LoginDate", "s_login_date_d", "Login Date", OdbcType.Date, -1, true),
+                    new TTypedColumnInfo(4, "LoginStatus", "s_login_status_c", "Login Status", OdbcType.VarChar, 50, false),
+                    new TTypedColumnInfo(5, "LogoutTime", "s_logout_time_i", "Logout Time", OdbcType.Int, -1, false),
+                    new TTypedColumnInfo(6, "LogoutDate", "s_logout_date_d", "Logout Date", OdbcType.Date, -1, false),
+                    new TTypedColumnInfo(7, "LoginProcessId", "s_login_process_id_r", "s_login_process_id_r", OdbcType.Int, -1, false),
+                    new TTypedColumnInfo(8, "DateCreated", "s_date_created_d", "Created Date", OdbcType.Date, -1, false),
+                    new TTypedColumnInfo(9, "CreatedBy", "s_created_by_c", "Created By", OdbcType.VarChar, 20, false),
+                    new TTypedColumnInfo(10, "DateModified", "s_date_modified_d", "Modified Date", OdbcType.Date, -1, false),
+                    new TTypedColumnInfo(11, "ModifiedBy", "s_modified_by_c", "Modified By", OdbcType.VarChar, 20, false),
+                    new TTypedColumnInfo(12, "ModificationId", "s_modification_id_c", "", OdbcType.VarChar, 150, false)
+                },
+                new int[] {
+                    0, 3, 2
+                }));
+            return true;
+        }
+
+        /// constructor
+        public SLoginTable() :
+                base("SLogin")
+        {
+        }
+
+        /// constructor
+        public SLoginTable(string ATablename) :
+                base(ATablename)
+        {
+        }
+
+        /// constructor for serialization
+        public SLoginTable(System.Runtime.Serialization.SerializationInfo info, System.Runtime.Serialization.StreamingContext context) :
+                base(info, context)
+        {
+        }
+
         /// This is the system user id. Each user of the system is allocated one.
         public DataColumn ColumnUserId;
         /// This is the tty line on which the terminal is located on computer.
@@ -10329,52 +10871,6 @@ namespace Ict.Petra.Shared.MSysMan.Data
         public DataColumn ColumnModifiedBy;
         /// This identifies the current version of the record.
         public DataColumn ColumnModificationId;
-
-        /// TableId for Ict.Common.Data generic functions
-        public static short TableId = 18;
-
-        private static bool FInitInfoValues = InitInfoValues();
-        private static bool InitInfoValues()
-        {
-            TableInfo.Add(TableId, new TTypedTableInfo(TableId, "SLogin", "s_login",
-                new TTypedColumnInfo[] {
-                    new TTypedColumnInfo(0, "UserId", "s_user_id_c", OdbcType.VarChar, 20, false),
-                    new TTypedColumnInfo(1, "LoginTtyLine", "s_login_tty_line_c", OdbcType.VarChar, 16, false),
-                    new TTypedColumnInfo(2, "LoginTime", "s_login_time_i", OdbcType.Int, -1, true),
-                    new TTypedColumnInfo(3, "LoginDate", "s_login_date_d", OdbcType.Date, -1, true),
-                    new TTypedColumnInfo(4, "LoginStatus", "s_login_status_c", OdbcType.VarChar, 50, false),
-                    new TTypedColumnInfo(5, "LogoutTime", "s_logout_time_i", OdbcType.Int, -1, false),
-                    new TTypedColumnInfo(6, "LogoutDate", "s_logout_date_d", OdbcType.Date, -1, false),
-                    new TTypedColumnInfo(7, "LoginProcessId", "s_login_process_id_r", OdbcType.Int, -1, false),
-                    new TTypedColumnInfo(8, "DateCreated", "s_date_created_d", OdbcType.Date, -1, false),
-                    new TTypedColumnInfo(9, "CreatedBy", "s_created_by_c", OdbcType.VarChar, 20, false),
-                    new TTypedColumnInfo(10, "DateModified", "s_date_modified_d", OdbcType.Date, -1, false),
-                    new TTypedColumnInfo(11, "ModifiedBy", "s_modified_by_c", OdbcType.VarChar, 20, false),
-                    new TTypedColumnInfo(12, "ModificationId", "s_modification_id_c", OdbcType.VarChar, 150, false)
-                },
-                new int[] {
-                    0, 3, 2
-                }));
-            return true;
-        }
-
-        /// constructor
-        public SLoginTable() :
-                base("SLogin")
-        {
-        }
-
-        /// constructor
-        public SLoginTable(string ATablename) :
-                base(ATablename)
-        {
-        }
-
-        /// constructor for serialization
-        public SLoginTable(System.Runtime.Serialization.SerializationInfo info, System.Runtime.Serialization.StreamingContext context) :
-                base(info, context)
-        {
-        }
 
         /// create the columns
         protected override void InitClass()
@@ -10448,6 +10944,18 @@ namespace Ict.Petra.Shared.MSysMan.Data
         public SLoginTable GetChangesTyped()
         {
             return ((SLoginTable)(base.GetChangesTypedInternal()));
+        }
+
+        /// return the CamelCase name of the table
+        public static string GetTableName()
+        {
+            return "SLogin";
+        }
+
+        /// return the name of the table as it is used in the database
+        public static string GetTableDBName()
+        {
+            return "s_login";
         }
 
         /// get an odbc parameter for the given column
@@ -11144,36 +11652,35 @@ namespace Ict.Petra.Shared.MSysMan.Data
     [Serializable()]
     public class SLogonMessageTable : TTypedDataTable
     {
-        /// This is the code used to identify a language.
-        public DataColumn ColumnLanguageCode;
-        /// Message displayed when a user logs onto to the system
-        public DataColumn ColumnLogonMessage;
-        /// The date the record was created.
-        public DataColumn ColumnDateCreated;
-        /// User ID of who created this record.
-        public DataColumn ColumnCreatedBy;
-        /// The date the record was modified.
-        public DataColumn ColumnDateModified;
-        /// User ID of who last modified this record.
-        public DataColumn ColumnModifiedBy;
-        /// This identifies the current version of the record.
-        public DataColumn ColumnModificationId;
-
         /// TableId for Ict.Common.Data generic functions
         public static short TableId = 19;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnLanguageCodeId = 0;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnLogonMessageId = 1;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnDateCreatedId = 2;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnCreatedById = 3;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnDateModifiedId = 4;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnModifiedById = 5;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnModificationIdId = 6;
 
         private static bool FInitInfoValues = InitInfoValues();
         private static bool InitInfoValues()
         {
             TableInfo.Add(TableId, new TTypedTableInfo(TableId, "SLogonMessage", "s_logon_message",
                 new TTypedColumnInfo[] {
-                    new TTypedColumnInfo(0, "LanguageCode", "s_language_code_c", OdbcType.VarChar, 20, true),
-                    new TTypedColumnInfo(1, "LogonMessage", "s_logon_message_c", OdbcType.VarChar, 300, false),
-                    new TTypedColumnInfo(2, "DateCreated", "s_date_created_d", OdbcType.Date, -1, false),
-                    new TTypedColumnInfo(3, "CreatedBy", "s_created_by_c", OdbcType.VarChar, 20, false),
-                    new TTypedColumnInfo(4, "DateModified", "s_date_modified_d", OdbcType.Date, -1, false),
-                    new TTypedColumnInfo(5, "ModifiedBy", "s_modified_by_c", OdbcType.VarChar, 20, false),
-                    new TTypedColumnInfo(6, "ModificationId", "s_modification_id_c", OdbcType.VarChar, 150, false)
+                    new TTypedColumnInfo(0, "LanguageCode", "s_language_code_c", "Language Code", OdbcType.VarChar, 20, true),
+                    new TTypedColumnInfo(1, "LogonMessage", "s_logon_message_c", "Logon Message", OdbcType.VarChar, 300, false),
+                    new TTypedColumnInfo(2, "DateCreated", "s_date_created_d", "Created Date", OdbcType.Date, -1, false),
+                    new TTypedColumnInfo(3, "CreatedBy", "s_created_by_c", "Created By", OdbcType.VarChar, 20, false),
+                    new TTypedColumnInfo(4, "DateModified", "s_date_modified_d", "Modified Date", OdbcType.Date, -1, false),
+                    new TTypedColumnInfo(5, "ModifiedBy", "s_modified_by_c", "Modified By", OdbcType.VarChar, 20, false),
+                    new TTypedColumnInfo(6, "ModificationId", "s_modification_id_c", "", OdbcType.VarChar, 150, false)
                 },
                 new int[] {
                     0
@@ -11198,6 +11705,21 @@ namespace Ict.Petra.Shared.MSysMan.Data
                 base(info, context)
         {
         }
+
+        /// This is the code used to identify a language.
+        public DataColumn ColumnLanguageCode;
+        /// Message displayed when a user logs onto to the system
+        public DataColumn ColumnLogonMessage;
+        /// The date the record was created.
+        public DataColumn ColumnDateCreated;
+        /// User ID of who created this record.
+        public DataColumn ColumnCreatedBy;
+        /// The date the record was modified.
+        public DataColumn ColumnDateModified;
+        /// User ID of who last modified this record.
+        public DataColumn ColumnModifiedBy;
+        /// This identifies the current version of the record.
+        public DataColumn ColumnModificationId;
 
         /// create the columns
         protected override void InitClass()
@@ -11259,6 +11781,18 @@ namespace Ict.Petra.Shared.MSysMan.Data
         public SLogonMessageTable GetChangesTyped()
         {
             return ((SLogonMessageTable)(base.GetChangesTypedInternal()));
+        }
+
+        /// return the CamelCase name of the table
+        public static string GetTableName()
+        {
+            return "SLogonMessage";
+        }
+
+        /// return the name of the table as it is used in the database
+        public static string GetTableDBName()
+        {
+            return "s_logon_message";
         }
 
         /// get an odbc parameter for the given column
@@ -11649,39 +12183,38 @@ namespace Ict.Petra.Shared.MSysMan.Data
     [Serializable()]
     public class SPatchLogTable : TTypedDataTable
     {
-        ///
-        public DataColumn ColumnPatchName;
-        /// The user who ran the patch
-        public DataColumn ColumnUserId;
-        /// The date the patch was run.
-        public DataColumn ColumnDateRun;
-        /// The date the record was created.
-        public DataColumn ColumnDateCreated;
-        /// User ID of who created this record.
-        public DataColumn ColumnCreatedBy;
-        /// The date the record was modified.
-        public DataColumn ColumnDateModified;
-        /// User ID of who last modified this record.
-        public DataColumn ColumnModifiedBy;
-        /// This identifies the current version of the record.
-        public DataColumn ColumnModificationId;
-
         /// TableId for Ict.Common.Data generic functions
         public static short TableId = 20;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnPatchNameId = 0;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnUserIdId = 1;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnDateRunId = 2;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnDateCreatedId = 3;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnCreatedById = 4;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnDateModifiedId = 5;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnModifiedById = 6;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnModificationIdId = 7;
 
         private static bool FInitInfoValues = InitInfoValues();
         private static bool InitInfoValues()
         {
             TableInfo.Add(TableId, new TTypedTableInfo(TableId, "SPatchLog", "s_patch_log",
                 new TTypedColumnInfo[] {
-                    new TTypedColumnInfo(0, "PatchName", "s_patch_name_c", OdbcType.VarChar, 24, true),
-                    new TTypedColumnInfo(1, "UserId", "s_user_id_c", OdbcType.VarChar, 20, false),
-                    new TTypedColumnInfo(2, "DateRun", "s_date_run_d", OdbcType.Date, -1, true),
-                    new TTypedColumnInfo(3, "DateCreated", "s_date_created_d", OdbcType.Date, -1, false),
-                    new TTypedColumnInfo(4, "CreatedBy", "s_created_by_c", OdbcType.VarChar, 20, false),
-                    new TTypedColumnInfo(5, "DateModified", "s_date_modified_d", OdbcType.Date, -1, false),
-                    new TTypedColumnInfo(6, "ModifiedBy", "s_modified_by_c", OdbcType.VarChar, 20, false),
-                    new TTypedColumnInfo(7, "ModificationId", "s_modification_id_c", OdbcType.VarChar, 150, false)
+                    new TTypedColumnInfo(0, "PatchName", "s_patch_name_c", "s_patch_name_c", OdbcType.VarChar, 24, true),
+                    new TTypedColumnInfo(1, "UserId", "s_user_id_c", "s_user_id_c", OdbcType.VarChar, 20, false),
+                    new TTypedColumnInfo(2, "DateRun", "s_date_run_d", "s_date_run_d", OdbcType.Date, -1, true),
+                    new TTypedColumnInfo(3, "DateCreated", "s_date_created_d", "Created Date", OdbcType.Date, -1, false),
+                    new TTypedColumnInfo(4, "CreatedBy", "s_created_by_c", "Created By", OdbcType.VarChar, 20, false),
+                    new TTypedColumnInfo(5, "DateModified", "s_date_modified_d", "Modified Date", OdbcType.Date, -1, false),
+                    new TTypedColumnInfo(6, "ModifiedBy", "s_modified_by_c", "Modified By", OdbcType.VarChar, 20, false),
+                    new TTypedColumnInfo(7, "ModificationId", "s_modification_id_c", "", OdbcType.VarChar, 150, false)
                 },
                 new int[] {
                     0
@@ -11706,6 +12239,23 @@ namespace Ict.Petra.Shared.MSysMan.Data
                 base(info, context)
         {
         }
+
+        ///
+        public DataColumn ColumnPatchName;
+        /// The user who ran the patch
+        public DataColumn ColumnUserId;
+        /// The date the patch was run.
+        public DataColumn ColumnDateRun;
+        /// The date the record was created.
+        public DataColumn ColumnDateCreated;
+        /// User ID of who created this record.
+        public DataColumn ColumnCreatedBy;
+        /// The date the record was modified.
+        public DataColumn ColumnDateModified;
+        /// User ID of who last modified this record.
+        public DataColumn ColumnModifiedBy;
+        /// This identifies the current version of the record.
+        public DataColumn ColumnModificationId;
 
         /// create the columns
         protected override void InitClass()
@@ -11769,6 +12319,18 @@ namespace Ict.Petra.Shared.MSysMan.Data
         public SPatchLogTable GetChangesTyped()
         {
             return ((SPatchLogTable)(base.GetChangesTypedInternal()));
+        }
+
+        /// return the CamelCase name of the table
+        public static string GetTableName()
+        {
+            return "SPatchLog";
+        }
+
+        /// return the name of the table as it is used in the database
+        public static string GetTableDBName()
+        {
+            return "s_patch_log";
         }
 
         /// get an odbc parameter for the given column
@@ -12210,33 +12772,32 @@ namespace Ict.Petra.Shared.MSysMan.Data
     [Serializable()]
     public class SReportsToArchiveTable : TTypedDataTable
     {
-        /// Title of the Report
-        public DataColumn ColumnReportTitle;
-        /// The date the record was created.
-        public DataColumn ColumnDateCreated;
-        /// User ID of who created this record.
-        public DataColumn ColumnCreatedBy;
-        /// The date the record was modified.
-        public DataColumn ColumnDateModified;
-        /// User ID of who last modified this record.
-        public DataColumn ColumnModifiedBy;
-        /// This identifies the current version of the record.
-        public DataColumn ColumnModificationId;
-
         /// TableId for Ict.Common.Data generic functions
         public static short TableId = 21;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnReportTitleId = 0;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnDateCreatedId = 1;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnCreatedById = 2;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnDateModifiedId = 3;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnModifiedById = 4;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnModificationIdId = 5;
 
         private static bool FInitInfoValues = InitInfoValues();
         private static bool InitInfoValues()
         {
             TableInfo.Add(TableId, new TTypedTableInfo(TableId, "SReportsToArchive", "s_reports_to_archive",
                 new TTypedColumnInfo[] {
-                    new TTypedColumnInfo(0, "ReportTitle", "s_report_title_c", OdbcType.VarChar, 100, true),
-                    new TTypedColumnInfo(1, "DateCreated", "s_date_created_d", OdbcType.Date, -1, false),
-                    new TTypedColumnInfo(2, "CreatedBy", "s_created_by_c", OdbcType.VarChar, 20, false),
-                    new TTypedColumnInfo(3, "DateModified", "s_date_modified_d", OdbcType.Date, -1, false),
-                    new TTypedColumnInfo(4, "ModifiedBy", "s_modified_by_c", OdbcType.VarChar, 20, false),
-                    new TTypedColumnInfo(5, "ModificationId", "s_modification_id_c", OdbcType.VarChar, 150, false)
+                    new TTypedColumnInfo(0, "ReportTitle", "s_report_title_c", "Report Title", OdbcType.VarChar, 100, true),
+                    new TTypedColumnInfo(1, "DateCreated", "s_date_created_d", "Created Date", OdbcType.Date, -1, false),
+                    new TTypedColumnInfo(2, "CreatedBy", "s_created_by_c", "Created By", OdbcType.VarChar, 20, false),
+                    new TTypedColumnInfo(3, "DateModified", "s_date_modified_d", "Modified Date", OdbcType.Date, -1, false),
+                    new TTypedColumnInfo(4, "ModifiedBy", "s_modified_by_c", "Modified By", OdbcType.VarChar, 20, false),
+                    new TTypedColumnInfo(5, "ModificationId", "s_modification_id_c", "", OdbcType.VarChar, 150, false)
                 },
                 new int[] {
                     0
@@ -12261,6 +12822,19 @@ namespace Ict.Petra.Shared.MSysMan.Data
                 base(info, context)
         {
         }
+
+        /// Title of the Report
+        public DataColumn ColumnReportTitle;
+        /// The date the record was created.
+        public DataColumn ColumnDateCreated;
+        /// User ID of who created this record.
+        public DataColumn ColumnCreatedBy;
+        /// The date the record was modified.
+        public DataColumn ColumnDateModified;
+        /// User ID of who last modified this record.
+        public DataColumn ColumnModifiedBy;
+        /// This identifies the current version of the record.
+        public DataColumn ColumnModificationId;
 
         /// create the columns
         protected override void InitClass()
@@ -12320,6 +12894,18 @@ namespace Ict.Petra.Shared.MSysMan.Data
         public SReportsToArchiveTable GetChangesTyped()
         {
             return ((SReportsToArchiveTable)(base.GetChangesTypedInternal()));
+        }
+
+        /// return the CamelCase name of the table
+        public static string GetTableName()
+        {
+            return "SReportsToArchive";
+        }
+
+        /// return the name of the table as it is used in the database
+        public static string GetTableDBName()
+        {
+            return "s_reports_to_archive";
         }
 
         /// get an odbc parameter for the given column
@@ -12659,48 +13245,47 @@ namespace Ict.Petra.Shared.MSysMan.Data
     [Serializable()]
     public class SReportFileTable : TTypedDataTable
     {
-        /// This identifies who the current user is
-        public DataColumn ColumnUserId;
-        /// Name of the report text file
-        public DataColumn ColumnReportFileName;
-        /// Name of the report generating program
-        public DataColumn ColumnRpg;
-        /// Date the report was generated
-        public DataColumn ColumnReportDate;
-        /// Time the report was generated.
-        public DataColumn ColumnReportTime;
-        /// Title of the Report
-        public DataColumn ColumnReportTitle;
-        /// The date the record was created.
-        public DataColumn ColumnDateCreated;
-        /// User ID of who created this record.
-        public DataColumn ColumnCreatedBy;
-        /// The date the record was modified.
-        public DataColumn ColumnDateModified;
-        /// User ID of who last modified this record.
-        public DataColumn ColumnModifiedBy;
-        /// This identifies the current version of the record.
-        public DataColumn ColumnModificationId;
-
         /// TableId for Ict.Common.Data generic functions
         public static short TableId = 22;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnUserIdId = 0;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnReportFileNameId = 1;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnRpgId = 2;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnReportDateId = 3;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnReportTimeId = 4;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnReportTitleId = 5;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnDateCreatedId = 6;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnCreatedById = 7;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnDateModifiedId = 8;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnModifiedById = 9;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnModificationIdId = 10;
 
         private static bool FInitInfoValues = InitInfoValues();
         private static bool InitInfoValues()
         {
             TableInfo.Add(TableId, new TTypedTableInfo(TableId, "SReportFile", "s_report_file",
                 new TTypedColumnInfo[] {
-                    new TTypedColumnInfo(0, "UserId", "s_user_id_c", OdbcType.VarChar, 20, true),
-                    new TTypedColumnInfo(1, "ReportFileName", "s_report_file_name_c", OdbcType.VarChar, 24, true),
-                    new TTypedColumnInfo(2, "Rpg", "s_rpg_c", OdbcType.VarChar, 80, true),
-                    new TTypedColumnInfo(3, "ReportDate", "s_report_date_d", OdbcType.Date, -1, true),
-                    new TTypedColumnInfo(4, "ReportTime", "s_report_time_i", OdbcType.Int, -1, true),
-                    new TTypedColumnInfo(5, "ReportTitle", "s_report_title_c", OdbcType.VarChar, 100, true),
-                    new TTypedColumnInfo(6, "DateCreated", "s_date_created_d", OdbcType.Date, -1, false),
-                    new TTypedColumnInfo(7, "CreatedBy", "s_created_by_c", OdbcType.VarChar, 20, false),
-                    new TTypedColumnInfo(8, "DateModified", "s_date_modified_d", OdbcType.Date, -1, false),
-                    new TTypedColumnInfo(9, "ModifiedBy", "s_modified_by_c", OdbcType.VarChar, 20, false),
-                    new TTypedColumnInfo(10, "ModificationId", "s_modification_id_c", OdbcType.VarChar, 150, false)
+                    new TTypedColumnInfo(0, "UserId", "s_user_id_c", "User ID", OdbcType.VarChar, 20, true),
+                    new TTypedColumnInfo(1, "ReportFileName", "s_report_file_name_c", "Report File Name", OdbcType.VarChar, 24, true),
+                    new TTypedColumnInfo(2, "Rpg", "s_rpg_c", "Report Program Generator", OdbcType.VarChar, 80, true),
+                    new TTypedColumnInfo(3, "ReportDate", "s_report_date_d", "Date", OdbcType.Date, -1, true),
+                    new TTypedColumnInfo(4, "ReportTime", "s_report_time_i", "Report Time", OdbcType.Int, -1, true),
+                    new TTypedColumnInfo(5, "ReportTitle", "s_report_title_c", "Report Title", OdbcType.VarChar, 100, true),
+                    new TTypedColumnInfo(6, "DateCreated", "s_date_created_d", "Created Date", OdbcType.Date, -1, false),
+                    new TTypedColumnInfo(7, "CreatedBy", "s_created_by_c", "Created By", OdbcType.VarChar, 20, false),
+                    new TTypedColumnInfo(8, "DateModified", "s_date_modified_d", "Modified Date", OdbcType.Date, -1, false),
+                    new TTypedColumnInfo(9, "ModifiedBy", "s_modified_by_c", "Modified By", OdbcType.VarChar, 20, false),
+                    new TTypedColumnInfo(10, "ModificationId", "s_modification_id_c", "", OdbcType.VarChar, 150, false)
                 },
                 new int[] {
                     1
@@ -12725,6 +13310,29 @@ namespace Ict.Petra.Shared.MSysMan.Data
                 base(info, context)
         {
         }
+
+        /// This identifies who the current user is
+        public DataColumn ColumnUserId;
+        /// Name of the report text file
+        public DataColumn ColumnReportFileName;
+        /// Name of the report generating program
+        public DataColumn ColumnRpg;
+        /// Date the report was generated
+        public DataColumn ColumnReportDate;
+        /// Time the report was generated.
+        public DataColumn ColumnReportTime;
+        /// Title of the Report
+        public DataColumn ColumnReportTitle;
+        /// The date the record was created.
+        public DataColumn ColumnDateCreated;
+        /// User ID of who created this record.
+        public DataColumn ColumnCreatedBy;
+        /// The date the record was modified.
+        public DataColumn ColumnDateModified;
+        /// User ID of who last modified this record.
+        public DataColumn ColumnModifiedBy;
+        /// This identifies the current version of the record.
+        public DataColumn ColumnModificationId;
 
         /// create the columns
         protected override void InitClass()
@@ -12794,6 +13402,18 @@ namespace Ict.Petra.Shared.MSysMan.Data
         public SReportFileTable GetChangesTyped()
         {
             return ((SReportFileTable)(base.GetChangesTypedInternal()));
+        }
+
+        /// return the CamelCase name of the table
+        public static string GetTableName()
+        {
+            return "SReportFile";
+        }
+
+        /// return the name of the table as it is used in the database
+        public static string GetTableDBName()
+        {
+            return "s_report_file";
         }
 
         /// get an odbc parameter for the given column
@@ -13388,6 +14008,84 @@ namespace Ict.Petra.Shared.MSysMan.Data
     [Serializable()]
     public class SReportOptionsTable : TTypedDataTable
     {
+        /// TableId for Ict.Common.Data generic functions
+        public static short TableId = 23;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnUserIdId = 0;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnModuleIdId = 1;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnReportFileNameId = 2;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnReportTitleId = 3;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnInteractiveId = 4;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnRpgId = 5;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnCopiesId = 6;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnFromPageId = 7;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnToPageId = 8;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnDataId = 9;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnDateCreatedId = 10;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnCreatedById = 11;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnDateModifiedId = 12;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnModifiedById = 13;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnModificationIdId = 14;
+
+        private static bool FInitInfoValues = InitInfoValues();
+        private static bool InitInfoValues()
+        {
+            TableInfo.Add(TableId, new TTypedTableInfo(TableId, "SReportOptions", "s_report_options",
+                new TTypedColumnInfo[] {
+                    new TTypedColumnInfo(0, "UserId", "s_user_id_c", "User ID", OdbcType.VarChar, 20, true),
+                    new TTypedColumnInfo(1, "ModuleId", "s_module_id_c", "Module ID", OdbcType.VarChar, 20, true),
+                    new TTypedColumnInfo(2, "ReportFileName", "s_report_file_name_c", "Report File Name", OdbcType.VarChar, 24, true),
+                    new TTypedColumnInfo(3, "ReportTitle", "s_report_title_c", "Report Title", OdbcType.VarChar, 100, false),
+                    new TTypedColumnInfo(4, "Interactive", "s_interactive_l", "Interactive flag", OdbcType.Bit, -1, false),
+                    new TTypedColumnInfo(5, "Rpg", "s_rpg_c", "Report Program Generator", OdbcType.VarChar, 80, true),
+                    new TTypedColumnInfo(6, "Copies", "s_copies_i", "s_copies_i", OdbcType.Int, -1, false),
+                    new TTypedColumnInfo(7, "FromPage", "s_from_page_i", "s_from_page_i", OdbcType.Int, -1, false),
+                    new TTypedColumnInfo(8, "ToPage", "s_to_page_i", "s_to_page_i", OdbcType.Int, -1, false),
+                    new TTypedColumnInfo(9, "Data", "s_data_c", "Data", OdbcType.VarChar, 1000, false),
+                    new TTypedColumnInfo(10, "DateCreated", "s_date_created_d", "Created Date", OdbcType.Date, -1, false),
+                    new TTypedColumnInfo(11, "CreatedBy", "s_created_by_c", "Created By", OdbcType.VarChar, 20, false),
+                    new TTypedColumnInfo(12, "DateModified", "s_date_modified_d", "Modified Date", OdbcType.Date, -1, false),
+                    new TTypedColumnInfo(13, "ModifiedBy", "s_modified_by_c", "Modified By", OdbcType.VarChar, 20, false),
+                    new TTypedColumnInfo(14, "ModificationId", "s_modification_id_c", "", OdbcType.VarChar, 150, false)
+                },
+                new int[] {
+
+                }));
+            return true;
+        }
+
+        /// constructor
+        public SReportOptionsTable() :
+                base("SReportOptions")
+        {
+        }
+
+        /// constructor
+        public SReportOptionsTable(string ATablename) :
+                base(ATablename)
+        {
+        }
+
+        /// constructor for serialization
+        public SReportOptionsTable(System.Runtime.Serialization.SerializationInfo info, System.Runtime.Serialization.StreamingContext context) :
+                base(info, context)
+        {
+        }
+
         /// This identifies who the current user is
         public DataColumn ColumnUserId;
         /// identifies the module
@@ -13418,54 +14116,6 @@ namespace Ict.Petra.Shared.MSysMan.Data
         public DataColumn ColumnModifiedBy;
         /// This identifies the current version of the record.
         public DataColumn ColumnModificationId;
-
-        /// TableId for Ict.Common.Data generic functions
-        public static short TableId = 23;
-
-        private static bool FInitInfoValues = InitInfoValues();
-        private static bool InitInfoValues()
-        {
-            TableInfo.Add(TableId, new TTypedTableInfo(TableId, "SReportOptions", "s_report_options",
-                new TTypedColumnInfo[] {
-                    new TTypedColumnInfo(0, "UserId", "s_user_id_c", OdbcType.VarChar, 20, true),
-                    new TTypedColumnInfo(1, "ModuleId", "s_module_id_c", OdbcType.VarChar, 20, true),
-                    new TTypedColumnInfo(2, "ReportFileName", "s_report_file_name_c", OdbcType.VarChar, 24, true),
-                    new TTypedColumnInfo(3, "ReportTitle", "s_report_title_c", OdbcType.VarChar, 100, false),
-                    new TTypedColumnInfo(4, "Interactive", "s_interactive_l", OdbcType.Bit, -1, false),
-                    new TTypedColumnInfo(5, "Rpg", "s_rpg_c", OdbcType.VarChar, 80, true),
-                    new TTypedColumnInfo(6, "Copies", "s_copies_i", OdbcType.Int, -1, false),
-                    new TTypedColumnInfo(7, "FromPage", "s_from_page_i", OdbcType.Int, -1, false),
-                    new TTypedColumnInfo(8, "ToPage", "s_to_page_i", OdbcType.Int, -1, false),
-                    new TTypedColumnInfo(9, "Data", "s_data_c", OdbcType.VarChar, 1000, false),
-                    new TTypedColumnInfo(10, "DateCreated", "s_date_created_d", OdbcType.Date, -1, false),
-                    new TTypedColumnInfo(11, "CreatedBy", "s_created_by_c", OdbcType.VarChar, 20, false),
-                    new TTypedColumnInfo(12, "DateModified", "s_date_modified_d", OdbcType.Date, -1, false),
-                    new TTypedColumnInfo(13, "ModifiedBy", "s_modified_by_c", OdbcType.VarChar, 20, false),
-                    new TTypedColumnInfo(14, "ModificationId", "s_modification_id_c", OdbcType.VarChar, 150, false)
-                },
-                new int[] {
-
-                }));
-            return true;
-        }
-
-        /// constructor
-        public SReportOptionsTable() :
-                base("SReportOptions")
-        {
-        }
-
-        /// constructor
-        public SReportOptionsTable(string ATablename) :
-                base(ATablename)
-        {
-        }
-
-        /// constructor for serialization
-        public SReportOptionsTable(System.Runtime.Serialization.SerializationInfo info, System.Runtime.Serialization.StreamingContext context) :
-                base(info, context)
-        {
-        }
 
         /// create the columns
         protected override void InitClass()
@@ -13543,6 +14193,18 @@ namespace Ict.Petra.Shared.MSysMan.Data
         public SReportOptionsTable GetChangesTyped()
         {
             return ((SReportOptionsTable)(base.GetChangesTypedInternal()));
+        }
+
+        /// return the CamelCase name of the table
+        public static string GetTableName()
+        {
+            return "SReportOptions";
+        }
+
+        /// return the name of the table as it is used in the database
+        public static string GetTableDBName()
+        {
+            return "s_report_options";
         }
 
         /// get an odbc parameter for the given column
@@ -14341,51 +15003,50 @@ namespace Ict.Petra.Shared.MSysMan.Data
     [Serializable()]
     public class SSelectedOutputDestinationTable : TTypedDataTable
     {
-        /// This identifies who the current user is
-        public DataColumn ColumnUserId;
-        /// Identifies a module
-        public DataColumn ColumnModuleId;
-        /// Identifies a form.  Also used for email addresses.
-        public DataColumn ColumnFormName;
-        /// Identifies a printer
-        public DataColumn ColumnPrinterName;
-        /// Recid of the corresponding batch job.  This field is set to ? if the job is running interactive.
-        public DataColumn ColumnBatchJobId;
-        /// Petra process ID
-        public DataColumn ColumnLoginProcessId;
-        /// Printer tray number to take the form from
-        public DataColumn ColumnPaperSource;
-        /// The date the record was created.
-        public DataColumn ColumnDateCreated;
-        /// User ID of who created this record.
-        public DataColumn ColumnCreatedBy;
-        /// The date the record was modified.
-        public DataColumn ColumnDateModified;
-        /// User ID of who last modified this record.
-        public DataColumn ColumnModifiedBy;
-        /// This identifies the current version of the record.
-        public DataColumn ColumnModificationId;
-
         /// TableId for Ict.Common.Data generic functions
         public static short TableId = 24;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnUserIdId = 0;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnModuleIdId = 1;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnFormNameId = 2;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnPrinterNameId = 3;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnBatchJobIdId = 4;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnLoginProcessIdId = 5;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnPaperSourceId = 6;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnDateCreatedId = 7;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnCreatedById = 8;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnDateModifiedId = 9;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnModifiedById = 10;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnModificationIdId = 11;
 
         private static bool FInitInfoValues = InitInfoValues();
         private static bool InitInfoValues()
         {
             TableInfo.Add(TableId, new TTypedTableInfo(TableId, "SSelectedOutputDestination", "s_selected_output_destination",
                 new TTypedColumnInfo[] {
-                    new TTypedColumnInfo(0, "UserId", "s_user_id_c", OdbcType.VarChar, 20, true),
-                    new TTypedColumnInfo(1, "ModuleId", "s_module_id_c", OdbcType.VarChar, 20, true),
-                    new TTypedColumnInfo(2, "FormName", "s_form_name_c", OdbcType.VarChar, 636, false),
-                    new TTypedColumnInfo(3, "PrinterName", "s_printer_name_c", OdbcType.VarChar, 64, true),
-                    new TTypedColumnInfo(4, "BatchJobId", "s_batch_job_id_r", OdbcType.Int, -1, false),
-                    new TTypedColumnInfo(5, "LoginProcessId", "s_login_process_id_r", OdbcType.Int, -1, false),
-                    new TTypedColumnInfo(6, "PaperSource", "s_paper_source_i", OdbcType.Int, -1, false),
-                    new TTypedColumnInfo(7, "DateCreated", "s_date_created_d", OdbcType.Date, -1, false),
-                    new TTypedColumnInfo(8, "CreatedBy", "s_created_by_c", OdbcType.VarChar, 20, false),
-                    new TTypedColumnInfo(9, "DateModified", "s_date_modified_d", OdbcType.Date, -1, false),
-                    new TTypedColumnInfo(10, "ModifiedBy", "s_modified_by_c", OdbcType.VarChar, 20, false),
-                    new TTypedColumnInfo(11, "ModificationId", "s_modification_id_c", OdbcType.VarChar, 150, false)
+                    new TTypedColumnInfo(0, "UserId", "s_user_id_c", "User ID", OdbcType.VarChar, 20, true),
+                    new TTypedColumnInfo(1, "ModuleId", "s_module_id_c", "Module ID", OdbcType.VarChar, 20, true),
+                    new TTypedColumnInfo(2, "FormName", "s_form_name_c", "Form Name", OdbcType.VarChar, 636, false),
+                    new TTypedColumnInfo(3, "PrinterName", "s_printer_name_c", "Printer Name", OdbcType.VarChar, 64, true),
+                    new TTypedColumnInfo(4, "BatchJobId", "s_batch_job_id_r", "Batch job ID", OdbcType.Int, -1, false),
+                    new TTypedColumnInfo(5, "LoginProcessId", "s_login_process_id_r", "Process ID", OdbcType.Int, -1, false),
+                    new TTypedColumnInfo(6, "PaperSource", "s_paper_source_i", "Paper Source", OdbcType.Int, -1, false),
+                    new TTypedColumnInfo(7, "DateCreated", "s_date_created_d", "Created Date", OdbcType.Date, -1, false),
+                    new TTypedColumnInfo(8, "CreatedBy", "s_created_by_c", "Created By", OdbcType.VarChar, 20, false),
+                    new TTypedColumnInfo(9, "DateModified", "s_date_modified_d", "Modified Date", OdbcType.Date, -1, false),
+                    new TTypedColumnInfo(10, "ModifiedBy", "s_modified_by_c", "Modified By", OdbcType.VarChar, 20, false),
+                    new TTypedColumnInfo(11, "ModificationId", "s_modification_id_c", "", OdbcType.VarChar, 150, false)
                 },
                 new int[] {
 
@@ -14410,6 +15071,31 @@ namespace Ict.Petra.Shared.MSysMan.Data
                 base(info, context)
         {
         }
+
+        /// This identifies who the current user is
+        public DataColumn ColumnUserId;
+        /// Identifies a module
+        public DataColumn ColumnModuleId;
+        /// Identifies a form.  Also used for email addresses.
+        public DataColumn ColumnFormName;
+        /// Identifies a printer
+        public DataColumn ColumnPrinterName;
+        /// Recid of the corresponding batch job.  This field is set to ? if the job is running interactive.
+        public DataColumn ColumnBatchJobId;
+        /// Petra process ID
+        public DataColumn ColumnLoginProcessId;
+        /// Printer tray number to take the form from
+        public DataColumn ColumnPaperSource;
+        /// The date the record was created.
+        public DataColumn ColumnDateCreated;
+        /// User ID of who created this record.
+        public DataColumn ColumnCreatedBy;
+        /// The date the record was modified.
+        public DataColumn ColumnDateModified;
+        /// User ID of who last modified this record.
+        public DataColumn ColumnModifiedBy;
+        /// This identifies the current version of the record.
+        public DataColumn ColumnModificationId;
 
         /// create the columns
         protected override void InitClass()
@@ -14481,6 +15167,18 @@ namespace Ict.Petra.Shared.MSysMan.Data
         public SSelectedOutputDestinationTable GetChangesTyped()
         {
             return ((SSelectedOutputDestinationTable)(base.GetChangesTypedInternal()));
+        }
+
+        /// return the CamelCase name of the table
+        public static string GetTableName()
+        {
+            return "SSelectedOutputDestination";
+        }
+
+        /// return the name of the table as it is used in the database
+        public static string GetTableDBName()
+        {
+            return "s_selected_output_destination";
         }
 
         /// get an odbc parameter for the given column
@@ -15126,51 +15824,50 @@ namespace Ict.Petra.Shared.MSysMan.Data
     [Serializable()]
     public class SSystemStatusTable : TTypedDataTable
     {
-        /// This is the system user id. Each user of the system is allocated one
-        public DataColumn ColumnUserId;
-        ///
-        public DataColumn ColumnSystemDisabledDate;
-        ///
-        public DataColumn ColumnSystemDisabledTime;
-        ///
-        public DataColumn ColumnSystemDisabledReason;
-        ///
-        public DataColumn ColumnSystemAvailableDate;
-        ///
-        public DataColumn ColumnSystemAvailableTime;
-        /// The log in status of the system.
-        public DataColumn ColumnSystemLoginStatus;
-        /// The date the record was created.
-        public DataColumn ColumnDateCreated;
-        /// User ID of who created this record.
-        public DataColumn ColumnCreatedBy;
-        /// The date the record was modified.
-        public DataColumn ColumnDateModified;
-        /// User ID of who last modified this record.
-        public DataColumn ColumnModifiedBy;
-        /// This identifies the current version of the record.
-        public DataColumn ColumnModificationId;
-
         /// TableId for Ict.Common.Data generic functions
         public static short TableId = 25;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnUserIdId = 0;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnSystemDisabledDateId = 1;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnSystemDisabledTimeId = 2;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnSystemDisabledReasonId = 3;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnSystemAvailableDateId = 4;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnSystemAvailableTimeId = 5;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnSystemLoginStatusId = 6;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnDateCreatedId = 7;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnCreatedById = 8;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnDateModifiedId = 9;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnModifiedById = 10;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnModificationIdId = 11;
 
         private static bool FInitInfoValues = InitInfoValues();
         private static bool InitInfoValues()
         {
             TableInfo.Add(TableId, new TTypedTableInfo(TableId, "SSystemStatus", "s_system_status",
                 new TTypedColumnInfo[] {
-                    new TTypedColumnInfo(0, "UserId", "s_user_id_c", OdbcType.VarChar, 20, true),
-                    new TTypedColumnInfo(1, "SystemDisabledDate", "s_system_disabled_date_d", OdbcType.Date, -1, false),
-                    new TTypedColumnInfo(2, "SystemDisabledTime", "s_system_disabled_time_i", OdbcType.Int, -1, false),
-                    new TTypedColumnInfo(3, "SystemDisabledReason", "s_system_disabled_reason_c", OdbcType.VarChar, 160, false),
-                    new TTypedColumnInfo(4, "SystemAvailableDate", "s_system_available_date_d", OdbcType.Date, -1, false),
-                    new TTypedColumnInfo(5, "SystemAvailableTime", "s_system_available_time_i", OdbcType.Int, -1, false),
-                    new TTypedColumnInfo(6, "SystemLoginStatus", "s_system_login_status_l", OdbcType.Bit, -1, false),
-                    new TTypedColumnInfo(7, "DateCreated", "s_date_created_d", OdbcType.Date, -1, false),
-                    new TTypedColumnInfo(8, "CreatedBy", "s_created_by_c", OdbcType.VarChar, 20, false),
-                    new TTypedColumnInfo(9, "DateModified", "s_date_modified_d", OdbcType.Date, -1, false),
-                    new TTypedColumnInfo(10, "ModifiedBy", "s_modified_by_c", OdbcType.VarChar, 20, false),
-                    new TTypedColumnInfo(11, "ModificationId", "s_modification_id_c", OdbcType.VarChar, 150, false)
+                    new TTypedColumnInfo(0, "UserId", "s_user_id_c", "User ID", OdbcType.VarChar, 20, true),
+                    new TTypedColumnInfo(1, "SystemDisabledDate", "s_system_disabled_date_d", "Date Disabled", OdbcType.Date, -1, false),
+                    new TTypedColumnInfo(2, "SystemDisabledTime", "s_system_disabled_time_i", "Time Disabled", OdbcType.Int, -1, false),
+                    new TTypedColumnInfo(3, "SystemDisabledReason", "s_system_disabled_reason_c", "Reason Disabled", OdbcType.VarChar, 160, false),
+                    new TTypedColumnInfo(4, "SystemAvailableDate", "s_system_available_date_d", "Date Available", OdbcType.Date, -1, false),
+                    new TTypedColumnInfo(5, "SystemAvailableTime", "s_system_available_time_i", "Time Available", OdbcType.Int, -1, false),
+                    new TTypedColumnInfo(6, "SystemLoginStatus", "s_system_login_status_l", "System Enabled", OdbcType.Bit, -1, false),
+                    new TTypedColumnInfo(7, "DateCreated", "s_date_created_d", "Created Date", OdbcType.Date, -1, false),
+                    new TTypedColumnInfo(8, "CreatedBy", "s_created_by_c", "Created By", OdbcType.VarChar, 20, false),
+                    new TTypedColumnInfo(9, "DateModified", "s_date_modified_d", "Modified Date", OdbcType.Date, -1, false),
+                    new TTypedColumnInfo(10, "ModifiedBy", "s_modified_by_c", "Modified By", OdbcType.VarChar, 20, false),
+                    new TTypedColumnInfo(11, "ModificationId", "s_modification_id_c", "", OdbcType.VarChar, 150, false)
                 },
                 new int[] {
                     0
@@ -15195,6 +15892,31 @@ namespace Ict.Petra.Shared.MSysMan.Data
                 base(info, context)
         {
         }
+
+        /// This is the system user id. Each user of the system is allocated one
+        public DataColumn ColumnUserId;
+        ///
+        public DataColumn ColumnSystemDisabledDate;
+        ///
+        public DataColumn ColumnSystemDisabledTime;
+        ///
+        public DataColumn ColumnSystemDisabledReason;
+        ///
+        public DataColumn ColumnSystemAvailableDate;
+        ///
+        public DataColumn ColumnSystemAvailableTime;
+        /// The log in status of the system.
+        public DataColumn ColumnSystemLoginStatus;
+        /// The date the record was created.
+        public DataColumn ColumnDateCreated;
+        /// User ID of who created this record.
+        public DataColumn ColumnCreatedBy;
+        /// The date the record was modified.
+        public DataColumn ColumnDateModified;
+        /// User ID of who last modified this record.
+        public DataColumn ColumnModifiedBy;
+        /// This identifies the current version of the record.
+        public DataColumn ColumnModificationId;
 
         /// create the columns
         protected override void InitClass()
@@ -15266,6 +15988,18 @@ namespace Ict.Petra.Shared.MSysMan.Data
         public SSystemStatusTable GetChangesTyped()
         {
             return ((SSystemStatusTable)(base.GetChangesTypedInternal()));
+        }
+
+        /// return the CamelCase name of the table
+        public static string GetTableName()
+        {
+            return "SSystemStatus";
+        }
+
+        /// return the name of the table as it is used in the database
+        public static string GetTableDBName()
+        {
+            return "s_system_status";
         }
 
         /// get an odbc parameter for the given column
@@ -15911,48 +16645,47 @@ namespace Ict.Petra.Shared.MSysMan.Data
     [Serializable()]
     public class SSystemStatusLogTable : TTypedDataTable
     {
-        /// This is the system user id. Each user of the system is allocated one
-        public DataColumn ColumnUserId;
-        ///
-        public DataColumn ColumnSystemDisabledDate;
-        ///
-        public DataColumn ColumnSystemDisabledTime;
-        ///
-        public DataColumn ColumnSystemDisabledReason;
-        ///
-        public DataColumn ColumnSystemEnabledDate;
-        ///
-        public DataColumn ColumnSystemEnabledTime;
-        /// The date the record was created.
-        public DataColumn ColumnDateCreated;
-        /// User ID of who created this record.
-        public DataColumn ColumnCreatedBy;
-        /// The date the record was modified.
-        public DataColumn ColumnDateModified;
-        /// User ID of who last modified this record.
-        public DataColumn ColumnModifiedBy;
-        /// This identifies the current version of the record.
-        public DataColumn ColumnModificationId;
-
         /// TableId for Ict.Common.Data generic functions
         public static short TableId = 26;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnUserIdId = 0;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnSystemDisabledDateId = 1;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnSystemDisabledTimeId = 2;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnSystemDisabledReasonId = 3;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnSystemEnabledDateId = 4;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnSystemEnabledTimeId = 5;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnDateCreatedId = 6;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnCreatedById = 7;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnDateModifiedId = 8;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnModifiedById = 9;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnModificationIdId = 10;
 
         private static bool FInitInfoValues = InitInfoValues();
         private static bool InitInfoValues()
         {
             TableInfo.Add(TableId, new TTypedTableInfo(TableId, "SSystemStatusLog", "s_system_status_log",
                 new TTypedColumnInfo[] {
-                    new TTypedColumnInfo(0, "UserId", "s_user_id_c", OdbcType.VarChar, 20, true),
-                    new TTypedColumnInfo(1, "SystemDisabledDate", "s_system_disabled_date_d", OdbcType.Date, -1, false),
-                    new TTypedColumnInfo(2, "SystemDisabledTime", "s_system_disabled_time_i", OdbcType.Int, -1, false),
-                    new TTypedColumnInfo(3, "SystemDisabledReason", "s_system_disabled_reason_c", OdbcType.VarChar, 80, false),
-                    new TTypedColumnInfo(4, "SystemEnabledDate", "s_system_enabled_date_d", OdbcType.Date, -1, false),
-                    new TTypedColumnInfo(5, "SystemEnabledTime", "s_system_enabled_time_i", OdbcType.Int, -1, false),
-                    new TTypedColumnInfo(6, "DateCreated", "s_date_created_d", OdbcType.Date, -1, false),
-                    new TTypedColumnInfo(7, "CreatedBy", "s_created_by_c", OdbcType.VarChar, 20, false),
-                    new TTypedColumnInfo(8, "DateModified", "s_date_modified_d", OdbcType.Date, -1, false),
-                    new TTypedColumnInfo(9, "ModifiedBy", "s_modified_by_c", OdbcType.VarChar, 20, false),
-                    new TTypedColumnInfo(10, "ModificationId", "s_modification_id_c", OdbcType.VarChar, 150, false)
+                    new TTypedColumnInfo(0, "UserId", "s_user_id_c", "User ID", OdbcType.VarChar, 20, true),
+                    new TTypedColumnInfo(1, "SystemDisabledDate", "s_system_disabled_date_d", "Date Disabled", OdbcType.Date, -1, false),
+                    new TTypedColumnInfo(2, "SystemDisabledTime", "s_system_disabled_time_i", "Time Disabled", OdbcType.Int, -1, false),
+                    new TTypedColumnInfo(3, "SystemDisabledReason", "s_system_disabled_reason_c", "Reason Disabled", OdbcType.VarChar, 80, false),
+                    new TTypedColumnInfo(4, "SystemEnabledDate", "s_system_enabled_date_d", "Date Enabled", OdbcType.Date, -1, false),
+                    new TTypedColumnInfo(5, "SystemEnabledTime", "s_system_enabled_time_i", "Time Enabled", OdbcType.Int, -1, false),
+                    new TTypedColumnInfo(6, "DateCreated", "s_date_created_d", "Created Date", OdbcType.Date, -1, false),
+                    new TTypedColumnInfo(7, "CreatedBy", "s_created_by_c", "Created By", OdbcType.VarChar, 20, false),
+                    new TTypedColumnInfo(8, "DateModified", "s_date_modified_d", "Modified Date", OdbcType.Date, -1, false),
+                    new TTypedColumnInfo(9, "ModifiedBy", "s_modified_by_c", "Modified By", OdbcType.VarChar, 20, false),
+                    new TTypedColumnInfo(10, "ModificationId", "s_modification_id_c", "", OdbcType.VarChar, 150, false)
                 },
                 new int[] {
 
@@ -15977,6 +16710,29 @@ namespace Ict.Petra.Shared.MSysMan.Data
                 base(info, context)
         {
         }
+
+        /// This is the system user id. Each user of the system is allocated one
+        public DataColumn ColumnUserId;
+        ///
+        public DataColumn ColumnSystemDisabledDate;
+        ///
+        public DataColumn ColumnSystemDisabledTime;
+        ///
+        public DataColumn ColumnSystemDisabledReason;
+        ///
+        public DataColumn ColumnSystemEnabledDate;
+        ///
+        public DataColumn ColumnSystemEnabledTime;
+        /// The date the record was created.
+        public DataColumn ColumnDateCreated;
+        /// User ID of who created this record.
+        public DataColumn ColumnCreatedBy;
+        /// The date the record was modified.
+        public DataColumn ColumnDateModified;
+        /// User ID of who last modified this record.
+        public DataColumn ColumnModifiedBy;
+        /// This identifies the current version of the record.
+        public DataColumn ColumnModificationId;
 
         /// create the columns
         protected override void InitClass()
@@ -16046,6 +16802,18 @@ namespace Ict.Petra.Shared.MSysMan.Data
         public SSystemStatusLogTable GetChangesTyped()
         {
             return ((SSystemStatusLogTable)(base.GetChangesTypedInternal()));
+        }
+
+        /// return the CamelCase name of the table
+        public static string GetTableName()
+        {
+            return "SSystemStatusLog";
+        }
+
+        /// return the name of the table as it is used in the database
+        public static string GetTableDBName()
+        {
+            return "s_system_status_log";
         }
 
         /// get an odbc parameter for the given column
@@ -16640,39 +17408,38 @@ namespace Ict.Petra.Shared.MSysMan.Data
     [Serializable()]
     public class SUserDefaultsTable : TTypedDataTable
     {
-        /// This identifies who the current user is
-        public DataColumn ColumnUserId;
-        /// The name of the default
-        public DataColumn ColumnDefaultCode;
-        /// The value of the default
-        public DataColumn ColumnDefaultValue;
-        /// The date the record was created.
-        public DataColumn ColumnDateCreated;
-        /// User ID of who created this record.
-        public DataColumn ColumnCreatedBy;
-        /// The date the record was modified.
-        public DataColumn ColumnDateModified;
-        /// User ID of who last modified this record.
-        public DataColumn ColumnModifiedBy;
-        /// This identifies the current version of the record.
-        public DataColumn ColumnModificationId;
-
         /// TableId for Ict.Common.Data generic functions
         public static short TableId = 27;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnUserIdId = 0;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnDefaultCodeId = 1;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnDefaultValueId = 2;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnDateCreatedId = 3;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnCreatedById = 4;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnDateModifiedId = 5;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnModifiedById = 6;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnModificationIdId = 7;
 
         private static bool FInitInfoValues = InitInfoValues();
         private static bool InitInfoValues()
         {
             TableInfo.Add(TableId, new TTypedTableInfo(TableId, "SUserDefaults", "s_user_defaults",
                 new TTypedColumnInfo[] {
-                    new TTypedColumnInfo(0, "UserId", "s_user_id_c", OdbcType.VarChar, 20, true),
-                    new TTypedColumnInfo(1, "DefaultCode", "s_default_code_c", OdbcType.VarChar, 100, true),
-                    new TTypedColumnInfo(2, "DefaultValue", "s_default_value_c", OdbcType.VarChar, 500, false),
-                    new TTypedColumnInfo(3, "DateCreated", "s_date_created_d", OdbcType.Date, -1, false),
-                    new TTypedColumnInfo(4, "CreatedBy", "s_created_by_c", OdbcType.VarChar, 20, false),
-                    new TTypedColumnInfo(5, "DateModified", "s_date_modified_d", OdbcType.Date, -1, false),
-                    new TTypedColumnInfo(6, "ModifiedBy", "s_modified_by_c", OdbcType.VarChar, 20, false),
-                    new TTypedColumnInfo(7, "ModificationId", "s_modification_id_c", OdbcType.VarChar, 150, false)
+                    new TTypedColumnInfo(0, "UserId", "s_user_id_c", "User ID", OdbcType.VarChar, 20, true),
+                    new TTypedColumnInfo(1, "DefaultCode", "s_default_code_c", "Default Code", OdbcType.VarChar, 100, true),
+                    new TTypedColumnInfo(2, "DefaultValue", "s_default_value_c", "Default Value", OdbcType.VarChar, 500, false),
+                    new TTypedColumnInfo(3, "DateCreated", "s_date_created_d", "Created Date", OdbcType.Date, -1, false),
+                    new TTypedColumnInfo(4, "CreatedBy", "s_created_by_c", "Created By", OdbcType.VarChar, 20, false),
+                    new TTypedColumnInfo(5, "DateModified", "s_date_modified_d", "Modified Date", OdbcType.Date, -1, false),
+                    new TTypedColumnInfo(6, "ModifiedBy", "s_modified_by_c", "Modified By", OdbcType.VarChar, 20, false),
+                    new TTypedColumnInfo(7, "ModificationId", "s_modification_id_c", "", OdbcType.VarChar, 150, false)
                 },
                 new int[] {
                     0, 1
@@ -16697,6 +17464,23 @@ namespace Ict.Petra.Shared.MSysMan.Data
                 base(info, context)
         {
         }
+
+        /// This identifies who the current user is
+        public DataColumn ColumnUserId;
+        /// The name of the default
+        public DataColumn ColumnDefaultCode;
+        /// The value of the default
+        public DataColumn ColumnDefaultValue;
+        /// The date the record was created.
+        public DataColumn ColumnDateCreated;
+        /// User ID of who created this record.
+        public DataColumn ColumnCreatedBy;
+        /// The date the record was modified.
+        public DataColumn ColumnDateModified;
+        /// User ID of who last modified this record.
+        public DataColumn ColumnModifiedBy;
+        /// This identifies the current version of the record.
+        public DataColumn ColumnModificationId;
 
         /// create the columns
         protected override void InitClass()
@@ -16760,6 +17544,18 @@ namespace Ict.Petra.Shared.MSysMan.Data
         public SUserDefaultsTable GetChangesTyped()
         {
             return ((SUserDefaultsTable)(base.GetChangesTypedInternal()));
+        }
+
+        /// return the CamelCase name of the table
+        public static string GetTableName()
+        {
+            return "SUserDefaults";
+        }
+
+        /// return the name of the table as it is used in the database
+        public static string GetTableDBName()
+        {
+            return "s_user_defaults";
         }
 
         /// get an odbc parameter for the given column
@@ -17201,39 +17997,38 @@ namespace Ict.Petra.Shared.MSysMan.Data
     [Serializable()]
     public class SSystemDefaultsTable : TTypedDataTable
     {
-        ///
-        public DataColumn ColumnDefaultCode;
-        ///
-        public DataColumn ColumnDefaultDescription;
-        ///
-        public DataColumn ColumnDefaultValue;
-        /// The date the record was created.
-        public DataColumn ColumnDateCreated;
-        /// User ID of who created this record.
-        public DataColumn ColumnCreatedBy;
-        /// The date the record was modified.
-        public DataColumn ColumnDateModified;
-        /// User ID of who last modified this record.
-        public DataColumn ColumnModifiedBy;
-        /// This identifies the current version of the record.
-        public DataColumn ColumnModificationId;
-
         /// TableId for Ict.Common.Data generic functions
         public static short TableId = 28;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnDefaultCodeId = 0;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnDefaultDescriptionId = 1;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnDefaultValueId = 2;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnDateCreatedId = 3;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnCreatedById = 4;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnDateModifiedId = 5;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnModifiedById = 6;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnModificationIdId = 7;
 
         private static bool FInitInfoValues = InitInfoValues();
         private static bool InitInfoValues()
         {
             TableInfo.Add(TableId, new TTypedTableInfo(TableId, "SSystemDefaults", "s_system_defaults",
                 new TTypedColumnInfo[] {
-                    new TTypedColumnInfo(0, "DefaultCode", "s_default_code_c", OdbcType.VarChar, 100, true),
-                    new TTypedColumnInfo(1, "DefaultDescription", "s_default_description_c", OdbcType.VarChar, 160, false),
-                    new TTypedColumnInfo(2, "DefaultValue", "s_default_value_c", OdbcType.VarChar, 500, false),
-                    new TTypedColumnInfo(3, "DateCreated", "s_date_created_d", OdbcType.Date, -1, false),
-                    new TTypedColumnInfo(4, "CreatedBy", "s_created_by_c", OdbcType.VarChar, 20, false),
-                    new TTypedColumnInfo(5, "DateModified", "s_date_modified_d", OdbcType.Date, -1, false),
-                    new TTypedColumnInfo(6, "ModifiedBy", "s_modified_by_c", OdbcType.VarChar, 20, false),
-                    new TTypedColumnInfo(7, "ModificationId", "s_modification_id_c", OdbcType.VarChar, 150, false)
+                    new TTypedColumnInfo(0, "DefaultCode", "s_default_code_c", "s_default_code_c", OdbcType.VarChar, 100, true),
+                    new TTypedColumnInfo(1, "DefaultDescription", "s_default_description_c", "s_default_description_c", OdbcType.VarChar, 160, false),
+                    new TTypedColumnInfo(2, "DefaultValue", "s_default_value_c", "s_default_value_c", OdbcType.VarChar, 500, false),
+                    new TTypedColumnInfo(3, "DateCreated", "s_date_created_d", "Created Date", OdbcType.Date, -1, false),
+                    new TTypedColumnInfo(4, "CreatedBy", "s_created_by_c", "Created By", OdbcType.VarChar, 20, false),
+                    new TTypedColumnInfo(5, "DateModified", "s_date_modified_d", "Modified Date", OdbcType.Date, -1, false),
+                    new TTypedColumnInfo(6, "ModifiedBy", "s_modified_by_c", "Modified By", OdbcType.VarChar, 20, false),
+                    new TTypedColumnInfo(7, "ModificationId", "s_modification_id_c", "", OdbcType.VarChar, 150, false)
                 },
                 new int[] {
                     0
@@ -17258,6 +18053,23 @@ namespace Ict.Petra.Shared.MSysMan.Data
                 base(info, context)
         {
         }
+
+        ///
+        public DataColumn ColumnDefaultCode;
+        ///
+        public DataColumn ColumnDefaultDescription;
+        ///
+        public DataColumn ColumnDefaultValue;
+        /// The date the record was created.
+        public DataColumn ColumnDateCreated;
+        /// User ID of who created this record.
+        public DataColumn ColumnCreatedBy;
+        /// The date the record was modified.
+        public DataColumn ColumnDateModified;
+        /// User ID of who last modified this record.
+        public DataColumn ColumnModifiedBy;
+        /// This identifies the current version of the record.
+        public DataColumn ColumnModificationId;
 
         /// create the columns
         protected override void InitClass()
@@ -17321,6 +18133,18 @@ namespace Ict.Petra.Shared.MSysMan.Data
         public SSystemDefaultsTable GetChangesTyped()
         {
             return ((SSystemDefaultsTable)(base.GetChangesTypedInternal()));
+        }
+
+        /// return the CamelCase name of the table
+        public static string GetTableName()
+        {
+            return "SSystemDefaults";
+        }
+
+        /// return the name of the table as it is used in the database
+        public static string GetTableDBName()
+        {
+            return "s_system_defaults";
         }
 
         /// get an odbc parameter for the given column
@@ -17762,6 +18586,93 @@ namespace Ict.Petra.Shared.MSysMan.Data
     [Serializable()]
     public class SBatchJobTable : TTypedDataTable
     {
+        /// TableId for Ict.Common.Data generic functions
+        public static short TableId = 29;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnFileNameId = 0;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnUserIdId = 1;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnJobTypeId = 2;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnMinutesId = 3;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnHoursId = 4;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnDayOfMonthId = 5;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnMonthOfYearId = 6;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnDayOfWeekId = 7;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnParametersUsedId = 8;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnDataId = 9;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnRemoveId = 10;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnDateSubmittedId = 11;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnTimeSubmittedId = 12;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnDateCreatedId = 13;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnCreatedById = 14;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnDateModifiedId = 15;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnModifiedById = 16;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnModificationIdId = 17;
+
+        private static bool FInitInfoValues = InitInfoValues();
+        private static bool InitInfoValues()
+        {
+            TableInfo.Add(TableId, new TTypedTableInfo(TableId, "SBatchJob", "s_batch_job",
+                new TTypedColumnInfo[] {
+                    new TTypedColumnInfo(0, "FileName", "s_file_name_c", "File Name", OdbcType.VarChar, 80, true),
+                    new TTypedColumnInfo(1, "UserId", "s_user_id_c", "User ID", OdbcType.VarChar, 20, true),
+                    new TTypedColumnInfo(2, "JobType", "s_job_type_c", "Job Type", OdbcType.VarChar, 16, false),
+                    new TTypedColumnInfo(3, "Minutes", "s_minutes_i", "Minutes", OdbcType.Int, -1, false),
+                    new TTypedColumnInfo(4, "Hours", "s_hours_i", "Hours", OdbcType.Int, -1, false),
+                    new TTypedColumnInfo(5, "DayOfMonth", "s_day_of_month_c", "Day of the Month", OdbcType.VarChar, 16, false),
+                    new TTypedColumnInfo(6, "MonthOfYear", "s_month_of_year_c", "Month of the Year", OdbcType.VarChar, 16, false),
+                    new TTypedColumnInfo(7, "DayOfWeek", "s_day_of_week_c", "Day of the Week", OdbcType.VarChar, 16, false),
+                    new TTypedColumnInfo(8, "ParametersUsed", "s_parameters_used_l", "Parameters Used?", OdbcType.Bit, -1, false),
+                    new TTypedColumnInfo(9, "Data", "s_data_c", "Data", OdbcType.VarChar, 1000, false),
+                    new TTypedColumnInfo(10, "Remove", "s_remove_l", "Remove after run?", OdbcType.Bit, -1, false),
+                    new TTypedColumnInfo(11, "DateSubmitted", "s_date_submitted_d", "Submitted Date", OdbcType.Date, -1, false),
+                    new TTypedColumnInfo(12, "TimeSubmitted", "s_time_submitted_i", "Submitted Time", OdbcType.Int, -1, false),
+                    new TTypedColumnInfo(13, "DateCreated", "s_date_created_d", "Created Date", OdbcType.Date, -1, false),
+                    new TTypedColumnInfo(14, "CreatedBy", "s_created_by_c", "Created By", OdbcType.VarChar, 20, false),
+                    new TTypedColumnInfo(15, "DateModified", "s_date_modified_d", "Modified Date", OdbcType.Date, -1, false),
+                    new TTypedColumnInfo(16, "ModifiedBy", "s_modified_by_c", "Modified By", OdbcType.VarChar, 20, false),
+                    new TTypedColumnInfo(17, "ModificationId", "s_modification_id_c", "", OdbcType.VarChar, 150, false)
+                },
+                new int[] {
+                    0, 1, 11, 12
+                }));
+            return true;
+        }
+
+        /// constructor
+        public SBatchJobTable() :
+                base("SBatchJob")
+        {
+        }
+
+        /// constructor
+        public SBatchJobTable(string ATablename) :
+                base(ATablename)
+        {
+        }
+
+        /// constructor for serialization
+        public SBatchJobTable(System.Runtime.Serialization.SerializationInfo info, System.Runtime.Serialization.StreamingContext context) :
+                base(info, context)
+        {
+        }
+
         /// This is the name of the file
         public DataColumn ColumnFileName;
         /// This identifies who the current user is
@@ -17798,57 +18709,6 @@ namespace Ict.Petra.Shared.MSysMan.Data
         public DataColumn ColumnModifiedBy;
         /// This identifies the current version of the record.
         public DataColumn ColumnModificationId;
-
-        /// TableId for Ict.Common.Data generic functions
-        public static short TableId = 29;
-
-        private static bool FInitInfoValues = InitInfoValues();
-        private static bool InitInfoValues()
-        {
-            TableInfo.Add(TableId, new TTypedTableInfo(TableId, "SBatchJob", "s_batch_job",
-                new TTypedColumnInfo[] {
-                    new TTypedColumnInfo(0, "FileName", "s_file_name_c", OdbcType.VarChar, 80, true),
-                    new TTypedColumnInfo(1, "UserId", "s_user_id_c", OdbcType.VarChar, 20, true),
-                    new TTypedColumnInfo(2, "JobType", "s_job_type_c", OdbcType.VarChar, 16, false),
-                    new TTypedColumnInfo(3, "Minutes", "s_minutes_i", OdbcType.Int, -1, false),
-                    new TTypedColumnInfo(4, "Hours", "s_hours_i", OdbcType.Int, -1, false),
-                    new TTypedColumnInfo(5, "DayOfMonth", "s_day_of_month_c", OdbcType.VarChar, 16, false),
-                    new TTypedColumnInfo(6, "MonthOfYear", "s_month_of_year_c", OdbcType.VarChar, 16, false),
-                    new TTypedColumnInfo(7, "DayOfWeek", "s_day_of_week_c", OdbcType.VarChar, 16, false),
-                    new TTypedColumnInfo(8, "ParametersUsed", "s_parameters_used_l", OdbcType.Bit, -1, false),
-                    new TTypedColumnInfo(9, "Data", "s_data_c", OdbcType.VarChar, 1000, false),
-                    new TTypedColumnInfo(10, "Remove", "s_remove_l", OdbcType.Bit, -1, false),
-                    new TTypedColumnInfo(11, "DateSubmitted", "s_date_submitted_d", OdbcType.Date, -1, false),
-                    new TTypedColumnInfo(12, "TimeSubmitted", "s_time_submitted_i", OdbcType.Int, -1, false),
-                    new TTypedColumnInfo(13, "DateCreated", "s_date_created_d", OdbcType.Date, -1, false),
-                    new TTypedColumnInfo(14, "CreatedBy", "s_created_by_c", OdbcType.VarChar, 20, false),
-                    new TTypedColumnInfo(15, "DateModified", "s_date_modified_d", OdbcType.Date, -1, false),
-                    new TTypedColumnInfo(16, "ModifiedBy", "s_modified_by_c", OdbcType.VarChar, 20, false),
-                    new TTypedColumnInfo(17, "ModificationId", "s_modification_id_c", OdbcType.VarChar, 150, false)
-                },
-                new int[] {
-                    0, 1, 11, 12
-                }));
-            return true;
-        }
-
-        /// constructor
-        public SBatchJobTable() :
-                base("SBatchJob")
-        {
-        }
-
-        /// constructor
-        public SBatchJobTable(string ATablename) :
-                base(ATablename)
-        {
-        }
-
-        /// constructor for serialization
-        public SBatchJobTable(System.Runtime.Serialization.SerializationInfo info, System.Runtime.Serialization.StreamingContext context) :
-                base(info, context)
-        {
-        }
 
         /// create the columns
         protected override void InitClass()
@@ -17932,6 +18792,18 @@ namespace Ict.Petra.Shared.MSysMan.Data
         public SBatchJobTable GetChangesTyped()
         {
             return ((SBatchJobTable)(base.GetChangesTypedInternal()));
+        }
+
+        /// return the CamelCase name of the table
+        public static string GetTableName()
+        {
+            return "SBatchJob";
+        }
+
+        /// return the name of the table as it is used in the database
+        public static string GetTableDBName()
+        {
+            return "s_batch_job";
         }
 
         /// get an odbc parameter for the given column
@@ -18883,6 +19755,81 @@ namespace Ict.Petra.Shared.MSysMan.Data
     [Serializable()]
     public class SErrorMessageTable : TTypedDataTable
     {
+        /// TableId for Ict.Common.Data generic functions
+        public static short TableId = 30;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnLanguageCodeId = 0;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnErrorCodeId = 1;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnMessageLine1Id = 2;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnMessageLine2Id = 3;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnMessageLine3Id = 4;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnResponseId = 5;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnAlertTypeId = 6;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnTitleId = 7;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnLogErrorId = 8;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnDateCreatedId = 9;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnCreatedById = 10;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnDateModifiedId = 11;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnModifiedById = 12;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnModificationIdId = 13;
+
+        private static bool FInitInfoValues = InitInfoValues();
+        private static bool InitInfoValues()
+        {
+            TableInfo.Add(TableId, new TTypedTableInfo(TableId, "SErrorMessage", "s_error_message",
+                new TTypedColumnInfo[] {
+                    new TTypedColumnInfo(0, "LanguageCode", "s_language_code_c", "Language", OdbcType.VarChar, 20, true),
+                    new TTypedColumnInfo(1, "ErrorCode", "s_error_code_c", "Error Number", OdbcType.VarChar, 12, true),
+                    new TTypedColumnInfo(2, "MessageLine1", "s_message_line_1_c", "Message Line 1", OdbcType.VarChar, 100, true),
+                    new TTypedColumnInfo(3, "MessageLine2", "s_message_line_2_c", "Message Line 2", OdbcType.VarChar, 100, false),
+                    new TTypedColumnInfo(4, "MessageLine3", "s_message_line_3_c", "Message Line 3", OdbcType.VarChar, 100, false),
+                    new TTypedColumnInfo(5, "Response", "s_response_c", "Response", OdbcType.VarChar, 100, false),
+                    new TTypedColumnInfo(6, "AlertType", "s_alert_type_c", "Display Type", OdbcType.VarChar, 24, false),
+                    new TTypedColumnInfo(7, "Title", "s_title_c", "Title", OdbcType.VarChar, 48, false),
+                    new TTypedColumnInfo(8, "LogError", "s_log_error_l", "Log Error?", OdbcType.Bit, -1, false),
+                    new TTypedColumnInfo(9, "DateCreated", "s_date_created_d", "Created Date", OdbcType.Date, -1, false),
+                    new TTypedColumnInfo(10, "CreatedBy", "s_created_by_c", "Created By", OdbcType.VarChar, 20, false),
+                    new TTypedColumnInfo(11, "DateModified", "s_date_modified_d", "Modified Date", OdbcType.Date, -1, false),
+                    new TTypedColumnInfo(12, "ModifiedBy", "s_modified_by_c", "Modified By", OdbcType.VarChar, 20, false),
+                    new TTypedColumnInfo(13, "ModificationId", "s_modification_id_c", "", OdbcType.VarChar, 150, false)
+                },
+                new int[] {
+                    0, 1
+                }));
+            return true;
+        }
+
+        /// constructor
+        public SErrorMessageTable() :
+                base("SErrorMessage")
+        {
+        }
+
+        /// constructor
+        public SErrorMessageTable(string ATablename) :
+                base(ATablename)
+        {
+        }
+
+        /// constructor for serialization
+        public SErrorMessageTable(System.Runtime.Serialization.SerializationInfo info, System.Runtime.Serialization.StreamingContext context) :
+                base(info, context)
+        {
+        }
+
         ///
         public DataColumn ColumnLanguageCode;
         ///
@@ -18911,53 +19858,6 @@ namespace Ict.Petra.Shared.MSysMan.Data
         public DataColumn ColumnModifiedBy;
         /// This identifies the current version of the record.
         public DataColumn ColumnModificationId;
-
-        /// TableId for Ict.Common.Data generic functions
-        public static short TableId = 30;
-
-        private static bool FInitInfoValues = InitInfoValues();
-        private static bool InitInfoValues()
-        {
-            TableInfo.Add(TableId, new TTypedTableInfo(TableId, "SErrorMessage", "s_error_message",
-                new TTypedColumnInfo[] {
-                    new TTypedColumnInfo(0, "LanguageCode", "s_language_code_c", OdbcType.VarChar, 20, true),
-                    new TTypedColumnInfo(1, "ErrorCode", "s_error_code_c", OdbcType.VarChar, 12, true),
-                    new TTypedColumnInfo(2, "MessageLine1", "s_message_line_1_c", OdbcType.VarChar, 100, true),
-                    new TTypedColumnInfo(3, "MessageLine2", "s_message_line_2_c", OdbcType.VarChar, 100, false),
-                    new TTypedColumnInfo(4, "MessageLine3", "s_message_line_3_c", OdbcType.VarChar, 100, false),
-                    new TTypedColumnInfo(5, "Response", "s_response_c", OdbcType.VarChar, 100, false),
-                    new TTypedColumnInfo(6, "AlertType", "s_alert_type_c", OdbcType.VarChar, 24, false),
-                    new TTypedColumnInfo(7, "Title", "s_title_c", OdbcType.VarChar, 48, false),
-                    new TTypedColumnInfo(8, "LogError", "s_log_error_l", OdbcType.Bit, -1, false),
-                    new TTypedColumnInfo(9, "DateCreated", "s_date_created_d", OdbcType.Date, -1, false),
-                    new TTypedColumnInfo(10, "CreatedBy", "s_created_by_c", OdbcType.VarChar, 20, false),
-                    new TTypedColumnInfo(11, "DateModified", "s_date_modified_d", OdbcType.Date, -1, false),
-                    new TTypedColumnInfo(12, "ModifiedBy", "s_modified_by_c", OdbcType.VarChar, 20, false),
-                    new TTypedColumnInfo(13, "ModificationId", "s_modification_id_c", OdbcType.VarChar, 150, false)
-                },
-                new int[] {
-                    0, 1
-                }));
-            return true;
-        }
-
-        /// constructor
-        public SErrorMessageTable() :
-                base("SErrorMessage")
-        {
-        }
-
-        /// constructor
-        public SErrorMessageTable(string ATablename) :
-                base(ATablename)
-        {
-        }
-
-        /// constructor for serialization
-        public SErrorMessageTable(System.Runtime.Serialization.SerializationInfo info, System.Runtime.Serialization.StreamingContext context) :
-                base(info, context)
-        {
-        }
 
         /// create the columns
         protected override void InitClass()
@@ -19033,6 +19933,18 @@ namespace Ict.Petra.Shared.MSysMan.Data
         public SErrorMessageTable GetChangesTyped()
         {
             return ((SErrorMessageTable)(base.GetChangesTypedInternal()));
+        }
+
+        /// return the CamelCase name of the table
+        public static string GetTableName()
+        {
+            return "SErrorMessage";
+        }
+
+        /// return the name of the table as it is used in the database
+        public static string GetTableDBName()
+        {
+            return "s_error_message";
         }
 
         /// get an odbc parameter for the given column
@@ -19780,6 +20692,84 @@ namespace Ict.Petra.Shared.MSysMan.Data
     [Serializable()]
     public class SErrorLogTable : TTypedDataTable
     {
+        /// TableId for Ict.Common.Data generic functions
+        public static short TableId = 31;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnErrorCodeId = 0;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnReleaseNumberId = 1;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnUserIdId = 2;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnFileNameId = 3;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnProcessIdId = 4;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnDateId = 5;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnTimeId = 6;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnMessageLine1Id = 7;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnMessageLine2Id = 8;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnMessageLine3Id = 9;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnDateCreatedId = 10;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnCreatedById = 11;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnDateModifiedId = 12;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnModifiedById = 13;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnModificationIdId = 14;
+
+        private static bool FInitInfoValues = InitInfoValues();
+        private static bool InitInfoValues()
+        {
+            TableInfo.Add(TableId, new TTypedTableInfo(TableId, "SErrorLog", "s_error_log",
+                new TTypedColumnInfo[] {
+                    new TTypedColumnInfo(0, "ErrorCode", "s_error_code_c", "Error Number", OdbcType.VarChar, 12, true),
+                    new TTypedColumnInfo(1, "ReleaseNumber", "s_release_number_c", "Release Number", OdbcType.VarChar, 24, true),
+                    new TTypedColumnInfo(2, "UserId", "s_user_id_c", "User ID", OdbcType.VarChar, 20, true),
+                    new TTypedColumnInfo(3, "FileName", "s_file_name_c", "File Name", OdbcType.VarChar, 80, true),
+                    new TTypedColumnInfo(4, "ProcessId", "s_process_id_c", "Process ID", OdbcType.VarChar, 16, false),
+                    new TTypedColumnInfo(5, "Date", "s_date_d", "Date", OdbcType.Date, -1, true),
+                    new TTypedColumnInfo(6, "Time", "s_time_i", "Time", OdbcType.Int, -1, true),
+                    new TTypedColumnInfo(7, "MessageLine1", "s_message_line_1_c", "Message Line 1", OdbcType.VarChar, 120, true),
+                    new TTypedColumnInfo(8, "MessageLine2", "s_message_line_2_c", "Message Line 2", OdbcType.VarChar, 80, false),
+                    new TTypedColumnInfo(9, "MessageLine3", "s_message_line_3_c", "Message Line 3", OdbcType.VarChar, 80, false),
+                    new TTypedColumnInfo(10, "DateCreated", "s_date_created_d", "Created Date", OdbcType.Date, -1, false),
+                    new TTypedColumnInfo(11, "CreatedBy", "s_created_by_c", "Created By", OdbcType.VarChar, 20, false),
+                    new TTypedColumnInfo(12, "DateModified", "s_date_modified_d", "Modified Date", OdbcType.Date, -1, false),
+                    new TTypedColumnInfo(13, "ModifiedBy", "s_modified_by_c", "Modified By", OdbcType.VarChar, 20, false),
+                    new TTypedColumnInfo(14, "ModificationId", "s_modification_id_c", "", OdbcType.VarChar, 150, false)
+                },
+                new int[] {
+                    0, 2, 5, 6
+                }));
+            return true;
+        }
+
+        /// constructor
+        public SErrorLogTable() :
+                base("SErrorLog")
+        {
+        }
+
+        /// constructor
+        public SErrorLogTable(string ATablename) :
+                base(ATablename)
+        {
+        }
+
+        /// constructor for serialization
+        public SErrorLogTable(System.Runtime.Serialization.SerializationInfo info, System.Runtime.Serialization.StreamingContext context) :
+                base(info, context)
+        {
+        }
+
         ///
         public DataColumn ColumnErrorCode;
         /// This is the software release number
@@ -19810,54 +20800,6 @@ namespace Ict.Petra.Shared.MSysMan.Data
         public DataColumn ColumnModifiedBy;
         /// This identifies the current version of the record.
         public DataColumn ColumnModificationId;
-
-        /// TableId for Ict.Common.Data generic functions
-        public static short TableId = 31;
-
-        private static bool FInitInfoValues = InitInfoValues();
-        private static bool InitInfoValues()
-        {
-            TableInfo.Add(TableId, new TTypedTableInfo(TableId, "SErrorLog", "s_error_log",
-                new TTypedColumnInfo[] {
-                    new TTypedColumnInfo(0, "ErrorCode", "s_error_code_c", OdbcType.VarChar, 12, true),
-                    new TTypedColumnInfo(1, "ReleaseNumber", "s_release_number_c", OdbcType.VarChar, 24, true),
-                    new TTypedColumnInfo(2, "UserId", "s_user_id_c", OdbcType.VarChar, 20, true),
-                    new TTypedColumnInfo(3, "FileName", "s_file_name_c", OdbcType.VarChar, 80, true),
-                    new TTypedColumnInfo(4, "ProcessId", "s_process_id_c", OdbcType.VarChar, 16, false),
-                    new TTypedColumnInfo(5, "Date", "s_date_d", OdbcType.Date, -1, true),
-                    new TTypedColumnInfo(6, "Time", "s_time_i", OdbcType.Int, -1, true),
-                    new TTypedColumnInfo(7, "MessageLine1", "s_message_line_1_c", OdbcType.VarChar, 120, true),
-                    new TTypedColumnInfo(8, "MessageLine2", "s_message_line_2_c", OdbcType.VarChar, 80, false),
-                    new TTypedColumnInfo(9, "MessageLine3", "s_message_line_3_c", OdbcType.VarChar, 80, false),
-                    new TTypedColumnInfo(10, "DateCreated", "s_date_created_d", OdbcType.Date, -1, false),
-                    new TTypedColumnInfo(11, "CreatedBy", "s_created_by_c", OdbcType.VarChar, 20, false),
-                    new TTypedColumnInfo(12, "DateModified", "s_date_modified_d", OdbcType.Date, -1, false),
-                    new TTypedColumnInfo(13, "ModifiedBy", "s_modified_by_c", OdbcType.VarChar, 20, false),
-                    new TTypedColumnInfo(14, "ModificationId", "s_modification_id_c", OdbcType.VarChar, 150, false)
-                },
-                new int[] {
-                    0, 2, 5, 6
-                }));
-            return true;
-        }
-
-        /// constructor
-        public SErrorLogTable() :
-                base("SErrorLog")
-        {
-        }
-
-        /// constructor
-        public SErrorLogTable(string ATablename) :
-                base(ATablename)
-        {
-        }
-
-        /// constructor for serialization
-        public SErrorLogTable(System.Runtime.Serialization.SerializationInfo info, System.Runtime.Serialization.StreamingContext context) :
-                base(info, context)
-        {
-        }
 
         /// create the columns
         protected override void InitClass()
@@ -19935,6 +20877,18 @@ namespace Ict.Petra.Shared.MSysMan.Data
         public SErrorLogTable GetChangesTyped()
         {
             return ((SErrorLogTable)(base.GetChangesTypedInternal()));
+        }
+
+        /// return the CamelCase name of the table
+        public static string GetTableName()
+        {
+            return "SErrorLog";
+        }
+
+        /// return the name of the table as it is used in the database
+        public static string GetTableDBName()
+        {
+            return "s_error_log";
         }
 
         /// get an odbc parameter for the given column
@@ -20733,42 +21687,41 @@ namespace Ict.Petra.Shared.MSysMan.Data
     [Serializable()]
     public class SGroupFunctionTable : TTypedDataTable
     {
-        /// identifies a system group
-        public DataColumn ColumnGroupId;
-        /// Field that the group belongs to
-        public DataColumn ColumnUnitKey;
-        /// Identifier for the particular function
-        public DataColumn ColumnFunctionId;
-        /// Does the group have access to this function?
-        public DataColumn ColumnCanAccess;
-        /// The date the record was created.
-        public DataColumn ColumnDateCreated;
-        /// User ID of who created this record.
-        public DataColumn ColumnCreatedBy;
-        /// The date the record was modified.
-        public DataColumn ColumnDateModified;
-        /// User ID of who last modified this record.
-        public DataColumn ColumnModifiedBy;
-        /// This identifies the current version of the record.
-        public DataColumn ColumnModificationId;
-
         /// TableId for Ict.Common.Data generic functions
         public static short TableId = 302;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnGroupIdId = 0;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnUnitKeyId = 1;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnFunctionIdId = 2;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnCanAccessId = 3;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnDateCreatedId = 4;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnCreatedById = 5;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnDateModifiedId = 6;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnModifiedById = 7;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnModificationIdId = 8;
 
         private static bool FInitInfoValues = InitInfoValues();
         private static bool InitInfoValues()
         {
             TableInfo.Add(TableId, new TTypedTableInfo(TableId, "SGroupFunction", "s_group_function",
                 new TTypedColumnInfo[] {
-                    new TTypedColumnInfo(0, "GroupId", "s_group_id_c", OdbcType.VarChar, 20, true),
-                    new TTypedColumnInfo(1, "UnitKey", "s_unit_key_n", OdbcType.Decimal, 10, true),
-                    new TTypedColumnInfo(2, "FunctionId", "s_function_id_c", OdbcType.VarChar, 30, true),
-                    new TTypedColumnInfo(3, "CanAccess", "s_can_access_l", OdbcType.Bit, -1, false),
-                    new TTypedColumnInfo(4, "DateCreated", "s_date_created_d", OdbcType.Date, -1, false),
-                    new TTypedColumnInfo(5, "CreatedBy", "s_created_by_c", OdbcType.VarChar, 20, false),
-                    new TTypedColumnInfo(6, "DateModified", "s_date_modified_d", OdbcType.Date, -1, false),
-                    new TTypedColumnInfo(7, "ModifiedBy", "s_modified_by_c", OdbcType.VarChar, 20, false),
-                    new TTypedColumnInfo(8, "ModificationId", "s_modification_id_c", OdbcType.VarChar, 150, false)
+                    new TTypedColumnInfo(0, "GroupId", "s_group_id_c", "Group ID", OdbcType.VarChar, 20, true),
+                    new TTypedColumnInfo(1, "UnitKey", "s_unit_key_n", "Field", OdbcType.Decimal, 10, true),
+                    new TTypedColumnInfo(2, "FunctionId", "s_function_id_c", "Function ID", OdbcType.VarChar, 30, true),
+                    new TTypedColumnInfo(3, "CanAccess", "s_can_access_l", "Access Granted?", OdbcType.Bit, -1, false),
+                    new TTypedColumnInfo(4, "DateCreated", "s_date_created_d", "Created Date", OdbcType.Date, -1, false),
+                    new TTypedColumnInfo(5, "CreatedBy", "s_created_by_c", "Created By", OdbcType.VarChar, 20, false),
+                    new TTypedColumnInfo(6, "DateModified", "s_date_modified_d", "Modified Date", OdbcType.Date, -1, false),
+                    new TTypedColumnInfo(7, "ModifiedBy", "s_modified_by_c", "Modified By", OdbcType.VarChar, 20, false),
+                    new TTypedColumnInfo(8, "ModificationId", "s_modification_id_c", "", OdbcType.VarChar, 150, false)
                 },
                 new int[] {
                     0, 1, 2
@@ -20793,6 +21746,25 @@ namespace Ict.Petra.Shared.MSysMan.Data
                 base(info, context)
         {
         }
+
+        /// identifies a system group
+        public DataColumn ColumnGroupId;
+        /// Field that the group belongs to
+        public DataColumn ColumnUnitKey;
+        /// Identifier for the particular function
+        public DataColumn ColumnFunctionId;
+        /// Does the group have access to this function?
+        public DataColumn ColumnCanAccess;
+        /// The date the record was created.
+        public DataColumn ColumnDateCreated;
+        /// User ID of who created this record.
+        public DataColumn ColumnCreatedBy;
+        /// The date the record was modified.
+        public DataColumn ColumnDateModified;
+        /// User ID of who last modified this record.
+        public DataColumn ColumnModifiedBy;
+        /// This identifies the current version of the record.
+        public DataColumn ColumnModificationId;
 
         /// create the columns
         protected override void InitClass()
@@ -20858,6 +21830,18 @@ namespace Ict.Petra.Shared.MSysMan.Data
         public SGroupFunctionTable GetChangesTyped()
         {
             return ((SGroupFunctionTable)(base.GetChangesTypedInternal()));
+        }
+
+        /// return the CamelCase name of the table
+        public static string GetTableName()
+        {
+            return "SGroupFunction";
+        }
+
+        /// return the name of the table as it is used in the database
+        public static string GetTableDBName()
+        {
+            return "s_group_function";
         }
 
         /// get an odbc parameter for the given column
@@ -21350,45 +22334,44 @@ namespace Ict.Petra.Shared.MSysMan.Data
     [Serializable()]
     public class SFunctionTable : TTypedDataTable
     {
-        /// Identifier for the particular function
-        public DataColumn ColumnFunctionId;
-        /// Petra Module which contains the function
-        public DataColumn ColumnModuleName;
-        /// Petra Sub-Module which contains the function
-        public DataColumn ColumnSubModuleName;
-        /// Function name
-        public DataColumn ColumnFunctionName;
-        /// Filename associated with the function
-        public DataColumn ColumnFilename;
-        /// The date the record was created.
-        public DataColumn ColumnDateCreated;
-        /// User ID of who created this record.
-        public DataColumn ColumnCreatedBy;
-        /// The date the record was modified.
-        public DataColumn ColumnDateModified;
-        /// User ID of who last modified this record.
-        public DataColumn ColumnModifiedBy;
-        /// This identifies the current version of the record.
-        public DataColumn ColumnModificationId;
-
         /// TableId for Ict.Common.Data generic functions
         public static short TableId = 303;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnFunctionIdId = 0;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnModuleNameId = 1;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnSubModuleNameId = 2;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnFunctionNameId = 3;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnFilenameId = 4;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnDateCreatedId = 5;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnCreatedById = 6;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnDateModifiedId = 7;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnModifiedById = 8;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnModificationIdId = 9;
 
         private static bool FInitInfoValues = InitInfoValues();
         private static bool InitInfoValues()
         {
             TableInfo.Add(TableId, new TTypedTableInfo(TableId, "SFunction", "s_function",
                 new TTypedColumnInfo[] {
-                    new TTypedColumnInfo(0, "FunctionId", "s_function_id_c", OdbcType.VarChar, 30, true),
-                    new TTypedColumnInfo(1, "ModuleName", "s_module_name_c", OdbcType.VarChar, 200, true),
-                    new TTypedColumnInfo(2, "SubModuleName", "s_sub_module_name_c", OdbcType.VarChar, 200, false),
-                    new TTypedColumnInfo(3, "FunctionName", "s_function_name_c", OdbcType.VarChar, 200, true),
-                    new TTypedColumnInfo(4, "Filename", "s_filename_c", OdbcType.VarChar, 200, false),
-                    new TTypedColumnInfo(5, "DateCreated", "s_date_created_d", OdbcType.Date, -1, false),
-                    new TTypedColumnInfo(6, "CreatedBy", "s_created_by_c", OdbcType.VarChar, 20, false),
-                    new TTypedColumnInfo(7, "DateModified", "s_date_modified_d", OdbcType.Date, -1, false),
-                    new TTypedColumnInfo(8, "ModifiedBy", "s_modified_by_c", OdbcType.VarChar, 20, false),
-                    new TTypedColumnInfo(9, "ModificationId", "s_modification_id_c", OdbcType.VarChar, 150, false)
+                    new TTypedColumnInfo(0, "FunctionId", "s_function_id_c", "Function ID", OdbcType.VarChar, 30, true),
+                    new TTypedColumnInfo(1, "ModuleName", "s_module_name_c", "Module Name", OdbcType.VarChar, 200, true),
+                    new TTypedColumnInfo(2, "SubModuleName", "s_sub_module_name_c", "Sub-Module Name", OdbcType.VarChar, 200, false),
+                    new TTypedColumnInfo(3, "FunctionName", "s_function_name_c", "Function Name", OdbcType.VarChar, 200, true),
+                    new TTypedColumnInfo(4, "Filename", "s_filename_c", "Filename", OdbcType.VarChar, 200, false),
+                    new TTypedColumnInfo(5, "DateCreated", "s_date_created_d", "Created Date", OdbcType.Date, -1, false),
+                    new TTypedColumnInfo(6, "CreatedBy", "s_created_by_c", "Created By", OdbcType.VarChar, 20, false),
+                    new TTypedColumnInfo(7, "DateModified", "s_date_modified_d", "Modified Date", OdbcType.Date, -1, false),
+                    new TTypedColumnInfo(8, "ModifiedBy", "s_modified_by_c", "Modified By", OdbcType.VarChar, 20, false),
+                    new TTypedColumnInfo(9, "ModificationId", "s_modification_id_c", "", OdbcType.VarChar, 150, false)
                 },
                 new int[] {
                     0
@@ -21413,6 +22396,27 @@ namespace Ict.Petra.Shared.MSysMan.Data
                 base(info, context)
         {
         }
+
+        /// Identifier for the particular function
+        public DataColumn ColumnFunctionId;
+        /// Petra Module which contains the function
+        public DataColumn ColumnModuleName;
+        /// Petra Sub-Module which contains the function
+        public DataColumn ColumnSubModuleName;
+        /// Function name
+        public DataColumn ColumnFunctionName;
+        /// Filename associated with the function
+        public DataColumn ColumnFilename;
+        /// The date the record was created.
+        public DataColumn ColumnDateCreated;
+        /// User ID of who created this record.
+        public DataColumn ColumnCreatedBy;
+        /// The date the record was modified.
+        public DataColumn ColumnDateModified;
+        /// User ID of who last modified this record.
+        public DataColumn ColumnModifiedBy;
+        /// This identifies the current version of the record.
+        public DataColumn ColumnModificationId;
 
         /// create the columns
         protected override void InitClass()
@@ -21480,6 +22484,18 @@ namespace Ict.Petra.Shared.MSysMan.Data
         public SFunctionTable GetChangesTyped()
         {
             return ((SFunctionTable)(base.GetChangesTypedInternal()));
+        }
+
+        /// return the CamelCase name of the table
+        public static string GetTableName()
+        {
+            return "SFunction";
+        }
+
+        /// return the name of the table as it is used in the database
+        public static string GetTableDBName()
+        {
+            return "s_function";
         }
 
         /// get an odbc parameter for the given column
@@ -22023,45 +23039,44 @@ namespace Ict.Petra.Shared.MSysMan.Data
     [Serializable()]
     public class SJobGroupTable : TTypedDataTable
     {
-        /// Name of the position.
-        public DataColumn ColumnPositionName;
-        /// Scope of the position.
-        public DataColumn ColumnPositionScope;
-        /// Position record identifier
-        public DataColumn ColumnJobKey;
-        /// identifies a system group
-        public DataColumn ColumnGroupId;
-        /// Field that this role/group assignment relates to
-        public DataColumn ColumnUnitKey;
-        /// The date the record was created.
-        public DataColumn ColumnDateCreated;
-        /// User ID of who created this record.
-        public DataColumn ColumnCreatedBy;
-        /// The date the record was modified.
-        public DataColumn ColumnDateModified;
-        /// User ID of who last modified this record.
-        public DataColumn ColumnModifiedBy;
-        /// This identifies the current version of the record.
-        public DataColumn ColumnModificationId;
-
         /// TableId for Ict.Common.Data generic functions
         public static short TableId = 304;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnPositionNameId = 0;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnPositionScopeId = 1;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnJobKeyId = 2;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnGroupIdId = 3;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnUnitKeyId = 4;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnDateCreatedId = 5;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnCreatedById = 6;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnDateModifiedId = 7;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnModifiedById = 8;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnModificationIdId = 9;
 
         private static bool FInitInfoValues = InitInfoValues();
         private static bool InitInfoValues()
         {
             TableInfo.Add(TableId, new TTypedTableInfo(TableId, "SJobGroup", "s_job_group",
                 new TTypedColumnInfo[] {
-                    new TTypedColumnInfo(0, "PositionName", "pt_position_name_c", OdbcType.VarChar, 60, true),
-                    new TTypedColumnInfo(1, "PositionScope", "pt_position_scope_c", OdbcType.VarChar, 24, true),
-                    new TTypedColumnInfo(2, "JobKey", "um_job_key_i", OdbcType.Int, -1, true),
-                    new TTypedColumnInfo(3, "GroupId", "s_group_id_c", OdbcType.VarChar, 20, true),
-                    new TTypedColumnInfo(4, "UnitKey", "s_unit_key_n", OdbcType.Decimal, 10, true),
-                    new TTypedColumnInfo(5, "DateCreated", "s_date_created_d", OdbcType.Date, -1, false),
-                    new TTypedColumnInfo(6, "CreatedBy", "s_created_by_c", OdbcType.VarChar, 20, false),
-                    new TTypedColumnInfo(7, "DateModified", "s_date_modified_d", OdbcType.Date, -1, false),
-                    new TTypedColumnInfo(8, "ModifiedBy", "s_modified_by_c", OdbcType.VarChar, 20, false),
-                    new TTypedColumnInfo(9, "ModificationId", "s_modification_id_c", OdbcType.VarChar, 150, false)
+                    new TTypedColumnInfo(0, "PositionName", "pt_position_name_c", "Position", OdbcType.VarChar, 60, true),
+                    new TTypedColumnInfo(1, "PositionScope", "pt_position_scope_c", "Position Scope", OdbcType.VarChar, 24, true),
+                    new TTypedColumnInfo(2, "JobKey", "um_job_key_i", "um_job_key_i", OdbcType.Int, -1, true),
+                    new TTypedColumnInfo(3, "GroupId", "s_group_id_c", "Group ID", OdbcType.VarChar, 20, true),
+                    new TTypedColumnInfo(4, "UnitKey", "s_unit_key_n", "Field", OdbcType.Decimal, 10, true),
+                    new TTypedColumnInfo(5, "DateCreated", "s_date_created_d", "Created Date", OdbcType.Date, -1, false),
+                    new TTypedColumnInfo(6, "CreatedBy", "s_created_by_c", "Created By", OdbcType.VarChar, 20, false),
+                    new TTypedColumnInfo(7, "DateModified", "s_date_modified_d", "Modified Date", OdbcType.Date, -1, false),
+                    new TTypedColumnInfo(8, "ModifiedBy", "s_modified_by_c", "Modified By", OdbcType.VarChar, 20, false),
+                    new TTypedColumnInfo(9, "ModificationId", "s_modification_id_c", "", OdbcType.VarChar, 150, false)
                 },
                 new int[] {
                     0, 1, 2, 3, 4
@@ -22086,6 +23101,27 @@ namespace Ict.Petra.Shared.MSysMan.Data
                 base(info, context)
         {
         }
+
+        /// Name of the position.
+        public DataColumn ColumnPositionName;
+        /// Scope of the position.
+        public DataColumn ColumnPositionScope;
+        /// Position record identifier
+        public DataColumn ColumnJobKey;
+        /// identifies a system group
+        public DataColumn ColumnGroupId;
+        /// Field that this role/group assignment relates to
+        public DataColumn ColumnUnitKey;
+        /// The date the record was created.
+        public DataColumn ColumnDateCreated;
+        /// User ID of who created this record.
+        public DataColumn ColumnCreatedBy;
+        /// The date the record was modified.
+        public DataColumn ColumnDateModified;
+        /// User ID of who last modified this record.
+        public DataColumn ColumnModifiedBy;
+        /// This identifies the current version of the record.
+        public DataColumn ColumnModificationId;
 
         /// create the columns
         protected override void InitClass()
@@ -22153,6 +23189,18 @@ namespace Ict.Petra.Shared.MSysMan.Data
         public SJobGroupTable GetChangesTyped()
         {
             return ((SJobGroupTable)(base.GetChangesTypedInternal()));
+        }
+
+        /// return the CamelCase name of the table
+        public static string GetTableName()
+        {
+            return "SJobGroup";
+        }
+
+        /// return the name of the table as it is used in the database
+        public static string GetTableDBName()
+        {
+            return "s_job_group";
         }
 
         /// get an odbc parameter for the given column
@@ -22696,6 +23744,78 @@ namespace Ict.Petra.Shared.MSysMan.Data
     [Serializable()]
     public class SGroupPartnerSetTable : TTypedDataTable
     {
+        /// TableId for Ict.Common.Data generic functions
+        public static short TableId = 305;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnGroupIdId = 0;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnGroupUnitKeyId = 1;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnPartnerSetIdId = 2;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnPartnerSetUnitKeyId = 3;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnInclusiveOrExclusiveId = 4;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnReadAccessId = 5;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnWriteAccessId = 6;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnDeleteAccessId = 7;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnDateCreatedId = 8;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnCreatedById = 9;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnDateModifiedId = 10;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnModifiedById = 11;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnModificationIdId = 12;
+
+        private static bool FInitInfoValues = InitInfoValues();
+        private static bool InitInfoValues()
+        {
+            TableInfo.Add(TableId, new TTypedTableInfo(TableId, "SGroupPartnerSet", "s_group_partner_set",
+                new TTypedColumnInfo[] {
+                    new TTypedColumnInfo(0, "GroupId", "s_group_id_c", "Group ID", OdbcType.VarChar, 20, true),
+                    new TTypedColumnInfo(1, "GroupUnitKey", "s_group_unit_key_n", "Field of Group", OdbcType.Decimal, 10, true),
+                    new TTypedColumnInfo(2, "PartnerSetId", "p_partner_set_id_c", "Partner Set ID", OdbcType.VarChar, 40, true),
+                    new TTypedColumnInfo(3, "PartnerSetUnitKey", "p_partner_set_unit_key_n", "Field of Partner Set", OdbcType.Decimal, 10, true),
+                    new TTypedColumnInfo(4, "InclusiveOrExclusive", "s_inclusive_or_exclusive_l", "Include or Exclude?", OdbcType.Bit, -1, true),
+                    new TTypedColumnInfo(5, "ReadAccess", "s_read_access_l", "Read Access?", OdbcType.Bit, -1, false),
+                    new TTypedColumnInfo(6, "WriteAccess", "s_write_access_l", "Write Access?", OdbcType.Bit, -1, false),
+                    new TTypedColumnInfo(7, "DeleteAccess", "s_delete_access_l", "Delete Access?", OdbcType.Bit, -1, false),
+                    new TTypedColumnInfo(8, "DateCreated", "s_date_created_d", "Created Date", OdbcType.Date, -1, false),
+                    new TTypedColumnInfo(9, "CreatedBy", "s_created_by_c", "Created By", OdbcType.VarChar, 20, false),
+                    new TTypedColumnInfo(10, "DateModified", "s_date_modified_d", "Modified Date", OdbcType.Date, -1, false),
+                    new TTypedColumnInfo(11, "ModifiedBy", "s_modified_by_c", "Modified By", OdbcType.VarChar, 20, false),
+                    new TTypedColumnInfo(12, "ModificationId", "s_modification_id_c", "", OdbcType.VarChar, 150, false)
+                },
+                new int[] {
+                    0, 1, 2, 3
+                }));
+            return true;
+        }
+
+        /// constructor
+        public SGroupPartnerSetTable() :
+                base("SGroupPartnerSet")
+        {
+        }
+
+        /// constructor
+        public SGroupPartnerSetTable(string ATablename) :
+                base(ATablename)
+        {
+        }
+
+        /// constructor for serialization
+        public SGroupPartnerSetTable(System.Runtime.Serialization.SerializationInfo info, System.Runtime.Serialization.StreamingContext context) :
+                base(info, context)
+        {
+        }
+
         /// identifies a system group
         public DataColumn ColumnGroupId;
         /// Field that the group belongs to
@@ -22722,52 +23842,6 @@ namespace Ict.Petra.Shared.MSysMan.Data
         public DataColumn ColumnModifiedBy;
         /// This identifies the current version of the record.
         public DataColumn ColumnModificationId;
-
-        /// TableId for Ict.Common.Data generic functions
-        public static short TableId = 305;
-
-        private static bool FInitInfoValues = InitInfoValues();
-        private static bool InitInfoValues()
-        {
-            TableInfo.Add(TableId, new TTypedTableInfo(TableId, "SGroupPartnerSet", "s_group_partner_set",
-                new TTypedColumnInfo[] {
-                    new TTypedColumnInfo(0, "GroupId", "s_group_id_c", OdbcType.VarChar, 20, true),
-                    new TTypedColumnInfo(1, "GroupUnitKey", "s_group_unit_key_n", OdbcType.Decimal, 10, true),
-                    new TTypedColumnInfo(2, "PartnerSetId", "p_partner_set_id_c", OdbcType.VarChar, 40, true),
-                    new TTypedColumnInfo(3, "PartnerSetUnitKey", "p_partner_set_unit_key_n", OdbcType.Decimal, 10, true),
-                    new TTypedColumnInfo(4, "InclusiveOrExclusive", "s_inclusive_or_exclusive_l", OdbcType.Bit, -1, true),
-                    new TTypedColumnInfo(5, "ReadAccess", "s_read_access_l", OdbcType.Bit, -1, false),
-                    new TTypedColumnInfo(6, "WriteAccess", "s_write_access_l", OdbcType.Bit, -1, false),
-                    new TTypedColumnInfo(7, "DeleteAccess", "s_delete_access_l", OdbcType.Bit, -1, false),
-                    new TTypedColumnInfo(8, "DateCreated", "s_date_created_d", OdbcType.Date, -1, false),
-                    new TTypedColumnInfo(9, "CreatedBy", "s_created_by_c", OdbcType.VarChar, 20, false),
-                    new TTypedColumnInfo(10, "DateModified", "s_date_modified_d", OdbcType.Date, -1, false),
-                    new TTypedColumnInfo(11, "ModifiedBy", "s_modified_by_c", OdbcType.VarChar, 20, false),
-                    new TTypedColumnInfo(12, "ModificationId", "s_modification_id_c", OdbcType.VarChar, 150, false)
-                },
-                new int[] {
-                    0, 1, 2, 3
-                }));
-            return true;
-        }
-
-        /// constructor
-        public SGroupPartnerSetTable() :
-                base("SGroupPartnerSet")
-        {
-        }
-
-        /// constructor
-        public SGroupPartnerSetTable(string ATablename) :
-                base(ATablename)
-        {
-        }
-
-        /// constructor for serialization
-        public SGroupPartnerSetTable(System.Runtime.Serialization.SerializationInfo info, System.Runtime.Serialization.StreamingContext context) :
-                base(info, context)
-        {
-        }
 
         /// create the columns
         protected override void InitClass()
@@ -22841,6 +23915,18 @@ namespace Ict.Petra.Shared.MSysMan.Data
         public SGroupPartnerSetTable GetChangesTyped()
         {
             return ((SGroupPartnerSetTable)(base.GetChangesTypedInternal()));
+        }
+
+        /// return the CamelCase name of the table
+        public static string GetTableName()
+        {
+            return "SGroupPartnerSet";
+        }
+
+        /// return the name of the table as it is used in the database
+        public static string GetTableDBName()
+        {
+            return "s_group_partner_set";
         }
 
         /// get an odbc parameter for the given column
@@ -23537,6 +24623,78 @@ namespace Ict.Petra.Shared.MSysMan.Data
     [Serializable()]
     public class SGroupGiftTable : TTypedDataTable
     {
+        /// TableId for Ict.Common.Data generic functions
+        public static short TableId = 308;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnGroupIdId = 0;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnGroupUnitKeyId = 1;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnLedgerNumberId = 2;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnBatchNumberId = 3;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnGiftTransactionNumberId = 4;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnReadAccessId = 5;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnWriteAccessId = 6;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnDeleteAccessId = 7;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnDateCreatedId = 8;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnCreatedById = 9;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnDateModifiedId = 10;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnModifiedById = 11;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnModificationIdId = 12;
+
+        private static bool FInitInfoValues = InitInfoValues();
+        private static bool InitInfoValues()
+        {
+            TableInfo.Add(TableId, new TTypedTableInfo(TableId, "SGroupGift", "s_group_gift",
+                new TTypedColumnInfo[] {
+                    new TTypedColumnInfo(0, "GroupId", "s_group_id_c", "Group ID", OdbcType.VarChar, 20, true),
+                    new TTypedColumnInfo(1, "GroupUnitKey", "s_group_unit_key_n", "Field of Group", OdbcType.Decimal, 10, true),
+                    new TTypedColumnInfo(2, "LedgerNumber", "a_ledger_number_i", "Ledger Number", OdbcType.Int, -1, true),
+                    new TTypedColumnInfo(3, "BatchNumber", "a_batch_number_i", "Batch Number", OdbcType.Int, -1, true),
+                    new TTypedColumnInfo(4, "GiftTransactionNumber", "a_gift_transaction_number_i", "Transaction Number", OdbcType.Int, -1, true),
+                    new TTypedColumnInfo(5, "ReadAccess", "s_read_access_l", "Read Access?", OdbcType.Bit, -1, false),
+                    new TTypedColumnInfo(6, "WriteAccess", "s_write_access_l", "Write Access?", OdbcType.Bit, -1, false),
+                    new TTypedColumnInfo(7, "DeleteAccess", "s_delete_access_l", "Delete Access?", OdbcType.Bit, -1, false),
+                    new TTypedColumnInfo(8, "DateCreated", "s_date_created_d", "Created Date", OdbcType.Date, -1, false),
+                    new TTypedColumnInfo(9, "CreatedBy", "s_created_by_c", "Created By", OdbcType.VarChar, 20, false),
+                    new TTypedColumnInfo(10, "DateModified", "s_date_modified_d", "Modified Date", OdbcType.Date, -1, false),
+                    new TTypedColumnInfo(11, "ModifiedBy", "s_modified_by_c", "Modified By", OdbcType.VarChar, 20, false),
+                    new TTypedColumnInfo(12, "ModificationId", "s_modification_id_c", "", OdbcType.VarChar, 150, false)
+                },
+                new int[] {
+                    0, 1, 2, 3, 4
+                }));
+            return true;
+        }
+
+        /// constructor
+        public SGroupGiftTable() :
+                base("SGroupGift")
+        {
+        }
+
+        /// constructor
+        public SGroupGiftTable(string ATablename) :
+                base(ATablename)
+        {
+        }
+
+        /// constructor for serialization
+        public SGroupGiftTable(System.Runtime.Serialization.SerializationInfo info, System.Runtime.Serialization.StreamingContext context) :
+                base(info, context)
+        {
+        }
+
         /// identifies a system group
         public DataColumn ColumnGroupId;
         /// Field that the group belongs to
@@ -23563,52 +24721,6 @@ namespace Ict.Petra.Shared.MSysMan.Data
         public DataColumn ColumnModifiedBy;
         /// This identifies the current version of the record.
         public DataColumn ColumnModificationId;
-
-        /// TableId for Ict.Common.Data generic functions
-        public static short TableId = 308;
-
-        private static bool FInitInfoValues = InitInfoValues();
-        private static bool InitInfoValues()
-        {
-            TableInfo.Add(TableId, new TTypedTableInfo(TableId, "SGroupGift", "s_group_gift",
-                new TTypedColumnInfo[] {
-                    new TTypedColumnInfo(0, "GroupId", "s_group_id_c", OdbcType.VarChar, 20, true),
-                    new TTypedColumnInfo(1, "GroupUnitKey", "s_group_unit_key_n", OdbcType.Decimal, 10, true),
-                    new TTypedColumnInfo(2, "LedgerNumber", "a_ledger_number_i", OdbcType.Int, -1, true),
-                    new TTypedColumnInfo(3, "BatchNumber", "a_batch_number_i", OdbcType.Int, -1, true),
-                    new TTypedColumnInfo(4, "GiftTransactionNumber", "a_gift_transaction_number_i", OdbcType.Int, -1, true),
-                    new TTypedColumnInfo(5, "ReadAccess", "s_read_access_l", OdbcType.Bit, -1, false),
-                    new TTypedColumnInfo(6, "WriteAccess", "s_write_access_l", OdbcType.Bit, -1, false),
-                    new TTypedColumnInfo(7, "DeleteAccess", "s_delete_access_l", OdbcType.Bit, -1, false),
-                    new TTypedColumnInfo(8, "DateCreated", "s_date_created_d", OdbcType.Date, -1, false),
-                    new TTypedColumnInfo(9, "CreatedBy", "s_created_by_c", OdbcType.VarChar, 20, false),
-                    new TTypedColumnInfo(10, "DateModified", "s_date_modified_d", OdbcType.Date, -1, false),
-                    new TTypedColumnInfo(11, "ModifiedBy", "s_modified_by_c", OdbcType.VarChar, 20, false),
-                    new TTypedColumnInfo(12, "ModificationId", "s_modification_id_c", OdbcType.VarChar, 150, false)
-                },
-                new int[] {
-                    0, 1, 2, 3, 4
-                }));
-            return true;
-        }
-
-        /// constructor
-        public SGroupGiftTable() :
-                base("SGroupGift")
-        {
-        }
-
-        /// constructor
-        public SGroupGiftTable(string ATablename) :
-                base(ATablename)
-        {
-        }
-
-        /// constructor for serialization
-        public SGroupGiftTable(System.Runtime.Serialization.SerializationInfo info, System.Runtime.Serialization.StreamingContext context) :
-                base(info, context)
-        {
-        }
 
         /// create the columns
         protected override void InitClass()
@@ -23682,6 +24794,18 @@ namespace Ict.Petra.Shared.MSysMan.Data
         public SGroupGiftTable GetChangesTyped()
         {
             return ((SGroupGiftTable)(base.GetChangesTypedInternal()));
+        }
+
+        /// return the CamelCase name of the table
+        public static string GetTableName()
+        {
+            return "SGroupGift";
+        }
+
+        /// return the name of the table as it is used in the database
+        public static string GetTableDBName()
+        {
+            return "s_group_gift";
         }
 
         /// get an odbc parameter for the given column
@@ -24378,6 +25502,78 @@ namespace Ict.Petra.Shared.MSysMan.Data
     [Serializable()]
     public class SGroupMotivationTable : TTypedDataTable
     {
+        /// TableId for Ict.Common.Data generic functions
+        public static short TableId = 309;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnGroupIdId = 0;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnGroupUnitKeyId = 1;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnLedgerNumberId = 2;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnMotivationGroupCodeId = 3;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnMotivationDetailCodeId = 4;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnReadAccessId = 5;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnWriteAccessId = 6;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnDeleteAccessId = 7;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnDateCreatedId = 8;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnCreatedById = 9;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnDateModifiedId = 10;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnModifiedById = 11;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnModificationIdId = 12;
+
+        private static bool FInitInfoValues = InitInfoValues();
+        private static bool InitInfoValues()
+        {
+            TableInfo.Add(TableId, new TTypedTableInfo(TableId, "SGroupMotivation", "s_group_motivation",
+                new TTypedColumnInfo[] {
+                    new TTypedColumnInfo(0, "GroupId", "s_group_id_c", "Group ID", OdbcType.VarChar, 20, true),
+                    new TTypedColumnInfo(1, "GroupUnitKey", "s_group_unit_key_n", "Field of Group", OdbcType.Decimal, 10, true),
+                    new TTypedColumnInfo(2, "LedgerNumber", "a_ledger_number_i", "Ledger Number", OdbcType.Int, -1, true),
+                    new TTypedColumnInfo(3, "MotivationGroupCode", "a_motivation_group_code_c", "Motivation Group Code", OdbcType.VarChar, 16, true),
+                    new TTypedColumnInfo(4, "MotivationDetailCode", "a_motivation_detail_code_c", "Motivation Detail Code", OdbcType.VarChar, 16, true),
+                    new TTypedColumnInfo(5, "ReadAccess", "s_read_access_l", "Read Access?", OdbcType.Bit, -1, false),
+                    new TTypedColumnInfo(6, "WriteAccess", "s_write_access_l", "Write Access?", OdbcType.Bit, -1, false),
+                    new TTypedColumnInfo(7, "DeleteAccess", "s_delete_access_l", "Delete Access?", OdbcType.Bit, -1, false),
+                    new TTypedColumnInfo(8, "DateCreated", "s_date_created_d", "Created Date", OdbcType.Date, -1, false),
+                    new TTypedColumnInfo(9, "CreatedBy", "s_created_by_c", "Created By", OdbcType.VarChar, 20, false),
+                    new TTypedColumnInfo(10, "DateModified", "s_date_modified_d", "Modified Date", OdbcType.Date, -1, false),
+                    new TTypedColumnInfo(11, "ModifiedBy", "s_modified_by_c", "Modified By", OdbcType.VarChar, 20, false),
+                    new TTypedColumnInfo(12, "ModificationId", "s_modification_id_c", "", OdbcType.VarChar, 150, false)
+                },
+                new int[] {
+                    0, 1, 2, 3, 4
+                }));
+            return true;
+        }
+
+        /// constructor
+        public SGroupMotivationTable() :
+                base("SGroupMotivation")
+        {
+        }
+
+        /// constructor
+        public SGroupMotivationTable(string ATablename) :
+                base(ATablename)
+        {
+        }
+
+        /// constructor for serialization
+        public SGroupMotivationTable(System.Runtime.Serialization.SerializationInfo info, System.Runtime.Serialization.StreamingContext context) :
+                base(info, context)
+        {
+        }
+
         /// identifies a system group
         public DataColumn ColumnGroupId;
         /// Field that the group belongs to
@@ -24404,52 +25600,6 @@ namespace Ict.Petra.Shared.MSysMan.Data
         public DataColumn ColumnModifiedBy;
         /// This identifies the current version of the record.
         public DataColumn ColumnModificationId;
-
-        /// TableId for Ict.Common.Data generic functions
-        public static short TableId = 309;
-
-        private static bool FInitInfoValues = InitInfoValues();
-        private static bool InitInfoValues()
-        {
-            TableInfo.Add(TableId, new TTypedTableInfo(TableId, "SGroupMotivation", "s_group_motivation",
-                new TTypedColumnInfo[] {
-                    new TTypedColumnInfo(0, "GroupId", "s_group_id_c", OdbcType.VarChar, 20, true),
-                    new TTypedColumnInfo(1, "GroupUnitKey", "s_group_unit_key_n", OdbcType.Decimal, 10, true),
-                    new TTypedColumnInfo(2, "LedgerNumber", "a_ledger_number_i", OdbcType.Int, -1, true),
-                    new TTypedColumnInfo(3, "MotivationGroupCode", "a_motivation_group_code_c", OdbcType.VarChar, 16, true),
-                    new TTypedColumnInfo(4, "MotivationDetailCode", "a_motivation_detail_code_c", OdbcType.VarChar, 16, true),
-                    new TTypedColumnInfo(5, "ReadAccess", "s_read_access_l", OdbcType.Bit, -1, false),
-                    new TTypedColumnInfo(6, "WriteAccess", "s_write_access_l", OdbcType.Bit, -1, false),
-                    new TTypedColumnInfo(7, "DeleteAccess", "s_delete_access_l", OdbcType.Bit, -1, false),
-                    new TTypedColumnInfo(8, "DateCreated", "s_date_created_d", OdbcType.Date, -1, false),
-                    new TTypedColumnInfo(9, "CreatedBy", "s_created_by_c", OdbcType.VarChar, 20, false),
-                    new TTypedColumnInfo(10, "DateModified", "s_date_modified_d", OdbcType.Date, -1, false),
-                    new TTypedColumnInfo(11, "ModifiedBy", "s_modified_by_c", OdbcType.VarChar, 20, false),
-                    new TTypedColumnInfo(12, "ModificationId", "s_modification_id_c", OdbcType.VarChar, 150, false)
-                },
-                new int[] {
-                    0, 1, 2, 3, 4
-                }));
-            return true;
-        }
-
-        /// constructor
-        public SGroupMotivationTable() :
-                base("SGroupMotivation")
-        {
-        }
-
-        /// constructor
-        public SGroupMotivationTable(string ATablename) :
-                base(ATablename)
-        {
-        }
-
-        /// constructor for serialization
-        public SGroupMotivationTable(System.Runtime.Serialization.SerializationInfo info, System.Runtime.Serialization.StreamingContext context) :
-                base(info, context)
-        {
-        }
 
         /// create the columns
         protected override void InitClass()
@@ -24523,6 +25673,18 @@ namespace Ict.Petra.Shared.MSysMan.Data
         public SGroupMotivationTable GetChangesTyped()
         {
             return ((SGroupMotivationTable)(base.GetChangesTypedInternal()));
+        }
+
+        /// return the CamelCase name of the table
+        public static string GetTableName()
+        {
+            return "SGroupMotivation";
+        }
+
+        /// return the name of the table as it is used in the database
+        public static string GetTableDBName()
+        {
+            return "s_group_motivation";
         }
 
         /// get an odbc parameter for the given column
@@ -25219,48 +26381,47 @@ namespace Ict.Petra.Shared.MSysMan.Data
     [Serializable()]
     public class SGroupPartnerContactTable : TTypedDataTable
     {
-        /// identifies a system group
-        public DataColumn ColumnGroupId;
-        /// Field that the group belongs to
-        public DataColumn ColumnGroupUnitKey;
-        /// identifying key for p_partner_contact
-        public DataColumn ColumnContactId;
-        /// Control read access to the contact
-        public DataColumn ColumnReadAccess;
-        /// Control write access to the contact
-        public DataColumn ColumnWriteAccess;
-        /// Control delete access to the contact
-        public DataColumn ColumnDeleteAccess;
-        /// The date the record was created.
-        public DataColumn ColumnDateCreated;
-        /// User ID of who created this record.
-        public DataColumn ColumnCreatedBy;
-        /// The date the record was modified.
-        public DataColumn ColumnDateModified;
-        /// User ID of who last modified this record.
-        public DataColumn ColumnModifiedBy;
-        /// This identifies the current version of the record.
-        public DataColumn ColumnModificationId;
-
         /// TableId for Ict.Common.Data generic functions
         public static short TableId = 310;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnGroupIdId = 0;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnGroupUnitKeyId = 1;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnContactIdId = 2;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnReadAccessId = 3;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnWriteAccessId = 4;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnDeleteAccessId = 5;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnDateCreatedId = 6;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnCreatedById = 7;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnDateModifiedId = 8;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnModifiedById = 9;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnModificationIdId = 10;
 
         private static bool FInitInfoValues = InitInfoValues();
         private static bool InitInfoValues()
         {
             TableInfo.Add(TableId, new TTypedTableInfo(TableId, "SGroupPartnerContact", "s_group_partner_contact",
                 new TTypedColumnInfo[] {
-                    new TTypedColumnInfo(0, "GroupId", "s_group_id_c", OdbcType.VarChar, 20, true),
-                    new TTypedColumnInfo(1, "GroupUnitKey", "s_group_unit_key_n", OdbcType.Decimal, 10, true),
-                    new TTypedColumnInfo(2, "ContactId", "p_contact_id_i", OdbcType.Int, -1, true),
-                    new TTypedColumnInfo(3, "ReadAccess", "s_read_access_l", OdbcType.Bit, -1, false),
-                    new TTypedColumnInfo(4, "WriteAccess", "s_write_access_l", OdbcType.Bit, -1, false),
-                    new TTypedColumnInfo(5, "DeleteAccess", "s_delete_access_l", OdbcType.Bit, -1, false),
-                    new TTypedColumnInfo(6, "DateCreated", "s_date_created_d", OdbcType.Date, -1, false),
-                    new TTypedColumnInfo(7, "CreatedBy", "s_created_by_c", OdbcType.VarChar, 20, false),
-                    new TTypedColumnInfo(8, "DateModified", "s_date_modified_d", OdbcType.Date, -1, false),
-                    new TTypedColumnInfo(9, "ModifiedBy", "s_modified_by_c", OdbcType.VarChar, 20, false),
-                    new TTypedColumnInfo(10, "ModificationId", "s_modification_id_c", OdbcType.VarChar, 150, false)
+                    new TTypedColumnInfo(0, "GroupId", "s_group_id_c", "Group ID", OdbcType.VarChar, 20, true),
+                    new TTypedColumnInfo(1, "GroupUnitKey", "s_group_unit_key_n", "Field of Group", OdbcType.Decimal, 10, true),
+                    new TTypedColumnInfo(2, "ContactId", "p_contact_id_i", "Contact ID", OdbcType.Int, -1, true),
+                    new TTypedColumnInfo(3, "ReadAccess", "s_read_access_l", "Read Access?", OdbcType.Bit, -1, false),
+                    new TTypedColumnInfo(4, "WriteAccess", "s_write_access_l", "Write Access?", OdbcType.Bit, -1, false),
+                    new TTypedColumnInfo(5, "DeleteAccess", "s_delete_access_l", "Delete Access?", OdbcType.Bit, -1, false),
+                    new TTypedColumnInfo(6, "DateCreated", "s_date_created_d", "Created Date", OdbcType.Date, -1, false),
+                    new TTypedColumnInfo(7, "CreatedBy", "s_created_by_c", "Created By", OdbcType.VarChar, 20, false),
+                    new TTypedColumnInfo(8, "DateModified", "s_date_modified_d", "Modified Date", OdbcType.Date, -1, false),
+                    new TTypedColumnInfo(9, "ModifiedBy", "s_modified_by_c", "Modified By", OdbcType.VarChar, 20, false),
+                    new TTypedColumnInfo(10, "ModificationId", "s_modification_id_c", "", OdbcType.VarChar, 150, false)
                 },
                 new int[] {
                     0, 1, 2
@@ -25285,6 +26446,29 @@ namespace Ict.Petra.Shared.MSysMan.Data
                 base(info, context)
         {
         }
+
+        /// identifies a system group
+        public DataColumn ColumnGroupId;
+        /// Field that the group belongs to
+        public DataColumn ColumnGroupUnitKey;
+        /// identifying key for p_partner_contact
+        public DataColumn ColumnContactId;
+        /// Control read access to the contact
+        public DataColumn ColumnReadAccess;
+        /// Control write access to the contact
+        public DataColumn ColumnWriteAccess;
+        /// Control delete access to the contact
+        public DataColumn ColumnDeleteAccess;
+        /// The date the record was created.
+        public DataColumn ColumnDateCreated;
+        /// User ID of who created this record.
+        public DataColumn ColumnCreatedBy;
+        /// The date the record was modified.
+        public DataColumn ColumnDateModified;
+        /// User ID of who last modified this record.
+        public DataColumn ColumnModifiedBy;
+        /// This identifies the current version of the record.
+        public DataColumn ColumnModificationId;
 
         /// create the columns
         protected override void InitClass()
@@ -25354,6 +26538,18 @@ namespace Ict.Petra.Shared.MSysMan.Data
         public SGroupPartnerContactTable GetChangesTyped()
         {
             return ((SGroupPartnerContactTable)(base.GetChangesTypedInternal()));
+        }
+
+        /// return the CamelCase name of the table
+        public static string GetTableName()
+        {
+            return "SGroupPartnerContact";
+        }
+
+        /// return the name of the table as it is used in the database
+        public static string GetTableDBName()
+        {
+            return "s_group_partner_contact";
         }
 
         /// get an odbc parameter for the given column
@@ -25948,6 +27144,78 @@ namespace Ict.Petra.Shared.MSysMan.Data
     [Serializable()]
     public class SGroupPartnerReminderTable : TTypedDataTable
     {
+        /// TableId for Ict.Common.Data generic functions
+        public static short TableId = 311;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnGroupIdId = 0;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnGroupUnitKeyId = 1;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnPartnerKeyId = 2;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnContactIdId = 3;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnReminderIdId = 4;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnReadAccessId = 5;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnWriteAccessId = 6;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnDeleteAccessId = 7;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnDateCreatedId = 8;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnCreatedById = 9;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnDateModifiedId = 10;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnModifiedById = 11;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnModificationIdId = 12;
+
+        private static bool FInitInfoValues = InitInfoValues();
+        private static bool InitInfoValues()
+        {
+            TableInfo.Add(TableId, new TTypedTableInfo(TableId, "SGroupPartnerReminder", "s_group_partner_reminder",
+                new TTypedColumnInfo[] {
+                    new TTypedColumnInfo(0, "GroupId", "s_group_id_c", "Group ID", OdbcType.VarChar, 20, true),
+                    new TTypedColumnInfo(1, "GroupUnitKey", "s_group_unit_key_n", "Field of Group", OdbcType.Decimal, 10, true),
+                    new TTypedColumnInfo(2, "PartnerKey", "p_partner_key_n", "Partner Key", OdbcType.Decimal, 10, true),
+                    new TTypedColumnInfo(3, "ContactId", "p_contact_id_i", "Contact ID", OdbcType.Int, -1, false),
+                    new TTypedColumnInfo(4, "ReminderId", "p_reminder_id_i", "Reminder ID", OdbcType.Int, -1, true),
+                    new TTypedColumnInfo(5, "ReadAccess", "s_read_access_l", "Read Access?", OdbcType.Bit, -1, false),
+                    new TTypedColumnInfo(6, "WriteAccess", "s_write_access_l", "Write Access?", OdbcType.Bit, -1, false),
+                    new TTypedColumnInfo(7, "DeleteAccess", "s_delete_access_l", "Delete Access?", OdbcType.Bit, -1, false),
+                    new TTypedColumnInfo(8, "DateCreated", "s_date_created_d", "Created Date", OdbcType.Date, -1, false),
+                    new TTypedColumnInfo(9, "CreatedBy", "s_created_by_c", "Created By", OdbcType.VarChar, 20, false),
+                    new TTypedColumnInfo(10, "DateModified", "s_date_modified_d", "Modified Date", OdbcType.Date, -1, false),
+                    new TTypedColumnInfo(11, "ModifiedBy", "s_modified_by_c", "Modified By", OdbcType.VarChar, 20, false),
+                    new TTypedColumnInfo(12, "ModificationId", "s_modification_id_c", "", OdbcType.VarChar, 150, false)
+                },
+                new int[] {
+                    0, 1, 2, 3, 4
+                }));
+            return true;
+        }
+
+        /// constructor
+        public SGroupPartnerReminderTable() :
+                base("SGroupPartnerReminder")
+        {
+        }
+
+        /// constructor
+        public SGroupPartnerReminderTable(string ATablename) :
+                base(ATablename)
+        {
+        }
+
+        /// constructor for serialization
+        public SGroupPartnerReminderTable(System.Runtime.Serialization.SerializationInfo info, System.Runtime.Serialization.StreamingContext context) :
+                base(info, context)
+        {
+        }
+
         /// identifies a system group
         public DataColumn ColumnGroupId;
         /// Field that the group belongs to
@@ -25974,52 +27242,6 @@ namespace Ict.Petra.Shared.MSysMan.Data
         public DataColumn ColumnModifiedBy;
         /// This identifies the current version of the record.
         public DataColumn ColumnModificationId;
-
-        /// TableId for Ict.Common.Data generic functions
-        public static short TableId = 311;
-
-        private static bool FInitInfoValues = InitInfoValues();
-        private static bool InitInfoValues()
-        {
-            TableInfo.Add(TableId, new TTypedTableInfo(TableId, "SGroupPartnerReminder", "s_group_partner_reminder",
-                new TTypedColumnInfo[] {
-                    new TTypedColumnInfo(0, "GroupId", "s_group_id_c", OdbcType.VarChar, 20, true),
-                    new TTypedColumnInfo(1, "GroupUnitKey", "s_group_unit_key_n", OdbcType.Decimal, 10, true),
-                    new TTypedColumnInfo(2, "PartnerKey", "p_partner_key_n", OdbcType.Decimal, 10, true),
-                    new TTypedColumnInfo(3, "ContactId", "p_contact_id_i", OdbcType.Int, -1, false),
-                    new TTypedColumnInfo(4, "ReminderId", "p_reminder_id_i", OdbcType.Int, -1, true),
-                    new TTypedColumnInfo(5, "ReadAccess", "s_read_access_l", OdbcType.Bit, -1, false),
-                    new TTypedColumnInfo(6, "WriteAccess", "s_write_access_l", OdbcType.Bit, -1, false),
-                    new TTypedColumnInfo(7, "DeleteAccess", "s_delete_access_l", OdbcType.Bit, -1, false),
-                    new TTypedColumnInfo(8, "DateCreated", "s_date_created_d", OdbcType.Date, -1, false),
-                    new TTypedColumnInfo(9, "CreatedBy", "s_created_by_c", OdbcType.VarChar, 20, false),
-                    new TTypedColumnInfo(10, "DateModified", "s_date_modified_d", OdbcType.Date, -1, false),
-                    new TTypedColumnInfo(11, "ModifiedBy", "s_modified_by_c", OdbcType.VarChar, 20, false),
-                    new TTypedColumnInfo(12, "ModificationId", "s_modification_id_c", OdbcType.VarChar, 150, false)
-                },
-                new int[] {
-                    0, 1, 2, 3, 4
-                }));
-            return true;
-        }
-
-        /// constructor
-        public SGroupPartnerReminderTable() :
-                base("SGroupPartnerReminder")
-        {
-        }
-
-        /// constructor
-        public SGroupPartnerReminderTable(string ATablename) :
-                base(ATablename)
-        {
-        }
-
-        /// constructor for serialization
-        public SGroupPartnerReminderTable(System.Runtime.Serialization.SerializationInfo info, System.Runtime.Serialization.StreamingContext context) :
-                base(info, context)
-        {
-        }
 
         /// create the columns
         protected override void InitClass()
@@ -26093,6 +27315,18 @@ namespace Ict.Petra.Shared.MSysMan.Data
         public SGroupPartnerReminderTable GetChangesTyped()
         {
             return ((SGroupPartnerReminderTable)(base.GetChangesTypedInternal()));
+        }
+
+        /// return the CamelCase name of the table
+        public static string GetTableName()
+        {
+            return "SGroupPartnerReminder";
+        }
+
+        /// return the name of the table as it is used in the database
+        public static string GetTableDBName()
+        {
+            return "s_group_partner_reminder";
         }
 
         /// get an odbc parameter for the given column
@@ -26789,51 +28023,50 @@ namespace Ict.Petra.Shared.MSysMan.Data
     [Serializable()]
     public class SGroupLocationTable : TTypedDataTable
     {
-        /// identifies a system group
-        public DataColumn ColumnGroupId;
-        /// Field that the group belongs to
-        public DataColumn ColumnGroupUnitKey;
-        /// This is the key that tell what site created this location, it will help to merge addresses when doing imports
-        public DataColumn ColumnSiteKey;
-        ///
-        public DataColumn ColumnLocationKey;
-        /// Control read access to the location
-        public DataColumn ColumnReadAccess;
-        /// Control write access to the location
-        public DataColumn ColumnWriteAccess;
-        /// Control delete access to the location
-        public DataColumn ColumnDeleteAccess;
-        /// The date the record was created.
-        public DataColumn ColumnDateCreated;
-        /// User ID of who created this record.
-        public DataColumn ColumnCreatedBy;
-        /// The date the record was modified.
-        public DataColumn ColumnDateModified;
-        /// User ID of who last modified this record.
-        public DataColumn ColumnModifiedBy;
-        /// This identifies the current version of the record.
-        public DataColumn ColumnModificationId;
-
         /// TableId for Ict.Common.Data generic functions
         public static short TableId = 312;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnGroupIdId = 0;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnGroupUnitKeyId = 1;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnSiteKeyId = 2;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnLocationKeyId = 3;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnReadAccessId = 4;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnWriteAccessId = 5;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnDeleteAccessId = 6;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnDateCreatedId = 7;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnCreatedById = 8;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnDateModifiedId = 9;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnModifiedById = 10;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnModificationIdId = 11;
 
         private static bool FInitInfoValues = InitInfoValues();
         private static bool InitInfoValues()
         {
             TableInfo.Add(TableId, new TTypedTableInfo(TableId, "SGroupLocation", "s_group_location",
                 new TTypedColumnInfo[] {
-                    new TTypedColumnInfo(0, "GroupId", "s_group_id_c", OdbcType.VarChar, 20, true),
-                    new TTypedColumnInfo(1, "GroupUnitKey", "s_group_unit_key_n", OdbcType.Decimal, 10, true),
-                    new TTypedColumnInfo(2, "SiteKey", "p_site_key_n", OdbcType.Decimal, 10, true),
-                    new TTypedColumnInfo(3, "LocationKey", "p_location_key_i", OdbcType.Int, -1, true),
-                    new TTypedColumnInfo(4, "ReadAccess", "s_read_access_l", OdbcType.Bit, -1, false),
-                    new TTypedColumnInfo(5, "WriteAccess", "s_write_access_l", OdbcType.Bit, -1, false),
-                    new TTypedColumnInfo(6, "DeleteAccess", "s_delete_access_l", OdbcType.Bit, -1, false),
-                    new TTypedColumnInfo(7, "DateCreated", "s_date_created_d", OdbcType.Date, -1, false),
-                    new TTypedColumnInfo(8, "CreatedBy", "s_created_by_c", OdbcType.VarChar, 20, false),
-                    new TTypedColumnInfo(9, "DateModified", "s_date_modified_d", OdbcType.Date, -1, false),
-                    new TTypedColumnInfo(10, "ModifiedBy", "s_modified_by_c", OdbcType.VarChar, 20, false),
-                    new TTypedColumnInfo(11, "ModificationId", "s_modification_id_c", OdbcType.VarChar, 150, false)
+                    new TTypedColumnInfo(0, "GroupId", "s_group_id_c", "Group ID", OdbcType.VarChar, 20, true),
+                    new TTypedColumnInfo(1, "GroupUnitKey", "s_group_unit_key_n", "Field of Group", OdbcType.Decimal, 10, true),
+                    new TTypedColumnInfo(2, "SiteKey", "p_site_key_n", "Site Key", OdbcType.Decimal, 10, true),
+                    new TTypedColumnInfo(3, "LocationKey", "p_location_key_i", "Location Key", OdbcType.Int, -1, true),
+                    new TTypedColumnInfo(4, "ReadAccess", "s_read_access_l", "Read Access?", OdbcType.Bit, -1, false),
+                    new TTypedColumnInfo(5, "WriteAccess", "s_write_access_l", "Write Access?", OdbcType.Bit, -1, false),
+                    new TTypedColumnInfo(6, "DeleteAccess", "s_delete_access_l", "Delete Access?", OdbcType.Bit, -1, false),
+                    new TTypedColumnInfo(7, "DateCreated", "s_date_created_d", "Created Date", OdbcType.Date, -1, false),
+                    new TTypedColumnInfo(8, "CreatedBy", "s_created_by_c", "Created By", OdbcType.VarChar, 20, false),
+                    new TTypedColumnInfo(9, "DateModified", "s_date_modified_d", "Modified Date", OdbcType.Date, -1, false),
+                    new TTypedColumnInfo(10, "ModifiedBy", "s_modified_by_c", "Modified By", OdbcType.VarChar, 20, false),
+                    new TTypedColumnInfo(11, "ModificationId", "s_modification_id_c", "", OdbcType.VarChar, 150, false)
                 },
                 new int[] {
                     0, 1, 2, 3
@@ -26858,6 +28091,31 @@ namespace Ict.Petra.Shared.MSysMan.Data
                 base(info, context)
         {
         }
+
+        /// identifies a system group
+        public DataColumn ColumnGroupId;
+        /// Field that the group belongs to
+        public DataColumn ColumnGroupUnitKey;
+        /// This is the key that tell what site created this location, it will help to merge addresses when doing imports
+        public DataColumn ColumnSiteKey;
+        ///
+        public DataColumn ColumnLocationKey;
+        /// Control read access to the location
+        public DataColumn ColumnReadAccess;
+        /// Control write access to the location
+        public DataColumn ColumnWriteAccess;
+        /// Control delete access to the location
+        public DataColumn ColumnDeleteAccess;
+        /// The date the record was created.
+        public DataColumn ColumnDateCreated;
+        /// User ID of who created this record.
+        public DataColumn ColumnCreatedBy;
+        /// The date the record was modified.
+        public DataColumn ColumnDateModified;
+        /// User ID of who last modified this record.
+        public DataColumn ColumnModifiedBy;
+        /// This identifies the current version of the record.
+        public DataColumn ColumnModificationId;
 
         /// create the columns
         protected override void InitClass()
@@ -26929,6 +28187,18 @@ namespace Ict.Petra.Shared.MSysMan.Data
         public SGroupLocationTable GetChangesTyped()
         {
             return ((SGroupLocationTable)(base.GetChangesTypedInternal()));
+        }
+
+        /// return the CamelCase name of the table
+        public static string GetTableName()
+        {
+            return "SGroupLocation";
+        }
+
+        /// return the name of the table as it is used in the database
+        public static string GetTableDBName()
+        {
+            return "s_group_location";
         }
 
         /// get an odbc parameter for the given column
@@ -27574,6 +28844,78 @@ namespace Ict.Petra.Shared.MSysMan.Data
     [Serializable()]
     public class SGroupPartnerLocationTable : TTypedDataTable
     {
+        /// TableId for Ict.Common.Data generic functions
+        public static short TableId = 313;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnGroupIdId = 0;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnGroupUnitKeyId = 1;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnPartnerKeyId = 2;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnSiteKeyId = 3;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnLocationKeyId = 4;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnReadAccessId = 5;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnWriteAccessId = 6;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnDeleteAccessId = 7;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnDateCreatedId = 8;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnCreatedById = 9;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnDateModifiedId = 10;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnModifiedById = 11;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnModificationIdId = 12;
+
+        private static bool FInitInfoValues = InitInfoValues();
+        private static bool InitInfoValues()
+        {
+            TableInfo.Add(TableId, new TTypedTableInfo(TableId, "SGroupPartnerLocation", "s_group_partner_location",
+                new TTypedColumnInfo[] {
+                    new TTypedColumnInfo(0, "GroupId", "s_group_id_c", "Group ID", OdbcType.VarChar, 20, true),
+                    new TTypedColumnInfo(1, "GroupUnitKey", "s_group_unit_key_n", "Field of Group", OdbcType.Decimal, 10, true),
+                    new TTypedColumnInfo(2, "PartnerKey", "p_partner_key_n", "Partner Key", OdbcType.Decimal, 10, true),
+                    new TTypedColumnInfo(3, "SiteKey", "p_site_key_n", "Site Key", OdbcType.Decimal, 10, true),
+                    new TTypedColumnInfo(4, "LocationKey", "p_location_key_i", "Location Key", OdbcType.Int, -1, true),
+                    new TTypedColumnInfo(5, "ReadAccess", "s_read_access_l", "Read Access?", OdbcType.Bit, -1, false),
+                    new TTypedColumnInfo(6, "WriteAccess", "s_write_access_l", "Write Access?", OdbcType.Bit, -1, false),
+                    new TTypedColumnInfo(7, "DeleteAccess", "s_delete_access_l", "Delete Access?", OdbcType.Bit, -1, false),
+                    new TTypedColumnInfo(8, "DateCreated", "s_date_created_d", "Created Date", OdbcType.Date, -1, false),
+                    new TTypedColumnInfo(9, "CreatedBy", "s_created_by_c", "Created By", OdbcType.VarChar, 20, false),
+                    new TTypedColumnInfo(10, "DateModified", "s_date_modified_d", "Modified Date", OdbcType.Date, -1, false),
+                    new TTypedColumnInfo(11, "ModifiedBy", "s_modified_by_c", "Modified By", OdbcType.VarChar, 20, false),
+                    new TTypedColumnInfo(12, "ModificationId", "s_modification_id_c", "", OdbcType.VarChar, 150, false)
+                },
+                new int[] {
+                    0, 1, 2, 3, 4
+                }));
+            return true;
+        }
+
+        /// constructor
+        public SGroupPartnerLocationTable() :
+                base("SGroupPartnerLocation")
+        {
+        }
+
+        /// constructor
+        public SGroupPartnerLocationTable(string ATablename) :
+                base(ATablename)
+        {
+        }
+
+        /// constructor for serialization
+        public SGroupPartnerLocationTable(System.Runtime.Serialization.SerializationInfo info, System.Runtime.Serialization.StreamingContext context) :
+                base(info, context)
+        {
+        }
+
         /// identifies a system group
         public DataColumn ColumnGroupId;
         /// Field that the group belongs to
@@ -27600,52 +28942,6 @@ namespace Ict.Petra.Shared.MSysMan.Data
         public DataColumn ColumnModifiedBy;
         /// This identifies the current version of the record.
         public DataColumn ColumnModificationId;
-
-        /// TableId for Ict.Common.Data generic functions
-        public static short TableId = 313;
-
-        private static bool FInitInfoValues = InitInfoValues();
-        private static bool InitInfoValues()
-        {
-            TableInfo.Add(TableId, new TTypedTableInfo(TableId, "SGroupPartnerLocation", "s_group_partner_location",
-                new TTypedColumnInfo[] {
-                    new TTypedColumnInfo(0, "GroupId", "s_group_id_c", OdbcType.VarChar, 20, true),
-                    new TTypedColumnInfo(1, "GroupUnitKey", "s_group_unit_key_n", OdbcType.Decimal, 10, true),
-                    new TTypedColumnInfo(2, "PartnerKey", "p_partner_key_n", OdbcType.Decimal, 10, true),
-                    new TTypedColumnInfo(3, "SiteKey", "p_site_key_n", OdbcType.Decimal, 10, true),
-                    new TTypedColumnInfo(4, "LocationKey", "p_location_key_i", OdbcType.Int, -1, true),
-                    new TTypedColumnInfo(5, "ReadAccess", "s_read_access_l", OdbcType.Bit, -1, false),
-                    new TTypedColumnInfo(6, "WriteAccess", "s_write_access_l", OdbcType.Bit, -1, false),
-                    new TTypedColumnInfo(7, "DeleteAccess", "s_delete_access_l", OdbcType.Bit, -1, false),
-                    new TTypedColumnInfo(8, "DateCreated", "s_date_created_d", OdbcType.Date, -1, false),
-                    new TTypedColumnInfo(9, "CreatedBy", "s_created_by_c", OdbcType.VarChar, 20, false),
-                    new TTypedColumnInfo(10, "DateModified", "s_date_modified_d", OdbcType.Date, -1, false),
-                    new TTypedColumnInfo(11, "ModifiedBy", "s_modified_by_c", OdbcType.VarChar, 20, false),
-                    new TTypedColumnInfo(12, "ModificationId", "s_modification_id_c", OdbcType.VarChar, 150, false)
-                },
-                new int[] {
-                    0, 1, 2, 3, 4
-                }));
-            return true;
-        }
-
-        /// constructor
-        public SGroupPartnerLocationTable() :
-                base("SGroupPartnerLocation")
-        {
-        }
-
-        /// constructor
-        public SGroupPartnerLocationTable(string ATablename) :
-                base(ATablename)
-        {
-        }
-
-        /// constructor for serialization
-        public SGroupPartnerLocationTable(System.Runtime.Serialization.SerializationInfo info, System.Runtime.Serialization.StreamingContext context) :
-                base(info, context)
-        {
-        }
 
         /// create the columns
         protected override void InitClass()
@@ -27719,6 +29015,18 @@ namespace Ict.Petra.Shared.MSysMan.Data
         public SGroupPartnerLocationTable GetChangesTyped()
         {
             return ((SGroupPartnerLocationTable)(base.GetChangesTypedInternal()));
+        }
+
+        /// return the CamelCase name of the table
+        public static string GetTableName()
+        {
+            return "SGroupPartnerLocation";
+        }
+
+        /// return the name of the table as it is used in the database
+        public static string GetTableDBName()
+        {
+            return "s_group_partner_location";
         }
 
         /// get an odbc parameter for the given column
@@ -28415,48 +29723,47 @@ namespace Ict.Petra.Shared.MSysMan.Data
     [Serializable()]
     public class SGroupDataLabelTable : TTypedDataTable
     {
-        /// identifies a system group
-        public DataColumn ColumnGroupId;
-        /// Field that the group belongs to
-        public DataColumn ColumnGroupUnitKey;
-        /// Identifying key for p_data_label
-        public DataColumn ColumnDataLabelKey;
-        /// Control read access to the data label
-        public DataColumn ColumnReadAccess;
-        /// Control write access to the data label
-        public DataColumn ColumnWriteAccess;
-        /// Control delete access to the data label
-        public DataColumn ColumnDeleteAccess;
-        /// The date the record was created.
-        public DataColumn ColumnDateCreated;
-        /// User ID of who created this record.
-        public DataColumn ColumnCreatedBy;
-        /// The date the record was modified.
-        public DataColumn ColumnDateModified;
-        /// User ID of who last modified this record.
-        public DataColumn ColumnModifiedBy;
-        /// This identifies the current version of the record.
-        public DataColumn ColumnModificationId;
-
         /// TableId for Ict.Common.Data generic functions
         public static short TableId = 314;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnGroupIdId = 0;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnGroupUnitKeyId = 1;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnDataLabelKeyId = 2;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnReadAccessId = 3;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnWriteAccessId = 4;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnDeleteAccessId = 5;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnDateCreatedId = 6;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnCreatedById = 7;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnDateModifiedId = 8;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnModifiedById = 9;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnModificationIdId = 10;
 
         private static bool FInitInfoValues = InitInfoValues();
         private static bool InitInfoValues()
         {
             TableInfo.Add(TableId, new TTypedTableInfo(TableId, "SGroupDataLabel", "s_group_data_label",
                 new TTypedColumnInfo[] {
-                    new TTypedColumnInfo(0, "GroupId", "s_group_id_c", OdbcType.VarChar, 20, true),
-                    new TTypedColumnInfo(1, "GroupUnitKey", "s_group_unit_key_n", OdbcType.Decimal, 10, true),
-                    new TTypedColumnInfo(2, "DataLabelKey", "p_data_label_key_i", OdbcType.Int, -1, true),
-                    new TTypedColumnInfo(3, "ReadAccess", "s_read_access_l", OdbcType.Bit, -1, false),
-                    new TTypedColumnInfo(4, "WriteAccess", "s_write_access_l", OdbcType.Bit, -1, false),
-                    new TTypedColumnInfo(5, "DeleteAccess", "s_delete_access_l", OdbcType.Bit, -1, false),
-                    new TTypedColumnInfo(6, "DateCreated", "s_date_created_d", OdbcType.Date, -1, false),
-                    new TTypedColumnInfo(7, "CreatedBy", "s_created_by_c", OdbcType.VarChar, 20, false),
-                    new TTypedColumnInfo(8, "DateModified", "s_date_modified_d", OdbcType.Date, -1, false),
-                    new TTypedColumnInfo(9, "ModifiedBy", "s_modified_by_c", OdbcType.VarChar, 20, false),
-                    new TTypedColumnInfo(10, "ModificationId", "s_modification_id_c", OdbcType.VarChar, 150, false)
+                    new TTypedColumnInfo(0, "GroupId", "s_group_id_c", "Group ID", OdbcType.VarChar, 20, true),
+                    new TTypedColumnInfo(1, "GroupUnitKey", "s_group_unit_key_n", "Field of Group", OdbcType.Decimal, 10, true),
+                    new TTypedColumnInfo(2, "DataLabelKey", "p_data_label_key_i", "p_data_label_key_i", OdbcType.Int, -1, true),
+                    new TTypedColumnInfo(3, "ReadAccess", "s_read_access_l", "Read Access?", OdbcType.Bit, -1, false),
+                    new TTypedColumnInfo(4, "WriteAccess", "s_write_access_l", "Write Access?", OdbcType.Bit, -1, false),
+                    new TTypedColumnInfo(5, "DeleteAccess", "s_delete_access_l", "Delete Access?", OdbcType.Bit, -1, false),
+                    new TTypedColumnInfo(6, "DateCreated", "s_date_created_d", "Created Date", OdbcType.Date, -1, false),
+                    new TTypedColumnInfo(7, "CreatedBy", "s_created_by_c", "Created By", OdbcType.VarChar, 20, false),
+                    new TTypedColumnInfo(8, "DateModified", "s_date_modified_d", "Modified Date", OdbcType.Date, -1, false),
+                    new TTypedColumnInfo(9, "ModifiedBy", "s_modified_by_c", "Modified By", OdbcType.VarChar, 20, false),
+                    new TTypedColumnInfo(10, "ModificationId", "s_modification_id_c", "", OdbcType.VarChar, 150, false)
                 },
                 new int[] {
                     0, 1, 2
@@ -28481,6 +29788,29 @@ namespace Ict.Petra.Shared.MSysMan.Data
                 base(info, context)
         {
         }
+
+        /// identifies a system group
+        public DataColumn ColumnGroupId;
+        /// Field that the group belongs to
+        public DataColumn ColumnGroupUnitKey;
+        /// Identifying key for p_data_label
+        public DataColumn ColumnDataLabelKey;
+        /// Control read access to the data label
+        public DataColumn ColumnReadAccess;
+        /// Control write access to the data label
+        public DataColumn ColumnWriteAccess;
+        /// Control delete access to the data label
+        public DataColumn ColumnDeleteAccess;
+        /// The date the record was created.
+        public DataColumn ColumnDateCreated;
+        /// User ID of who created this record.
+        public DataColumn ColumnCreatedBy;
+        /// The date the record was modified.
+        public DataColumn ColumnDateModified;
+        /// User ID of who last modified this record.
+        public DataColumn ColumnModifiedBy;
+        /// This identifies the current version of the record.
+        public DataColumn ColumnModificationId;
 
         /// create the columns
         protected override void InitClass()
@@ -28550,6 +29880,18 @@ namespace Ict.Petra.Shared.MSysMan.Data
         public SGroupDataLabelTable GetChangesTyped()
         {
             return ((SGroupDataLabelTable)(base.GetChangesTypedInternal()));
+        }
+
+        /// return the CamelCase name of the table
+        public static string GetTableName()
+        {
+            return "SGroupDataLabel";
+        }
+
+        /// return the name of the table as it is used in the database
+        public static string GetTableDBName()
+        {
+            return "s_group_data_label";
         }
 
         /// get an odbc parameter for the given column
@@ -29144,39 +30486,38 @@ namespace Ict.Petra.Shared.MSysMan.Data
     [Serializable()]
     public class SGroupLedgerTable : TTypedDataTable
     {
-        /// identifies a system group
-        public DataColumn ColumnGroupId;
-        /// Field that the group belongs to
-        public DataColumn ColumnGroupUnitKey;
-        /// Ledger Number
-        public DataColumn ColumnLedgerNumber;
-        /// The date the record was created.
-        public DataColumn ColumnDateCreated;
-        /// User ID of who created this record.
-        public DataColumn ColumnCreatedBy;
-        /// The date the record was modified.
-        public DataColumn ColumnDateModified;
-        /// User ID of who last modified this record.
-        public DataColumn ColumnModifiedBy;
-        /// This identifies the current version of the record.
-        public DataColumn ColumnModificationId;
-
         /// TableId for Ict.Common.Data generic functions
         public static short TableId = 315;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnGroupIdId = 0;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnGroupUnitKeyId = 1;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnLedgerNumberId = 2;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnDateCreatedId = 3;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnCreatedById = 4;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnDateModifiedId = 5;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnModifiedById = 6;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnModificationIdId = 7;
 
         private static bool FInitInfoValues = InitInfoValues();
         private static bool InitInfoValues()
         {
             TableInfo.Add(TableId, new TTypedTableInfo(TableId, "SGroupLedger", "s_group_ledger",
                 new TTypedColumnInfo[] {
-                    new TTypedColumnInfo(0, "GroupId", "s_group_id_c", OdbcType.VarChar, 20, true),
-                    new TTypedColumnInfo(1, "GroupUnitKey", "s_group_unit_key_n", OdbcType.Decimal, 10, true),
-                    new TTypedColumnInfo(2, "LedgerNumber", "a_ledger_number_i", OdbcType.Int, -1, true),
-                    new TTypedColumnInfo(3, "DateCreated", "s_date_created_d", OdbcType.Date, -1, false),
-                    new TTypedColumnInfo(4, "CreatedBy", "s_created_by_c", OdbcType.VarChar, 20, false),
-                    new TTypedColumnInfo(5, "DateModified", "s_date_modified_d", OdbcType.Date, -1, false),
-                    new TTypedColumnInfo(6, "ModifiedBy", "s_modified_by_c", OdbcType.VarChar, 20, false),
-                    new TTypedColumnInfo(7, "ModificationId", "s_modification_id_c", OdbcType.VarChar, 150, false)
+                    new TTypedColumnInfo(0, "GroupId", "s_group_id_c", "Group ID", OdbcType.VarChar, 20, true),
+                    new TTypedColumnInfo(1, "GroupUnitKey", "s_group_unit_key_n", "Field of Group", OdbcType.Decimal, 10, true),
+                    new TTypedColumnInfo(2, "LedgerNumber", "a_ledger_number_i", "Ledger Number", OdbcType.Int, -1, true),
+                    new TTypedColumnInfo(3, "DateCreated", "s_date_created_d", "Created Date", OdbcType.Date, -1, false),
+                    new TTypedColumnInfo(4, "CreatedBy", "s_created_by_c", "Created By", OdbcType.VarChar, 20, false),
+                    new TTypedColumnInfo(5, "DateModified", "s_date_modified_d", "Modified Date", OdbcType.Date, -1, false),
+                    new TTypedColumnInfo(6, "ModifiedBy", "s_modified_by_c", "Modified By", OdbcType.VarChar, 20, false),
+                    new TTypedColumnInfo(7, "ModificationId", "s_modification_id_c", "", OdbcType.VarChar, 150, false)
                 },
                 new int[] {
                     0, 1, 2
@@ -29201,6 +30542,23 @@ namespace Ict.Petra.Shared.MSysMan.Data
                 base(info, context)
         {
         }
+
+        /// identifies a system group
+        public DataColumn ColumnGroupId;
+        /// Field that the group belongs to
+        public DataColumn ColumnGroupUnitKey;
+        /// Ledger Number
+        public DataColumn ColumnLedgerNumber;
+        /// The date the record was created.
+        public DataColumn ColumnDateCreated;
+        /// User ID of who created this record.
+        public DataColumn ColumnCreatedBy;
+        /// The date the record was modified.
+        public DataColumn ColumnDateModified;
+        /// User ID of who last modified this record.
+        public DataColumn ColumnModifiedBy;
+        /// This identifies the current version of the record.
+        public DataColumn ColumnModificationId;
 
         /// create the columns
         protected override void InitClass()
@@ -29264,6 +30622,18 @@ namespace Ict.Petra.Shared.MSysMan.Data
         public SGroupLedgerTable GetChangesTyped()
         {
             return ((SGroupLedgerTable)(base.GetChangesTypedInternal()));
+        }
+
+        /// return the CamelCase name of the table
+        public static string GetTableName()
+        {
+            return "SGroupLedger";
+        }
+
+        /// return the name of the table as it is used in the database
+        public static string GetTableDBName()
+        {
+            return "s_group_ledger";
         }
 
         /// get an odbc parameter for the given column
@@ -29705,42 +31075,41 @@ namespace Ict.Petra.Shared.MSysMan.Data
     [Serializable()]
     public class SGroupCostCentreTable : TTypedDataTable
     {
-        /// identifies a system group
-        public DataColumn ColumnGroupId;
-        /// Field that the group belongs to
-        public DataColumn ColumnGroupUnitKey;
-        /// Ledger Number
-        public DataColumn ColumnLedgerNumber;
-        /// Cost Centre
-        public DataColumn ColumnCostCentreCode;
-        /// The date the record was created.
-        public DataColumn ColumnDateCreated;
-        /// User ID of who created this record.
-        public DataColumn ColumnCreatedBy;
-        /// The date the record was modified.
-        public DataColumn ColumnDateModified;
-        /// User ID of who last modified this record.
-        public DataColumn ColumnModifiedBy;
-        /// This identifies the current version of the record.
-        public DataColumn ColumnModificationId;
-
         /// TableId for Ict.Common.Data generic functions
         public static short TableId = 316;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnGroupIdId = 0;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnGroupUnitKeyId = 1;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnLedgerNumberId = 2;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnCostCentreCodeId = 3;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnDateCreatedId = 4;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnCreatedById = 5;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnDateModifiedId = 6;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnModifiedById = 7;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnModificationIdId = 8;
 
         private static bool FInitInfoValues = InitInfoValues();
         private static bool InitInfoValues()
         {
             TableInfo.Add(TableId, new TTypedTableInfo(TableId, "SGroupCostCentre", "s_group_cost_centre",
                 new TTypedColumnInfo[] {
-                    new TTypedColumnInfo(0, "GroupId", "s_group_id_c", OdbcType.VarChar, 20, true),
-                    new TTypedColumnInfo(1, "GroupUnitKey", "s_group_unit_key_n", OdbcType.Decimal, 10, true),
-                    new TTypedColumnInfo(2, "LedgerNumber", "a_ledger_number_i", OdbcType.Int, -1, true),
-                    new TTypedColumnInfo(3, "CostCentreCode", "a_cost_centre_code_c", OdbcType.VarChar, 24, true),
-                    new TTypedColumnInfo(4, "DateCreated", "s_date_created_d", OdbcType.Date, -1, false),
-                    new TTypedColumnInfo(5, "CreatedBy", "s_created_by_c", OdbcType.VarChar, 20, false),
-                    new TTypedColumnInfo(6, "DateModified", "s_date_modified_d", OdbcType.Date, -1, false),
-                    new TTypedColumnInfo(7, "ModifiedBy", "s_modified_by_c", OdbcType.VarChar, 20, false),
-                    new TTypedColumnInfo(8, "ModificationId", "s_modification_id_c", OdbcType.VarChar, 150, false)
+                    new TTypedColumnInfo(0, "GroupId", "s_group_id_c", "Group ID", OdbcType.VarChar, 20, true),
+                    new TTypedColumnInfo(1, "GroupUnitKey", "s_group_unit_key_n", "Field of Group", OdbcType.Decimal, 10, true),
+                    new TTypedColumnInfo(2, "LedgerNumber", "a_ledger_number_i", "Ledger Number", OdbcType.Int, -1, true),
+                    new TTypedColumnInfo(3, "CostCentreCode", "a_cost_centre_code_c", "Cost Centre", OdbcType.VarChar, 24, true),
+                    new TTypedColumnInfo(4, "DateCreated", "s_date_created_d", "Created Date", OdbcType.Date, -1, false),
+                    new TTypedColumnInfo(5, "CreatedBy", "s_created_by_c", "Created By", OdbcType.VarChar, 20, false),
+                    new TTypedColumnInfo(6, "DateModified", "s_date_modified_d", "Modified Date", OdbcType.Date, -1, false),
+                    new TTypedColumnInfo(7, "ModifiedBy", "s_modified_by_c", "Modified By", OdbcType.VarChar, 20, false),
+                    new TTypedColumnInfo(8, "ModificationId", "s_modification_id_c", "", OdbcType.VarChar, 150, false)
                 },
                 new int[] {
                     0, 1, 2, 3
@@ -29765,6 +31134,25 @@ namespace Ict.Petra.Shared.MSysMan.Data
                 base(info, context)
         {
         }
+
+        /// identifies a system group
+        public DataColumn ColumnGroupId;
+        /// Field that the group belongs to
+        public DataColumn ColumnGroupUnitKey;
+        /// Ledger Number
+        public DataColumn ColumnLedgerNumber;
+        /// Cost Centre
+        public DataColumn ColumnCostCentreCode;
+        /// The date the record was created.
+        public DataColumn ColumnDateCreated;
+        /// User ID of who created this record.
+        public DataColumn ColumnCreatedBy;
+        /// The date the record was modified.
+        public DataColumn ColumnDateModified;
+        /// User ID of who last modified this record.
+        public DataColumn ColumnModifiedBy;
+        /// This identifies the current version of the record.
+        public DataColumn ColumnModificationId;
 
         /// create the columns
         protected override void InitClass()
@@ -29830,6 +31218,18 @@ namespace Ict.Petra.Shared.MSysMan.Data
         public SGroupCostCentreTable GetChangesTyped()
         {
             return ((SGroupCostCentreTable)(base.GetChangesTypedInternal()));
+        }
+
+        /// return the CamelCase name of the table
+        public static string GetTableName()
+        {
+            return "SGroupCostCentre";
+        }
+
+        /// return the name of the table as it is used in the database
+        public static string GetTableDBName()
+        {
+            return "s_group_cost_centre";
         }
 
         /// get an odbc parameter for the given column
@@ -30322,48 +31722,47 @@ namespace Ict.Petra.Shared.MSysMan.Data
     [Serializable()]
     public class SGroupExtractTable : TTypedDataTable
     {
-        /// identifies a system group
-        public DataColumn ColumnGroupId;
-        /// Field that the group belongs to
-        public DataColumn ColumnGroupUnitKey;
-        /// Identifier for the extract
-        public DataColumn ColumnExtractId;
-        /// Control read access to the extract
-        public DataColumn ColumnReadAccess;
-        /// Control write access to the extract
-        public DataColumn ColumnWriteAccess;
-        /// Control delete access to the extract
-        public DataColumn ColumnDeleteAccess;
-        /// The date the record was created.
-        public DataColumn ColumnDateCreated;
-        /// User ID of who created this record.
-        public DataColumn ColumnCreatedBy;
-        /// The date the record was modified.
-        public DataColumn ColumnDateModified;
-        /// User ID of who last modified this record.
-        public DataColumn ColumnModifiedBy;
-        /// This identifies the current version of the record.
-        public DataColumn ColumnModificationId;
-
         /// TableId for Ict.Common.Data generic functions
         public static short TableId = 317;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnGroupIdId = 0;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnGroupUnitKeyId = 1;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnExtractIdId = 2;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnReadAccessId = 3;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnWriteAccessId = 4;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnDeleteAccessId = 5;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnDateCreatedId = 6;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnCreatedById = 7;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnDateModifiedId = 8;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnModifiedById = 9;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnModificationIdId = 10;
 
         private static bool FInitInfoValues = InitInfoValues();
         private static bool InitInfoValues()
         {
             TableInfo.Add(TableId, new TTypedTableInfo(TableId, "SGroupExtract", "s_group_extract",
                 new TTypedColumnInfo[] {
-                    new TTypedColumnInfo(0, "GroupId", "s_group_id_c", OdbcType.VarChar, 20, true),
-                    new TTypedColumnInfo(1, "GroupUnitKey", "s_group_unit_key_n", OdbcType.Decimal, 10, true),
-                    new TTypedColumnInfo(2, "ExtractId", "m_extract_id_i", OdbcType.Int, -1, true),
-                    new TTypedColumnInfo(3, "ReadAccess", "s_read_access_l", OdbcType.Bit, -1, false),
-                    new TTypedColumnInfo(4, "WriteAccess", "s_write_access_l", OdbcType.Bit, -1, false),
-                    new TTypedColumnInfo(5, "DeleteAccess", "s_delete_access_l", OdbcType.Bit, -1, false),
-                    new TTypedColumnInfo(6, "DateCreated", "s_date_created_d", OdbcType.Date, -1, false),
-                    new TTypedColumnInfo(7, "CreatedBy", "s_created_by_c", OdbcType.VarChar, 20, false),
-                    new TTypedColumnInfo(8, "DateModified", "s_date_modified_d", OdbcType.Date, -1, false),
-                    new TTypedColumnInfo(9, "ModifiedBy", "s_modified_by_c", OdbcType.VarChar, 20, false),
-                    new TTypedColumnInfo(10, "ModificationId", "s_modification_id_c", OdbcType.VarChar, 150, false)
+                    new TTypedColumnInfo(0, "GroupId", "s_group_id_c", "Group ID", OdbcType.VarChar, 20, true),
+                    new TTypedColumnInfo(1, "GroupUnitKey", "s_group_unit_key_n", "Field of Group", OdbcType.Decimal, 10, true),
+                    new TTypedColumnInfo(2, "ExtractId", "m_extract_id_i", "Extract Id", OdbcType.Int, -1, true),
+                    new TTypedColumnInfo(3, "ReadAccess", "s_read_access_l", "Read Access?", OdbcType.Bit, -1, false),
+                    new TTypedColumnInfo(4, "WriteAccess", "s_write_access_l", "Write Access?", OdbcType.Bit, -1, false),
+                    new TTypedColumnInfo(5, "DeleteAccess", "s_delete_access_l", "Delete Access?", OdbcType.Bit, -1, false),
+                    new TTypedColumnInfo(6, "DateCreated", "s_date_created_d", "Created Date", OdbcType.Date, -1, false),
+                    new TTypedColumnInfo(7, "CreatedBy", "s_created_by_c", "Created By", OdbcType.VarChar, 20, false),
+                    new TTypedColumnInfo(8, "DateModified", "s_date_modified_d", "Modified Date", OdbcType.Date, -1, false),
+                    new TTypedColumnInfo(9, "ModifiedBy", "s_modified_by_c", "Modified By", OdbcType.VarChar, 20, false),
+                    new TTypedColumnInfo(10, "ModificationId", "s_modification_id_c", "", OdbcType.VarChar, 150, false)
                 },
                 new int[] {
                     0, 1, 2
@@ -30388,6 +31787,29 @@ namespace Ict.Petra.Shared.MSysMan.Data
                 base(info, context)
         {
         }
+
+        /// identifies a system group
+        public DataColumn ColumnGroupId;
+        /// Field that the group belongs to
+        public DataColumn ColumnGroupUnitKey;
+        /// Identifier for the extract
+        public DataColumn ColumnExtractId;
+        /// Control read access to the extract
+        public DataColumn ColumnReadAccess;
+        /// Control write access to the extract
+        public DataColumn ColumnWriteAccess;
+        /// Control delete access to the extract
+        public DataColumn ColumnDeleteAccess;
+        /// The date the record was created.
+        public DataColumn ColumnDateCreated;
+        /// User ID of who created this record.
+        public DataColumn ColumnCreatedBy;
+        /// The date the record was modified.
+        public DataColumn ColumnDateModified;
+        /// User ID of who last modified this record.
+        public DataColumn ColumnModifiedBy;
+        /// This identifies the current version of the record.
+        public DataColumn ColumnModificationId;
 
         /// create the columns
         protected override void InitClass()
@@ -30457,6 +31879,18 @@ namespace Ict.Petra.Shared.MSysMan.Data
         public SGroupExtractTable GetChangesTyped()
         {
             return ((SGroupExtractTable)(base.GetChangesTypedInternal()));
+        }
+
+        /// return the CamelCase name of the table
+        public static string GetTableName()
+        {
+            return "SGroupExtract";
+        }
+
+        /// return the name of the table as it is used in the database
+        public static string GetTableDBName()
+        {
+            return "s_group_extract";
         }
 
         /// get an odbc parameter for the given column
@@ -31051,48 +32485,47 @@ namespace Ict.Petra.Shared.MSysMan.Data
     [Serializable()]
     public class SChangeEventTable : TTypedDataTable
     {
-        /// Name of the database table where the event occurred
-        public DataColumn ColumnTableName;
-        /// Rowid of the record that the event applied to
-        public DataColumn ColumnRowid;
-        /// Type of event (I, U or D - Insert, Update, Delete)
-        public DataColumn ColumnChangeType;
-        /// Concatenation of the natural key values for the affected record (the primary key is not enough where a surrogate key is used as this is not meaningful across sites)
-        public DataColumn ColumnNaturalKey;
-        /// Date on which the event took place
-        public DataColumn ColumnDate;
-        /// Time at which event took place
-        public DataColumn ColumnTime;
-        /// The date the record was created.
-        public DataColumn ColumnDateCreated;
-        /// User ID of who created this record.
-        public DataColumn ColumnCreatedBy;
-        /// The date the record was modified.
-        public DataColumn ColumnDateModified;
-        /// User ID of who last modified this record.
-        public DataColumn ColumnModifiedBy;
-        /// This identifies the current version of the record.
-        public DataColumn ColumnModificationId;
-
         /// TableId for Ict.Common.Data generic functions
         public static short TableId = 318;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnTableNameId = 0;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnRowidId = 1;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnChangeTypeId = 2;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnNaturalKeyId = 3;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnDateId = 4;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnTimeId = 5;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnDateCreatedId = 6;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnCreatedById = 7;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnDateModifiedId = 8;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnModifiedById = 9;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnModificationIdId = 10;
 
         private static bool FInitInfoValues = InitInfoValues();
         private static bool InitInfoValues()
         {
             TableInfo.Add(TableId, new TTypedTableInfo(TableId, "SChangeEvent", "s_change_event",
                 new TTypedColumnInfo[] {
-                    new TTypedColumnInfo(0, "TableName", "s_table_name_c", OdbcType.VarChar, 64, true),
-                    new TTypedColumnInfo(1, "Rowid", "s_rowid_c", OdbcType.VarChar, 40, true),
-                    new TTypedColumnInfo(2, "ChangeType", "s_change_type_c", OdbcType.VarChar, 2, true),
-                    new TTypedColumnInfo(3, "NaturalKey", "s_natural_key_c", OdbcType.VarChar, 2000, true),
-                    new TTypedColumnInfo(4, "Date", "s_date_d", OdbcType.Date, -1, true),
-                    new TTypedColumnInfo(5, "Time", "s_time_i", OdbcType.Int, -1, true),
-                    new TTypedColumnInfo(6, "DateCreated", "s_date_created_d", OdbcType.Date, -1, false),
-                    new TTypedColumnInfo(7, "CreatedBy", "s_created_by_c", OdbcType.VarChar, 20, false),
-                    new TTypedColumnInfo(8, "DateModified", "s_date_modified_d", OdbcType.Date, -1, false),
-                    new TTypedColumnInfo(9, "ModifiedBy", "s_modified_by_c", OdbcType.VarChar, 20, false),
-                    new TTypedColumnInfo(10, "ModificationId", "s_modification_id_c", OdbcType.VarChar, 150, false)
+                    new TTypedColumnInfo(0, "TableName", "s_table_name_c", "Table Name", OdbcType.VarChar, 64, true),
+                    new TTypedColumnInfo(1, "Rowid", "s_rowid_c", "Rowid", OdbcType.VarChar, 40, true),
+                    new TTypedColumnInfo(2, "ChangeType", "s_change_type_c", "Type of Change", OdbcType.VarChar, 2, true),
+                    new TTypedColumnInfo(3, "NaturalKey", "s_natural_key_c", "s_natural_key_c", OdbcType.VarChar, 2000, true),
+                    new TTypedColumnInfo(4, "Date", "s_date_d", "s_date_d", OdbcType.Date, -1, true),
+                    new TTypedColumnInfo(5, "Time", "s_time_i", "s_time_i", OdbcType.Int, -1, true),
+                    new TTypedColumnInfo(6, "DateCreated", "s_date_created_d", "Created Date", OdbcType.Date, -1, false),
+                    new TTypedColumnInfo(7, "CreatedBy", "s_created_by_c", "Created By", OdbcType.VarChar, 20, false),
+                    new TTypedColumnInfo(8, "DateModified", "s_date_modified_d", "Modified Date", OdbcType.Date, -1, false),
+                    new TTypedColumnInfo(9, "ModifiedBy", "s_modified_by_c", "Modified By", OdbcType.VarChar, 20, false),
+                    new TTypedColumnInfo(10, "ModificationId", "s_modification_id_c", "", OdbcType.VarChar, 150, false)
                 },
                 new int[] {
                     0, 1
@@ -31117,6 +32550,29 @@ namespace Ict.Petra.Shared.MSysMan.Data
                 base(info, context)
         {
         }
+
+        /// Name of the database table where the event occurred
+        public DataColumn ColumnTableName;
+        /// Rowid of the record that the event applied to
+        public DataColumn ColumnRowid;
+        /// Type of event (I, U or D - Insert, Update, Delete)
+        public DataColumn ColumnChangeType;
+        /// Concatenation of the natural key values for the affected record (the primary key is not enough where a surrogate key is used as this is not meaningful across sites)
+        public DataColumn ColumnNaturalKey;
+        /// Date on which the event took place
+        public DataColumn ColumnDate;
+        /// Time at which event took place
+        public DataColumn ColumnTime;
+        /// The date the record was created.
+        public DataColumn ColumnDateCreated;
+        /// User ID of who created this record.
+        public DataColumn ColumnCreatedBy;
+        /// The date the record was modified.
+        public DataColumn ColumnDateModified;
+        /// User ID of who last modified this record.
+        public DataColumn ColumnModifiedBy;
+        /// This identifies the current version of the record.
+        public DataColumn ColumnModificationId;
 
         /// create the columns
         protected override void InitClass()
@@ -31186,6 +32642,18 @@ namespace Ict.Petra.Shared.MSysMan.Data
         public SChangeEventTable GetChangesTyped()
         {
             return ((SChangeEventTable)(base.GetChangesTypedInternal()));
+        }
+
+        /// return the CamelCase name of the table
+        public static string GetTableName()
+        {
+            return "SChangeEvent";
+        }
+
+        /// return the name of the table as it is used in the database
+        public static string GetTableDBName()
+        {
+            return "s_change_event";
         }
 
         /// get an odbc parameter for the given column
@@ -31780,6 +33248,87 @@ namespace Ict.Petra.Shared.MSysMan.Data
     [Serializable()]
     public class SLabelTable : TTypedDataTable
     {
+        /// TableId for Ict.Common.Data generic functions
+        public static short TableId = 319;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnLabelNameId = 0;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnLabelDescriptionId = 1;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnFormNameId = 2;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnTopMarginId = 3;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnSideMarginId = 4;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnVerticalPitchId = 5;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnHorizontalPitchId = 6;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnLabelHeightId = 7;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnLabelWidthId = 8;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnLabelsAcrossId = 9;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnLabelsDownId = 10;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnDateCreatedId = 11;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnCreatedById = 12;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnDateModifiedId = 13;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnModifiedById = 14;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnModificationIdId = 15;
+
+        private static bool FInitInfoValues = InitInfoValues();
+        private static bool InitInfoValues()
+        {
+            TableInfo.Add(TableId, new TTypedTableInfo(TableId, "SLabel", "s_label",
+                new TTypedColumnInfo[] {
+                    new TTypedColumnInfo(0, "LabelName", "p_label_name_c", "Label Name", OdbcType.VarChar, 20, true),
+                    new TTypedColumnInfo(1, "LabelDescription", "s_label_description_c", "Description", OdbcType.VarChar, 80, false),
+                    new TTypedColumnInfo(2, "FormName", "s_form_name_c", "Form Name", OdbcType.VarChar, 20, true),
+                    new TTypedColumnInfo(3, "TopMargin", "s_top_margin_n", "Top Margin", OdbcType.Decimal, 6, true),
+                    new TTypedColumnInfo(4, "SideMargin", "s_side_margin_n", "Side Margin", OdbcType.Decimal, 6, true),
+                    new TTypedColumnInfo(5, "VerticalPitch", "s_vertical_pitch_n", "Side Margin", OdbcType.Decimal, 6, true),
+                    new TTypedColumnInfo(6, "HorizontalPitch", "s_horizontal_pitch_n", "Horizontal pitch", OdbcType.Decimal, 6, true),
+                    new TTypedColumnInfo(7, "LabelHeight", "s_label_height_n", "Label Height", OdbcType.Decimal, 6, true),
+                    new TTypedColumnInfo(8, "LabelWidth", "s_label_width_n", "Label Width", OdbcType.Decimal, 6, true),
+                    new TTypedColumnInfo(9, "LabelsAcross", "s_labels_across_i", "Number of labels across", OdbcType.Int, -1, true),
+                    new TTypedColumnInfo(10, "LabelsDown", "s_labels_down_i", "Number of labels down", OdbcType.Int, -1, true),
+                    new TTypedColumnInfo(11, "DateCreated", "s_date_created_d", "Created Date", OdbcType.Date, -1, false),
+                    new TTypedColumnInfo(12, "CreatedBy", "s_created_by_c", "Created By", OdbcType.VarChar, 20, false),
+                    new TTypedColumnInfo(13, "DateModified", "s_date_modified_d", "Modified Date", OdbcType.Date, -1, false),
+                    new TTypedColumnInfo(14, "ModifiedBy", "s_modified_by_c", "Modified By", OdbcType.VarChar, 20, false),
+                    new TTypedColumnInfo(15, "ModificationId", "s_modification_id_c", "", OdbcType.VarChar, 150, false)
+                },
+                new int[] {
+                    0
+                }));
+            return true;
+        }
+
+        /// constructor
+        public SLabelTable() :
+                base("SLabel")
+        {
+        }
+
+        /// constructor
+        public SLabelTable(string ATablename) :
+                base(ATablename)
+        {
+        }
+
+        /// constructor for serialization
+        public SLabelTable(System.Runtime.Serialization.SerializationInfo info, System.Runtime.Serialization.StreamingContext context) :
+                base(info, context)
+        {
+        }
+
         ///
         public DataColumn ColumnLabelName;
         ///
@@ -31812,55 +33361,6 @@ namespace Ict.Petra.Shared.MSysMan.Data
         public DataColumn ColumnModifiedBy;
         /// This identifies the current version of the record.
         public DataColumn ColumnModificationId;
-
-        /// TableId for Ict.Common.Data generic functions
-        public static short TableId = 319;
-
-        private static bool FInitInfoValues = InitInfoValues();
-        private static bool InitInfoValues()
-        {
-            TableInfo.Add(TableId, new TTypedTableInfo(TableId, "SLabel", "s_label",
-                new TTypedColumnInfo[] {
-                    new TTypedColumnInfo(0, "LabelName", "p_label_name_c", OdbcType.VarChar, 20, true),
-                    new TTypedColumnInfo(1, "LabelDescription", "s_label_description_c", OdbcType.VarChar, 80, false),
-                    new TTypedColumnInfo(2, "FormName", "s_form_name_c", OdbcType.VarChar, 20, true),
-                    new TTypedColumnInfo(3, "TopMargin", "s_top_margin_n", OdbcType.Decimal, 6, true),
-                    new TTypedColumnInfo(4, "SideMargin", "s_side_margin_n", OdbcType.Decimal, 6, true),
-                    new TTypedColumnInfo(5, "VerticalPitch", "s_vertical_pitch_n", OdbcType.Decimal, 6, true),
-                    new TTypedColumnInfo(6, "HorizontalPitch", "s_horizontal_pitch_n", OdbcType.Decimal, 6, true),
-                    new TTypedColumnInfo(7, "LabelHeight", "s_label_height_n", OdbcType.Decimal, 6, true),
-                    new TTypedColumnInfo(8, "LabelWidth", "s_label_width_n", OdbcType.Decimal, 6, true),
-                    new TTypedColumnInfo(9, "LabelsAcross", "s_labels_across_i", OdbcType.Int, -1, true),
-                    new TTypedColumnInfo(10, "LabelsDown", "s_labels_down_i", OdbcType.Int, -1, true),
-                    new TTypedColumnInfo(11, "DateCreated", "s_date_created_d", OdbcType.Date, -1, false),
-                    new TTypedColumnInfo(12, "CreatedBy", "s_created_by_c", OdbcType.VarChar, 20, false),
-                    new TTypedColumnInfo(13, "DateModified", "s_date_modified_d", OdbcType.Date, -1, false),
-                    new TTypedColumnInfo(14, "ModifiedBy", "s_modified_by_c", OdbcType.VarChar, 20, false),
-                    new TTypedColumnInfo(15, "ModificationId", "s_modification_id_c", OdbcType.VarChar, 150, false)
-                },
-                new int[] {
-                    0
-                }));
-            return true;
-        }
-
-        /// constructor
-        public SLabelTable() :
-                base("SLabel")
-        {
-        }
-
-        /// constructor
-        public SLabelTable(string ATablename) :
-                base(ATablename)
-        {
-        }
-
-        /// constructor for serialization
-        public SLabelTable(System.Runtime.Serialization.SerializationInfo info, System.Runtime.Serialization.StreamingContext context) :
-                base(info, context)
-        {
-        }
 
         /// create the columns
         protected override void InitClass()
@@ -31940,6 +33440,18 @@ namespace Ict.Petra.Shared.MSysMan.Data
         public SLabelTable GetChangesTyped()
         {
             return ((SLabelTable)(base.GetChangesTypedInternal()));
+        }
+
+        /// return the CamelCase name of the table
+        public static string GetTableName()
+        {
+            return "SLabel";
+        }
+
+        /// return the name of the table as it is used in the database
+        public static string GetTableDBName()
+        {
+            return "s_label";
         }
 
         /// get an odbc parameter for the given column
@@ -32789,45 +34301,44 @@ namespace Ict.Petra.Shared.MSysMan.Data
     [Serializable()]
     public class SWorkflowDefinitionTable : TTypedDataTable
     {
-        /// Workflow ID
-        public DataColumn ColumnWorkflowId;
-        ///
-        public DataColumn ColumnName;
-        ///
-        public DataColumn ColumnDescription;
-        /// List of all modules within which workflow should be available
-        public DataColumn ColumnModuleList;
-        /// If workflow is dependent on a particular data item what sort of data item is it (eg. partner key, application, extract).
-        public DataColumn ColumnTypeOfSharedData;
-        /// The date the record was created.
-        public DataColumn ColumnDateCreated;
-        /// User ID of who created this record.
-        public DataColumn ColumnCreatedBy;
-        /// The date the record was modified.
-        public DataColumn ColumnDateModified;
-        /// User ID of who last modified this record.
-        public DataColumn ColumnModifiedBy;
-        /// This identifies the current version of the record.
-        public DataColumn ColumnModificationId;
-
         /// TableId for Ict.Common.Data generic functions
         public static short TableId = 327;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnWorkflowIdId = 0;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnNameId = 1;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnDescriptionId = 2;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnModuleListId = 3;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnTypeOfSharedDataId = 4;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnDateCreatedId = 5;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnCreatedById = 6;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnDateModifiedId = 7;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnModifiedById = 8;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnModificationIdId = 9;
 
         private static bool FInitInfoValues = InitInfoValues();
         private static bool InitInfoValues()
         {
             TableInfo.Add(TableId, new TTypedTableInfo(TableId, "SWorkflowDefinition", "s_workflow_definition",
                 new TTypedColumnInfo[] {
-                    new TTypedColumnInfo(0, "WorkflowId", "s_workflow_id_i", OdbcType.Int, -1, true),
-                    new TTypedColumnInfo(1, "Name", "s_name_c", OdbcType.VarChar, 60, true),
-                    new TTypedColumnInfo(2, "Description", "s_description_c", OdbcType.VarChar, 600, false),
-                    new TTypedColumnInfo(3, "ModuleList", "s_module_list_c", OdbcType.VarChar, 200, false),
-                    new TTypedColumnInfo(4, "TypeOfSharedData", "s_type_of_shared_data_c", OdbcType.VarChar, 200, false),
-                    new TTypedColumnInfo(5, "DateCreated", "s_date_created_d", OdbcType.Date, -1, false),
-                    new TTypedColumnInfo(6, "CreatedBy", "s_created_by_c", OdbcType.VarChar, 20, false),
-                    new TTypedColumnInfo(7, "DateModified", "s_date_modified_d", OdbcType.Date, -1, false),
-                    new TTypedColumnInfo(8, "ModifiedBy", "s_modified_by_c", OdbcType.VarChar, 20, false),
-                    new TTypedColumnInfo(9, "ModificationId", "s_modification_id_c", OdbcType.VarChar, 150, false)
+                    new TTypedColumnInfo(0, "WorkflowId", "s_workflow_id_i", "Workflow ID", OdbcType.Int, -1, true),
+                    new TTypedColumnInfo(1, "Name", "s_name_c", "Workflow Name", OdbcType.VarChar, 60, true),
+                    new TTypedColumnInfo(2, "Description", "s_description_c", "Description", OdbcType.VarChar, 600, false),
+                    new TTypedColumnInfo(3, "ModuleList", "s_module_list_c", "Module List", OdbcType.VarChar, 200, false),
+                    new TTypedColumnInfo(4, "TypeOfSharedData", "s_type_of_shared_data_c", "Shared Data Type", OdbcType.VarChar, 200, false),
+                    new TTypedColumnInfo(5, "DateCreated", "s_date_created_d", "Created Date", OdbcType.Date, -1, false),
+                    new TTypedColumnInfo(6, "CreatedBy", "s_created_by_c", "Created By", OdbcType.VarChar, 20, false),
+                    new TTypedColumnInfo(7, "DateModified", "s_date_modified_d", "Modified Date", OdbcType.Date, -1, false),
+                    new TTypedColumnInfo(8, "ModifiedBy", "s_modified_by_c", "Modified By", OdbcType.VarChar, 20, false),
+                    new TTypedColumnInfo(9, "ModificationId", "s_modification_id_c", "", OdbcType.VarChar, 150, false)
                 },
                 new int[] {
                     0
@@ -32852,6 +34363,27 @@ namespace Ict.Petra.Shared.MSysMan.Data
                 base(info, context)
         {
         }
+
+        /// Workflow ID
+        public DataColumn ColumnWorkflowId;
+        ///
+        public DataColumn ColumnName;
+        ///
+        public DataColumn ColumnDescription;
+        /// List of all modules within which workflow should be available
+        public DataColumn ColumnModuleList;
+        /// If workflow is dependent on a particular data item what sort of data item is it (eg. partner key, application, extract).
+        public DataColumn ColumnTypeOfSharedData;
+        /// The date the record was created.
+        public DataColumn ColumnDateCreated;
+        /// User ID of who created this record.
+        public DataColumn ColumnCreatedBy;
+        /// The date the record was modified.
+        public DataColumn ColumnDateModified;
+        /// User ID of who last modified this record.
+        public DataColumn ColumnModifiedBy;
+        /// This identifies the current version of the record.
+        public DataColumn ColumnModificationId;
 
         /// create the columns
         protected override void InitClass()
@@ -32919,6 +34451,18 @@ namespace Ict.Petra.Shared.MSysMan.Data
         public SWorkflowDefinitionTable GetChangesTyped()
         {
             return ((SWorkflowDefinitionTable)(base.GetChangesTypedInternal()));
+        }
+
+        /// return the CamelCase name of the table
+        public static string GetTableName()
+        {
+            return "SWorkflowDefinition";
+        }
+
+        /// return the name of the table as it is used in the database
+        public static string GetTableDBName()
+        {
+            return "s_workflow_definition";
         }
 
         /// get an odbc parameter for the given column
@@ -33462,36 +35006,35 @@ namespace Ict.Petra.Shared.MSysMan.Data
     [Serializable()]
     public class SWorkflowUserTable : TTypedDataTable
     {
-        /// Workflow ID
-        public DataColumn ColumnWorkflowId;
-        /// The user that has access to the workflow
-        public DataColumn ColumnUserId;
-        /// The date the record was created.
-        public DataColumn ColumnDateCreated;
-        /// User ID of who created this record.
-        public DataColumn ColumnCreatedBy;
-        /// The date the record was modified.
-        public DataColumn ColumnDateModified;
-        /// User ID of who last modified this record.
-        public DataColumn ColumnModifiedBy;
-        /// This identifies the current version of the record.
-        public DataColumn ColumnModificationId;
-
         /// TableId for Ict.Common.Data generic functions
         public static short TableId = 328;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnWorkflowIdId = 0;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnUserIdId = 1;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnDateCreatedId = 2;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnCreatedById = 3;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnDateModifiedId = 4;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnModifiedById = 5;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnModificationIdId = 6;
 
         private static bool FInitInfoValues = InitInfoValues();
         private static bool InitInfoValues()
         {
             TableInfo.Add(TableId, new TTypedTableInfo(TableId, "SWorkflowUser", "s_workflow_user",
                 new TTypedColumnInfo[] {
-                    new TTypedColumnInfo(0, "WorkflowId", "s_workflow_id_i", OdbcType.Int, -1, true),
-                    new TTypedColumnInfo(1, "UserId", "s_user_id_c", OdbcType.VarChar, 20, true),
-                    new TTypedColumnInfo(2, "DateCreated", "s_date_created_d", OdbcType.Date, -1, false),
-                    new TTypedColumnInfo(3, "CreatedBy", "s_created_by_c", OdbcType.VarChar, 20, false),
-                    new TTypedColumnInfo(4, "DateModified", "s_date_modified_d", OdbcType.Date, -1, false),
-                    new TTypedColumnInfo(5, "ModifiedBy", "s_modified_by_c", OdbcType.VarChar, 20, false),
-                    new TTypedColumnInfo(6, "ModificationId", "s_modification_id_c", OdbcType.VarChar, 150, false)
+                    new TTypedColumnInfo(0, "WorkflowId", "s_workflow_id_i", "Workflow ID", OdbcType.Int, -1, true),
+                    new TTypedColumnInfo(1, "UserId", "s_user_id_c", "User ID", OdbcType.VarChar, 20, true),
+                    new TTypedColumnInfo(2, "DateCreated", "s_date_created_d", "Created Date", OdbcType.Date, -1, false),
+                    new TTypedColumnInfo(3, "CreatedBy", "s_created_by_c", "Created By", OdbcType.VarChar, 20, false),
+                    new TTypedColumnInfo(4, "DateModified", "s_date_modified_d", "Modified Date", OdbcType.Date, -1, false),
+                    new TTypedColumnInfo(5, "ModifiedBy", "s_modified_by_c", "Modified By", OdbcType.VarChar, 20, false),
+                    new TTypedColumnInfo(6, "ModificationId", "s_modification_id_c", "", OdbcType.VarChar, 150, false)
                 },
                 new int[] {
                     0, 1
@@ -33516,6 +35059,21 @@ namespace Ict.Petra.Shared.MSysMan.Data
                 base(info, context)
         {
         }
+
+        /// Workflow ID
+        public DataColumn ColumnWorkflowId;
+        /// The user that has access to the workflow
+        public DataColumn ColumnUserId;
+        /// The date the record was created.
+        public DataColumn ColumnDateCreated;
+        /// User ID of who created this record.
+        public DataColumn ColumnCreatedBy;
+        /// The date the record was modified.
+        public DataColumn ColumnDateModified;
+        /// User ID of who last modified this record.
+        public DataColumn ColumnModifiedBy;
+        /// This identifies the current version of the record.
+        public DataColumn ColumnModificationId;
 
         /// create the columns
         protected override void InitClass()
@@ -33577,6 +35135,18 @@ namespace Ict.Petra.Shared.MSysMan.Data
         public SWorkflowUserTable GetChangesTyped()
         {
             return ((SWorkflowUserTable)(base.GetChangesTypedInternal()));
+        }
+
+        /// return the CamelCase name of the table
+        public static string GetTableName()
+        {
+            return "SWorkflowUser";
+        }
+
+        /// return the name of the table as it is used in the database
+        public static string GetTableDBName()
+        {
+            return "s_workflow_user";
         }
 
         /// get an odbc parameter for the given column
@@ -33967,39 +35537,38 @@ namespace Ict.Petra.Shared.MSysMan.Data
     [Serializable()]
     public class SWorkflowGroupTable : TTypedDataTable
     {
-        /// Workflow ID
-        public DataColumn ColumnWorkflowId;
-        /// The group that has access to the workflow
-        public DataColumn ColumnGroupId;
-        /// Field that the group belongs to
-        public DataColumn ColumnGroupUnitKey;
-        /// The date the record was created.
-        public DataColumn ColumnDateCreated;
-        /// User ID of who created this record.
-        public DataColumn ColumnCreatedBy;
-        /// The date the record was modified.
-        public DataColumn ColumnDateModified;
-        /// User ID of who last modified this record.
-        public DataColumn ColumnModifiedBy;
-        /// This identifies the current version of the record.
-        public DataColumn ColumnModificationId;
-
         /// TableId for Ict.Common.Data generic functions
         public static short TableId = 329;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnWorkflowIdId = 0;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnGroupIdId = 1;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnGroupUnitKeyId = 2;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnDateCreatedId = 3;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnCreatedById = 4;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnDateModifiedId = 5;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnModifiedById = 6;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnModificationIdId = 7;
 
         private static bool FInitInfoValues = InitInfoValues();
         private static bool InitInfoValues()
         {
             TableInfo.Add(TableId, new TTypedTableInfo(TableId, "SWorkflowGroup", "s_workflow_group",
                 new TTypedColumnInfo[] {
-                    new TTypedColumnInfo(0, "WorkflowId", "s_workflow_id_i", OdbcType.Int, -1, true),
-                    new TTypedColumnInfo(1, "GroupId", "s_group_id_c", OdbcType.VarChar, 20, true),
-                    new TTypedColumnInfo(2, "GroupUnitKey", "s_group_unit_key_n", OdbcType.Decimal, 10, true),
-                    new TTypedColumnInfo(3, "DateCreated", "s_date_created_d", OdbcType.Date, -1, false),
-                    new TTypedColumnInfo(4, "CreatedBy", "s_created_by_c", OdbcType.VarChar, 20, false),
-                    new TTypedColumnInfo(5, "DateModified", "s_date_modified_d", OdbcType.Date, -1, false),
-                    new TTypedColumnInfo(6, "ModifiedBy", "s_modified_by_c", OdbcType.VarChar, 20, false),
-                    new TTypedColumnInfo(7, "ModificationId", "s_modification_id_c", OdbcType.VarChar, 150, false)
+                    new TTypedColumnInfo(0, "WorkflowId", "s_workflow_id_i", "Workflow ID", OdbcType.Int, -1, true),
+                    new TTypedColumnInfo(1, "GroupId", "s_group_id_c", "Group ID", OdbcType.VarChar, 20, true),
+                    new TTypedColumnInfo(2, "GroupUnitKey", "s_group_unit_key_n", "Field of Group", OdbcType.Decimal, 10, true),
+                    new TTypedColumnInfo(3, "DateCreated", "s_date_created_d", "Created Date", OdbcType.Date, -1, false),
+                    new TTypedColumnInfo(4, "CreatedBy", "s_created_by_c", "Created By", OdbcType.VarChar, 20, false),
+                    new TTypedColumnInfo(5, "DateModified", "s_date_modified_d", "Modified Date", OdbcType.Date, -1, false),
+                    new TTypedColumnInfo(6, "ModifiedBy", "s_modified_by_c", "Modified By", OdbcType.VarChar, 20, false),
+                    new TTypedColumnInfo(7, "ModificationId", "s_modification_id_c", "", OdbcType.VarChar, 150, false)
                 },
                 new int[] {
                     0, 1, 2
@@ -34024,6 +35593,23 @@ namespace Ict.Petra.Shared.MSysMan.Data
                 base(info, context)
         {
         }
+
+        /// Workflow ID
+        public DataColumn ColumnWorkflowId;
+        /// The group that has access to the workflow
+        public DataColumn ColumnGroupId;
+        /// Field that the group belongs to
+        public DataColumn ColumnGroupUnitKey;
+        /// The date the record was created.
+        public DataColumn ColumnDateCreated;
+        /// User ID of who created this record.
+        public DataColumn ColumnCreatedBy;
+        /// The date the record was modified.
+        public DataColumn ColumnDateModified;
+        /// User ID of who last modified this record.
+        public DataColumn ColumnModifiedBy;
+        /// This identifies the current version of the record.
+        public DataColumn ColumnModificationId;
 
         /// create the columns
         protected override void InitClass()
@@ -34087,6 +35673,18 @@ namespace Ict.Petra.Shared.MSysMan.Data
         public SWorkflowGroupTable GetChangesTyped()
         {
             return ((SWorkflowGroupTable)(base.GetChangesTypedInternal()));
+        }
+
+        /// return the CamelCase name of the table
+        public static string GetTableName()
+        {
+            return "SWorkflowGroup";
+        }
+
+        /// return the name of the table as it is used in the database
+        public static string GetTableDBName()
+        {
+            return "s_workflow_group";
         }
 
         /// get an odbc parameter for the given column
@@ -34528,39 +36126,38 @@ namespace Ict.Petra.Shared.MSysMan.Data
     [Serializable()]
     public class SWorkflowStepTable : TTypedDataTable
     {
-        /// Workflow ID
-        public DataColumn ColumnWorkflowId;
-        /// Indicates position within workflow (ie. 1 means first step, etc)
-        public DataColumn ColumnStepNumber;
-        /// Identifier for the particular function
-        public DataColumn ColumnFunctionId;
-        /// The date the record was created.
-        public DataColumn ColumnDateCreated;
-        /// User ID of who created this record.
-        public DataColumn ColumnCreatedBy;
-        /// The date the record was modified.
-        public DataColumn ColumnDateModified;
-        /// User ID of who last modified this record.
-        public DataColumn ColumnModifiedBy;
-        /// This identifies the current version of the record.
-        public DataColumn ColumnModificationId;
-
         /// TableId for Ict.Common.Data generic functions
         public static short TableId = 330;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnWorkflowIdId = 0;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnStepNumberId = 1;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnFunctionIdId = 2;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnDateCreatedId = 3;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnCreatedById = 4;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnDateModifiedId = 5;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnModifiedById = 6;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnModificationIdId = 7;
 
         private static bool FInitInfoValues = InitInfoValues();
         private static bool InitInfoValues()
         {
             TableInfo.Add(TableId, new TTypedTableInfo(TableId, "SWorkflowStep", "s_workflow_step",
                 new TTypedColumnInfo[] {
-                    new TTypedColumnInfo(0, "WorkflowId", "s_workflow_id_i", OdbcType.Int, -1, true),
-                    new TTypedColumnInfo(1, "StepNumber", "s_step_number_i", OdbcType.Int, -1, true),
-                    new TTypedColumnInfo(2, "FunctionId", "s_function_id_c", OdbcType.VarChar, 30, true),
-                    new TTypedColumnInfo(3, "DateCreated", "s_date_created_d", OdbcType.Date, -1, false),
-                    new TTypedColumnInfo(4, "CreatedBy", "s_created_by_c", OdbcType.VarChar, 20, false),
-                    new TTypedColumnInfo(5, "DateModified", "s_date_modified_d", OdbcType.Date, -1, false),
-                    new TTypedColumnInfo(6, "ModifiedBy", "s_modified_by_c", OdbcType.VarChar, 20, false),
-                    new TTypedColumnInfo(7, "ModificationId", "s_modification_id_c", OdbcType.VarChar, 150, false)
+                    new TTypedColumnInfo(0, "WorkflowId", "s_workflow_id_i", "Workflow ID", OdbcType.Int, -1, true),
+                    new TTypedColumnInfo(1, "StepNumber", "s_step_number_i", "Step Number", OdbcType.Int, -1, true),
+                    new TTypedColumnInfo(2, "FunctionId", "s_function_id_c", "Function ID", OdbcType.VarChar, 30, true),
+                    new TTypedColumnInfo(3, "DateCreated", "s_date_created_d", "Created Date", OdbcType.Date, -1, false),
+                    new TTypedColumnInfo(4, "CreatedBy", "s_created_by_c", "Created By", OdbcType.VarChar, 20, false),
+                    new TTypedColumnInfo(5, "DateModified", "s_date_modified_d", "Modified Date", OdbcType.Date, -1, false),
+                    new TTypedColumnInfo(6, "ModifiedBy", "s_modified_by_c", "Modified By", OdbcType.VarChar, 20, false),
+                    new TTypedColumnInfo(7, "ModificationId", "s_modification_id_c", "", OdbcType.VarChar, 150, false)
                 },
                 new int[] {
                     0, 1
@@ -34585,6 +36182,23 @@ namespace Ict.Petra.Shared.MSysMan.Data
                 base(info, context)
         {
         }
+
+        /// Workflow ID
+        public DataColumn ColumnWorkflowId;
+        /// Indicates position within workflow (ie. 1 means first step, etc)
+        public DataColumn ColumnStepNumber;
+        /// Identifier for the particular function
+        public DataColumn ColumnFunctionId;
+        /// The date the record was created.
+        public DataColumn ColumnDateCreated;
+        /// User ID of who created this record.
+        public DataColumn ColumnCreatedBy;
+        /// The date the record was modified.
+        public DataColumn ColumnDateModified;
+        /// User ID of who last modified this record.
+        public DataColumn ColumnModifiedBy;
+        /// This identifies the current version of the record.
+        public DataColumn ColumnModificationId;
 
         /// create the columns
         protected override void InitClass()
@@ -34648,6 +36262,18 @@ namespace Ict.Petra.Shared.MSysMan.Data
         public SWorkflowStepTable GetChangesTyped()
         {
             return ((SWorkflowStepTable)(base.GetChangesTypedInternal()));
+        }
+
+        /// return the CamelCase name of the table
+        public static string GetTableName()
+        {
+            return "SWorkflowStep";
+        }
+
+        /// return the name of the table as it is used in the database
+        public static string GetTableDBName()
+        {
+            return "s_workflow_step";
         }
 
         /// get an odbc parameter for the given column
@@ -35089,39 +36715,38 @@ namespace Ict.Petra.Shared.MSysMan.Data
     [Serializable()]
     public class SFunctionRelationshipTable : TTypedDataTable
     {
-        /// Identifier for one particular function
-        public DataColumn ColumnFunction1;
-        /// Identifier for related function
-        public DataColumn ColumnFunction2;
-        /// Code to run if a workflow contains function_1 and function_2 as adjacent steps. This code will provide the glue to connect the two steps.
-        public DataColumn ColumnCodeToRun;
-        /// The date the record was created.
-        public DataColumn ColumnDateCreated;
-        /// User ID of who created this record.
-        public DataColumn ColumnCreatedBy;
-        /// The date the record was modified.
-        public DataColumn ColumnDateModified;
-        /// User ID of who last modified this record.
-        public DataColumn ColumnModifiedBy;
-        /// This identifies the current version of the record.
-        public DataColumn ColumnModificationId;
-
         /// TableId for Ict.Common.Data generic functions
         public static short TableId = 331;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnFunction1Id = 0;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnFunction2Id = 1;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnCodeToRunId = 2;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnDateCreatedId = 3;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnCreatedById = 4;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnDateModifiedId = 5;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnModifiedById = 6;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnModificationIdId = 7;
 
         private static bool FInitInfoValues = InitInfoValues();
         private static bool InitInfoValues()
         {
             TableInfo.Add(TableId, new TTypedTableInfo(TableId, "SFunctionRelationship", "s_function_relationship",
                 new TTypedColumnInfo[] {
-                    new TTypedColumnInfo(0, "Function1", "s_function_1_c", OdbcType.VarChar, 30, true),
-                    new TTypedColumnInfo(1, "Function2", "s_function_2_c", OdbcType.VarChar, 30, true),
-                    new TTypedColumnInfo(2, "CodeToRun", "s_code_to_run_c", OdbcType.VarChar, 400, false),
-                    new TTypedColumnInfo(3, "DateCreated", "s_date_created_d", OdbcType.Date, -1, false),
-                    new TTypedColumnInfo(4, "CreatedBy", "s_created_by_c", OdbcType.VarChar, 20, false),
-                    new TTypedColumnInfo(5, "DateModified", "s_date_modified_d", OdbcType.Date, -1, false),
-                    new TTypedColumnInfo(6, "ModifiedBy", "s_modified_by_c", OdbcType.VarChar, 20, false),
-                    new TTypedColumnInfo(7, "ModificationId", "s_modification_id_c", OdbcType.VarChar, 150, false)
+                    new TTypedColumnInfo(0, "Function1", "s_function_1_c", "Function ID", OdbcType.VarChar, 30, true),
+                    new TTypedColumnInfo(1, "Function2", "s_function_2_c", "Function ID", OdbcType.VarChar, 30, true),
+                    new TTypedColumnInfo(2, "CodeToRun", "s_code_to_run_c", "Code to run", OdbcType.VarChar, 400, false),
+                    new TTypedColumnInfo(3, "DateCreated", "s_date_created_d", "Created Date", OdbcType.Date, -1, false),
+                    new TTypedColumnInfo(4, "CreatedBy", "s_created_by_c", "Created By", OdbcType.VarChar, 20, false),
+                    new TTypedColumnInfo(5, "DateModified", "s_date_modified_d", "Modified Date", OdbcType.Date, -1, false),
+                    new TTypedColumnInfo(6, "ModifiedBy", "s_modified_by_c", "Modified By", OdbcType.VarChar, 20, false),
+                    new TTypedColumnInfo(7, "ModificationId", "s_modification_id_c", "", OdbcType.VarChar, 150, false)
                 },
                 new int[] {
                     0, 1
@@ -35146,6 +36771,23 @@ namespace Ict.Petra.Shared.MSysMan.Data
                 base(info, context)
         {
         }
+
+        /// Identifier for one particular function
+        public DataColumn ColumnFunction1;
+        /// Identifier for related function
+        public DataColumn ColumnFunction2;
+        /// Code to run if a workflow contains function_1 and function_2 as adjacent steps. This code will provide the glue to connect the two steps.
+        public DataColumn ColumnCodeToRun;
+        /// The date the record was created.
+        public DataColumn ColumnDateCreated;
+        /// User ID of who created this record.
+        public DataColumn ColumnCreatedBy;
+        /// The date the record was modified.
+        public DataColumn ColumnDateModified;
+        /// User ID of who last modified this record.
+        public DataColumn ColumnModifiedBy;
+        /// This identifies the current version of the record.
+        public DataColumn ColumnModificationId;
 
         /// create the columns
         protected override void InitClass()
@@ -35209,6 +36851,18 @@ namespace Ict.Petra.Shared.MSysMan.Data
         public SFunctionRelationshipTable GetChangesTyped()
         {
             return ((SFunctionRelationshipTable)(base.GetChangesTypedInternal()));
+        }
+
+        /// return the CamelCase name of the table
+        public static string GetTableName()
+        {
+            return "SFunctionRelationship";
+        }
+
+        /// return the name of the table as it is used in the database
+        public static string GetTableDBName()
+        {
+            return "s_function_relationship";
         }
 
         /// get an odbc parameter for the given column
@@ -35650,51 +37304,50 @@ namespace Ict.Petra.Shared.MSysMan.Data
     [Serializable()]
     public class SWorkflowInstanceTable : TTypedDataTable
     {
-        /// Workflow Instance ID
-        public DataColumn ColumnWorkflowInstanceId;
-        /// Workflow ID
-        public DataColumn ColumnWorkflowId;
-        /// If there is a particular data item required through the workflow what is it. Eg. if a Partner Key is required what is that Partner Key
-        public DataColumn ColumnKeyDataItem;
-        /// The type of the shared data item (eg. Partner Key)
-        public DataColumn ColumnKeyDataItemType;
-        /// Was this instance generated by the System rather than the user
-        public DataColumn ColumnSystemGenerated;
-        /// Has the workflow been completed
-        public DataColumn ColumnComplete;
-        /// User entered comment or note attached to the workflow
-        public DataColumn ColumnNote;
-        /// The date the record was created.
-        public DataColumn ColumnDateCreated;
-        /// User ID of who created this record.
-        public DataColumn ColumnCreatedBy;
-        /// The date the record was modified.
-        public DataColumn ColumnDateModified;
-        /// User ID of who last modified this record.
-        public DataColumn ColumnModifiedBy;
-        /// This identifies the current version of the record.
-        public DataColumn ColumnModificationId;
-
         /// TableId for Ict.Common.Data generic functions
         public static short TableId = 332;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnWorkflowInstanceIdId = 0;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnWorkflowIdId = 1;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnKeyDataItemId = 2;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnKeyDataItemTypeId = 3;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnSystemGeneratedId = 4;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnCompleteId = 5;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnNoteId = 6;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnDateCreatedId = 7;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnCreatedById = 8;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnDateModifiedId = 9;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnModifiedById = 10;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnModificationIdId = 11;
 
         private static bool FInitInfoValues = InitInfoValues();
         private static bool InitInfoValues()
         {
             TableInfo.Add(TableId, new TTypedTableInfo(TableId, "SWorkflowInstance", "s_workflow_instance",
                 new TTypedColumnInfo[] {
-                    new TTypedColumnInfo(0, "WorkflowInstanceId", "s_workflow_instance_id_i", OdbcType.Int, -1, true),
-                    new TTypedColumnInfo(1, "WorkflowId", "s_workflow_id_i", OdbcType.Int, -1, true),
-                    new TTypedColumnInfo(2, "KeyDataItem", "s_key_data_item_c", OdbcType.VarChar, 200, false),
-                    new TTypedColumnInfo(3, "KeyDataItemType", "s_key_data_item_type_c", OdbcType.VarChar, 200, false),
-                    new TTypedColumnInfo(4, "SystemGenerated", "s_system_generated_l", OdbcType.Bit, -1, false),
-                    new TTypedColumnInfo(5, "Complete", "s_complete_l", OdbcType.Bit, -1, false),
-                    new TTypedColumnInfo(6, "Note", "s_note_c", OdbcType.VarChar, 600, false),
-                    new TTypedColumnInfo(7, "DateCreated", "s_date_created_d", OdbcType.Date, -1, false),
-                    new TTypedColumnInfo(8, "CreatedBy", "s_created_by_c", OdbcType.VarChar, 20, false),
-                    new TTypedColumnInfo(9, "DateModified", "s_date_modified_d", OdbcType.Date, -1, false),
-                    new TTypedColumnInfo(10, "ModifiedBy", "s_modified_by_c", OdbcType.VarChar, 20, false),
-                    new TTypedColumnInfo(11, "ModificationId", "s_modification_id_c", OdbcType.VarChar, 150, false)
+                    new TTypedColumnInfo(0, "WorkflowInstanceId", "s_workflow_instance_id_i", "Workflow Instance ID", OdbcType.Int, -1, true),
+                    new TTypedColumnInfo(1, "WorkflowId", "s_workflow_id_i", "Workflow ID", OdbcType.Int, -1, true),
+                    new TTypedColumnInfo(2, "KeyDataItem", "s_key_data_item_c", "Data Item Key", OdbcType.VarChar, 200, false),
+                    new TTypedColumnInfo(3, "KeyDataItemType", "s_key_data_item_type_c", "Data Item Type", OdbcType.VarChar, 200, false),
+                    new TTypedColumnInfo(4, "SystemGenerated", "s_system_generated_l", "System Generated", OdbcType.Bit, -1, false),
+                    new TTypedColumnInfo(5, "Complete", "s_complete_l", "Completed", OdbcType.Bit, -1, false),
+                    new TTypedColumnInfo(6, "Note", "s_note_c", "Comment", OdbcType.VarChar, 600, false),
+                    new TTypedColumnInfo(7, "DateCreated", "s_date_created_d", "Created Date", OdbcType.Date, -1, false),
+                    new TTypedColumnInfo(8, "CreatedBy", "s_created_by_c", "Created By", OdbcType.VarChar, 20, false),
+                    new TTypedColumnInfo(9, "DateModified", "s_date_modified_d", "Modified Date", OdbcType.Date, -1, false),
+                    new TTypedColumnInfo(10, "ModifiedBy", "s_modified_by_c", "Modified By", OdbcType.VarChar, 20, false),
+                    new TTypedColumnInfo(11, "ModificationId", "s_modification_id_c", "", OdbcType.VarChar, 150, false)
                 },
                 new int[] {
                     0
@@ -35719,6 +37372,31 @@ namespace Ict.Petra.Shared.MSysMan.Data
                 base(info, context)
         {
         }
+
+        /// Workflow Instance ID
+        public DataColumn ColumnWorkflowInstanceId;
+        /// Workflow ID
+        public DataColumn ColumnWorkflowId;
+        /// If there is a particular data item required through the workflow what is it. Eg. if a Partner Key is required what is that Partner Key
+        public DataColumn ColumnKeyDataItem;
+        /// The type of the shared data item (eg. Partner Key)
+        public DataColumn ColumnKeyDataItemType;
+        /// Was this instance generated by the System rather than the user
+        public DataColumn ColumnSystemGenerated;
+        /// Has the workflow been completed
+        public DataColumn ColumnComplete;
+        /// User entered comment or note attached to the workflow
+        public DataColumn ColumnNote;
+        /// The date the record was created.
+        public DataColumn ColumnDateCreated;
+        /// User ID of who created this record.
+        public DataColumn ColumnCreatedBy;
+        /// The date the record was modified.
+        public DataColumn ColumnDateModified;
+        /// User ID of who last modified this record.
+        public DataColumn ColumnModifiedBy;
+        /// This identifies the current version of the record.
+        public DataColumn ColumnModificationId;
 
         /// create the columns
         protected override void InitClass()
@@ -35790,6 +37468,18 @@ namespace Ict.Petra.Shared.MSysMan.Data
         public SWorkflowInstanceTable GetChangesTyped()
         {
             return ((SWorkflowInstanceTable)(base.GetChangesTypedInternal()));
+        }
+
+        /// return the CamelCase name of the table
+        public static string GetTableName()
+        {
+            return "SWorkflowInstance";
+        }
+
+        /// return the name of the table as it is used in the database
+        public static string GetTableDBName()
+        {
+            return "s_workflow_instance";
         }
 
         /// get an odbc parameter for the given column
@@ -36435,45 +38125,44 @@ namespace Ict.Petra.Shared.MSysMan.Data
     [Serializable()]
     public class SWorkflowInstanceStepTable : TTypedDataTable
     {
-        /// Workflow Instance ID
-        public DataColumn ColumnWorkflowInstanceId;
-        /// Indicates current position within workflow instance
-        public DataColumn ColumnStepNumber;
-        /// Has this step been completed
-        public DataColumn ColumnComplete;
-        /// User who ran or is running this step
-        public DataColumn ColumnUserId;
-        /// Any output parameters from this step
-        public DataColumn ColumnOutputParameters;
-        /// The date the record was created.
-        public DataColumn ColumnDateCreated;
-        /// User ID of who created this record.
-        public DataColumn ColumnCreatedBy;
-        /// The date the record was modified.
-        public DataColumn ColumnDateModified;
-        /// User ID of who last modified this record.
-        public DataColumn ColumnModifiedBy;
-        /// This identifies the current version of the record.
-        public DataColumn ColumnModificationId;
-
         /// TableId for Ict.Common.Data generic functions
         public static short TableId = 333;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnWorkflowInstanceIdId = 0;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnStepNumberId = 1;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnCompleteId = 2;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnUserIdId = 3;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnOutputParametersId = 4;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnDateCreatedId = 5;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnCreatedById = 6;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnDateModifiedId = 7;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnModifiedById = 8;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnModificationIdId = 9;
 
         private static bool FInitInfoValues = InitInfoValues();
         private static bool InitInfoValues()
         {
             TableInfo.Add(TableId, new TTypedTableInfo(TableId, "SWorkflowInstanceStep", "s_workflow_instance_step",
                 new TTypedColumnInfo[] {
-                    new TTypedColumnInfo(0, "WorkflowInstanceId", "s_workflow_instance_id_i", OdbcType.Int, -1, true),
-                    new TTypedColumnInfo(1, "StepNumber", "s_step_number_i", OdbcType.Int, -1, true),
-                    new TTypedColumnInfo(2, "Complete", "s_complete_l", OdbcType.Bit, -1, false),
-                    new TTypedColumnInfo(3, "UserId", "s_user_id_c", OdbcType.VarChar, 20, true),
-                    new TTypedColumnInfo(4, "OutputParameters", "s_output_parameters_c", OdbcType.VarChar, 200, false),
-                    new TTypedColumnInfo(5, "DateCreated", "s_date_created_d", OdbcType.Date, -1, false),
-                    new TTypedColumnInfo(6, "CreatedBy", "s_created_by_c", OdbcType.VarChar, 20, false),
-                    new TTypedColumnInfo(7, "DateModified", "s_date_modified_d", OdbcType.Date, -1, false),
-                    new TTypedColumnInfo(8, "ModifiedBy", "s_modified_by_c", OdbcType.VarChar, 20, false),
-                    new TTypedColumnInfo(9, "ModificationId", "s_modification_id_c", OdbcType.VarChar, 150, false)
+                    new TTypedColumnInfo(0, "WorkflowInstanceId", "s_workflow_instance_id_i", "Workflow Instance ID", OdbcType.Int, -1, true),
+                    new TTypedColumnInfo(1, "StepNumber", "s_step_number_i", "Step Number", OdbcType.Int, -1, true),
+                    new TTypedColumnInfo(2, "Complete", "s_complete_l", "Completed", OdbcType.Bit, -1, false),
+                    new TTypedColumnInfo(3, "UserId", "s_user_id_c", "User ID", OdbcType.VarChar, 20, true),
+                    new TTypedColumnInfo(4, "OutputParameters", "s_output_parameters_c", "s_output_parameters_c", OdbcType.VarChar, 200, false),
+                    new TTypedColumnInfo(5, "DateCreated", "s_date_created_d", "Created Date", OdbcType.Date, -1, false),
+                    new TTypedColumnInfo(6, "CreatedBy", "s_created_by_c", "Created By", OdbcType.VarChar, 20, false),
+                    new TTypedColumnInfo(7, "DateModified", "s_date_modified_d", "Modified Date", OdbcType.Date, -1, false),
+                    new TTypedColumnInfo(8, "ModifiedBy", "s_modified_by_c", "Modified By", OdbcType.VarChar, 20, false),
+                    new TTypedColumnInfo(9, "ModificationId", "s_modification_id_c", "", OdbcType.VarChar, 150, false)
                 },
                 new int[] {
                     0, 1
@@ -36498,6 +38187,27 @@ namespace Ict.Petra.Shared.MSysMan.Data
                 base(info, context)
         {
         }
+
+        /// Workflow Instance ID
+        public DataColumn ColumnWorkflowInstanceId;
+        /// Indicates current position within workflow instance
+        public DataColumn ColumnStepNumber;
+        /// Has this step been completed
+        public DataColumn ColumnComplete;
+        /// User who ran or is running this step
+        public DataColumn ColumnUserId;
+        /// Any output parameters from this step
+        public DataColumn ColumnOutputParameters;
+        /// The date the record was created.
+        public DataColumn ColumnDateCreated;
+        /// User ID of who created this record.
+        public DataColumn ColumnCreatedBy;
+        /// The date the record was modified.
+        public DataColumn ColumnDateModified;
+        /// User ID of who last modified this record.
+        public DataColumn ColumnModifiedBy;
+        /// This identifies the current version of the record.
+        public DataColumn ColumnModificationId;
 
         /// create the columns
         protected override void InitClass()
@@ -36565,6 +38275,18 @@ namespace Ict.Petra.Shared.MSysMan.Data
         public SWorkflowInstanceStepTable GetChangesTyped()
         {
             return ((SWorkflowInstanceStepTable)(base.GetChangesTypedInternal()));
+        }
+
+        /// return the CamelCase name of the table
+        public static string GetTableName()
+        {
+            return "SWorkflowInstanceStep";
+        }
+
+        /// return the name of the table as it is used in the database
+        public static string GetTableDBName()
+        {
+            return "s_workflow_instance_step";
         }
 
         /// get an odbc parameter for the given column
@@ -37108,42 +38830,41 @@ namespace Ict.Petra.Shared.MSysMan.Data
     [Serializable()]
     public class SVolumeTable : TTypedDataTable
     {
-        /// Name (Identifier) for the volume
-        public DataColumn ColumnName;
-        /// Name of the parent volume (use either Path or Parent Volume)
-        public DataColumn ColumnParentVolumeName;
-        /// Path information (use either Path or Parent Volume)
-        public DataColumn ColumnPath;
-        /// Comment for the user
-        public DataColumn ColumnComment;
-        /// The date the record was created.
-        public DataColumn ColumnDateCreated;
-        /// User ID of who created this record.
-        public DataColumn ColumnCreatedBy;
-        /// The date the record was modified.
-        public DataColumn ColumnDateModified;
-        /// User ID of who last modified this record.
-        public DataColumn ColumnModifiedBy;
-        /// This identifies the current version of the record.
-        public DataColumn ColumnModificationId;
-
         /// TableId for Ict.Common.Data generic functions
         public static short TableId = 341;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnNameId = 0;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnParentVolumeNameId = 1;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnPathId = 2;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnCommentId = 3;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnDateCreatedId = 4;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnCreatedById = 5;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnDateModifiedId = 6;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnModifiedById = 7;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnModificationIdId = 8;
 
         private static bool FInitInfoValues = InitInfoValues();
         private static bool InitInfoValues()
         {
             TableInfo.Add(TableId, new TTypedTableInfo(TableId, "SVolume", "s_volume",
                 new TTypedColumnInfo[] {
-                    new TTypedColumnInfo(0, "Name", "s_name_c", OdbcType.VarChar, 160, true),
-                    new TTypedColumnInfo(1, "ParentVolumeName", "s_parent_volume_name_c", OdbcType.VarChar, 160, false),
-                    new TTypedColumnInfo(2, "Path", "s_path_c", OdbcType.VarChar, 4096, false),
-                    new TTypedColumnInfo(3, "Comment", "s_comment_c", OdbcType.VarChar, 1000, false),
-                    new TTypedColumnInfo(4, "DateCreated", "s_date_created_d", OdbcType.Date, -1, false),
-                    new TTypedColumnInfo(5, "CreatedBy", "s_created_by_c", OdbcType.VarChar, 20, false),
-                    new TTypedColumnInfo(6, "DateModified", "s_date_modified_d", OdbcType.Date, -1, false),
-                    new TTypedColumnInfo(7, "ModifiedBy", "s_modified_by_c", OdbcType.VarChar, 20, false),
-                    new TTypedColumnInfo(8, "ModificationId", "s_modification_id_c", OdbcType.VarChar, 150, false)
+                    new TTypedColumnInfo(0, "Name", "s_name_c", "Name", OdbcType.VarChar, 160, true),
+                    new TTypedColumnInfo(1, "ParentVolumeName", "s_parent_volume_name_c", "Parent Volume", OdbcType.VarChar, 160, false),
+                    new TTypedColumnInfo(2, "Path", "s_path_c", "Path", OdbcType.VarChar, 4096, false),
+                    new TTypedColumnInfo(3, "Comment", "s_comment_c", "Comment", OdbcType.VarChar, 1000, false),
+                    new TTypedColumnInfo(4, "DateCreated", "s_date_created_d", "Created Date", OdbcType.Date, -1, false),
+                    new TTypedColumnInfo(5, "CreatedBy", "s_created_by_c", "Created By", OdbcType.VarChar, 20, false),
+                    new TTypedColumnInfo(6, "DateModified", "s_date_modified_d", "Modified Date", OdbcType.Date, -1, false),
+                    new TTypedColumnInfo(7, "ModifiedBy", "s_modified_by_c", "Modified By", OdbcType.VarChar, 20, false),
+                    new TTypedColumnInfo(8, "ModificationId", "s_modification_id_c", "", OdbcType.VarChar, 150, false)
                 },
                 new int[] {
                     0
@@ -37168,6 +38889,25 @@ namespace Ict.Petra.Shared.MSysMan.Data
                 base(info, context)
         {
         }
+
+        /// Name (Identifier) for the volume
+        public DataColumn ColumnName;
+        /// Name of the parent volume (use either Path or Parent Volume)
+        public DataColumn ColumnParentVolumeName;
+        /// Path information (use either Path or Parent Volume)
+        public DataColumn ColumnPath;
+        /// Comment for the user
+        public DataColumn ColumnComment;
+        /// The date the record was created.
+        public DataColumn ColumnDateCreated;
+        /// User ID of who created this record.
+        public DataColumn ColumnCreatedBy;
+        /// The date the record was modified.
+        public DataColumn ColumnDateModified;
+        /// User ID of who last modified this record.
+        public DataColumn ColumnModifiedBy;
+        /// This identifies the current version of the record.
+        public DataColumn ColumnModificationId;
 
         /// create the columns
         protected override void InitClass()
@@ -37233,6 +38973,18 @@ namespace Ict.Petra.Shared.MSysMan.Data
         public SVolumeTable GetChangesTyped()
         {
             return ((SVolumeTable)(base.GetChangesTypedInternal()));
+        }
+
+        /// return the CamelCase name of the table
+        public static string GetTableName()
+        {
+            return "SVolume";
+        }
+
+        /// return the name of the table as it is used in the database
+        public static string GetTableDBName()
+        {
+            return "s_volume";
         }
 
         /// get an odbc parameter for the given column
@@ -37725,39 +39477,38 @@ namespace Ict.Petra.Shared.MSysMan.Data
     [Serializable()]
     public class SDefaultFileVolumeTable : TTypedDataTable
     {
-        /// Group Name this default volume applies to
-        public DataColumn ColumnGroupName;
-        /// Area this default volume applies to (e.g. Partner, Application, Contacts, ...)
-        public DataColumn ColumnArea;
-        /// Default Volume for combination of group and area
-        public DataColumn ColumnVolumeName;
-        /// The date the record was created.
-        public DataColumn ColumnDateCreated;
-        /// User ID of who created this record.
-        public DataColumn ColumnCreatedBy;
-        /// The date the record was modified.
-        public DataColumn ColumnDateModified;
-        /// User ID of who last modified this record.
-        public DataColumn ColumnModifiedBy;
-        /// This identifies the current version of the record.
-        public DataColumn ColumnModificationId;
-
         /// TableId for Ict.Common.Data generic functions
         public static short TableId = 342;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnGroupNameId = 0;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnAreaId = 1;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnVolumeNameId = 2;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnDateCreatedId = 3;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnCreatedById = 4;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnDateModifiedId = 5;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnModifiedById = 6;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnModificationIdId = 7;
 
         private static bool FInitInfoValues = InitInfoValues();
         private static bool InitInfoValues()
         {
             TableInfo.Add(TableId, new TTypedTableInfo(TableId, "SDefaultFileVolume", "s_default_file_volume",
                 new TTypedColumnInfo[] {
-                    new TTypedColumnInfo(0, "GroupName", "s_group_name_c", OdbcType.VarChar, 60, true),
-                    new TTypedColumnInfo(1, "Area", "s_area_c", OdbcType.VarChar, 60, true),
-                    new TTypedColumnInfo(2, "VolumeName", "s_volume_name_c", OdbcType.VarChar, 160, false),
-                    new TTypedColumnInfo(3, "DateCreated", "s_date_created_d", OdbcType.Date, -1, false),
-                    new TTypedColumnInfo(4, "CreatedBy", "s_created_by_c", OdbcType.VarChar, 20, false),
-                    new TTypedColumnInfo(5, "DateModified", "s_date_modified_d", OdbcType.Date, -1, false),
-                    new TTypedColumnInfo(6, "ModifiedBy", "s_modified_by_c", OdbcType.VarChar, 20, false),
-                    new TTypedColumnInfo(7, "ModificationId", "s_modification_id_c", OdbcType.VarChar, 150, false)
+                    new TTypedColumnInfo(0, "GroupName", "s_group_name_c", "Group Name", OdbcType.VarChar, 60, true),
+                    new TTypedColumnInfo(1, "Area", "s_area_c", "Area", OdbcType.VarChar, 60, true),
+                    new TTypedColumnInfo(2, "VolumeName", "s_volume_name_c", "Volume", OdbcType.VarChar, 160, false),
+                    new TTypedColumnInfo(3, "DateCreated", "s_date_created_d", "Created Date", OdbcType.Date, -1, false),
+                    new TTypedColumnInfo(4, "CreatedBy", "s_created_by_c", "Created By", OdbcType.VarChar, 20, false),
+                    new TTypedColumnInfo(5, "DateModified", "s_date_modified_d", "Modified Date", OdbcType.Date, -1, false),
+                    new TTypedColumnInfo(6, "ModifiedBy", "s_modified_by_c", "Modified By", OdbcType.VarChar, 20, false),
+                    new TTypedColumnInfo(7, "ModificationId", "s_modification_id_c", "", OdbcType.VarChar, 150, false)
                 },
                 new int[] {
                     0, 1
@@ -37782,6 +39533,23 @@ namespace Ict.Petra.Shared.MSysMan.Data
                 base(info, context)
         {
         }
+
+        /// Group Name this default volume applies to
+        public DataColumn ColumnGroupName;
+        /// Area this default volume applies to (e.g. Partner, Application, Contacts, ...)
+        public DataColumn ColumnArea;
+        /// Default Volume for combination of group and area
+        public DataColumn ColumnVolumeName;
+        /// The date the record was created.
+        public DataColumn ColumnDateCreated;
+        /// User ID of who created this record.
+        public DataColumn ColumnCreatedBy;
+        /// The date the record was modified.
+        public DataColumn ColumnDateModified;
+        /// User ID of who last modified this record.
+        public DataColumn ColumnModifiedBy;
+        /// This identifies the current version of the record.
+        public DataColumn ColumnModificationId;
 
         /// create the columns
         protected override void InitClass()
@@ -37845,6 +39613,18 @@ namespace Ict.Petra.Shared.MSysMan.Data
         public SDefaultFileVolumeTable GetChangesTyped()
         {
             return ((SDefaultFileVolumeTable)(base.GetChangesTypedInternal()));
+        }
+
+        /// return the CamelCase name of the table
+        public static string GetTableName()
+        {
+            return "SDefaultFileVolume";
+        }
+
+        /// return the name of the table as it is used in the database
+        public static string GetTableDBName()
+        {
+            return "s_default_file_volume";
         }
 
         /// get an odbc parameter for the given column
@@ -38286,39 +40066,38 @@ namespace Ict.Petra.Shared.MSysMan.Data
     [Serializable()]
     public class SVolumePartnerGroupTable : TTypedDataTable
     {
-        /// Group Name this default volume applies to
-        public DataColumn ColumnName;
-        /// Description
-        public DataColumn ColumnDescription;
-        /// Comment field
-        public DataColumn ColumnComment;
-        /// The date the record was created.
-        public DataColumn ColumnDateCreated;
-        /// User ID of who created this record.
-        public DataColumn ColumnCreatedBy;
-        /// The date the record was modified.
-        public DataColumn ColumnDateModified;
-        /// User ID of who last modified this record.
-        public DataColumn ColumnModifiedBy;
-        /// This identifies the current version of the record.
-        public DataColumn ColumnModificationId;
-
         /// TableId for Ict.Common.Data generic functions
         public static short TableId = 343;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnNameId = 0;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnDescriptionId = 1;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnCommentId = 2;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnDateCreatedId = 3;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnCreatedById = 4;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnDateModifiedId = 5;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnModifiedById = 6;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnModificationIdId = 7;
 
         private static bool FInitInfoValues = InitInfoValues();
         private static bool InitInfoValues()
         {
             TableInfo.Add(TableId, new TTypedTableInfo(TableId, "SVolumePartnerGroup", "s_volume_partner_group",
                 new TTypedColumnInfo[] {
-                    new TTypedColumnInfo(0, "Name", "s_name_c", OdbcType.VarChar, 60, true),
-                    new TTypedColumnInfo(1, "Description", "s_description_c", OdbcType.VarChar, 160, false),
-                    new TTypedColumnInfo(2, "Comment", "s_comment_c", OdbcType.VarChar, 600, false),
-                    new TTypedColumnInfo(3, "DateCreated", "s_date_created_d", OdbcType.Date, -1, false),
-                    new TTypedColumnInfo(4, "CreatedBy", "s_created_by_c", OdbcType.VarChar, 20, false),
-                    new TTypedColumnInfo(5, "DateModified", "s_date_modified_d", OdbcType.Date, -1, false),
-                    new TTypedColumnInfo(6, "ModifiedBy", "s_modified_by_c", OdbcType.VarChar, 20, false),
-                    new TTypedColumnInfo(7, "ModificationId", "s_modification_id_c", OdbcType.VarChar, 150, false)
+                    new TTypedColumnInfo(0, "Name", "s_name_c", "Group Name", OdbcType.VarChar, 60, true),
+                    new TTypedColumnInfo(1, "Description", "s_description_c", "Description", OdbcType.VarChar, 160, false),
+                    new TTypedColumnInfo(2, "Comment", "s_comment_c", "Comment", OdbcType.VarChar, 600, false),
+                    new TTypedColumnInfo(3, "DateCreated", "s_date_created_d", "Created Date", OdbcType.Date, -1, false),
+                    new TTypedColumnInfo(4, "CreatedBy", "s_created_by_c", "Created By", OdbcType.VarChar, 20, false),
+                    new TTypedColumnInfo(5, "DateModified", "s_date_modified_d", "Modified Date", OdbcType.Date, -1, false),
+                    new TTypedColumnInfo(6, "ModifiedBy", "s_modified_by_c", "Modified By", OdbcType.VarChar, 20, false),
+                    new TTypedColumnInfo(7, "ModificationId", "s_modification_id_c", "", OdbcType.VarChar, 150, false)
                 },
                 new int[] {
                     0
@@ -38343,6 +40122,23 @@ namespace Ict.Petra.Shared.MSysMan.Data
                 base(info, context)
         {
         }
+
+        /// Group Name this default volume applies to
+        public DataColumn ColumnName;
+        /// Description
+        public DataColumn ColumnDescription;
+        /// Comment field
+        public DataColumn ColumnComment;
+        /// The date the record was created.
+        public DataColumn ColumnDateCreated;
+        /// User ID of who created this record.
+        public DataColumn ColumnCreatedBy;
+        /// The date the record was modified.
+        public DataColumn ColumnDateModified;
+        /// User ID of who last modified this record.
+        public DataColumn ColumnModifiedBy;
+        /// This identifies the current version of the record.
+        public DataColumn ColumnModificationId;
 
         /// create the columns
         protected override void InitClass()
@@ -38406,6 +40202,18 @@ namespace Ict.Petra.Shared.MSysMan.Data
         public SVolumePartnerGroupTable GetChangesTyped()
         {
             return ((SVolumePartnerGroupTable)(base.GetChangesTypedInternal()));
+        }
+
+        /// return the CamelCase name of the table
+        public static string GetTableName()
+        {
+            return "SVolumePartnerGroup";
+        }
+
+        /// return the name of the table as it is used in the database
+        public static string GetTableDBName()
+        {
+            return "s_volume_partner_group";
         }
 
         /// get an odbc parameter for the given column
@@ -38847,36 +40655,35 @@ namespace Ict.Petra.Shared.MSysMan.Data
     [Serializable()]
     public class SVolumePartnerGroupPartnerTable : TTypedDataTable
     {
-        /// Group Name this default volume applies to
-        public DataColumn ColumnGroupName;
-        /// Partner key (one partner can be in several groups)
-        public DataColumn ColumnPartnerKey;
-        /// The date the record was created.
-        public DataColumn ColumnDateCreated;
-        /// User ID of who created this record.
-        public DataColumn ColumnCreatedBy;
-        /// The date the record was modified.
-        public DataColumn ColumnDateModified;
-        /// User ID of who last modified this record.
-        public DataColumn ColumnModifiedBy;
-        /// This identifies the current version of the record.
-        public DataColumn ColumnModificationId;
-
         /// TableId for Ict.Common.Data generic functions
         public static short TableId = 344;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnGroupNameId = 0;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnPartnerKeyId = 1;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnDateCreatedId = 2;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnCreatedById = 3;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnDateModifiedId = 4;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnModifiedById = 5;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnModificationIdId = 6;
 
         private static bool FInitInfoValues = InitInfoValues();
         private static bool InitInfoValues()
         {
             TableInfo.Add(TableId, new TTypedTableInfo(TableId, "SVolumePartnerGroupPartner", "s_volume_partner_group_partner",
                 new TTypedColumnInfo[] {
-                    new TTypedColumnInfo(0, "GroupName", "s_group_name_c", OdbcType.VarChar, 60, true),
-                    new TTypedColumnInfo(1, "PartnerKey", "p_partner_key_n", OdbcType.Decimal, 10, true),
-                    new TTypedColumnInfo(2, "DateCreated", "s_date_created_d", OdbcType.Date, -1, false),
-                    new TTypedColumnInfo(3, "CreatedBy", "s_created_by_c", OdbcType.VarChar, 20, false),
-                    new TTypedColumnInfo(4, "DateModified", "s_date_modified_d", OdbcType.Date, -1, false),
-                    new TTypedColumnInfo(5, "ModifiedBy", "s_modified_by_c", OdbcType.VarChar, 20, false),
-                    new TTypedColumnInfo(6, "ModificationId", "s_modification_id_c", OdbcType.VarChar, 150, false)
+                    new TTypedColumnInfo(0, "GroupName", "s_group_name_c", "Group Name", OdbcType.VarChar, 60, true),
+                    new TTypedColumnInfo(1, "PartnerKey", "p_partner_key_n", "Partner Key", OdbcType.Decimal, 10, true),
+                    new TTypedColumnInfo(2, "DateCreated", "s_date_created_d", "Created Date", OdbcType.Date, -1, false),
+                    new TTypedColumnInfo(3, "CreatedBy", "s_created_by_c", "Created By", OdbcType.VarChar, 20, false),
+                    new TTypedColumnInfo(4, "DateModified", "s_date_modified_d", "Modified Date", OdbcType.Date, -1, false),
+                    new TTypedColumnInfo(5, "ModifiedBy", "s_modified_by_c", "Modified By", OdbcType.VarChar, 20, false),
+                    new TTypedColumnInfo(6, "ModificationId", "s_modification_id_c", "", OdbcType.VarChar, 150, false)
                 },
                 new int[] {
                     0, 1
@@ -38901,6 +40708,21 @@ namespace Ict.Petra.Shared.MSysMan.Data
                 base(info, context)
         {
         }
+
+        /// Group Name this default volume applies to
+        public DataColumn ColumnGroupName;
+        /// Partner key (one partner can be in several groups)
+        public DataColumn ColumnPartnerKey;
+        /// The date the record was created.
+        public DataColumn ColumnDateCreated;
+        /// User ID of who created this record.
+        public DataColumn ColumnCreatedBy;
+        /// The date the record was modified.
+        public DataColumn ColumnDateModified;
+        /// User ID of who last modified this record.
+        public DataColumn ColumnModifiedBy;
+        /// This identifies the current version of the record.
+        public DataColumn ColumnModificationId;
 
         /// create the columns
         protected override void InitClass()
@@ -38962,6 +40784,18 @@ namespace Ict.Petra.Shared.MSysMan.Data
         public SVolumePartnerGroupPartnerTable GetChangesTyped()
         {
             return ((SVolumePartnerGroupPartnerTable)(base.GetChangesTypedInternal()));
+        }
+
+        /// return the CamelCase name of the table
+        public static string GetTableName()
+        {
+            return "SVolumePartnerGroupPartner";
+        }
+
+        /// return the name of the table as it is used in the database
+        public static string GetTableDBName()
+        {
+            return "s_volume_partner_group_partner";
         }
 
         /// get an odbc parameter for the given column
@@ -39352,48 +41186,47 @@ namespace Ict.Petra.Shared.MSysMan.Data
     [Serializable()]
     public class SGroupFileInfoTable : TTypedDataTable
     {
-        /// identifies a system group
-        public DataColumn ColumnGroupId;
-        /// Field that the group belongs to
-        public DataColumn ColumnGroupUnitKey;
-        ///
-        public DataColumn ColumnFileInfoKey;
-        /// Control read access to the file information
-        public DataColumn ColumnReadAccess;
-        /// Control write access to the file information
-        public DataColumn ColumnWriteAccess;
-        /// Control delete access to the file information
-        public DataColumn ColumnDeleteAccess;
-        /// The date the record was created.
-        public DataColumn ColumnDateCreated;
-        /// User ID of who created this record.
-        public DataColumn ColumnCreatedBy;
-        /// The date the record was modified.
-        public DataColumn ColumnDateModified;
-        /// User ID of who last modified this record.
-        public DataColumn ColumnModifiedBy;
-        /// This identifies the current version of the record.
-        public DataColumn ColumnModificationId;
-
         /// TableId for Ict.Common.Data generic functions
         public static short TableId = 345;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnGroupIdId = 0;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnGroupUnitKeyId = 1;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnFileInfoKeyId = 2;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnReadAccessId = 3;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnWriteAccessId = 4;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnDeleteAccessId = 5;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnDateCreatedId = 6;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnCreatedById = 7;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnDateModifiedId = 8;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnModifiedById = 9;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnModificationIdId = 10;
 
         private static bool FInitInfoValues = InitInfoValues();
         private static bool InitInfoValues()
         {
             TableInfo.Add(TableId, new TTypedTableInfo(TableId, "SGroupFileInfo", "s_group_file_info",
                 new TTypedColumnInfo[] {
-                    new TTypedColumnInfo(0, "GroupId", "s_group_id_c", OdbcType.VarChar, 20, true),
-                    new TTypedColumnInfo(1, "GroupUnitKey", "s_group_unit_key_n", OdbcType.Decimal, 10, true),
-                    new TTypedColumnInfo(2, "FileInfoKey", "p_file_info_key_n", OdbcType.Decimal, 10, true),
-                    new TTypedColumnInfo(3, "ReadAccess", "s_read_access_l", OdbcType.Bit, -1, false),
-                    new TTypedColumnInfo(4, "WriteAccess", "s_write_access_l", OdbcType.Bit, -1, false),
-                    new TTypedColumnInfo(5, "DeleteAccess", "s_delete_access_l", OdbcType.Bit, -1, false),
-                    new TTypedColumnInfo(6, "DateCreated", "s_date_created_d", OdbcType.Date, -1, false),
-                    new TTypedColumnInfo(7, "CreatedBy", "s_created_by_c", OdbcType.VarChar, 20, false),
-                    new TTypedColumnInfo(8, "DateModified", "s_date_modified_d", OdbcType.Date, -1, false),
-                    new TTypedColumnInfo(9, "ModifiedBy", "s_modified_by_c", OdbcType.VarChar, 20, false),
-                    new TTypedColumnInfo(10, "ModificationId", "s_modification_id_c", OdbcType.VarChar, 150, false)
+                    new TTypedColumnInfo(0, "GroupId", "s_group_id_c", "Group ID", OdbcType.VarChar, 20, true),
+                    new TTypedColumnInfo(1, "GroupUnitKey", "s_group_unit_key_n", "Field of Group", OdbcType.Decimal, 10, true),
+                    new TTypedColumnInfo(2, "FileInfoKey", "p_file_info_key_n", "", OdbcType.Decimal, 10, true),
+                    new TTypedColumnInfo(3, "ReadAccess", "s_read_access_l", "Read Access?", OdbcType.Bit, -1, false),
+                    new TTypedColumnInfo(4, "WriteAccess", "s_write_access_l", "Write Access?", OdbcType.Bit, -1, false),
+                    new TTypedColumnInfo(5, "DeleteAccess", "s_delete_access_l", "Delete Access?", OdbcType.Bit, -1, false),
+                    new TTypedColumnInfo(6, "DateCreated", "s_date_created_d", "Created Date", OdbcType.Date, -1, false),
+                    new TTypedColumnInfo(7, "CreatedBy", "s_created_by_c", "Created By", OdbcType.VarChar, 20, false),
+                    new TTypedColumnInfo(8, "DateModified", "s_date_modified_d", "Modified Date", OdbcType.Date, -1, false),
+                    new TTypedColumnInfo(9, "ModifiedBy", "s_modified_by_c", "Modified By", OdbcType.VarChar, 20, false),
+                    new TTypedColumnInfo(10, "ModificationId", "s_modification_id_c", "", OdbcType.VarChar, 150, false)
                 },
                 new int[] {
                     0, 1, 2
@@ -39418,6 +41251,29 @@ namespace Ict.Petra.Shared.MSysMan.Data
                 base(info, context)
         {
         }
+
+        /// identifies a system group
+        public DataColumn ColumnGroupId;
+        /// Field that the group belongs to
+        public DataColumn ColumnGroupUnitKey;
+        ///
+        public DataColumn ColumnFileInfoKey;
+        /// Control read access to the file information
+        public DataColumn ColumnReadAccess;
+        /// Control write access to the file information
+        public DataColumn ColumnWriteAccess;
+        /// Control delete access to the file information
+        public DataColumn ColumnDeleteAccess;
+        /// The date the record was created.
+        public DataColumn ColumnDateCreated;
+        /// User ID of who created this record.
+        public DataColumn ColumnCreatedBy;
+        /// The date the record was modified.
+        public DataColumn ColumnDateModified;
+        /// User ID of who last modified this record.
+        public DataColumn ColumnModifiedBy;
+        /// This identifies the current version of the record.
+        public DataColumn ColumnModificationId;
 
         /// create the columns
         protected override void InitClass()
@@ -39487,6 +41343,18 @@ namespace Ict.Petra.Shared.MSysMan.Data
         public SGroupFileInfoTable GetChangesTyped()
         {
             return ((SGroupFileInfoTable)(base.GetChangesTypedInternal()));
+        }
+
+        /// return the CamelCase name of the table
+        public static string GetTableName()
+        {
+            return "SGroupFileInfo";
+        }
+
+        /// return the name of the table as it is used in the database
+        public static string GetTableDBName()
+        {
+            return "s_group_file_info";
         }
 
         /// get an odbc parameter for the given column

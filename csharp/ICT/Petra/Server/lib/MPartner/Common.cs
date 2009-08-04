@@ -131,7 +131,7 @@ namespace Ict.Petra.Server.MPartner.Common
 
                     // Now check that this does not exist, and increment until we
                     // find one which does not
-                    while (PPartnerAccess.CountByPrimaryKey(ANewPartnerKey, ReadTransaction) > 0)
+                    while (PPartnerAccess.Exists(ANewPartnerKey, ReadTransaction))
                     {
                         ANewPartnerKey = ANewPartnerKey + 1;
                     }
@@ -176,7 +176,7 @@ namespace Ict.Petra.Server.MPartner.Common
                         TEnforceIsolationLevel.eilMinimum,
                         out NewTransaction);
 
-                    if (PPartnerAccess.CountByPrimaryKey(ANewPartnerKey, ReadTransaction) > 0)
+                    if (PPartnerAccess.Exists(ANewPartnerKey, ReadTransaction))
                     {
                         ANewPartnerKey = -1;
                         ReturnValue = false;

@@ -44,7 +44,7 @@ namespace Ict.Tools.CodeGeneration.DataStore
             ProcessTemplate snippet = Template.GetSnippet("TYPEDTABLE");
 
             snippet.SetCodeletComment("TABLE_DESCRIPTION", currentTable.strDescription);
-            snippet.SetCodelet("TABLENAME", TTable.NiceTableName(currentTable.strName));
+            snippet.SetCodelet("TABLENAME", currentTable.strDotNetName);
             snippet.SetCodelet("DBTABLENAME", currentTable.strName);
             snippet.SetCodelet("TABLEID", currentTable.order.ToString());
 
@@ -80,11 +80,17 @@ namespace Ict.Tools.CodeGeneration.DataStore
                 tempTemplate.SetCodeletComment("COLUMN_DESCRIPTION", col.strDescription);
                 tempTemplate.SetCodelet("COLUMNNAME", TTable.NiceFieldName(col));
                 snippet.InsertSnippet("DATACOLUMNS", tempTemplate);
+                
+                tempTemplate = Template.GetSnippet("COLUMNIDS");
+                tempTemplate.SetCodelet("COLUMNNAME", TTable.NiceFieldName(col));
+                tempTemplate.SetCodelet("COLUMNORDERNUMBER", colOrder.ToString());
+                snippet.InsertSnippet("COLUMNIDS", tempTemplate);
 
                 tempTemplate = Template.GetSnippet("COLUMNINFO");
                 tempTemplate.SetCodelet("COLUMNORDERNUMBER", (colOrder++).ToString());
                 tempTemplate.SetCodelet("COLUMNNAME", TTable.NiceFieldName(col));
                 tempTemplate.SetCodelet("COLUMNDBNAME", col.strName);
+                tempTemplate.SetCodelet("COLUMNLABEL", col.strLabel);
                 tempTemplate.SetCodelet("COLUMNODBCTYPE", codeGenerationPetra.ToOdbcTypeString(col));
                 tempTemplate.SetCodelet("COLUMNLENGTH", col.iLength.ToString());
                 tempTemplate.SetCodelet("COLUMNNOTNULL", col.bNotNull.ToString().ToLower());
@@ -116,7 +122,7 @@ namespace Ict.Tools.CodeGeneration.DataStore
             ProcessTemplate snippet = Template.GetSnippet("TYPEDROW");
 
             snippet.SetCodeletComment("TABLE_DESCRIPTION", currentTable.strDescription);
-            snippet.SetCodelet("TABLENAME", TTable.NiceTableName(currentTable.strName));
+            snippet.SetCodelet("TABLENAME", currentTable.strDotNetName);
 
             foreach (TTableField col in currentTable.grpTableField.List)
             {

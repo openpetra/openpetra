@@ -122,10 +122,15 @@ namespace Ict.Tools.DBXML
         public TGrpConstraint grpConstraint;
 
         /// <summary>
-        /// the name of the table
+        /// the name of the table (as it is in the database)
         /// </summary>
         public string strName;
 
+        /// <summary>
+        /// the name of the table as it should be used in dotnet
+        /// </summary>
+        public string strDotNetName;
+        
         /// <summary>
         /// the name used for dumping the table
         /// </summary>
@@ -205,6 +210,7 @@ namespace Ict.Tools.DBXML
 
             this.order = AOtherTable.order;
             this.strName = AOtherTable.strName;
+            this.strDotNetName = AOtherTable.strDotNetName;
             this.strDumpName = AOtherTable.strDumpName;
             this.strDescription = AOtherTable.strDescription;
             this.strArea = AOtherTable.strArea;

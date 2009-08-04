@@ -42,48 +42,47 @@ namespace Ict.Petra.Shared.MPersonnel.Units.Data
     [Serializable()]
     public class PtPositionTable : TTypedDataTable
     {
-        /// Name of the position.
-        public DataColumn ColumnPositionName;
-        /// Scope of this position.
-        public DataColumn ColumnPositionScope;
-        /// Describes the position.
-        public DataColumn ColumnPositionDescr;
-        /// Can this position be assigned?
-        public DataColumn ColumnUnassignableFlag;
-        /// This is the date the record was last updated.
-        public DataColumn ColumnUnassignableDate;
-        /// Indicates if a record can be deleted.
-        public DataColumn ColumnDeletableFlag;
-        /// The date the record was created.
-        public DataColumn ColumnDateCreated;
-        /// User ID of who created this record.
-        public DataColumn ColumnCreatedBy;
-        /// The date the record was modified.
-        public DataColumn ColumnDateModified;
-        /// User ID of who last modified this record.
-        public DataColumn ColumnModifiedBy;
-        /// This identifies the current version of the record.
-        public DataColumn ColumnModificationId;
-
         /// TableId for Ict.Common.Data generic functions
         public static short TableId = 252;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnPositionNameId = 0;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnPositionScopeId = 1;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnPositionDescrId = 2;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnUnassignableFlagId = 3;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnUnassignableDateId = 4;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnDeletableFlagId = 5;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnDateCreatedId = 6;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnCreatedById = 7;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnDateModifiedId = 8;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnModifiedById = 9;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnModificationIdId = 10;
 
         private static bool FInitInfoValues = InitInfoValues();
         private static bool InitInfoValues()
         {
             TableInfo.Add(TableId, new TTypedTableInfo(TableId, "PtPosition", "pt_position",
                 new TTypedColumnInfo[] {
-                    new TTypedColumnInfo(0, "PositionName", "pt_position_name_c", OdbcType.VarChar, 60, true),
-                    new TTypedColumnInfo(1, "PositionScope", "pt_position_scope_c", OdbcType.VarChar, 24, true),
-                    new TTypedColumnInfo(2, "PositionDescr", "pt_position_descr_c", OdbcType.VarChar, 160, false),
-                    new TTypedColumnInfo(3, "UnassignableFlag", "pt_unassignable_flag_l", OdbcType.Bit, -1, true),
-                    new TTypedColumnInfo(4, "UnassignableDate", "pt_unassignable_date_d", OdbcType.Date, -1, false),
-                    new TTypedColumnInfo(5, "DeletableFlag", "pt_deletable_flag_l", OdbcType.Bit, -1, false),
-                    new TTypedColumnInfo(6, "DateCreated", "s_date_created_d", OdbcType.Date, -1, false),
-                    new TTypedColumnInfo(7, "CreatedBy", "s_created_by_c", OdbcType.VarChar, 20, false),
-                    new TTypedColumnInfo(8, "DateModified", "s_date_modified_d", OdbcType.Date, -1, false),
-                    new TTypedColumnInfo(9, "ModifiedBy", "s_modified_by_c", OdbcType.VarChar, 20, false),
-                    new TTypedColumnInfo(10, "ModificationId", "s_modification_id_c", OdbcType.VarChar, 150, false)
+                    new TTypedColumnInfo(0, "PositionName", "pt_position_name_c", "Position", OdbcType.VarChar, 60, true),
+                    new TTypedColumnInfo(1, "PositionScope", "pt_position_scope_c", "Position Scope", OdbcType.VarChar, 24, true),
+                    new TTypedColumnInfo(2, "PositionDescr", "pt_position_descr_c", "Description", OdbcType.VarChar, 160, false),
+                    new TTypedColumnInfo(3, "UnassignableFlag", "pt_unassignable_flag_l", "Unassignable?", OdbcType.Bit, -1, true),
+                    new TTypedColumnInfo(4, "UnassignableDate", "pt_unassignable_date_d", "Unassignable Date", OdbcType.Date, -1, false),
+                    new TTypedColumnInfo(5, "DeletableFlag", "pt_deletable_flag_l", "Deletable", OdbcType.Bit, -1, false),
+                    new TTypedColumnInfo(6, "DateCreated", "s_date_created_d", "Created Date", OdbcType.Date, -1, false),
+                    new TTypedColumnInfo(7, "CreatedBy", "s_created_by_c", "Created By", OdbcType.VarChar, 20, false),
+                    new TTypedColumnInfo(8, "DateModified", "s_date_modified_d", "Modified Date", OdbcType.Date, -1, false),
+                    new TTypedColumnInfo(9, "ModifiedBy", "s_modified_by_c", "Modified By", OdbcType.VarChar, 20, false),
+                    new TTypedColumnInfo(10, "ModificationId", "s_modification_id_c", "", OdbcType.VarChar, 150, false)
                 },
                 new int[] {
                     0, 1
@@ -108,6 +107,29 @@ namespace Ict.Petra.Shared.MPersonnel.Units.Data
                 base(info, context)
         {
         }
+
+        /// Name of the position.
+        public DataColumn ColumnPositionName;
+        /// Scope of this position.
+        public DataColumn ColumnPositionScope;
+        /// Describes the position.
+        public DataColumn ColumnPositionDescr;
+        /// Can this position be assigned?
+        public DataColumn ColumnUnassignableFlag;
+        /// This is the date the record was last updated.
+        public DataColumn ColumnUnassignableDate;
+        /// Indicates if a record can be deleted.
+        public DataColumn ColumnDeletableFlag;
+        /// The date the record was created.
+        public DataColumn ColumnDateCreated;
+        /// User ID of who created this record.
+        public DataColumn ColumnCreatedBy;
+        /// The date the record was modified.
+        public DataColumn ColumnDateModified;
+        /// User ID of who last modified this record.
+        public DataColumn ColumnModifiedBy;
+        /// This identifies the current version of the record.
+        public DataColumn ColumnModificationId;
 
         /// create the columns
         protected override void InitClass()
@@ -177,6 +199,18 @@ namespace Ict.Petra.Shared.MPersonnel.Units.Data
         public PtPositionTable GetChangesTyped()
         {
             return ((PtPositionTable)(base.GetChangesTypedInternal()));
+        }
+
+        /// return the CamelCase name of the table
+        public static string GetTableName()
+        {
+            return "PtPosition";
+        }
+
+        /// return the name of the table as it is used in the database
+        public static string GetTableDBName()
+        {
+            return "pt_position";
         }
 
         /// get an odbc parameter for the given column
@@ -771,6 +805,108 @@ namespace Ict.Petra.Shared.MPersonnel.Units.Data
     [Serializable()]
     public class UmJobTable : TTypedDataTable
     {
+        /// TableId for Ict.Common.Data generic functions
+        public static short TableId = 253;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnUnitKeyId = 0;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnPositionNameId = 1;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnPositionScopeId = 2;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnJobKeyId = 3;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnJobTypeId = 4;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnFromDateId = 5;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnToDateId = 6;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnMinimumId = 7;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnMaximumId = 8;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnPresentId = 9;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnPartTimersId = 10;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnApplicationsId = 11;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnPartTimeFlagId = 12;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnTrainingPeriodId = 13;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnCommitmentPeriodId = 14;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnPublicFlagId = 15;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnJobPublicityId = 16;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnPreviousInternalExpReqId = 17;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnDateCreatedId = 18;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnCreatedById = 19;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnDateModifiedId = 20;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnModifiedById = 21;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnModificationIdId = 22;
+
+        private static bool FInitInfoValues = InitInfoValues();
+        private static bool InitInfoValues()
+        {
+            TableInfo.Add(TableId, new TTypedTableInfo(TableId, "UmJob", "um_job",
+                new TTypedColumnInfo[] {
+                    new TTypedColumnInfo(0, "UnitKey", "pm_unit_key_n", "Unit Key", OdbcType.Decimal, 10, true),
+                    new TTypedColumnInfo(1, "PositionName", "pt_position_name_c", "Position", OdbcType.VarChar, 60, true),
+                    new TTypedColumnInfo(2, "PositionScope", "pt_position_scope_c", "Position Scope", OdbcType.VarChar, 24, true),
+                    new TTypedColumnInfo(3, "JobKey", "um_job_key_i", "um_job_key_i", OdbcType.Int, -1, true),
+                    new TTypedColumnInfo(4, "JobType", "um_job_type_c", "Job Type", OdbcType.VarChar, 40, true),
+                    new TTypedColumnInfo(5, "FromDate", "um_from_date_d", "From Date", OdbcType.Date, -1, false),
+                    new TTypedColumnInfo(6, "ToDate", "um_to_date_d", "To Date", OdbcType.Date, -1, false),
+                    new TTypedColumnInfo(7, "Minimum", "um_minimum_i", "Minimum Staff", OdbcType.Int, -1, false),
+                    new TTypedColumnInfo(8, "Maximum", "um_maximum_i", "Maximum Staff", OdbcType.Int, -1, false),
+                    new TTypedColumnInfo(9, "Present", "um_present_i", "Present Staff", OdbcType.Int, -1, false),
+                    new TTypedColumnInfo(10, "PartTimers", "um_part_timers_i", "Part-Timers", OdbcType.Int, -1, false),
+                    new TTypedColumnInfo(11, "Applications", "um_applications_i", "Applications", OdbcType.Int, -1, false),
+                    new TTypedColumnInfo(12, "PartTimeFlag", "um_part_time_flag_l", "Part-Time Flag", OdbcType.Bit, -1, false),
+                    new TTypedColumnInfo(13, "TrainingPeriod", "um_training_period_c", "Training Period", OdbcType.VarChar, 30, true),
+                    new TTypedColumnInfo(14, "CommitmentPeriod", "um_commitment_period_c", "Commitment Period", OdbcType.VarChar, 30, true),
+                    new TTypedColumnInfo(15, "PublicFlag", "um_public_flag_l", "Public Flag", OdbcType.Bit, -1, false),
+                    new TTypedColumnInfo(16, "JobPublicity", "um_job_publicity_i", "Level of Publicity", OdbcType.Int, -1, false),
+                    new TTypedColumnInfo(17, "PreviousInternalExpReq", "um_previous_internal_exp_req_l", "Internal Experience Required?", OdbcType.Bit, -1, false),
+                    new TTypedColumnInfo(18, "DateCreated", "s_date_created_d", "Created Date", OdbcType.Date, -1, false),
+                    new TTypedColumnInfo(19, "CreatedBy", "s_created_by_c", "Created By", OdbcType.VarChar, 20, false),
+                    new TTypedColumnInfo(20, "DateModified", "s_date_modified_d", "Modified Date", OdbcType.Date, -1, false),
+                    new TTypedColumnInfo(21, "ModifiedBy", "s_modified_by_c", "Modified By", OdbcType.VarChar, 20, false),
+                    new TTypedColumnInfo(22, "ModificationId", "s_modification_id_c", "", OdbcType.VarChar, 150, false)
+                },
+                new int[] {
+                    0, 1, 2, 3
+                }));
+            return true;
+        }
+
+        /// constructor
+        public UmJobTable() :
+                base("UmJob")
+        {
+        }
+
+        /// constructor
+        public UmJobTable(string ATablename) :
+                base(ATablename)
+        {
+        }
+
+        /// constructor for serialization
+        public UmJobTable(System.Runtime.Serialization.SerializationInfo info, System.Runtime.Serialization.StreamingContext context) :
+                base(info, context)
+        {
+        }
+
         /// This is the partner key of the unit. It consists of the fund id followed by a computer generated six digit number.
         public DataColumn ColumnUnitKey;
         /// Name of the position.
@@ -817,62 +953,6 @@ namespace Ict.Petra.Shared.MPersonnel.Units.Data
         public DataColumn ColumnModifiedBy;
         /// This identifies the current version of the record.
         public DataColumn ColumnModificationId;
-
-        /// TableId for Ict.Common.Data generic functions
-        public static short TableId = 253;
-
-        private static bool FInitInfoValues = InitInfoValues();
-        private static bool InitInfoValues()
-        {
-            TableInfo.Add(TableId, new TTypedTableInfo(TableId, "UmJob", "um_job",
-                new TTypedColumnInfo[] {
-                    new TTypedColumnInfo(0, "UnitKey", "pm_unit_key_n", OdbcType.Decimal, 10, true),
-                    new TTypedColumnInfo(1, "PositionName", "pt_position_name_c", OdbcType.VarChar, 60, true),
-                    new TTypedColumnInfo(2, "PositionScope", "pt_position_scope_c", OdbcType.VarChar, 24, true),
-                    new TTypedColumnInfo(3, "JobKey", "um_job_key_i", OdbcType.Int, -1, true),
-                    new TTypedColumnInfo(4, "JobType", "um_job_type_c", OdbcType.VarChar, 40, true),
-                    new TTypedColumnInfo(5, "FromDate", "um_from_date_d", OdbcType.Date, -1, false),
-                    new TTypedColumnInfo(6, "ToDate", "um_to_date_d", OdbcType.Date, -1, false),
-                    new TTypedColumnInfo(7, "Minimum", "um_minimum_i", OdbcType.Int, -1, false),
-                    new TTypedColumnInfo(8, "Maximum", "um_maximum_i", OdbcType.Int, -1, false),
-                    new TTypedColumnInfo(9, "Present", "um_present_i", OdbcType.Int, -1, false),
-                    new TTypedColumnInfo(10, "PartTimers", "um_part_timers_i", OdbcType.Int, -1, false),
-                    new TTypedColumnInfo(11, "Applications", "um_applications_i", OdbcType.Int, -1, false),
-                    new TTypedColumnInfo(12, "PartTimeFlag", "um_part_time_flag_l", OdbcType.Bit, -1, false),
-                    new TTypedColumnInfo(13, "TrainingPeriod", "um_training_period_c", OdbcType.VarChar, 30, true),
-                    new TTypedColumnInfo(14, "CommitmentPeriod", "um_commitment_period_c", OdbcType.VarChar, 30, true),
-                    new TTypedColumnInfo(15, "PublicFlag", "um_public_flag_l", OdbcType.Bit, -1, false),
-                    new TTypedColumnInfo(16, "JobPublicity", "um_job_publicity_i", OdbcType.Int, -1, false),
-                    new TTypedColumnInfo(17, "PreviousInternalExpReq", "um_previous_internal_exp_req_l", OdbcType.Bit, -1, false),
-                    new TTypedColumnInfo(18, "DateCreated", "s_date_created_d", OdbcType.Date, -1, false),
-                    new TTypedColumnInfo(19, "CreatedBy", "s_created_by_c", OdbcType.VarChar, 20, false),
-                    new TTypedColumnInfo(20, "DateModified", "s_date_modified_d", OdbcType.Date, -1, false),
-                    new TTypedColumnInfo(21, "ModifiedBy", "s_modified_by_c", OdbcType.VarChar, 20, false),
-                    new TTypedColumnInfo(22, "ModificationId", "s_modification_id_c", OdbcType.VarChar, 150, false)
-                },
-                new int[] {
-                    0, 1, 2, 3
-                }));
-            return true;
-        }
-
-        /// constructor
-        public UmJobTable() :
-                base("UmJob")
-        {
-        }
-
-        /// constructor
-        public UmJobTable(string ATablename) :
-                base(ATablename)
-        {
-        }
-
-        /// constructor for serialization
-        public UmJobTable(System.Runtime.Serialization.SerializationInfo info, System.Runtime.Serialization.StreamingContext context) :
-                base(info, context)
-        {
-        }
 
         /// create the columns
         protected override void InitClass()
@@ -966,6 +1046,18 @@ namespace Ict.Petra.Shared.MPersonnel.Units.Data
         public UmJobTable GetChangesTyped()
         {
             return ((UmJobTable)(base.GetChangesTypedInternal()));
+        }
+
+        /// return the CamelCase name of the table
+        public static string GetTableName()
+        {
+            return "UmJob";
+        }
+
+        /// return the name of the table as it is used in the database
+        public static string GetTableDBName()
+        {
+            return "um_job";
         }
 
         /// get an odbc parameter for the given column
@@ -2172,51 +2264,50 @@ namespace Ict.Petra.Shared.MPersonnel.Units.Data
     [Serializable()]
     public class UmJobRequirementTable : TTypedDataTable
     {
-        /// This is the partner key of the unit to which this person is assigned. It consists of the fund id followed by a computer generated six digit number.
-        public DataColumn ColumnUnitKey;
-        /// Name of the position.
-        public DataColumn ColumnPositionName;
-        /// Scope of the position.
-        public DataColumn ColumnPositionScope;
-        ///
-        public DataColumn ColumnJobKey;
-        /// Name of the area of ability
-        public DataColumn ColumnAbilityAreaName;
-        /// Years of experience required for this position..
-        public DataColumn ColumnYearsOfExperience;
-        /// This field is a numeric representation of level of ability.
-        public DataColumn ColumnAbilityLevel;
-        /// The date the record was created.
-        public DataColumn ColumnDateCreated;
-        /// User ID of who created this record.
-        public DataColumn ColumnCreatedBy;
-        /// The date the record was modified.
-        public DataColumn ColumnDateModified;
-        /// User ID of who last modified this record.
-        public DataColumn ColumnModifiedBy;
-        /// This identifies the current version of the record.
-        public DataColumn ColumnModificationId;
-
         /// TableId for Ict.Common.Data generic functions
         public static short TableId = 254;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnUnitKeyId = 0;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnPositionNameId = 1;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnPositionScopeId = 2;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnJobKeyId = 3;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnAbilityAreaNameId = 4;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnYearsOfExperienceId = 5;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnAbilityLevelId = 6;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnDateCreatedId = 7;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnCreatedById = 8;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnDateModifiedId = 9;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnModifiedById = 10;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnModificationIdId = 11;
 
         private static bool FInitInfoValues = InitInfoValues();
         private static bool InitInfoValues()
         {
             TableInfo.Add(TableId, new TTypedTableInfo(TableId, "UmJobRequirement", "um_job_requirement",
                 new TTypedColumnInfo[] {
-                    new TTypedColumnInfo(0, "UnitKey", "pm_unit_key_n", OdbcType.Decimal, 10, true),
-                    new TTypedColumnInfo(1, "PositionName", "pt_position_name_c", OdbcType.VarChar, 60, true),
-                    new TTypedColumnInfo(2, "PositionScope", "pt_position_scope_c", OdbcType.VarChar, 24, true),
-                    new TTypedColumnInfo(3, "JobKey", "um_job_key_i", OdbcType.Int, -1, true),
-                    new TTypedColumnInfo(4, "AbilityAreaName", "pt_ability_area_name_c", OdbcType.VarChar, 32, true),
-                    new TTypedColumnInfo(5, "YearsOfExperience", "um_years_of_experience_i", OdbcType.Int, -1, true),
-                    new TTypedColumnInfo(6, "AbilityLevel", "pt_ability_level_i", OdbcType.Int, -1, false),
-                    new TTypedColumnInfo(7, "DateCreated", "s_date_created_d", OdbcType.Date, -1, false),
-                    new TTypedColumnInfo(8, "CreatedBy", "s_created_by_c", OdbcType.VarChar, 20, false),
-                    new TTypedColumnInfo(9, "DateModified", "s_date_modified_d", OdbcType.Date, -1, false),
-                    new TTypedColumnInfo(10, "ModifiedBy", "s_modified_by_c", OdbcType.VarChar, 20, false),
-                    new TTypedColumnInfo(11, "ModificationId", "s_modification_id_c", OdbcType.VarChar, 150, false)
+                    new TTypedColumnInfo(0, "UnitKey", "pm_unit_key_n", "Unit Key", OdbcType.Decimal, 10, true),
+                    new TTypedColumnInfo(1, "PositionName", "pt_position_name_c", "Position", OdbcType.VarChar, 60, true),
+                    new TTypedColumnInfo(2, "PositionScope", "pt_position_scope_c", "Position Scope", OdbcType.VarChar, 24, true),
+                    new TTypedColumnInfo(3, "JobKey", "um_job_key_i", "um_job_key_i", OdbcType.Int, -1, true),
+                    new TTypedColumnInfo(4, "AbilityAreaName", "pt_ability_area_name_c", "Ability Area", OdbcType.VarChar, 32, true),
+                    new TTypedColumnInfo(5, "YearsOfExperience", "um_years_of_experience_i", "Years of Experience", OdbcType.Int, -1, true),
+                    new TTypedColumnInfo(6, "AbilityLevel", "pt_ability_level_i", "Ability Level", OdbcType.Int, -1, false),
+                    new TTypedColumnInfo(7, "DateCreated", "s_date_created_d", "Created Date", OdbcType.Date, -1, false),
+                    new TTypedColumnInfo(8, "CreatedBy", "s_created_by_c", "Created By", OdbcType.VarChar, 20, false),
+                    new TTypedColumnInfo(9, "DateModified", "s_date_modified_d", "Modified Date", OdbcType.Date, -1, false),
+                    new TTypedColumnInfo(10, "ModifiedBy", "s_modified_by_c", "Modified By", OdbcType.VarChar, 20, false),
+                    new TTypedColumnInfo(11, "ModificationId", "s_modification_id_c", "", OdbcType.VarChar, 150, false)
                 },
                 new int[] {
                     0, 1, 2, 3, 4
@@ -2241,6 +2332,31 @@ namespace Ict.Petra.Shared.MPersonnel.Units.Data
                 base(info, context)
         {
         }
+
+        /// This is the partner key of the unit to which this person is assigned. It consists of the fund id followed by a computer generated six digit number.
+        public DataColumn ColumnUnitKey;
+        /// Name of the position.
+        public DataColumn ColumnPositionName;
+        /// Scope of the position.
+        public DataColumn ColumnPositionScope;
+        ///
+        public DataColumn ColumnJobKey;
+        /// Name of the area of ability
+        public DataColumn ColumnAbilityAreaName;
+        /// Years of experience required for this position..
+        public DataColumn ColumnYearsOfExperience;
+        /// This field is a numeric representation of level of ability.
+        public DataColumn ColumnAbilityLevel;
+        /// The date the record was created.
+        public DataColumn ColumnDateCreated;
+        /// User ID of who created this record.
+        public DataColumn ColumnCreatedBy;
+        /// The date the record was modified.
+        public DataColumn ColumnDateModified;
+        /// User ID of who last modified this record.
+        public DataColumn ColumnModifiedBy;
+        /// This identifies the current version of the record.
+        public DataColumn ColumnModificationId;
 
         /// create the columns
         protected override void InitClass()
@@ -2312,6 +2428,18 @@ namespace Ict.Petra.Shared.MPersonnel.Units.Data
         public UmJobRequirementTable GetChangesTyped()
         {
             return ((UmJobRequirementTable)(base.GetChangesTypedInternal()));
+        }
+
+        /// return the CamelCase name of the table
+        public static string GetTableName()
+        {
+            return "UmJobRequirement";
+        }
+
+        /// return the name of the table as it is used in the database
+        public static string GetTableDBName()
+        {
+            return "um_job_requirement";
         }
 
         /// get an odbc parameter for the given column
@@ -2957,51 +3085,50 @@ namespace Ict.Petra.Shared.MPersonnel.Units.Data
     [Serializable()]
     public class UmJobLanguageTable : TTypedDataTable
     {
-        /// This is the partner key of the unit to which this person is assigned. It consists of the fund id followed by a computer generated six digit number.
-        public DataColumn ColumnUnitKey;
-        /// Name of the position.
-        public DataColumn ColumnPositionName;
-        /// Scope of the position.
-        public DataColumn ColumnPositionScope;
-        ///
-        public DataColumn ColumnJobKey;
-        /// Name of the language(s) spoken.
-        public DataColumn ColumnLanguageCode;
-        /// Years of experience required using this language.
-        public DataColumn ColumnYearsOfExperience;
-        /// This field is a numeric representation of level of language.
-        public DataColumn ColumnLanguageLevel;
-        /// The date the record was created.
-        public DataColumn ColumnDateCreated;
-        /// User ID of who created this record.
-        public DataColumn ColumnCreatedBy;
-        /// The date the record was modified.
-        public DataColumn ColumnDateModified;
-        /// User ID of who last modified this record.
-        public DataColumn ColumnModifiedBy;
-        /// This identifies the current version of the record.
-        public DataColumn ColumnModificationId;
-
         /// TableId for Ict.Common.Data generic functions
         public static short TableId = 255;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnUnitKeyId = 0;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnPositionNameId = 1;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnPositionScopeId = 2;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnJobKeyId = 3;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnLanguageCodeId = 4;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnYearsOfExperienceId = 5;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnLanguageLevelId = 6;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnDateCreatedId = 7;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnCreatedById = 8;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnDateModifiedId = 9;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnModifiedById = 10;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnModificationIdId = 11;
 
         private static bool FInitInfoValues = InitInfoValues();
         private static bool InitInfoValues()
         {
             TableInfo.Add(TableId, new TTypedTableInfo(TableId, "UmJobLanguage", "um_job_language",
                 new TTypedColumnInfo[] {
-                    new TTypedColumnInfo(0, "UnitKey", "pm_unit_key_n", OdbcType.Decimal, 10, true),
-                    new TTypedColumnInfo(1, "PositionName", "pt_position_name_c", OdbcType.VarChar, 60, true),
-                    new TTypedColumnInfo(2, "PositionScope", "pt_position_scope_c", OdbcType.VarChar, 24, true),
-                    new TTypedColumnInfo(3, "JobKey", "um_job_key_i", OdbcType.Int, -1, true),
-                    new TTypedColumnInfo(4, "LanguageCode", "p_language_code_c", OdbcType.VarChar, 20, true),
-                    new TTypedColumnInfo(5, "YearsOfExperience", "um_years_of_experience_i", OdbcType.Int, -1, true),
-                    new TTypedColumnInfo(6, "LanguageLevel", "pt_language_level_i", OdbcType.Int, -1, false),
-                    new TTypedColumnInfo(7, "DateCreated", "s_date_created_d", OdbcType.Date, -1, false),
-                    new TTypedColumnInfo(8, "CreatedBy", "s_created_by_c", OdbcType.VarChar, 20, false),
-                    new TTypedColumnInfo(9, "DateModified", "s_date_modified_d", OdbcType.Date, -1, false),
-                    new TTypedColumnInfo(10, "ModifiedBy", "s_modified_by_c", OdbcType.VarChar, 20, false),
-                    new TTypedColumnInfo(11, "ModificationId", "s_modification_id_c", OdbcType.VarChar, 150, false)
+                    new TTypedColumnInfo(0, "UnitKey", "pm_unit_key_n", "Unit Key", OdbcType.Decimal, 10, true),
+                    new TTypedColumnInfo(1, "PositionName", "pt_position_name_c", "Position", OdbcType.VarChar, 60, true),
+                    new TTypedColumnInfo(2, "PositionScope", "pt_position_scope_c", "Position Scope", OdbcType.VarChar, 24, true),
+                    new TTypedColumnInfo(3, "JobKey", "um_job_key_i", "um_job_key_i", OdbcType.Int, -1, true),
+                    new TTypedColumnInfo(4, "LanguageCode", "p_language_code_c", "Language Area", OdbcType.VarChar, 20, true),
+                    new TTypedColumnInfo(5, "YearsOfExperience", "um_years_of_experience_i", "Years of Experience", OdbcType.Int, -1, true),
+                    new TTypedColumnInfo(6, "LanguageLevel", "pt_language_level_i", "Language Level", OdbcType.Int, -1, false),
+                    new TTypedColumnInfo(7, "DateCreated", "s_date_created_d", "Created Date", OdbcType.Date, -1, false),
+                    new TTypedColumnInfo(8, "CreatedBy", "s_created_by_c", "Created By", OdbcType.VarChar, 20, false),
+                    new TTypedColumnInfo(9, "DateModified", "s_date_modified_d", "Modified Date", OdbcType.Date, -1, false),
+                    new TTypedColumnInfo(10, "ModifiedBy", "s_modified_by_c", "Modified By", OdbcType.VarChar, 20, false),
+                    new TTypedColumnInfo(11, "ModificationId", "s_modification_id_c", "", OdbcType.VarChar, 150, false)
                 },
                 new int[] {
                     0, 1, 2, 3, 4
@@ -3026,6 +3153,31 @@ namespace Ict.Petra.Shared.MPersonnel.Units.Data
                 base(info, context)
         {
         }
+
+        /// This is the partner key of the unit to which this person is assigned. It consists of the fund id followed by a computer generated six digit number.
+        public DataColumn ColumnUnitKey;
+        /// Name of the position.
+        public DataColumn ColumnPositionName;
+        /// Scope of the position.
+        public DataColumn ColumnPositionScope;
+        ///
+        public DataColumn ColumnJobKey;
+        /// Name of the language(s) spoken.
+        public DataColumn ColumnLanguageCode;
+        /// Years of experience required using this language.
+        public DataColumn ColumnYearsOfExperience;
+        /// This field is a numeric representation of level of language.
+        public DataColumn ColumnLanguageLevel;
+        /// The date the record was created.
+        public DataColumn ColumnDateCreated;
+        /// User ID of who created this record.
+        public DataColumn ColumnCreatedBy;
+        /// The date the record was modified.
+        public DataColumn ColumnDateModified;
+        /// User ID of who last modified this record.
+        public DataColumn ColumnModifiedBy;
+        /// This identifies the current version of the record.
+        public DataColumn ColumnModificationId;
 
         /// create the columns
         protected override void InitClass()
@@ -3097,6 +3249,18 @@ namespace Ict.Petra.Shared.MPersonnel.Units.Data
         public UmJobLanguageTable GetChangesTyped()
         {
             return ((UmJobLanguageTable)(base.GetChangesTypedInternal()));
+        }
+
+        /// return the CamelCase name of the table
+        public static string GetTableName()
+        {
+            return "UmJobLanguage";
+        }
+
+        /// return the name of the table as it is used in the database
+        public static string GetTableDBName()
+        {
+            return "um_job_language";
         }
 
         /// get an odbc parameter for the given column
@@ -3742,6 +3906,78 @@ namespace Ict.Petra.Shared.MPersonnel.Units.Data
     [Serializable()]
     public class UmJobQualificationTable : TTypedDataTable
     {
+        /// TableId for Ict.Common.Data generic functions
+        public static short TableId = 256;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnUnitKeyId = 0;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnPositionNameId = 1;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnPositionScopeId = 2;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnJobKeyId = 3;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnQualificationAreaNameId = 4;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnYearsOfExperienceId = 5;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnInformalFlagId = 6;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnQualificationLevelId = 7;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnDateCreatedId = 8;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnCreatedById = 9;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnDateModifiedId = 10;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnModifiedById = 11;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnModificationIdId = 12;
+
+        private static bool FInitInfoValues = InitInfoValues();
+        private static bool InitInfoValues()
+        {
+            TableInfo.Add(TableId, new TTypedTableInfo(TableId, "UmJobQualification", "um_job_qualification",
+                new TTypedColumnInfo[] {
+                    new TTypedColumnInfo(0, "UnitKey", "pm_unit_key_n", "Unit Key", OdbcType.Decimal, 10, true),
+                    new TTypedColumnInfo(1, "PositionName", "pt_position_name_c", "Position", OdbcType.VarChar, 60, true),
+                    new TTypedColumnInfo(2, "PositionScope", "pt_position_scope_c", "Position Scope", OdbcType.VarChar, 24, true),
+                    new TTypedColumnInfo(3, "JobKey", "um_job_key_i", "um_job_key_i", OdbcType.Int, -1, true),
+                    new TTypedColumnInfo(4, "QualificationAreaName", "pt_qualification_area_name_c", "Qualification Area", OdbcType.VarChar, 32, true),
+                    new TTypedColumnInfo(5, "YearsOfExperience", "um_years_of_experience_i", "Years of Experience", OdbcType.Int, -1, false),
+                    new TTypedColumnInfo(6, "InformalFlag", "pm_informal_flag_l", "Informal Training", OdbcType.Bit, -1, false),
+                    new TTypedColumnInfo(7, "QualificationLevel", "pt_qualification_level_i", "Qualification Level", OdbcType.Int, -1, false),
+                    new TTypedColumnInfo(8, "DateCreated", "s_date_created_d", "Created Date", OdbcType.Date, -1, false),
+                    new TTypedColumnInfo(9, "CreatedBy", "s_created_by_c", "Created By", OdbcType.VarChar, 20, false),
+                    new TTypedColumnInfo(10, "DateModified", "s_date_modified_d", "Modified Date", OdbcType.Date, -1, false),
+                    new TTypedColumnInfo(11, "ModifiedBy", "s_modified_by_c", "Modified By", OdbcType.VarChar, 20, false),
+                    new TTypedColumnInfo(12, "ModificationId", "s_modification_id_c", "", OdbcType.VarChar, 150, false)
+                },
+                new int[] {
+                    0, 1, 2, 3, 4
+                }));
+            return true;
+        }
+
+        /// constructor
+        public UmJobQualificationTable() :
+                base("UmJobQualification")
+        {
+        }
+
+        /// constructor
+        public UmJobQualificationTable(string ATablename) :
+                base(ATablename)
+        {
+        }
+
+        /// constructor for serialization
+        public UmJobQualificationTable(System.Runtime.Serialization.SerializationInfo info, System.Runtime.Serialization.StreamingContext context) :
+                base(info, context)
+        {
+        }
+
         /// This is the partner key of the unit to which this person is assigned. It consists of the fund id followed by a computer generated six digit number.
         public DataColumn ColumnUnitKey;
         /// Name of the position.
@@ -3769,52 +4005,6 @@ namespace Ict.Petra.Shared.MPersonnel.Units.Data
         public DataColumn ColumnModifiedBy;
         /// This identifies the current version of the record.
         public DataColumn ColumnModificationId;
-
-        /// TableId for Ict.Common.Data generic functions
-        public static short TableId = 256;
-
-        private static bool FInitInfoValues = InitInfoValues();
-        private static bool InitInfoValues()
-        {
-            TableInfo.Add(TableId, new TTypedTableInfo(TableId, "UmJobQualification", "um_job_qualification",
-                new TTypedColumnInfo[] {
-                    new TTypedColumnInfo(0, "UnitKey", "pm_unit_key_n", OdbcType.Decimal, 10, true),
-                    new TTypedColumnInfo(1, "PositionName", "pt_position_name_c", OdbcType.VarChar, 60, true),
-                    new TTypedColumnInfo(2, "PositionScope", "pt_position_scope_c", OdbcType.VarChar, 24, true),
-                    new TTypedColumnInfo(3, "JobKey", "um_job_key_i", OdbcType.Int, -1, true),
-                    new TTypedColumnInfo(4, "QualificationAreaName", "pt_qualification_area_name_c", OdbcType.VarChar, 32, true),
-                    new TTypedColumnInfo(5, "YearsOfExperience", "um_years_of_experience_i", OdbcType.Int, -1, false),
-                    new TTypedColumnInfo(6, "InformalFlag", "pm_informal_flag_l", OdbcType.Bit, -1, false),
-                    new TTypedColumnInfo(7, "QualificationLevel", "pt_qualification_level_i", OdbcType.Int, -1, false),
-                    new TTypedColumnInfo(8, "DateCreated", "s_date_created_d", OdbcType.Date, -1, false),
-                    new TTypedColumnInfo(9, "CreatedBy", "s_created_by_c", OdbcType.VarChar, 20, false),
-                    new TTypedColumnInfo(10, "DateModified", "s_date_modified_d", OdbcType.Date, -1, false),
-                    new TTypedColumnInfo(11, "ModifiedBy", "s_modified_by_c", OdbcType.VarChar, 20, false),
-                    new TTypedColumnInfo(12, "ModificationId", "s_modification_id_c", OdbcType.VarChar, 150, false)
-                },
-                new int[] {
-                    0, 1, 2, 3, 4
-                }));
-            return true;
-        }
-
-        /// constructor
-        public UmJobQualificationTable() :
-                base("UmJobQualification")
-        {
-        }
-
-        /// constructor
-        public UmJobQualificationTable(string ATablename) :
-                base(ATablename)
-        {
-        }
-
-        /// constructor for serialization
-        public UmJobQualificationTable(System.Runtime.Serialization.SerializationInfo info, System.Runtime.Serialization.StreamingContext context) :
-                base(info, context)
-        {
-        }
 
         /// create the columns
         protected override void InitClass()
@@ -3888,6 +4078,18 @@ namespace Ict.Petra.Shared.MPersonnel.Units.Data
         public UmJobQualificationTable GetChangesTyped()
         {
             return ((UmJobQualificationTable)(base.GetChangesTypedInternal()));
+        }
+
+        /// return the CamelCase name of the table
+        public static string GetTableName()
+        {
+            return "UmJobQualification";
+        }
+
+        /// return the name of the table as it is used in the database
+        public static string GetTableDBName()
+        {
+            return "um_job_qualification";
         }
 
         /// get an odbc parameter for the given column
@@ -4585,48 +4787,47 @@ namespace Ict.Petra.Shared.MPersonnel.Units.Data
     [Serializable()]
     public class UmJobVisionTable : TTypedDataTable
     {
-        /// This is the partner key of the unit to which this person is assigned. It consists of the fund id followed by a computer generated six digit number.
-        public DataColumn ColumnUnitKey;
-        /// Name of the position.
-        public DataColumn ColumnPositionName;
-        /// Scope of the position.
-        public DataColumn ColumnPositionScope;
-        ///
-        public DataColumn ColumnJobKey;
-        /// Name of the area of vision
-        public DataColumn ColumnVisionAreaName;
-        /// This field is a numeric representation of level of vision.
-        public DataColumn ColumnVisionLevel;
-        /// The date the record was created.
-        public DataColumn ColumnDateCreated;
-        /// User ID of who created this record.
-        public DataColumn ColumnCreatedBy;
-        /// The date the record was modified.
-        public DataColumn ColumnDateModified;
-        /// User ID of who last modified this record.
-        public DataColumn ColumnModifiedBy;
-        /// This identifies the current version of the record.
-        public DataColumn ColumnModificationId;
-
         /// TableId for Ict.Common.Data generic functions
         public static short TableId = 257;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnUnitKeyId = 0;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnPositionNameId = 1;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnPositionScopeId = 2;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnJobKeyId = 3;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnVisionAreaNameId = 4;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnVisionLevelId = 5;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnDateCreatedId = 6;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnCreatedById = 7;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnDateModifiedId = 8;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnModifiedById = 9;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnModificationIdId = 10;
 
         private static bool FInitInfoValues = InitInfoValues();
         private static bool InitInfoValues()
         {
             TableInfo.Add(TableId, new TTypedTableInfo(TableId, "UmJobVision", "um_job_vision",
                 new TTypedColumnInfo[] {
-                    new TTypedColumnInfo(0, "UnitKey", "pm_unit_key_n", OdbcType.Decimal, 10, true),
-                    new TTypedColumnInfo(1, "PositionName", "pt_position_name_c", OdbcType.VarChar, 60, true),
-                    new TTypedColumnInfo(2, "PositionScope", "pt_position_scope_c", OdbcType.VarChar, 24, true),
-                    new TTypedColumnInfo(3, "JobKey", "um_job_key_i", OdbcType.Int, -1, true),
-                    new TTypedColumnInfo(4, "VisionAreaName", "pt_vision_area_name_c", OdbcType.VarChar, 32, true),
-                    new TTypedColumnInfo(5, "VisionLevel", "pt_vision_level_i", OdbcType.Int, -1, false),
-                    new TTypedColumnInfo(6, "DateCreated", "s_date_created_d", OdbcType.Date, -1, false),
-                    new TTypedColumnInfo(7, "CreatedBy", "s_created_by_c", OdbcType.VarChar, 20, false),
-                    new TTypedColumnInfo(8, "DateModified", "s_date_modified_d", OdbcType.Date, -1, false),
-                    new TTypedColumnInfo(9, "ModifiedBy", "s_modified_by_c", OdbcType.VarChar, 20, false),
-                    new TTypedColumnInfo(10, "ModificationId", "s_modification_id_c", OdbcType.VarChar, 150, false)
+                    new TTypedColumnInfo(0, "UnitKey", "pm_unit_key_n", "Unit Key", OdbcType.Decimal, 10, true),
+                    new TTypedColumnInfo(1, "PositionName", "pt_position_name_c", "Position", OdbcType.VarChar, 60, true),
+                    new TTypedColumnInfo(2, "PositionScope", "pt_position_scope_c", "Position Scope", OdbcType.VarChar, 24, true),
+                    new TTypedColumnInfo(3, "JobKey", "um_job_key_i", "um_job_key_i", OdbcType.Int, -1, true),
+                    new TTypedColumnInfo(4, "VisionAreaName", "pt_vision_area_name_c", "Vision Area", OdbcType.VarChar, 32, true),
+                    new TTypedColumnInfo(5, "VisionLevel", "pt_vision_level_i", "Vision Level", OdbcType.Int, -1, false),
+                    new TTypedColumnInfo(6, "DateCreated", "s_date_created_d", "Created Date", OdbcType.Date, -1, false),
+                    new TTypedColumnInfo(7, "CreatedBy", "s_created_by_c", "Created By", OdbcType.VarChar, 20, false),
+                    new TTypedColumnInfo(8, "DateModified", "s_date_modified_d", "Modified Date", OdbcType.Date, -1, false),
+                    new TTypedColumnInfo(9, "ModifiedBy", "s_modified_by_c", "Modified By", OdbcType.VarChar, 20, false),
+                    new TTypedColumnInfo(10, "ModificationId", "s_modification_id_c", "", OdbcType.VarChar, 150, false)
                 },
                 new int[] {
                     0, 1, 2, 3, 4
@@ -4651,6 +4852,29 @@ namespace Ict.Petra.Shared.MPersonnel.Units.Data
                 base(info, context)
         {
         }
+
+        /// This is the partner key of the unit to which this person is assigned. It consists of the fund id followed by a computer generated six digit number.
+        public DataColumn ColumnUnitKey;
+        /// Name of the position.
+        public DataColumn ColumnPositionName;
+        /// Scope of the position.
+        public DataColumn ColumnPositionScope;
+        ///
+        public DataColumn ColumnJobKey;
+        /// Name of the area of vision
+        public DataColumn ColumnVisionAreaName;
+        /// This field is a numeric representation of level of vision.
+        public DataColumn ColumnVisionLevel;
+        /// The date the record was created.
+        public DataColumn ColumnDateCreated;
+        /// User ID of who created this record.
+        public DataColumn ColumnCreatedBy;
+        /// The date the record was modified.
+        public DataColumn ColumnDateModified;
+        /// User ID of who last modified this record.
+        public DataColumn ColumnModifiedBy;
+        /// This identifies the current version of the record.
+        public DataColumn ColumnModificationId;
 
         /// create the columns
         protected override void InitClass()
@@ -4720,6 +4944,18 @@ namespace Ict.Petra.Shared.MPersonnel.Units.Data
         public UmJobVisionTable GetChangesTyped()
         {
             return ((UmJobVisionTable)(base.GetChangesTypedInternal()));
+        }
+
+        /// return the CamelCase name of the table
+        public static string GetTableName()
+        {
+            return "UmJobVision";
+        }
+
+        /// return the name of the table as it is used in the database
+        public static string GetTableDBName()
+        {
+            return "um_job_vision";
         }
 
         /// get an odbc parameter for the given column
@@ -5314,45 +5550,44 @@ namespace Ict.Petra.Shared.MPersonnel.Units.Data
     [Serializable()]
     public class PtAssignmentTypeTable : TTypedDataTable
     {
-        /// Indicates the type of assignment .
-        public DataColumn ColumnAssignmentTypeCode;
-        /// This describes the one-letter assignment code.
-        public DataColumn ColumnAssignmentCodeDescr;
-        /// Can this qualification level be assigned?
-        public DataColumn ColumnUnassignableFlag;
-        /// This is the date the record was last updated.
-        public DataColumn ColumnUnassignableDate;
-        /// Indicates if a record can be deleted.
-        public DataColumn ColumnDeletableFlag;
-        /// The date the record was created.
-        public DataColumn ColumnDateCreated;
-        /// User ID of who created this record.
-        public DataColumn ColumnCreatedBy;
-        /// The date the record was modified.
-        public DataColumn ColumnDateModified;
-        /// User ID of who last modified this record.
-        public DataColumn ColumnModifiedBy;
-        /// This identifies the current version of the record.
-        public DataColumn ColumnModificationId;
-
         /// TableId for Ict.Common.Data generic functions
         public static short TableId = 258;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnAssignmentTypeCodeId = 0;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnAssignmentCodeDescrId = 1;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnUnassignableFlagId = 2;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnUnassignableDateId = 3;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnDeletableFlagId = 4;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnDateCreatedId = 5;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnCreatedById = 6;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnDateModifiedId = 7;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnModifiedById = 8;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnModificationIdId = 9;
 
         private static bool FInitInfoValues = InitInfoValues();
         private static bool InitInfoValues()
         {
             TableInfo.Add(TableId, new TTypedTableInfo(TableId, "PtAssignmentType", "pt_assignment_type",
                 new TTypedColumnInfo[] {
-                    new TTypedColumnInfo(0, "AssignmentTypeCode", "pt_assignment_type_code_c", OdbcType.VarChar, 2, true),
-                    new TTypedColumnInfo(1, "AssignmentCodeDescr", "pt_assignment_code_descr_c", OdbcType.VarChar, 70, true),
-                    new TTypedColumnInfo(2, "UnassignableFlag", "pt_unassignable_flag_l", OdbcType.Bit, -1, true),
-                    new TTypedColumnInfo(3, "UnassignableDate", "pt_unassignable_date_d", OdbcType.Date, -1, false),
-                    new TTypedColumnInfo(4, "DeletableFlag", "pt_deletable_flag_l", OdbcType.Bit, -1, false),
-                    new TTypedColumnInfo(5, "DateCreated", "s_date_created_d", OdbcType.Date, -1, false),
-                    new TTypedColumnInfo(6, "CreatedBy", "s_created_by_c", OdbcType.VarChar, 20, false),
-                    new TTypedColumnInfo(7, "DateModified", "s_date_modified_d", OdbcType.Date, -1, false),
-                    new TTypedColumnInfo(8, "ModifiedBy", "s_modified_by_c", OdbcType.VarChar, 20, false),
-                    new TTypedColumnInfo(9, "ModificationId", "s_modification_id_c", OdbcType.VarChar, 150, false)
+                    new TTypedColumnInfo(0, "AssignmentTypeCode", "pt_assignment_type_code_c", "Assignment Code", OdbcType.VarChar, 2, true),
+                    new TTypedColumnInfo(1, "AssignmentCodeDescr", "pt_assignment_code_descr_c", "Assignment Code Description", OdbcType.VarChar, 70, true),
+                    new TTypedColumnInfo(2, "UnassignableFlag", "pt_unassignable_flag_l", "Unassignable?", OdbcType.Bit, -1, true),
+                    new TTypedColumnInfo(3, "UnassignableDate", "pt_unassignable_date_d", "Date", OdbcType.Date, -1, false),
+                    new TTypedColumnInfo(4, "DeletableFlag", "pt_deletable_flag_l", "Deletable", OdbcType.Bit, -1, false),
+                    new TTypedColumnInfo(5, "DateCreated", "s_date_created_d", "Created Date", OdbcType.Date, -1, false),
+                    new TTypedColumnInfo(6, "CreatedBy", "s_created_by_c", "Created By", OdbcType.VarChar, 20, false),
+                    new TTypedColumnInfo(7, "DateModified", "s_date_modified_d", "Modified Date", OdbcType.Date, -1, false),
+                    new TTypedColumnInfo(8, "ModifiedBy", "s_modified_by_c", "Modified By", OdbcType.VarChar, 20, false),
+                    new TTypedColumnInfo(9, "ModificationId", "s_modification_id_c", "", OdbcType.VarChar, 150, false)
                 },
                 new int[] {
                     0
@@ -5377,6 +5612,27 @@ namespace Ict.Petra.Shared.MPersonnel.Units.Data
                 base(info, context)
         {
         }
+
+        /// Indicates the type of assignment .
+        public DataColumn ColumnAssignmentTypeCode;
+        /// This describes the one-letter assignment code.
+        public DataColumn ColumnAssignmentCodeDescr;
+        /// Can this qualification level be assigned?
+        public DataColumn ColumnUnassignableFlag;
+        /// This is the date the record was last updated.
+        public DataColumn ColumnUnassignableDate;
+        /// Indicates if a record can be deleted.
+        public DataColumn ColumnDeletableFlag;
+        /// The date the record was created.
+        public DataColumn ColumnDateCreated;
+        /// User ID of who created this record.
+        public DataColumn ColumnCreatedBy;
+        /// The date the record was modified.
+        public DataColumn ColumnDateModified;
+        /// User ID of who last modified this record.
+        public DataColumn ColumnModifiedBy;
+        /// This identifies the current version of the record.
+        public DataColumn ColumnModificationId;
 
         /// create the columns
         protected override void InitClass()
@@ -5444,6 +5700,18 @@ namespace Ict.Petra.Shared.MPersonnel.Units.Data
         public PtAssignmentTypeTable GetChangesTyped()
         {
             return ((PtAssignmentTypeTable)(base.GetChangesTypedInternal()));
+        }
+
+        /// return the CamelCase name of the table
+        public static string GetTableName()
+        {
+            return "PtAssignmentType";
+        }
+
+        /// return the name of the table as it is used in the database
+        public static string GetTableDBName()
+        {
+            return "pt_assignment_type";
         }
 
         /// get an odbc parameter for the given column
@@ -5987,46 +6255,44 @@ namespace Ict.Petra.Shared.MPersonnel.Units.Data
     [Serializable()]
     public class PtLeavingCodeTable : TTypedDataTable
     {
-        /// This is the one letter code that indicates why a person left
-        /// a particular position.
-        public DataColumn ColumnLeavingCodeInd;
-        /// This describes the one letter leaving code.
-        public DataColumn ColumnLeavingCodeDescr;
-        /// Can this qualification level be assigned?
-        public DataColumn ColumnUnassignableFlag;
-        /// This is the date the record was last updated.
-        public DataColumn ColumnUnassignableDate;
-        /// Indicates if a record can be deleted.
-        public DataColumn ColumnDeletableFlag;
-        /// The date the record was created.
-        public DataColumn ColumnDateCreated;
-        /// User ID of who created this record.
-        public DataColumn ColumnCreatedBy;
-        /// The date the record was modified.
-        public DataColumn ColumnDateModified;
-        /// User ID of who last modified this record.
-        public DataColumn ColumnModifiedBy;
-        /// This identifies the current version of the record.
-        public DataColumn ColumnModificationId;
-
         /// TableId for Ict.Common.Data generic functions
         public static short TableId = 259;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnLeavingCodeIndId = 0;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnLeavingCodeDescrId = 1;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnUnassignableFlagId = 2;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnUnassignableDateId = 3;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnDeletableFlagId = 4;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnDateCreatedId = 5;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnCreatedById = 6;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnDateModifiedId = 7;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnModifiedById = 8;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnModificationIdId = 9;
 
         private static bool FInitInfoValues = InitInfoValues();
         private static bool InitInfoValues()
         {
             TableInfo.Add(TableId, new TTypedTableInfo(TableId, "PtLeavingCode", "pt_leaving_code",
                 new TTypedColumnInfo[] {
-                    new TTypedColumnInfo(0, "LeavingCodeInd", "pt_leaving_code_ind_c", OdbcType.VarChar, 4, true),
-                    new TTypedColumnInfo(1, "LeavingCodeDescr", "pt_leaving_code_descr_c", OdbcType.VarChar, 70, true),
-                    new TTypedColumnInfo(2, "UnassignableFlag", "pt_unassignable_flag_l", OdbcType.Bit, -1, true),
-                    new TTypedColumnInfo(3, "UnassignableDate", "pt_unassignable_date_d", OdbcType.Date, -1, false),
-                    new TTypedColumnInfo(4, "DeletableFlag", "pt_deletable_flag_l", OdbcType.Bit, -1, false),
-                    new TTypedColumnInfo(5, "DateCreated", "s_date_created_d", OdbcType.Date, -1, false),
-                    new TTypedColumnInfo(6, "CreatedBy", "s_created_by_c", OdbcType.VarChar, 20, false),
-                    new TTypedColumnInfo(7, "DateModified", "s_date_modified_d", OdbcType.Date, -1, false),
-                    new TTypedColumnInfo(8, "ModifiedBy", "s_modified_by_c", OdbcType.VarChar, 20, false),
-                    new TTypedColumnInfo(9, "ModificationId", "s_modification_id_c", OdbcType.VarChar, 150, false)
+                    new TTypedColumnInfo(0, "LeavingCodeInd", "pt_leaving_code_ind_c", "Leaving Code", OdbcType.VarChar, 4, true),
+                    new TTypedColumnInfo(1, "LeavingCodeDescr", "pt_leaving_code_descr_c", "Leaving Code Description", OdbcType.VarChar, 70, true),
+                    new TTypedColumnInfo(2, "UnassignableFlag", "pt_unassignable_flag_l", "Unassignable?", OdbcType.Bit, -1, true),
+                    new TTypedColumnInfo(3, "UnassignableDate", "pt_unassignable_date_d", "Date", OdbcType.Date, -1, false),
+                    new TTypedColumnInfo(4, "DeletableFlag", "pt_deletable_flag_l", "Deletable", OdbcType.Bit, -1, false),
+                    new TTypedColumnInfo(5, "DateCreated", "s_date_created_d", "Created Date", OdbcType.Date, -1, false),
+                    new TTypedColumnInfo(6, "CreatedBy", "s_created_by_c", "Created By", OdbcType.VarChar, 20, false),
+                    new TTypedColumnInfo(7, "DateModified", "s_date_modified_d", "Modified Date", OdbcType.Date, -1, false),
+                    new TTypedColumnInfo(8, "ModifiedBy", "s_modified_by_c", "Modified By", OdbcType.VarChar, 20, false),
+                    new TTypedColumnInfo(9, "ModificationId", "s_modification_id_c", "", OdbcType.VarChar, 150, false)
                 },
                 new int[] {
                     0
@@ -6051,6 +6317,28 @@ namespace Ict.Petra.Shared.MPersonnel.Units.Data
                 base(info, context)
         {
         }
+
+        /// This is the one letter code that indicates why a person left
+        /// a particular position.
+        public DataColumn ColumnLeavingCodeInd;
+        /// This describes the one letter leaving code.
+        public DataColumn ColumnLeavingCodeDescr;
+        /// Can this qualification level be assigned?
+        public DataColumn ColumnUnassignableFlag;
+        /// This is the date the record was last updated.
+        public DataColumn ColumnUnassignableDate;
+        /// Indicates if a record can be deleted.
+        public DataColumn ColumnDeletableFlag;
+        /// The date the record was created.
+        public DataColumn ColumnDateCreated;
+        /// User ID of who created this record.
+        public DataColumn ColumnCreatedBy;
+        /// The date the record was modified.
+        public DataColumn ColumnDateModified;
+        /// User ID of who last modified this record.
+        public DataColumn ColumnModifiedBy;
+        /// This identifies the current version of the record.
+        public DataColumn ColumnModificationId;
 
         /// create the columns
         protected override void InitClass()
@@ -6118,6 +6406,18 @@ namespace Ict.Petra.Shared.MPersonnel.Units.Data
         public PtLeavingCodeTable GetChangesTyped()
         {
             return ((PtLeavingCodeTable)(base.GetChangesTypedInternal()));
+        }
+
+        /// return the CamelCase name of the table
+        public static string GetTableName()
+        {
+            return "PtLeavingCode";
+        }
+
+        /// return the name of the table as it is used in the database
+        public static string GetTableDBName()
+        {
+            return "pt_leaving_code";
         }
 
         /// get an odbc parameter for the given column
@@ -6662,42 +6962,41 @@ namespace Ict.Petra.Shared.MPersonnel.Units.Data
     [Serializable()]
     public class UmUnitAbilityTable : TTypedDataTable
     {
-        /// This is the partner key assigned to each partner. It consists of the fund id followed by a computer generated six digit number.
-        public DataColumn ColumnPartnerKey;
-        /// Name of the area of ability
-        public DataColumn ColumnAbilityAreaName;
-        /// Years of experience this required for this ability.
-        public DataColumn ColumnYearsOfExperience;
-        /// This field is a numeric representation of level of ability.
-        public DataColumn ColumnAbilityLevel;
-        /// The date the record was created.
-        public DataColumn ColumnDateCreated;
-        /// User ID of who created this record.
-        public DataColumn ColumnCreatedBy;
-        /// The date the record was modified.
-        public DataColumn ColumnDateModified;
-        /// User ID of who last modified this record.
-        public DataColumn ColumnModifiedBy;
-        /// This identifies the current version of the record.
-        public DataColumn ColumnModificationId;
-
         /// TableId for Ict.Common.Data generic functions
         public static short TableId = 261;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnPartnerKeyId = 0;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnAbilityAreaNameId = 1;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnYearsOfExperienceId = 2;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnAbilityLevelId = 3;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnDateCreatedId = 4;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnCreatedById = 5;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnDateModifiedId = 6;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnModifiedById = 7;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnModificationIdId = 8;
 
         private static bool FInitInfoValues = InitInfoValues();
         private static bool InitInfoValues()
         {
             TableInfo.Add(TableId, new TTypedTableInfo(TableId, "UmUnitAbility", "um_unit_ability",
                 new TTypedColumnInfo[] {
-                    new TTypedColumnInfo(0, "PartnerKey", "p_partner_key_n", OdbcType.Decimal, 10, true),
-                    new TTypedColumnInfo(1, "AbilityAreaName", "pt_ability_area_name_c", OdbcType.VarChar, 32, true),
-                    new TTypedColumnInfo(2, "YearsOfExperience", "um_years_of_experience_i", OdbcType.Int, -1, true),
-                    new TTypedColumnInfo(3, "AbilityLevel", "pt_ability_level_i", OdbcType.Int, -1, true),
-                    new TTypedColumnInfo(4, "DateCreated", "s_date_created_d", OdbcType.Date, -1, false),
-                    new TTypedColumnInfo(5, "CreatedBy", "s_created_by_c", OdbcType.VarChar, 20, false),
-                    new TTypedColumnInfo(6, "DateModified", "s_date_modified_d", OdbcType.Date, -1, false),
-                    new TTypedColumnInfo(7, "ModifiedBy", "s_modified_by_c", OdbcType.VarChar, 20, false),
-                    new TTypedColumnInfo(8, "ModificationId", "s_modification_id_c", OdbcType.VarChar, 150, false)
+                    new TTypedColumnInfo(0, "PartnerKey", "p_partner_key_n", "Partner Key", OdbcType.Decimal, 10, true),
+                    new TTypedColumnInfo(1, "AbilityAreaName", "pt_ability_area_name_c", "Ability Area", OdbcType.VarChar, 32, true),
+                    new TTypedColumnInfo(2, "YearsOfExperience", "um_years_of_experience_i", "Years of Experience", OdbcType.Int, -1, true),
+                    new TTypedColumnInfo(3, "AbilityLevel", "pt_ability_level_i", "Ability Level", OdbcType.Int, -1, true),
+                    new TTypedColumnInfo(4, "DateCreated", "s_date_created_d", "Created Date", OdbcType.Date, -1, false),
+                    new TTypedColumnInfo(5, "CreatedBy", "s_created_by_c", "Created By", OdbcType.VarChar, 20, false),
+                    new TTypedColumnInfo(6, "DateModified", "s_date_modified_d", "Modified Date", OdbcType.Date, -1, false),
+                    new TTypedColumnInfo(7, "ModifiedBy", "s_modified_by_c", "Modified By", OdbcType.VarChar, 20, false),
+                    new TTypedColumnInfo(8, "ModificationId", "s_modification_id_c", "", OdbcType.VarChar, 150, false)
                 },
                 new int[] {
                     0, 1
@@ -6722,6 +7021,25 @@ namespace Ict.Petra.Shared.MPersonnel.Units.Data
                 base(info, context)
         {
         }
+
+        /// This is the partner key assigned to each partner. It consists of the fund id followed by a computer generated six digit number.
+        public DataColumn ColumnPartnerKey;
+        /// Name of the area of ability
+        public DataColumn ColumnAbilityAreaName;
+        /// Years of experience this required for this ability.
+        public DataColumn ColumnYearsOfExperience;
+        /// This field is a numeric representation of level of ability.
+        public DataColumn ColumnAbilityLevel;
+        /// The date the record was created.
+        public DataColumn ColumnDateCreated;
+        /// User ID of who created this record.
+        public DataColumn ColumnCreatedBy;
+        /// The date the record was modified.
+        public DataColumn ColumnDateModified;
+        /// User ID of who last modified this record.
+        public DataColumn ColumnModifiedBy;
+        /// This identifies the current version of the record.
+        public DataColumn ColumnModificationId;
 
         /// create the columns
         protected override void InitClass()
@@ -6787,6 +7105,18 @@ namespace Ict.Petra.Shared.MPersonnel.Units.Data
         public UmUnitAbilityTable GetChangesTyped()
         {
             return ((UmUnitAbilityTable)(base.GetChangesTypedInternal()));
+        }
+
+        /// return the CamelCase name of the table
+        public static string GetTableName()
+        {
+            return "UmUnitAbility";
+        }
+
+        /// return the name of the table as it is used in the database
+        public static string GetTableDBName()
+        {
+            return "um_unit_ability";
         }
 
         /// get an odbc parameter for the given column
@@ -7279,48 +7609,47 @@ namespace Ict.Petra.Shared.MPersonnel.Units.Data
     [Serializable()]
     public class UmUnitLanguageTable : TTypedDataTable
     {
-        /// This is the partner key assigned to each partner. It consists of the fund id followed by a computer generated six digit number.
-        public DataColumn ColumnPartnerKey;
-        /// Name of the language(s) spoken.
-        public DataColumn ColumnLanguageCode;
-        /// This field is a numeric representation of level of language.
-        public DataColumn ColumnLanguageLevel;
-        /// Years of experience required using this language.
-        public DataColumn ColumnYearsOfExperience;
-        /// Contains comments pertaining to the language of the unit.
-        public DataColumn ColumnUnitLangComment;
-        /// Lists whether the languare is required or desired.
-        public DataColumn ColumnUnitLanguageReq;
-        /// The date the record was created.
-        public DataColumn ColumnDateCreated;
-        /// User ID of who created this record.
-        public DataColumn ColumnCreatedBy;
-        /// The date the record was modified.
-        public DataColumn ColumnDateModified;
-        /// User ID of who last modified this record.
-        public DataColumn ColumnModifiedBy;
-        /// This identifies the current version of the record.
-        public DataColumn ColumnModificationId;
-
         /// TableId for Ict.Common.Data generic functions
         public static short TableId = 262;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnPartnerKeyId = 0;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnLanguageCodeId = 1;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnLanguageLevelId = 2;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnYearsOfExperienceId = 3;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnUnitLangCommentId = 4;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnUnitLanguageReqId = 5;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnDateCreatedId = 6;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnCreatedById = 7;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnDateModifiedId = 8;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnModifiedById = 9;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnModificationIdId = 10;
 
         private static bool FInitInfoValues = InitInfoValues();
         private static bool InitInfoValues()
         {
             TableInfo.Add(TableId, new TTypedTableInfo(TableId, "UmUnitLanguage", "um_unit_language",
                 new TTypedColumnInfo[] {
-                    new TTypedColumnInfo(0, "PartnerKey", "p_partner_key_n", OdbcType.Decimal, 10, true),
-                    new TTypedColumnInfo(1, "LanguageCode", "p_language_code_c", OdbcType.VarChar, 20, true),
-                    new TTypedColumnInfo(2, "LanguageLevel", "pt_language_level_i", OdbcType.Int, -1, true),
-                    new TTypedColumnInfo(3, "YearsOfExperience", "um_years_of_experience_i", OdbcType.Int, -1, true),
-                    new TTypedColumnInfo(4, "UnitLangComment", "um_unit_lang_comment_c", OdbcType.VarChar, 80, false),
-                    new TTypedColumnInfo(5, "UnitLanguageReq", "um_unit_language_req_c", OdbcType.VarChar, 16, false),
-                    new TTypedColumnInfo(6, "DateCreated", "s_date_created_d", OdbcType.Date, -1, false),
-                    new TTypedColumnInfo(7, "CreatedBy", "s_created_by_c", OdbcType.VarChar, 20, false),
-                    new TTypedColumnInfo(8, "DateModified", "s_date_modified_d", OdbcType.Date, -1, false),
-                    new TTypedColumnInfo(9, "ModifiedBy", "s_modified_by_c", OdbcType.VarChar, 20, false),
-                    new TTypedColumnInfo(10, "ModificationId", "s_modification_id_c", OdbcType.VarChar, 150, false)
+                    new TTypedColumnInfo(0, "PartnerKey", "p_partner_key_n", "Partner Key", OdbcType.Decimal, 10, true),
+                    new TTypedColumnInfo(1, "LanguageCode", "p_language_code_c", "Language Area", OdbcType.VarChar, 20, true),
+                    new TTypedColumnInfo(2, "LanguageLevel", "pt_language_level_i", "Language Level", OdbcType.Int, -1, true),
+                    new TTypedColumnInfo(3, "YearsOfExperience", "um_years_of_experience_i", "Years of Experience", OdbcType.Int, -1, true),
+                    new TTypedColumnInfo(4, "UnitLangComment", "um_unit_lang_comment_c", "Comment", OdbcType.VarChar, 80, false),
+                    new TTypedColumnInfo(5, "UnitLanguageReq", "um_unit_language_req_c", "Requirement", OdbcType.VarChar, 16, false),
+                    new TTypedColumnInfo(6, "DateCreated", "s_date_created_d", "Created Date", OdbcType.Date, -1, false),
+                    new TTypedColumnInfo(7, "CreatedBy", "s_created_by_c", "Created By", OdbcType.VarChar, 20, false),
+                    new TTypedColumnInfo(8, "DateModified", "s_date_modified_d", "Modified Date", OdbcType.Date, -1, false),
+                    new TTypedColumnInfo(9, "ModifiedBy", "s_modified_by_c", "Modified By", OdbcType.VarChar, 20, false),
+                    new TTypedColumnInfo(10, "ModificationId", "s_modification_id_c", "", OdbcType.VarChar, 150, false)
                 },
                 new int[] {
                     0, 1, 2
@@ -7345,6 +7674,29 @@ namespace Ict.Petra.Shared.MPersonnel.Units.Data
                 base(info, context)
         {
         }
+
+        /// This is the partner key assigned to each partner. It consists of the fund id followed by a computer generated six digit number.
+        public DataColumn ColumnPartnerKey;
+        /// Name of the language(s) spoken.
+        public DataColumn ColumnLanguageCode;
+        /// This field is a numeric representation of level of language.
+        public DataColumn ColumnLanguageLevel;
+        /// Years of experience required using this language.
+        public DataColumn ColumnYearsOfExperience;
+        /// Contains comments pertaining to the language of the unit.
+        public DataColumn ColumnUnitLangComment;
+        /// Lists whether the languare is required or desired.
+        public DataColumn ColumnUnitLanguageReq;
+        /// The date the record was created.
+        public DataColumn ColumnDateCreated;
+        /// User ID of who created this record.
+        public DataColumn ColumnCreatedBy;
+        /// The date the record was modified.
+        public DataColumn ColumnDateModified;
+        /// User ID of who last modified this record.
+        public DataColumn ColumnModifiedBy;
+        /// This identifies the current version of the record.
+        public DataColumn ColumnModificationId;
 
         /// create the columns
         protected override void InitClass()
@@ -7414,6 +7766,18 @@ namespace Ict.Petra.Shared.MPersonnel.Units.Data
         public UmUnitLanguageTable GetChangesTyped()
         {
             return ((UmUnitLanguageTable)(base.GetChangesTypedInternal()));
+        }
+
+        /// return the CamelCase name of the table
+        public static string GetTableName()
+        {
+            return "UmUnitLanguage";
+        }
+
+        /// return the name of the table as it is used in the database
+        public static string GetTableDBName()
+        {
+            return "um_unit_language";
         }
 
         /// get an odbc parameter for the given column
@@ -8008,39 +8372,38 @@ namespace Ict.Petra.Shared.MPersonnel.Units.Data
     [Serializable()]
     public class UmUnitVisionTable : TTypedDataTable
     {
-        /// This is the partner key assigned to each partner. It consists of the fund id followed by a computer generated six digit number.
-        public DataColumn ColumnPartnerKey;
-        /// Name of the area of vision
-        public DataColumn ColumnVisionAreaName;
-        /// This field is a numeric representation of level of vision.
-        public DataColumn ColumnVisionLevel;
-        /// The date the record was created.
-        public DataColumn ColumnDateCreated;
-        /// User ID of who created this record.
-        public DataColumn ColumnCreatedBy;
-        /// The date the record was modified.
-        public DataColumn ColumnDateModified;
-        /// User ID of who last modified this record.
-        public DataColumn ColumnModifiedBy;
-        /// This identifies the current version of the record.
-        public DataColumn ColumnModificationId;
-
         /// TableId for Ict.Common.Data generic functions
         public static short TableId = 263;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnPartnerKeyId = 0;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnVisionAreaNameId = 1;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnVisionLevelId = 2;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnDateCreatedId = 3;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnCreatedById = 4;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnDateModifiedId = 5;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnModifiedById = 6;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnModificationIdId = 7;
 
         private static bool FInitInfoValues = InitInfoValues();
         private static bool InitInfoValues()
         {
             TableInfo.Add(TableId, new TTypedTableInfo(TableId, "UmUnitVision", "um_unit_vision",
                 new TTypedColumnInfo[] {
-                    new TTypedColumnInfo(0, "PartnerKey", "p_partner_key_n", OdbcType.Decimal, 10, true),
-                    new TTypedColumnInfo(1, "VisionAreaName", "pt_vision_area_name_c", OdbcType.VarChar, 32, true),
-                    new TTypedColumnInfo(2, "VisionLevel", "pt_vision_level_i", OdbcType.Int, -1, true),
-                    new TTypedColumnInfo(3, "DateCreated", "s_date_created_d", OdbcType.Date, -1, false),
-                    new TTypedColumnInfo(4, "CreatedBy", "s_created_by_c", OdbcType.VarChar, 20, false),
-                    new TTypedColumnInfo(5, "DateModified", "s_date_modified_d", OdbcType.Date, -1, false),
-                    new TTypedColumnInfo(6, "ModifiedBy", "s_modified_by_c", OdbcType.VarChar, 20, false),
-                    new TTypedColumnInfo(7, "ModificationId", "s_modification_id_c", OdbcType.VarChar, 150, false)
+                    new TTypedColumnInfo(0, "PartnerKey", "p_partner_key_n", "Partner Key", OdbcType.Decimal, 10, true),
+                    new TTypedColumnInfo(1, "VisionAreaName", "pt_vision_area_name_c", "Vision Area", OdbcType.VarChar, 32, true),
+                    new TTypedColumnInfo(2, "VisionLevel", "pt_vision_level_i", "Vision Level", OdbcType.Int, -1, true),
+                    new TTypedColumnInfo(3, "DateCreated", "s_date_created_d", "Created Date", OdbcType.Date, -1, false),
+                    new TTypedColumnInfo(4, "CreatedBy", "s_created_by_c", "Created By", OdbcType.VarChar, 20, false),
+                    new TTypedColumnInfo(5, "DateModified", "s_date_modified_d", "Modified Date", OdbcType.Date, -1, false),
+                    new TTypedColumnInfo(6, "ModifiedBy", "s_modified_by_c", "Modified By", OdbcType.VarChar, 20, false),
+                    new TTypedColumnInfo(7, "ModificationId", "s_modification_id_c", "", OdbcType.VarChar, 150, false)
                 },
                 new int[] {
                     0, 1
@@ -8065,6 +8428,23 @@ namespace Ict.Petra.Shared.MPersonnel.Units.Data
                 base(info, context)
         {
         }
+
+        /// This is the partner key assigned to each partner. It consists of the fund id followed by a computer generated six digit number.
+        public DataColumn ColumnPartnerKey;
+        /// Name of the area of vision
+        public DataColumn ColumnVisionAreaName;
+        /// This field is a numeric representation of level of vision.
+        public DataColumn ColumnVisionLevel;
+        /// The date the record was created.
+        public DataColumn ColumnDateCreated;
+        /// User ID of who created this record.
+        public DataColumn ColumnCreatedBy;
+        /// The date the record was modified.
+        public DataColumn ColumnDateModified;
+        /// User ID of who last modified this record.
+        public DataColumn ColumnModifiedBy;
+        /// This identifies the current version of the record.
+        public DataColumn ColumnModificationId;
 
         /// create the columns
         protected override void InitClass()
@@ -8128,6 +8508,18 @@ namespace Ict.Petra.Shared.MPersonnel.Units.Data
         public UmUnitVisionTable GetChangesTyped()
         {
             return ((UmUnitVisionTable)(base.GetChangesTypedInternal()));
+        }
+
+        /// return the CamelCase name of the table
+        public static string GetTableName()
+        {
+            return "UmUnitVision";
+        }
+
+        /// return the name of the table as it is used in the database
+        public static string GetTableDBName()
+        {
+            return "um_unit_vision";
         }
 
         /// get an odbc parameter for the given column
@@ -8569,6 +8961,114 @@ namespace Ict.Petra.Shared.MPersonnel.Units.Data
     [Serializable()]
     public class UmUnitCostTable : TTypedDataTable
     {
+        /// TableId for Ict.Common.Data generic functions
+        public static short TableId = 264;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnPartnerKeyId = 0;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnValidFromDateId = 1;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnSingleCostsPeriodIntlId = 2;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnCoupleCostsPeriodIntlId = 3;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnChild1CostsPeriodIntlId = 4;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnChild2CostsPeriodIntlId = 5;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnChild3CostsPeriodIntlId = 6;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnAdultJoiningChargeIntlId = 7;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnCoupleJoiningChargeIntlId = 8;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnChildJoiningChargeIntlId = 9;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnLocalCurrencyCodeId = 10;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnChargePeriodId = 11;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnSingleCostsPeriodBaseId = 12;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnCoupleCostsPeriodBaseId = 13;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnChild1CostsPeriodBaseId = 14;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnChild2CostsPeriodBaseId = 15;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnChild3CostsPeriodBaseId = 16;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnAdultJoiningChargeBaseId = 17;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnCoupleJoiningChargeBaseId = 18;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnChildJoiningChargeBaseId = 19;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnDateCreatedId = 20;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnCreatedById = 21;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnDateModifiedId = 22;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnModifiedById = 23;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnModificationIdId = 24;
+
+        private static bool FInitInfoValues = InitInfoValues();
+        private static bool InitInfoValues()
+        {
+            TableInfo.Add(TableId, new TTypedTableInfo(TableId, "UmUnitCost", "um_unit_cost",
+                new TTypedColumnInfo[] {
+                    new TTypedColumnInfo(0, "PartnerKey", "p_partner_key_n", "Partner Key", OdbcType.Decimal, 10, true),
+                    new TTypedColumnInfo(1, "ValidFromDate", "um_valid_from_date_d", "Valid From", OdbcType.Date, -1, true),
+                    new TTypedColumnInfo(2, "SingleCostsPeriodIntl", "um_single_costs_period_intl_n", "Single", OdbcType.Decimal, 24, false),
+                    new TTypedColumnInfo(3, "CoupleCostsPeriodIntl", "um_couple_costs_period_intl_n", "Couple", OdbcType.Decimal, 24, false),
+                    new TTypedColumnInfo(4, "Child1CostsPeriodIntl", "um_child1_costs_period_intl_n", "Child Level 1", OdbcType.Decimal, 24, false),
+                    new TTypedColumnInfo(5, "Child2CostsPeriodIntl", "um_child2_costs_period_intl_n", "Child Level 2", OdbcType.Decimal, 24, false),
+                    new TTypedColumnInfo(6, "Child3CostsPeriodIntl", "um_child3_costs_period_intl_n", "Child Level 3", OdbcType.Decimal, 24, false),
+                    new TTypedColumnInfo(7, "AdultJoiningChargeIntl", "um_adult_joining_charge_intl_n", "Adult", OdbcType.Decimal, 24, false),
+                    new TTypedColumnInfo(8, "CoupleJoiningChargeIntl", "um_couple_joining_charge_intl_n", "Couple", OdbcType.Decimal, 24, false),
+                    new TTypedColumnInfo(9, "ChildJoiningChargeIntl", "um_child_joining_charge_intl_n", "Child", OdbcType.Decimal, 24, false),
+                    new TTypedColumnInfo(10, "LocalCurrencyCode", "a_local_currency_code_c", "Local Currency", OdbcType.VarChar, 16, false),
+                    new TTypedColumnInfo(11, "ChargePeriod", "um_charge_period_c", "Charge Period", OdbcType.VarChar, 24, true),
+                    new TTypedColumnInfo(12, "SingleCostsPeriodBase", "um_single_costs_period_base_n", "Single", OdbcType.Decimal, 24, false),
+                    new TTypedColumnInfo(13, "CoupleCostsPeriodBase", "um_couple_costs_period_base_n", "Couple", OdbcType.Decimal, 24, false),
+                    new TTypedColumnInfo(14, "Child1CostsPeriodBase", "um_child1_costs_period_base_n", "Child Level 1", OdbcType.Decimal, 24, false),
+                    new TTypedColumnInfo(15, "Child2CostsPeriodBase", "um_child2_costs_period_base_n", "Child Level 2", OdbcType.Decimal, 24, false),
+                    new TTypedColumnInfo(16, "Child3CostsPeriodBase", "um_child3_costs_period_base_n", "Child Level 3", OdbcType.Decimal, 24, false),
+                    new TTypedColumnInfo(17, "AdultJoiningChargeBase", "um_adult_joining_charge_base_n", "Adult", OdbcType.Decimal, 24, false),
+                    new TTypedColumnInfo(18, "CoupleJoiningChargeBase", "um_couple_joining_charge_base_n", "Couple", OdbcType.Decimal, 24, false),
+                    new TTypedColumnInfo(19, "ChildJoiningChargeBase", "um_child_joining_charge_base_n", "Child", OdbcType.Decimal, 24, false),
+                    new TTypedColumnInfo(20, "DateCreated", "s_date_created_d", "Created Date", OdbcType.Date, -1, false),
+                    new TTypedColumnInfo(21, "CreatedBy", "s_created_by_c", "Created By", OdbcType.VarChar, 20, false),
+                    new TTypedColumnInfo(22, "DateModified", "s_date_modified_d", "Modified Date", OdbcType.Date, -1, false),
+                    new TTypedColumnInfo(23, "ModifiedBy", "s_modified_by_c", "Modified By", OdbcType.VarChar, 20, false),
+                    new TTypedColumnInfo(24, "ModificationId", "s_modification_id_c", "", OdbcType.VarChar, 150, false)
+                },
+                new int[] {
+                    0, 1
+                }));
+            return true;
+        }
+
+        /// constructor
+        public UmUnitCostTable() :
+                base("UmUnitCost")
+        {
+        }
+
+        /// constructor
+        public UmUnitCostTable(string ATablename) :
+                base(ATablename)
+        {
+        }
+
+        /// constructor for serialization
+        public UmUnitCostTable(System.Runtime.Serialization.SerializationInfo info, System.Runtime.Serialization.StreamingContext context) :
+                base(info, context)
+        {
+        }
+
         /// This is the partner key assigned to each partner. It consists of the fund id followed by a computer generated six digit number.
         public DataColumn ColumnPartnerKey;
         /// Date from which these costs are applicable.
@@ -8619,64 +9119,6 @@ namespace Ict.Petra.Shared.MPersonnel.Units.Data
         public DataColumn ColumnModifiedBy;
         /// This identifies the current version of the record.
         public DataColumn ColumnModificationId;
-
-        /// TableId for Ict.Common.Data generic functions
-        public static short TableId = 264;
-
-        private static bool FInitInfoValues = InitInfoValues();
-        private static bool InitInfoValues()
-        {
-            TableInfo.Add(TableId, new TTypedTableInfo(TableId, "UmUnitCost", "um_unit_cost",
-                new TTypedColumnInfo[] {
-                    new TTypedColumnInfo(0, "PartnerKey", "p_partner_key_n", OdbcType.Decimal, 10, true),
-                    new TTypedColumnInfo(1, "ValidFromDate", "um_valid_from_date_d", OdbcType.Date, -1, true),
-                    new TTypedColumnInfo(2, "SingleCostsPeriodIntl", "um_single_costs_period_intl_n", OdbcType.Decimal, 24, false),
-                    new TTypedColumnInfo(3, "CoupleCostsPeriodIntl", "um_couple_costs_period_intl_n", OdbcType.Decimal, 24, false),
-                    new TTypedColumnInfo(4, "Child1CostsPeriodIntl", "um_child1_costs_period_intl_n", OdbcType.Decimal, 24, false),
-                    new TTypedColumnInfo(5, "Child2CostsPeriodIntl", "um_child2_costs_period_intl_n", OdbcType.Decimal, 24, false),
-                    new TTypedColumnInfo(6, "Child3CostsPeriodIntl", "um_child3_costs_period_intl_n", OdbcType.Decimal, 24, false),
-                    new TTypedColumnInfo(7, "AdultJoiningChargeIntl", "um_adult_joining_charge_intl_n", OdbcType.Decimal, 24, false),
-                    new TTypedColumnInfo(8, "CoupleJoiningChargeIntl", "um_couple_joining_charge_intl_n", OdbcType.Decimal, 24, false),
-                    new TTypedColumnInfo(9, "ChildJoiningChargeIntl", "um_child_joining_charge_intl_n", OdbcType.Decimal, 24, false),
-                    new TTypedColumnInfo(10, "LocalCurrencyCode", "a_local_currency_code_c", OdbcType.VarChar, 16, false),
-                    new TTypedColumnInfo(11, "ChargePeriod", "um_charge_period_c", OdbcType.VarChar, 24, true),
-                    new TTypedColumnInfo(12, "SingleCostsPeriodBase", "um_single_costs_period_base_n", OdbcType.Decimal, 24, false),
-                    new TTypedColumnInfo(13, "CoupleCostsPeriodBase", "um_couple_costs_period_base_n", OdbcType.Decimal, 24, false),
-                    new TTypedColumnInfo(14, "Child1CostsPeriodBase", "um_child1_costs_period_base_n", OdbcType.Decimal, 24, false),
-                    new TTypedColumnInfo(15, "Child2CostsPeriodBase", "um_child2_costs_period_base_n", OdbcType.Decimal, 24, false),
-                    new TTypedColumnInfo(16, "Child3CostsPeriodBase", "um_child3_costs_period_base_n", OdbcType.Decimal, 24, false),
-                    new TTypedColumnInfo(17, "AdultJoiningChargeBase", "um_adult_joining_charge_base_n", OdbcType.Decimal, 24, false),
-                    new TTypedColumnInfo(18, "CoupleJoiningChargeBase", "um_couple_joining_charge_base_n", OdbcType.Decimal, 24, false),
-                    new TTypedColumnInfo(19, "ChildJoiningChargeBase", "um_child_joining_charge_base_n", OdbcType.Decimal, 24, false),
-                    new TTypedColumnInfo(20, "DateCreated", "s_date_created_d", OdbcType.Date, -1, false),
-                    new TTypedColumnInfo(21, "CreatedBy", "s_created_by_c", OdbcType.VarChar, 20, false),
-                    new TTypedColumnInfo(22, "DateModified", "s_date_modified_d", OdbcType.Date, -1, false),
-                    new TTypedColumnInfo(23, "ModifiedBy", "s_modified_by_c", OdbcType.VarChar, 20, false),
-                    new TTypedColumnInfo(24, "ModificationId", "s_modification_id_c", OdbcType.VarChar, 150, false)
-                },
-                new int[] {
-                    0, 1
-                }));
-            return true;
-        }
-
-        /// constructor
-        public UmUnitCostTable() :
-                base("UmUnitCost")
-        {
-        }
-
-        /// constructor
-        public UmUnitCostTable(string ATablename) :
-                base(ATablename)
-        {
-        }
-
-        /// constructor for serialization
-        public UmUnitCostTable(System.Runtime.Serialization.SerializationInfo info, System.Runtime.Serialization.StreamingContext context) :
-                base(info, context)
-        {
-        }
 
         /// create the columns
         protected override void InitClass()
@@ -8774,6 +9216,18 @@ namespace Ict.Petra.Shared.MPersonnel.Units.Data
         public UmUnitCostTable GetChangesTyped()
         {
             return ((UmUnitCostTable)(base.GetChangesTypedInternal()));
+        }
+
+        /// return the CamelCase name of the table
+        public static string GetTableName()
+        {
+            return "UmUnitCost";
+        }
+
+        /// return the name of the table as it is used in the database
+        public static string GetTableDBName()
+        {
+            return "um_unit_cost";
         }
 
         /// get an odbc parameter for the given column
@@ -10082,6 +10536,78 @@ namespace Ict.Petra.Shared.MPersonnel.Units.Data
     [Serializable()]
     public class UmUnitEvaluationTable : TTypedDataTable
     {
+        /// TableId for Ict.Common.Data generic functions
+        public static short TableId = 265;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnPartnerKeyId = 0;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnDateOfEvaluationId = 1;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnEvaluationNumberId = 2;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnEvaluatorFamilyStatusId = 3;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnEvaluatorHomeCountryId = 4;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnEvaluatorAgeId = 5;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnEvaluatorSexId = 6;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnUnitEvaluationDataId = 7;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnDateCreatedId = 8;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnCreatedById = 9;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnDateModifiedId = 10;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnModifiedById = 11;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnModificationIdId = 12;
+
+        private static bool FInitInfoValues = InitInfoValues();
+        private static bool InitInfoValues()
+        {
+            TableInfo.Add(TableId, new TTypedTableInfo(TableId, "UmUnitEvaluation", "um_unit_evaluation",
+                new TTypedColumnInfo[] {
+                    new TTypedColumnInfo(0, "PartnerKey", "p_partner_key_n", "Partner Key", OdbcType.Decimal, 10, true),
+                    new TTypedColumnInfo(1, "DateOfEvaluation", "um_date_of_evaluation_d", "Evaluation Date", OdbcType.Date, -1, true),
+                    new TTypedColumnInfo(2, "EvaluationNumber", "um_evaluation_number_n", "Evaluation Number", OdbcType.Decimal, 14, true),
+                    new TTypedColumnInfo(3, "EvaluatorFamilyStatus", "um_evaluator_family_status_c", "Evaluator Family Status", OdbcType.VarChar, 40, true),
+                    new TTypedColumnInfo(4, "EvaluatorHomeCountry", "p_evaluator_home_country_c", "Evaluator Home Country", OdbcType.VarChar, 40, true),
+                    new TTypedColumnInfo(5, "EvaluatorAge", "um_evaluator_age_n", "Evaluator Age", OdbcType.Decimal, 4, true),
+                    new TTypedColumnInfo(6, "EvaluatorSex", "um_evaluator_sex_c", "Sex", OdbcType.VarChar, 2, true),
+                    new TTypedColumnInfo(7, "UnitEvaluationData", "um_unit_evaluation_data_c", "Unit Evaluation Data", OdbcType.VarChar, 160, false),
+                    new TTypedColumnInfo(8, "DateCreated", "s_date_created_d", "Created Date", OdbcType.Date, -1, false),
+                    new TTypedColumnInfo(9, "CreatedBy", "s_created_by_c", "Created By", OdbcType.VarChar, 20, false),
+                    new TTypedColumnInfo(10, "DateModified", "s_date_modified_d", "Modified Date", OdbcType.Date, -1, false),
+                    new TTypedColumnInfo(11, "ModifiedBy", "s_modified_by_c", "Modified By", OdbcType.VarChar, 20, false),
+                    new TTypedColumnInfo(12, "ModificationId", "s_modification_id_c", "", OdbcType.VarChar, 150, false)
+                },
+                new int[] {
+                    0, 1, 2
+                }));
+            return true;
+        }
+
+        /// constructor
+        public UmUnitEvaluationTable() :
+                base("UmUnitEvaluation")
+        {
+        }
+
+        /// constructor
+        public UmUnitEvaluationTable(string ATablename) :
+                base(ATablename)
+        {
+        }
+
+        /// constructor for serialization
+        public UmUnitEvaluationTable(System.Runtime.Serialization.SerializationInfo info, System.Runtime.Serialization.StreamingContext context) :
+                base(info, context)
+        {
+        }
+
         /// This is the partner key assigned to each partner. It consists of the fund id followed by a computer generated six digit number.
         public DataColumn ColumnPartnerKey;
         /// Indicates the date of the evaluation.
@@ -10108,52 +10634,6 @@ namespace Ict.Petra.Shared.MPersonnel.Units.Data
         public DataColumn ColumnModifiedBy;
         /// This identifies the current version of the record.
         public DataColumn ColumnModificationId;
-
-        /// TableId for Ict.Common.Data generic functions
-        public static short TableId = 265;
-
-        private static bool FInitInfoValues = InitInfoValues();
-        private static bool InitInfoValues()
-        {
-            TableInfo.Add(TableId, new TTypedTableInfo(TableId, "UmUnitEvaluation", "um_unit_evaluation",
-                new TTypedColumnInfo[] {
-                    new TTypedColumnInfo(0, "PartnerKey", "p_partner_key_n", OdbcType.Decimal, 10, true),
-                    new TTypedColumnInfo(1, "DateOfEvaluation", "um_date_of_evaluation_d", OdbcType.Date, -1, true),
-                    new TTypedColumnInfo(2, "EvaluationNumber", "um_evaluation_number_n", OdbcType.Decimal, 14, true),
-                    new TTypedColumnInfo(3, "EvaluatorFamilyStatus", "um_evaluator_family_status_c", OdbcType.VarChar, 40, true),
-                    new TTypedColumnInfo(4, "EvaluatorHomeCountry", "p_evaluator_home_country_c", OdbcType.VarChar, 40, true),
-                    new TTypedColumnInfo(5, "EvaluatorAge", "um_evaluator_age_n", OdbcType.Decimal, 4, true),
-                    new TTypedColumnInfo(6, "EvaluatorSex", "um_evaluator_sex_c", OdbcType.VarChar, 2, true),
-                    new TTypedColumnInfo(7, "UnitEvaluationData", "um_unit_evaluation_data_c", OdbcType.VarChar, 160, false),
-                    new TTypedColumnInfo(8, "DateCreated", "s_date_created_d", OdbcType.Date, -1, false),
-                    new TTypedColumnInfo(9, "CreatedBy", "s_created_by_c", OdbcType.VarChar, 20, false),
-                    new TTypedColumnInfo(10, "DateModified", "s_date_modified_d", OdbcType.Date, -1, false),
-                    new TTypedColumnInfo(11, "ModifiedBy", "s_modified_by_c", OdbcType.VarChar, 20, false),
-                    new TTypedColumnInfo(12, "ModificationId", "s_modification_id_c", OdbcType.VarChar, 150, false)
-                },
-                new int[] {
-                    0, 1, 2
-                }));
-            return true;
-        }
-
-        /// constructor
-        public UmUnitEvaluationTable() :
-                base("UmUnitEvaluation")
-        {
-        }
-
-        /// constructor
-        public UmUnitEvaluationTable(string ATablename) :
-                base(ATablename)
-        {
-        }
-
-        /// constructor for serialization
-        public UmUnitEvaluationTable(System.Runtime.Serialization.SerializationInfo info, System.Runtime.Serialization.StreamingContext context) :
-                base(info, context)
-        {
-        }
 
         /// create the columns
         protected override void InitClass()
@@ -10227,6 +10707,18 @@ namespace Ict.Petra.Shared.MPersonnel.Units.Data
         public UmUnitEvaluationTable GetChangesTyped()
         {
             return ((UmUnitEvaluationTable)(base.GetChangesTypedInternal()));
+        }
+
+        /// return the CamelCase name of the table
+        public static string GetTableName()
+        {
+            return "UmUnitEvaluation";
+        }
+
+        /// return the name of the table as it is used in the database
+        public static string GetTableDBName()
+        {
+            return "um_unit_evaluation";
         }
 
         /// get an odbc parameter for the given column

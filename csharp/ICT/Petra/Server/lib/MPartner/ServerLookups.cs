@@ -31,6 +31,7 @@ using System.Data;
 
 using Ict.Common;
 using Ict.Common.DB;
+using Ict.Common.Data;
 using Ict.Petra.Server.MCommon;
 using Ict.Petra.Shared;
 using Ict.Petra.Shared.MPartner;
@@ -773,8 +774,8 @@ namespace Ict.Petra.Server.MPartner.Partner.ServerLookups
             // Sort the users by date and time they have been last used
 
             System.Data.DataRow[] RecentPartnerRows = RecentPartnersDT.Select("",
-                PRecentPartnersTable.GetwhenDateLabel() + " DESC, " +
-                PRecentPartnersTable.GetwhenTimeLabel() + " DESC");
+                TTypedDataTable.GetLabel(PRecentPartnersTable.TableId, PRecentPartnersTable.ColumnwhenDateId) + " DESC, " +
+                TTypedDataTable.GetLabel(PRecentPartnersTable.TableId, PRecentPartnersTable.ColumnwhenTimeId) + " DESC");
 
             for (int Counter = 0; Counter < RecentPartnersDT.Rows.Count; ++Counter)
             {

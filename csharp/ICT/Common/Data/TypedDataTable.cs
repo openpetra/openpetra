@@ -28,6 +28,7 @@ using System.Data;
 using System.Data.Odbc;
 using System.Collections.Generic;
 using System.Runtime.Serialization;
+using Mono.Unix;
 
 namespace Ict.Common.Data
 {
@@ -161,6 +162,9 @@ namespace Ict.Common.Data
             /// name of the column as it is in the SQL database
             public string dbname;
 
+            /// Label (with translation if it is used on a generated screen on the client side)
+            public string label;
+            
             /// odbc type of the column
             public System.Data.Odbc.OdbcType odbctype;
 
@@ -174,6 +178,7 @@ namespace Ict.Common.Data
             public TTypedColumnInfo(short AOrderNumber,
                 string AName,
                 string ADBName,
+                string ALabel,
                 System.Data.Odbc.OdbcType AOdbcType,
                 Int32 ALength,
                 bool ANotNull)
@@ -181,6 +186,7 @@ namespace Ict.Common.Data
                 orderNumber = AOrderNumber;
                 name = AName;
                 dbname = ADBName;
+                label = ALabel;
                 odbctype = AOdbcType;
                 length = ALength;
                 bNotNull = ANotNull;
@@ -226,6 +232,18 @@ namespace Ict.Common.Data
         public static string GetTableName(short ATableNumber)
         {
             return TableInfo[ATableNumber].name;
+        }
+
+        /// the column name as it is in the SQL database
+        public static string GetColumnNameSQL(short ATableNumber, short AColumnNr)
+        {
+            return TableInfo[ATableNumber].columns[AColumnNr].dbname;
+        }
+        
+        /// returns the translated label for the column
+        public static string GetLabel(short ATableNumber, short AColumnNr)
+        {
+            return Catalog.GetString(TableInfo[ATableNumber].columns[AColumnNr].label);
         }
 
         /// get the names of the columns that are part of the primary key

@@ -42,45 +42,44 @@ namespace Ict.Petra.Shared.MConference.Data
     [Serializable()]
     public class PcConferenceTable : TTypedDataTable
     {
-        /// This is the partner key assigned to each partner. It consists of the fund id followed by a computer generated six digit number.
-        public DataColumn ColumnConferenceKey;
-        ///
-        public DataColumn ColumnXyzTbdPrefix;
-        ///
-        public DataColumn ColumnStart;
-        ///
-        public DataColumn ColumnEnd;
-        /// This defines which currency is being used
-        public DataColumn ColumnCurrencyCode;
-        /// The date the record was created.
-        public DataColumn ColumnDateCreated;
-        /// User ID of who created this record.
-        public DataColumn ColumnCreatedBy;
-        /// The date the record was modified.
-        public DataColumn ColumnDateModified;
-        /// User ID of who last modified this record.
-        public DataColumn ColumnModifiedBy;
-        /// This identifies the current version of the record.
-        public DataColumn ColumnModificationId;
-
         /// TableId for Ict.Common.Data generic functions
         public static short TableId = 266;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnConferenceKeyId = 0;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnXyzTbdPrefixId = 1;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnStartId = 2;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnEndId = 3;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnCurrencyCodeId = 4;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnDateCreatedId = 5;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnCreatedById = 6;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnDateModifiedId = 7;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnModifiedById = 8;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnModificationIdId = 9;
 
         private static bool FInitInfoValues = InitInfoValues();
         private static bool InitInfoValues()
         {
             TableInfo.Add(TableId, new TTypedTableInfo(TableId, "PcConference", "pc_conference",
                 new TTypedColumnInfo[] {
-                    new TTypedColumnInfo(0, "ConferenceKey", "pc_conference_key_n", OdbcType.Decimal, 10, true),
-                    new TTypedColumnInfo(1, "XyzTbdPrefix", "pc_xyz_tbd_prefix_c", OdbcType.VarChar, 10, false),
-                    new TTypedColumnInfo(2, "Start", "pc_start_d", OdbcType.Date, -1, false),
-                    new TTypedColumnInfo(3, "End", "pc_end_d", OdbcType.Date, -1, false),
-                    new TTypedColumnInfo(4, "CurrencyCode", "a_currency_code_c", OdbcType.VarChar, 16, true),
-                    new TTypedColumnInfo(5, "DateCreated", "s_date_created_d", OdbcType.Date, -1, false),
-                    new TTypedColumnInfo(6, "CreatedBy", "s_created_by_c", OdbcType.VarChar, 20, false),
-                    new TTypedColumnInfo(7, "DateModified", "s_date_modified_d", OdbcType.Date, -1, false),
-                    new TTypedColumnInfo(8, "ModifiedBy", "s_modified_by_c", OdbcType.VarChar, 20, false),
-                    new TTypedColumnInfo(9, "ModificationId", "s_modification_id_c", OdbcType.VarChar, 150, false)
+                    new TTypedColumnInfo(0, "ConferenceKey", "pc_conference_key_n", "Partner Key", OdbcType.Decimal, 10, true),
+                    new TTypedColumnInfo(1, "XyzTbdPrefix", "pc_xyz_tbd_prefix_c", "Xyz_tbd Code Prefix", OdbcType.VarChar, 10, false),
+                    new TTypedColumnInfo(2, "Start", "pc_start_d", "Start Date", OdbcType.Date, -1, false),
+                    new TTypedColumnInfo(3, "End", "pc_end_d", "End Date", OdbcType.Date, -1, false),
+                    new TTypedColumnInfo(4, "CurrencyCode", "a_currency_code_c", "Currency Code", OdbcType.VarChar, 16, true),
+                    new TTypedColumnInfo(5, "DateCreated", "s_date_created_d", "Created Date", OdbcType.Date, -1, false),
+                    new TTypedColumnInfo(6, "CreatedBy", "s_created_by_c", "Created By", OdbcType.VarChar, 20, false),
+                    new TTypedColumnInfo(7, "DateModified", "s_date_modified_d", "Modified Date", OdbcType.Date, -1, false),
+                    new TTypedColumnInfo(8, "ModifiedBy", "s_modified_by_c", "Modified By", OdbcType.VarChar, 20, false),
+                    new TTypedColumnInfo(9, "ModificationId", "s_modification_id_c", "", OdbcType.VarChar, 150, false)
                 },
                 new int[] {
                     0
@@ -105,6 +104,27 @@ namespace Ict.Petra.Shared.MConference.Data
                 base(info, context)
         {
         }
+
+        /// This is the partner key assigned to each partner. It consists of the fund id followed by a computer generated six digit number.
+        public DataColumn ColumnConferenceKey;
+        ///
+        public DataColumn ColumnXyzTbdPrefix;
+        ///
+        public DataColumn ColumnStart;
+        ///
+        public DataColumn ColumnEnd;
+        /// This defines which currency is being used
+        public DataColumn ColumnCurrencyCode;
+        /// The date the record was created.
+        public DataColumn ColumnDateCreated;
+        /// User ID of who created this record.
+        public DataColumn ColumnCreatedBy;
+        /// The date the record was modified.
+        public DataColumn ColumnDateModified;
+        /// User ID of who last modified this record.
+        public DataColumn ColumnModifiedBy;
+        /// This identifies the current version of the record.
+        public DataColumn ColumnModificationId;
 
         /// create the columns
         protected override void InitClass()
@@ -172,6 +192,18 @@ namespace Ict.Petra.Shared.MConference.Data
         public PcConferenceTable GetChangesTyped()
         {
             return ((PcConferenceTable)(base.GetChangesTypedInternal()));
+        }
+
+        /// return the CamelCase name of the table
+        public static string GetTableName()
+        {
+            return "PcConference";
+        }
+
+        /// return the name of the table as it is used in the database
+        public static string GetTableDBName()
+        {
+            return "pc_conference";
         }
 
         /// get an odbc parameter for the given column
@@ -715,45 +747,44 @@ namespace Ict.Petra.Shared.MConference.Data
     [Serializable()]
     public class PcCostTypeTable : TTypedDataTable
     {
-        /// Unique name of the cost type
-        public DataColumn ColumnCostTypeCode;
-        /// Description of the cost type
-        public DataColumn ColumnCostTypeDescription;
-        /// Can this cost type be assigned?
-        public DataColumn ColumnUnassignableFlag;
-        /// This is the date the record was last updated.
-        public DataColumn ColumnUnassignableDate;
-        /// Indicates if a record can be deleted.
-        public DataColumn ColumnDeletableFlag;
-        /// The date the record was created.
-        public DataColumn ColumnDateCreated;
-        /// User ID of who created this record.
-        public DataColumn ColumnCreatedBy;
-        /// The date the record was modified.
-        public DataColumn ColumnDateModified;
-        /// User ID of who last modified this record.
-        public DataColumn ColumnModifiedBy;
-        /// This identifies the current version of the record.
-        public DataColumn ColumnModificationId;
-
         /// TableId for Ict.Common.Data generic functions
         public static short TableId = 267;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnCostTypeCodeId = 0;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnCostTypeDescriptionId = 1;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnUnassignableFlagId = 2;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnUnassignableDateId = 3;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnDeletableFlagId = 4;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnDateCreatedId = 5;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnCreatedById = 6;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnDateModifiedId = 7;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnModifiedById = 8;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnModificationIdId = 9;
 
         private static bool FInitInfoValues = InitInfoValues();
         private static bool InitInfoValues()
         {
             TableInfo.Add(TableId, new TTypedTableInfo(TableId, "PcCostType", "pc_cost_type",
                 new TTypedColumnInfo[] {
-                    new TTypedColumnInfo(0, "CostTypeCode", "pc_cost_type_code_c", OdbcType.VarChar, 32, true),
-                    new TTypedColumnInfo(1, "CostTypeDescription", "pc_cost_type_description_c", OdbcType.VarChar, 80, false),
-                    new TTypedColumnInfo(2, "UnassignableFlag", "pc_unassignable_flag_l", OdbcType.Bit, -1, true),
-                    new TTypedColumnInfo(3, "UnassignableDate", "pc_unassignable_date_d", OdbcType.Date, -1, false),
-                    new TTypedColumnInfo(4, "DeletableFlag", "pc_deletable_flag_l", OdbcType.Bit, -1, false),
-                    new TTypedColumnInfo(5, "DateCreated", "s_date_created_d", OdbcType.Date, -1, false),
-                    new TTypedColumnInfo(6, "CreatedBy", "s_created_by_c", OdbcType.VarChar, 20, false),
-                    new TTypedColumnInfo(7, "DateModified", "s_date_modified_d", OdbcType.Date, -1, false),
-                    new TTypedColumnInfo(8, "ModifiedBy", "s_modified_by_c", OdbcType.VarChar, 20, false),
-                    new TTypedColumnInfo(9, "ModificationId", "s_modification_id_c", OdbcType.VarChar, 150, false)
+                    new TTypedColumnInfo(0, "CostTypeCode", "pc_cost_type_code_c", "Cost Type Code", OdbcType.VarChar, 32, true),
+                    new TTypedColumnInfo(1, "CostTypeDescription", "pc_cost_type_description_c", "Description", OdbcType.VarChar, 80, false),
+                    new TTypedColumnInfo(2, "UnassignableFlag", "pc_unassignable_flag_l", "Unassignable?", OdbcType.Bit, -1, true),
+                    new TTypedColumnInfo(3, "UnassignableDate", "pc_unassignable_date_d", "Date", OdbcType.Date, -1, false),
+                    new TTypedColumnInfo(4, "DeletableFlag", "pc_deletable_flag_l", "Deletable?", OdbcType.Bit, -1, false),
+                    new TTypedColumnInfo(5, "DateCreated", "s_date_created_d", "Created Date", OdbcType.Date, -1, false),
+                    new TTypedColumnInfo(6, "CreatedBy", "s_created_by_c", "Created By", OdbcType.VarChar, 20, false),
+                    new TTypedColumnInfo(7, "DateModified", "s_date_modified_d", "Modified Date", OdbcType.Date, -1, false),
+                    new TTypedColumnInfo(8, "ModifiedBy", "s_modified_by_c", "Modified By", OdbcType.VarChar, 20, false),
+                    new TTypedColumnInfo(9, "ModificationId", "s_modification_id_c", "", OdbcType.VarChar, 150, false)
                 },
                 new int[] {
                     0
@@ -778,6 +809,27 @@ namespace Ict.Petra.Shared.MConference.Data
                 base(info, context)
         {
         }
+
+        /// Unique name of the cost type
+        public DataColumn ColumnCostTypeCode;
+        /// Description of the cost type
+        public DataColumn ColumnCostTypeDescription;
+        /// Can this cost type be assigned?
+        public DataColumn ColumnUnassignableFlag;
+        /// This is the date the record was last updated.
+        public DataColumn ColumnUnassignableDate;
+        /// Indicates if a record can be deleted.
+        public DataColumn ColumnDeletableFlag;
+        /// The date the record was created.
+        public DataColumn ColumnDateCreated;
+        /// User ID of who created this record.
+        public DataColumn ColumnCreatedBy;
+        /// The date the record was modified.
+        public DataColumn ColumnDateModified;
+        /// User ID of who last modified this record.
+        public DataColumn ColumnModifiedBy;
+        /// This identifies the current version of the record.
+        public DataColumn ColumnModificationId;
 
         /// create the columns
         protected override void InitClass()
@@ -845,6 +897,18 @@ namespace Ict.Petra.Shared.MConference.Data
         public PcCostTypeTable GetChangesTyped()
         {
             return ((PcCostTypeTable)(base.GetChangesTypedInternal()));
+        }
+
+        /// return the CamelCase name of the table
+        public static string GetTableName()
+        {
+            return "PcCostType";
+        }
+
+        /// return the name of the table as it is used in the database
+        public static string GetTableDBName()
+        {
+            return "pc_cost_type";
         }
 
         /// get an odbc parameter for the given column
@@ -1388,48 +1452,47 @@ namespace Ict.Petra.Shared.MConference.Data
     [Serializable()]
     public class PcConferenceOptionTypeTable : TTypedDataTable
     {
-        /// Unique name of the cost type
-        public DataColumn ColumnOptionTypeCode;
-        /// Description of the option type
-        public DataColumn ColumnOptionTypeDescription;
-        ///
-        public DataColumn ColumnOptionTypeComment;
-        /// Can this option type be assigned?
-        public DataColumn ColumnUnassignableFlag;
-        /// This is the date the record was last updated.
-        public DataColumn ColumnUnassignableDate;
-        /// Indicates if a record can be deleted.
-        public DataColumn ColumnDeletableFlag;
-        /// The date the record was created.
-        public DataColumn ColumnDateCreated;
-        /// User ID of who created this record.
-        public DataColumn ColumnCreatedBy;
-        /// The date the record was modified.
-        public DataColumn ColumnDateModified;
-        /// User ID of who last modified this record.
-        public DataColumn ColumnModifiedBy;
-        /// This identifies the current version of the record.
-        public DataColumn ColumnModificationId;
-
         /// TableId for Ict.Common.Data generic functions
         public static short TableId = 268;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnOptionTypeCodeId = 0;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnOptionTypeDescriptionId = 1;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnOptionTypeCommentId = 2;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnUnassignableFlagId = 3;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnUnassignableDateId = 4;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnDeletableFlagId = 5;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnDateCreatedId = 6;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnCreatedById = 7;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnDateModifiedId = 8;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnModifiedById = 9;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnModificationIdId = 10;
 
         private static bool FInitInfoValues = InitInfoValues();
         private static bool InitInfoValues()
         {
             TableInfo.Add(TableId, new TTypedTableInfo(TableId, "PcConferenceOptionType", "pc_conference_option_type",
                 new TTypedColumnInfo[] {
-                    new TTypedColumnInfo(0, "OptionTypeCode", "pc_option_type_code_c", OdbcType.VarChar, 32, true),
-                    new TTypedColumnInfo(1, "OptionTypeDescription", "pc_option_type_description_c", OdbcType.VarChar, 80, false),
-                    new TTypedColumnInfo(2, "OptionTypeComment", "pc_option_type_comment_c", OdbcType.VarChar, 512, false),
-                    new TTypedColumnInfo(3, "UnassignableFlag", "pc_unassignable_flag_l", OdbcType.Bit, -1, true),
-                    new TTypedColumnInfo(4, "UnassignableDate", "pc_unassignable_date_d", OdbcType.Date, -1, false),
-                    new TTypedColumnInfo(5, "DeletableFlag", "pc_deletable_flag_l", OdbcType.Bit, -1, false),
-                    new TTypedColumnInfo(6, "DateCreated", "s_date_created_d", OdbcType.Date, -1, false),
-                    new TTypedColumnInfo(7, "CreatedBy", "s_created_by_c", OdbcType.VarChar, 20, false),
-                    new TTypedColumnInfo(8, "DateModified", "s_date_modified_d", OdbcType.Date, -1, false),
-                    new TTypedColumnInfo(9, "ModifiedBy", "s_modified_by_c", OdbcType.VarChar, 20, false),
-                    new TTypedColumnInfo(10, "ModificationId", "s_modification_id_c", OdbcType.VarChar, 150, false)
+                    new TTypedColumnInfo(0, "OptionTypeCode", "pc_option_type_code_c", "pc_option_type_code_c", OdbcType.VarChar, 32, true),
+                    new TTypedColumnInfo(1, "OptionTypeDescription", "pc_option_type_description_c", "pc_option_type_description_c", OdbcType.VarChar, 80, false),
+                    new TTypedColumnInfo(2, "OptionTypeComment", "pc_option_type_comment_c", "pc_option_type_comment_c", OdbcType.VarChar, 512, false),
+                    new TTypedColumnInfo(3, "UnassignableFlag", "pc_unassignable_flag_l", "pc_unassignable_flag_l", OdbcType.Bit, -1, true),
+                    new TTypedColumnInfo(4, "UnassignableDate", "pc_unassignable_date_d", "pc_unassignable_date_d", OdbcType.Date, -1, false),
+                    new TTypedColumnInfo(5, "DeletableFlag", "pc_deletable_flag_l", "pc_deletable_flag_l", OdbcType.Bit, -1, false),
+                    new TTypedColumnInfo(6, "DateCreated", "s_date_created_d", "Created Date", OdbcType.Date, -1, false),
+                    new TTypedColumnInfo(7, "CreatedBy", "s_created_by_c", "Created By", OdbcType.VarChar, 20, false),
+                    new TTypedColumnInfo(8, "DateModified", "s_date_modified_d", "Modified Date", OdbcType.Date, -1, false),
+                    new TTypedColumnInfo(9, "ModifiedBy", "s_modified_by_c", "Modified By", OdbcType.VarChar, 20, false),
+                    new TTypedColumnInfo(10, "ModificationId", "s_modification_id_c", "", OdbcType.VarChar, 150, false)
                 },
                 new int[] {
                     0
@@ -1454,6 +1517,29 @@ namespace Ict.Petra.Shared.MConference.Data
                 base(info, context)
         {
         }
+
+        /// Unique name of the cost type
+        public DataColumn ColumnOptionTypeCode;
+        /// Description of the option type
+        public DataColumn ColumnOptionTypeDescription;
+        ///
+        public DataColumn ColumnOptionTypeComment;
+        /// Can this option type be assigned?
+        public DataColumn ColumnUnassignableFlag;
+        /// This is the date the record was last updated.
+        public DataColumn ColumnUnassignableDate;
+        /// Indicates if a record can be deleted.
+        public DataColumn ColumnDeletableFlag;
+        /// The date the record was created.
+        public DataColumn ColumnDateCreated;
+        /// User ID of who created this record.
+        public DataColumn ColumnCreatedBy;
+        /// The date the record was modified.
+        public DataColumn ColumnDateModified;
+        /// User ID of who last modified this record.
+        public DataColumn ColumnModifiedBy;
+        /// This identifies the current version of the record.
+        public DataColumn ColumnModificationId;
 
         /// create the columns
         protected override void InitClass()
@@ -1523,6 +1609,18 @@ namespace Ict.Petra.Shared.MConference.Data
         public PcConferenceOptionTypeTable GetChangesTyped()
         {
             return ((PcConferenceOptionTypeTable)(base.GetChangesTypedInternal()));
+        }
+
+        /// return the CamelCase name of the table
+        public static string GetTableName()
+        {
+            return "PcConferenceOptionType";
+        }
+
+        /// return the name of the table as it is used in the database
+        public static string GetTableDBName()
+        {
+            return "pc_conference_option_type";
         }
 
         /// get an odbc parameter for the given column
@@ -2117,39 +2215,38 @@ namespace Ict.Petra.Shared.MConference.Data
     [Serializable()]
     public class PcConferenceOptionTable : TTypedDataTable
     {
-        /// This is the partner key assigned to each partner. It consists of the fund id followed by a computer generated six digit number.
-        public DataColumn ColumnConferenceKey;
-        /// Unique name of the cost type
-        public DataColumn ColumnOptionTypeCode;
-        /// Description of the option type
-        public DataColumn ColumnOptionSet;
-        /// The date the record was created.
-        public DataColumn ColumnDateCreated;
-        /// User ID of who created this record.
-        public DataColumn ColumnCreatedBy;
-        /// The date the record was modified.
-        public DataColumn ColumnDateModified;
-        /// User ID of who last modified this record.
-        public DataColumn ColumnModifiedBy;
-        /// This identifies the current version of the record.
-        public DataColumn ColumnModificationId;
-
         /// TableId for Ict.Common.Data generic functions
         public static short TableId = 269;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnConferenceKeyId = 0;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnOptionTypeCodeId = 1;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnOptionSetId = 2;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnDateCreatedId = 3;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnCreatedById = 4;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnDateModifiedId = 5;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnModifiedById = 6;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnModificationIdId = 7;
 
         private static bool FInitInfoValues = InitInfoValues();
         private static bool InitInfoValues()
         {
             TableInfo.Add(TableId, new TTypedTableInfo(TableId, "PcConferenceOption", "pc_conference_option",
                 new TTypedColumnInfo[] {
-                    new TTypedColumnInfo(0, "ConferenceKey", "pc_conference_key_n", OdbcType.Decimal, 10, true),
-                    new TTypedColumnInfo(1, "OptionTypeCode", "pc_option_type_code_c", OdbcType.VarChar, 32, true),
-                    new TTypedColumnInfo(2, "OptionSet", "pc_option_set_l", OdbcType.Bit, -1, false),
-                    new TTypedColumnInfo(3, "DateCreated", "s_date_created_d", OdbcType.Date, -1, false),
-                    new TTypedColumnInfo(4, "CreatedBy", "s_created_by_c", OdbcType.VarChar, 20, false),
-                    new TTypedColumnInfo(5, "DateModified", "s_date_modified_d", OdbcType.Date, -1, false),
-                    new TTypedColumnInfo(6, "ModifiedBy", "s_modified_by_c", OdbcType.VarChar, 20, false),
-                    new TTypedColumnInfo(7, "ModificationId", "s_modification_id_c", OdbcType.VarChar, 150, false)
+                    new TTypedColumnInfo(0, "ConferenceKey", "pc_conference_key_n", "pc_conference_key_n", OdbcType.Decimal, 10, true),
+                    new TTypedColumnInfo(1, "OptionTypeCode", "pc_option_type_code_c", "pc_option_type_code_c", OdbcType.VarChar, 32, true),
+                    new TTypedColumnInfo(2, "OptionSet", "pc_option_set_l", "pc_option_set_l", OdbcType.Bit, -1, false),
+                    new TTypedColumnInfo(3, "DateCreated", "s_date_created_d", "Created Date", OdbcType.Date, -1, false),
+                    new TTypedColumnInfo(4, "CreatedBy", "s_created_by_c", "Created By", OdbcType.VarChar, 20, false),
+                    new TTypedColumnInfo(5, "DateModified", "s_date_modified_d", "Modified Date", OdbcType.Date, -1, false),
+                    new TTypedColumnInfo(6, "ModifiedBy", "s_modified_by_c", "Modified By", OdbcType.VarChar, 20, false),
+                    new TTypedColumnInfo(7, "ModificationId", "s_modification_id_c", "", OdbcType.VarChar, 150, false)
                 },
                 new int[] {
                     0, 1
@@ -2174,6 +2271,23 @@ namespace Ict.Petra.Shared.MConference.Data
                 base(info, context)
         {
         }
+
+        /// This is the partner key assigned to each partner. It consists of the fund id followed by a computer generated six digit number.
+        public DataColumn ColumnConferenceKey;
+        /// Unique name of the cost type
+        public DataColumn ColumnOptionTypeCode;
+        /// Description of the option type
+        public DataColumn ColumnOptionSet;
+        /// The date the record was created.
+        public DataColumn ColumnDateCreated;
+        /// User ID of who created this record.
+        public DataColumn ColumnCreatedBy;
+        /// The date the record was modified.
+        public DataColumn ColumnDateModified;
+        /// User ID of who last modified this record.
+        public DataColumn ColumnModifiedBy;
+        /// This identifies the current version of the record.
+        public DataColumn ColumnModificationId;
 
         /// create the columns
         protected override void InitClass()
@@ -2237,6 +2351,18 @@ namespace Ict.Petra.Shared.MConference.Data
         public PcConferenceOptionTable GetChangesTyped()
         {
             return ((PcConferenceOptionTable)(base.GetChangesTypedInternal()));
+        }
+
+        /// return the CamelCase name of the table
+        public static string GetTableName()
+        {
+            return "PcConferenceOption";
+        }
+
+        /// return the name of the table as it is used in the database
+        public static string GetTableDBName()
+        {
+            return "pc_conference_option";
         }
 
         /// get an odbc parameter for the given column
@@ -2678,45 +2804,44 @@ namespace Ict.Petra.Shared.MConference.Data
     [Serializable()]
     public class PcDiscountCriteriaTable : TTypedDataTable
     {
-        /// Unique name of the discount criteria
-        public DataColumn ColumnDiscountCriteriaCode;
-        /// Description of the discount criteria
-        public DataColumn ColumnDiscountCriteriaDesc;
-        /// Can this discount criteria be assigned?
-        public DataColumn ColumnUnassignableFlag;
-        /// This is the date the record was last updated.
-        public DataColumn ColumnUnassignableDate;
-        /// Indicates if a record can be deleted.
-        public DataColumn ColumnDeletableFlag;
-        /// The date the record was created.
-        public DataColumn ColumnDateCreated;
-        /// User ID of who created this record.
-        public DataColumn ColumnCreatedBy;
-        /// The date the record was modified.
-        public DataColumn ColumnDateModified;
-        /// User ID of who last modified this record.
-        public DataColumn ColumnModifiedBy;
-        /// This identifies the current version of the record.
-        public DataColumn ColumnModificationId;
-
         /// TableId for Ict.Common.Data generic functions
         public static short TableId = 270;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnDiscountCriteriaCodeId = 0;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnDiscountCriteriaDescId = 1;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnUnassignableFlagId = 2;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnUnassignableDateId = 3;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnDeletableFlagId = 4;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnDateCreatedId = 5;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnCreatedById = 6;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnDateModifiedId = 7;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnModifiedById = 8;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnModificationIdId = 9;
 
         private static bool FInitInfoValues = InitInfoValues();
         private static bool InitInfoValues()
         {
             TableInfo.Add(TableId, new TTypedTableInfo(TableId, "PcDiscountCriteria", "pc_discount_criteria",
                 new TTypedColumnInfo[] {
-                    new TTypedColumnInfo(0, "DiscountCriteriaCode", "pc_discount_criteria_code_c", OdbcType.VarChar, 16, true),
-                    new TTypedColumnInfo(1, "DiscountCriteriaDesc", "pc_discount_criteria_desc_c", OdbcType.VarChar, 80, false),
-                    new TTypedColumnInfo(2, "UnassignableFlag", "pc_unassignable_flag_l", OdbcType.Bit, -1, true),
-                    new TTypedColumnInfo(3, "UnassignableDate", "pc_unassignable_date_d", OdbcType.Date, -1, false),
-                    new TTypedColumnInfo(4, "DeletableFlag", "pc_deletable_flag_l", OdbcType.Bit, -1, false),
-                    new TTypedColumnInfo(5, "DateCreated", "s_date_created_d", OdbcType.Date, -1, false),
-                    new TTypedColumnInfo(6, "CreatedBy", "s_created_by_c", OdbcType.VarChar, 20, false),
-                    new TTypedColumnInfo(7, "DateModified", "s_date_modified_d", OdbcType.Date, -1, false),
-                    new TTypedColumnInfo(8, "ModifiedBy", "s_modified_by_c", OdbcType.VarChar, 20, false),
-                    new TTypedColumnInfo(9, "ModificationId", "s_modification_id_c", OdbcType.VarChar, 150, false)
+                    new TTypedColumnInfo(0, "DiscountCriteriaCode", "pc_discount_criteria_code_c", "pc_discount_criteria_code_c", OdbcType.VarChar, 16, true),
+                    new TTypedColumnInfo(1, "DiscountCriteriaDesc", "pc_discount_criteria_desc_c", "pc_discount_criteria_desc_c", OdbcType.VarChar, 80, false),
+                    new TTypedColumnInfo(2, "UnassignableFlag", "pc_unassignable_flag_l", "pc_unassignable_flag_l", OdbcType.Bit, -1, true),
+                    new TTypedColumnInfo(3, "UnassignableDate", "pc_unassignable_date_d", "pc_unassignable_date_d", OdbcType.Date, -1, false),
+                    new TTypedColumnInfo(4, "DeletableFlag", "pc_deletable_flag_l", "pc_deletable_flag_l", OdbcType.Bit, -1, false),
+                    new TTypedColumnInfo(5, "DateCreated", "s_date_created_d", "Created Date", OdbcType.Date, -1, false),
+                    new TTypedColumnInfo(6, "CreatedBy", "s_created_by_c", "Created By", OdbcType.VarChar, 20, false),
+                    new TTypedColumnInfo(7, "DateModified", "s_date_modified_d", "Modified Date", OdbcType.Date, -1, false),
+                    new TTypedColumnInfo(8, "ModifiedBy", "s_modified_by_c", "Modified By", OdbcType.VarChar, 20, false),
+                    new TTypedColumnInfo(9, "ModificationId", "s_modification_id_c", "", OdbcType.VarChar, 150, false)
                 },
                 new int[] {
                     0
@@ -2741,6 +2866,27 @@ namespace Ict.Petra.Shared.MConference.Data
                 base(info, context)
         {
         }
+
+        /// Unique name of the discount criteria
+        public DataColumn ColumnDiscountCriteriaCode;
+        /// Description of the discount criteria
+        public DataColumn ColumnDiscountCriteriaDesc;
+        /// Can this discount criteria be assigned?
+        public DataColumn ColumnUnassignableFlag;
+        /// This is the date the record was last updated.
+        public DataColumn ColumnUnassignableDate;
+        /// Indicates if a record can be deleted.
+        public DataColumn ColumnDeletableFlag;
+        /// The date the record was created.
+        public DataColumn ColumnDateCreated;
+        /// User ID of who created this record.
+        public DataColumn ColumnCreatedBy;
+        /// The date the record was modified.
+        public DataColumn ColumnDateModified;
+        /// User ID of who last modified this record.
+        public DataColumn ColumnModifiedBy;
+        /// This identifies the current version of the record.
+        public DataColumn ColumnModificationId;
 
         /// create the columns
         protected override void InitClass()
@@ -2808,6 +2954,18 @@ namespace Ict.Petra.Shared.MConference.Data
         public PcDiscountCriteriaTable GetChangesTyped()
         {
             return ((PcDiscountCriteriaTable)(base.GetChangesTypedInternal()));
+        }
+
+        /// return the CamelCase name of the table
+        public static string GetTableName()
+        {
+            return "PcDiscountCriteria";
+        }
+
+        /// return the name of the table as it is used in the database
+        public static string GetTableDBName()
+        {
+            return "pc_discount_criteria";
         }
 
         /// get an odbc parameter for the given column
@@ -3351,51 +3509,50 @@ namespace Ict.Petra.Shared.MConference.Data
     [Serializable()]
     public class PcDiscountTable : TTypedDataTable
     {
-        /// This is the partner key assigned to each partner. It consists of the fund id followed by a computer generated six digit number.
-        public DataColumn ColumnConferenceKey;
-        /// Unique name of the criteria that a person has to meet to get the discount
-        public DataColumn ColumnDiscountCriteriaCode;
-        /// Unique name of the cost type
-        public DataColumn ColumnCostTypeCode;
-        /// When is this discount valid (PRE, CONF, POST, ALWAYS)
-        public DataColumn ColumnValidity;
-        /// For discounts up to a certain age (mainly child discount). If age does not matter, set to -1.
-        public DataColumn ColumnUpToAge;
-        /// Is the discount value given in percent (or total otherwise)
-        public DataColumn ColumnPercentage;
-        /// Amount of discount (in percent or total)
-        public DataColumn ColumnDiscount;
-        /// The date the record was created.
-        public DataColumn ColumnDateCreated;
-        /// User ID of who created this record.
-        public DataColumn ColumnCreatedBy;
-        /// The date the record was modified.
-        public DataColumn ColumnDateModified;
-        /// User ID of who last modified this record.
-        public DataColumn ColumnModifiedBy;
-        /// This identifies the current version of the record.
-        public DataColumn ColumnModificationId;
-
         /// TableId for Ict.Common.Data generic functions
         public static short TableId = 271;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnConferenceKeyId = 0;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnDiscountCriteriaCodeId = 1;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnCostTypeCodeId = 2;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnValidityId = 3;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnUpToAgeId = 4;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnPercentageId = 5;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnDiscountId = 6;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnDateCreatedId = 7;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnCreatedById = 8;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnDateModifiedId = 9;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnModifiedById = 10;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnModificationIdId = 11;
 
         private static bool FInitInfoValues = InitInfoValues();
         private static bool InitInfoValues()
         {
             TableInfo.Add(TableId, new TTypedTableInfo(TableId, "PcDiscount", "pc_discount",
                 new TTypedColumnInfo[] {
-                    new TTypedColumnInfo(0, "ConferenceKey", "pc_conference_key_n", OdbcType.Decimal, 10, true),
-                    new TTypedColumnInfo(1, "DiscountCriteriaCode", "pc_discount_criteria_code_c", OdbcType.VarChar, 16, true),
-                    new TTypedColumnInfo(2, "CostTypeCode", "pc_cost_type_code_c", OdbcType.VarChar, 32, true),
-                    new TTypedColumnInfo(3, "Validity", "pc_validity_c", OdbcType.VarChar, 6, true),
-                    new TTypedColumnInfo(4, "UpToAge", "pc_up_to_age_i", OdbcType.Int, -1, false),
-                    new TTypedColumnInfo(5, "Percentage", "pc_percentage_l", OdbcType.Bit, -1, false),
-                    new TTypedColumnInfo(6, "Discount", "pc_discount_n", OdbcType.Decimal, 24, false),
-                    new TTypedColumnInfo(7, "DateCreated", "s_date_created_d", OdbcType.Date, -1, false),
-                    new TTypedColumnInfo(8, "CreatedBy", "s_created_by_c", OdbcType.VarChar, 20, false),
-                    new TTypedColumnInfo(9, "DateModified", "s_date_modified_d", OdbcType.Date, -1, false),
-                    new TTypedColumnInfo(10, "ModifiedBy", "s_modified_by_c", OdbcType.VarChar, 20, false),
-                    new TTypedColumnInfo(11, "ModificationId", "s_modification_id_c", OdbcType.VarChar, 150, false)
+                    new TTypedColumnInfo(0, "ConferenceKey", "pc_conference_key_n", "Partner Key", OdbcType.Decimal, 10, true),
+                    new TTypedColumnInfo(1, "DiscountCriteriaCode", "pc_discount_criteria_code_c", "Discount Criteria", OdbcType.VarChar, 16, true),
+                    new TTypedColumnInfo(2, "CostTypeCode", "pc_cost_type_code_c", "Apply Discount to", OdbcType.VarChar, 32, true),
+                    new TTypedColumnInfo(3, "Validity", "pc_validity_c", "Validity", OdbcType.VarChar, 6, true),
+                    new TTypedColumnInfo(4, "UpToAge", "pc_up_to_age_i", "Up to Age", OdbcType.Int, -1, false),
+                    new TTypedColumnInfo(5, "Percentage", "pc_percentage_l", "Percentage", OdbcType.Bit, -1, false),
+                    new TTypedColumnInfo(6, "Discount", "pc_discount_n", "Discount", OdbcType.Decimal, 24, false),
+                    new TTypedColumnInfo(7, "DateCreated", "s_date_created_d", "Created Date", OdbcType.Date, -1, false),
+                    new TTypedColumnInfo(8, "CreatedBy", "s_created_by_c", "Created By", OdbcType.VarChar, 20, false),
+                    new TTypedColumnInfo(9, "DateModified", "s_date_modified_d", "Modified Date", OdbcType.Date, -1, false),
+                    new TTypedColumnInfo(10, "ModifiedBy", "s_modified_by_c", "Modified By", OdbcType.VarChar, 20, false),
+                    new TTypedColumnInfo(11, "ModificationId", "s_modification_id_c", "", OdbcType.VarChar, 150, false)
                 },
                 new int[] {
                     0, 1, 2, 3, 4
@@ -3420,6 +3577,31 @@ namespace Ict.Petra.Shared.MConference.Data
                 base(info, context)
         {
         }
+
+        /// This is the partner key assigned to each partner. It consists of the fund id followed by a computer generated six digit number.
+        public DataColumn ColumnConferenceKey;
+        /// Unique name of the criteria that a person has to meet to get the discount
+        public DataColumn ColumnDiscountCriteriaCode;
+        /// Unique name of the cost type
+        public DataColumn ColumnCostTypeCode;
+        /// When is this discount valid (PRE, CONF, POST, ALWAYS)
+        public DataColumn ColumnValidity;
+        /// For discounts up to a certain age (mainly child discount). If age does not matter, set to -1.
+        public DataColumn ColumnUpToAge;
+        /// Is the discount value given in percent (or total otherwise)
+        public DataColumn ColumnPercentage;
+        /// Amount of discount (in percent or total)
+        public DataColumn ColumnDiscount;
+        /// The date the record was created.
+        public DataColumn ColumnDateCreated;
+        /// User ID of who created this record.
+        public DataColumn ColumnCreatedBy;
+        /// The date the record was modified.
+        public DataColumn ColumnDateModified;
+        /// User ID of who last modified this record.
+        public DataColumn ColumnModifiedBy;
+        /// This identifies the current version of the record.
+        public DataColumn ColumnModificationId;
 
         /// create the columns
         protected override void InitClass()
@@ -3491,6 +3673,18 @@ namespace Ict.Petra.Shared.MConference.Data
         public PcDiscountTable GetChangesTyped()
         {
             return ((PcDiscountTable)(base.GetChangesTypedInternal()));
+        }
+
+        /// return the CamelCase name of the table
+        public static string GetTableName()
+        {
+            return "PcDiscount";
+        }
+
+        /// return the name of the table as it is used in the database
+        public static string GetTableDBName()
+        {
+            return "pc_discount";
         }
 
         /// get an odbc parameter for the given column
@@ -4136,6 +4330,96 @@ namespace Ict.Petra.Shared.MConference.Data
     [Serializable()]
     public class PcAttendeeTable : TTypedDataTable
     {
+        /// TableId for Ict.Common.Data generic functions
+        public static short TableId = 272;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnConferenceKeyId = 0;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnPartnerKeyId = 1;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnHomeOfficeKeyId = 2;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnXyzTbdTypeId = 3;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnActualArrId = 4;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnActualDepId = 5;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnBadgePrintId = 6;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnDetailsPrintId = 7;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnCommentsId = 8;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnDiscoveryGroupId = 9;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnWorkGroupId = 10;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnRegisteredId = 11;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnArrivalGroupId = 12;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnDepartureGroupId = 13;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnDateCreatedId = 14;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnCreatedById = 15;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnDateModifiedId = 16;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnModifiedById = 17;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnModificationIdId = 18;
+
+        private static bool FInitInfoValues = InitInfoValues();
+        private static bool InitInfoValues()
+        {
+            TableInfo.Add(TableId, new TTypedTableInfo(TableId, "PcAttendee", "pc_attendee",
+                new TTypedColumnInfo[] {
+                    new TTypedColumnInfo(0, "ConferenceKey", "pc_conference_key_n", "Partner Key", OdbcType.Decimal, 10, true),
+                    new TTypedColumnInfo(1, "PartnerKey", "p_partner_key_n", "Partner Key", OdbcType.Decimal, 10, true),
+                    new TTypedColumnInfo(2, "HomeOfficeKey", "pc_home_office_key_n", "Home Office Key", OdbcType.Decimal, 10, true),
+                    new TTypedColumnInfo(3, "XyzTbdType", "pc_xyz_tbd_type_c", "Xyz_tbd Type", OdbcType.VarChar, 12, false),
+                    new TTypedColumnInfo(4, "ActualArr", "pc_actual_arr_d", "Actual Arrival", OdbcType.Date, -1, false),
+                    new TTypedColumnInfo(5, "ActualDep", "pc_actual_dep_d", "Actual Departure", OdbcType.Date, -1, false),
+                    new TTypedColumnInfo(6, "BadgePrint", "pc_badge_print_d", "Badge printed", OdbcType.Date, -1, false),
+                    new TTypedColumnInfo(7, "DetailsPrint", "pc_details_print_d", "Deatils Printed", OdbcType.Date, -1, false),
+                    new TTypedColumnInfo(8, "Comments", "pc_comments_c", "Comments", OdbcType.VarChar, 1000, false),
+                    new TTypedColumnInfo(9, "DiscoveryGroup", "pc_discovery_group_c", "Discovery Group", OdbcType.VarChar, 32, false),
+                    new TTypedColumnInfo(10, "WorkGroup", "pc_work_group_c", "Work Group", OdbcType.VarChar, 32, false),
+                    new TTypedColumnInfo(11, "Registered", "pc_registered_d", "Date registered", OdbcType.Date, -1, false),
+                    new TTypedColumnInfo(12, "ArrivalGroup", "pc_arrival_group_c", "Arrival Group", OdbcType.VarChar, 40, false),
+                    new TTypedColumnInfo(13, "DepartureGroup", "pc_departure_group_c", "Departure Group", OdbcType.VarChar, 40, false),
+                    new TTypedColumnInfo(14, "DateCreated", "s_date_created_d", "Created Date", OdbcType.Date, -1, false),
+                    new TTypedColumnInfo(15, "CreatedBy", "s_created_by_c", "Created By", OdbcType.VarChar, 20, false),
+                    new TTypedColumnInfo(16, "DateModified", "s_date_modified_d", "Modified Date", OdbcType.Date, -1, false),
+                    new TTypedColumnInfo(17, "ModifiedBy", "s_modified_by_c", "Modified By", OdbcType.VarChar, 20, false),
+                    new TTypedColumnInfo(18, "ModificationId", "s_modification_id_c", "", OdbcType.VarChar, 150, false)
+                },
+                new int[] {
+                    0, 1
+                }));
+            return true;
+        }
+
+        /// constructor
+        public PcAttendeeTable() :
+                base("PcAttendee")
+        {
+        }
+
+        /// constructor
+        public PcAttendeeTable(string ATablename) :
+                base(ATablename)
+        {
+        }
+
+        /// constructor for serialization
+        public PcAttendeeTable(System.Runtime.Serialization.SerializationInfo info, System.Runtime.Serialization.StreamingContext context) :
+                base(info, context)
+        {
+        }
+
         /// This is the partner key assigned to each partner. It consists of the fund id followed by a computer generated six digit number.
         public DataColumn ColumnConferenceKey;
         /// This is the partner key assigned to each partner. It consists of the fund id followed by a computer generated six digit number.
@@ -4174,58 +4458,6 @@ namespace Ict.Petra.Shared.MConference.Data
         public DataColumn ColumnModifiedBy;
         /// This identifies the current version of the record.
         public DataColumn ColumnModificationId;
-
-        /// TableId for Ict.Common.Data generic functions
-        public static short TableId = 272;
-
-        private static bool FInitInfoValues = InitInfoValues();
-        private static bool InitInfoValues()
-        {
-            TableInfo.Add(TableId, new TTypedTableInfo(TableId, "PcAttendee", "pc_attendee",
-                new TTypedColumnInfo[] {
-                    new TTypedColumnInfo(0, "ConferenceKey", "pc_conference_key_n", OdbcType.Decimal, 10, true),
-                    new TTypedColumnInfo(1, "PartnerKey", "p_partner_key_n", OdbcType.Decimal, 10, true),
-                    new TTypedColumnInfo(2, "HomeOfficeKey", "pc_home_office_key_n", OdbcType.Decimal, 10, true),
-                    new TTypedColumnInfo(3, "XyzTbdType", "pc_xyz_tbd_type_c", OdbcType.VarChar, 12, false),
-                    new TTypedColumnInfo(4, "ActualArr", "pc_actual_arr_d", OdbcType.Date, -1, false),
-                    new TTypedColumnInfo(5, "ActualDep", "pc_actual_dep_d", OdbcType.Date, -1, false),
-                    new TTypedColumnInfo(6, "BadgePrint", "pc_badge_print_d", OdbcType.Date, -1, false),
-                    new TTypedColumnInfo(7, "DetailsPrint", "pc_details_print_d", OdbcType.Date, -1, false),
-                    new TTypedColumnInfo(8, "Comments", "pc_comments_c", OdbcType.VarChar, 1000, false),
-                    new TTypedColumnInfo(9, "DiscoveryGroup", "pc_discovery_group_c", OdbcType.VarChar, 32, false),
-                    new TTypedColumnInfo(10, "WorkGroup", "pc_work_group_c", OdbcType.VarChar, 32, false),
-                    new TTypedColumnInfo(11, "Registered", "pc_registered_d", OdbcType.Date, -1, false),
-                    new TTypedColumnInfo(12, "ArrivalGroup", "pc_arrival_group_c", OdbcType.VarChar, 40, false),
-                    new TTypedColumnInfo(13, "DepartureGroup", "pc_departure_group_c", OdbcType.VarChar, 40, false),
-                    new TTypedColumnInfo(14, "DateCreated", "s_date_created_d", OdbcType.Date, -1, false),
-                    new TTypedColumnInfo(15, "CreatedBy", "s_created_by_c", OdbcType.VarChar, 20, false),
-                    new TTypedColumnInfo(16, "DateModified", "s_date_modified_d", OdbcType.Date, -1, false),
-                    new TTypedColumnInfo(17, "ModifiedBy", "s_modified_by_c", OdbcType.VarChar, 20, false),
-                    new TTypedColumnInfo(18, "ModificationId", "s_modification_id_c", OdbcType.VarChar, 150, false)
-                },
-                new int[] {
-                    0, 1
-                }));
-            return true;
-        }
-
-        /// constructor
-        public PcAttendeeTable() :
-                base("PcAttendee")
-        {
-        }
-
-        /// constructor
-        public PcAttendeeTable(string ATablename) :
-                base(ATablename)
-        {
-        }
-
-        /// constructor for serialization
-        public PcAttendeeTable(System.Runtime.Serialization.SerializationInfo info, System.Runtime.Serialization.StreamingContext context) :
-                base(info, context)
-        {
-        }
 
         /// create the columns
         protected override void InitClass()
@@ -4311,6 +4543,18 @@ namespace Ict.Petra.Shared.MConference.Data
         public PcAttendeeTable GetChangesTyped()
         {
             return ((PcAttendeeTable)(base.GetChangesTypedInternal()));
+        }
+
+        /// return the CamelCase name of the table
+        public static string GetTableName()
+        {
+            return "PcAttendee";
+        }
+
+        /// return the name of the table as it is used in the database
+        public static string GetTableDBName()
+        {
+            return "pc_attendee";
         }
 
         /// get an odbc parameter for the given column
@@ -5313,39 +5557,38 @@ namespace Ict.Petra.Shared.MConference.Data
     [Serializable()]
     public class PcConferenceCostTable : TTypedDataTable
     {
-        /// This is the partner key assigned to each partner. It consists of the fund id followed by a computer generated six digit number.
-        public DataColumn ColumnConferenceKey;
-        /// 9999999999
-        public DataColumn ColumnOptionDays;
-        ///
-        public DataColumn ColumnCharge;
-        /// The date the record was created.
-        public DataColumn ColumnDateCreated;
-        /// User ID of who created this record.
-        public DataColumn ColumnCreatedBy;
-        /// The date the record was modified.
-        public DataColumn ColumnDateModified;
-        /// User ID of who last modified this record.
-        public DataColumn ColumnModifiedBy;
-        /// This identifies the current version of the record.
-        public DataColumn ColumnModificationId;
-
         /// TableId for Ict.Common.Data generic functions
         public static short TableId = 273;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnConferenceKeyId = 0;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnOptionDaysId = 1;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnChargeId = 2;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnDateCreatedId = 3;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnCreatedById = 4;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnDateModifiedId = 5;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnModifiedById = 6;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnModificationIdId = 7;
 
         private static bool FInitInfoValues = InitInfoValues();
         private static bool InitInfoValues()
         {
             TableInfo.Add(TableId, new TTypedTableInfo(TableId, "PcConferenceCost", "pc_conference_cost",
                 new TTypedColumnInfo[] {
-                    new TTypedColumnInfo(0, "ConferenceKey", "pc_conference_key_n", OdbcType.Decimal, 10, true),
-                    new TTypedColumnInfo(1, "OptionDays", "pc_option_days_i", OdbcType.Int, -1, true),
-                    new TTypedColumnInfo(2, "Charge", "pc_charge_n", OdbcType.Decimal, 24, false),
-                    new TTypedColumnInfo(3, "DateCreated", "s_date_created_d", OdbcType.Date, -1, false),
-                    new TTypedColumnInfo(4, "CreatedBy", "s_created_by_c", OdbcType.VarChar, 20, false),
-                    new TTypedColumnInfo(5, "DateModified", "s_date_modified_d", OdbcType.Date, -1, false),
-                    new TTypedColumnInfo(6, "ModifiedBy", "s_modified_by_c", OdbcType.VarChar, 20, false),
-                    new TTypedColumnInfo(7, "ModificationId", "s_modification_id_c", OdbcType.VarChar, 150, false)
+                    new TTypedColumnInfo(0, "ConferenceKey", "pc_conference_key_n", "Partner Key", OdbcType.Decimal, 10, true),
+                    new TTypedColumnInfo(1, "OptionDays", "pc_option_days_i", "Days in Option", OdbcType.Int, -1, true),
+                    new TTypedColumnInfo(2, "Charge", "pc_charge_n", "Cost", OdbcType.Decimal, 24, false),
+                    new TTypedColumnInfo(3, "DateCreated", "s_date_created_d", "Created Date", OdbcType.Date, -1, false),
+                    new TTypedColumnInfo(4, "CreatedBy", "s_created_by_c", "Created By", OdbcType.VarChar, 20, false),
+                    new TTypedColumnInfo(5, "DateModified", "s_date_modified_d", "Modified Date", OdbcType.Date, -1, false),
+                    new TTypedColumnInfo(6, "ModifiedBy", "s_modified_by_c", "Modified By", OdbcType.VarChar, 20, false),
+                    new TTypedColumnInfo(7, "ModificationId", "s_modification_id_c", "", OdbcType.VarChar, 150, false)
                 },
                 new int[] {
                     0, 1
@@ -5370,6 +5613,23 @@ namespace Ict.Petra.Shared.MConference.Data
                 base(info, context)
         {
         }
+
+        /// This is the partner key assigned to each partner. It consists of the fund id followed by a computer generated six digit number.
+        public DataColumn ColumnConferenceKey;
+        /// 9999999999
+        public DataColumn ColumnOptionDays;
+        ///
+        public DataColumn ColumnCharge;
+        /// The date the record was created.
+        public DataColumn ColumnDateCreated;
+        /// User ID of who created this record.
+        public DataColumn ColumnCreatedBy;
+        /// The date the record was modified.
+        public DataColumn ColumnDateModified;
+        /// User ID of who last modified this record.
+        public DataColumn ColumnModifiedBy;
+        /// This identifies the current version of the record.
+        public DataColumn ColumnModificationId;
 
         /// create the columns
         protected override void InitClass()
@@ -5433,6 +5693,18 @@ namespace Ict.Petra.Shared.MConference.Data
         public PcConferenceCostTable GetChangesTyped()
         {
             return ((PcConferenceCostTable)(base.GetChangesTypedInternal()));
+        }
+
+        /// return the CamelCase name of the table
+        public static string GetTableName()
+        {
+            return "PcConferenceCost";
+        }
+
+        /// return the name of the table as it is used in the database
+        public static string GetTableDBName()
+        {
+            return "pc_conference_cost";
         }
 
         /// get an odbc parameter for the given column
@@ -5874,6 +6146,78 @@ namespace Ict.Petra.Shared.MConference.Data
     [Serializable()]
     public class PcExtraCostTable : TTypedDataTable
     {
+        /// TableId for Ict.Common.Data generic functions
+        public static short TableId = 274;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnConferenceKeyId = 0;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnPartnerKeyId = 1;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnExtraCostKeyId = 2;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnCostTypeCodeId = 3;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnCostAmountId = 4;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnCommentId = 5;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnAuthorisingFieldId = 6;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnAuthorisingPersonId = 7;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnDateCreatedId = 8;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnCreatedById = 9;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnDateModifiedId = 10;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnModifiedById = 11;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnModificationIdId = 12;
+
+        private static bool FInitInfoValues = InitInfoValues();
+        private static bool InitInfoValues()
+        {
+            TableInfo.Add(TableId, new TTypedTableInfo(TableId, "PcExtraCost", "pc_extra_cost",
+                new TTypedColumnInfo[] {
+                    new TTypedColumnInfo(0, "ConferenceKey", "pc_conference_key_n", "Conference", OdbcType.Decimal, 10, true),
+                    new TTypedColumnInfo(1, "PartnerKey", "p_partner_key_n", "Partner", OdbcType.Decimal, 10, true),
+                    new TTypedColumnInfo(2, "ExtraCostKey", "pc_extra_cost_key_i", "Extra Cost Key", OdbcType.Int, -1, true),
+                    new TTypedColumnInfo(3, "CostTypeCode", "pc_cost_type_code_c", "Cost Type", OdbcType.VarChar, 32, false),
+                    new TTypedColumnInfo(4, "CostAmount", "pc_cost_amount_n", "Amount", OdbcType.Decimal, 24, false),
+                    new TTypedColumnInfo(5, "Comment", "pc_comment_c", "Comments", OdbcType.VarChar, 512, false),
+                    new TTypedColumnInfo(6, "AuthorisingField", "pc_authorising_field_n", "Authorising field", OdbcType.Decimal, 10, false),
+                    new TTypedColumnInfo(7, "AuthorisingPerson", "pc_authorising_person_c", "Authorised by", OdbcType.VarChar, 40, false),
+                    new TTypedColumnInfo(8, "DateCreated", "s_date_created_d", "Created Date", OdbcType.Date, -1, false),
+                    new TTypedColumnInfo(9, "CreatedBy", "s_created_by_c", "Created By", OdbcType.VarChar, 20, false),
+                    new TTypedColumnInfo(10, "DateModified", "s_date_modified_d", "Modified Date", OdbcType.Date, -1, false),
+                    new TTypedColumnInfo(11, "ModifiedBy", "s_modified_by_c", "Modified By", OdbcType.VarChar, 20, false),
+                    new TTypedColumnInfo(12, "ModificationId", "s_modification_id_c", "", OdbcType.VarChar, 150, false)
+                },
+                new int[] {
+                    0, 1, 2
+                }));
+            return true;
+        }
+
+        /// constructor
+        public PcExtraCostTable() :
+                base("PcExtraCost")
+        {
+        }
+
+        /// constructor
+        public PcExtraCostTable(string ATablename) :
+                base(ATablename)
+        {
+        }
+
+        /// constructor for serialization
+        public PcExtraCostTable(System.Runtime.Serialization.SerializationInfo info, System.Runtime.Serialization.StreamingContext context) :
+                base(info, context)
+        {
+        }
+
         /// This is the partner key assigned to each partner. It consists of the fund id followed by a computer generated six digit number.
         public DataColumn ColumnConferenceKey;
         /// This is the partner key assigned to each partner. It consists of the fund id followed by a computer generated six digit number.
@@ -5900,52 +6244,6 @@ namespace Ict.Petra.Shared.MConference.Data
         public DataColumn ColumnModifiedBy;
         /// This identifies the current version of the record.
         public DataColumn ColumnModificationId;
-
-        /// TableId for Ict.Common.Data generic functions
-        public static short TableId = 274;
-
-        private static bool FInitInfoValues = InitInfoValues();
-        private static bool InitInfoValues()
-        {
-            TableInfo.Add(TableId, new TTypedTableInfo(TableId, "PcExtraCost", "pc_extra_cost",
-                new TTypedColumnInfo[] {
-                    new TTypedColumnInfo(0, "ConferenceKey", "pc_conference_key_n", OdbcType.Decimal, 10, true),
-                    new TTypedColumnInfo(1, "PartnerKey", "p_partner_key_n", OdbcType.Decimal, 10, true),
-                    new TTypedColumnInfo(2, "ExtraCostKey", "pc_extra_cost_key_i", OdbcType.Int, -1, true),
-                    new TTypedColumnInfo(3, "CostTypeCode", "pc_cost_type_code_c", OdbcType.VarChar, 32, false),
-                    new TTypedColumnInfo(4, "CostAmount", "pc_cost_amount_n", OdbcType.Decimal, 24, false),
-                    new TTypedColumnInfo(5, "Comment", "pc_comment_c", OdbcType.VarChar, 512, false),
-                    new TTypedColumnInfo(6, "AuthorisingField", "pc_authorising_field_n", OdbcType.Decimal, 10, false),
-                    new TTypedColumnInfo(7, "AuthorisingPerson", "pc_authorising_person_c", OdbcType.VarChar, 40, false),
-                    new TTypedColumnInfo(8, "DateCreated", "s_date_created_d", OdbcType.Date, -1, false),
-                    new TTypedColumnInfo(9, "CreatedBy", "s_created_by_c", OdbcType.VarChar, 20, false),
-                    new TTypedColumnInfo(10, "DateModified", "s_date_modified_d", OdbcType.Date, -1, false),
-                    new TTypedColumnInfo(11, "ModifiedBy", "s_modified_by_c", OdbcType.VarChar, 20, false),
-                    new TTypedColumnInfo(12, "ModificationId", "s_modification_id_c", OdbcType.VarChar, 150, false)
-                },
-                new int[] {
-                    0, 1, 2
-                }));
-            return true;
-        }
-
-        /// constructor
-        public PcExtraCostTable() :
-                base("PcExtraCost")
-        {
-        }
-
-        /// constructor
-        public PcExtraCostTable(string ATablename) :
-                base(ATablename)
-        {
-        }
-
-        /// constructor for serialization
-        public PcExtraCostTable(System.Runtime.Serialization.SerializationInfo info, System.Runtime.Serialization.StreamingContext context) :
-                base(info, context)
-        {
-        }
 
         /// create the columns
         protected override void InitClass()
@@ -6019,6 +6317,18 @@ namespace Ict.Petra.Shared.MConference.Data
         public PcExtraCostTable GetChangesTyped()
         {
             return ((PcExtraCostTable)(base.GetChangesTypedInternal()));
+        }
+
+        /// return the CamelCase name of the table
+        public static string GetTableName()
+        {
+            return "PcExtraCost";
+        }
+
+        /// return the name of the table as it is used in the database
+        public static string GetTableDBName()
+        {
+            return "pc_extra_cost";
         }
 
         /// get an odbc parameter for the given column
@@ -6715,48 +7025,47 @@ namespace Ict.Petra.Shared.MConference.Data
     [Serializable()]
     public class PcEarlyLateTable : TTypedDataTable
     {
-        /// This is the partner key assigned to each partner. It consists of the fund id followed by a computer generated six digit number.
-        public DataColumn ColumnConferenceKey;
-        ///
-        public DataColumn ColumnApplicable;
-        ///
-        public DataColumn ColumnType;
-        ///
-        public DataColumn ColumnAmountPercent;
-        ///
-        public DataColumn ColumnAmount;
-        ///
-        public DataColumn ColumnPercent;
-        /// The date the record was created.
-        public DataColumn ColumnDateCreated;
-        /// User ID of who created this record.
-        public DataColumn ColumnCreatedBy;
-        /// The date the record was modified.
-        public DataColumn ColumnDateModified;
-        /// User ID of who last modified this record.
-        public DataColumn ColumnModifiedBy;
-        /// This identifies the current version of the record.
-        public DataColumn ColumnModificationId;
-
         /// TableId for Ict.Common.Data generic functions
         public static short TableId = 275;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnConferenceKeyId = 0;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnApplicableId = 1;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnTypeId = 2;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnAmountPercentId = 3;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnAmountId = 4;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnPercentId = 5;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnDateCreatedId = 6;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnCreatedById = 7;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnDateModifiedId = 8;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnModifiedById = 9;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnModificationIdId = 10;
 
         private static bool FInitInfoValues = InitInfoValues();
         private static bool InitInfoValues()
         {
             TableInfo.Add(TableId, new TTypedTableInfo(TableId, "PcEarlyLate", "pc_early_late",
                 new TTypedColumnInfo[] {
-                    new TTypedColumnInfo(0, "ConferenceKey", "pc_conference_key_n", OdbcType.Decimal, 10, true),
-                    new TTypedColumnInfo(1, "Applicable", "pc_applicable_d", OdbcType.Date, -1, true),
-                    new TTypedColumnInfo(2, "Type", "pc_type_l", OdbcType.Bit, -1, false),
-                    new TTypedColumnInfo(3, "AmountPercent", "pc_amount_percent_l", OdbcType.Bit, -1, false),
-                    new TTypedColumnInfo(4, "Amount", "pc_amount_n", OdbcType.Decimal, 24, false),
-                    new TTypedColumnInfo(5, "Percent", "pc_percent_i", OdbcType.Int, -1, false),
-                    new TTypedColumnInfo(6, "DateCreated", "s_date_created_d", OdbcType.Date, -1, false),
-                    new TTypedColumnInfo(7, "CreatedBy", "s_created_by_c", OdbcType.VarChar, 20, false),
-                    new TTypedColumnInfo(8, "DateModified", "s_date_modified_d", OdbcType.Date, -1, false),
-                    new TTypedColumnInfo(9, "ModifiedBy", "s_modified_by_c", OdbcType.VarChar, 20, false),
-                    new TTypedColumnInfo(10, "ModificationId", "s_modification_id_c", OdbcType.VarChar, 150, false)
+                    new TTypedColumnInfo(0, "ConferenceKey", "pc_conference_key_n", "Partner Key", OdbcType.Decimal, 10, true),
+                    new TTypedColumnInfo(1, "Applicable", "pc_applicable_d", "Applicable Date", OdbcType.Date, -1, true),
+                    new TTypedColumnInfo(2, "Type", "pc_type_l", "Registration Type", OdbcType.Bit, -1, false),
+                    new TTypedColumnInfo(3, "AmountPercent", "pc_amount_percent_l", "Value type", OdbcType.Bit, -1, false),
+                    new TTypedColumnInfo(4, "Amount", "pc_amount_n", "Amount", OdbcType.Decimal, 24, false),
+                    new TTypedColumnInfo(5, "Percent", "pc_percent_i", "Percentage", OdbcType.Int, -1, false),
+                    new TTypedColumnInfo(6, "DateCreated", "s_date_created_d", "Created Date", OdbcType.Date, -1, false),
+                    new TTypedColumnInfo(7, "CreatedBy", "s_created_by_c", "Created By", OdbcType.VarChar, 20, false),
+                    new TTypedColumnInfo(8, "DateModified", "s_date_modified_d", "Modified Date", OdbcType.Date, -1, false),
+                    new TTypedColumnInfo(9, "ModifiedBy", "s_modified_by_c", "Modified By", OdbcType.VarChar, 20, false),
+                    new TTypedColumnInfo(10, "ModificationId", "s_modification_id_c", "", OdbcType.VarChar, 150, false)
                 },
                 new int[] {
                     0, 1
@@ -6781,6 +7090,29 @@ namespace Ict.Petra.Shared.MConference.Data
                 base(info, context)
         {
         }
+
+        /// This is the partner key assigned to each partner. It consists of the fund id followed by a computer generated six digit number.
+        public DataColumn ColumnConferenceKey;
+        ///
+        public DataColumn ColumnApplicable;
+        ///
+        public DataColumn ColumnType;
+        ///
+        public DataColumn ColumnAmountPercent;
+        ///
+        public DataColumn ColumnAmount;
+        ///
+        public DataColumn ColumnPercent;
+        /// The date the record was created.
+        public DataColumn ColumnDateCreated;
+        /// User ID of who created this record.
+        public DataColumn ColumnCreatedBy;
+        /// The date the record was modified.
+        public DataColumn ColumnDateModified;
+        /// User ID of who last modified this record.
+        public DataColumn ColumnModifiedBy;
+        /// This identifies the current version of the record.
+        public DataColumn ColumnModificationId;
 
         /// create the columns
         protected override void InitClass()
@@ -6850,6 +7182,18 @@ namespace Ict.Petra.Shared.MConference.Data
         public PcEarlyLateTable GetChangesTyped()
         {
             return ((PcEarlyLateTable)(base.GetChangesTypedInternal()));
+        }
+
+        /// return the CamelCase name of the table
+        public static string GetTableName()
+        {
+            return "PcEarlyLate";
+        }
+
+        /// return the name of the table as it is used in the database
+        public static string GetTableDBName()
+        {
+            return "pc_early_late";
         }
 
         /// get an odbc parameter for the given column
@@ -7444,42 +7788,41 @@ namespace Ict.Petra.Shared.MConference.Data
     [Serializable()]
     public class PcGroupTable : TTypedDataTable
     {
-        /// This is the partner key of the conference. It consists of the fund id followed by a computer generated six digit number.
-        public DataColumn ColumnConferenceKey;
-        /// This is the partner key assigned to each partner. It consists of the fund id followed by a computer generated six digit number.
-        public DataColumn ColumnPartnerKey;
-        ///
-        public DataColumn ColumnGroupType;
-        ///
-        public DataColumn ColumnGroupName;
-        /// The date the record was created.
-        public DataColumn ColumnDateCreated;
-        /// User ID of who created this record.
-        public DataColumn ColumnCreatedBy;
-        /// The date the record was modified.
-        public DataColumn ColumnDateModified;
-        /// User ID of who last modified this record.
-        public DataColumn ColumnModifiedBy;
-        /// This identifies the current version of the record.
-        public DataColumn ColumnModificationId;
-
         /// TableId for Ict.Common.Data generic functions
         public static short TableId = 276;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnConferenceKeyId = 0;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnPartnerKeyId = 1;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnGroupTypeId = 2;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnGroupNameId = 3;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnDateCreatedId = 4;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnCreatedById = 5;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnDateModifiedId = 6;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnModifiedById = 7;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnModificationIdId = 8;
 
         private static bool FInitInfoValues = InitInfoValues();
         private static bool InitInfoValues()
         {
             TableInfo.Add(TableId, new TTypedTableInfo(TableId, "PcGroup", "pc_group",
                 new TTypedColumnInfo[] {
-                    new TTypedColumnInfo(0, "ConferenceKey", "pc_conference_key_n", OdbcType.Decimal, 10, true),
-                    new TTypedColumnInfo(1, "PartnerKey", "p_partner_key_n", OdbcType.Decimal, 10, true),
-                    new TTypedColumnInfo(2, "GroupType", "pc_group_type_c", OdbcType.VarChar, 40, false),
-                    new TTypedColumnInfo(3, "GroupName", "pc_group_name_c", OdbcType.VarChar, 80, false),
-                    new TTypedColumnInfo(4, "DateCreated", "s_date_created_d", OdbcType.Date, -1, false),
-                    new TTypedColumnInfo(5, "CreatedBy", "s_created_by_c", OdbcType.VarChar, 20, false),
-                    new TTypedColumnInfo(6, "DateModified", "s_date_modified_d", OdbcType.Date, -1, false),
-                    new TTypedColumnInfo(7, "ModifiedBy", "s_modified_by_c", OdbcType.VarChar, 20, false),
-                    new TTypedColumnInfo(8, "ModificationId", "s_modification_id_c", OdbcType.VarChar, 150, false)
+                    new TTypedColumnInfo(0, "ConferenceKey", "pc_conference_key_n", "Conference", OdbcType.Decimal, 10, true),
+                    new TTypedColumnInfo(1, "PartnerKey", "p_partner_key_n", "Partner", OdbcType.Decimal, 10, true),
+                    new TTypedColumnInfo(2, "GroupType", "pc_group_type_c", "Group Type", OdbcType.VarChar, 40, false),
+                    new TTypedColumnInfo(3, "GroupName", "pc_group_name_c", "Group Name", OdbcType.VarChar, 80, false),
+                    new TTypedColumnInfo(4, "DateCreated", "s_date_created_d", "Created Date", OdbcType.Date, -1, false),
+                    new TTypedColumnInfo(5, "CreatedBy", "s_created_by_c", "Created By", OdbcType.VarChar, 20, false),
+                    new TTypedColumnInfo(6, "DateModified", "s_date_modified_d", "Modified Date", OdbcType.Date, -1, false),
+                    new TTypedColumnInfo(7, "ModifiedBy", "s_modified_by_c", "Modified By", OdbcType.VarChar, 20, false),
+                    new TTypedColumnInfo(8, "ModificationId", "s_modification_id_c", "", OdbcType.VarChar, 150, false)
                 },
                 new int[] {
                     0, 1, 2, 3
@@ -7504,6 +7847,25 @@ namespace Ict.Petra.Shared.MConference.Data
                 base(info, context)
         {
         }
+
+        /// This is the partner key of the conference. It consists of the fund id followed by a computer generated six digit number.
+        public DataColumn ColumnConferenceKey;
+        /// This is the partner key assigned to each partner. It consists of the fund id followed by a computer generated six digit number.
+        public DataColumn ColumnPartnerKey;
+        ///
+        public DataColumn ColumnGroupType;
+        ///
+        public DataColumn ColumnGroupName;
+        /// The date the record was created.
+        public DataColumn ColumnDateCreated;
+        /// User ID of who created this record.
+        public DataColumn ColumnCreatedBy;
+        /// The date the record was modified.
+        public DataColumn ColumnDateModified;
+        /// User ID of who last modified this record.
+        public DataColumn ColumnModifiedBy;
+        /// This identifies the current version of the record.
+        public DataColumn ColumnModificationId;
 
         /// create the columns
         protected override void InitClass()
@@ -7569,6 +7931,18 @@ namespace Ict.Petra.Shared.MConference.Data
         public PcGroupTable GetChangesTyped()
         {
             return ((PcGroupTable)(base.GetChangesTypedInternal()));
+        }
+
+        /// return the CamelCase name of the table
+        public static string GetTableName()
+        {
+            return "PcGroup";
+        }
+
+        /// return the name of the table as it is used in the database
+        public static string GetTableDBName()
+        {
+            return "pc_group";
         }
 
         /// get an odbc parameter for the given column
@@ -8061,42 +8435,41 @@ namespace Ict.Petra.Shared.MConference.Data
     [Serializable()]
     public class PcSupplementTable : TTypedDataTable
     {
-        /// This is the partner key assigned to each partner. It consists of the fund id followed by a computer generated six digit number.
-        public DataColumn ColumnConferenceKey;
-        ///
-        public DataColumn ColumnXyzTbdType;
-        ///
-        public DataColumn ColumnSupplement;
-        /// Apply conference fee discounts to this supplement
-        public DataColumn ColumnApplyDiscounts;
-        /// The date the record was created.
-        public DataColumn ColumnDateCreated;
-        /// User ID of who created this record.
-        public DataColumn ColumnCreatedBy;
-        /// The date the record was modified.
-        public DataColumn ColumnDateModified;
-        /// User ID of who last modified this record.
-        public DataColumn ColumnModifiedBy;
-        /// This identifies the current version of the record.
-        public DataColumn ColumnModificationId;
-
         /// TableId for Ict.Common.Data generic functions
         public static short TableId = 277;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnConferenceKeyId = 0;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnXyzTbdTypeId = 1;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnSupplementId = 2;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnApplyDiscountsId = 3;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnDateCreatedId = 4;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnCreatedById = 5;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnDateModifiedId = 6;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnModifiedById = 7;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnModificationIdId = 8;
 
         private static bool FInitInfoValues = InitInfoValues();
         private static bool InitInfoValues()
         {
             TableInfo.Add(TableId, new TTypedTableInfo(TableId, "PcSupplement", "pc_supplement",
                 new TTypedColumnInfo[] {
-                    new TTypedColumnInfo(0, "ConferenceKey", "pc_conference_key_n", OdbcType.Decimal, 10, true),
-                    new TTypedColumnInfo(1, "XyzTbdType", "pc_xyz_tbd_type_c", OdbcType.VarChar, 12, true),
-                    new TTypedColumnInfo(2, "Supplement", "pc_supplement_n", OdbcType.Decimal, 24, false),
-                    new TTypedColumnInfo(3, "ApplyDiscounts", "pc_apply_discounts_l", OdbcType.Bit, -1, false),
-                    new TTypedColumnInfo(4, "DateCreated", "s_date_created_d", OdbcType.Date, -1, false),
-                    new TTypedColumnInfo(5, "CreatedBy", "s_created_by_c", OdbcType.VarChar, 20, false),
-                    new TTypedColumnInfo(6, "DateModified", "s_date_modified_d", OdbcType.Date, -1, false),
-                    new TTypedColumnInfo(7, "ModifiedBy", "s_modified_by_c", OdbcType.VarChar, 20, false),
-                    new TTypedColumnInfo(8, "ModificationId", "s_modification_id_c", OdbcType.VarChar, 150, false)
+                    new TTypedColumnInfo(0, "ConferenceKey", "pc_conference_key_n", "Partner Key", OdbcType.Decimal, 10, true),
+                    new TTypedColumnInfo(1, "XyzTbdType", "pc_xyz_tbd_type_c", "Xyz_tbd Type", OdbcType.VarChar, 12, true),
+                    new TTypedColumnInfo(2, "Supplement", "pc_supplement_n", "Supplement", OdbcType.Decimal, 24, false),
+                    new TTypedColumnInfo(3, "ApplyDiscounts", "pc_apply_discounts_l", "pc_apply_discounts_l", OdbcType.Bit, -1, false),
+                    new TTypedColumnInfo(4, "DateCreated", "s_date_created_d", "Created Date", OdbcType.Date, -1, false),
+                    new TTypedColumnInfo(5, "CreatedBy", "s_created_by_c", "Created By", OdbcType.VarChar, 20, false),
+                    new TTypedColumnInfo(6, "DateModified", "s_date_modified_d", "Modified Date", OdbcType.Date, -1, false),
+                    new TTypedColumnInfo(7, "ModifiedBy", "s_modified_by_c", "Modified By", OdbcType.VarChar, 20, false),
+                    new TTypedColumnInfo(8, "ModificationId", "s_modification_id_c", "", OdbcType.VarChar, 150, false)
                 },
                 new int[] {
                     0, 1
@@ -8121,6 +8494,25 @@ namespace Ict.Petra.Shared.MConference.Data
                 base(info, context)
         {
         }
+
+        /// This is the partner key assigned to each partner. It consists of the fund id followed by a computer generated six digit number.
+        public DataColumn ColumnConferenceKey;
+        ///
+        public DataColumn ColumnXyzTbdType;
+        ///
+        public DataColumn ColumnSupplement;
+        /// Apply conference fee discounts to this supplement
+        public DataColumn ColumnApplyDiscounts;
+        /// The date the record was created.
+        public DataColumn ColumnDateCreated;
+        /// User ID of who created this record.
+        public DataColumn ColumnCreatedBy;
+        /// The date the record was modified.
+        public DataColumn ColumnDateModified;
+        /// User ID of who last modified this record.
+        public DataColumn ColumnModifiedBy;
+        /// This identifies the current version of the record.
+        public DataColumn ColumnModificationId;
 
         /// create the columns
         protected override void InitClass()
@@ -8186,6 +8578,18 @@ namespace Ict.Petra.Shared.MConference.Data
         public PcSupplementTable GetChangesTyped()
         {
             return ((PcSupplementTable)(base.GetChangesTypedInternal()));
+        }
+
+        /// return the CamelCase name of the table
+        public static string GetTableName()
+        {
+            return "PcSupplement";
+        }
+
+        /// return the name of the table as it is used in the database
+        public static string GetTableDBName()
+        {
+            return "pc_supplement";
         }
 
         /// get an odbc parameter for the given column
@@ -8678,36 +9082,35 @@ namespace Ict.Petra.Shared.MConference.Data
     [Serializable()]
     public class PcConferenceVenueTable : TTypedDataTable
     {
-        /// This is the partner key assigned to each partner. It consists of the fund id followed by a computer generated six digit number.
-        public DataColumn ColumnConferenceKey;
-        /// This is the partner key assigned to each partner. It consists of the fund id followed by a computer generated six digit number.
-        public DataColumn ColumnVenueKey;
-        /// The date the record was created.
-        public DataColumn ColumnDateCreated;
-        /// User ID of who created this record.
-        public DataColumn ColumnCreatedBy;
-        /// The date the record was modified.
-        public DataColumn ColumnDateModified;
-        /// User ID of who last modified this record.
-        public DataColumn ColumnModifiedBy;
-        /// This identifies the current version of the record.
-        public DataColumn ColumnModificationId;
-
         /// TableId for Ict.Common.Data generic functions
         public static short TableId = 283;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnConferenceKeyId = 0;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnVenueKeyId = 1;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnDateCreatedId = 2;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnCreatedById = 3;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnDateModifiedId = 4;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnModifiedById = 5;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnModificationIdId = 6;
 
         private static bool FInitInfoValues = InitInfoValues();
         private static bool InitInfoValues()
         {
             TableInfo.Add(TableId, new TTypedTableInfo(TableId, "PcConferenceVenue", "pc_conference_venue",
                 new TTypedColumnInfo[] {
-                    new TTypedColumnInfo(0, "ConferenceKey", "pc_conference_key_n", OdbcType.Decimal, 10, true),
-                    new TTypedColumnInfo(1, "VenueKey", "p_venue_key_n", OdbcType.Decimal, 10, true),
-                    new TTypedColumnInfo(2, "DateCreated", "s_date_created_d", OdbcType.Date, -1, false),
-                    new TTypedColumnInfo(3, "CreatedBy", "s_created_by_c", OdbcType.VarChar, 20, false),
-                    new TTypedColumnInfo(4, "DateModified", "s_date_modified_d", OdbcType.Date, -1, false),
-                    new TTypedColumnInfo(5, "ModifiedBy", "s_modified_by_c", OdbcType.VarChar, 20, false),
-                    new TTypedColumnInfo(6, "ModificationId", "s_modification_id_c", OdbcType.VarChar, 150, false)
+                    new TTypedColumnInfo(0, "ConferenceKey", "pc_conference_key_n", "pc_conference_key_n", OdbcType.Decimal, 10, true),
+                    new TTypedColumnInfo(1, "VenueKey", "p_venue_key_n", "Venue Key", OdbcType.Decimal, 10, true),
+                    new TTypedColumnInfo(2, "DateCreated", "s_date_created_d", "Created Date", OdbcType.Date, -1, false),
+                    new TTypedColumnInfo(3, "CreatedBy", "s_created_by_c", "Created By", OdbcType.VarChar, 20, false),
+                    new TTypedColumnInfo(4, "DateModified", "s_date_modified_d", "Modified Date", OdbcType.Date, -1, false),
+                    new TTypedColumnInfo(5, "ModifiedBy", "s_modified_by_c", "Modified By", OdbcType.VarChar, 20, false),
+                    new TTypedColumnInfo(6, "ModificationId", "s_modification_id_c", "", OdbcType.VarChar, 150, false)
                 },
                 new int[] {
                     0, 1
@@ -8732,6 +9135,21 @@ namespace Ict.Petra.Shared.MConference.Data
                 base(info, context)
         {
         }
+
+        /// This is the partner key assigned to each partner. It consists of the fund id followed by a computer generated six digit number.
+        public DataColumn ColumnConferenceKey;
+        /// This is the partner key assigned to each partner. It consists of the fund id followed by a computer generated six digit number.
+        public DataColumn ColumnVenueKey;
+        /// The date the record was created.
+        public DataColumn ColumnDateCreated;
+        /// User ID of who created this record.
+        public DataColumn ColumnCreatedBy;
+        /// The date the record was modified.
+        public DataColumn ColumnDateModified;
+        /// User ID of who last modified this record.
+        public DataColumn ColumnModifiedBy;
+        /// This identifies the current version of the record.
+        public DataColumn ColumnModificationId;
 
         /// create the columns
         protected override void InitClass()
@@ -8793,6 +9211,18 @@ namespace Ict.Petra.Shared.MConference.Data
         public PcConferenceVenueTable GetChangesTyped()
         {
             return ((PcConferenceVenueTable)(base.GetChangesTypedInternal()));
+        }
+
+        /// return the CamelCase name of the table
+        public static string GetTableName()
+        {
+            return "PcConferenceVenue";
+        }
+
+        /// return the name of the table as it is used in the database
+        public static string GetTableDBName()
+        {
+            return "pc_conference_venue";
         }
 
         /// get an odbc parameter for the given column
