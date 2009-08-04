@@ -217,6 +217,8 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data
             this.ColumnDateModified = this.Columns["s_date_modified_d"];
             this.ColumnModifiedBy = this.Columns["s_modified_by_c"];
             this.ColumnModificationId = this.Columns["s_modification_id_c"];
+            this.PrimaryKey = new System.Data.DataColumn[1] {
+                    ColumnExtractId};
         }
 
         /// Access a typed row by index
@@ -553,7 +555,7 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data
                 ret = this[this.myTable.ColumnExtractName.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return String.Empty;
                 }
                 else
                 {
@@ -579,7 +581,7 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data
                 ret = this[this.myTable.ColumnExtractDesc.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return String.Empty;
                 }
                 else
                 {
@@ -787,7 +789,7 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data
                 ret = this[this.myTable.ColumnManualModBy.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return String.Empty;
                 }
                 else
                 {
@@ -813,7 +815,7 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data
                 ret = this[this.myTable.ColumnExtractTypeCode.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return String.Empty;
                 }
                 else
                 {
@@ -917,7 +919,7 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data
                 ret = this[this.myTable.ColumnCreatedBy.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return String.Empty;
                 }
                 else
                 {
@@ -969,7 +971,7 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data
                 ret = this[this.myTable.ColumnModifiedBy.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return String.Empty;
                 }
                 else
                 {
@@ -995,7 +997,7 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data
                 ret = this[this.myTable.ColumnModificationId.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return String.Empty;
                 }
                 else
                 {
@@ -1374,6 +1376,8 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data
             this.ColumnDateModified = this.Columns["s_date_modified_d"];
             this.ColumnModifiedBy = this.Columns["s_modified_by_c"];
             this.ColumnModificationId = this.Columns["s_modification_id_c"];
+            this.PrimaryKey = new System.Data.DataColumn[3] {
+                    ColumnExtractId,ColumnPartnerKey,ColumnSiteKey};
         }
 
         /// Access a typed row by index
@@ -1694,7 +1698,7 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data
                 ret = this[this.myTable.ColumnCreatedBy.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return String.Empty;
                 }
                 else
                 {
@@ -1746,7 +1750,7 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data
                 ret = this[this.myTable.ColumnModifiedBy.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return String.Empty;
                 }
                 else
                 {
@@ -1772,7 +1776,7 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data
                 ret = this[this.myTable.ColumnModificationId.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return String.Empty;
                 }
                 else
                 {
@@ -2014,6 +2018,8 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data
             this.ColumnDateModified = this.Columns["s_date_modified_d"];
             this.ColumnModifiedBy = this.Columns["s_modified_by_c"];
             this.ColumnModificationId = this.Columns["s_modification_id_c"];
+            this.PrimaryKey = new System.Data.DataColumn[1] {
+                    ColumnCode};
         }
 
         /// Access a typed row by index
@@ -2192,7 +2198,7 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data
                 ret = this[this.myTable.ColumnCode.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return String.Empty;
                 }
                 else
                 {
@@ -2218,7 +2224,7 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data
                 ret = this[this.myTable.ColumnFunction.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return String.Empty;
                 }
                 else
                 {
@@ -2244,7 +2250,7 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data
                 ret = this[this.myTable.ColumnDescription.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return String.Empty;
                 }
                 else
                 {
@@ -2296,7 +2302,7 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data
                 ret = this[this.myTable.ColumnCreatedBy.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return String.Empty;
                 }
                 else
                 {
@@ -2348,7 +2354,7 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data
                 ret = this[this.myTable.ColumnModifiedBy.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return String.Empty;
                 }
                 else
                 {
@@ -2374,7 +2380,7 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data
                 ret = this[this.myTable.ColumnModificationId.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return String.Empty;
                 }
                 else
                 {
@@ -2610,6 +2616,8 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data
             this.ColumnDateModified = this.Columns["s_date_modified_d"];
             this.ColumnModifiedBy = this.Columns["s_modified_by_c"];
             this.ColumnModificationId = this.Columns["s_modification_id_c"];
+            this.PrimaryKey = new System.Data.DataColumn[3] {
+                    ColumnExtractId,ColumnParameterCode,ColumnValueIndex};
         }
 
         /// Access a typed row by index
@@ -2826,7 +2834,7 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data
                 ret = this[this.myTable.ColumnParameterCode.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return String.Empty;
                 }
                 else
                 {
@@ -2878,7 +2886,7 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data
                 ret = this[this.myTable.ColumnParameterValue.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return String.Empty;
                 }
                 else
                 {
@@ -2930,7 +2938,7 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data
                 ret = this[this.myTable.ColumnCreatedBy.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return String.Empty;
                 }
                 else
                 {
@@ -2982,7 +2990,7 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data
                 ret = this[this.myTable.ColumnModifiedBy.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return String.Empty;
                 }
                 else
                 {
@@ -3008,7 +3016,7 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data
                 ret = this[this.myTable.ColumnModificationId.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return String.Empty;
                 }
                 else
                 {
@@ -3292,6 +3300,8 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data
             this.ColumnDateModified = this.Columns["s_date_modified_d"];
             this.ColumnModifiedBy = this.Columns["s_modified_by_c"];
             this.ColumnModificationId = this.Columns["s_modification_id_c"];
+            this.PrimaryKey = new System.Data.DataColumn[1] {
+                    ColumnMailingCode};
         }
 
         /// Access a typed row by index
@@ -3542,7 +3552,7 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data
                 ret = this[this.myTable.ColumnMailingCode.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return String.Empty;
                 }
                 else
                 {
@@ -3568,7 +3578,7 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data
                 ret = this[this.myTable.ColumnMailingDescription.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return String.Empty;
                 }
                 else
                 {
@@ -3620,7 +3630,7 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data
                 ret = this[this.myTable.ColumnMotivationGroupCode.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return String.Empty;
                 }
                 else
                 {
@@ -3646,7 +3656,7 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data
                 ret = this[this.myTable.ColumnMotivationDetailCode.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return String.Empty;
                 }
                 else
                 {
@@ -3802,7 +3812,7 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data
                 ret = this[this.myTable.ColumnCreatedBy.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return String.Empty;
                 }
                 else
                 {
@@ -3854,7 +3864,7 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data
                 ret = this[this.myTable.ColumnModifiedBy.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return String.Empty;
                 }
                 else
                 {
@@ -3880,7 +3890,7 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data
                 ret = this[this.myTable.ColumnModificationId.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return String.Empty;
                 }
                 else
                 {
@@ -4194,6 +4204,8 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data
             this.ColumnDateModified = this.Columns["s_date_modified_d"];
             this.ColumnModifiedBy = this.Columns["s_modified_by_c"];
             this.ColumnModificationId = this.Columns["s_modification_id_c"];
+            this.PrimaryKey = new System.Data.DataColumn[1] {
+                    ColumnCode};
         }
 
         /// Access a typed row by index
@@ -4384,7 +4396,7 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data
                 ret = this[this.myTable.ColumnCode.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return String.Empty;
                 }
                 else
                 {
@@ -4410,7 +4422,7 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data
                 ret = this[this.myTable.ColumnDescription.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return String.Empty;
                 }
                 else
                 {
@@ -4462,7 +4474,7 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data
                 ret = this[this.myTable.ColumnComment.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return String.Empty;
                 }
                 else
                 {
@@ -4514,7 +4526,7 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data
                 ret = this[this.myTable.ColumnCreatedBy.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return String.Empty;
                 }
                 else
                 {
@@ -4566,7 +4578,7 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data
                 ret = this[this.myTable.ColumnModifiedBy.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return String.Empty;
                 }
                 else
                 {
@@ -4592,7 +4604,7 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data
                 ret = this[this.myTable.ColumnModificationId.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return String.Empty;
                 }
                 else
                 {
@@ -4855,6 +4867,8 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data
             this.ColumnDateModified = this.Columns["s_date_modified_d"];
             this.ColumnModifiedBy = this.Columns["s_modified_by_c"];
             this.ColumnModificationId = this.Columns["s_modification_id_c"];
+            this.PrimaryKey = new System.Data.DataColumn[4] {
+                    ColumnCountryCode,ColumnAddressLayoutCode,ColumnAddressLineNumber,ColumnAddressLineCode};
         }
 
         /// Access a typed row by index
@@ -5069,7 +5083,7 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data
                 ret = this[this.myTable.ColumnCountryCode.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return String.Empty;
                 }
                 else
                 {
@@ -5095,7 +5109,7 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data
                 ret = this[this.myTable.ColumnAddressLayoutCode.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return String.Empty;
                 }
                 else
                 {
@@ -5147,7 +5161,7 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data
                 ret = this[this.myTable.ColumnAddressLineCode.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return String.Empty;
                 }
                 else
                 {
@@ -5173,7 +5187,7 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data
                 ret = this[this.myTable.ColumnAddressPrompt.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return String.Empty;
                 }
                 else
                 {
@@ -5251,7 +5265,7 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data
                 ret = this[this.myTable.ColumnCreatedBy.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return String.Empty;
                 }
                 else
                 {
@@ -5303,7 +5317,7 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data
                 ret = this[this.myTable.ColumnModifiedBy.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return String.Empty;
                 }
                 else
                 {
@@ -5329,7 +5343,7 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data
                 ret = this[this.myTable.ColumnModificationId.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return String.Empty;
                 }
                 else
                 {
@@ -5604,6 +5618,8 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data
             this.ColumnDateModified = this.Columns["s_date_modified_d"];
             this.ColumnModifiedBy = this.Columns["s_modified_by_c"];
             this.ColumnModificationId = this.Columns["s_modification_id_c"];
+            this.PrimaryKey = new System.Data.DataColumn[1] {
+                    ColumnAddressElementCode};
         }
 
         /// Access a typed row by index
@@ -5794,7 +5810,7 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data
                 ret = this[this.myTable.ColumnAddressElementCode.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return String.Empty;
                 }
                 else
                 {
@@ -5820,7 +5836,7 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data
                 ret = this[this.myTable.ColumnAddressElementDescription.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return String.Empty;
                 }
                 else
                 {
@@ -5846,7 +5862,7 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data
                 ret = this[this.myTable.ColumnAddressElementFieldName.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return String.Empty;
                 }
                 else
                 {
@@ -5872,7 +5888,7 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data
                 ret = this[this.myTable.ColumnAddressElementText.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return String.Empty;
                 }
                 else
                 {
@@ -5924,7 +5940,7 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data
                 ret = this[this.myTable.ColumnCreatedBy.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return String.Empty;
                 }
                 else
                 {
@@ -5976,7 +5992,7 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data
                 ret = this[this.myTable.ColumnModifiedBy.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return String.Empty;
                 }
                 else
                 {
@@ -6002,7 +6018,7 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data
                 ret = this[this.myTable.ColumnModificationId.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return String.Empty;
                 }
                 else
                 {
@@ -6244,6 +6260,8 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data
             this.ColumnDateModified = this.Columns["s_date_modified_d"];
             this.ColumnModifiedBy = this.Columns["s_modified_by_c"];
             this.ColumnModificationId = this.Columns["s_modification_id_c"];
+            this.PrimaryKey = new System.Data.DataColumn[2] {
+                    ColumnAddressLineCode,ColumnAddressElementPosition};
         }
 
         /// Access a typed row by index
@@ -6422,7 +6440,7 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data
                 ret = this[this.myTable.ColumnAddressLineCode.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return String.Empty;
                 }
                 else
                 {
@@ -6474,7 +6492,7 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data
                 ret = this[this.myTable.ColumnAddressElementCode.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return String.Empty;
                 }
                 else
                 {
@@ -6526,7 +6544,7 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data
                 ret = this[this.myTable.ColumnCreatedBy.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return String.Empty;
                 }
                 else
                 {
@@ -6578,7 +6596,7 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data
                 ret = this[this.myTable.ColumnModifiedBy.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return String.Empty;
                 }
                 else
                 {
@@ -6604,7 +6622,7 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data
                 ret = this[this.myTable.ColumnModificationId.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return String.Empty;
                 }
                 else
                 {
@@ -6835,6 +6853,8 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data
             this.ColumnDateModified = this.Columns["s_date_modified_d"];
             this.ColumnModifiedBy = this.Columns["s_modified_by_c"];
             this.ColumnModificationId = this.Columns["s_modification_id_c"];
+            this.PrimaryKey = new System.Data.DataColumn[2] {
+                    ColumnLanguageCode,ColumnTitle};
         }
 
         /// Access a typed row by index
@@ -7015,7 +7035,7 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data
                 ret = this[this.myTable.ColumnLanguageCode.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return String.Empty;
                 }
                 else
                 {
@@ -7041,7 +7061,7 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data
                 ret = this[this.myTable.ColumnTitle.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return String.Empty;
                 }
                 else
                 {
@@ -7067,7 +7087,7 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data
                 ret = this[this.myTable.ColumnTitleOverride.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return String.Empty;
                 }
                 else
                 {
@@ -7119,7 +7139,7 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data
                 ret = this[this.myTable.ColumnCreatedBy.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return String.Empty;
                 }
                 else
                 {
@@ -7171,7 +7191,7 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data
                 ret = this[this.myTable.ColumnModifiedBy.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return String.Empty;
                 }
                 else
                 {
@@ -7197,7 +7217,7 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data
                 ret = this[this.myTable.ColumnModificationId.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return String.Empty;
                 }
                 else
                 {
@@ -7433,6 +7453,8 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data
             this.ColumnDateModified = this.Columns["s_date_modified_d"];
             this.ColumnModifiedBy = this.Columns["s_modified_by_c"];
             this.ColumnModificationId = this.Columns["s_modification_id_c"];
+            this.PrimaryKey = new System.Data.DataColumn[2] {
+                    ColumnPartnerKey,ColumnUserId};
         }
 
         /// Access a typed row by index
@@ -7649,7 +7671,7 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data
                 ret = this[this.myTable.ColumnUserId.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return String.Empty;
                 }
                 else
                 {
@@ -7675,7 +7697,7 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data
                 ret = this[this.myTable.ColumnCustomisedGreetingText.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return String.Empty;
                 }
                 else
                 {
@@ -7701,7 +7723,7 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data
                 ret = this[this.myTable.ColumnCustomisedClosingText.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return String.Empty;
                 }
                 else
                 {
@@ -7753,7 +7775,7 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data
                 ret = this[this.myTable.ColumnCreatedBy.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return String.Empty;
                 }
                 else
                 {
@@ -7805,7 +7827,7 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data
                 ret = this[this.myTable.ColumnModifiedBy.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return String.Empty;
                 }
                 else
                 {
@@ -7831,7 +7853,7 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data
                 ret = this[this.myTable.ColumnModificationId.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return String.Empty;
                 }
                 else
                 {
@@ -8109,6 +8131,8 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data
             this.ColumnDateModified = this.Columns["s_date_modified_d"];
             this.ColumnModifiedBy = this.Columns["s_modified_by_c"];
             this.ColumnModificationId = this.Columns["s_modification_id_c"];
+            this.PrimaryKey = new System.Data.DataColumn[4] {
+                    ColumnLanguageCode,ColumnCountryCode,ColumnAddresseeTypeCode,ColumnFormalityLevel};
         }
 
         /// Access a typed row by index
@@ -8347,7 +8371,7 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data
                 ret = this[this.myTable.ColumnLanguageCode.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return String.Empty;
                 }
                 else
                 {
@@ -8374,7 +8398,7 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data
                 ret = this[this.myTable.ColumnCountryCode.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return String.Empty;
                 }
                 else
                 {
@@ -8400,7 +8424,7 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data
                 ret = this[this.myTable.ColumnAddresseeTypeCode.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return String.Empty;
                 }
                 else
                 {
@@ -8452,7 +8476,7 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data
                 ret = this[this.myTable.ColumnSalutationText.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return String.Empty;
                 }
                 else
                 {
@@ -8478,7 +8502,7 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data
                 ret = this[this.myTable.ColumnTitle.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return String.Empty;
                 }
                 else
                 {
@@ -8504,7 +8528,7 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data
                 ret = this[this.myTable.ColumnComplimentaryClosingText.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return String.Empty;
                 }
                 else
                 {
@@ -8530,7 +8554,7 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data
                 ret = this[this.myTable.ColumnPersonalPronoun.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return String.Empty;
                 }
                 else
                 {
@@ -8582,7 +8606,7 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data
                 ret = this[this.myTable.ColumnCreatedBy.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return String.Empty;
                 }
                 else
                 {
@@ -8634,7 +8658,7 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data
                 ret = this[this.myTable.ColumnModifiedBy.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return String.Empty;
                 }
                 else
                 {
@@ -8660,7 +8684,7 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data
                 ret = this[this.myTable.ColumnModificationId.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return String.Empty;
                 }
                 else
                 {
@@ -8968,6 +8992,8 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data
             this.ColumnDateModified = this.Columns["s_date_modified_d"];
             this.ColumnModifiedBy = this.Columns["s_modified_by_c"];
             this.ColumnModificationId = this.Columns["s_modification_id_c"];
+            this.PrimaryKey = new System.Data.DataColumn[1] {
+                    ColumnBodyName};
         }
 
         /// Access a typed row by index
@@ -9170,7 +9196,7 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data
                 ret = this[this.myTable.ColumnBodyName.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return String.Empty;
                 }
                 else
                 {
@@ -9196,7 +9222,7 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data
                 ret = this[this.myTable.ColumnBodyText.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return String.Empty;
                 }
                 else
                 {
@@ -9222,7 +9248,7 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data
                 ret = this[this.myTable.ColumnDescription.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return String.Empty;
                 }
                 else
                 {
@@ -9248,7 +9274,7 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data
                 ret = this[this.myTable.ColumnPhysicalFile.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return String.Empty;
                 }
                 else
                 {
@@ -9274,7 +9300,7 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data
                 ret = this[this.myTable.ColumnOwner.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return String.Empty;
                 }
                 else
                 {
@@ -9326,7 +9352,7 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data
                 ret = this[this.myTable.ColumnCreatedBy.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return String.Empty;
                 }
                 else
                 {
@@ -9378,7 +9404,7 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data
                 ret = this[this.myTable.ColumnModifiedBy.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return String.Empty;
                 }
                 else
                 {
@@ -9404,7 +9430,7 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data
                 ret = this[this.myTable.ColumnModificationId.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return String.Empty;
                 }
                 else
                 {
@@ -9673,6 +9699,8 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data
             this.ColumnDateModified = this.Columns["s_date_modified_d"];
             this.ColumnModifiedBy = this.Columns["s_modified_by_c"];
             this.ColumnModificationId = this.Columns["s_modification_id_c"];
+            this.PrimaryKey = new System.Data.DataColumn[1] {
+                    ColumnDesignName};
         }
 
         /// Access a typed row by index
@@ -9875,7 +9903,7 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data
                 ret = this[this.myTable.ColumnDesignName.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return String.Empty;
                 }
                 else
                 {
@@ -9901,7 +9929,7 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data
                 ret = this[this.myTable.ColumnDescription.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return String.Empty;
                 }
                 else
                 {
@@ -9927,7 +9955,7 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data
                 ret = this[this.myTable.ColumnAddressLayoutCode.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return String.Empty;
                 }
                 else
                 {
@@ -9979,7 +10007,7 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data
                 ret = this[this.myTable.ColumnBodyName.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return String.Empty;
                 }
                 else
                 {
@@ -10031,7 +10059,7 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data
                 ret = this[this.myTable.ColumnCreatedBy.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return String.Empty;
                 }
                 else
                 {
@@ -10083,7 +10111,7 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data
                 ret = this[this.myTable.ColumnModifiedBy.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return String.Empty;
                 }
                 else
                 {
@@ -10109,7 +10137,7 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data
                 ret = this[this.myTable.ColumnModificationId.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return String.Empty;
                 }
                 else
                 {
@@ -10378,6 +10406,8 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data
             this.ColumnDateModified = this.Columns["s_date_modified_d"];
             this.ColumnModifiedBy = this.Columns["s_modified_by_c"];
             this.ColumnModificationId = this.Columns["s_modification_id_c"];
+            this.PrimaryKey = new System.Data.DataColumn[1] {
+                    ColumnSequence};
         }
 
         /// Access a typed row by index
@@ -10658,7 +10688,7 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data
                 ret = this[this.myTable.ColumnBodyName.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return String.Empty;
                 }
                 else
                 {
@@ -10684,7 +10714,7 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data
                 ret = this[this.myTable.ColumnInsert.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return String.Empty;
                 }
                 else
                 {
@@ -10736,7 +10766,7 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data
                 ret = this[this.myTable.ColumnCreatedBy.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return String.Empty;
                 }
                 else
                 {
@@ -10788,7 +10818,7 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data
                 ret = this[this.myTable.ColumnModifiedBy.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return String.Empty;
                 }
                 else
                 {
@@ -10814,7 +10844,7 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data
                 ret = this[this.myTable.ColumnModificationId.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return String.Empty;
                 }
                 else
                 {
@@ -11125,6 +11155,8 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data
             this.ColumnDateModified = this.Columns["s_date_modified_d"];
             this.ColumnModifiedBy = this.Columns["s_modified_by_c"];
             this.ColumnModificationId = this.Columns["s_modification_id_c"];
+            this.PrimaryKey = new System.Data.DataColumn[1] {
+                    ColumnCode};
         }
 
         /// Access a typed row by index
@@ -11399,7 +11431,7 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data
                 ret = this[this.myTable.ColumnCode.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return String.Empty;
                 }
                 else
                 {
@@ -11425,7 +11457,7 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data
                 ret = this[this.myTable.ColumnFormName.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return String.Empty;
                 }
                 else
                 {
@@ -11607,7 +11639,7 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data
                 ret = this[this.myTable.ColumnDescription.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return String.Empty;
                 }
                 else
                 {
@@ -11711,7 +11743,7 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data
                 ret = this[this.myTable.ColumnCreatedBy.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return String.Empty;
                 }
                 else
                 {
@@ -11763,7 +11795,7 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data
                 ret = this[this.myTable.ColumnModifiedBy.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return String.Empty;
                 }
                 else
                 {
@@ -11789,7 +11821,7 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data
                 ret = this[this.myTable.ColumnModificationId.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return String.Empty;
                 }
                 else
                 {
@@ -12115,6 +12147,8 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data
             this.ColumnDateModified = this.Columns["s_date_modified_d"];
             this.ColumnModifiedBy = this.Columns["s_modified_by_c"];
             this.ColumnModificationId = this.Columns["s_modification_id_c"];
+            this.PrimaryKey = new System.Data.DataColumn[1] {
+                    ColumnMergeFormName};
         }
 
         /// Access a typed row by index
@@ -12281,7 +12315,7 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data
                 ret = this[this.myTable.ColumnMergeFormName.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return String.Empty;
                 }
                 else
                 {
@@ -12307,7 +12341,7 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data
                 ret = this[this.myTable.ColumnMergeFormDescription.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return String.Empty;
                 }
                 else
                 {
@@ -12359,7 +12393,7 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data
                 ret = this[this.myTable.ColumnCreatedBy.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return String.Empty;
                 }
                 else
                 {
@@ -12411,7 +12445,7 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data
                 ret = this[this.myTable.ColumnModifiedBy.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return String.Empty;
                 }
                 else
                 {
@@ -12437,7 +12471,7 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data
                 ret = this[this.myTable.ColumnModificationId.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return String.Empty;
                 }
                 else
                 {
@@ -12667,6 +12701,8 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data
             this.ColumnDateModified = this.Columns["s_date_modified_d"];
             this.ColumnModifiedBy = this.Columns["s_modified_by_c"];
             this.ColumnModificationId = this.Columns["s_modification_id_c"];
+            this.PrimaryKey = new System.Data.DataColumn[2] {
+                    ColumnMergeFormName,ColumnMergeFieldName};
         }
 
         /// Access a typed row by index
@@ -12869,7 +12905,7 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data
                 ret = this[this.myTable.ColumnMergeFormName.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return String.Empty;
                 }
                 else
                 {
@@ -12895,7 +12931,7 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data
                 ret = this[this.myTable.ColumnMergeFieldName.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return String.Empty;
                 }
                 else
                 {
@@ -12947,7 +12983,7 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data
                 ret = this[this.myTable.ColumnMergeType.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return String.Empty;
                 }
                 else
                 {
@@ -12973,7 +13009,7 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data
                 ret = this[this.myTable.ColumnMergeParameters.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return String.Empty;
                 }
                 else
                 {
@@ -13025,7 +13061,7 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data
                 ret = this[this.myTable.ColumnCreatedBy.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return String.Empty;
                 }
                 else
                 {
@@ -13077,7 +13113,7 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data
                 ret = this[this.myTable.ColumnModifiedBy.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return String.Empty;
                 }
                 else
                 {
@@ -13103,7 +13139,7 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data
                 ret = this[this.myTable.ColumnModificationId.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return String.Empty;
                 }
                 else
                 {
@@ -13358,6 +13394,8 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data
             this.ColumnDateModified = this.Columns["s_date_modified_d"];
             this.ColumnModifiedBy = this.Columns["s_modified_by_c"];
             this.ColumnModificationId = this.Columns["s_modification_id_c"];
+            this.PrimaryKey = new System.Data.DataColumn[1] {
+                    ColumnRange};
         }
 
         /// Access a typed row by index
@@ -13536,7 +13574,7 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data
                 ret = this[this.myTable.ColumnRange.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return String.Empty;
                 }
                 else
                 {
@@ -13562,7 +13600,7 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data
                 ret = this[this.myTable.ColumnFrom.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return String.Empty;
                 }
                 else
                 {
@@ -13588,7 +13626,7 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data
                 ret = this[this.myTable.ColumnTo.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return String.Empty;
                 }
                 else
                 {
@@ -13640,7 +13678,7 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data
                 ret = this[this.myTable.ColumnCreatedBy.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return String.Empty;
                 }
                 else
                 {
@@ -13692,7 +13730,7 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data
                 ret = this[this.myTable.ColumnModifiedBy.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return String.Empty;
                 }
                 else
                 {
@@ -13718,7 +13756,7 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data
                 ret = this[this.myTable.ColumnModificationId.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return String.Empty;
                 }
                 else
                 {
@@ -13940,6 +13978,8 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data
             this.ColumnDateModified = this.Columns["s_date_modified_d"];
             this.ColumnModifiedBy = this.Columns["s_modified_by_c"];
             this.ColumnModificationId = this.Columns["s_modification_id_c"];
+            this.PrimaryKey = new System.Data.DataColumn[2] {
+                    ColumnRegion,ColumnRange};
         }
 
         /// Access a typed row by index
@@ -14106,7 +14146,7 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data
                 ret = this[this.myTable.ColumnRegion.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return String.Empty;
                 }
                 else
                 {
@@ -14132,7 +14172,7 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data
                 ret = this[this.myTable.ColumnRange.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return String.Empty;
                 }
                 else
                 {
@@ -14184,7 +14224,7 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data
                 ret = this[this.myTable.ColumnCreatedBy.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return String.Empty;
                 }
                 else
                 {
@@ -14236,7 +14276,7 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data
                 ret = this[this.myTable.ColumnModifiedBy.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return String.Empty;
                 }
                 else
                 {
@@ -14262,7 +14302,7 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data
                 ret = this[this.myTable.ColumnModificationId.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return String.Empty;
                 }
                 else
                 {
@@ -14513,6 +14553,8 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data
             this.ColumnDateModified = this.Columns["s_date_modified_d"];
             this.ColumnModifiedBy = this.Columns["s_modified_by_c"];
             this.ColumnModificationId = this.Columns["s_modification_id_c"];
+            this.PrimaryKey = new System.Data.DataColumn[1] {
+                    ColumnPublicationCode};
         }
 
         /// Access a typed row by index
@@ -14751,7 +14793,7 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data
                 ret = this[this.myTable.ColumnPublicationCode.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return String.Empty;
                 }
                 else
                 {
@@ -14829,7 +14871,7 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data
                 ret = this[this.myTable.ColumnPublicationDescription.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return String.Empty;
                 }
                 else
                 {
@@ -14881,7 +14923,7 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data
                 ret = this[this.myTable.ColumnFrequencyCode.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return String.Empty;
                 }
                 else
                 {
@@ -14907,7 +14949,7 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data
                 ret = this[this.myTable.ColumnPublicationLabelCode.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return String.Empty;
                 }
                 else
                 {
@@ -14933,7 +14975,7 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data
                 ret = this[this.myTable.ColumnPublicationLanguage.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return String.Empty;
                 }
                 else
                 {
@@ -14985,7 +15027,7 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data
                 ret = this[this.myTable.ColumnCreatedBy.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return String.Empty;
                 }
                 else
                 {
@@ -15037,7 +15079,7 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data
                 ret = this[this.myTable.ColumnModifiedBy.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return String.Empty;
                 }
                 else
                 {
@@ -15063,7 +15105,7 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data
                 ret = this[this.myTable.ColumnModificationId.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return String.Empty;
                 }
                 else
                 {
@@ -15371,6 +15413,8 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data
             this.ColumnDateModified = this.Columns["s_date_modified_d"];
             this.ColumnModifiedBy = this.Columns["s_modified_by_c"];
             this.ColumnModificationId = this.Columns["s_modification_id_c"];
+            this.PrimaryKey = new System.Data.DataColumn[2] {
+                    ColumnPublicationCode,ColumnDateEffective};
         }
 
         /// Access a typed row by index
@@ -15573,7 +15617,7 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data
                 ret = this[this.myTable.ColumnPublicationCode.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return String.Empty;
                 }
                 else
                 {
@@ -15677,7 +15721,7 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data
                 ret = this[this.myTable.ColumnCurrencyCode.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return String.Empty;
                 }
                 else
                 {
@@ -15729,7 +15773,7 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data
                 ret = this[this.myTable.ColumnCreatedBy.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return String.Empty;
                 }
                 else
                 {
@@ -15781,7 +15825,7 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data
                 ret = this[this.myTable.ColumnModifiedBy.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return String.Empty;
                 }
                 else
                 {
@@ -15807,7 +15851,7 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data
                 ret = this[this.myTable.ColumnModificationId.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return String.Empty;
                 }
                 else
                 {
@@ -16055,6 +16099,8 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data
             this.ColumnDateModified = this.Columns["s_date_modified_d"];
             this.ColumnModifiedBy = this.Columns["s_modified_by_c"];
             this.ColumnModificationId = this.Columns["s_modification_id_c"];
+            this.PrimaryKey = new System.Data.DataColumn[1] {
+                    ColumnCode};
         }
 
         /// Access a typed row by index
@@ -16221,7 +16267,7 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data
                 ret = this[this.myTable.ColumnCode.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return String.Empty;
                 }
                 else
                 {
@@ -16247,7 +16293,7 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data
                 ret = this[this.myTable.ColumnDescription.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return String.Empty;
                 }
                 else
                 {
@@ -16299,7 +16345,7 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data
                 ret = this[this.myTable.ColumnCreatedBy.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return String.Empty;
                 }
                 else
                 {
@@ -16351,7 +16397,7 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data
                 ret = this[this.myTable.ColumnModifiedBy.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return String.Empty;
                 }
                 else
                 {
@@ -16377,7 +16423,7 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data
                 ret = this[this.myTable.ColumnModificationId.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return String.Empty;
                 }
                 else
                 {
@@ -16586,6 +16632,8 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data
             this.ColumnDateModified = this.Columns["s_date_modified_d"];
             this.ColumnModifiedBy = this.Columns["s_modified_by_c"];
             this.ColumnModificationId = this.Columns["s_modification_id_c"];
+            this.PrimaryKey = new System.Data.DataColumn[1] {
+                    ColumnCode};
         }
 
         /// Access a typed row by index
@@ -16752,7 +16800,7 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data
                 ret = this[this.myTable.ColumnCode.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return String.Empty;
                 }
                 else
                 {
@@ -16778,7 +16826,7 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data
                 ret = this[this.myTable.ColumnDescription.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return String.Empty;
                 }
                 else
                 {
@@ -16830,7 +16878,7 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data
                 ret = this[this.myTable.ColumnCreatedBy.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return String.Empty;
                 }
                 else
                 {
@@ -16882,7 +16930,7 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data
                 ret = this[this.myTable.ColumnModifiedBy.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return String.Empty;
                 }
                 else
                 {
@@ -16908,7 +16956,7 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data
                 ret = this[this.myTable.ColumnModificationId.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return String.Empty;
                 }
                 else
                 {
@@ -17229,6 +17277,8 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data
             this.ColumnDateModified = this.Columns["s_date_modified_d"];
             this.ColumnModifiedBy = this.Columns["s_modified_by_c"];
             this.ColumnModificationId = this.Columns["s_modification_id_c"];
+            this.PrimaryKey = new System.Data.DataColumn[2] {
+                    ColumnPublicationCode,ColumnPartnerKey};
         }
 
         /// Access a typed row by index
@@ -17587,7 +17637,7 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data
                 ret = this[this.myTable.ColumnPublicationCode.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return String.Empty;
                 }
                 else
                 {
@@ -17665,7 +17715,7 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data
                 ret = this[this.myTable.ColumnReasonSubsGivenCode.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return String.Empty;
                 }
                 else
                 {
@@ -17691,7 +17741,7 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data
                 ret = this[this.myTable.ColumnReasonSubsCancelledCode.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return String.Empty;
                 }
                 else
                 {
@@ -17951,7 +18001,7 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data
                 ret = this[this.myTable.ColumnSubscriptionStatus.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return String.Empty;
                 }
                 else
                 {
@@ -18081,7 +18131,7 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data
                 ret = this[this.myTable.ColumnCreatedBy.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return String.Empty;
                 }
                 else
                 {
@@ -18133,7 +18183,7 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data
                 ret = this[this.myTable.ColumnModifiedBy.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return String.Empty;
                 }
                 else
                 {
@@ -18159,7 +18209,7 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data
                 ret = this[this.myTable.ColumnModificationId.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return String.Empty;
                 }
                 else
                 {
@@ -18583,6 +18633,8 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data
             this.ColumnDateModified = this.Columns["s_date_modified_d"];
             this.ColumnModifiedBy = this.Columns["s_modified_by_c"];
             this.ColumnModificationId = this.Columns["s_modification_id_c"];
+            this.PrimaryKey = new System.Data.DataColumn[1] {
+                    ColumnContactAttributeCode};
         }
 
         /// Access a typed row by index
@@ -18761,7 +18813,7 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data
                 ret = this[this.myTable.ColumnContactAttributeCode.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return String.Empty;
                 }
                 else
                 {
@@ -18787,7 +18839,7 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data
                 ret = this[this.myTable.ColumnContactAttributeDescr.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return String.Empty;
                 }
                 else
                 {
@@ -18865,7 +18917,7 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data
                 ret = this[this.myTable.ColumnCreatedBy.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return String.Empty;
                 }
                 else
                 {
@@ -18917,7 +18969,7 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data
                 ret = this[this.myTable.ColumnModifiedBy.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return String.Empty;
                 }
                 else
                 {
@@ -18943,7 +18995,7 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data
                 ret = this[this.myTable.ColumnModificationId.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return String.Empty;
                 }
                 else
                 {
@@ -19186,6 +19238,8 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data
             this.ColumnDateModified = this.Columns["s_date_modified_d"];
             this.ColumnModifiedBy = this.Columns["s_modified_by_c"];
             this.ColumnModificationId = this.Columns["s_modification_id_c"];
+            this.PrimaryKey = new System.Data.DataColumn[2] {
+                    ColumnContactAttributeCode,ColumnContactAttrDetailCode};
         }
 
         /// Access a typed row by index
@@ -19388,7 +19442,7 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data
                 ret = this[this.myTable.ColumnContactAttributeCode.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return String.Empty;
                 }
                 else
                 {
@@ -19414,7 +19468,7 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data
                 ret = this[this.myTable.ColumnContactAttrDetailCode.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return String.Empty;
                 }
                 else
                 {
@@ -19440,7 +19494,7 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data
                 ret = this[this.myTable.ColumnContactAttrDetailDescr.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return String.Empty;
                 }
                 else
                 {
@@ -19492,7 +19546,7 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data
                 ret = this[this.myTable.ColumnComment.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return String.Empty;
                 }
                 else
                 {
@@ -19544,7 +19598,7 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data
                 ret = this[this.myTable.ColumnCreatedBy.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return String.Empty;
                 }
                 else
                 {
@@ -19596,7 +19650,7 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data
                 ret = this[this.myTable.ColumnModifiedBy.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return String.Empty;
                 }
                 else
                 {
@@ -19622,7 +19676,7 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data
                 ret = this[this.myTable.ColumnModificationId.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return String.Empty;
                 }
                 else
                 {
@@ -19894,6 +19948,8 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data
             this.ColumnDateModified = this.Columns["s_date_modified_d"];
             this.ColumnModifiedBy = this.Columns["s_modified_by_c"];
             this.ColumnModificationId = this.Columns["s_modification_id_c"];
+            this.PrimaryKey = new System.Data.DataColumn[1] {
+                    ColumnMethodOfContactCode};
         }
 
         /// Access a typed row by index
@@ -20096,7 +20152,7 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data
                 ret = this[this.myTable.ColumnMethodOfContactCode.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return String.Empty;
                 }
                 else
                 {
@@ -20122,7 +20178,7 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data
                 ret = this[this.myTable.ColumnDescription.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return String.Empty;
                 }
                 else
                 {
@@ -20148,7 +20204,7 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data
                 ret = this[this.myTable.ColumnContactType.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return String.Empty;
                 }
                 else
                 {
@@ -20255,7 +20311,7 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data
                 ret = this[this.myTable.ColumnCreatedBy.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return String.Empty;
                 }
                 else
                 {
@@ -20307,7 +20363,7 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data
                 ret = this[this.myTable.ColumnModifiedBy.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return String.Empty;
                 }
                 else
                 {
@@ -20333,7 +20389,7 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data
                 ret = this[this.myTable.ColumnModificationId.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return String.Empty;
                 }
                 else
                 {
@@ -20658,6 +20714,8 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data
             this.ColumnDateModified = this.Columns["s_date_modified_d"];
             this.ColumnModifiedBy = this.Columns["s_modified_by_c"];
             this.ColumnModificationId = this.Columns["s_modification_id_c"];
+            this.PrimaryKey = new System.Data.DataColumn[1] {
+                    ColumnContactId};
         }
 
         /// Access a typed row by index
@@ -21060,7 +21118,7 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data
                 ret = this[this.myTable.ColumnContactCode.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return String.Empty;
                 }
                 else
                 {
@@ -21086,7 +21144,7 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data
                 ret = this[this.myTable.ColumnContactor.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return String.Empty;
                 }
                 else
                 {
@@ -21112,7 +21170,7 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data
                 ret = this[this.myTable.ColumnContactMessageId.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return String.Empty;
                 }
                 else
                 {
@@ -21138,7 +21196,7 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data
                 ret = this[this.myTable.ColumnContactComment.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return String.Empty;
                 }
                 else
                 {
@@ -21164,7 +21222,7 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data
                 ret = this[this.myTable.ColumnModuleId.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return String.Empty;
                 }
                 else
                 {
@@ -21190,7 +21248,7 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data
                 ret = this[this.myTable.ColumnUserId.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return String.Empty;
                 }
                 else
                 {
@@ -21216,7 +21274,7 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data
                 ret = this[this.myTable.ColumnMailingCode.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return String.Empty;
                 }
                 else
                 {
@@ -21268,7 +21326,7 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data
                 ret = this[this.myTable.ColumnContactLocation.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return String.Empty;
                 }
                 else
                 {
@@ -21320,7 +21378,7 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data
                 ret = this[this.myTable.ColumnCreatedBy.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return String.Empty;
                 }
                 else
                 {
@@ -21372,7 +21430,7 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data
                 ret = this[this.myTable.ColumnModifiedBy.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return String.Empty;
                 }
                 else
                 {
@@ -21398,7 +21456,7 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data
                 ret = this[this.myTable.ColumnModificationId.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return String.Empty;
                 }
                 else
                 {
@@ -21757,6 +21815,8 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data
             this.ColumnDateModified = this.Columns["s_date_modified_d"];
             this.ColumnModifiedBy = this.Columns["s_modified_by_c"];
             this.ColumnModificationId = this.Columns["s_modification_id_c"];
+            this.PrimaryKey = new System.Data.DataColumn[3] {
+                    ColumnContactId,ColumnContactAttributeCode,ColumnContactAttrDetailCode};
         }
 
         /// Access a typed row by index
@@ -21961,7 +22021,7 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data
                 ret = this[this.myTable.ColumnContactAttributeCode.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return String.Empty;
                 }
                 else
                 {
@@ -21987,7 +22047,7 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data
                 ret = this[this.myTable.ColumnContactAttrDetailCode.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return String.Empty;
                 }
                 else
                 {
@@ -22039,7 +22099,7 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data
                 ret = this[this.myTable.ColumnCreatedBy.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return String.Empty;
                 }
                 else
                 {
@@ -22091,7 +22151,7 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data
                 ret = this[this.myTable.ColumnModifiedBy.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return String.Empty;
                 }
                 else
                 {
@@ -22117,7 +22177,7 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data
                 ret = this[this.myTable.ColumnModificationId.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return String.Empty;
                 }
                 else
                 {

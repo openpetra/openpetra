@@ -131,6 +131,9 @@ namespace Ict.Tools.DBXML
         /// </summary>
         public string strDotNetName;
 
+        /// the name of the table when it is used in a dataset; empty otherwise.
+        public string strVariableNameInDataset = null;
+
         /// <summary>
         /// the name used for dumping the table
         /// </summary>
@@ -211,6 +214,7 @@ namespace Ict.Tools.DBXML
             this.order = AOtherTable.order;
             this.strName = AOtherTable.strName;
             this.strDotNetName = AOtherTable.strDotNetName;
+            this.strVariableNameInDataset = AOtherTable.strVariableNameInDataset;
             this.strDumpName = AOtherTable.strDumpName;
             this.strDescription = AOtherTable.strDescription;
             this.strArea = AOtherTable.strArea;

@@ -372,7 +372,7 @@ namespace Ict.Petra.Shared.MCommon.Data
                     new TTypedColumnInfo(7, "TableSize", "TableSize", "", OdbcType.Int, -1, false)
                 },
                 new int[] {
-
+                    0
                 }));
             return true;
         }
@@ -436,6 +436,8 @@ namespace Ict.Petra.Shared.MCommon.Data
             this.ColumnLastAccessed = this.Columns["LastAccessed"];
             this.ColumnHashCode = this.Columns["HashCode"];
             this.ColumnTableSize = this.Columns["TableSize"];
+            this.PrimaryKey = new System.Data.DataColumn[1] {
+                    ColumnTableName};
         }
 
         /// Access a typed row by index
@@ -479,7 +481,7 @@ namespace Ict.Petra.Shared.MCommon.Data
         /// return the CamelCase name of the table
         public static string GetTableName()
         {
-            return "CacheableTablesTDSContents";
+            return "Contents";
         }
 
         /// return the name of the table as it is used in the database
@@ -614,7 +616,7 @@ namespace Ict.Petra.Shared.MCommon.Data
                 ret = this[this.myTable.ColumnTableName.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return String.Empty;
                 }
                 else
                 {
@@ -770,7 +772,7 @@ namespace Ict.Petra.Shared.MCommon.Data
                 ret = this[this.myTable.ColumnHashCode.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return String.Empty;
                 }
                 else
                 {

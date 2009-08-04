@@ -276,6 +276,7 @@ namespace Ict.Tools.CodeGeneration.DataStore
                                 }
 
                                 table.strDotNetName = tabletype;
+                                table.strVariableNameInDataset = variablename;
 
                                 // set tableid
                                 table.order = DataSetTableIdCounter++;
@@ -323,6 +324,7 @@ namespace Ict.Tools.CodeGeneration.DataStore
                             customTable.strDescription = TXMLParser.GetAttribute(curChild, "comment");
                             customTable.strName = tabletype;
                             customTable.strDotNetName = tabletype;
+                            customTable.strVariableNameInDataset = variablename;
 
                             while (customTableNodes != null)
                             {
@@ -353,6 +355,7 @@ namespace Ict.Tools.CodeGeneration.DataStore
                                 {
                                     TConstraint primKeyConstraint = new TConstraint();
                                     primKeyConstraint.strName = "PK";
+                                    primKeyConstraint.strType = "primarykey";
                                     primKeyConstraint.strThisFields = StringHelper.StrSplit(TXMLParser.GetAttribute(customTableNodes,
                                             "thisFields"), ",");
                                     customTable.grpConstraint.List.Add(primKeyConstraint);

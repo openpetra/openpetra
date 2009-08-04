@@ -245,6 +245,8 @@ namespace Ict.Petra.Shared.MSysMan.Data
             this.ColumnDateModified = this.Columns["s_date_modified_d"];
             this.ColumnModifiedBy = this.Columns["s_modified_by_c"];
             this.ColumnModificationId = this.Columns["s_modification_id_c"];
+            this.PrimaryKey = new System.Data.DataColumn[1] {
+                    ColumnUserId};
         }
 
         /// Access a typed row by index
@@ -603,7 +605,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
                 ret = this[this.myTable.ColumnUserId.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return String.Empty;
                 }
                 else
                 {
@@ -629,7 +631,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
                 ret = this[this.myTable.ColumnFirstName.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return String.Empty;
                 }
                 else
                 {
@@ -655,7 +657,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
                 ret = this[this.myTable.ColumnLastName.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return String.Empty;
                 }
                 else
                 {
@@ -681,7 +683,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
                 ret = this[this.myTable.ColumnPasswordHash.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return String.Empty;
                 }
                 else
                 {
@@ -707,7 +709,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
                 ret = this[this.myTable.ColumnPasswordSalt.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return String.Empty;
                 }
                 else
                 {
@@ -863,7 +865,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
                 ret = this[this.myTable.ColumnLanguageCode.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return String.Empty;
                 }
                 else
                 {
@@ -941,7 +943,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
                 ret = this[this.myTable.ColumnAcquisitionCode.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return String.Empty;
                 }
                 else
                 {
@@ -1097,7 +1099,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
                 ret = this[this.myTable.ColumnCreatedBy.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return String.Empty;
                 }
                 else
                 {
@@ -1149,7 +1151,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
                 ret = this[this.myTable.ColumnModifiedBy.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return String.Empty;
                 }
                 else
                 {
@@ -1175,7 +1177,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
                 ret = this[this.myTable.ColumnModificationId.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return String.Empty;
                 }
                 else
                 {
@@ -1676,6 +1678,8 @@ namespace Ict.Petra.Shared.MSysMan.Data
             this.ColumnDateModified = this.Columns["s_date_modified_d"];
             this.ColumnModifiedBy = this.Columns["s_modified_by_c"];
             this.ColumnModificationId = this.Columns["s_modification_id_c"];
+            this.PrimaryKey = new System.Data.DataColumn[1] {
+                    ColumnFormName};
         }
 
         /// Access a typed row by index
@@ -1986,7 +1990,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
                 ret = this[this.myTable.ColumnFormName.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return String.Empty;
                 }
                 else
                 {
@@ -2012,7 +2016,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
                 ret = this[this.myTable.ColumnFormDescription.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return String.Empty;
                 }
                 else
                 {
@@ -2038,7 +2042,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
                 ret = this[this.myTable.ColumnDefaultFont.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return String.Empty;
                 }
                 else
                 {
@@ -2194,7 +2198,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
                 ret = this[this.myTable.ColumnFormOrientation.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return String.Empty;
                 }
                 else
                 {
@@ -2376,7 +2380,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
                 ret = this[this.myTable.ColumnCreatedBy.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return String.Empty;
                 }
                 else
                 {
@@ -2428,7 +2432,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
                 ret = this[this.myTable.ColumnModifiedBy.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return String.Empty;
                 }
                 else
                 {
@@ -2454,7 +2458,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
                 ret = this[this.myTable.ColumnModificationId.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return String.Empty;
                 }
                 else
                 {
@@ -2819,6 +2823,8 @@ namespace Ict.Petra.Shared.MSysMan.Data
             this.ColumnDateModified = this.Columns["s_date_modified_d"];
             this.ColumnModifiedBy = this.Columns["s_modified_by_c"];
             this.ColumnModificationId = this.Columns["s_modification_id_c"];
+            this.PrimaryKey = new System.Data.DataColumn[1] {
+                    ColumnFileName};
         }
 
         /// Access a typed row by index
@@ -2985,7 +2991,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
                 ret = this[this.myTable.ColumnFileName.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return String.Empty;
                 }
                 else
                 {
@@ -3011,7 +3017,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
                 ret = this[this.myTable.ColumnFileDescription.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return String.Empty;
                 }
                 else
                 {
@@ -3063,7 +3069,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
                 ret = this[this.myTable.ColumnCreatedBy.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return String.Empty;
                 }
                 else
                 {
@@ -3115,7 +3121,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
                 ret = this[this.myTable.ColumnModifiedBy.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return String.Empty;
                 }
                 else
                 {
@@ -3141,7 +3147,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
                 ret = this[this.myTable.ColumnModificationId.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return String.Empty;
                 }
                 else
                 {
@@ -3364,6 +3370,8 @@ namespace Ict.Petra.Shared.MSysMan.Data
             this.ColumnDateModified = this.Columns["s_date_modified_d"];
             this.ColumnModifiedBy = this.Columns["s_modified_by_c"];
             this.ColumnModificationId = this.Columns["s_modification_id_c"];
+            this.PrimaryKey = new System.Data.DataColumn[2] {
+                    ColumnGroupId,ColumnUnitKey};
         }
 
         /// Access a typed row by index
@@ -3554,7 +3562,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
                 ret = this[this.myTable.ColumnGroupId.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return String.Empty;
                 }
                 else
                 {
@@ -3606,7 +3614,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
                 ret = this[this.myTable.ColumnGroupName.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return String.Empty;
                 }
                 else
                 {
@@ -3684,7 +3692,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
                 ret = this[this.myTable.ColumnCreatedBy.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return String.Empty;
                 }
                 else
                 {
@@ -3736,7 +3744,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
                 ret = this[this.myTable.ColumnModifiedBy.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return String.Empty;
                 }
                 else
                 {
@@ -3762,7 +3770,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
                 ret = this[this.myTable.ColumnModificationId.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return String.Empty;
                 }
                 else
                 {
@@ -4004,6 +4012,8 @@ namespace Ict.Petra.Shared.MSysMan.Data
             this.ColumnDateModified = this.Columns["s_date_modified_d"];
             this.ColumnModifiedBy = this.Columns["s_modified_by_c"];
             this.ColumnModificationId = this.Columns["s_modification_id_c"];
+            this.PrimaryKey = new System.Data.DataColumn[3] {
+                    ColumnUserId,ColumnGroupId,ColumnUnitKey};
         }
 
         /// Access a typed row by index
@@ -4182,7 +4192,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
                 ret = this[this.myTable.ColumnUserId.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return String.Empty;
                 }
                 else
                 {
@@ -4208,7 +4218,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
                 ret = this[this.myTable.ColumnGroupId.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return String.Empty;
                 }
                 else
                 {
@@ -4286,7 +4296,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
                 ret = this[this.myTable.ColumnCreatedBy.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return String.Empty;
                 }
                 else
                 {
@@ -4338,7 +4348,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
                 ret = this[this.myTable.ColumnModifiedBy.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return String.Empty;
                 }
                 else
                 {
@@ -4364,7 +4374,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
                 ret = this[this.myTable.ColumnModificationId.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return String.Empty;
                 }
                 else
                 {
@@ -4586,6 +4596,8 @@ namespace Ict.Petra.Shared.MSysMan.Data
             this.ColumnDateModified = this.Columns["s_date_modified_d"];
             this.ColumnModifiedBy = this.Columns["s_modified_by_c"];
             this.ColumnModificationId = this.Columns["s_modification_id_c"];
+            this.PrimaryKey = new System.Data.DataColumn[1] {
+                    ColumnModuleId};
         }
 
         /// Access a typed row by index
@@ -4752,7 +4764,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
                 ret = this[this.myTable.ColumnModuleId.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return String.Empty;
                 }
                 else
                 {
@@ -4778,7 +4790,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
                 ret = this[this.myTable.ColumnModuleName.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return String.Empty;
                 }
                 else
                 {
@@ -4830,7 +4842,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
                 ret = this[this.myTable.ColumnCreatedBy.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return String.Empty;
                 }
                 else
                 {
@@ -4882,7 +4894,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
                 ret = this[this.myTable.ColumnModifiedBy.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return String.Empty;
                 }
                 else
                 {
@@ -4908,7 +4920,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
                 ret = this[this.myTable.ColumnModificationId.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return String.Empty;
                 }
                 else
                 {
@@ -5117,6 +5129,8 @@ namespace Ict.Petra.Shared.MSysMan.Data
             this.ColumnDateModified = this.Columns["s_date_modified_d"];
             this.ColumnModifiedBy = this.Columns["s_modified_by_c"];
             this.ColumnModificationId = this.Columns["s_modification_id_c"];
+            this.PrimaryKey = new System.Data.DataColumn[2] {
+                    ColumnModuleId,ColumnFormName};
         }
 
         /// Access a typed row by index
@@ -5283,7 +5297,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
                 ret = this[this.myTable.ColumnModuleId.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return String.Empty;
                 }
                 else
                 {
@@ -5309,7 +5323,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
                 ret = this[this.myTable.ColumnFormName.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return String.Empty;
                 }
                 else
                 {
@@ -5361,7 +5375,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
                 ret = this[this.myTable.ColumnCreatedBy.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return String.Empty;
                 }
                 else
                 {
@@ -5413,7 +5427,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
                 ret = this[this.myTable.ColumnModifiedBy.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return String.Empty;
                 }
                 else
                 {
@@ -5439,7 +5453,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
                 ret = this[this.myTable.ColumnModificationId.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return String.Empty;
                 }
                 else
                 {
@@ -5648,6 +5662,8 @@ namespace Ict.Petra.Shared.MSysMan.Data
             this.ColumnDateModified = this.Columns["s_date_modified_d"];
             this.ColumnModifiedBy = this.Columns["s_modified_by_c"];
             this.ColumnModificationId = this.Columns["s_modification_id_c"];
+            this.PrimaryKey = new System.Data.DataColumn[2] {
+                    ColumnModuleId,ColumnFileName};
         }
 
         /// Access a typed row by index
@@ -5814,7 +5830,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
                 ret = this[this.myTable.ColumnModuleId.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return String.Empty;
                 }
                 else
                 {
@@ -5840,7 +5856,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
                 ret = this[this.myTable.ColumnFileName.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return String.Empty;
                 }
                 else
                 {
@@ -5892,7 +5908,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
                 ret = this[this.myTable.ColumnCreatedBy.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return String.Empty;
                 }
                 else
                 {
@@ -5944,7 +5960,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
                 ret = this[this.myTable.ColumnModifiedBy.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return String.Empty;
                 }
                 else
                 {
@@ -5970,7 +5986,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
                 ret = this[this.myTable.ColumnModificationId.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return String.Empty;
                 }
                 else
                 {
@@ -6193,6 +6209,8 @@ namespace Ict.Petra.Shared.MSysMan.Data
             this.ColumnDateModified = this.Columns["s_date_modified_d"];
             this.ColumnModifiedBy = this.Columns["s_modified_by_c"];
             this.ColumnModificationId = this.Columns["s_modification_id_c"];
+            this.PrimaryKey = new System.Data.DataColumn[3] {
+                    ColumnGroupId,ColumnGroupUnitKey,ColumnModuleId};
         }
 
         /// Access a typed row by index
@@ -6383,7 +6401,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
                 ret = this[this.myTable.ColumnGroupId.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return String.Empty;
                 }
                 else
                 {
@@ -6435,7 +6453,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
                 ret = this[this.myTable.ColumnModuleId.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return String.Empty;
                 }
                 else
                 {
@@ -6513,7 +6531,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
                 ret = this[this.myTable.ColumnCreatedBy.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return String.Empty;
                 }
                 else
                 {
@@ -6565,7 +6583,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
                 ret = this[this.myTable.ColumnModifiedBy.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return String.Empty;
                 }
                 else
                 {
@@ -6591,7 +6609,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
                 ret = this[this.myTable.ColumnModificationId.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return String.Empty;
                 }
                 else
                 {
@@ -6861,6 +6879,8 @@ namespace Ict.Petra.Shared.MSysMan.Data
             this.ColumnDateModified = this.Columns["s_date_modified_d"];
             this.ColumnModifiedBy = this.Columns["s_modified_by_c"];
             this.ColumnModificationId = this.Columns["s_modification_id_c"];
+            this.PrimaryKey = new System.Data.DataColumn[3] {
+                    ColumnGroupId,ColumnGroupUnitKey,ColumnTableName};
         }
 
         /// Access a typed row by index
@@ -7087,7 +7107,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
                 ret = this[this.myTable.ColumnGroupId.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return String.Empty;
                 }
                 else
                 {
@@ -7139,7 +7159,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
                 ret = this[this.myTable.ColumnTableName.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return String.Empty;
                 }
                 else
                 {
@@ -7295,7 +7315,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
                 ret = this[this.myTable.ColumnCreatedBy.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return String.Empty;
                 }
                 else
                 {
@@ -7347,7 +7367,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
                 ret = this[this.myTable.ColumnModifiedBy.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return String.Empty;
                 }
                 else
                 {
@@ -7373,7 +7393,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
                 ret = this[this.myTable.ColumnModificationId.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return String.Empty;
                 }
                 else
                 {
@@ -7654,6 +7674,8 @@ namespace Ict.Petra.Shared.MSysMan.Data
             this.ColumnDateModified = this.Columns["s_date_modified_d"];
             this.ColumnModifiedBy = this.Columns["s_modified_by_c"];
             this.ColumnModificationId = this.Columns["s_modification_id_c"];
+            this.PrimaryKey = new System.Data.DataColumn[2] {
+                    ColumnUserId,ColumnModuleId};
         }
 
         /// Access a typed row by index
@@ -7832,7 +7854,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
                 ret = this[this.myTable.ColumnUserId.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return String.Empty;
                 }
                 else
                 {
@@ -7858,7 +7880,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
                 ret = this[this.myTable.ColumnModuleId.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return String.Empty;
                 }
                 else
                 {
@@ -7936,7 +7958,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
                 ret = this[this.myTable.ColumnCreatedBy.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return String.Empty;
                 }
                 else
                 {
@@ -7988,7 +8010,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
                 ret = this[this.myTable.ColumnModifiedBy.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return String.Empty;
                 }
                 else
                 {
@@ -8014,7 +8036,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
                 ret = this[this.myTable.ColumnModificationId.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return String.Empty;
                 }
                 else
                 {
@@ -8264,6 +8286,8 @@ namespace Ict.Petra.Shared.MSysMan.Data
             this.ColumnDateModified = this.Columns["s_date_modified_d"];
             this.ColumnModifiedBy = this.Columns["s_modified_by_c"];
             this.ColumnModificationId = this.Columns["s_modification_id_c"];
+            this.PrimaryKey = new System.Data.DataColumn[2] {
+                    ColumnUserId,ColumnTableName};
         }
 
         /// Access a typed row by index
@@ -8478,7 +8502,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
                 ret = this[this.myTable.ColumnUserId.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return String.Empty;
                 }
                 else
                 {
@@ -8504,7 +8528,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
                 ret = this[this.myTable.ColumnTableName.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return String.Empty;
                 }
                 else
                 {
@@ -8660,7 +8684,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
                 ret = this[this.myTable.ColumnCreatedBy.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return String.Empty;
                 }
                 else
                 {
@@ -8712,7 +8736,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
                 ret = this[this.myTable.ColumnModifiedBy.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return String.Empty;
                 }
                 else
                 {
@@ -8738,7 +8762,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
                 ret = this[this.myTable.ColumnModificationId.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return String.Empty;
                 }
                 else
                 {
@@ -9160,6 +9184,8 @@ namespace Ict.Petra.Shared.MSysMan.Data
             this.ColumnDateModified = this.Columns["s_date_modified_d"];
             this.ColumnModifiedBy = this.Columns["s_modified_by_c"];
             this.ColumnModificationId = this.Columns["s_modification_id_c"];
+            this.PrimaryKey = new System.Data.DataColumn[1] {
+                    ColumnLanguageCode};
         }
 
         /// Access a typed row by index
@@ -9602,7 +9628,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
                 ret = this[this.myTable.ColumnLanguageCode.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return String.Empty;
                 }
                 else
                 {
@@ -9628,7 +9654,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
                 ret = this[this.myTable.ColumnMonthName1.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return String.Empty;
                 }
                 else
                 {
@@ -9654,7 +9680,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
                 ret = this[this.myTable.ColumnMonthName2.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return String.Empty;
                 }
                 else
                 {
@@ -9680,7 +9706,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
                 ret = this[this.myTable.ColumnMonthName3.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return String.Empty;
                 }
                 else
                 {
@@ -9706,7 +9732,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
                 ret = this[this.myTable.ColumnMonthName4.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return String.Empty;
                 }
                 else
                 {
@@ -9732,7 +9758,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
                 ret = this[this.myTable.ColumnMonthName5.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return String.Empty;
                 }
                 else
                 {
@@ -9758,7 +9784,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
                 ret = this[this.myTable.ColumnMonthName6.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return String.Empty;
                 }
                 else
                 {
@@ -9784,7 +9810,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
                 ret = this[this.myTable.ColumnMonthName7.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return String.Empty;
                 }
                 else
                 {
@@ -9810,7 +9836,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
                 ret = this[this.myTable.ColumnMonthName8.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return String.Empty;
                 }
                 else
                 {
@@ -9836,7 +9862,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
                 ret = this[this.myTable.ColumnMonthName9.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return String.Empty;
                 }
                 else
                 {
@@ -9862,7 +9888,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
                 ret = this[this.myTable.ColumnMonthName10.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return String.Empty;
                 }
                 else
                 {
@@ -9888,7 +9914,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
                 ret = this[this.myTable.ColumnMonthName11.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return String.Empty;
                 }
                 else
                 {
@@ -9914,7 +9940,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
                 ret = this[this.myTable.ColumnMonthName12.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return String.Empty;
                 }
                 else
                 {
@@ -9940,7 +9966,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
                 ret = this[this.myTable.ColumnMonthNameShort1.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return String.Empty;
                 }
                 else
                 {
@@ -9966,7 +9992,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
                 ret = this[this.myTable.ColumnMonthNameShort2.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return String.Empty;
                 }
                 else
                 {
@@ -9992,7 +10018,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
                 ret = this[this.myTable.ColumnMonthNameShort3.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return String.Empty;
                 }
                 else
                 {
@@ -10018,7 +10044,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
                 ret = this[this.myTable.ColumnMonthNameShort4.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return String.Empty;
                 }
                 else
                 {
@@ -10044,7 +10070,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
                 ret = this[this.myTable.ColumnMonthNameShort5.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return String.Empty;
                 }
                 else
                 {
@@ -10070,7 +10096,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
                 ret = this[this.myTable.ColumnMonthNameShort6.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return String.Empty;
                 }
                 else
                 {
@@ -10096,7 +10122,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
                 ret = this[this.myTable.ColumnMonthNameShort7.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return String.Empty;
                 }
                 else
                 {
@@ -10122,7 +10148,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
                 ret = this[this.myTable.ColumnMonthNameShort8.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return String.Empty;
                 }
                 else
                 {
@@ -10148,7 +10174,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
                 ret = this[this.myTable.ColumnMonthNameShort9.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return String.Empty;
                 }
                 else
                 {
@@ -10174,7 +10200,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
                 ret = this[this.myTable.ColumnMonthNameShort10.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return String.Empty;
                 }
                 else
                 {
@@ -10200,7 +10226,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
                 ret = this[this.myTable.ColumnMonthNameShort11.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return String.Empty;
                 }
                 else
                 {
@@ -10226,7 +10252,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
                 ret = this[this.myTable.ColumnMonthNameShort12.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return String.Empty;
                 }
                 else
                 {
@@ -10278,7 +10304,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
                 ret = this[this.myTable.ColumnCreatedBy.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return String.Empty;
                 }
                 else
                 {
@@ -10330,7 +10356,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
                 ret = this[this.myTable.ColumnModifiedBy.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return String.Empty;
                 }
                 else
                 {
@@ -10356,7 +10382,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
                 ret = this[this.myTable.ColumnModificationId.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return String.Empty;
                 }
                 else
                 {
@@ -10906,6 +10932,8 @@ namespace Ict.Petra.Shared.MSysMan.Data
             this.ColumnDateModified = this.Columns["s_date_modified_d"];
             this.ColumnModifiedBy = this.Columns["s_modified_by_c"];
             this.ColumnModificationId = this.Columns["s_modification_id_c"];
+            this.PrimaryKey = new System.Data.DataColumn[3] {
+                    ColumnUserId,ColumnLoginDate,ColumnLoginTime};
         }
 
         /// Access a typed row by index
@@ -11144,7 +11172,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
                 ret = this[this.myTable.ColumnUserId.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return String.Empty;
                 }
                 else
                 {
@@ -11170,7 +11198,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
                 ret = this[this.myTable.ColumnLoginTtyLine.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return String.Empty;
                 }
                 else
                 {
@@ -11248,7 +11276,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
                 ret = this[this.myTable.ColumnLoginStatus.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return String.Empty;
                 }
                 else
                 {
@@ -11378,7 +11406,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
                 ret = this[this.myTable.ColumnCreatedBy.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return String.Empty;
                 }
                 else
                 {
@@ -11430,7 +11458,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
                 ret = this[this.myTable.ColumnModifiedBy.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return String.Empty;
                 }
                 else
                 {
@@ -11456,7 +11484,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
                 ret = this[this.myTable.ColumnModificationId.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return String.Empty;
                 }
                 else
                 {
@@ -11743,6 +11771,8 @@ namespace Ict.Petra.Shared.MSysMan.Data
             this.ColumnDateModified = this.Columns["s_date_modified_d"];
             this.ColumnModifiedBy = this.Columns["s_modified_by_c"];
             this.ColumnModificationId = this.Columns["s_modification_id_c"];
+            this.PrimaryKey = new System.Data.DataColumn[1] {
+                    ColumnLanguageCode};
         }
 
         /// Access a typed row by index
@@ -11909,7 +11939,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
                 ret = this[this.myTable.ColumnLanguageCode.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return String.Empty;
                 }
                 else
                 {
@@ -11935,7 +11965,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
                 ret = this[this.myTable.ColumnLogonMessage.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return String.Empty;
                 }
                 else
                 {
@@ -11987,7 +12017,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
                 ret = this[this.myTable.ColumnCreatedBy.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return String.Empty;
                 }
                 else
                 {
@@ -12039,7 +12069,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
                 ret = this[this.myTable.ColumnModifiedBy.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return String.Empty;
                 }
                 else
                 {
@@ -12065,7 +12095,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
                 ret = this[this.myTable.ColumnModificationId.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return String.Empty;
                 }
                 else
                 {
@@ -12281,6 +12311,8 @@ namespace Ict.Petra.Shared.MSysMan.Data
             this.ColumnDateModified = this.Columns["s_date_modified_d"];
             this.ColumnModifiedBy = this.Columns["s_modified_by_c"];
             this.ColumnModificationId = this.Columns["s_modification_id_c"];
+            this.PrimaryKey = new System.Data.DataColumn[1] {
+                    ColumnPatchName};
         }
 
         /// Access a typed row by index
@@ -12459,7 +12491,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
                 ret = this[this.myTable.ColumnPatchName.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return String.Empty;
                 }
                 else
                 {
@@ -12485,7 +12517,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
                 ret = this[this.myTable.ColumnUserId.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return String.Empty;
                 }
                 else
                 {
@@ -12563,7 +12595,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
                 ret = this[this.myTable.ColumnCreatedBy.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return String.Empty;
                 }
                 else
                 {
@@ -12615,7 +12647,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
                 ret = this[this.myTable.ColumnModifiedBy.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return String.Empty;
                 }
                 else
                 {
@@ -12641,7 +12673,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
                 ret = this[this.myTable.ColumnModificationId.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return String.Empty;
                 }
                 else
                 {
@@ -12856,6 +12888,8 @@ namespace Ict.Petra.Shared.MSysMan.Data
             this.ColumnDateModified = this.Columns["s_date_modified_d"];
             this.ColumnModifiedBy = this.Columns["s_modified_by_c"];
             this.ColumnModificationId = this.Columns["s_modification_id_c"];
+            this.PrimaryKey = new System.Data.DataColumn[1] {
+                    ColumnReportTitle};
         }
 
         /// Access a typed row by index
@@ -13010,7 +13044,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
                 ret = this[this.myTable.ColumnReportTitle.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return String.Empty;
                 }
                 else
                 {
@@ -13062,7 +13096,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
                 ret = this[this.myTable.ColumnCreatedBy.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return String.Empty;
                 }
                 else
                 {
@@ -13114,7 +13148,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
                 ret = this[this.myTable.ColumnModifiedBy.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return String.Empty;
                 }
                 else
                 {
@@ -13140,7 +13174,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
                 ret = this[this.myTable.ColumnModificationId.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return String.Empty;
                 }
                 else
                 {
@@ -13364,6 +13398,8 @@ namespace Ict.Petra.Shared.MSysMan.Data
             this.ColumnDateModified = this.Columns["s_date_modified_d"];
             this.ColumnModifiedBy = this.Columns["s_modified_by_c"];
             this.ColumnModificationId = this.Columns["s_modification_id_c"];
+            this.PrimaryKey = new System.Data.DataColumn[1] {
+                    ColumnReportFileName};
         }
 
         /// Access a typed row by index
@@ -13578,7 +13614,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
                 ret = this[this.myTable.ColumnUserId.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return String.Empty;
                 }
                 else
                 {
@@ -13604,7 +13640,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
                 ret = this[this.myTable.ColumnReportFileName.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return String.Empty;
                 }
                 else
                 {
@@ -13630,7 +13666,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
                 ret = this[this.myTable.ColumnRpg.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return String.Empty;
                 }
                 else
                 {
@@ -13708,7 +13744,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
                 ret = this[this.myTable.ColumnReportTitle.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return String.Empty;
                 }
                 else
                 {
@@ -13760,7 +13796,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
                 ret = this[this.myTable.ColumnCreatedBy.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return String.Empty;
                 }
                 else
                 {
@@ -13812,7 +13848,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
                 ret = this[this.myTable.ColumnModifiedBy.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return String.Empty;
                 }
                 else
                 {
@@ -13838,7 +13874,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
                 ret = this[this.myTable.ColumnModificationId.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return String.Empty;
                 }
                 else
                 {
@@ -14417,7 +14453,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
                 ret = this[this.myTable.ColumnUserId.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return String.Empty;
                 }
                 else
                 {
@@ -14443,7 +14479,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
                 ret = this[this.myTable.ColumnModuleId.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return String.Empty;
                 }
                 else
                 {
@@ -14469,7 +14505,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
                 ret = this[this.myTable.ColumnReportFileName.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return String.Empty;
                 }
                 else
                 {
@@ -14495,7 +14531,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
                 ret = this[this.myTable.ColumnReportTitle.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return String.Empty;
                 }
                 else
                 {
@@ -14547,7 +14583,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
                 ret = this[this.myTable.ColumnRpg.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return String.Empty;
                 }
                 else
                 {
@@ -14651,7 +14687,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
                 ret = this[this.myTable.ColumnData.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return String.Empty;
                 }
                 else
                 {
@@ -14703,7 +14739,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
                 ret = this[this.myTable.ColumnCreatedBy.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return String.Empty;
                 }
                 else
                 {
@@ -14755,7 +14791,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
                 ret = this[this.myTable.ColumnModifiedBy.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return String.Empty;
                 }
                 else
                 {
@@ -14781,7 +14817,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
                 ret = this[this.myTable.ColumnModificationId.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return String.Empty;
                 }
                 else
                 {
@@ -15355,7 +15391,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
                 ret = this[this.myTable.ColumnUserId.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return String.Empty;
                 }
                 else
                 {
@@ -15381,7 +15417,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
                 ret = this[this.myTable.ColumnModuleId.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return String.Empty;
                 }
                 else
                 {
@@ -15407,7 +15443,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
                 ret = this[this.myTable.ColumnFormName.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return String.Empty;
                 }
                 else
                 {
@@ -15433,7 +15469,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
                 ret = this[this.myTable.ColumnPrinterName.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return String.Empty;
                 }
                 else
                 {
@@ -15563,7 +15599,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
                 ret = this[this.myTable.ColumnCreatedBy.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return String.Empty;
                 }
                 else
                 {
@@ -15615,7 +15651,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
                 ret = this[this.myTable.ColumnModifiedBy.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return String.Empty;
                 }
                 else
                 {
@@ -15641,7 +15677,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
                 ret = this[this.myTable.ColumnModificationId.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return String.Empty;
                 }
                 else
                 {
@@ -15950,6 +15986,8 @@ namespace Ict.Petra.Shared.MSysMan.Data
             this.ColumnDateModified = this.Columns["s_date_modified_d"];
             this.ColumnModifiedBy = this.Columns["s_modified_by_c"];
             this.ColumnModificationId = this.Columns["s_modification_id_c"];
+            this.PrimaryKey = new System.Data.DataColumn[1] {
+                    ColumnUserId};
         }
 
         /// Access a typed row by index
@@ -16176,7 +16214,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
                 ret = this[this.myTable.ColumnUserId.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return String.Empty;
                 }
                 else
                 {
@@ -16254,7 +16292,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
                 ret = this[this.myTable.ColumnSystemDisabledReason.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return String.Empty;
                 }
                 else
                 {
@@ -16384,7 +16422,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
                 ret = this[this.myTable.ColumnCreatedBy.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return String.Empty;
                 }
                 else
                 {
@@ -16436,7 +16474,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
                 ret = this[this.myTable.ColumnModifiedBy.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return String.Empty;
                 }
                 else
                 {
@@ -16462,7 +16500,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
                 ret = this[this.myTable.ColumnModificationId.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return String.Empty;
                 }
                 else
                 {
@@ -16978,7 +17016,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
                 ret = this[this.myTable.ColumnUserId.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return String.Empty;
                 }
                 else
                 {
@@ -17056,7 +17094,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
                 ret = this[this.myTable.ColumnSystemDisabledReason.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return String.Empty;
                 }
                 else
                 {
@@ -17160,7 +17198,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
                 ret = this[this.myTable.ColumnCreatedBy.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return String.Empty;
                 }
                 else
                 {
@@ -17212,7 +17250,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
                 ret = this[this.myTable.ColumnModifiedBy.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return String.Empty;
                 }
                 else
                 {
@@ -17238,7 +17276,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
                 ret = this[this.myTable.ColumnModificationId.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return String.Empty;
                 }
                 else
                 {
@@ -17506,6 +17544,8 @@ namespace Ict.Petra.Shared.MSysMan.Data
             this.ColumnDateModified = this.Columns["s_date_modified_d"];
             this.ColumnModifiedBy = this.Columns["s_modified_by_c"];
             this.ColumnModificationId = this.Columns["s_modification_id_c"];
+            this.PrimaryKey = new System.Data.DataColumn[2] {
+                    ColumnUserId,ColumnDefaultCode};
         }
 
         /// Access a typed row by index
@@ -17684,7 +17724,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
                 ret = this[this.myTable.ColumnUserId.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return String.Empty;
                 }
                 else
                 {
@@ -17710,7 +17750,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
                 ret = this[this.myTable.ColumnDefaultCode.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return String.Empty;
                 }
                 else
                 {
@@ -17736,7 +17776,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
                 ret = this[this.myTable.ColumnDefaultValue.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return String.Empty;
                 }
                 else
                 {
@@ -17788,7 +17828,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
                 ret = this[this.myTable.ColumnCreatedBy.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return String.Empty;
                 }
                 else
                 {
@@ -17840,7 +17880,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
                 ret = this[this.myTable.ColumnModifiedBy.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return String.Empty;
                 }
                 else
                 {
@@ -17866,7 +17906,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
                 ret = this[this.myTable.ColumnModificationId.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return String.Empty;
                 }
                 else
                 {
@@ -18095,6 +18135,8 @@ namespace Ict.Petra.Shared.MSysMan.Data
             this.ColumnDateModified = this.Columns["s_date_modified_d"];
             this.ColumnModifiedBy = this.Columns["s_modified_by_c"];
             this.ColumnModificationId = this.Columns["s_modification_id_c"];
+            this.PrimaryKey = new System.Data.DataColumn[1] {
+                    ColumnDefaultCode};
         }
 
         /// Access a typed row by index
@@ -18273,7 +18315,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
                 ret = this[this.myTable.ColumnDefaultCode.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return String.Empty;
                 }
                 else
                 {
@@ -18299,7 +18341,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
                 ret = this[this.myTable.ColumnDefaultDescription.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return String.Empty;
                 }
                 else
                 {
@@ -18325,7 +18367,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
                 ret = this[this.myTable.ColumnDefaultValue.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return String.Empty;
                 }
                 else
                 {
@@ -18377,7 +18419,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
                 ret = this[this.myTable.ColumnCreatedBy.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return String.Empty;
                 }
                 else
                 {
@@ -18429,7 +18471,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
                 ret = this[this.myTable.ColumnModifiedBy.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return String.Empty;
                 }
                 else
                 {
@@ -18455,7 +18497,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
                 ret = this[this.myTable.ColumnModificationId.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return String.Empty;
                 }
                 else
                 {
@@ -18754,6 +18796,8 @@ namespace Ict.Petra.Shared.MSysMan.Data
             this.ColumnDateModified = this.Columns["s_date_modified_d"];
             this.ColumnModifiedBy = this.Columns["s_modified_by_c"];
             this.ColumnModificationId = this.Columns["s_modification_id_c"];
+            this.PrimaryKey = new System.Data.DataColumn[4] {
+                    ColumnFileName,ColumnUserId,ColumnDateSubmitted,ColumnTimeSubmitted};
         }
 
         /// Access a typed row by index
@@ -19052,7 +19096,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
                 ret = this[this.myTable.ColumnFileName.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return String.Empty;
                 }
                 else
                 {
@@ -19078,7 +19122,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
                 ret = this[this.myTable.ColumnUserId.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return String.Empty;
                 }
                 else
                 {
@@ -19104,7 +19148,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
                 ret = this[this.myTable.ColumnJobType.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return String.Empty;
                 }
                 else
                 {
@@ -19182,7 +19226,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
                 ret = this[this.myTable.ColumnDayOfMonth.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return String.Empty;
                 }
                 else
                 {
@@ -19208,7 +19252,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
                 ret = this[this.myTable.ColumnMonthOfYear.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return String.Empty;
                 }
                 else
                 {
@@ -19234,7 +19278,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
                 ret = this[this.myTable.ColumnDayOfWeek.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return String.Empty;
                 }
                 else
                 {
@@ -19286,7 +19330,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
                 ret = this[this.myTable.ColumnData.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return String.Empty;
                 }
                 else
                 {
@@ -19416,7 +19460,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
                 ret = this[this.myTable.ColumnCreatedBy.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return String.Empty;
                 }
                 else
                 {
@@ -19468,7 +19512,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
                 ret = this[this.myTable.ColumnModifiedBy.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return String.Empty;
                 }
                 else
                 {
@@ -19494,7 +19538,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
                 ret = this[this.myTable.ColumnModificationId.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return String.Empty;
                 }
                 else
                 {
@@ -19895,6 +19939,8 @@ namespace Ict.Petra.Shared.MSysMan.Data
             this.ColumnDateModified = this.Columns["s_date_modified_d"];
             this.ColumnModifiedBy = this.Columns["s_modified_by_c"];
             this.ColumnModificationId = this.Columns["s_modification_id_c"];
+            this.PrimaryKey = new System.Data.DataColumn[2] {
+                    ColumnLanguageCode,ColumnErrorCode};
         }
 
         /// Access a typed row by index
@@ -20145,7 +20191,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
                 ret = this[this.myTable.ColumnLanguageCode.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return String.Empty;
                 }
                 else
                 {
@@ -20171,7 +20217,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
                 ret = this[this.myTable.ColumnErrorCode.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return String.Empty;
                 }
                 else
                 {
@@ -20197,7 +20243,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
                 ret = this[this.myTable.ColumnMessageLine1.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return String.Empty;
                 }
                 else
                 {
@@ -20223,7 +20269,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
                 ret = this[this.myTable.ColumnMessageLine2.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return String.Empty;
                 }
                 else
                 {
@@ -20249,7 +20295,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
                 ret = this[this.myTable.ColumnMessageLine3.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return String.Empty;
                 }
                 else
                 {
@@ -20275,7 +20321,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
                 ret = this[this.myTable.ColumnResponse.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return String.Empty;
                 }
                 else
                 {
@@ -20301,7 +20347,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
                 ret = this[this.myTable.ColumnAlertType.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return String.Empty;
                 }
                 else
                 {
@@ -20327,7 +20373,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
                 ret = this[this.myTable.ColumnTitle.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return String.Empty;
                 }
                 else
                 {
@@ -20405,7 +20451,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
                 ret = this[this.myTable.ColumnCreatedBy.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return String.Empty;
                 }
                 else
                 {
@@ -20457,7 +20503,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
                 ret = this[this.myTable.ColumnModifiedBy.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return String.Empty;
                 }
                 else
                 {
@@ -20483,7 +20529,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
                 ret = this[this.myTable.ColumnModificationId.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return String.Empty;
                 }
                 else
                 {
@@ -20839,6 +20885,8 @@ namespace Ict.Petra.Shared.MSysMan.Data
             this.ColumnDateModified = this.Columns["s_date_modified_d"];
             this.ColumnModifiedBy = this.Columns["s_modified_by_c"];
             this.ColumnModificationId = this.Columns["s_modification_id_c"];
+            this.PrimaryKey = new System.Data.DataColumn[4] {
+                    ColumnErrorCode,ColumnUserId,ColumnDate,ColumnTime};
         }
 
         /// Access a typed row by index
@@ -21101,7 +21149,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
                 ret = this[this.myTable.ColumnErrorCode.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return String.Empty;
                 }
                 else
                 {
@@ -21127,7 +21175,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
                 ret = this[this.myTable.ColumnReleaseNumber.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return String.Empty;
                 }
                 else
                 {
@@ -21153,7 +21201,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
                 ret = this[this.myTable.ColumnUserId.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return String.Empty;
                 }
                 else
                 {
@@ -21179,7 +21227,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
                 ret = this[this.myTable.ColumnFileName.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return String.Empty;
                 }
                 else
                 {
@@ -21205,7 +21253,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
                 ret = this[this.myTable.ColumnProcessId.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return String.Empty;
                 }
                 else
                 {
@@ -21283,7 +21331,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
                 ret = this[this.myTable.ColumnMessageLine1.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return String.Empty;
                 }
                 else
                 {
@@ -21309,7 +21357,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
                 ret = this[this.myTable.ColumnMessageLine2.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return String.Empty;
                 }
                 else
                 {
@@ -21335,7 +21383,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
                 ret = this[this.myTable.ColumnMessageLine3.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return String.Empty;
                 }
                 else
                 {
@@ -21387,7 +21435,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
                 ret = this[this.myTable.ColumnCreatedBy.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return String.Empty;
                 }
                 else
                 {
@@ -21439,7 +21487,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
                 ret = this[this.myTable.ColumnModifiedBy.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return String.Empty;
                 }
                 else
                 {
@@ -21465,7 +21513,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
                 ret = this[this.myTable.ColumnModificationId.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return String.Empty;
                 }
                 else
                 {
@@ -21792,6 +21840,8 @@ namespace Ict.Petra.Shared.MSysMan.Data
             this.ColumnDateModified = this.Columns["s_date_modified_d"];
             this.ColumnModifiedBy = this.Columns["s_modified_by_c"];
             this.ColumnModificationId = this.Columns["s_modification_id_c"];
+            this.PrimaryKey = new System.Data.DataColumn[3] {
+                    ColumnGroupId,ColumnUnitKey,ColumnFunctionId};
         }
 
         /// Access a typed row by index
@@ -21982,7 +22032,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
                 ret = this[this.myTable.ColumnGroupId.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return String.Empty;
                 }
                 else
                 {
@@ -22034,7 +22084,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
                 ret = this[this.myTable.ColumnFunctionId.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return String.Empty;
                 }
                 else
                 {
@@ -22112,7 +22162,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
                 ret = this[this.myTable.ColumnCreatedBy.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return String.Empty;
                 }
                 else
                 {
@@ -22164,7 +22214,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
                 ret = this[this.myTable.ColumnModifiedBy.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return String.Empty;
                 }
                 else
                 {
@@ -22190,7 +22240,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
                 ret = this[this.myTable.ColumnModificationId.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return String.Empty;
                 }
                 else
                 {
@@ -22446,6 +22496,8 @@ namespace Ict.Petra.Shared.MSysMan.Data
             this.ColumnDateModified = this.Columns["s_date_modified_d"];
             this.ColumnModifiedBy = this.Columns["s_modified_by_c"];
             this.ColumnModificationId = this.Columns["s_modification_id_c"];
+            this.PrimaryKey = new System.Data.DataColumn[1] {
+                    ColumnFunctionId};
         }
 
         /// Access a typed row by index
@@ -22648,7 +22700,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
                 ret = this[this.myTable.ColumnFunctionId.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return String.Empty;
                 }
                 else
                 {
@@ -22674,7 +22726,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
                 ret = this[this.myTable.ColumnModuleName.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return String.Empty;
                 }
                 else
                 {
@@ -22700,7 +22752,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
                 ret = this[this.myTable.ColumnSubModuleName.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return String.Empty;
                 }
                 else
                 {
@@ -22726,7 +22778,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
                 ret = this[this.myTable.ColumnFunctionName.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return String.Empty;
                 }
                 else
                 {
@@ -22752,7 +22804,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
                 ret = this[this.myTable.ColumnFilename.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return String.Empty;
                 }
                 else
                 {
@@ -22804,7 +22856,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
                 ret = this[this.myTable.ColumnCreatedBy.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return String.Empty;
                 }
                 else
                 {
@@ -22856,7 +22908,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
                 ret = this[this.myTable.ColumnModifiedBy.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return String.Empty;
                 }
                 else
                 {
@@ -22882,7 +22934,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
                 ret = this[this.myTable.ColumnModificationId.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return String.Empty;
                 }
                 else
                 {
@@ -23151,6 +23203,8 @@ namespace Ict.Petra.Shared.MSysMan.Data
             this.ColumnDateModified = this.Columns["s_date_modified_d"];
             this.ColumnModifiedBy = this.Columns["s_modified_by_c"];
             this.ColumnModificationId = this.Columns["s_modification_id_c"];
+            this.PrimaryKey = new System.Data.DataColumn[5] {
+                    ColumnPositionName,ColumnPositionScope,ColumnJobKey,ColumnGroupId,ColumnUnitKey};
         }
 
         /// Access a typed row by index
@@ -23353,7 +23407,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
                 ret = this[this.myTable.ColumnPositionName.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return String.Empty;
                 }
                 else
                 {
@@ -23379,7 +23433,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
                 ret = this[this.myTable.ColumnPositionScope.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return String.Empty;
                 }
                 else
                 {
@@ -23431,7 +23485,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
                 ret = this[this.myTable.ColumnGroupId.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return String.Empty;
                 }
                 else
                 {
@@ -23509,7 +23563,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
                 ret = this[this.myTable.ColumnCreatedBy.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return String.Empty;
                 }
                 else
                 {
@@ -23561,7 +23615,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
                 ret = this[this.myTable.ColumnModifiedBy.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return String.Empty;
                 }
                 else
                 {
@@ -23587,7 +23641,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
                 ret = this[this.myTable.ColumnModificationId.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return String.Empty;
                 }
                 else
                 {
@@ -23877,6 +23931,8 @@ namespace Ict.Petra.Shared.MSysMan.Data
             this.ColumnDateModified = this.Columns["s_date_modified_d"];
             this.ColumnModifiedBy = this.Columns["s_modified_by_c"];
             this.ColumnModificationId = this.Columns["s_modification_id_c"];
+            this.PrimaryKey = new System.Data.DataColumn[4] {
+                    ColumnGroupId,ColumnGroupUnitKey,ColumnPartnerSetId,ColumnPartnerSetUnitKey};
         }
 
         /// Access a typed row by index
@@ -24115,7 +24171,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
                 ret = this[this.myTable.ColumnGroupId.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return String.Empty;
                 }
                 else
                 {
@@ -24167,7 +24223,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
                 ret = this[this.myTable.ColumnPartnerSetId.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return String.Empty;
                 }
                 else
                 {
@@ -24349,7 +24405,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
                 ret = this[this.myTable.ColumnCreatedBy.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return String.Empty;
                 }
                 else
                 {
@@ -24401,7 +24457,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
                 ret = this[this.myTable.ColumnModifiedBy.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return String.Empty;
                 }
                 else
                 {
@@ -24427,7 +24483,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
                 ret = this[this.myTable.ColumnModificationId.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return String.Empty;
                 }
                 else
                 {
@@ -24756,6 +24812,8 @@ namespace Ict.Petra.Shared.MSysMan.Data
             this.ColumnDateModified = this.Columns["s_date_modified_d"];
             this.ColumnModifiedBy = this.Columns["s_modified_by_c"];
             this.ColumnModificationId = this.Columns["s_modification_id_c"];
+            this.PrimaryKey = new System.Data.DataColumn[5] {
+                    ColumnGroupId,ColumnGroupUnitKey,ColumnLedgerNumber,ColumnBatchNumber,ColumnGiftTransactionNumber};
         }
 
         /// Access a typed row by index
@@ -24994,7 +25052,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
                 ret = this[this.myTable.ColumnGroupId.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return String.Empty;
                 }
                 else
                 {
@@ -25228,7 +25286,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
                 ret = this[this.myTable.ColumnCreatedBy.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return String.Empty;
                 }
                 else
                 {
@@ -25280,7 +25338,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
                 ret = this[this.myTable.ColumnModifiedBy.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return String.Empty;
                 }
                 else
                 {
@@ -25306,7 +25364,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
                 ret = this[this.myTable.ColumnModificationId.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return String.Empty;
                 }
                 else
                 {
@@ -25635,6 +25693,8 @@ namespace Ict.Petra.Shared.MSysMan.Data
             this.ColumnDateModified = this.Columns["s_date_modified_d"];
             this.ColumnModifiedBy = this.Columns["s_modified_by_c"];
             this.ColumnModificationId = this.Columns["s_modification_id_c"];
+            this.PrimaryKey = new System.Data.DataColumn[5] {
+                    ColumnGroupId,ColumnGroupUnitKey,ColumnLedgerNumber,ColumnMotivationGroupCode,ColumnMotivationDetailCode};
         }
 
         /// Access a typed row by index
@@ -25873,7 +25933,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
                 ret = this[this.myTable.ColumnGroupId.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return String.Empty;
                 }
                 else
                 {
@@ -25951,7 +26011,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
                 ret = this[this.myTable.ColumnMotivationGroupCode.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return String.Empty;
                 }
                 else
                 {
@@ -25977,7 +26037,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
                 ret = this[this.myTable.ColumnMotivationDetailCode.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return String.Empty;
                 }
                 else
                 {
@@ -26107,7 +26167,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
                 ret = this[this.myTable.ColumnCreatedBy.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return String.Empty;
                 }
                 else
                 {
@@ -26159,7 +26219,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
                 ret = this[this.myTable.ColumnModifiedBy.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return String.Empty;
                 }
                 else
                 {
@@ -26185,7 +26245,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
                 ret = this[this.myTable.ColumnModificationId.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return String.Empty;
                 }
                 else
                 {
@@ -26500,6 +26560,8 @@ namespace Ict.Petra.Shared.MSysMan.Data
             this.ColumnDateModified = this.Columns["s_date_modified_d"];
             this.ColumnModifiedBy = this.Columns["s_modified_by_c"];
             this.ColumnModificationId = this.Columns["s_modification_id_c"];
+            this.PrimaryKey = new System.Data.DataColumn[3] {
+                    ColumnGroupId,ColumnGroupUnitKey,ColumnContactId};
         }
 
         /// Access a typed row by index
@@ -26714,7 +26776,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
                 ret = this[this.myTable.ColumnGroupId.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return String.Empty;
                 }
                 else
                 {
@@ -26896,7 +26958,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
                 ret = this[this.myTable.ColumnCreatedBy.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return String.Empty;
                 }
                 else
                 {
@@ -26948,7 +27010,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
                 ret = this[this.myTable.ColumnModifiedBy.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return String.Empty;
                 }
                 else
                 {
@@ -26974,7 +27036,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
                 ret = this[this.myTable.ColumnModificationId.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return String.Empty;
                 }
                 else
                 {
@@ -27277,6 +27339,8 @@ namespace Ict.Petra.Shared.MSysMan.Data
             this.ColumnDateModified = this.Columns["s_date_modified_d"];
             this.ColumnModifiedBy = this.Columns["s_modified_by_c"];
             this.ColumnModificationId = this.Columns["s_modification_id_c"];
+            this.PrimaryKey = new System.Data.DataColumn[5] {
+                    ColumnGroupId,ColumnGroupUnitKey,ColumnPartnerKey,ColumnContactId,ColumnReminderId};
         }
 
         /// Access a typed row by index
@@ -27515,7 +27579,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
                 ret = this[this.myTable.ColumnGroupId.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return String.Empty;
                 }
                 else
                 {
@@ -27749,7 +27813,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
                 ret = this[this.myTable.ColumnCreatedBy.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return String.Empty;
                 }
                 else
                 {
@@ -27801,7 +27865,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
                 ret = this[this.myTable.ColumnModifiedBy.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return String.Empty;
                 }
                 else
                 {
@@ -27827,7 +27891,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
                 ret = this[this.myTable.ColumnModificationId.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return String.Empty;
                 }
                 else
                 {
@@ -28149,6 +28213,8 @@ namespace Ict.Petra.Shared.MSysMan.Data
             this.ColumnDateModified = this.Columns["s_date_modified_d"];
             this.ColumnModifiedBy = this.Columns["s_modified_by_c"];
             this.ColumnModificationId = this.Columns["s_modification_id_c"];
+            this.PrimaryKey = new System.Data.DataColumn[4] {
+                    ColumnGroupId,ColumnGroupUnitKey,ColumnSiteKey,ColumnLocationKey};
         }
 
         /// Access a typed row by index
@@ -28375,7 +28441,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
                 ret = this[this.myTable.ColumnGroupId.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return String.Empty;
                 }
                 else
                 {
@@ -28583,7 +28649,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
                 ret = this[this.myTable.ColumnCreatedBy.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return String.Empty;
                 }
                 else
                 {
@@ -28635,7 +28701,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
                 ret = this[this.myTable.ColumnModifiedBy.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return String.Empty;
                 }
                 else
                 {
@@ -28661,7 +28727,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
                 ret = this[this.myTable.ColumnModificationId.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return String.Empty;
                 }
                 else
                 {
@@ -28977,6 +29043,8 @@ namespace Ict.Petra.Shared.MSysMan.Data
             this.ColumnDateModified = this.Columns["s_date_modified_d"];
             this.ColumnModifiedBy = this.Columns["s_modified_by_c"];
             this.ColumnModificationId = this.Columns["s_modification_id_c"];
+            this.PrimaryKey = new System.Data.DataColumn[5] {
+                    ColumnGroupId,ColumnGroupUnitKey,ColumnPartnerKey,ColumnSiteKey,ColumnLocationKey};
         }
 
         /// Access a typed row by index
@@ -29215,7 +29283,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
                 ret = this[this.myTable.ColumnGroupId.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return String.Empty;
                 }
                 else
                 {
@@ -29449,7 +29517,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
                 ret = this[this.myTable.ColumnCreatedBy.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return String.Empty;
                 }
                 else
                 {
@@ -29501,7 +29569,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
                 ret = this[this.myTable.ColumnModifiedBy.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return String.Empty;
                 }
                 else
                 {
@@ -29527,7 +29595,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
                 ret = this[this.myTable.ColumnModificationId.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return String.Empty;
                 }
                 else
                 {
@@ -29842,6 +29910,8 @@ namespace Ict.Petra.Shared.MSysMan.Data
             this.ColumnDateModified = this.Columns["s_date_modified_d"];
             this.ColumnModifiedBy = this.Columns["s_modified_by_c"];
             this.ColumnModificationId = this.Columns["s_modification_id_c"];
+            this.PrimaryKey = new System.Data.DataColumn[3] {
+                    ColumnGroupId,ColumnGroupUnitKey,ColumnDataLabelKey};
         }
 
         /// Access a typed row by index
@@ -30056,7 +30126,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
                 ret = this[this.myTable.ColumnGroupId.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return String.Empty;
                 }
                 else
                 {
@@ -30238,7 +30308,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
                 ret = this[this.myTable.ColumnCreatedBy.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return String.Empty;
                 }
                 else
                 {
@@ -30290,7 +30360,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
                 ret = this[this.myTable.ColumnModifiedBy.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return String.Empty;
                 }
                 else
                 {
@@ -30316,7 +30386,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
                 ret = this[this.myTable.ColumnModificationId.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return String.Empty;
                 }
                 else
                 {
@@ -30584,6 +30654,8 @@ namespace Ict.Petra.Shared.MSysMan.Data
             this.ColumnDateModified = this.Columns["s_date_modified_d"];
             this.ColumnModifiedBy = this.Columns["s_modified_by_c"];
             this.ColumnModificationId = this.Columns["s_modification_id_c"];
+            this.PrimaryKey = new System.Data.DataColumn[3] {
+                    ColumnGroupId,ColumnGroupUnitKey,ColumnLedgerNumber};
         }
 
         /// Access a typed row by index
@@ -30762,7 +30834,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
                 ret = this[this.myTable.ColumnGroupId.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return String.Empty;
                 }
                 else
                 {
@@ -30866,7 +30938,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
                 ret = this[this.myTable.ColumnCreatedBy.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return String.Empty;
                 }
                 else
                 {
@@ -30918,7 +30990,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
                 ret = this[this.myTable.ColumnModifiedBy.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return String.Empty;
                 }
                 else
                 {
@@ -30944,7 +31016,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
                 ret = this[this.myTable.ColumnModificationId.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return String.Empty;
                 }
                 else
                 {
@@ -31180,6 +31252,8 @@ namespace Ict.Petra.Shared.MSysMan.Data
             this.ColumnDateModified = this.Columns["s_date_modified_d"];
             this.ColumnModifiedBy = this.Columns["s_modified_by_c"];
             this.ColumnModificationId = this.Columns["s_modification_id_c"];
+            this.PrimaryKey = new System.Data.DataColumn[4] {
+                    ColumnGroupId,ColumnGroupUnitKey,ColumnLedgerNumber,ColumnCostCentreCode};
         }
 
         /// Access a typed row by index
@@ -31370,7 +31444,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
                 ret = this[this.myTable.ColumnGroupId.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return String.Empty;
                 }
                 else
                 {
@@ -31448,7 +31522,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
                 ret = this[this.myTable.ColumnCostCentreCode.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return String.Empty;
                 }
                 else
                 {
@@ -31500,7 +31574,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
                 ret = this[this.myTable.ColumnCreatedBy.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return String.Empty;
                 }
                 else
                 {
@@ -31552,7 +31626,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
                 ret = this[this.myTable.ColumnModifiedBy.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return String.Empty;
                 }
                 else
                 {
@@ -31578,7 +31652,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
                 ret = this[this.myTable.ColumnModificationId.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return String.Empty;
                 }
                 else
                 {
@@ -31841,6 +31915,8 @@ namespace Ict.Petra.Shared.MSysMan.Data
             this.ColumnDateModified = this.Columns["s_date_modified_d"];
             this.ColumnModifiedBy = this.Columns["s_modified_by_c"];
             this.ColumnModificationId = this.Columns["s_modification_id_c"];
+            this.PrimaryKey = new System.Data.DataColumn[3] {
+                    ColumnGroupId,ColumnGroupUnitKey,ColumnExtractId};
         }
 
         /// Access a typed row by index
@@ -32055,7 +32131,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
                 ret = this[this.myTable.ColumnGroupId.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return String.Empty;
                 }
                 else
                 {
@@ -32237,7 +32313,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
                 ret = this[this.myTable.ColumnCreatedBy.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return String.Empty;
                 }
                 else
                 {
@@ -32289,7 +32365,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
                 ret = this[this.myTable.ColumnModifiedBy.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return String.Empty;
                 }
                 else
                 {
@@ -32315,7 +32391,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
                 ret = this[this.myTable.ColumnModificationId.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return String.Empty;
                 }
                 else
                 {
@@ -32604,6 +32680,8 @@ namespace Ict.Petra.Shared.MSysMan.Data
             this.ColumnDateModified = this.Columns["s_date_modified_d"];
             this.ColumnModifiedBy = this.Columns["s_modified_by_c"];
             this.ColumnModificationId = this.Columns["s_modification_id_c"];
+            this.PrimaryKey = new System.Data.DataColumn[2] {
+                    ColumnTableName,ColumnRowid};
         }
 
         /// Access a typed row by index
@@ -32818,7 +32896,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
                 ret = this[this.myTable.ColumnTableName.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return String.Empty;
                 }
                 else
                 {
@@ -32844,7 +32922,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
                 ret = this[this.myTable.ColumnRowid.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return String.Empty;
                 }
                 else
                 {
@@ -32870,7 +32948,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
                 ret = this[this.myTable.ColumnChangeType.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return String.Empty;
                 }
                 else
                 {
@@ -32896,7 +32974,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
                 ret = this[this.myTable.ColumnNaturalKey.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return String.Empty;
                 }
                 else
                 {
@@ -33000,7 +33078,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
                 ret = this[this.myTable.ColumnCreatedBy.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return String.Empty;
                 }
                 else
                 {
@@ -33052,7 +33130,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
                 ret = this[this.myTable.ColumnModifiedBy.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return String.Empty;
                 }
                 else
                 {
@@ -33078,7 +33156,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
                 ret = this[this.myTable.ColumnModificationId.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return String.Empty;
                 }
                 else
                 {
@@ -33402,6 +33480,8 @@ namespace Ict.Petra.Shared.MSysMan.Data
             this.ColumnDateModified = this.Columns["s_date_modified_d"];
             this.ColumnModifiedBy = this.Columns["s_modified_by_c"];
             this.ColumnModificationId = this.Columns["s_modification_id_c"];
+            this.PrimaryKey = new System.Data.DataColumn[1] {
+                    ColumnLabelName};
         }
 
         /// Access a typed row by index
@@ -33676,7 +33756,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
                 ret = this[this.myTable.ColumnLabelName.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return String.Empty;
                 }
                 else
                 {
@@ -33702,7 +33782,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
                 ret = this[this.myTable.ColumnLabelDescription.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return String.Empty;
                 }
                 else
                 {
@@ -33728,7 +33808,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
                 ret = this[this.myTable.ColumnFormName.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return String.Empty;
                 }
                 else
                 {
@@ -33988,7 +34068,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
                 ret = this[this.myTable.ColumnCreatedBy.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return String.Empty;
                 }
                 else
                 {
@@ -34040,7 +34120,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
                 ret = this[this.myTable.ColumnModifiedBy.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return String.Empty;
                 }
                 else
                 {
@@ -34066,7 +34146,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
                 ret = this[this.myTable.ColumnModificationId.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return String.Empty;
                 }
                 else
                 {
@@ -34413,6 +34493,8 @@ namespace Ict.Petra.Shared.MSysMan.Data
             this.ColumnDateModified = this.Columns["s_date_modified_d"];
             this.ColumnModifiedBy = this.Columns["s_modified_by_c"];
             this.ColumnModificationId = this.Columns["s_modification_id_c"];
+            this.PrimaryKey = new System.Data.DataColumn[1] {
+                    ColumnWorkflowId};
         }
 
         /// Access a typed row by index
@@ -34641,7 +34723,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
                 ret = this[this.myTable.ColumnName.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return String.Empty;
                 }
                 else
                 {
@@ -34667,7 +34749,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
                 ret = this[this.myTable.ColumnDescription.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return String.Empty;
                 }
                 else
                 {
@@ -34693,7 +34775,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
                 ret = this[this.myTable.ColumnModuleList.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return String.Empty;
                 }
                 else
                 {
@@ -34719,7 +34801,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
                 ret = this[this.myTable.ColumnTypeOfSharedData.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return String.Empty;
                 }
                 else
                 {
@@ -34771,7 +34853,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
                 ret = this[this.myTable.ColumnCreatedBy.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return String.Empty;
                 }
                 else
                 {
@@ -34823,7 +34905,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
                 ret = this[this.myTable.ColumnModifiedBy.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return String.Empty;
                 }
                 else
                 {
@@ -34849,7 +34931,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
                 ret = this[this.myTable.ColumnModificationId.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return String.Empty;
                 }
                 else
                 {
@@ -35097,6 +35179,8 @@ namespace Ict.Petra.Shared.MSysMan.Data
             this.ColumnDateModified = this.Columns["s_date_modified_d"];
             this.ColumnModifiedBy = this.Columns["s_modified_by_c"];
             this.ColumnModificationId = this.Columns["s_modification_id_c"];
+            this.PrimaryKey = new System.Data.DataColumn[2] {
+                    ColumnWorkflowId,ColumnUserId};
         }
 
         /// Access a typed row by index
@@ -35289,7 +35373,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
                 ret = this[this.myTable.ColumnUserId.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return String.Empty;
                 }
                 else
                 {
@@ -35341,7 +35425,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
                 ret = this[this.myTable.ColumnCreatedBy.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return String.Empty;
                 }
                 else
                 {
@@ -35393,7 +35477,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
                 ret = this[this.myTable.ColumnModifiedBy.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return String.Empty;
                 }
                 else
                 {
@@ -35419,7 +35503,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
                 ret = this[this.myTable.ColumnModificationId.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return String.Empty;
                 }
                 else
                 {
@@ -35635,6 +35719,8 @@ namespace Ict.Petra.Shared.MSysMan.Data
             this.ColumnDateModified = this.Columns["s_date_modified_d"];
             this.ColumnModifiedBy = this.Columns["s_modified_by_c"];
             this.ColumnModificationId = this.Columns["s_modification_id_c"];
+            this.PrimaryKey = new System.Data.DataColumn[3] {
+                    ColumnWorkflowId,ColumnGroupId,ColumnGroupUnitKey};
         }
 
         /// Access a typed row by index
@@ -35839,7 +35925,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
                 ret = this[this.myTable.ColumnGroupId.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return String.Empty;
                 }
                 else
                 {
@@ -35917,7 +36003,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
                 ret = this[this.myTable.ColumnCreatedBy.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return String.Empty;
                 }
                 else
                 {
@@ -35969,7 +36055,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
                 ret = this[this.myTable.ColumnModifiedBy.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return String.Empty;
                 }
                 else
                 {
@@ -35995,7 +36081,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
                 ret = this[this.myTable.ColumnModificationId.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return String.Empty;
                 }
                 else
                 {
@@ -36224,6 +36310,8 @@ namespace Ict.Petra.Shared.MSysMan.Data
             this.ColumnDateModified = this.Columns["s_date_modified_d"];
             this.ColumnModifiedBy = this.Columns["s_modified_by_c"];
             this.ColumnModificationId = this.Columns["s_modification_id_c"];
+            this.PrimaryKey = new System.Data.DataColumn[2] {
+                    ColumnWorkflowId,ColumnStepNumber};
         }
 
         /// Access a typed row by index
@@ -36454,7 +36542,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
                 ret = this[this.myTable.ColumnFunctionId.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return String.Empty;
                 }
                 else
                 {
@@ -36506,7 +36594,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
                 ret = this[this.myTable.ColumnCreatedBy.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return String.Empty;
                 }
                 else
                 {
@@ -36558,7 +36646,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
                 ret = this[this.myTable.ColumnModifiedBy.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return String.Empty;
                 }
                 else
                 {
@@ -36584,7 +36672,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
                 ret = this[this.myTable.ColumnModificationId.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return String.Empty;
                 }
                 else
                 {
@@ -36813,6 +36901,8 @@ namespace Ict.Petra.Shared.MSysMan.Data
             this.ColumnDateModified = this.Columns["s_date_modified_d"];
             this.ColumnModifiedBy = this.Columns["s_modified_by_c"];
             this.ColumnModificationId = this.Columns["s_modification_id_c"];
+            this.PrimaryKey = new System.Data.DataColumn[2] {
+                    ColumnFunction1,ColumnFunction2};
         }
 
         /// Access a typed row by index
@@ -36991,7 +37081,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
                 ret = this[this.myTable.ColumnFunction1.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return String.Empty;
                 }
                 else
                 {
@@ -37017,7 +37107,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
                 ret = this[this.myTable.ColumnFunction2.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return String.Empty;
                 }
                 else
                 {
@@ -37043,7 +37133,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
                 ret = this[this.myTable.ColumnCodeToRun.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return String.Empty;
                 }
                 else
                 {
@@ -37095,7 +37185,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
                 ret = this[this.myTable.ColumnCreatedBy.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return String.Empty;
                 }
                 else
                 {
@@ -37147,7 +37237,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
                 ret = this[this.myTable.ColumnModifiedBy.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return String.Empty;
                 }
                 else
                 {
@@ -37173,7 +37263,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
                 ret = this[this.myTable.ColumnModificationId.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return String.Empty;
                 }
                 else
                 {
@@ -37430,6 +37520,8 @@ namespace Ict.Petra.Shared.MSysMan.Data
             this.ColumnDateModified = this.Columns["s_date_modified_d"];
             this.ColumnModifiedBy = this.Columns["s_modified_by_c"];
             this.ColumnModificationId = this.Columns["s_modification_id_c"];
+            this.PrimaryKey = new System.Data.DataColumn[1] {
+                    ColumnWorkflowInstanceId};
         }
 
         /// Access a typed row by index
@@ -37708,7 +37800,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
                 ret = this[this.myTable.ColumnKeyDataItem.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return String.Empty;
                 }
                 else
                 {
@@ -37734,7 +37826,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
                 ret = this[this.myTable.ColumnKeyDataItemType.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return String.Empty;
                 }
                 else
                 {
@@ -37812,7 +37904,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
                 ret = this[this.myTable.ColumnNote.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return String.Empty;
                 }
                 else
                 {
@@ -37864,7 +37956,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
                 ret = this[this.myTable.ColumnCreatedBy.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return String.Empty;
                 }
                 else
                 {
@@ -37916,7 +38008,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
                 ret = this[this.myTable.ColumnModifiedBy.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return String.Empty;
                 }
                 else
                 {
@@ -37942,7 +38034,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
                 ret = this[this.myTable.ColumnModificationId.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return String.Empty;
                 }
                 else
                 {
@@ -38237,6 +38329,8 @@ namespace Ict.Petra.Shared.MSysMan.Data
             this.ColumnDateModified = this.Columns["s_date_modified_d"];
             this.ColumnModifiedBy = this.Columns["s_modified_by_c"];
             this.ColumnModificationId = this.Columns["s_modification_id_c"];
+            this.PrimaryKey = new System.Data.DataColumn[2] {
+                    ColumnWorkflowInstanceId,ColumnStepNumber};
         }
 
         /// Access a typed row by index
@@ -38517,7 +38611,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
                 ret = this[this.myTable.ColumnUserId.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return String.Empty;
                 }
                 else
                 {
@@ -38543,7 +38637,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
                 ret = this[this.myTable.ColumnOutputParameters.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return String.Empty;
                 }
                 else
                 {
@@ -38595,7 +38689,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
                 ret = this[this.myTable.ColumnCreatedBy.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return String.Empty;
                 }
                 else
                 {
@@ -38647,7 +38741,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
                 ret = this[this.myTable.ColumnModifiedBy.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return String.Empty;
                 }
                 else
                 {
@@ -38673,7 +38767,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
                 ret = this[this.myTable.ColumnModificationId.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return String.Empty;
                 }
                 else
                 {
@@ -38935,6 +39029,8 @@ namespace Ict.Petra.Shared.MSysMan.Data
             this.ColumnDateModified = this.Columns["s_date_modified_d"];
             this.ColumnModifiedBy = this.Columns["s_modified_by_c"];
             this.ColumnModificationId = this.Columns["s_modification_id_c"];
+            this.PrimaryKey = new System.Data.DataColumn[1] {
+                    ColumnName};
         }
 
         /// Access a typed row by index
@@ -39125,7 +39221,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
                 ret = this[this.myTable.ColumnName.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return String.Empty;
                 }
                 else
                 {
@@ -39151,7 +39247,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
                 ret = this[this.myTable.ColumnParentVolumeName.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return String.Empty;
                 }
                 else
                 {
@@ -39177,7 +39273,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
                 ret = this[this.myTable.ColumnPath.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return String.Empty;
                 }
                 else
                 {
@@ -39203,7 +39299,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
                 ret = this[this.myTable.ColumnComment.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return String.Empty;
                 }
                 else
                 {
@@ -39255,7 +39351,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
                 ret = this[this.myTable.ColumnCreatedBy.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return String.Empty;
                 }
                 else
                 {
@@ -39307,7 +39403,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
                 ret = this[this.myTable.ColumnModifiedBy.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return String.Empty;
                 }
                 else
                 {
@@ -39333,7 +39429,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
                 ret = this[this.myTable.ColumnModificationId.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return String.Empty;
                 }
                 else
                 {
@@ -39575,6 +39671,8 @@ namespace Ict.Petra.Shared.MSysMan.Data
             this.ColumnDateModified = this.Columns["s_date_modified_d"];
             this.ColumnModifiedBy = this.Columns["s_modified_by_c"];
             this.ColumnModificationId = this.Columns["s_modification_id_c"];
+            this.PrimaryKey = new System.Data.DataColumn[2] {
+                    ColumnGroupName,ColumnArea};
         }
 
         /// Access a typed row by index
@@ -39753,7 +39851,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
                 ret = this[this.myTable.ColumnGroupName.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return String.Empty;
                 }
                 else
                 {
@@ -39779,7 +39877,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
                 ret = this[this.myTable.ColumnArea.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return String.Empty;
                 }
                 else
                 {
@@ -39805,7 +39903,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
                 ret = this[this.myTable.ColumnVolumeName.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return String.Empty;
                 }
                 else
                 {
@@ -39857,7 +39955,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
                 ret = this[this.myTable.ColumnCreatedBy.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return String.Empty;
                 }
                 else
                 {
@@ -39909,7 +40007,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
                 ret = this[this.myTable.ColumnModifiedBy.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return String.Empty;
                 }
                 else
                 {
@@ -39935,7 +40033,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
                 ret = this[this.myTable.ColumnModificationId.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return String.Empty;
                 }
                 else
                 {
@@ -40164,6 +40262,8 @@ namespace Ict.Petra.Shared.MSysMan.Data
             this.ColumnDateModified = this.Columns["s_date_modified_d"];
             this.ColumnModifiedBy = this.Columns["s_modified_by_c"];
             this.ColumnModificationId = this.Columns["s_modification_id_c"];
+            this.PrimaryKey = new System.Data.DataColumn[1] {
+                    ColumnName};
         }
 
         /// Access a typed row by index
@@ -40342,7 +40442,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
                 ret = this[this.myTable.ColumnName.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return String.Empty;
                 }
                 else
                 {
@@ -40368,7 +40468,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
                 ret = this[this.myTable.ColumnDescription.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return String.Empty;
                 }
                 else
                 {
@@ -40394,7 +40494,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
                 ret = this[this.myTable.ColumnComment.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return String.Empty;
                 }
                 else
                 {
@@ -40446,7 +40546,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
                 ret = this[this.myTable.ColumnCreatedBy.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return String.Empty;
                 }
                 else
                 {
@@ -40498,7 +40598,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
                 ret = this[this.myTable.ColumnModifiedBy.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return String.Empty;
                 }
                 else
                 {
@@ -40524,7 +40624,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
                 ret = this[this.myTable.ColumnModificationId.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return String.Empty;
                 }
                 else
                 {
@@ -40746,6 +40846,8 @@ namespace Ict.Petra.Shared.MSysMan.Data
             this.ColumnDateModified = this.Columns["s_date_modified_d"];
             this.ColumnModifiedBy = this.Columns["s_modified_by_c"];
             this.ColumnModificationId = this.Columns["s_modification_id_c"];
+            this.PrimaryKey = new System.Data.DataColumn[2] {
+                    ColumnGroupName,ColumnPartnerKey};
         }
 
         /// Access a typed row by index
@@ -40912,7 +41014,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
                 ret = this[this.myTable.ColumnGroupName.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return String.Empty;
                 }
                 else
                 {
@@ -40990,7 +41092,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
                 ret = this[this.myTable.ColumnCreatedBy.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return String.Empty;
                 }
                 else
                 {
@@ -41042,7 +41144,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
                 ret = this[this.myTable.ColumnModifiedBy.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return String.Empty;
                 }
                 else
                 {
@@ -41068,7 +41170,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
                 ret = this[this.myTable.ColumnModificationId.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return String.Empty;
                 }
                 else
                 {
@@ -41305,6 +41407,8 @@ namespace Ict.Petra.Shared.MSysMan.Data
             this.ColumnDateModified = this.Columns["s_date_modified_d"];
             this.ColumnModifiedBy = this.Columns["s_modified_by_c"];
             this.ColumnModificationId = this.Columns["s_modification_id_c"];
+            this.PrimaryKey = new System.Data.DataColumn[3] {
+                    ColumnGroupId,ColumnGroupUnitKey,ColumnFileInfoKey};
         }
 
         /// Access a typed row by index
@@ -41519,7 +41623,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
                 ret = this[this.myTable.ColumnGroupId.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return String.Empty;
                 }
                 else
                 {
@@ -41701,7 +41805,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
                 ret = this[this.myTable.ColumnCreatedBy.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return String.Empty;
                 }
                 else
                 {
@@ -41753,7 +41857,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
                 ret = this[this.myTable.ColumnModifiedBy.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return String.Empty;
                 }
                 else
                 {
@@ -41779,7 +41883,7 @@ namespace Ict.Petra.Shared.MSysMan.Data
                 ret = this[this.myTable.ColumnModificationId.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return String.Empty;
                 }
                 else
                 {

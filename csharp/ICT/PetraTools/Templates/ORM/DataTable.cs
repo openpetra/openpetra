@@ -71,7 +71,7 @@ public class {#TABLENAME}Table : {#BASECLASSTABLE}
     {
         {#INITVARSCOLUMN}
 {#IFDEF PRIMARYKEYCOLUMNS}
-        this.PrimaryKey = new System.Data.DataColumn[] {
+        this.PrimaryKey = new System.Data.DataColumn[{#PRIMARYKEYCOLUMNSCOUNT}] {
                 {#PRIMARYKEYCOLUMNS}};
 {#ENDIF PRIMARYKEYCOLUMNS}
     }
@@ -117,7 +117,7 @@ public class {#TABLENAME}Table : {#BASECLASSTABLE}
     /// return the CamelCase name of the table
     public static {#NEW}string GetTableName()
     {
-        return "{#TABLENAME}";
+        return "{#TABLEVARIABLENAME}";
     }
 
     /// return the name of the table as it is used in the database

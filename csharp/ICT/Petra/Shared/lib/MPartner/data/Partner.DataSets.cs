@@ -1121,6 +1121,8 @@ namespace Ict.Petra.Shared.MPartner.Partner.Data
             this.ColumnModificationId = this.Columns["s_modification_id_c"];
             this.ColumnBestAddress = this.Columns["BestAddress"];
             this.ColumnIcon = this.Columns["Icon"];
+            this.PrimaryKey = new System.Data.DataColumn[3] {
+                    ColumnPartnerKey,ColumnSiteKey,ColumnLocationKey};
         }
 
         /// Access a typed row by index
@@ -1164,7 +1166,7 @@ namespace Ict.Petra.Shared.MPartner.Partner.Data
         /// return the CamelCase name of the table
         public static new string GetTableName()
         {
-            return "PartnerEditTDSPPartnerLocation";
+            return "PPartnerLocation";
         }
 
         /// return the name of the table as it is used in the database
@@ -1357,7 +1359,7 @@ namespace Ict.Petra.Shared.MPartner.Partner.Data
                 ret = this[this.myTable.ColumnLocationType.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return String.Empty;
                 }
                 else
                 {
@@ -1409,7 +1411,7 @@ namespace Ict.Petra.Shared.MPartner.Partner.Data
                 ret = this[this.myTable.ColumnFaxNumber.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return String.Empty;
                 }
                 else
                 {
@@ -1461,7 +1463,7 @@ namespace Ict.Petra.Shared.MPartner.Partner.Data
                 ret = this[this.myTable.ColumnTelephoneNumber.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return String.Empty;
                 }
                 else
                 {
@@ -1513,7 +1515,7 @@ namespace Ict.Petra.Shared.MPartner.Partner.Data
                 ret = this[this.myTable.ColumnEmailAddress.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return String.Empty;
                 }
                 else
                 {
@@ -1539,7 +1541,7 @@ namespace Ict.Petra.Shared.MPartner.Partner.Data
                 ret = this[this.myTable.ColumnLocationDetailComment.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return String.Empty;
                 }
                 else
                 {
@@ -1591,7 +1593,7 @@ namespace Ict.Petra.Shared.MPartner.Partner.Data
                 ret = this[this.myTable.ColumnMobileNumber.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return String.Empty;
                 }
                 else
                 {
@@ -1617,7 +1619,7 @@ namespace Ict.Petra.Shared.MPartner.Partner.Data
                 ret = this[this.myTable.ColumnAlternateTelephone.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return String.Empty;
                 }
                 else
                 {
@@ -1643,7 +1645,7 @@ namespace Ict.Petra.Shared.MPartner.Partner.Data
                 ret = this[this.myTable.ColumnUrl.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return String.Empty;
                 }
                 else
                 {
@@ -1721,7 +1723,7 @@ namespace Ict.Petra.Shared.MPartner.Partner.Data
                 ret = this[this.myTable.ColumnCreatedBy.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return String.Empty;
                 }
                 else
                 {
@@ -1773,7 +1775,7 @@ namespace Ict.Petra.Shared.MPartner.Partner.Data
                 ret = this[this.myTable.ColumnModifiedBy.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return String.Empty;
                 }
                 else
                 {
@@ -1799,7 +1801,7 @@ namespace Ict.Petra.Shared.MPartner.Partner.Data
                 ret = this[this.myTable.ColumnModificationId.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return String.Empty;
                 }
                 else
                 {
@@ -2330,6 +2332,8 @@ namespace Ict.Petra.Shared.MPartner.Partner.Data
             this.ColumnModifiedBy = this.Columns["s_modified_by_c"];
             this.ColumnModificationId = this.Columns["s_modification_id_c"];
             this.ColumnUnitName = this.Columns["p_unit_name_c"];
+            this.PrimaryKey = new System.Data.DataColumn[1] {
+                    ColumnPartnerKey};
         }
 
         /// Access a typed row by index
@@ -2373,7 +2377,7 @@ namespace Ict.Petra.Shared.MPartner.Partner.Data
         /// return the CamelCase name of the table
         public static new string GetTableName()
         {
-            return "PartnerEditTDSPPerson";
+            return "PPerson";
         }
 
         /// return the name of the table as it is used in the database
@@ -2450,7 +2454,7 @@ namespace Ict.Petra.Shared.MPartner.Partner.Data
                 ret = this[this.myTable.ColumnTitle.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return String.Empty;
                 }
                 else
                 {
@@ -2476,7 +2480,7 @@ namespace Ict.Petra.Shared.MPartner.Partner.Data
                 ret = this[this.myTable.ColumnFirstName.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return String.Empty;
                 }
                 else
                 {
@@ -2502,7 +2506,7 @@ namespace Ict.Petra.Shared.MPartner.Partner.Data
                 ret = this[this.myTable.ColumnPreferedName.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return String.Empty;
                 }
                 else
                 {
@@ -2528,7 +2532,7 @@ namespace Ict.Petra.Shared.MPartner.Partner.Data
                 ret = this[this.myTable.ColumnMiddleName1.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return String.Empty;
                 }
                 else
                 {
@@ -2554,7 +2558,7 @@ namespace Ict.Petra.Shared.MPartner.Partner.Data
                 ret = this[this.myTable.ColumnMiddleName2.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return String.Empty;
                 }
                 else
                 {
@@ -2580,7 +2584,7 @@ namespace Ict.Petra.Shared.MPartner.Partner.Data
                 ret = this[this.myTable.ColumnMiddleName3.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return String.Empty;
                 }
                 else
                 {
@@ -2606,7 +2610,7 @@ namespace Ict.Petra.Shared.MPartner.Partner.Data
                 ret = this[this.myTable.ColumnFamilyName.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return String.Empty;
                 }
                 else
                 {
@@ -2632,7 +2636,7 @@ namespace Ict.Petra.Shared.MPartner.Partner.Data
                 ret = this[this.myTable.ColumnDecorations.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return String.Empty;
                 }
                 else
                 {
@@ -2684,7 +2688,7 @@ namespace Ict.Petra.Shared.MPartner.Partner.Data
                 ret = this[this.myTable.ColumnGender.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return String.Empty;
                 }
                 else
                 {
@@ -2710,7 +2714,7 @@ namespace Ict.Petra.Shared.MPartner.Partner.Data
                 ret = this[this.myTable.ColumnMaritalStatus.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return String.Empty;
                 }
                 else
                 {
@@ -2736,7 +2740,7 @@ namespace Ict.Petra.Shared.MPartner.Partner.Data
                 ret = this[this.myTable.ColumnOccupationCode.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return String.Empty;
                 }
                 else
                 {
@@ -2788,7 +2792,7 @@ namespace Ict.Petra.Shared.MPartner.Partner.Data
                 ret = this[this.myTable.ColumnBelieverSinceComment.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return String.Empty;
                 }
                 else
                 {
@@ -2894,7 +2898,7 @@ namespace Ict.Petra.Shared.MPartner.Partner.Data
                 ret = this[this.myTable.ColumnAcademicTitle.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return String.Empty;
                 }
                 else
                 {
@@ -2946,7 +2950,7 @@ namespace Ict.Petra.Shared.MPartner.Partner.Data
                 ret = this[this.myTable.ColumnMaritalStatusComment.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return String.Empty;
                 }
                 else
                 {
@@ -2998,7 +3002,7 @@ namespace Ict.Petra.Shared.MPartner.Partner.Data
                 ret = this[this.myTable.ColumnCreatedBy.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return String.Empty;
                 }
                 else
                 {
@@ -3050,7 +3054,7 @@ namespace Ict.Petra.Shared.MPartner.Partner.Data
                 ret = this[this.myTable.ColumnModifiedBy.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return String.Empty;
                 }
                 else
                 {
@@ -3076,7 +3080,7 @@ namespace Ict.Petra.Shared.MPartner.Partner.Data
                 ret = this[this.myTable.ColumnModificationId.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return String.Empty;
                 }
                 else
                 {
@@ -3102,7 +3106,7 @@ namespace Ict.Petra.Shared.MPartner.Partner.Data
                 ret = this[this.myTable.ColumnUnitName.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return String.Empty;
                 }
                 else
                 {
@@ -3574,6 +3578,8 @@ namespace Ict.Petra.Shared.MPartner.Partner.Data
             this.ColumnModifiedBy = this.Columns["s_modified_by_c"];
             this.ColumnModificationId = this.Columns["s_modification_id_c"];
             this.ColumnUnitName = this.Columns["p_unit_name_c"];
+            this.PrimaryKey = new System.Data.DataColumn[1] {
+                    ColumnPartnerKey};
         }
 
         /// Access a typed row by index
@@ -3617,7 +3623,7 @@ namespace Ict.Petra.Shared.MPartner.Partner.Data
         /// return the CamelCase name of the table
         public static new string GetTableName()
         {
-            return "PartnerEditTDSPFamily";
+            return "PFamily";
         }
 
         /// return the name of the table as it is used in the database
@@ -3720,7 +3726,7 @@ namespace Ict.Petra.Shared.MPartner.Partner.Data
                 ret = this[this.myTable.ColumnTitle.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return String.Empty;
                 }
                 else
                 {
@@ -3746,7 +3752,7 @@ namespace Ict.Petra.Shared.MPartner.Partner.Data
                 ret = this[this.myTable.ColumnFirstName.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return String.Empty;
                 }
                 else
                 {
@@ -3772,7 +3778,7 @@ namespace Ict.Petra.Shared.MPartner.Partner.Data
                 ret = this[this.myTable.ColumnFamilyName.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return String.Empty;
                 }
                 else
                 {
@@ -3850,7 +3856,7 @@ namespace Ict.Petra.Shared.MPartner.Partner.Data
                 ret = this[this.myTable.ColumnMaritalStatus.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return String.Empty;
                 }
                 else
                 {
@@ -3902,7 +3908,7 @@ namespace Ict.Petra.Shared.MPartner.Partner.Data
                 ret = this[this.myTable.ColumnMaritalStatusComment.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return String.Empty;
                 }
                 else
                 {
@@ -3954,7 +3960,7 @@ namespace Ict.Petra.Shared.MPartner.Partner.Data
                 ret = this[this.myTable.ColumnCreatedBy.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return String.Empty;
                 }
                 else
                 {
@@ -4006,7 +4012,7 @@ namespace Ict.Petra.Shared.MPartner.Partner.Data
                 ret = this[this.myTable.ColumnModifiedBy.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return String.Empty;
                 }
                 else
                 {
@@ -4032,7 +4038,7 @@ namespace Ict.Petra.Shared.MPartner.Partner.Data
                 ret = this[this.myTable.ColumnModificationId.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return String.Empty;
                 }
                 else
                 {
@@ -4058,7 +4064,7 @@ namespace Ict.Petra.Shared.MPartner.Partner.Data
                 ret = this[this.myTable.ColumnUnitName.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return String.Empty;
                 }
                 else
                 {
@@ -4363,7 +4369,7 @@ namespace Ict.Petra.Shared.MPartner.Partner.Data
                     new TTypedColumnInfo(19, "HasEXWORKERPartnerType", "HasEXWORKERPartnerType", "", OdbcType.Int, -1, false)
                 },
                 new int[] {
-
+                    0
                 }));
             return true;
         }
@@ -4475,6 +4481,8 @@ namespace Ict.Petra.Shared.MPartner.Partner.Data
             this.ColumnFoundationOwner1Key = this.Columns["FoundationOwner1Key"];
             this.ColumnFoundationOwner2Key = this.Columns["FoundationOwner2Key"];
             this.ColumnHasEXWORKERPartnerType = this.Columns["HasEXWORKERPartnerType"];
+            this.PrimaryKey = new System.Data.DataColumn[1] {
+                    ColumnPartnerKey};
         }
 
         /// Access a typed row by index
@@ -4518,7 +4526,7 @@ namespace Ict.Petra.Shared.MPartner.Partner.Data
         /// return the CamelCase name of the table
         public static string GetTableName()
         {
-            return "PartnerEditTDSMiscellaneousData";
+            return "MiscellaneousData";
         }
 
         /// return the name of the table as it is used in the database
@@ -4901,7 +4909,7 @@ namespace Ict.Petra.Shared.MPartner.Partner.Data
                 ret = this[this.myTable.ColumnLastGiftInfo.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return String.Empty;
                 }
                 else
                 {
@@ -5612,7 +5620,7 @@ namespace Ict.Petra.Shared.MPartner.Partner.Data
                     new TTypedColumnInfo(7, "OtherTypeCodes", "OtherTypeCodes", "", OdbcType.Int, -1, false)
                 },
                 new int[] {
-
+                    0
                 }));
             return true;
         }
@@ -5677,6 +5685,8 @@ namespace Ict.Petra.Shared.MPartner.Partner.Data
             this.ColumnTypeCodeModify = this.Columns["TypeCodeModify"];
             this.ColumnTypeCodePresent = this.Columns["TypeCodePresent"];
             this.ColumnOtherTypeCodes = this.Columns["OtherTypeCodes"];
+            this.PrimaryKey = new System.Data.DataColumn[1] {
+                    ColumnPartnerKey};
         }
 
         /// Access a typed row by index
@@ -5720,7 +5730,7 @@ namespace Ict.Petra.Shared.MPartner.Partner.Data
         /// return the CamelCase name of the table
         public static string GetTableName()
         {
-            return "PartnerEditTDSFamilyMembers";
+            return "FamilyMembers";
         }
 
         /// return the name of the table as it is used in the database
@@ -5881,7 +5891,7 @@ namespace Ict.Petra.Shared.MPartner.Partner.Data
                 ret = this[this.myTable.ColumnPartnerShortName.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return String.Empty;
                 }
                 else
                 {
@@ -5934,7 +5944,7 @@ namespace Ict.Petra.Shared.MPartner.Partner.Data
                 ret = this[this.myTable.ColumnGender.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return String.Empty;
                 }
                 else
                 {
@@ -6038,7 +6048,7 @@ namespace Ict.Petra.Shared.MPartner.Partner.Data
                 ret = this[this.myTable.ColumnOtherTypeCodes.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return String.Empty;
                 }
                 else
                 {
@@ -6261,7 +6271,7 @@ namespace Ict.Petra.Shared.MPartner.Partner.Data
         /// return the CamelCase name of the table
         public static string GetTableName()
         {
-            return "PartnerEditTDSFamilyMembersInfoForStatusChange";
+            return "FamilyMembersInfoForStatusChange";
         }
 
         /// return the name of the table as it is used in the database
@@ -6374,7 +6384,7 @@ namespace Ict.Petra.Shared.MPartner.Partner.Data
                     new TTypedColumnInfo(3, "RemoveTypeCode", "RemoveTypeCode", "", OdbcType.Int, -1, false)
                 },
                 new int[] {
-
+                    0, 1, 2
                 }));
             return true;
         }
@@ -6422,6 +6432,8 @@ namespace Ict.Petra.Shared.MPartner.Partner.Data
             this.ColumnTypeCode = this.Columns["TypeCode"];
             this.ColumnAddTypeCode = this.Columns["AddTypeCode"];
             this.ColumnRemoveTypeCode = this.Columns["RemoveTypeCode"];
+            this.PrimaryKey = new System.Data.DataColumn[3] {
+                    ColumnPartnerKey,ColumnTypeCode,ColumnAddTypeCode};
         }
 
         /// Access a typed row by index
@@ -6465,7 +6477,7 @@ namespace Ict.Petra.Shared.MPartner.Partner.Data
         /// return the CamelCase name of the table
         public static string GetTableName()
         {
-            return "PartnerEditTDSPartnerTypeChangeFamilyMembersPromotion";
+            return "PartnerTypeChangeFamilyMembersPromotion";
         }
 
         /// return the name of the table as it is used in the database
@@ -6578,7 +6590,7 @@ namespace Ict.Petra.Shared.MPartner.Partner.Data
                 ret = this[this.myTable.ColumnTypeCode.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return String.Empty;
                 }
                 else
                 {
@@ -6982,6 +6994,8 @@ namespace Ict.Petra.Shared.MPartner.Partner.Data
             this.ColumnAnswerReuse = this.Columns["AnswerReuse"];
             this.ColumnAnswerProcessedClientSide = this.Columns["AnswerProcessedClientSide"];
             this.ColumnAnswerProcessedServerSide = this.Columns["AnswerProcessedServerSide"];
+            this.PrimaryKey = new System.Data.DataColumn[2] {
+                    ColumnSiteKey,ColumnLocationKey};
         }
 
         /// Access a typed row by index
@@ -7025,7 +7039,7 @@ namespace Ict.Petra.Shared.MPartner.Partner.Data
         /// return the CamelCase name of the table
         public static new string GetTableName()
         {
-            return "PartnerAddressAggregateTDSSimilarLocationParameters";
+            return "SimilarLocationParameters";
         }
 
         /// return the name of the table as it is used in the database
@@ -7188,7 +7202,7 @@ namespace Ict.Petra.Shared.MPartner.Partner.Data
                 ret = this[this.myTable.ColumnBuilding1.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return String.Empty;
                 }
                 else
                 {
@@ -7214,7 +7228,7 @@ namespace Ict.Petra.Shared.MPartner.Partner.Data
                 ret = this[this.myTable.ColumnBuilding2.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return String.Empty;
                 }
                 else
                 {
@@ -7240,7 +7254,7 @@ namespace Ict.Petra.Shared.MPartner.Partner.Data
                 ret = this[this.myTable.ColumnStreetName.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return String.Empty;
                 }
                 else
                 {
@@ -7266,7 +7280,7 @@ namespace Ict.Petra.Shared.MPartner.Partner.Data
                 ret = this[this.myTable.ColumnLocality.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return String.Empty;
                 }
                 else
                 {
@@ -7292,7 +7306,7 @@ namespace Ict.Petra.Shared.MPartner.Partner.Data
                 ret = this[this.myTable.ColumnSuburb.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return String.Empty;
                 }
                 else
                 {
@@ -7318,7 +7332,7 @@ namespace Ict.Petra.Shared.MPartner.Partner.Data
                 ret = this[this.myTable.ColumnCity.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return String.Empty;
                 }
                 else
                 {
@@ -7344,7 +7358,7 @@ namespace Ict.Petra.Shared.MPartner.Partner.Data
                 ret = this[this.myTable.ColumnCounty.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return String.Empty;
                 }
                 else
                 {
@@ -7370,7 +7384,7 @@ namespace Ict.Petra.Shared.MPartner.Partner.Data
                 ret = this[this.myTable.ColumnPostalCode.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return String.Empty;
                 }
                 else
                 {
@@ -7397,7 +7411,7 @@ namespace Ict.Petra.Shared.MPartner.Partner.Data
                 ret = this[this.myTable.ColumnCountryCode.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return String.Empty;
                 }
                 else
                 {
@@ -7423,7 +7437,7 @@ namespace Ict.Petra.Shared.MPartner.Partner.Data
                 ret = this[this.myTable.ColumnAddress3.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return String.Empty;
                 }
                 else
                 {
@@ -7631,7 +7645,7 @@ namespace Ict.Petra.Shared.MPartner.Partner.Data
                 ret = this[this.myTable.ColumnCreatedBy.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return String.Empty;
                 }
                 else
                 {
@@ -7683,7 +7697,7 @@ namespace Ict.Petra.Shared.MPartner.Partner.Data
                 ret = this[this.myTable.ColumnModifiedBy.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return String.Empty;
                 }
                 else
                 {
@@ -7709,7 +7723,7 @@ namespace Ict.Petra.Shared.MPartner.Partner.Data
                 ret = this[this.myTable.ColumnModificationId.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return String.Empty;
                 }
                 else
                 {
@@ -8487,7 +8501,7 @@ namespace Ict.Petra.Shared.MPartner.Partner.Data
         /// return the CamelCase name of the table
         public static string GetTableName()
         {
-            return "PartnerAddressAggregateTDSChangePromotionParameters";
+            return "ChangePromotionParameters";
         }
 
         /// return the name of the table as it is used in the database
@@ -8832,7 +8846,7 @@ namespace Ict.Petra.Shared.MPartner.Partner.Data
                 ret = this[this.myTable.ColumnPartnerShortName.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return String.Empty;
                 }
                 else
                 {
@@ -8858,7 +8872,7 @@ namespace Ict.Petra.Shared.MPartner.Partner.Data
                 ret = this[this.myTable.ColumnPartnerClass.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return String.Empty;
                 }
                 else
                 {
@@ -8884,7 +8898,7 @@ namespace Ict.Petra.Shared.MPartner.Partner.Data
                 ret = this[this.myTable.ColumnTelephoneNumber.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return String.Empty;
                 }
                 else
                 {
@@ -8936,7 +8950,7 @@ namespace Ict.Petra.Shared.MPartner.Partner.Data
                 ret = this[this.myTable.ColumnFaxNumber.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return String.Empty;
                 }
                 else
                 {
@@ -8988,7 +9002,7 @@ namespace Ict.Petra.Shared.MPartner.Partner.Data
                 ret = this[this.myTable.ColumnAlternateTelephone.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return String.Empty;
                 }
                 else
                 {
@@ -9014,7 +9028,7 @@ namespace Ict.Petra.Shared.MPartner.Partner.Data
                 ret = this[this.myTable.ColumnMobileNumber.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return String.Empty;
                 }
                 else
                 {
@@ -9040,7 +9054,7 @@ namespace Ict.Petra.Shared.MPartner.Partner.Data
                 ret = this[this.myTable.ColumnEmailAddress.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return String.Empty;
                 }
                 else
                 {
@@ -9066,7 +9080,7 @@ namespace Ict.Petra.Shared.MPartner.Partner.Data
                 ret = this[this.myTable.ColumnUrl.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return String.Empty;
                 }
                 else
                 {
@@ -9170,7 +9184,7 @@ namespace Ict.Petra.Shared.MPartner.Partner.Data
                 ret = this[this.myTable.ColumnLocationType.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return String.Empty;
                 }
                 else
                 {
@@ -9651,7 +9665,7 @@ namespace Ict.Petra.Shared.MPartner.Partner.Data
         /// return the CamelCase name of the table
         public static string GetTableName()
         {
-            return "PartnerAddressAggregateTDSAddressAddedOrChangedPromotion";
+            return "AddressAddedOrChangedPromotion";
         }
 
         /// return the name of the table as it is used in the database
@@ -9966,7 +9980,7 @@ namespace Ict.Petra.Shared.MPartner.Partner.Data
                 ret = this[this.myTable.ColumnChangedFields.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return String.Empty;
                 }
                 else
                 {
@@ -9992,7 +10006,7 @@ namespace Ict.Petra.Shared.MPartner.Partner.Data
                 ret = this[this.myTable.ColumnUserAnswer.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return String.Empty;
                 }
                 else
                 {
@@ -10557,7 +10571,7 @@ namespace Ict.Petra.Shared.MPartner.Partner.Data
         /// return the CamelCase name of the table
         public static string GetTableName()
         {
-            return "PartnerInfoTDSPartnerHeadInfo";
+            return "PartnerHeadInfo";
         }
 
         /// return the name of the table as it is used in the database
@@ -10694,7 +10708,7 @@ namespace Ict.Petra.Shared.MPartner.Partner.Data
                 ret = this[this.myTable.ColumnPartnerShortName.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return String.Empty;
                 }
                 else
                 {
@@ -10720,7 +10734,7 @@ namespace Ict.Petra.Shared.MPartner.Partner.Data
                 ret = this[this.myTable.ColumnPartnerClass.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return String.Empty;
                 }
                 else
                 {
@@ -10747,7 +10761,7 @@ namespace Ict.Petra.Shared.MPartner.Partner.Data
                 ret = this[this.myTable.ColumnStatusCode.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return String.Empty;
                 }
                 else
                 {
@@ -10773,7 +10787,7 @@ namespace Ict.Petra.Shared.MPartner.Partner.Data
                 ret = this[this.myTable.ColumnAcquisitionCode.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return String.Empty;
                 }
                 else
                 {
@@ -10799,7 +10813,7 @@ namespace Ict.Petra.Shared.MPartner.Partner.Data
                 ret = this[this.myTable.ColumnPrivatePartnerOwner.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return String.Empty;
                 }
                 else
                 {
@@ -11074,7 +11088,7 @@ namespace Ict.Petra.Shared.MPartner.Partner.Data
         /// return the CamelCase name of the table
         public static string GetTableName()
         {
-            return "PartnerInfoTDSPartnerAdditionalInfo";
+            return "PartnerAdditionalInfo";
         }
 
         /// return the name of the table as it is used in the database
@@ -11257,7 +11271,7 @@ namespace Ict.Petra.Shared.MPartner.Partner.Data
                 ret = this[this.myTable.ColumnMainLanguages.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return String.Empty;
                 }
                 else
                 {
@@ -11283,7 +11297,7 @@ namespace Ict.Petra.Shared.MPartner.Partner.Data
                 ret = this[this.myTable.ColumnAdditionalLanguages.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return String.Empty;
                 }
                 else
                 {
@@ -11413,7 +11427,7 @@ namespace Ict.Petra.Shared.MPartner.Partner.Data
                 ret = this[this.myTable.ColumnFamily.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return String.Empty;
                 }
                 else
                 {
@@ -11466,7 +11480,7 @@ namespace Ict.Petra.Shared.MPartner.Partner.Data
                 ret = this[this.myTable.ColumnPreviousName.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return String.Empty;
                 }
                 else
                 {
@@ -11492,7 +11506,7 @@ namespace Ict.Petra.Shared.MPartner.Partner.Data
                 ret = this[this.myTable.ColumnField.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return String.Empty;
                 }
                 else
                 {
@@ -11544,7 +11558,7 @@ namespace Ict.Petra.Shared.MPartner.Partner.Data
                 ret = this[this.myTable.ColumnNotes.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return String.Empty;
                 }
                 else
                 {
@@ -11826,7 +11840,7 @@ namespace Ict.Petra.Shared.MPartner.Partner.Data
         /// return the CamelCase name of the table
         public static string GetTableName()
         {
-            return "PartnerInfoTDSUnitInfo";
+            return "UnitInfo";
         }
 
         /// return the name of the table as it is used in the database
@@ -11915,7 +11929,7 @@ namespace Ict.Petra.Shared.MPartner.Partner.Data
                 ret = this[this.myTable.ColumnParentUnitName.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return String.Empty;
                 }
                 else
                 {
@@ -11987,7 +12001,7 @@ namespace Ict.Petra.Shared.MPartner.Partner.Data
                     new TTypedColumnInfo(2, "FamilyId", "p_family_id_i", "Family ID", OdbcType.Int, -1, false)
                 },
                 new int[] {
-
+                    0
                 }));
             return true;
         }
@@ -12032,6 +12046,8 @@ namespace Ict.Petra.Shared.MPartner.Partner.Data
             this.ColumnPartnerKey = this.Columns["p_partner_key_n"];
             this.ColumnPartnerShortName = this.Columns["p_partner_short_name_c"];
             this.ColumnFamilyId = this.Columns["p_family_id_i"];
+            this.PrimaryKey = new System.Data.DataColumn[1] {
+                    ColumnPartnerKey};
         }
 
         /// Access a typed row by index
@@ -12075,7 +12091,7 @@ namespace Ict.Petra.Shared.MPartner.Partner.Data
         /// return the CamelCase name of the table
         public static string GetTableName()
         {
-            return "PartnerInfoTDSFamilyMembers";
+            return "FamilyMembers";
         }
 
         /// return the name of the table as it is used in the database
@@ -12176,7 +12192,7 @@ namespace Ict.Petra.Shared.MPartner.Partner.Data
                 ret = this[this.myTable.ColumnPartnerShortName.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return String.Empty;
                 }
                 else
                 {

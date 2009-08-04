@@ -1444,14 +1444,14 @@ namespace Ict.Petra.Client.MPartner.Gui
             }
         }
 
-        private void TUC_PartnerFindCriteria_Load(System.Object sender, System.EventArgs e)
+        /// <summary>
+        /// todoComment
+        /// </summary>
+        public void InitialiseUserControl()
         {
-            SingleLineFlow LayoutManagerLeftColumn;
-            SingleLineFlow LayoutManagerRightColumn;
-
-            LayoutManagerLeftColumn = new SingleLineFlow(pnlLeftColumn, 1, 1);
+            SingleLineFlow LayoutManagerLeftColumn = new SingleLineFlow(pnlLeftColumn, 1, 1);
             LayoutManagerLeftColumn.SpacerDistance = 7;
-            LayoutManagerRightColumn = new SingleLineFlow(pnlRightColumn, 1, 1);
+            SingleLineFlow LayoutManagerRightColumn = new SingleLineFlow(pnlRightColumn, 1, 1);
             LayoutManagerRightColumn.SpacerDistance = 7;
             FWorkerFamOnly = false;
             FDefaultPartnerClass = "*";
@@ -1460,13 +1460,7 @@ namespace Ict.Petra.Client.MPartner.Gui
             {
                 ResetSearchCriteriaValuesToDefault();
             }
-        }
 
-        /// <summary>
-        /// todoComment
-        /// </summary>
-        public void InitialiseUserControl()
-        {
             ucoPartnerFind_PersonnelCriteria_CollapsiblePart.InitialiseUserControl();
             FCriteriaFieldsLeft = new ArrayList();
             FCriteriaFieldsRight = new ArrayList();

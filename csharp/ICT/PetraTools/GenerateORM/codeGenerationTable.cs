@@ -57,6 +57,16 @@ namespace Ict.Tools.CodeGeneration.DataStore
             snippet.SetCodelet("NEW", derivedTable);
             snippet.SetCodeletComment("TABLE_DESCRIPTION", currentTable.strDescription);
             snippet.SetCodelet("TABLENAME", currentTable.strDotNetName);
+
+            if (currentTable.strVariableNameInDataset != null)
+            {
+                snippet.SetCodelet("TABLEVARIABLENAME", currentTable.strVariableNameInDataset);
+            }
+            else
+            {
+                snippet.SetCodelet("TABLEVARIABLENAME", currentTable.strDotNetName);
+            }
+
             snippet.SetCodelet("DBTABLENAME", currentTable.strName);
             snippet.SetCodelet("TABLEID", currentTable.order.ToString());
 
@@ -64,6 +74,7 @@ namespace Ict.Tools.CodeGeneration.DataStore
             {
                 TConstraint primKey = currentTable.GetPrimaryKey();
                 bool first = true;
+                string primaryKeyColumns = "";
 
                 foreach (string columnName in primKey.strThisFields)
                 {
@@ -72,11 +83,19 @@ namespace Ict.Tools.CodeGeneration.DataStore
                     if (!first)
                     {
                         toAdd = ", " + toAdd;
+                        primaryKeyColumns += ",";
                     }
 
                     first = false;
 
                     snippet.AddToCodelet("COLUMNPRIMARYKEYORDER", toAdd);
+                    primaryKeyColumns += "Column" + TTable.NiceFieldName(currentTable.GetField(columnName));
+                }
+
+                if (primaryKeyColumns.Length > 0)
+                {
+                    snippet.SetCodelet("PRIMARYKEYCOLUMNS", primaryKeyColumns);
+                    snippet.SetCodelet("PRIMARYKEYCOLUMNSCOUNT", primKey.strThisFields.Count.ToString());
                 }
             }
             else
@@ -177,6 +196,10 @@ namespace Ict.Tools.CodeGeneration.DataStore
                 if (col.GetDotNetType().Contains("DateTime"))
                 {
                     tempTemplate.SetCodelet("ACTIONGETNULLVALUE", "return DateTime.MinValue;");
+                }
+                else if (col.GetDotNetType().ToLower().Contains("string"))
+                {
+                    tempTemplate.SetCodelet("ACTIONGETNULLVALUE", "return String.Empty;");
                 }
                 else
                 {

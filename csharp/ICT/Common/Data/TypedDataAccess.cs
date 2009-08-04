@@ -856,6 +856,7 @@ namespace Ict.Common.Data
             foreach (System.Object obj in APrimaryKeyValues)
             {
                 ParametersArray[counter] = CreateOdbcParameter(ATableId, primaryKeyColumns[counter], obj);
+                ParametersArray[counter].Value = obj;
                 counter++;
             }
 

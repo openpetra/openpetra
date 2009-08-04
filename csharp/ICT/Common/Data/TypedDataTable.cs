@@ -259,7 +259,7 @@ namespace Ict.Common.Data
                     s += ",";
                 }
 
-                s += '"' + TableInfo[ATableNumber].columns[item].name + '"';
+                s += TableInfo[ATableNumber].columns[item].dbname;
             }
 
             return s.Split(',');

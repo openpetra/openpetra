@@ -1369,7 +1369,6 @@ namespace Ict.Petra.Client.MPartner.Gui
             this.Font = new System.Drawing.Font("Verdana", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.Name = "TUC_PartnerFindCriteria";
             this.Size = new System.Drawing.Size(655, 213);
-            this.Load += new System.EventHandler(this.TUC_PartnerFindCriteria_Load);
             ((System.ComponentModel.ISupportInitialize)(this.FFindCriteriaDataTable)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.FFindCriteriaDataSet)).EndInit();
             this.spcCriteria.Panel1.ResumeLayout(false);

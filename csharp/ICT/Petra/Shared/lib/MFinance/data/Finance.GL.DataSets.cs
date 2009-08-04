@@ -353,6 +353,8 @@ namespace Ict.Petra.Shared.MFinance.GL.Data
             this.ColumnModificationId = this.Columns["s_modification_id_c"];
             this.ColumnDateEntered = this.Columns["DateEntered"];
             this.ColumnAnalysisAttributes = this.Columns["AnalysisAttributes"];
+            this.PrimaryKey = new System.Data.DataColumn[4] {
+                    ColumnLedgerNumber,ColumnBatchNumber,ColumnJournalNumber,ColumnTransactionNumber};
         }
 
         /// Access a typed row by index
@@ -396,7 +398,7 @@ namespace Ict.Petra.Shared.MFinance.GL.Data
         /// return the CamelCase name of the table
         public static new string GetTableName()
         {
-            return "GLBatchTDSATransaction";
+            return "ATransaction";
         }
 
         /// return the name of the table as it is used in the database
@@ -563,7 +565,7 @@ namespace Ict.Petra.Shared.MFinance.GL.Data
                 ret = this[this.myTable.ColumnAccountCode.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return String.Empty;
                 }
                 else
                 {
@@ -589,7 +591,7 @@ namespace Ict.Petra.Shared.MFinance.GL.Data
                 ret = this[this.myTable.ColumnPrimaryAccountCode.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return String.Empty;
                 }
                 else
                 {
@@ -615,7 +617,7 @@ namespace Ict.Petra.Shared.MFinance.GL.Data
                 ret = this[this.myTable.ColumnCostCentreCode.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return String.Empty;
                 }
                 else
                 {
@@ -641,7 +643,7 @@ namespace Ict.Petra.Shared.MFinance.GL.Data
                 ret = this[this.myTable.ColumnPrimaryCostCentreCode.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return String.Empty;
                 }
                 else
                 {
@@ -797,7 +799,7 @@ namespace Ict.Petra.Shared.MFinance.GL.Data
                 ret = this[this.myTable.ColumnNarrative.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return String.Empty;
                 }
                 else
                 {
@@ -927,7 +929,7 @@ namespace Ict.Petra.Shared.MFinance.GL.Data
                 ret = this[this.myTable.ColumnSubType.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return String.Empty;
                 }
                 else
                 {
@@ -1005,7 +1007,7 @@ namespace Ict.Petra.Shared.MFinance.GL.Data
                 ret = this[this.myTable.ColumnReference.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return String.Empty;
                 }
                 else
                 {
@@ -1031,7 +1033,7 @@ namespace Ict.Petra.Shared.MFinance.GL.Data
                 ret = this[this.myTable.ColumnSourceReference.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return String.Empty;
                 }
                 else
                 {
@@ -1187,7 +1189,7 @@ namespace Ict.Petra.Shared.MFinance.GL.Data
                 ret = this[this.myTable.ColumnCreatedBy.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return String.Empty;
                 }
                 else
                 {
@@ -1239,7 +1241,7 @@ namespace Ict.Petra.Shared.MFinance.GL.Data
                 ret = this[this.myTable.ColumnModifiedBy.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return String.Empty;
                 }
                 else
                 {
@@ -1265,7 +1267,7 @@ namespace Ict.Petra.Shared.MFinance.GL.Data
                 ret = this[this.myTable.ColumnModificationId.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return String.Empty;
                 }
                 else
                 {
@@ -1317,7 +1319,7 @@ namespace Ict.Petra.Shared.MFinance.GL.Data
                 ret = this[this.myTable.ColumnAnalysisAttributes.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return String.Empty;
                 }
                 else
                 {
