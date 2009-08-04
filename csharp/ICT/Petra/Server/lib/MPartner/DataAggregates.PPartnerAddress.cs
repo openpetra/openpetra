@@ -4473,7 +4473,7 @@ namespace Ict.Petra.Server.MPartner.DataAggregates
                                          PPartnerLocationTable.GetLocationKeyDBName() + " = " + ExistingLocationKey.ToString(), "",
                                          DataViewRowState.Deleted).Length == 0)
                                     && (PPartnerLocationAccess.Exists(APartnerKey, ExistingSiteKey, ExistingLocationKey,
-                                                ASubmitChangesTransaction))))
+                                            ASubmitChangesTransaction))))
                             {
                                 AVerificationResult.Add(new TVerificationResult("[Partner Address Save]", "Partner " + APartnerKey.ToString() +
                                         " already has a " + "record linked with Location " + ExistingLocationKey.ToString() + Environment.NewLine +

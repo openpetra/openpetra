@@ -37,41 +37,42 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
         public void NewRow(System.Object sender, EventArgs e)
         {
             this.CreateNewABatch();
-            this.FMainDS.ABatch[
-                }
 
-                /// <summary>
-                /// cancel a batch (there is no deletion of batches)
-                /// </summary>
-                /// <param name="sender"></param>
-                /// <param name="e"></param>
-                public void CancelRow(System.Object sender, EventArgs e)
-                {
-                }
+//            this.FMainDS.ABatch[
+        }
 
-                /// <summary>
-                /// get the ledger information
-                /// </summary>
-                private void InitializeManualCode()
-                {
-                }
+        /// <summary>
+        /// cancel a batch (there is no deletion of batches)
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        public void CancelRow(System.Object sender, EventArgs e)
+        {
+        }
 
-                /// <summary>
-                /// assign a temporary (negative) batch number
-                /// </summary>
-                /// <param name="ANewRow"></param>
-                private void NewRowManual(ref Ict.Petra.Shared.MFinance.Account.Data.ABatchRow ANewRow)
-                {
-                    ANewRow.LedgerNumber = FMainDS.ALedger[0].LedgerNumber;
+        /// <summary>
+        /// get the ledger information
+        /// </summary>
+        private void InitializeManualCode()
+        {
+        }
 
-                    if (FMainDS.ALedger[0].LastBatchNumber > 0)
-                    {
-                        FMainDS.ALedger[0].LastBatchNumber *= -1;
-                    }
+        /// <summary>
+        /// assign a temporary (negative) batch number
+        /// </summary>
+        /// <param name="ANewRow"></param>
+        private void NewRowManual(ref Ict.Petra.Shared.MFinance.Account.Data.ABatchRow ANewRow)
+        {
+            ANewRow.LedgerNumber = FMainDS.ALedger[0].LedgerNumber;
 
-                    FMainDS.ALedger[0].LastBatchNumber--;
+            if (FMainDS.ALedger[0].LastBatchNumber > 0)
+            {
+                FMainDS.ALedger[0].LastBatchNumber *= -1;
+            }
 
-                    ANewRow.BatchNumber = FMainDS.ALedger[0].LastBatchNumber;
-                }
-                }
-                }
+            FMainDS.ALedger[0].LastBatchNumber--;
+
+            ANewRow.BatchNumber = FMainDS.ALedger[0].LastBatchNumber;
+        }
+    }
+}

@@ -29,7 +29,6 @@ using Ict.Petra.Client.App.Core.RemoteObjects;
 
 namespace Ict.Petra.Client.MFinance.Gui.GL
 {
-    
     public partial class TFrmGLBatch
     {
         private Int32 FLedgerNumber;
@@ -64,14 +63,14 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
         {
             // TODO
         }
-        
+
         public void InitializeManualCode()
         {
             Ict.Petra.Shared.MFinance.Account.Data.ALedgerTable LedgerTable;
             todo
             TRemote.MCommon.DataReader.GetData("ALedger",
-                                               new TSearchCriteria[]{new TSearchCriteria("LedgerNumber", FLedgerNumber)},
-                                               out LedgerTable);
+                new TSearchCriteria[] { new TSearchCriteria("LedgerNumber", FLedgerNumber) },
+                out LedgerTable);
             FMainDS.Merge(LedgerTable);
         }
     }

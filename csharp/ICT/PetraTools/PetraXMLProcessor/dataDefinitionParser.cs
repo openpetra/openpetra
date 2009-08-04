@@ -211,6 +211,7 @@ namespace Ict.Tools.DBXML
         }
 
         static int tableCounter = 0;
+
         /// <summary>
         /// Parse the definition of one database table
         /// </summary>

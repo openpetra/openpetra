@@ -130,7 +130,7 @@ namespace Ict.Tools.DBXML
         /// the name of the table as it should be used in dotnet
         /// </summary>
         public string strDotNetName;
-        
+
         /// <summary>
         /// the name used for dumping the table
         /// </summary>

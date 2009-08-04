@@ -2787,7 +2787,7 @@ namespace Ict.Petra.Server.MPartner.Partner.UIConnectors
                     {
                         PartnerTypeDBExists =
                             PPartnerTypeAccess.Exists(FamilyChangePromotionTable[Counter].PartnerKey,
-                                    FamilyChangePromotionTable[Counter].TypeCode, ASubmitChangesTransaction);
+                                FamilyChangePromotionTable[Counter].TypeCode, ASubmitChangesTransaction);
 #if DEBUGMODE
                         if (TSrvSetting.DL >= 7)
                         {

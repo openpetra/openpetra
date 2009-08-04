@@ -1576,9 +1576,9 @@ namespace Ict.Common.Data
         {
             OdbcParameter[] ParametersArray = CreateOdbcParameterArrayFromPrimaryKey(ATableId, APrimaryKeyValues);
             return 1 == Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar("SELECT COUNT(*) FROM PUB_" +
-                TTypedDataTable.GetTableNameSQL(ATableId) +
-                GenerateWhereClauseFromPrimaryKey(ATableId),
-                ATransaction, ParametersArray));
+                    TTypedDataTable.GetTableNameSQL(ATableId) +
+                    GenerateWhereClauseFromPrimaryKey(ATableId),
+                    ATransaction, ParametersArray));
         }
 
         /// <summary>

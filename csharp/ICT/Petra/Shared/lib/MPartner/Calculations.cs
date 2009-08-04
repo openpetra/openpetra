@@ -77,7 +77,8 @@ namespace Ict.Petra.Shared.MPartner
         {
             DataTable ProcessDT;
 
-            if ((APartnerLocationsDS is PartnerEditTDS) || (APartnerLocationsDS.Tables.Contains(TTypedDataTable.GetTableName(PPartnerLocationTable.TableId)) == true))
+            if ((APartnerLocationsDS is PartnerEditTDS)
+                || (APartnerLocationsDS.Tables.Contains(TTypedDataTable.GetTableName(PPartnerLocationTable.TableId)) == true))
             {
                 ProcessDT = APartnerLocationsDS.Tables[TTypedDataTable.GetTableName(PPartnerLocationTable.TableId)];
             }
@@ -148,7 +149,8 @@ namespace Ict.Petra.Shared.MPartner
         {
             DataTable ProcessDT;
 
-            if ((APartnerLocationsDS is PartnerEditTDS) || (APartnerLocationsDS.Tables.Contains(TTypedDataTable.GetTableName(PPartnerLocationTable.TableId)) == true))
+            if ((APartnerLocationsDS is PartnerEditTDS)
+                || (APartnerLocationsDS.Tables.Contains(TTypedDataTable.GetTableName(PPartnerLocationTable.TableId)) == true))
             {
                 ProcessDT = APartnerLocationsDS.Tables[TTypedDataTable.GetTableName(PPartnerLocationTable.TableId)];
             }

@@ -978,10 +978,10 @@ namespace Ict.Petra.Server.MCommon
             FCriteriaField = ACriteriaField;
             FMatchField = ACriteriaMatchField;
 
-            FDBFieldName = "PUB_" + 
-                TTypedDataTable.GetTableNameSQL(ATableId) + 
-                "." + 
-                TTypedDataTable.GetColumnNameSQL(ATableId, AColumnNr);
+            FDBFieldName = "PUB_" +
+                           TTypedDataTable.GetTableNameSQL(ATableId) +
+                           "." +
+                           TTypedDataTable.GetColumnNameSQL(ATableId, AColumnNr);
 
             object ParameterValue = GetParameterValue();
 
@@ -993,7 +993,6 @@ namespace Ict.Petra.Server.MCommon
                 AIntParamArray.Add(miParam);
                 AWhereClause = AWhereClause + GetWhereString();
             }
-            
         }
 
         /// <summary>
@@ -1016,7 +1015,7 @@ namespace Ict.Petra.Server.MCommon
             ref String AWhereClause,
             ref ArrayList AIntParamArray,
             String ASearchDelimiter)
-            : this(ATableId, AColumnNr, ACriteriaDataRow, ACriteriaField, 
+            : this(ATableId, AColumnNr, ACriteriaDataRow, ACriteriaField,
                    ACriteriaMatchField, ref AWhereClause, ref AIntParamArray)
         {
             FSearchDelimiter = ASearchDelimiter;

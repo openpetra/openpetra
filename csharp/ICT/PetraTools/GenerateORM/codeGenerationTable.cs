@@ -80,7 +80,7 @@ namespace Ict.Tools.CodeGeneration.DataStore
                 tempTemplate.SetCodeletComment("COLUMN_DESCRIPTION", col.strDescription);
                 tempTemplate.SetCodelet("COLUMNNAME", TTable.NiceFieldName(col));
                 snippet.InsertSnippet("DATACOLUMNS", tempTemplate);
-                
+
                 tempTemplate = Template.GetSnippet("COLUMNIDS");
                 tempTemplate.SetCodelet("COLUMNNAME", TTable.NiceFieldName(col));
                 tempTemplate.SetCodelet("COLUMNORDERNUMBER", colOrder.ToString());

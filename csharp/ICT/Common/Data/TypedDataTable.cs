@@ -164,7 +164,7 @@ namespace Ict.Common.Data
 
             /// Label (with translation if it is used on a generated screen on the client side)
             public string label;
-            
+
             /// odbc type of the column
             public System.Data.Odbc.OdbcType odbctype;
 
@@ -239,7 +239,7 @@ namespace Ict.Common.Data
         {
             return TableInfo[ATableNumber].columns[AColumnNr].dbname;
         }
-        
+
         /// returns the translated label for the column
         public static string GetLabel(short ATableNumber, short AColumnNr)
         {

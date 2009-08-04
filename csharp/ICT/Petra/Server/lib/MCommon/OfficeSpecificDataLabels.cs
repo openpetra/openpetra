@@ -480,11 +480,13 @@ namespace Ict.Petra.Server.MCommon.UIConnectors
             catch (Exception Exp)
             {
                 DBAccess.GDBAccessObj.RollbackTransaction();
+
                 if (TSrvSetting.DL >= 8)
                 {
                     Console.WriteLine(
                         this.GetType().FullName + ".SubmitChanges: Exception occured, Transaction ROLLED BACK. Exception: " + Exp.ToString());
                 }
+
                 throw;
             }
 #else

@@ -154,7 +154,7 @@ namespace Ict.Tools.CodeGeneration.DataStore
         }
 
         private static short DataSetTableIdCounter = -1;
-        
+
         public static void CreateTypedDataSets(String AInputXmlfile,
             String AOutputPath,
             String ANameSpace,
@@ -172,7 +172,7 @@ namespace Ict.Tools.CodeGeneration.DataStore
             Template.AddSnippetsFromOtherFile(templateDir + Path.DirectorySeparatorChar +
                 "ORM" + Path.DirectorySeparatorChar +
                 "DataTable.cs");
-            
+
             DataSetTableIdCounter = Convert.ToInt16(opts.GetValue("StartTableId"));
 
             // load default header with license and copyright
@@ -269,6 +269,7 @@ namespace Ict.Tools.CodeGeneration.DataStore
                             if (OverloadTable)
                             {
                                 tabletype = datasetname + TTable.NiceTableName(table.strName);
+
                                 if (TXMLParser.HasAttribute(curChild, "name"))
                                 {
                                     tabletype = datasetname + TXMLParser.GetAttribute(curChild, "name");
@@ -285,7 +286,7 @@ namespace Ict.Tools.CodeGeneration.DataStore
                             }
 
                             tables.Add(table.tableorig, table);
-                            
+
                             AddTableToDataset(tabletype, variablename, snippetDataset);
                         }
 
