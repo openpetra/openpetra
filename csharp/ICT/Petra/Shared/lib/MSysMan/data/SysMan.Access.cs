@@ -12568,12 +12568,6 @@ namespace Ict.Petra.Shared.MSysMan.Data.Access
             return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar("SELECT COUNT(*) FROM PUB_s_report_options", ATransaction, false));
         }
 
-        /// check if a row exists by using the primary key
-        public static bool Exists(, TDBTransaction ATransaction)
-        {
-            return Exists(SReportOptionsTable.TableId, new System.Object[0]{}, ATransaction);
-        }
-
         /// this method is called by all overloads
         public static int CountUsingTemplate(SReportOptionsRow ATemplateRow, StringCollection ATemplateOperators, TDBTransaction ATransaction)
         {
@@ -13295,12 +13289,6 @@ namespace Ict.Petra.Shared.MSysMan.Data.Access
         public static int CountAll(TDBTransaction ATransaction)
         {
             return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar("SELECT COUNT(*) FROM PUB_s_selected_output_destination", ATransaction, false));
-        }
-
-        /// check if a row exists by using the primary key
-        public static bool Exists(, TDBTransaction ATransaction)
-        {
-            return Exists(SSelectedOutputDestinationTable.TableId, new System.Object[0]{}, ATransaction);
         }
 
         /// this method is called by all overloads
@@ -14291,12 +14279,6 @@ namespace Ict.Petra.Shared.MSysMan.Data.Access
         public static int CountAll(TDBTransaction ATransaction)
         {
             return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar("SELECT COUNT(*) FROM PUB_s_system_status_log", ATransaction, false));
-        }
-
-        /// check if a row exists by using the primary key
-        public static bool Exists(, TDBTransaction ATransaction)
-        {
-            return Exists(SSystemStatusLogTable.TableId, new System.Object[0]{}, ATransaction);
         }
 
         /// this method is called by all overloads

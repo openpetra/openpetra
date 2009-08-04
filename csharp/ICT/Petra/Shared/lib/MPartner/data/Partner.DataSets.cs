@@ -1048,7 +1048,7 @@ namespace Ict.Petra.Shared.MPartner.Partner.Data
         public DataColumn ColumnIcon;
 
         /// TableId for Ict.Common.Data generic functions
-        public static short TableId = 42;
+        public static short TableId = 5100;
 
         private static bool FInitInfoValues = InitInfoValues();
         private static bool InitInfoValues()
@@ -2567,7 +2567,7 @@ namespace Ict.Petra.Shared.MPartner.Partner.Data
         public DataColumn ColumnUnitName;
 
         /// TableId for Ict.Common.Data generic functions
-        public static short TableId = 51;
+        public static short TableId = 5101;
 
         private static bool FInitInfoValues = InitInfoValues();
         private static bool InitInfoValues()
@@ -4172,7 +4172,7 @@ namespace Ict.Petra.Shared.MPartner.Partner.Data
         public DataColumn ColumnUnitName;
 
         /// TableId for Ict.Common.Data generic functions
-        public static short TableId = 48;
+        public static short TableId = 5102;
 
         private static bool FInitInfoValues = InitInfoValues();
         private static bool InitInfoValues()
@@ -5189,7 +5189,7 @@ namespace Ict.Petra.Shared.MPartner.Partner.Data
         public DataColumn ColumnHasEXWORKERPartnerType;
 
         /// TableId for Ict.Common.Data generic functions
-        public static short TableId = -1;
+        public static short TableId = 5103;
 
         private static bool FInitInfoValues = InitInfoValues();
         private static bool InitInfoValues()
@@ -6399,7 +6399,7 @@ namespace Ict.Petra.Shared.MPartner.Partner.Data
         public DataColumn ColumnOtherTypeCodes;
 
         /// TableId for Ict.Common.Data generic functions
-        public static short TableId = -1;
+        public static short TableId = 5104;
 
         private static bool FInitInfoValues = InitInfoValues();
         private static bool InitInfoValues()
@@ -6947,7 +6947,7 @@ namespace Ict.Petra.Shared.MPartner.Partner.Data
         public DataColumn ColumnPartnerKey;
 
         /// TableId for Ict.Common.Data generic functions
-        public static short TableId = -1;
+        public static short TableId = 5105;
 
         private static bool FInitInfoValues = InitInfoValues();
         private static bool InitInfoValues()
@@ -7122,7 +7122,7 @@ namespace Ict.Petra.Shared.MPartner.Partner.Data
         public DataColumn ColumnRemoveTypeCode;
 
         /// TableId for Ict.Common.Data generic functions
-        public static short TableId = -1;
+        public static short TableId = 5106;
 
         private static bool FInitInfoValues = InitInfoValues();
         private static bool InitInfoValues()
@@ -7630,7 +7630,7 @@ namespace Ict.Petra.Shared.MPartner.Partner.Data
         public DataColumn ColumnAnswerProcessedServerSide;
 
         /// TableId for Ict.Common.Data generic functions
-        public static short TableId = 40;
+        public static short TableId = 5107;
 
         private static bool FInitInfoValues = InitInfoValues();
         private static bool InitInfoValues()
@@ -9348,7 +9348,7 @@ namespace Ict.Petra.Shared.MPartner.Partner.Data
         public DataColumn ColumnLocationKeyOfEditedRecord;
 
         /// TableId for Ict.Common.Data generic functions
-        public static short TableId = -1;
+        public static short TableId = 5108;
 
         private static bool FInitInfoValues = InitInfoValues();
         private static bool InitInfoValues()
@@ -10507,7 +10507,7 @@ namespace Ict.Petra.Shared.MPartner.Partner.Data
         public DataColumn ColumnAnswerProcessedServerSide;
 
         /// TableId for Ict.Common.Data generic functions
-        public static short TableId = -1;
+        public static short TableId = 5109;
 
         private static bool FInitInfoValues = InitInfoValues();
         private static bool InitInfoValues()
@@ -11401,7 +11401,7 @@ namespace Ict.Petra.Shared.MPartner.Partner.Data
         public DataColumn ColumnPrivatePartnerOwner;
 
         /// TableId for Ict.Common.Data generic functions
-        public static short TableId = -1;
+        public static short TableId = 5110;
 
         private static bool FInitInfoValues = InitInfoValues();
         private static bool InitInfoValues()
@@ -11864,7 +11864,7 @@ namespace Ict.Petra.Shared.MPartner.Partner.Data
         public DataColumn ColumnNotes;
 
         /// TableId for Ict.Common.Data generic functions
-        public static short TableId = -1;
+        public static short TableId = 5111;
 
         private static bool FInitInfoValues = InitInfoValues();
         private static bool InitInfoValues()
@@ -12630,7 +12630,7 @@ namespace Ict.Petra.Shared.MPartner.Partner.Data
         public DataColumn ColumnParentUnitName;
 
         /// TableId for Ict.Common.Data generic functions
-        public static short TableId = -1;
+        public static short TableId = 5112;
 
         private static bool FInitInfoValues = InitInfoValues();
         private static bool InitInfoValues()
@@ -12858,7 +12858,7 @@ namespace Ict.Petra.Shared.MPartner.Partner.Data
         public DataColumn ColumnFamilyId;
 
         /// TableId for Ict.Common.Data generic functions
-        public static short TableId = -1;
+        public static short TableId = 5113;
 
         private static bool FInitInfoValues = InitInfoValues();
         private static bool InitInfoValues()

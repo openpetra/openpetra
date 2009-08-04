@@ -153,6 +153,8 @@ namespace Ict.Tools.CodeGeneration.DataStore
             snippetDataset.InsertSnippet("INITVARSTABLE", tempSnippet);
         }
 
+        private static short DataSetTableIdCounter = -1;
+        
         public static void CreateTypedDataSets(String AInputXmlfile,
             String AOutputPath,
             String ANameSpace,
@@ -170,6 +172,8 @@ namespace Ict.Tools.CodeGeneration.DataStore
             Template.AddSnippetsFromOtherFile(templateDir + Path.DirectorySeparatorChar +
                 "ORM" + Path.DirectorySeparatorChar +
                 "DataTable.cs");
+            
+            DataSetTableIdCounter = Convert.ToInt16(opts.GetValue("StartTableId"));
 
             // load default header with license and copyright
             StreamReader sr = new StreamReader(templateDir + Path.DirectorySeparatorChar + "EmptyFileComment.txt");
@@ -269,6 +273,8 @@ namespace Ict.Tools.CodeGeneration.DataStore
                                 tabletype = datasetname + TTable.NiceTableName(table.strName);
 
                                 table.strName = tabletype;
+                                // set tableid
+                                table.order = DataSetTableIdCounter++;
 
                                 // TODO: can we derive from the base table, and just overload a few functions?
                                 codeGenerationTable.InsertTableDefinition(snippetDataset, table, "TABLELOOP");
@@ -306,6 +312,8 @@ namespace Ict.Tools.CodeGeneration.DataStore
                                 variablename,
                                 null);
 
+                            // set TableId
+                            customTable.order = DataSetTableIdCounter++;
                             customTable.strDescription = TXMLParser.GetAttribute(curChild, "comment");
                             customTable.strName = tabletype;
 

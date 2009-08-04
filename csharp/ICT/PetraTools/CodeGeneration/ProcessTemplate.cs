@@ -248,7 +248,7 @@ namespace Ict.Tools.CodeGeneration
                 s = s.Replace("{#ENDIFN " + name + "}" + Environment.NewLine, "");
                 s = s.Replace("{#ENDIFN " + name + "}", "");
 
-                posPlaceholder = s.IndexOf("{#IFNDEF " + name + "}");
+                posPlaceholder = s.IndexOf("{#IFNDEF ");
             }
 
             return s;

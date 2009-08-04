@@ -211,13 +211,15 @@ public class {#TABLENAME}Access : TTypedDataAccess
     {
         return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar("SELECT COUNT(*) FROM PUB_{#SQLTABLENAME}", ATransaction, false));
     }
+{#IFDEF FORMALPARAMETERSPRIMARYKEY}
 
     /// check if a row exists by using the primary key
     public static bool Exists({#FORMALPARAMETERSPRIMARYKEY}, TDBTransaction ATransaction)
     {
         return Exists({#TABLENAME}Table.TableId, new System.Object[{#PRIMARYKEYNUMBERCOLUMNS}]{{#ACTUALPARAMETERSPRIMARYKEY}}, ATransaction);
     }
-    
+{#ENDIF FORMALPARAMETERSPRIMARYKEY}
+
     /// this method is called by all overloads
     public static int CountUsingTemplate({#TABLENAME}Row ATemplateRow, StringCollection ATemplateOperators, TDBTransaction ATransaction)
     {

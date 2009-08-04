@@ -356,7 +356,7 @@ namespace Ict.Petra.Shared.MCommon.Data
         public DataColumn ColumnTableSize;
 
         /// TableId for Ict.Common.Data generic functions
-        public static short TableId = -1;
+        public static short TableId = 5000;
 
         private static bool FInitInfoValues = InitInfoValues();
         private static bool InitInfoValues()

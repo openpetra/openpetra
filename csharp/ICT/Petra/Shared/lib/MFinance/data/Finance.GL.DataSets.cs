@@ -271,7 +271,7 @@ namespace Ict.Petra.Shared.MFinance.GL.Data
         public DataColumn ColumnAnalysisAttributes;
 
         /// TableId for Ict.Common.Data generic functions
-        public static short TableId = 169;
+        public static short TableId = 5500;
 
         private static bool FInitInfoValues = InitInfoValues();
         private static bool InitInfoValues()
