@@ -33,7 +33,7 @@ public class {#TABLENAME}Access : TTypedDataAccess
     /// this method is called by all overloads
     public static void LoadAll(DataSet ADataSet, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
     {
-        ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, ((GenerateSelectClause(AFieldList, {#TABLENAME}Table.TableId) + " FROM PUB_{#SQLTABLENAME}") +
+        DBAccess.GDBAccessObj.Select(ADataSet, ((GenerateSelectClause(AFieldList, {#TABLENAME}Table.TableId) + " FROM PUB_{#SQLTABLENAME}") +
                         GenerateOrderByClause(AOrderBy)), TTypedDataTable.GetTableName({#TABLENAME}Table.TableId), ATransaction, AStartRecord, AMaxRecords);
     }
 
@@ -52,11 +52,8 @@ public class {#TABLENAME}Access : TTypedDataAccess
     /// auto generated
     public static void LoadAll(out {#TABLENAME}Table AData, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
     {
-        DataSet FillDataSet = new DataSet();
         AData = new {#TABLENAME}Table();
-        FillDataSet.Tables.Add(AData);
-        LoadAll(FillDataSet, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
-        FillDataSet.Tables.Remove(AData);
+        DBAccess.GDBAccessObj.SelectDT(AData, GenerateSelectClause(AFieldList, {#TABLENAME}Table.TableId) + " FROM PUB_{#SQLTABLENAME}" + GenerateOrderByClause(AOrderBy), ATransaction, null, AStartRecord, AMaxRecords);
     }
     
     /// auto generated
@@ -75,8 +72,7 @@ public class {#TABLENAME}Access : TTypedDataAccess
     /// this method is called by all overloads
     public static void LoadByPrimaryKey(DataSet ADataSet, {#FORMALPARAMETERSPRIMARYKEY}, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
     {
-        ADataSet = LoadByPrimaryKey({#TABLENAME}Table.TableId, 
-            ADataSet, new System.Object[{#PRIMARYKEYNUMBERCOLUMNS}]{{#ACTUALPARAMETERSPRIMARYKEY}}, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+        LoadByPrimaryKey({#TABLENAME}Table.TableId, ADataSet, new System.Object[{#PRIMARYKEYNUMBERCOLUMNS}]{{#ACTUALPARAMETERSPRIMARYKEY}}, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
     }
 
     /// auto generated
@@ -94,11 +90,8 @@ public class {#TABLENAME}Access : TTypedDataAccess
     /// auto generated
     public static void LoadByPrimaryKey(out {#TABLENAME}Table AData, {#FORMALPARAMETERSPRIMARYKEY}, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
     {
-        DataSet FillDataSet = new DataSet();
         AData = new {#TABLENAME}Table();
-        FillDataSet.Tables.Add(AData);
-        LoadByPrimaryKey(FillDataSet, {#ACTUALPARAMETERSPRIMARYKEY}, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
-        FillDataSet.Tables.Remove(AData);
+        LoadByPrimaryKey({#TABLENAME}Table.TableId, AData, new System.Object[{#PRIMARYKEYNUMBERCOLUMNS}]{{#ACTUALPARAMETERSPRIMARYKEY}}, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
     }
     
     /// auto generated
@@ -117,10 +110,7 @@ public class {#TABLENAME}Access : TTypedDataAccess
     /// this method is called by all overloads
     public static void LoadUsingTemplate(DataSet ADataSet, {#TABLENAME}Row ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
     {
-        ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClause(AFieldList, {#TABLENAME}Table.TableId) + " FROM PUB_{#SQLTABLENAME}") +
-                        GenerateWhereClause(TTypedDataTable.GetColumnStringList({#TABLENAME}Table.TableId), ATemplateRow, ATemplateOperators)) +
-                        GenerateOrderByClause(AOrderBy)), TTypedDataTable.GetTableName({#TABLENAME}Table.TableId), ATransaction, 
-                        GetParametersForWhereClause({#TABLENAME}Table.TableId, ATemplateRow), AStartRecord, AMaxRecords);
+        LoadUsingTemplate({#TABLENAME}Table.TableId, ADataSet, ATemplateRow, ATemplateOperators, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
     }
     
     /// auto generated
@@ -138,11 +128,8 @@ public class {#TABLENAME}Access : TTypedDataAccess
     /// auto generated
     public static void LoadUsingTemplate(out {#TABLENAME}Table AData, {#TABLENAME}Row ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
     {
-        DataSet FillDataSet = new DataSet();
         AData = new {#TABLENAME}Table();
-        FillDataSet.Tables.Add(AData);
-        LoadUsingTemplate(FillDataSet, ATemplateRow, ATemplateOperators, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
-        FillDataSet.Tables.Remove(AData);
+        LoadUsingTemplate({#TABLENAME}Table.TableId, AData, ATemplateRow, ATemplateOperators, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
     }
     
     /// auto generated
@@ -166,10 +153,7 @@ public class {#TABLENAME}Access : TTypedDataAccess
     /// this method is called by all overloads
     public static void LoadUsingTemplate(DataSet ADataSet, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
     {
-        ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClause(AFieldList, {#TABLENAME}Table.TableId) + " FROM PUB_{#SQLTABLENAME}") +
-                        GenerateWhereClause(TTypedDataTable.GetColumnStringList({#TABLENAME}Table.TableId), ASearchCriteria)) +
-                        GenerateOrderByClause(AOrderBy)), TTypedDataTable.GetTableName({#TABLENAME}Table.TableId), ATransaction, 
-                        GetParametersForWhereClause({#TABLENAME}Table.TableId, ASearchCriteria), AStartRecord, AMaxRecords);
+        LoadUsingTemplate({#TABLENAME}Table.TableId, ADataSet, ASearchCriteria, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
     }
     
     /// auto generated
@@ -187,11 +171,8 @@ public class {#TABLENAME}Access : TTypedDataAccess
     /// auto generated
     public static void LoadUsingTemplate(out {#TABLENAME}Table AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
     {
-        DataSet FillDataSet = new DataSet();
         AData = new {#TABLENAME}Table();
-        FillDataSet.Tables.Add(AData);
-        LoadUsingTemplate(FillDataSet, ASearchCriteria, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
-        FillDataSet.Tables.Remove(AData);
+        LoadUsingTemplate({#TABLENAME}Table.TableId, AData, ASearchCriteria, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
     }
     
     /// auto generated
@@ -260,54 +241,7 @@ public class {#TABLENAME}Access : TTypedDataAccess
     /// auto generated
     public static bool SubmitChanges({#TABLENAME}Table ATable, TDBTransaction ATransaction, out TVerificationResultCollection AVerificationResult)
     {
-        bool ResultValue = true;
-        bool ExceptionReported = false;
-        DataRow TheRow = null;
-        AVerificationResult = new TVerificationResultCollection();
-        for (RowCount = 0; (RowCount != ATable.Rows.Count); RowCount = (RowCount + 1))
-        {
-            TheRow = ATable[RowCount];
-            try
-            {
-                if ((TheRow.RowState == DataRowState.Added))
-                {
-{#IFDEF SEQUENCENAME}
-                    (({#TABLENAME}Row)(TheRow)).{#SEQUENCEFIELD} = ({#SEQUENCECAST}(DBAccess.GDBAccessObj.GetNextSequenceValue("{#SEQUENCENAME}", ATransaction)));
-{#ENDIF SEQUENCENAME}
-                    TTypedDataAccess.InsertRow({#TABLENAME}Table.TableId, ref TheRow, ATransaction, UserInfo.GUserInfo.UserID);
-                }
-                if ((TheRow.RowState == DataRowState.Modified))
-                {
-{#IFDEF FORMALPARAMETERSPRIMARYKEY}
-                    TTypedDataAccess.UpdateRow({#TABLENAME}Table.TableId, ref TheRow, ATransaction, UserInfo.GUserInfo.UserID);
-{#ENDIF FORMALPARAMETERSPRIMARYKEY}
-{#IFNDEF FORMALPARAMETERSPRIMARYKEY}
-                    AVerificationResult.Add(new TVerificationResult("[DB] NO PRIMARY KEY", "Cannot update record because table {#TABLENAME} has no primary key." +
-                                "", "Primary Key missing", "{#SQLTABLENAME}", TResultSeverity.Resv_Critical));
-{#ENDIFN FORMALPARAMETERSPRIMARYKEY}
-                }
-                if ((TheRow.RowState == DataRowState.Deleted))
-                {
-{#IFDEF FORMALPARAMETERSPRIMARYKEY}
-                    TTypedDataAccess.DeleteRow({#TABLENAME}Table.TableId, TheRow, ATransaction);
-{#ENDIF FORMALPARAMETERSPRIMARYKEY}
-{#IFNDEF FORMALPARAMETERSPRIMARYKEY}
-                    AVerificationResult.Add(new TVerificationResult("[DB] NO PRIMARY KEY", "Cannot delete record because table {#TABLENAME} has no primary key." +
-                                "", "Primary Key missing", "{#SQLTABLENAME}", TResultSeverity.Resv_Critical));
-{#ENDIFN FORMALPARAMETERSPRIMARYKEY}
-                }
-            }
-            catch (OdbcException ex)
-            {
-                ResultValue = false;
-                ExceptionReported = false;
-                if ((ExceptionReported == false))
-                {
-                    AVerificationResult.Add(new TVerificationResult("[ODBC]", ex.Errors[0].Message, "ODBC error for table {#TABLENAME}", ex.Errors[0].NativeError.ToString(), TResultSeverity.Resv_Critical));
-                }
-            }
-        }
-        return ResultValue;
+        return SubmitChanges({#TABLENAME}Table.TableId, ATable, ATransaction, out AVerificationResult, UserInfo.GUserInfo.UserID{#SEQUENCENAMEANDFIELD});
     }
 }
 
@@ -316,10 +250,8 @@ public class {#TABLENAME}Access : TTypedDataAccess
 /// auto generated
 public static void Load{#VIAPROCEDURENAME}(DataSet ADataSet, {#FORMALPARAMETERSOTHERPRIMARYKEY}, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
 {
-    {#ODBCPARAMETERSFOREIGNKEY}
-    ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, ((GenerateSelectClause(AFieldList, {#TABLENAME}Table.TableId) + 
-                    " FROM PUB_{#SQLTABLENAME} WHERE {#WHERECLAUSEFOREIGNKEY}") +
-                    GenerateOrderByClause(AOrderBy)), TTypedDataTable.GetTableName({#TABLENAME}Table.TableId), ATransaction, ParametersArray, AStartRecord, AMaxRecords);
+    LoadViaForeignKey({#TABLENAME}Table.TableId, {#OTHERTABLENAME}Table.TableId, ADataSet, new string[{#NUMBERFIELDS}]{{#THISTABLEFIELDS}},
+        new System.Object[{#NUMBERFIELDS}]{{#ACTUALPARAMETERSOTHERPRIMARYKEY}}, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
 }
 
 /// auto generated
@@ -337,11 +269,9 @@ public static void Load{#VIAPROCEDURENAME}(DataSet AData, {#FORMALPARAMETERSOTHE
 /// auto generated
 public static void Load{#VIAPROCEDURENAME}(out {#TABLENAME}Table AData, {#FORMALPARAMETERSOTHERPRIMARYKEY}, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
 {
-    DataSet FillDataSet = new DataSet();
     AData = new {#TABLENAME}Table();
-    FillDataSet.Tables.Add(AData);
-    Load{#VIAPROCEDURENAME}(FillDataSet, {#ACTUALPARAMETERSOTHERPRIMARYKEY}, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
-    FillDataSet.Tables.Remove(AData);
+    LoadViaForeignKey({#TABLENAME}Table.TableId, {#OTHERTABLENAME}Table.TableId, AData, new string[{#NUMBERFIELDS}]{{#THISTABLEFIELDS}},
+        new System.Object[{#NUMBERFIELDS}]{{#ACTUALPARAMETERSOTHERPRIMARYKEY}}, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
 }
 
 /// auto generated
@@ -359,12 +289,8 @@ public static void Load{#VIAPROCEDURENAME}(out {#TABLENAME}Table AData, {#FORMAL
 /// auto generated
 public static void Load{#VIAPROCEDURENAME}Template(DataSet ADataSet, {#OTHERTABLENAME}Row ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
 {
-    ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClauseLong("PUB_{#SQLTABLENAME}", AFieldList, {#TABLENAME}Table.TableId) + 
-                    " FROM PUB_{#SQLTABLENAME}, PUB_{#SQLOTHERTABLENAME} WHERE " +
-                    "{#WHERECLAUSEVIAOTHERTABLE}") +
-                    GenerateWhereClauseLong("PUB_{#SQLOTHERTABLENAME}", {#OTHERTABLENAME}Table.TableId, ATemplateRow, ATemplateOperators)) +
-                    GenerateOrderByClause(AOrderBy)), TTypedDataTable.GetTableName({#TABLENAME}Table.TableId), ATransaction, 
-                    GetParametersForWhereClause({#OTHERTABLENAME}Table.TableId, ATemplateRow), AStartRecord, AMaxRecords);
+    LoadViaForeignKey({#TABLENAME}Table.TableId, {#OTHERTABLENAME}Table.TableId, ADataSet, new string[{#NUMBERFIELDS}]{{#THISTABLEFIELDS}},
+        ATemplateRow, ATemplateOperators, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
 }
 
 /// auto generated
@@ -382,11 +308,9 @@ public static void Load{#VIAPROCEDURENAME}Template(DataSet AData, {#OTHERTABLENA
 /// auto generated
 public static void Load{#VIAPROCEDURENAME}Template(out {#TABLENAME}Table AData, {#OTHERTABLENAME}Row ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
 {
-    DataSet FillDataSet = new DataSet();
     AData = new {#TABLENAME}Table();
-    FillDataSet.Tables.Add(AData);
-    Load{#VIAPROCEDURENAME}Template(FillDataSet, ATemplateRow, ATemplateOperators, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
-    FillDataSet.Tables.Remove(AData);
+    LoadViaForeignKey({#TABLENAME}Table.TableId, {#OTHERTABLENAME}Table.TableId, AData, new string[{#NUMBERFIELDS}]{{#THISTABLEFIELDS}},
+        ATemplateRow, ATemplateOperators, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
 }
 
 /// auto generated
@@ -410,12 +334,8 @@ public static void Load{#VIAPROCEDURENAME}Template(out {#TABLENAME}Table AData, 
 /// auto generated
 public static void Load{#VIAPROCEDURENAME}Template(DataSet ADataSet, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
 {
-    ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClauseLong("PUB_{#SQLTABLENAME}", AFieldList, {#TABLENAME}Table.TableId) + 
-                    " FROM PUB_{#SQLTABLENAME}, PUB_{#SQLOTHERTABLENAME} WHERE " +
-                    "{#WHERECLAUSEVIAOTHERTABLE}") +
-                    GenerateWhereClauseLong("PUB_{#SQLOTHERTABLENAME}", ASearchCriteria)) +
-                    GenerateOrderByClause(AOrderBy)), TTypedDataTable.GetTableName({#TABLENAME}Table.TableId), ATransaction, 
-                    GetParametersForWhereClause({#TABLENAME}Table.TableId, ASearchCriteria), AStartRecord, AMaxRecords);
+    LoadViaForeignKey({#TABLENAME}Table.TableId, {#OTHERTABLENAME}Table.TableId, ADataSet, new string[{#NUMBERFIELDS}]{{#THISTABLEFIELDS}},
+        ASearchCriteria, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
 }
 
 /// auto generated
@@ -433,11 +353,9 @@ public static void Load{#VIAPROCEDURENAME}Template(DataSet AData, TSearchCriteri
 /// auto generated
 public static void Load{#VIAPROCEDURENAME}Template(out {#TABLENAME}Table AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
 {
-    DataSet FillDataSet = new DataSet();
     AData = new {#TABLENAME}Table();
-    FillDataSet.Tables.Add(AData);
-    Load{#VIAPROCEDURENAME}Template(FillDataSet, ASearchCriteria, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
-    FillDataSet.Tables.Remove(AData);
+    LoadViaForeignKey({#TABLENAME}Table.TableId, {#OTHERTABLENAME}Table.TableId, AData, new string[{#NUMBERFIELDS}]{{#THISTABLEFIELDS}},
+        ASearchCriteria, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
 }
 
 /// auto generated
@@ -455,27 +373,22 @@ public static void Load{#VIAPROCEDURENAME}Template(out {#TABLENAME}Table AData, 
 /// auto generated
 public static int Count{#VIAPROCEDURENAME}({#FORMALPARAMETERSOTHERPRIMARYKEY}, TDBTransaction ATransaction)
 {
-    {#ODBCPARAMETERSFOREIGNKEY}
-    return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar("SELECT COUNT(*) FROM PUB_{#SQLTABLENAME} WHERE {#WHERECLAUSEFOREIGNKEY}", ATransaction, false, ParametersArray));
+    return CountViaForeignKey({#TABLENAME}Table.TableId, {#OTHERTABLENAME}Table.TableId, new string[{#NUMBERFIELDS}]{{#THISTABLEFIELDS}}, 
+        new System.Object[{#NUMBERFIELDS}]{{#ACTUALPARAMETERSOTHERPRIMARYKEY}}, ATransaction);
 }
 
 /// auto generated
 public static int Count{#VIAPROCEDURENAME}Template({#OTHERTABLENAME}Row ATemplateRow, StringCollection ATemplateOperators, TDBTransaction ATransaction)
 {
-    return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_{#SQLTABLENAME}, PUB_{#SQLOTHERTABLENAME} WHERE " +
-        "{#WHERECLAUSEVIAOTHERTABLE}" + GenerateWhereClauseLong("PUB_{#SQLOTHERTABLENAME}", 
-        {#OTHERTABLENAME}Table.TableId, ATemplateRow, ATemplateOperators)), 
-        ATransaction, false, 
-        GetParametersForWhereClauseWithPrimaryKey({#OTHERTABLENAME}Table.TableId, ATemplateRow)));
+    return CountViaForeignKey({#TABLENAME}Table.TableId, {#OTHERTABLENAME}Table.TableId, new string[{#NUMBERFIELDS}]{{#THISTABLEFIELDS}}, 
+        ATemplateRow, ATemplateOperators, ATransaction);
 }
 
 /// auto generated
 public static int Count{#VIAPROCEDURENAME}Template(TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
 {
-    return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_{#SQLTABLENAME}, PUB_{#SQLOTHERTABLENAME} WHERE " +
-        "{#WHERECLAUSEVIAOTHERTABLE}" + 
-        GenerateWhereClauseLong("PUB_{#SQLOTHERTABLENAME}", ASearchCriteria)), ATransaction, false, 
-        GetParametersForWhereClause({#OTHERTABLENAME}Table.TableId, ASearchCriteria)));
+    return CountViaForeignKey({#TABLENAME}Table.TableId, {#OTHERTABLENAME}Table.TableId, new string[{#NUMBERFIELDS}]{{#THISTABLEFIELDS}}, 
+        ASearchCriteria, ATransaction);
 }
 
 {##VIALINKTABLE}
@@ -484,7 +397,7 @@ public static int Count{#VIAPROCEDURENAME}Template(TSearchCriteria[] ASearchCrit
 public static void Load{#VIAPROCEDURENAME}(DataSet ADataSet, {#FORMALPARAMETERSOTHERPRIMARYKEY}, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
 {
     {#ODBCPARAMETERSFOREIGNKEY}
-    ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, ((GenerateSelectClauseLong("PUB_{#SQLTABLENAME}", AFieldList, {#TABLENAME}Table.TableId) + 
+    DBAccess.GDBAccessObj.Select(ADataSet, ((GenerateSelectClauseLong("PUB_{#SQLTABLENAME}", AFieldList, {#TABLENAME}Table.TableId) + 
                     " FROM PUB_{#SQLTABLENAME}, PUB_{#SQLLINKTABLENAME} WHERE " + 
                     "{#WHERECLAUSEVIALINKTABLE}") +
                     GenerateOrderByClause(AOrderBy)), TTypedDataTable.GetTableName({#TABLENAME}Table.TableId), ATransaction, ParametersArray, AStartRecord, AMaxRecords);
@@ -527,7 +440,7 @@ public static void Load{#VIAPROCEDURENAME}(out {#TABLENAME}Table AData, {#FORMAL
 /// auto generated
 public static void Load{#VIAPROCEDURENAME}Template(DataSet ADataSet, {#OTHERTABLENAME}Row ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
 {
-    ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClauseLong("PUB_{#SQLTABLENAME}", AFieldList, {#TABLENAME}Table.TableId) + 
+    DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClauseLong("PUB_{#SQLTABLENAME}", AFieldList, {#TABLENAME}Table.TableId) + 
                     " FROM PUB_{#SQLTABLENAME}, PUB_{#SQLLINKTABLENAME}, PUB_{#SQLOTHERTABLENAME} WHERE " +
                     "{#WHERECLAUSEALLVIATABLES}") +
                     GenerateWhereClauseLong("PUB_{#SQLOTHERTABLENAME}", {#OTHERTABLENAME}Table.TableId, ATemplateRow, ATemplateOperators)) +
@@ -578,7 +491,7 @@ public static void Load{#VIAPROCEDURENAME}Template(out {#TABLENAME}Table AData, 
 /// auto generated
 public static void Load{#VIAPROCEDURENAME}Template(DataSet ADataSet, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
 {
-    ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClauseLong("PUB_{#SQLTABLENAME}", AFieldList, {#TABLENAME}Table.TableId) + 
+    DBAccess.GDBAccessObj.Select(ADataSet, (((GenerateSelectClauseLong("PUB_{#SQLTABLENAME}", AFieldList, {#TABLENAME}Table.TableId) + 
                     " FROM PUB_{#SQLTABLENAME}, PUB_{#SQLLINKTABLENAME}, PUB_{#SQLOTHERTABLENAME} WHERE " +
                     "{#WHERECLAUSEALLVIATABLES}") +
                     GenerateWhereClauseLong("PUB_{#SQLOTHERTABLENAME}", ASearchCriteria)) +

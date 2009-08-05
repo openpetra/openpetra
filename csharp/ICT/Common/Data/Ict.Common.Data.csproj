@@ -65,5 +65,9 @@
       <Project>{ED73B0A3-AC08-4FB0-A18C-2816C9AC5588}</Project>
       <Name>Ict.Common</Name>
     </ProjectReference>
+    <ProjectReference Include="..\Verification\Ict.Common.Verification.csproj">
+      <Project>{6DC5901F-3F0A-4B87-A258-80FD0794A4DB}</Project>
+      <Name>Ict.Common.Verification</Name>
+    </ProjectReference>
   </ItemGroup>
 </Project>

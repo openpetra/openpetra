@@ -161,15 +161,18 @@ namespace Ict.Tools.CodeGeneration.DataStore
             TConstraint AConstraint,
             out string whereClauseForeignKey,
             out string whereClauseViaOtherTable,
-            out string odbcParametersForeignKey)
+            out string odbcParametersForeignKey,
+            out int numberFields,
+            out string namesOfThisTableFields)
         {
             whereClauseForeignKey = "";
             whereClauseViaOtherTable = "";
+            numberFields = AConstraint.strThisFields.Count;
+            namesOfThisTableFields = "";
             odbcParametersForeignKey =
                 "OdbcParameter[] ParametersArray = new OdbcParameter[" +
                 AConstraint.strThisFields.Count.ToString() + "];" +
                 Environment.NewLine;
-
 
             int counterKeyField = 0;
 
@@ -179,7 +182,10 @@ namespace Ict.Tools.CodeGeneration.DataStore
                 {
                     whereClauseForeignKey += " AND ";
                     whereClauseViaOtherTable += " AND ";
+                    namesOfThisTableFields += ", ";
                 }
+
+                namesOfThisTableFields += '"' + AConstraint.strThisFields[counterKeyField] + '"';
 
                 string otherfield = AConstraint.strOtherFields[counterKeyField];
                 TTableField otherTypedField = AOtherTable.GetField(otherfield);
@@ -299,22 +305,23 @@ namespace Ict.Tools.CodeGeneration.DataStore
                 out actualParametersOtherPrimaryKey,
                 out notUsedInt);
 
-            string whereClauseForeignKey;
-            string whereClauseViaOtherTable;
-            string odbcParametersForeignKey;
+            int numberFields;
+            string namesOfThisTableFields;
+            string notUsed;
             PrepareCodeletsForeignKey(
                 AOtherTable,
                 AConstraint,
-                out whereClauseForeignKey,
-                out whereClauseViaOtherTable,
-                out odbcParametersForeignKey);
+                out notUsed,
+                out notUsed,
+                out notUsed,
+                out numberFields,
+                out namesOfThisTableFields);
 
             snippetViaTable.SetCodelet("VIAPROCEDURENAME", ProcedureName);
             snippetViaTable.SetCodelet("FORMALPARAMETERSOTHERPRIMARYKEY", formalParametersOtherPrimaryKey);
             snippetViaTable.SetCodelet("ACTUALPARAMETERSOTHERPRIMARYKEY", actualParametersOtherPrimaryKey);
-            snippetViaTable.SetCodelet("WHERECLAUSEFOREIGNKEY", whereClauseForeignKey);
-            snippetViaTable.SetCodelet("ODBCPARAMETERSFOREIGNKEY", odbcParametersForeignKey);
-            snippetViaTable.SetCodelet("WHERECLAUSEVIAOTHERTABLE", whereClauseViaOtherTable);
+            snippetViaTable.SetCodelet("NUMBERFIELDS", numberFields.ToString());
+            snippetViaTable.SetCodelet("THISTABLEFIELDS", namesOfThisTableFields);
 
             AddDirectReference(AConstraint);
 
@@ -567,7 +574,9 @@ namespace Ict.Tools.CodeGeneration.DataStore
                     OtherLinkConstraint,
                     out whereClauseForeignKey,
                     out whereClauseViaOtherTable,
-                    out odbcParametersForeignKey);
+                    out odbcParametersForeignKey,
+                    out notUsedInt,
+                    out notUsed);
 
                 string whereClauseViaLinkTable;
                 string whereClauseAllViaTables;
@@ -613,21 +622,15 @@ namespace Ict.Tools.CodeGeneration.DataStore
             ASnippet.SetCodelet("ACTUALPARAMETERSPRIMARYKEY", actualParametersPrimaryKey);
             ASnippet.SetCodelet("PRIMARYKEYNUMBERCOLUMNS", numberPrimaryKeyColumns.ToString());
 
+            ASnippet.SetCodelet("SEQUENCENAMEANDFIELD", "");
+
             foreach (TTableField tablefield in ACurrentTable.grpTableField.List)
             {
                 // is there a field filled by a sequence?
                 // yes: get the next value of that sequence and assign to row
                 if (tablefield.strSequence.Length > 0)
                 {
-                    ASnippet.SetCodelet("SEQUENCECAST", "");
-
-                    if (codeGenerationPetra.ToDelphiType(tablefield) != "Int64")
-                    {
-                        ASnippet.AddToCodelet("SEQUENCECAST", "(" + codeGenerationPetra.ToDelphiType(tablefield) + ")");
-                    }
-
-                    ASnippet.SetCodelet("SEQUENCEFIELD", TTable.NiceFieldName(tablefield));
-                    ASnippet.SetCodelet("SEQUENCENAME", tablefield.strSequence);
+                    ASnippet.SetCodelet("SEQUENCENAMEANDFIELD", ", \"" + tablefield.strSequence + "\", \"" + tablefield.strName + "\"");
 
                     // assume only one sequence per table
                     break;

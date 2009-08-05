@@ -29,6 +29,7 @@ using System.Data;
 using System.Data.Odbc;
 using Ict.Common;
 using Ict.Common.DB;
+using Ict.Common.Verification;
 
 namespace Ict.Common.Data
 {
@@ -594,17 +595,15 @@ namespace Ict.Common.Data
         }
 
         /// <summary>
-        /// this function generates a where clause for the primary key of the given table
+        /// this function generates a simple where clause with the given fieldnames
         /// </summary>
-        /// <param name="ATableId"></param>
+        /// <param name="AFieldNames"></param>
         /// <returns></returns>
-        public static String GenerateWhereClauseFromPrimaryKey(short ATableId)
+        private static String GenerateWhereClause(string[] AFieldNames)
         {
             String ReturnValue = "";
 
-            string[] primaryKeyColumns = TTypedDataTable.GetPrimaryKeyColumnStringList(ATableId);
-
-            foreach (string columnname in primaryKeyColumns)
+            foreach (string columnname in AFieldNames)
             {
                 if (ReturnValue.Length == 0)                     //first time around
                 {
@@ -619,6 +618,16 @@ namespace Ict.Common.Data
             }
 
             return ReturnValue;
+        }
+
+        /// <summary>
+        /// this function generates a where clause for the primary key of the given table
+        /// </summary>
+        /// <param name="ATableId"></param>
+        /// <returns></returns>
+        public static String GenerateWhereClauseFromPrimaryKey(short ATableId)
+        {
+            return GenerateWhereClause(TTypedDataTable.GetPrimaryKeyColumnStringList(ATableId));
         }
 
         /// <summary>
@@ -1534,7 +1543,7 @@ namespace Ict.Common.Data
         /// <param name="AOrderBy"></param>
         /// <param name="AStartRecord"></param>
         /// <param name="AMaxRecords"></param>
-        public static DataSet LoadByPrimaryKey(short ATableId,
+        public static void LoadByPrimaryKey(short ATableId,
             DataSet ADataSet,
             System.Object[] APrimaryKeyValues,
             StringCollection AFieldList,
@@ -1544,13 +1553,240 @@ namespace Ict.Common.Data
             int AMaxRecords)
         {
             OdbcParameter[] ParametersArray = CreateOdbcParameterArrayFromPrimaryKey(ATableId, APrimaryKeyValues);
-            return DBAccess.GDBAccessObj.Select(ADataSet,
+            DBAccess.GDBAccessObj.Select(ADataSet,
                 GenerateSelectClause(AFieldList, ATableId) +
                 " FROM PUB_" + TTypedDataTable.GetTableNameSQL(ATableId) +
                 GenerateWhereClauseFromPrimaryKey(ATableId) +
                 GenerateOrderByClause(AOrderBy),
                 TTypedDataTable.GetTableName(ATableId),
                 ATransaction, ParametersArray, AStartRecord, AMaxRecords);
+        }
+
+        /// <summary>
+        /// different version for data table
+        /// </summary>
+        public static void LoadByPrimaryKey(short ATableId,
+            TTypedDataTable ADataTable,
+            System.Object[] APrimaryKeyValues,
+            StringCollection AFieldList,
+            TDBTransaction ATransaction,
+            StringCollection AOrderBy,
+            int AStartRecord,
+            int AMaxRecords)
+        {
+            OdbcParameter[] ParametersArray = CreateOdbcParameterArrayFromPrimaryKey(ATableId, APrimaryKeyValues);
+            ADataTable = (TTypedDataTable)DBAccess.GDBAccessObj.SelectDT(ADataTable,
+                GenerateSelectClause(AFieldList, ATableId) +
+                " FROM PUB_" + TTypedDataTable.GetTableNameSQL(ATableId) +
+                GenerateWhereClauseFromPrimaryKey(ATableId) +
+                GenerateOrderByClause(AOrderBy),
+                ATransaction, ParametersArray, AStartRecord, AMaxRecords);
+        }
+
+        /// <summary>
+        /// load data for the current table via a foreign key, eg. load all extracts created by user x
+        /// </summary>
+        public static void LoadViaForeignKey(
+            short ATableId,
+            short AOtherTableId,
+            DataSet ADataSet,
+            string[] AThisFieldNames,
+            System.Object[] AForeignKeyValues,
+            StringCollection AFieldList,
+            TDBTransaction ATransaction,
+            StringCollection AOrderBy,
+            int AStartRecord,
+            int AMaxRecords)
+        {
+            OdbcParameter[] ParametersArray = CreateOdbcParameterArrayFromPrimaryKey(AOtherTableId, AForeignKeyValues);
+            DBAccess.GDBAccessObj.Select(ADataSet,
+                GenerateSelectClause(AFieldList, ATableId) +
+                " FROM PUB_" + TTypedDataTable.GetTableNameSQL(ATableId) +
+                GenerateWhereClause(AThisFieldNames) +
+                GenerateOrderByClause(AOrderBy),
+                TTypedDataTable.GetTableName(ATableId),
+                ATransaction, ParametersArray, AStartRecord, AMaxRecords);
+        }
+
+        /// <summary>
+        /// load data for the current table via a foreign key, eg. load all extracts created by user x
+        /// </summary>
+        public static void LoadViaForeignKey(
+            short ATableId,
+            short AOtherTableId,
+            TTypedDataTable ADataTable,
+            string[] AThisFieldNames,
+            System.Object[] AForeignKeyValues,
+            StringCollection AFieldList,
+            TDBTransaction ATransaction,
+            StringCollection AOrderBy,
+            int AStartRecord,
+            int AMaxRecords)
+        {
+            OdbcParameter[] ParametersArray = CreateOdbcParameterArrayFromPrimaryKey(AOtherTableId, AForeignKeyValues);
+            DBAccess.GDBAccessObj.SelectDT(ADataTable,
+                GenerateSelectClause(AFieldList, ATableId) +
+                " FROM PUB_" + TTypedDataTable.GetTableNameSQL(ATableId) +
+                GenerateWhereClause(AThisFieldNames) +
+                GenerateOrderByClause(AOrderBy),
+                ATransaction, ParametersArray, AStartRecord, AMaxRecords);
+        }
+
+        /// Load via other table, using template values
+        public static void LoadViaForeignKey(
+            short ATableId,
+            short AOtherTableId,
+            DataSet ADataSet,
+            string[] AThisFieldNames,
+            DataRow ATemplateRow,
+            StringCollection ATemplateOperators,
+            StringCollection AFieldList,
+            TDBTransaction ATransaction,
+            StringCollection AOrderBy,
+            int AStartRecord,
+            int AMaxRecords)
+        {
+            DBAccess.GDBAccessObj.Select(ADataSet,
+                GenerateSelectClause(AFieldList, ATableId) +
+                " FROM PUB_" + TTypedDataTable.GetTableNameSQL(ATableId) + ", PUB_" + TTypedDataTable.GetTableNameSQL(AOtherTableId) +
+                GenerateWhereClause(AThisFieldNames) +
+                GenerateWhereClauseLong("PUB_" + TTypedDataTable.GetTableNameSQL(AOtherTableId),
+                    AOtherTableId, ATemplateRow, ATemplateOperators) +
+                GenerateOrderByClause(AOrderBy),
+                TTypedDataTable.GetTableName(ATableId),
+                ATransaction,
+                GetParametersForWhereClause(AOtherTableId, ATemplateRow),
+                AStartRecord, AMaxRecords);
+        }
+
+        /// Load via other table, using template values
+        public static void LoadViaForeignKey(
+            short ATableId,
+            short AOtherTableId,
+            TTypedDataTable ADataTable,
+            string[] AThisFieldNames,
+            DataRow ATemplateRow,
+            StringCollection ATemplateOperators,
+            StringCollection AFieldList,
+            TDBTransaction ATransaction,
+            StringCollection AOrderBy,
+            int AStartRecord,
+            int AMaxRecords)
+        {
+            DBAccess.GDBAccessObj.SelectDT(ADataTable,
+                GenerateSelectClause(AFieldList, ATableId) +
+                " FROM PUB_" + TTypedDataTable.GetTableNameSQL(ATableId) + ", PUB_" + TTypedDataTable.GetTableNameSQL(AOtherTableId) +
+                GenerateWhereClause(AThisFieldNames) +
+                GenerateWhereClauseLong("PUB_" + TTypedDataTable.GetTableNameSQL(AOtherTableId),
+                    AOtherTableId, ATemplateRow, ATemplateOperators) +
+                GenerateOrderByClause(AOrderBy),
+                ATransaction,
+                GetParametersForWhereClause(AOtherTableId, ATemplateRow),
+                AStartRecord, AMaxRecords);
+        }
+
+        /// Load via other table, using template values
+        public static void LoadViaForeignKey(
+            short ATableId,
+            short AOtherTableId,
+            DataSet ADataSet,
+            string[] AThisFieldNames,
+            TSearchCriteria[] ASearchCriteria,
+            StringCollection AFieldList,
+            TDBTransaction ATransaction,
+            StringCollection AOrderBy,
+            int AStartRecord,
+            int AMaxRecords)
+        {
+            DBAccess.GDBAccessObj.Select(ADataSet,
+                GenerateSelectClause(AFieldList, ATableId) +
+                " FROM PUB_" + TTypedDataTable.GetTableNameSQL(ATableId) + ", PUB_" + TTypedDataTable.GetTableNameSQL(AOtherTableId) +
+                GenerateWhereClause(AThisFieldNames) +
+                GenerateWhereClauseLong("PUB_" + TTypedDataTable.GetTableNameSQL(AOtherTableId),
+                    ASearchCriteria) +
+                GenerateOrderByClause(AOrderBy),
+                TTypedDataTable.GetTableName(ATableId),
+                ATransaction,
+                GetParametersForWhereClause(AOtherTableId, ASearchCriteria),
+                AStartRecord, AMaxRecords);
+        }
+
+        /// Load via other table, using template values
+        public static void LoadViaForeignKey(
+            short ATableId,
+            short AOtherTableId,
+            TTypedDataTable ADataTable,
+            string[] AThisFieldNames,
+            TSearchCriteria[] ASearchCriteria,
+            StringCollection AFieldList,
+            TDBTransaction ATransaction,
+            StringCollection AOrderBy,
+            int AStartRecord,
+            int AMaxRecords)
+        {
+            DBAccess.GDBAccessObj.SelectDT(ADataTable,
+                GenerateSelectClause(AFieldList, ATableId) +
+                " FROM PUB_" + TTypedDataTable.GetTableNameSQL(ATableId) + ", PUB_" + TTypedDataTable.GetTableNameSQL(AOtherTableId) +
+                GenerateWhereClause(AThisFieldNames) +
+                GenerateWhereClauseLong("PUB_" + TTypedDataTable.GetTableNameSQL(AOtherTableId),
+                    ASearchCriteria) +
+                GenerateOrderByClause(AOrderBy),
+                ATransaction,
+                GetParametersForWhereClause(AOtherTableId, ASearchCriteria),
+                AStartRecord, AMaxRecords);
+        }
+
+        /// count the rows by the values of a foreign key
+        public static int CountViaForeignKey(
+            short ATableId, short AOtherTableId,
+            string[] AThisFieldNames,
+            System.Object[] AForeignKeyValues,
+            TDBTransaction ATransaction)
+        {
+            OdbcParameter[] ParametersArray = CreateOdbcParameterArrayFromPrimaryKey(AOtherTableId, AForeignKeyValues);
+            return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(
+                    "SELECT COUNT(*) FROM PUB_" + TTypedDataTable.GetTableNameSQL(ATableId) +
+                    GenerateWhereClause(AThisFieldNames),
+                    ATransaction,
+                    false,
+                    ParametersArray));
+        }
+
+        /// count the rows by the values of a foreign key
+        public static int CountViaForeignKey(
+            short ATableId, short AOtherTableId,
+            string[] AThisFieldNames,
+            DataRow ATemplateRow,
+            StringCollection ATemplateOperators,
+            TDBTransaction ATransaction)
+        {
+            OdbcParameter[] ParametersArray = GetParametersForWhereClause(AOtherTableId, ATemplateRow);
+            return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(
+                    "SELECT COUNT(*) FROM PUB_" + TTypedDataTable.GetTableNameSQL(ATableId) +
+                    GenerateWhereClause(AThisFieldNames) +
+                    GenerateWhereClauseLong("PUB_" + TTypedDataTable.GetTableNameSQL(AOtherTableId),
+                        AOtherTableId, ATemplateRow, ATemplateOperators),
+                    ATransaction,
+                    false,
+                    ParametersArray));
+        }
+
+        /// count the rows by the values of a foreign key
+        public static int CountViaForeignKey(
+            short ATableId, short AOtherTableId,
+            string[] AThisFieldNames,
+            TSearchCriteria[] ASearchCriteria,
+            TDBTransaction ATransaction)
+        {
+            OdbcParameter[] ParametersArray = GetParametersForWhereClause(AOtherTableId, ASearchCriteria);
+            return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(
+                    "SELECT COUNT(*) FROM PUB_" + TTypedDataTable.GetTableNameSQL(ATableId) +
+                    GenerateWhereClause(AThisFieldNames) +
+                    GenerateWhereClauseLong("PUB_" + TTypedDataTable.GetTableNameSQL(AOtherTableId),
+                        ASearchCriteria),
+                    ATransaction,
+                    false,
+                    ParametersArray));
         }
 
         /// <summary>
@@ -1602,7 +1838,7 @@ namespace Ict.Common.Data
             int AStartRecord,
             int AMaxRecords)
         {
-            ADataSet = DBAccess.GDBAccessObj.Select(ADataSet, GenerateSelectClause(AFieldList, ATableID) +
+            DBAccess.GDBAccessObj.Select(ADataSet, GenerateSelectClause(AFieldList, ATableID) +
                 " FROM PUB_" + TTypedDataTable.GetTableNameSQL(ATableID) +
                 GenerateWhereClause(TTypedDataTable.GetColumnStringList(ATableID), ASearchCriteria) +
                 GenerateOrderByClause(AOrderBy), TTypedDataTable.GetTableName(ATableID), ATransaction,
@@ -1612,16 +1848,17 @@ namespace Ict.Common.Data
         /// <summary>
         /// loads all rows matching certain search criteria into a typed data table
         /// </summary>
-        /// <param name="ATypedTableToLoad">pre condition: has to have an object of the typed table</param>
         /// <param name="ATableID">specify which typed table is used</param>
+        /// <param name="ATypedTableToLoad">pre condition: has to have an object of the typed table</param>
         /// <param name="ASearchCriteria"></param>
         /// <param name="AFieldList"></param>
         /// <param name="ATransaction"></param>
         /// <param name="AOrderBy"></param>
         /// <param name="AStartRecord"></param>
         /// <param name="AMaxRecords"></param>
-        public static void LoadUsingTemplate(ref TTypedDataTable ATypedTableToLoad,
+        public static void LoadUsingTemplate(
             short ATableID,
+            TTypedDataTable ATypedTableToLoad,
             TSearchCriteria[] ASearchCriteria,
             StringCollection AFieldList,
             TDBTransaction ATransaction,
@@ -1635,6 +1872,47 @@ namespace Ict.Common.Data
                 GenerateWhereClause(TTypedDataTable.GetColumnStringList(ATableID), ASearchCriteria) +
                 GenerateOrderByClause(AOrderBy), ATransaction,
                 GetParametersForWhereClause(ATableID, ASearchCriteria), AStartRecord, AMaxRecords);
+        }
+
+        /// <summary>
+        /// load using a template row
+        /// </summary>
+        public static void LoadUsingTemplate(
+            short ATableId,
+            DataSet ADataSet,
+            DataRow ATemplateRow,
+            StringCollection ATemplateOperators,
+            StringCollection AFieldList,
+            TDBTransaction ATransaction,
+            StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        {
+            DBAccess.GDBAccessObj.Select(ADataSet,
+                (((GenerateSelectClause(AFieldList, ATableId) + " FROM PUB_" + TTypedDataTable.GetTableNameSQL(ATableId)) +
+                  GenerateWhereClause(TTypedDataTable.GetColumnStringList(ATableId), ATemplateRow,
+                      ATemplateOperators)) +
+            GenerateOrderByClause(AOrderBy)), TTypedDataTable.GetTableName(ATableId), ATransaction,
+                GetParametersForWhereClause(ATableId, ATemplateRow), AStartRecord, AMaxRecords);
+        }
+
+        /// <summary>
+        /// load using a template row
+        /// </summary>
+        public static void LoadUsingTemplate(
+            short ATableId,
+            TTypedDataTable ADataTable,
+            DataRow ATemplateRow,
+            StringCollection ATemplateOperators,
+            StringCollection AFieldList,
+            TDBTransaction ATransaction,
+            StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        {
+            ADataTable =
+                (TTypedDataTable)DBAccess.GDBAccessObj.SelectDT(ADataTable,
+                    (((GenerateSelectClause(AFieldList, ATableId) + " FROM PUB_" + TTypedDataTable.GetTableNameSQL(ATableId)) +
+                      GenerateWhereClause(TTypedDataTable.GetColumnStringList(
+                              ATableId), ATemplateRow, ATemplateOperators)) +
+            GenerateOrderByClause(AOrderBy)), ATransaction,
+                    GetParametersForWhereClause(ATableId, ATemplateRow), AStartRecord, AMaxRecords);
         }
 
         /// <summary>
@@ -1664,6 +1942,107 @@ namespace Ict.Common.Data
                                                    GenerateWhereClause(TTypedDataTable.GetColumnStringList(ATableId), ASearchCriteria)),
                 ATransaction, false,
                 GetParametersForWhereClause(ATableId, ASearchCriteria));
+        }
+
+        /// <summary>
+        /// submit those rows in the table that have been modified or created or deleted
+        /// </summary>
+        /// <param name="ATableId"></param>
+        /// <param name="ATable"></param>
+        /// <param name="ATransaction"></param>
+        /// <param name="AVerificationResult"></param>
+        /// <param name="AUserId">the current user, for auditing</param>
+        /// <param name="ASequenceName"></param>
+        /// <param name="ASequenceField"></param>
+        /// <returns></returns>
+        public static bool SubmitChanges(short ATableId,
+            TTypedDataTable ATable,
+            TDBTransaction ATransaction,
+            out TVerificationResultCollection AVerificationResult,
+            string AUserId,
+            string ASequenceName, string ASequenceField)
+        {
+            bool ResultValue = true;
+            bool ExceptionReported = false;
+            DataRow TheRow = null;
+
+            AVerificationResult = new TVerificationResultCollection();
+
+            for (RowCount = 0; (RowCount != ATable.Rows.Count); RowCount = (RowCount + 1))
+            {
+                TheRow = ATable.Rows[RowCount];
+                try
+                {
+                    if (TheRow.RowState == DataRowState.Added)
+                    {
+                        if (ASequenceField.Length > 0)
+                        {
+                            TheRow[ASequenceField] = (System.Object)DBAccess.GDBAccessObj.GetNextSequenceValue(ASequenceName, ATransaction);
+                        }
+
+                        TTypedDataAccess.InsertRow(ATableId, ref TheRow, ATransaction, AUserId);
+                    }
+                    else
+                    {
+                        bool hasPrimaryKey = TTypedDataTable.GetPrimaryKeyColumnOrdList(ATableId).Length > 0;
+
+                        if (TheRow.RowState == DataRowState.Modified)
+                        {
+                            if (!hasPrimaryKey)
+                            {
+                                AVerificationResult.Add(new TVerificationResult(
+                                        "[DB] NO PRIMARY KEY",
+                                        "Cannot update record because table " + TTypedDataTable.GetTableName(ATableId) + " has no primary key.",
+                                        "Primary Key missing", TTypedDataTable.GetTableNameSQL(ATableId), TResultSeverity.Resv_Critical));
+                            }
+                            else
+                            {
+                                TTypedDataAccess.UpdateRow(ATableId, ref TheRow, ATransaction, AUserId);
+                            }
+                        }
+
+                        if (TheRow.RowState == DataRowState.Deleted)
+                        {
+                            if (!hasPrimaryKey)
+                            {
+                                AVerificationResult.Add(new TVerificationResult(
+                                        "[DB] NO PRIMARY KEY",
+                                        "Cannot delete record because table " + TTypedDataTable.GetTableName(ATableId) + " has no primary key.",
+                                        "Primary Key missing", TTypedDataTable.GetTableNameSQL(ATableId), TResultSeverity.Resv_Critical));
+                            }
+                            else
+                            {
+                                TTypedDataAccess.DeleteRow(ATableId, TheRow, ATransaction);
+                            }
+                        }
+                    }
+                }
+                catch (OdbcException ex)
+                {
+                    ResultValue = false;
+                    ExceptionReported = false;
+
+                    if ((ExceptionReported == false))
+                    {
+                        AVerificationResult.Add(new TVerificationResult("[ODBC]", ex.Errors[0].Message, "ODBC error for table PLanguage",
+                                ex.Errors[0].NativeError.ToString(), TResultSeverity.Resv_Critical));
+                    }
+                }
+            }
+
+            return ResultValue;
+        }
+
+        /// <summary>
+        /// overloaded version without sequence
+        /// </summary>
+        public static bool SubmitChanges(short ATableId,
+            TTypedDataTable ATable,
+            TDBTransaction ATransaction,
+            out TVerificationResultCollection AVerificationResult,
+            string AUserId)
+        {
+            return SubmitChanges(ATableId, ATable, ATransaction, out AVerificationResult, AUserId, "", "");
         }
 
         #endregion CalledByORMGenerateCode
