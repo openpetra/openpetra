@@ -27,8 +27,6 @@ using System;
 using Ict.Common;
 using Ict.Common.DB;
 using Ict.Petra.Shared;
-using Ict.Petra.Shared.DataStore;
-using Ict.Petra.Shared.DataStore.TableList;
 using Ict.Petra.Shared.MSysMan.Data;
 using Ict.Petra.Shared.MSysMan.Data.Access;
 using System.Data;

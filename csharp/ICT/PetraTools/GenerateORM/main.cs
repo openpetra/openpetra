@@ -25,9 +25,6 @@
  ************************************************************************/
 using System;
 using System.IO;
-using System.CodeDom;
-using System.CodeDom.Compiler;
-using Microsoft.CSharp;
 using Ict.Tools.CodeGeneration;
 using Ict.Tools.DBXML;
 using Ict.Common;
@@ -41,121 +38,6 @@ namespace Ict.Tools.CodeGeneration.DataStore
         public static TDataDefinitionParser parser;
         public static TDataDefinitionStore store;
         public static TCmdOpts cmdLine;
-
-        public static Boolean WriteSortedTableList(TDataDefinitionStore store, string AFilePath)
-        {
-            FileStream outFile;
-            TextWriter tw;
-            String OutFileName;
-            CodeNamespace cns;
-            CodeMemberMethod FillSortedList;
-            CodeMemberField list;
-            CodeTypeDeclaration t;
-            String DLLName = "";
-
-            Console.WriteLine("writing the SortedList of tables/dll association");
-            OutFileName = AFilePath + "/TableList.cs";
-            outFile = new FileStream(OutFileName + ".new", FileMode.Create, FileAccess.Write);
-
-            if (outFile == null)
-            {
-                return false;
-            }
-
-            CSharpCodeProvider gen = new CSharpCodeProvider();
-            cns = new CodeNamespace("Ict.Petra.Shared.DataStore.TableList");
-            tw = new StreamWriter(outFile);
-            tw.WriteLine("/* Auto generated with nant generateORM");
-            tw.WriteLine(" * Do not modify this file manually!");
-            tw.WriteLine(" */");
-            cns.Imports.Add(new CodeNamespaceImport("System"));
-            cns.Imports.Add(new CodeNamespaceImport("System.Collections"));
-
-            // todo: add the other things in other units, for retrieving the type and calling methods on it
-            FillSortedList = new CodeMemberMethod();
-            FillSortedList.Name = "FillSortedListTables";
-            FillSortedList.Comments.Add(new CodeCommentStatement("auto generated", true));
-            FillSortedList.Attributes = MemberAttributes.Public | MemberAttributes.Final | MemberAttributes.Static;
-            FillSortedList.Statements.Add(CodeDom.Let(CodeDom.Local("FTableList"), CodeDom._New("SortedList", new CodeExpression[] { })));
-
-            foreach (TTable currentTable in store.GetTables())
-            {
-                if (currentTable.strGroup == "partner")
-                {
-                    DLLName = "MPartner.Partner";
-                }
-                else if (currentTable.strGroup == "mailroom")
-                {
-                    DLLName = "MPartner.Mailroom";
-                }
-                else if (currentTable.strGroup == "personnel")
-                {
-                    DLLName = "MPersonnel.Personnel";
-                }
-                else if (currentTable.strGroup == "units")
-                {
-                    DLLName = "MPersonnel.Units";
-                }
-                else if (currentTable.strGroup == "conference")
-                {
-                    DLLName = "MConference";
-                }
-                else if (currentTable.strGroup == "hospitality")
-                {
-                    DLLName = "MHospitality";
-                }
-                else if (currentTable.strGroup == "account")
-                {
-                    DLLName = "MFinance.Account";
-                }
-                else if (currentTable.strGroup == "ap")
-                {
-                    DLLName = "MFinance.AP";
-                }
-                else if (currentTable.strGroup == "ar")
-                {
-                    DLLName = "MFinance.AR";
-                }
-                else if (currentTable.strGroup == "gift")
-                {
-                    DLLName = "MFinance.Gift";
-                }
-                else if (currentTable.strGroup == "sysman")
-                {
-                    DLLName = "MSysMan";
-                }
-                else if (currentTable.strGroup == "main")
-                {
-                    DLLName = "MCommon";
-                }
-
-                FillSortedList.Statements.Add(CodeDom.MethodInvoke(CodeDom.Local("FTableList"), "Add", new CodeExpression[]
-                        { CodeDom._Const(TTable.NiceTableName(currentTable.strName)),
-                          CodeDom._Const(DLLName
-                              ) }));
-            }
-
-            list = new CodeMemberField("SortedList", "FTableList");
-            list.Comments.Add(new CodeCommentStatement("auto generated", true));
-            list.Attributes = MemberAttributes.Family | MemberAttributes.Static;
-            t = new CodeTypeDeclaration("TTableList");
-            t.Comments.Add(new CodeCommentStatement("auto generated", true));
-            t.IsClass = true;
-            t.Members.Add(list);
-            t.Members.Add(FillSortedList);
-            cns.Types.Add(t);
-            CodeGeneratorOptions opt = new CodeGeneratorOptions();
-            opt.BracingStyle = "C";
-            gen.GenerateCodeFromNamespace(cns, tw, opt);
-            tw.Close();
-
-            if (TTextFile.UpdateFile(OutFileName) == true)
-            {
-                System.Console.WriteLine("   Writing file " + OutFileName);
-            }
-
-            return true;
-        }
 
         void run()
         {
@@ -192,7 +74,6 @@ namespace Ict.Tools.CodeGeneration.DataStore
                 {
                     if ((cmdLine.GetOptValue("do") == "defaulttables") || (cmdLine.GetOptValue("do") == "datatables"))
                     {
-                        WriteSortedTableList(store, cmdLine.GetOptValue("outputshared"));
                         codeGenerationTable.WriteTypedTable(store, "partner", cmdLine.GetOptValue(
                                 "outputshared") + "\\lib\\MPartner\\data\\",
                             "Ict.Petra.Shared.MPartner.Partner.Data",

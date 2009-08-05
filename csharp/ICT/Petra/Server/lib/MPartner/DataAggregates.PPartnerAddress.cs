@@ -75,18 +75,18 @@ namespace Ict.Petra.Server.MPartner.DataAggregates
 #if DEBUGMODE
             if (TSrvSetting.DL >= 9)
             {
-                Console.WriteLine("Select done in TPPartnerAddressAggregate.GetData(). Result: ");
+                TLogging.Log("Select done in TPPartnerAddressAggregate.GetData(). Result: ");
 
                 foreach (DataRow TheRow in ADataSet.Tables[PLocationTable.GetTableName()].Rows)
                 {
-                    Console.WriteLine(PLocationTable.GetTableName() + ": Processing rows...");
-                    Console.WriteLine(TheRow[0].ToString() + " | " + TheRow[1].ToString());
+                    TLogging.Log(PLocationTable.GetTableName() + ": Processing rows...");
+                    TLogging.Log(TheRow[0].ToString() + " | " + TheRow[1].ToString());
                 }
 
                 foreach (DataRow TheRow in ADataSet.Tables[PPartnerLocationTable.GetTableName()].Rows)
                 {
-                    Console.WriteLine(PPartnerLocationTable.GetTableName() + ": Processing rows...");
-                    Console.WriteLine(TheRow[0].ToString() + " | " + TheRow[1].ToString());
+                    TLogging.Log(PPartnerLocationTable.GetTableName() + ": Processing rows...");
+                    TLogging.Log(TheRow[0].ToString() + " | " + TheRow[1].ToString());
                 }
             }
 #endif

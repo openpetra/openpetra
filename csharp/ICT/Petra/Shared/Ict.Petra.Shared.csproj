@@ -1,4 +1,4 @@
-<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+﻿<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
     <ProjectGuid>{5F8FBEF6-2E30-4E12-B3E4-80BC29932B7D}</ProjectGuid>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
@@ -67,7 +67,6 @@
     <Compile Include="Constants.cs" />
     <Compile Include="Conversions.cs" />
     <Compile Include="ErrorCodes.cs" />
-    <Compile Include="Functions.cs" />
     <Compile Include="Messages.cs" />
     <Compile Include="RemotedExceptions.cs" />
     <Compile Include="Security.Data.cs" />
@@ -75,7 +74,6 @@
     <Compile Include="Security.Principal.cs" />
     <Compile Include="Security.Types.cs" />
     <Compile Include="StaticData.cs" />
-    <Compile Include="TableList.cs" />
     <Compile Include="TypeConverter.cs" />
     <Compile Include="Types.cs" />
     <Compile Include="Utilities.cs" />

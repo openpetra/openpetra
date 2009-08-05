@@ -25,9 +25,6 @@
  ************************************************************************/
 using System;
 using System.IO;
-using System.CodeDom;
-using System.CodeDom.Compiler;
-using Microsoft.CSharp;
 using System.Collections;
 using System.Collections.Specialized;
 using Ict.Tools.CodeGeneration;

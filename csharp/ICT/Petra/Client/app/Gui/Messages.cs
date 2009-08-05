@@ -32,7 +32,7 @@ using Ict.Petra.Shared.RemotedExceptions;
 using System.Diagnostics;
 using Mono.Unix;
 using Ict.Common;
-using Ict.Petra.Shared.DataStore;
+using Ict.Common.Data;
 using Ict.Petra.Client.App.Core;
 
 namespace Ict.Petra.Client.App.Gui
@@ -178,9 +178,8 @@ namespace Ict.Petra.Client.App.Gui
         /// <param name="ATypeWhichRaisesException"></param>
         public static void MsgSecurityException(ESecurityDBTableAccessDeniedException AException, System.Type ATypeWhichRaisesException)
         {
-            String TableLabelName;
+            String TableLabelName = StringHelper.UpperCamelCase(AException.DBTable);
 
-            TableLabelName = TPetraDataStore.GetTableLabel(StringHelper.UpperCamelCase(AException.DBTable));
             MessageBox.Show(String.Format(Catalog.GetString("You do not have permission to {0} {1} records."), AException.AccessRight,
                     TableLabelName) + BuildMessageFooter(ErrorCodes.PETRAERRORCODE_NOPERMISSIONTOACCESSTABLE,
                     ATypeWhichRaisesException.GetType().ToString()), Catalog.GetString("Security Violation"), MessageBoxButtons.OK,
@@ -238,7 +237,7 @@ namespace Ict.Petra.Client.App.Gui
             String MessageString;
 
             object[] ReplacePlaceholdersArray;
-            TableLabelName = TPetraDataStore.GetTableLabel(StringHelper.UpperCamelCase(AException.DBTable));
+            TableLabelName = StringHelper.UpperCamelCase(AException.DBTable);
             ReplacePlaceholdersArray = new Object[5];
 
             if (AException.DBOperation == "write")

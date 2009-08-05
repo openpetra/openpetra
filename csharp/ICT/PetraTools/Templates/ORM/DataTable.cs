@@ -30,7 +30,7 @@ public class {#TABLENAME}Table : {#BASECLASSTABLE}
     private static bool FInitInfoValues = InitInfoValues();
     private static bool InitInfoValues()
     {
-        TableInfo.Add(TableId, new TTypedTableInfo(TableId, "{#TABLENAME}", "{#DBTABLENAME}", 
+        TableInfo.Add(TableId, new TTypedTableInfo(TableId, "{#TABLEVARIABLENAME}", "{#DBTABLENAME}", 
             new TTypedColumnInfo[] { 
                 {#COLUMNINFO}
             },
@@ -42,7 +42,7 @@ public class {#TABLENAME}Table : {#BASECLASSTABLE}
 
     /// constructor
     public {#TABLENAME}Table() : 
-            base("{#TABLENAME}")
+            base("{#TABLEVARIABLENAME}")
     {
     }
     
@@ -171,7 +171,7 @@ public static {#NEW}short Get{#COLUMNNAME}Length()
 
 {#TABLE_DESCRIPTION}
 [Serializable()]
-public class {#TABLENAME}Row : System.Data.DataRow
+public class {#TABLENAME}Row : {#BASECLASSROW}
 {
     private {#TABLENAME}Table myTable;
     
@@ -185,7 +185,7 @@ public class {#TABLENAME}Row : System.Data.DataRow
     {#ROWCOLUMNPROPERTIES}
 
     /// set default values
-    public virtual void InitValues()
+    public {#OVERRIDE}void InitValues()
     {
         {#ROWSETNULLORDEFAULT}
     }

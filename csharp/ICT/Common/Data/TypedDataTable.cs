@@ -234,6 +234,20 @@ namespace Ict.Common.Data
             return TableInfo[ATableNumber].name;
         }
 
+        /// the table name in CamelCase
+        public static TTypedTableInfo GetTableByName(string ATableName)
+        {
+            foreach (TTypedTableInfo info in TableInfo.Values)
+            {
+                if (info.name == ATableName)
+                {
+                    return info;
+                }
+            }
+
+            throw new Exception("TTypedDataTable::GetTableByName cannot find " + ATableName);
+        }
+
         /// the column name as it is in the SQL database
         public static string GetColumnNameSQL(short ATableNumber, short AColumnNr)
         {
@@ -244,6 +258,45 @@ namespace Ict.Common.Data
         public static string GetLabel(short ATableNumber, short AColumnNr)
         {
             return Catalog.GetString(TableInfo[ATableNumber].columns[AColumnNr].label);
+        }
+
+        /// get the maximum length for the field
+        public static Int32 GetLength(short ATableNumber, short AColumnNr)
+        {
+            return TableInfo[ATableNumber].columns[AColumnNr].length;
+        }
+
+        /// get the maximum length for the field
+        public static Int32 GetLength(string ATableName, string AColumnName)
+        {
+            try
+            {
+                TTypedTableInfo table = GetTableByName(ATableName);
+
+                foreach (TTypedColumnInfo col in table.columns)
+                {
+                    if ((col.name == AColumnName) || (col.dbname == AColumnName))
+                    {
+                        if (col.odbctype == OdbcType.Date)
+                        {
+                            // to avoid errors in CommonControls::TexpTextBoxStringLengthCheck::RetrieveTextBoxMaxLength
+                            return 20;
+                        }
+
+                        if (col.length <= 0)
+                        {
+                            // to avoid errors in CommonControls::TexpTextBoxStringLengthCheck::RetrieveTextBoxMaxLength
+                            return 20;
+                        }
+
+                        return col.length;
+                    }
+                }
+            }
+            catch (Exception)
+            {
+            }
+            return -1;
         }
 
         /// get the names of the columns that are part of the primary key

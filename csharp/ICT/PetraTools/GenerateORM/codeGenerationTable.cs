@@ -176,42 +176,64 @@ namespace Ict.Tools.CodeGeneration.DataStore
             Template.InsertSnippet(WhereToInsert, snippet);
         }
 
-        public static void InsertRowDefinition(ProcessTemplate Template, TTable currentTable, string WhereToInsert)
+        public static void InsertRowDefinition(ProcessTemplate Template, TTable currentTable, TTable origTable, string WhereToInsert)
         {
             ProcessTemplate snippet = Template.GetSnippet("TYPEDROW");
+
+            if (origTable != null)
+            {
+                snippet.SetCodelet("BASECLASSROW", TTable.NiceTableName(currentTable.strName) + "Row");
+                snippet.SetCodelet("OVERRIDE", "override ");
+            }
+            else
+            {
+                snippet.SetCodelet("BASECLASSROW", "System.Data.DataRow");
+                snippet.SetCodelet("OVERRIDE", "virtual ");
+            }
 
             snippet.SetCodeletComment("TABLE_DESCRIPTION", currentTable.strDescription);
             snippet.SetCodelet("TABLENAME", currentTable.strDotNetName);
 
             foreach (TTableField col in currentTable.grpTableField.List)
             {
-                ProcessTemplate tempTemplate = Template.GetSnippet("ROWCOLUMNPROPERTY");
-                tempTemplate.SetCodelet("COLUMNDBNAME", col.strName);
-                tempTemplate.SetCodelet("COLUMNNAME", TTable.NiceFieldName(col));
-                tempTemplate.SetCodelet("COLUMNHELP", col.strDescription.Replace(Environment.NewLine, " "));
-                tempTemplate.SetCodelet("COLUMNLABEL", col.strLabel);
-                tempTemplate.SetCodelet("COLUMNLENGTH", col.iLength.ToString());
-                tempTemplate.SetCodelet("COLUMNDOTNETTYPE", col.GetDotNetType());
+                ProcessTemplate tempTemplate = null;
+                string columnOverwrite = "";
 
-                if (col.GetDotNetType().Contains("DateTime"))
+                if ((origTable != null) && (origTable.GetField(col.strName, false) != null))
                 {
-                    tempTemplate.SetCodelet("ACTIONGETNULLVALUE", "return DateTime.MinValue;");
-                }
-                else if (col.GetDotNetType().ToLower().Contains("string"))
-                {
-                    tempTemplate.SetCodelet("ACTIONGETNULLVALUE", "return String.Empty;");
-                }
-                else
-                {
-                    tempTemplate.SetCodelet("ACTIONGETNULLVALUE", "throw new System.Data.StrongTypingException(\"Error: DB null\", null);");
+                    columnOverwrite = "new ";
                 }
 
-                tempTemplate.SetCodeletComment("COLUMN_DESCRIPTION", col.strDescription);
-                snippet.InsertSnippet("ROWCOLUMNPROPERTIES", tempTemplate);
+                if (columnOverwrite.Length == 0)
+                {
+                    tempTemplate = Template.GetSnippet("ROWCOLUMNPROPERTY");
+                    tempTemplate.SetCodelet("COLUMNDBNAME", col.strName);
+                    tempTemplate.SetCodelet("COLUMNNAME", TTable.NiceFieldName(col));
+                    tempTemplate.SetCodelet("COLUMNHELP", col.strDescription.Replace(Environment.NewLine, " "));
+                    tempTemplate.SetCodelet("COLUMNLABEL", col.strLabel);
+                    tempTemplate.SetCodelet("COLUMNLENGTH", col.iLength.ToString());
+                    tempTemplate.SetCodelet("COLUMNDOTNETTYPE", col.GetDotNetType());
 
-                tempTemplate = Template.GetSnippet("FUNCTIONSFORNULLVALUES");
-                tempTemplate.SetCodelet("COLUMNNAME", TTable.NiceFieldName(col));
-                snippet.InsertSnippet("FUNCTIONSFORNULLVALUES", tempTemplate);
+                    if (col.GetDotNetType().Contains("DateTime"))
+                    {
+                        tempTemplate.SetCodelet("ACTIONGETNULLVALUE", "return DateTime.MinValue;");
+                    }
+                    else if (col.GetDotNetType().ToLower().Contains("string"))
+                    {
+                        tempTemplate.SetCodelet("ACTIONGETNULLVALUE", "return String.Empty;");
+                    }
+                    else
+                    {
+                        tempTemplate.SetCodelet("ACTIONGETNULLVALUE", "throw new System.Data.StrongTypingException(\"Error: DB null\", null);");
+                    }
+
+                    tempTemplate.SetCodeletComment("COLUMN_DESCRIPTION", col.strDescription);
+                    snippet.InsertSnippet("ROWCOLUMNPROPERTIES", tempTemplate);
+
+                    tempTemplate = Template.GetSnippet("FUNCTIONSFORNULLVALUES");
+                    tempTemplate.SetCodelet("COLUMNNAME", TTable.NiceFieldName(col));
+                    snippet.InsertSnippet("FUNCTIONSFORNULLVALUES", tempTemplate);
+                }
 
                 if ((col.strDefault.Length > 0) && (col.strDefault != "NULL"))
                 {
@@ -267,7 +289,7 @@ namespace Ict.Tools.CodeGeneration.DataStore
                 if (currentTable.strGroup == strGroup)
                 {
                     InsertTableDefinition(Template, currentTable, null, "TABLELOOP");
-                    InsertRowDefinition(Template, currentTable, "TABLELOOP");
+                    InsertRowDefinition(Template, currentTable, null, "TABLELOOP");
                 }
             }
 

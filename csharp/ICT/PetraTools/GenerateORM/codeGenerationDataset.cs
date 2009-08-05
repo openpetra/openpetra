@@ -283,7 +283,7 @@ namespace Ict.Tools.CodeGeneration.DataStore
 
                                 // TODO: can we derive from the base table, and just overload a few functions?
                                 codeGenerationTable.InsertTableDefinition(snippetDataset, table, store.GetTable(table.tableorig), "TABLELOOP");
-                                codeGenerationTable.InsertRowDefinition(snippetDataset, table, "TABLELOOP");
+                                codeGenerationTable.InsertRowDefinition(snippetDataset, table, store.GetTable(table.tableorig), "TABLELOOP");
                             }
 
                             tables.Add(table.tableorig, table);
@@ -369,7 +369,7 @@ namespace Ict.Tools.CodeGeneration.DataStore
                             AddTableToDataset(tabletype, variablename, snippetDataset);
 
                             codeGenerationTable.InsertTableDefinition(snippetDataset, customTable, null, "TABLELOOP");
-                            codeGenerationTable.InsertRowDefinition(snippetDataset, customTable, "TABLELOOP");
+                            codeGenerationTable.InsertRowDefinition(snippetDataset, customTable, null, "TABLELOOP");
                         }
 
                         curChild = curChild.NextSibling;

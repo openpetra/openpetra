@@ -360,7 +360,7 @@ namespace Ict.Petra.Shared.MCommon.Data
         private static bool FInitInfoValues = InitInfoValues();
         private static bool InitInfoValues()
         {
-            TableInfo.Add(TableId, new TTypedTableInfo(TableId, "CacheableTablesTDSContents", "CacheableTablesTDSContents",
+            TableInfo.Add(TableId, new TTypedTableInfo(TableId, "Contents", "CacheableTablesTDSContents",
                 new TTypedColumnInfo[] {
                     new TTypedColumnInfo(0, "TableName", "TableName", "", OdbcType.Int, -1, false),
                     new TTypedColumnInfo(1, "DataUpToDate", "DataUpToDate", "", OdbcType.Int, -1, false),
@@ -379,7 +379,7 @@ namespace Ict.Petra.Shared.MCommon.Data
 
         /// constructor
         public CacheableTablesTDSContentsTable() :
-                base("CacheableTablesTDSContents")
+                base("Contents")
         {
         }
 

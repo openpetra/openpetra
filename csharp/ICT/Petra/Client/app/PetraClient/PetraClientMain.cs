@@ -36,8 +36,6 @@ using Mono.Unix;
 using Ict.Common;
 using Ict.Common.IO;
 using Ict.Petra.Shared;
-using Ict.Petra.Shared.DataStore.TableList;
-using Ict.Petra.Shared.DataStore;
 using Ict.Petra.Shared.Security;
 using Ict.Petra.Client.App.Core;
 using Ict.Petra.Client.CommonDialogs;
@@ -302,9 +300,6 @@ namespace Ict.Petra.Client.App.PetraClient
                 throw;
 #endif
             }
-
-            // call this once; this table is used for the GUI, to figure out the field length etc.
-            TPetraDataStore.FillSortedListTables();
 
             if (FLoginSuccessful)
             {

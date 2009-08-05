@@ -550,7 +550,7 @@ namespace Ict.Petra.Server.MSysMan.Maintenance
                         AddedRow.ItemArray = ASourceDT[Counter].ItemArray;
                         ADestinationDT.Rows.Add(AddedRow);
 
-                        // Mark row as no longer beeing new
+                        // Mark row as no longer being new
                         AddedRow.AcceptChanges();
 
                         // Mark row as beeing changed
@@ -565,14 +565,6 @@ namespace Ict.Petra.Server.MSysMan.Maintenance
                     AddedRow = ADestinationDT.NewRowTyped(false);
                     AddedRow.ItemArray = ASourceDT[Counter].ItemArray;
                     ADestinationDT.Rows.Add(AddedRow);
-
-                    // Mark row as no longer beeing new
-                    AddedRow.AcceptChanges();
-
-                    // Mark row as beeing changed
-                    AddedRow.DefaultValue = AddedRow.DefaultValue + ' ';
-                    AddedRow.AcceptChanges();
-                    AddedRow.DefaultValue = AddedRow.DefaultValue.Substring(0, AddedRow.DefaultValue.Length - 1);
                 }
             }
         }
@@ -827,18 +819,13 @@ namespace Ict.Petra.Server.MSysMan.Maintenance
             Boolean ASendUpdateInfoToClient)
         {
             Boolean ReturnValue;
-            Boolean NewTransaction;
-            Boolean SubmissionOK;
+            Boolean NewTransaction = false;
+            Boolean SubmissionOK = false;
             TDBTransaction WriteTransaction;
-            Int32 SavingAttempts;
+            Int32 SavingAttempts = 0;
             SUserDefaultsTable ChangedUserDefaultsDT;
             SUserDefaultsTable ChangedUserDefaults2DT;
             SUserDefaultsTable RefreshedUserDefaultsDataTable = null;
-
-            // TmpRow: Integer;
-            NewTransaction = false;
-            SubmissionOK = false;
-            SavingAttempts = 0;
 
             if ((AUserDefaultsDataTable != null) && (AUserDefaultsDataTable.Rows.Count > 0))
             {
@@ -864,11 +851,6 @@ namespace Ict.Petra.Server.MSysMan.Maintenance
                     }
 #endif
 
-                    // $IFDEF DEBUGMODE if TSrvSetting.DL >= 8 then Console.WriteLine('TMaintenanceUserDefaults.SaveUserDefaultsTable: Saving ' + (AUserDefaultsDataTable.Rows.Count).ToString + ' User Defaults...'); $ENDIF
-
-                    /* $IFDEF DEBUGMODE if TSrvSetting.DL >= 8 then Console.WriteLine('TMaintenanceUserDefaults.SaveUserDefaultsTable: Row[0]  UserId: ' + AUserDefaultsDataTable.Row[0].UserId + '; DefaultCode: ' +
-                     *AUserDefaultsDataTable.Row[0].DefaultCode + '; DefaultValue: ' + AUserDefaultsDataTable.Row[0].DefaultValue); $ENDIF */
-
                     if (AWriteTransaction == null)
                     {
                         WriteTransaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(IsolationLevel.ReadCommitted,
@@ -882,16 +864,6 @@ namespace Ict.Petra.Server.MSysMan.Maintenance
 
                     try
                     {
-                        // $IFDEF DEBUGMODE
-                        // TmpRow := new DataView(AUserDefaultsDataTable, '', SUserDefaultsTable.GetDefaultCodeDBName, DataViewRowState.CurrentRows).Find('partneredit_uppe');
-                        // if TmpRow <> 1 then
-                        // begin
-
-                        /* if TSrvSetting.DL >= new 7 then Console.WriteLine('partneredit_uppe value: ' + DataView(AUserDefaultsDataTable, '', SUserDefaultsTable.GetDefaultCodeDBName,
-                         *DataViewRowState.CurrentRows).Item[TmpRow].Item[SUserDefaultsTable.GetDefaultValueDBName].ToString); */
-
-                        // end;
-                        // $ENDIF
                         do
                         {
                             try
@@ -904,7 +876,7 @@ namespace Ict.Petra.Server.MSysMan.Maintenance
 #if DEBUGMODE
                                 if (TSrvSetting.DL >= 8)
                                 {
-                                    Console.WriteLine(
+                                    TLogging.Log(
                                         "TMaintenanceUserDefaults.SaveUserDefaultsTable: EDBConcurrencyException occured --> refreshing cached UserDefaults with UserDefaults from the DB!");
                                 }
 #endif
@@ -925,7 +897,7 @@ namespace Ict.Petra.Server.MSysMan.Maintenance
                             {
                                 if (TSrvSetting.DL >= 8)
                                 {
-                                    Console.WriteLine("TMaintenanceUserDefaults.SaveUserDefaultsTable: Exception occured: " + Exp.ToString());
+                                    TLogging.Log("TMaintenanceUserDefaults.SaveUserDefaultsTable: Exception occured: " + Exp.ToString());
                                 }
 
                                 throw;
@@ -1054,7 +1026,7 @@ namespace Ict.Petra.Server.MSysMan.Maintenance
                 }
                 else
                 {
-                    // nothing to save!
+// nothing to save!
 #if DEBUGMODE
                     if (TSrvSetting.DL >= 8)
                     {

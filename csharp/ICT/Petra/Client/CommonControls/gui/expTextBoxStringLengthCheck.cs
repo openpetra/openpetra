@@ -25,9 +25,8 @@
  ************************************************************************/
 using System;
 using Ict.Common;
+using Ict.Common.Data;
 using Ict.Common.Controls;
-using Ict.Petra.Shared.DataStore.TableList;
-using Ict.Petra.Shared.DataStore;
 using Ict.Petra.Shared.MConference.Data;
 using Ict.Petra.Shared.MFinance.Account.Data;
 using Ict.Petra.Shared.MFinance.AP.Data;
@@ -574,7 +573,7 @@ namespace Ict.Petra.Client.CommonControls
             mColumnName = ADataRow[strFoundControlColumnName].ToString();
             try
             {
-                mMaxLength = TPetraDataStore.GetLengthOfTableField(mTableName, mColumnName);
+                mMaxLength = TTypedDataTable.GetLength(mTableName, mColumnName);
             }
             catch (Exception e)
             {

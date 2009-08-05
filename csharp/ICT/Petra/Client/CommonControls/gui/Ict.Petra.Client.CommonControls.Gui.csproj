@@ -85,11 +85,11 @@
       <SpecificVersion>False</SpecificVersion>
     </Reference>
     <Reference Include="Ict.Common.Data">
-      <HintPath>..\..\..\Shared\_bin\Server_Client\Debug\Ict.Common.Data.dll</HintPath>
+      <HintPath>..\..\..\..\Common\_bin\Debug\Ict.Common.Data.dll</HintPath>
       <SpecificVersion>False</SpecificVersion>
     </Reference>
     <Reference Include="Ict.Common.Verification">
-      <HintPath>..\..\..\Shared\_bin\Server_Client\Debug\Ict.Common.Verification.dll</HintPath>
+      <HintPath>..\..\..\..\Common\_bin\Debug\Ict.Common.Verification.dll</HintPath>
       <SpecificVersion>False</SpecificVersion>
     </Reference>
     <Reference Include="Ict.Petra.Shared">
