@@ -351,7 +351,7 @@ namespace Ict.Common.DB
                 }
                 else
                 {
-                    return new TDBTransaction(FTransaction);
+                    return new TDBTransaction(FTransaction, FSqlConnection);
                 }
             }
         }
@@ -1198,7 +1198,7 @@ namespace Ict.Common.DB
             }
 
             FLastDBAction = DateTime.Now;
-            return new TDBTransaction(FTransaction);
+            return new TDBTransaction(FTransaction, FSqlConnection);
         }
 
         /// <summary>
@@ -1275,7 +1275,7 @@ namespace Ict.Common.DB
             }
 
             FLastDBAction = DateTime.Now;
-            return new TDBTransaction(FTransaction);
+            return new TDBTransaction(FTransaction, FSqlConnection);
         }
 
         /// <summary>
@@ -2415,12 +2415,14 @@ namespace Ict.Common.DB
         /// <summary>
         /// Constructor for a <see cref="TDBTransaction" /> Object.
         /// </summary>
-        /// <param name="ATransaction">The concrete IDbTransaction Object
-        /// that <see cref="TDBTransaction" /> should represent</param>
-        public TDBTransaction(IDbTransaction ATransaction)
+        /// <param name="ATransaction">The concrete IDbTransaction Object that <see cref="TDBTransaction" /> should represent</param>
+        /// <param name="AConnection"></param>
+        public TDBTransaction(IDbTransaction ATransaction, IDbConnection AConnection)
         {
             FWrappedTransaction = ATransaction;
-            FConnection = ATransaction.Connection;
+            // somehow, this line does not work for Progress, gives segmentation fault
+            //FConnection = ATransaction.Connection;
+            FConnection = AConnection;
             FIsolationLevel = ATransaction.IsolationLevel;
         }
     }
