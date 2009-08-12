@@ -487,6 +487,9 @@ namespace Ict.Petra.Client.MCommon
 
                 // perform data binding for user control depending on type etc.
                 PerformDataBinding(ADataLabelRow, DataLabelValuePartnerRow, DataLabelValueApplicationRow, PartnerKeyEditor);
+
+                // TODO? UOfficeSpecificGrid[ARowIndex, 0] = new Cell();
+                // TODO? UOfficeSpecificGrid.LinkedControls.Add(new LinkedControlValue(PartnerKeyEditor, new Position(ARowIndex, 0)));
                 UOfficeSpecificGrid[ARowIndex, 0] = new SourceGrid.Cells.CellControl(PartnerKeyEditor);
                 UOfficeSpecificGrid[ARowIndex, 0].ColumnSpan = 3;
 
@@ -507,6 +510,9 @@ namespace Ict.Petra.Client.MCommon
                 // perform data binding for user control depending on type etc.
                 PerformDataBinding(ADataLabelRow, DataLabelValuePartnerRow, DataLabelValueApplicationRow, LookupValueEditor);
                 LookupValueEditor.TabStop = false;
+
+                // TODO? UOfficeSpecificGrid[ARowIndex, 1] = new Cell();
+                // TODO? UOfficeSpecificGrid.LinkedControls.Add(new LinkedControlValue((Control)LookupValueEditor, new Position(ARowIndex, 1)));
                 UOfficeSpecificGrid[ARowIndex, 1] = new SourceGrid.Cells.CellControl((Control)LookupValueEditor);
                 UOfficeSpecificGrid[ARowIndex, 1].ColumnSpan = 2;
 
