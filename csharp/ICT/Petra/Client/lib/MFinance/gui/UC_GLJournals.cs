@@ -208,7 +208,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
         if (FMainDS.AJournal != null)
         {
             DataView myDataView = FMainDS.AJournal.DefaultView;
-            myDataView.Sort = "a_batch_number_i DESC";
+            myDataView.Sort = "a_journal_number_i DESC";
             myDataView.AllowNew = false;
             grdDetails.DataSource = new DevAge.ComponentModel.BoundDataView(myDataView);
             grdDetails.AutoSizeCells();

@@ -31,7 +31,7 @@ RootNode:
             Dock: Fill
             Columns: [AJournal.JournalNumber, AJournal.JournalStatus, AJournal.JournalDebitTotal, AJournal.JournalCreditTotal, AJournal.TransactionCurrency, AJournal.JournalDescription, AJournal.SubSystemCode, AJournal.TransactionTypeCode]
             ActionFocusRow: FocusedRowChanged
-            SortOrder: ABatch.BatchNumber DESC
+            SortOrder: AJournal.JournalNumber DESC
         pnlDetails:
             Dock: Bottom
             Controls: [txtDetailJournalDescription, cmbDetailSubSystemCode, cmbDetailTransactionTypeCode, cmbDetailTransactionCurrency, dtpDetailDateEffective, txtDetailExchangeRateToBase]
