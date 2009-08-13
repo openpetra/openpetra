@@ -620,6 +620,7 @@ namespace Ict.Tools.CodeGeneration.Winforms
                 // get all parameters without VerificationResult
                 bool HasVerification = false;
                 string actualParameters = String.Empty;
+                string actualParametersLocal = String.Empty;
                 string formalParameters = String.Empty;
                 bool firstParameter = true;
 
@@ -628,6 +629,7 @@ namespace Ict.Tools.CodeGeneration.Winforms
                     if (!firstParameter)
                     {
                         actualParameters += ", ";
+                        actualParametersLocal += ", ";
                         formalParameters += ", ";
                     }
 
@@ -636,12 +638,14 @@ namespace Ict.Tools.CodeGeneration.Winforms
                     if ((p.Modifiers & Modifier.Out) > 0)
                     {
                         actualParameters += "out ";
+                        actualParametersLocal += "out ";
                         formalParameters += "out ";
                     }
 
                     if ((p.Modifiers & Modifier.Ref) > 0)
                     {
                         actualParameters += "ref ";
+                        actualParametersLocal += "ref ";
                         formalParameters += "ref ";
                     }
 
@@ -652,6 +656,7 @@ namespace Ict.Tools.CodeGeneration.Winforms
                     else
                     {
                         actualParameters += p.Name;
+                        actualParametersLocal += (p.Name[0] == 'A' ? 'F' : p.Name[0]) + p.Name.Substring(1);
                         formalParameters += CSParser.GetName(p.Type) + " " + p.Name;
                     }
                 }
@@ -660,6 +665,7 @@ namespace Ict.Tools.CodeGeneration.Winforms
                 FTemplate.SetCodelet("WEBCONNECTOR" + AMasterOrDetail, "TRemote." +
                     AServerWebConnectorNamespace.Substring("Ict.Petra.Server.".Length));
                 FTemplate.AddToCodelet(AFunctionType.ToUpper() + AMasterOrDetail + "_ACTUALPARAMETERS", actualParameters);
+                FTemplate.AddToCodelet(AFunctionType.ToUpper() + AMasterOrDetail + "_ACTUALPARAMETERS_LOCAL", actualParametersLocal);
                 FTemplate.AddToCodelet(AFunctionType.ToUpper() + AMasterOrDetail + "_FORMALPARAMETERS", formalParameters);
 
                 if (HasVerification)
@@ -681,9 +687,14 @@ namespace Ict.Tools.CodeGeneration.Winforms
 
             List <ClassNode>WebConnectorClasses = CSParser.GetWebConnectorClasses(ServerWebConnectorNamespace);
 
-            HandleWebConnector("CreateNew", "MASTER", FCodeStorage.GetAttribute("MasterTable"), ServerWebConnectorNamespace, WebConnectorClasses);
-            HandleWebConnector("CreateNew", "DETAIL", FCodeStorage.GetAttribute("DetailTable"), ServerWebConnectorNamespace, WebConnectorClasses);
+            HandleWebConnector("Create", "MASTER", FCodeStorage.GetAttribute("MasterTable"), ServerWebConnectorNamespace, WebConnectorClasses);
+            HandleWebConnector("Create", "DETAIL", FCodeStorage.GetAttribute("DetailTable"), ServerWebConnectorNamespace, WebConnectorClasses);
             HandleWebConnector("Load", "MASTER", FCodeStorage.GetAttribute("MasterTable"), ServerWebConnectorNamespace, WebConnectorClasses);
+
+            FTemplate.SetCodelet("WEBCONNECTORTDS", "TRemote." +
+                ServerWebConnectorNamespace.Substring("Ict.Petra.Server.".Length));
+            FTemplate.SetCodelet("WEBCONNECTORTDS", "TRemote." +
+                ServerWebConnectorNamespace.Substring("Ict.Petra.Server.".Length));
         }
 
         /*
@@ -727,7 +738,9 @@ namespace Ict.Tools.CodeGeneration.Winforms
 
             if (FCodeStorage.HasAttribute("DatasetType"))
             {
-                FTemplate.AddToCodelet("DATASETTYPE", FCodeStorage.GetAttribute("DatasetType"));
+                FTemplate.SetCodelet("DATASETTYPE", FCodeStorage.GetAttribute("DatasetType"));
+                FTemplate.SetCodelet("SHORTDATASETTYPE",
+                    FCodeStorage.GetAttribute("DatasetType").Substring(FCodeStorage.GetAttribute("DatasetType").LastIndexOf(".") + 1));
                 FTemplate.SetCodelet("MANAGEDDATASETORTYPE", "true");
             }
 
@@ -839,7 +852,7 @@ namespace Ict.Tools.CodeGeneration.Winforms
 
             if (FCodeStorage.ManualFileExistsAndContains("ShowDetailsManual"))
             {
-                FTemplate.AddToCodelet("SHOWDETAILS", "ShowDetailsManual();" + Environment.NewLine);
+                FTemplate.AddToCodelet("SHOWDETAILS", "ShowDetailsManual(ACurrentDetailIndex);" + Environment.NewLine);
             }
 
             if (FCodeStorage.ManualFileExistsAndContains("GetDataFromControlsManual"))
@@ -849,7 +862,7 @@ namespace Ict.Tools.CodeGeneration.Winforms
 
             if (FCodeStorage.ManualFileExistsAndContains("GetDetailDataFromControlsManual"))
             {
-                FTemplate.AddToCodelet("SAVEDETAILS", "GetDetailsFromControlsManual();" + Environment.NewLine);
+                FTemplate.AddToCodelet("SAVEDETAILS", "GetDetailsFromControlsManual(ACurrentDetailIndex);" + Environment.NewLine);
             }
 
             InsertCodeIntoTemplate(AXAMLFilename);

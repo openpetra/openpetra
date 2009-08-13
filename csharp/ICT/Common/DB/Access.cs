@@ -2420,6 +2420,7 @@ namespace Ict.Common.DB
         public TDBTransaction(IDbTransaction ATransaction, IDbConnection AConnection)
         {
             FWrappedTransaction = ATransaction;
+
             // somehow, this line does not work for Progress, gives segmentation fault
             //FConnection = ATransaction.Connection;
             FConnection = AConnection;

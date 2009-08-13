@@ -71,7 +71,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
       this.rbtAll.Text = Catalog.GetString("All");
       this.rgrShowBatches.Text = Catalog.GetString("Show batches available for");
       this.btnNew.Text = Catalog.GetString("&Add");
-      this.btnDelete.Text = Catalog.GetString("&Delete");
+      this.btnDelete.Text = Catalog.GetString("&Cancel");
       this.lblDetailBatchDescription.Text = Catalog.GetString("Batch Description:");
       this.lblDetailBatchControlTotal.Text = Catalog.GetString("Batch Hash Total:");
       this.lblDetailDateEffective.Text = Catalog.GetString("Effective Date:");
@@ -104,7 +104,6 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
       FPetraUtilsObject.SetStatusBarText(txtDetailBatchDescription, Catalog.GetString("Enter a description for this general ledger batch."));
       FPetraUtilsObject.SetStatusBarText(txtDetailBatchControlTotal, Catalog.GetString("(Optional) Enter the total amount of the batch (hash total)."));
       FPetraUtilsObject.SetStatusBarText(dtpDetailDateEffective, Catalog.GetString("Enter the date for which this batch is to take effect."));
-      InitializeManualCode();
       grdDetails.Columns.Clear();
       grdDetails.AddTextColumn("Batch Number", FMainDS.ABatch.ColumnBatchNumber);
       grdDetails.AddTextColumn("Batch status", FMainDS.ABatch.ColumnBatchStatus);
@@ -124,12 +123,9 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
     }
 
     /// automatically generated, create a new record of ABatch and display on the edit screen
-    /// we create the table locally, no dataset
     public bool CreateNewABatch()
     {
-        Ict.Petra.Shared.MFinance.Account.Data.ABatchRow NewRow = FMainDS.ABatch.NewRowTyped(true);
-        NewRowManual(ref NewRow);
-        FMainDS.ABatch.Rows.Add(NewRow);
+        FMainDS.Merge(TRemote.MFinance.GL.WebConnectors.CreateABatch(FLedgerNumber));
 
         FPetraUtilsObject.SetChangedFlag();
 
@@ -206,6 +202,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
         if (FMainDS.ABatch != null)
         {
             DataView myDataView = FMainDS.ABatch.DefaultView;
+            myDataView.Sort = "a_batch_number_i DESC";
             myDataView.AllowNew = false;
             grdDetails.DataSource = new DevAge.ComponentModel.BoundDataView(myDataView);
             grdDetails.AutoSizeCells();
@@ -243,6 +240,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             txtDetailBatchControlTotal.Text = FMainDS.ABatch[ACurrentDetailIndex].BatchControlTotal.ToString();
         }
         dtpDetailDateEffective.Value = FMainDS.ABatch[ACurrentDetailIndex].DateEffective;
+        ShowDetailsManual(ACurrentDetailIndex);
     }
 
     private Int32 FPreviouslySelectedDetailRow = -1;
@@ -257,6 +255,12 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
         ShowDetails(GetSelectedDetailDataTableIndex());
         FPreviouslySelectedDetailRow = GetSelectedDetailDataTableIndex();
         pnlDetails.Enabled = true;
+    }
+
+    /// get the data from the controls and store in the currently selected detail row
+    public void GetDataFromControls()
+    {
+        GetDetailsFromControls(GetSelectedDetailDataTableIndex());
     }
 
     private void GetDetailsFromControls(Int32 ACurrentDetailIndex)

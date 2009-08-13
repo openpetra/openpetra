@@ -165,6 +165,19 @@ namespace Ict.Tools.CodeGeneration.Winforms
             : base("dtp", typeof(DateTimePicker))
         {
         }
+
+        public override void SetControlProperties(IFormWriter writer, TControlDef ctrl)
+        {
+            base.SetControlProperties(writer, ctrl);
+
+            if (TYml2Xml.HasAttribute(ctrl.xmlNode, "ReadOnly")
+                && (TYml2Xml.GetAttribute(ctrl.xmlNode, "ReadOnly").ToLower() == "true"))
+            {
+                writer.SetControlProperty(ctrl.controlName,
+                    "Enabled",
+                    "false");
+            }
+        }
     }
     public class TcmbAutoCompleteGenerator : ComboBoxGenerator
     {
@@ -602,6 +615,26 @@ namespace Ict.Tools.CodeGeneration.Winforms
                 LoadDetailsToGrid += "{" + Environment.NewLine;
                 LoadDetailsToGrid += "    DataView myDataView = FMainDS." + FCodeStorage.GetAttribute("DetailTable") + ".DefaultView;" +
                                      Environment.NewLine;
+
+                if (ctrl.HasAttribute("SortOrder"))
+                {
+                    // SortOrder is comma separated and has DESC or ASC after the column name
+                    string SortOrder = ctrl.GetAttribute("SortOrder");
+
+                    foreach (string SortOrderPart in SortOrder.Split(','))
+                    {
+                        bool temp;
+                        string columnName =
+                            writer.CodeStorage.GetTableField(
+                                null,
+                                SortOrderPart.Split(' ')[0],
+                                out temp, true).strName;
+                        SortOrder = SortOrder.Replace(SortOrderPart.Split(' ')[0], columnName);
+                    }
+
+                    LoadDetailsToGrid += "    myDataView.Sort = \"" + SortOrder + "\";" + Environment.NewLine;
+                }
+
                 LoadDetailsToGrid += "    myDataView.AllowNew = false;" + Environment.NewLine;
                 LoadDetailsToGrid += "    " + ctrl.controlName + ".DataSource = new DevAge.ComponentModel.BoundDataView(myDataView);" +
                                      Environment.NewLine;

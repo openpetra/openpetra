@@ -74,7 +74,7 @@ namespace Ict.Petra.Server.MFinance.AccountsPayable.WebConnectors
         /// <param name="APartnerKey">the supplier</param>
         /// <param name="ACreditNoteOrInvoice">true: credit note; false: invoice</param>
         /// <returns></returns>
-        public static AccountsPayableTDS CreateNewAApDocument(Int32 ALedgerNumber, Int64 APartnerKey, bool ACreditNoteOrInvoice)
+        public static AccountsPayableTDS CreateAApDocument(Int32 ALedgerNumber, Int64 APartnerKey, bool ACreditNoteOrInvoice)
         {
             // create the DataSet that will later be passed to the Client
             AccountsPayableTDS MainDS = new AccountsPayableTDS();
@@ -220,7 +220,7 @@ namespace Ict.Petra.Server.MFinance.AccountsPayable.WebConnectors
         /// <param name="AAmount">the amount that is still missing from the total amount of the invoice</param>
         /// <param name="ALastDetailNumber">AApDocument.LastDetailNumber</param>
         /// <returns>the new AApDocumentDetail row</returns>
-        public static AccountsPayableTDS CreateNewAApDocumentDetail(Int32 ALedgerNumber,
+        public static AccountsPayableTDS CreateAApDocumentDetail(Int32 ALedgerNumber,
             Int32 AApNumber,
             string AApSupplier_DefaultExpAccount,
             string AApSupplier_DefaultCostCentre,

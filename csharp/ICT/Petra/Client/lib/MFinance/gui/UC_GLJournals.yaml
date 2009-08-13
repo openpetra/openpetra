@@ -7,13 +7,15 @@ RootNode:
     DatatableType: Ict.Petra.Shared.MFinance.Account.Data.AJournal
     FormType: edit
     Template: controlMaintainTable
+    Actions:
+        actNew: {Label=&Add, ActionClick=NewRow}
     Controls:
         pnlContent:
             Controls: [pnlLedgerInfo, pnlBatches]
             Dock: Fill
         pnlLedgerInfo:
             Controls: [txtLedgerNumber]
-        txtLedgerNumber: {TODO=true}
+        txtLedgerNumber: {ReadOnly=true}
         pnlBatches:
             Controls: [pnlDetailGrid, pnlDetails]
             Dock: Fill
@@ -23,11 +25,13 @@ RootNode:
         pnlDetailButtons:
             Dock: Right
             Controls: [btnAdd, btnRemove]
-        btnAdd: {TODO=true}
+        btnAdd: {Action=actNew}
         btnRemove: {TODO=true}
         grdDetails:
             Dock: Fill
             Columns: [AJournal.JournalNumber, AJournal.JournalStatus, AJournal.JournalDebitTotal, AJournal.JournalCreditTotal, AJournal.TransactionCurrency, AJournal.JournalDescription, AJournal.SubSystemCode, AJournal.TransactionTypeCode]
+            ActionFocusRow: FocusedRowChanged
+            SortOrder: ABatch.BatchNumber DESC
         pnlDetails:
             Dock: Bottom
             Controls: [txtDetailJournalDescription, cmbDetailSubSystemCode, cmbDetailTransactionTypeCode, cmbDetailTransactionCurrency, dtpDetailDateEffective, txtDetailExchangeRateToBase]

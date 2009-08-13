@@ -173,7 +173,7 @@ namespace Ict.Petra.Client.MFinance.Gui.AccountsPayable
     /// automatically generated function from webconnector
     public bool CreateNewAApDocument(Int32 ALedgerNumber, Int64 APartnerKey, bool ACreditNoteOrInvoice)
     {
-        FMainDS = TRemote.MFinance.AccountsPayable.WebConnectors.CreateNewAApDocument(ALedgerNumber, APartnerKey, ACreditNoteOrInvoice);
+        FMainDS = TRemote.MFinance.AccountsPayable.WebConnectors.CreateAApDocument(ALedgerNumber, APartnerKey, ACreditNoteOrInvoice);
 
         FPetraUtilsObject.SetChangedFlag();
 
@@ -185,7 +185,7 @@ namespace Ict.Petra.Client.MFinance.Gui.AccountsPayable
     /// automatically generated, create a new record of AApDocumentDetail and display on the edit screen
     public bool CreateNewAApDocumentDetail(Int32 ALedgerNumber, Int32 AApNumber, string AApSupplier_DefaultExpAccount, string AApSupplier_DefaultCostCentre, double AAmount, Int32 ALastDetailNumber)
     {
-        FMainDS.Merge(TRemote.MFinance.AccountsPayable.WebConnectors.CreateNewAApDocumentDetail(ALedgerNumber, AApNumber, AApSupplier_DefaultExpAccount, AApSupplier_DefaultCostCentre, AAmount, ALastDetailNumber));
+        FMainDS.Merge(TRemote.MFinance.AccountsPayable.WebConnectors.CreateAApDocumentDetail(ALedgerNumber, AApNumber, AApSupplier_DefaultExpAccount, AApSupplier_DefaultCostCentre, AAmount, ALastDetailNumber));
 
         FPetraUtilsObject.SetChangedFlag();
 

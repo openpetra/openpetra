@@ -80,7 +80,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             this.grdDetails = new Ict.Common.Controls.TSgrdDataGridPaged();
             this.pnlDetailButtons = new System.Windows.Forms.Panel();
             this.tableLayoutPanel3 = new System.Windows.Forms.TableLayoutPanel();
-            this.btnAdd = new System.Windows.Forms.Button();
+            this.btnNew = new System.Windows.Forms.Button();
             this.btnRemove = new System.Windows.Forms.Button();
             this.pnlDetails = new System.Windows.Forms.Panel();
             this.tableLayoutPanel4 = new System.Windows.Forms.TableLayoutPanel();
@@ -205,6 +205,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             //
             this.grdDetails.Name = "grdDetails";
             this.grdDetails.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.grdDetails.Selection.FocusRowEntered += new SourceGrid.RowEventHandler(this.FocusedRowChanged);
             //
             // pnlDetailButtons
             //
@@ -226,14 +227,15 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             this.tableLayoutPanel3.RowStyles.Add(new System.Windows.Forms.RowStyle());
             this.pnlDetailButtons.Controls.Add(this.tableLayoutPanel3);
             //
-            // btnAdd
+            // btnNew
             //
-            this.btnAdd.Location = new System.Drawing.Point(2,2);
-            this.btnAdd.Name = "btnAdd";
-            this.btnAdd.AutoSize = true;
-            this.btnAdd.Text = "Add";
-            this.tableLayoutPanel3.Controls.Add(this.btnAdd, 0, 0);
-            this.tableLayoutPanel3.SetColumnSpan(this.btnAdd, 2);
+            this.btnNew.Location = new System.Drawing.Point(2,2);
+            this.btnNew.Name = "btnNew";
+            this.btnNew.AutoSize = true;
+            this.btnNew.Click += new System.EventHandler(this.NewRow);
+            this.btnNew.Text = "&Add";
+            this.tableLayoutPanel3.Controls.Add(this.btnNew, 0, 0);
+            this.tableLayoutPanel3.SetColumnSpan(this.btnNew, 2);
             //
             // btnRemove
             //
@@ -586,7 +588,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
         private Ict.Common.Controls.TSgrdDataGridPaged grdDetails;
         private System.Windows.Forms.Panel pnlDetailButtons;
         private System.Windows.Forms.TableLayoutPanel tableLayoutPanel3;
-        private System.Windows.Forms.Button btnAdd;
+        private System.Windows.Forms.Button btnNew;
         private System.Windows.Forms.Button btnRemove;
         private System.Windows.Forms.Panel pnlDetails;
         private System.Windows.Forms.TableLayoutPanel tableLayoutPanel4;

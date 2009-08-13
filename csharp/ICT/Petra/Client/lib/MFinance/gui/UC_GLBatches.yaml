@@ -9,7 +9,7 @@ RootNode:
     Template: controlMaintainTable
     Actions:
         actNew: {Label=&Add, ActionClick=NewRow}
-        actDelete: {Label=&Delete, ActionClick=CancelRow}
+        actDelete: {Label=&Cancel, ActionClick=CancelRow}
     Controls:
         pnlContent:
             Controls: [pnlLedgerInfo, rgrShowBatches, pnlBatches]
@@ -20,7 +20,7 @@ RootNode:
             OptionalValues: [Posting, Editing, All]
         pnlLedgerInfo:
             Controls: [txtLedgerNumber]
-        txtLedgerNumber: {TODO=true}
+        txtLedgerNumber: {ReadOnly=true}
         pnlBatches:
             Controls: [pnlDetailGrid, pnlDetails]
             Dock: Fill
@@ -35,13 +35,15 @@ RootNode:
         grdDetails:
             Dock: Fill
             Columns: [ABatch.BatchNumber, ABatch.BatchStatus, ABatch.DateEffective, ABatch.BatchDebitTotal, ABatch.BatchCreditTotal, ABatch.BatchControlTotal, ABatch.BatchDescription]
+            ActionFocusRow: FocusedRowChanged
+            SortOrder: ABatch.BatchNumber DESC
         pnlDetails:
             Dock: Bottom
             Controls:
                 Row0: [txtDetailBatchDescription]
                 Row1: [txtDetailBatchControlTotal]
                 Row2: [dtpDetailDateEffective, dtpDateCantBeBeyond]
-        txtDetailBatchDescription: {Label=Batch Description}
-        txtDetailBatchControlTotal: {Label=Batch Hash Total}
+        txtDetailBatchDescription: {Label=Batch Description, Width=350, ColSpan=2}
+        txtDetailBatchControlTotal: {Label=Batch Hash Total, Type=Currency}
         dtpDateCantBeBeyond: {Label=Date can't be beyond, ReadOnly=true}
         dtpDetailDateEffective: {Label=Effective Date}

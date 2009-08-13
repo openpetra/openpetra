@@ -227,6 +227,10 @@ namespace Ict.Petra.Client.CommonForms
                 {
                     ((DateTimePicker)ctrl).ValueChanged += new EventHandler(this.MultiEventHandler);
                 }
+                else if (ctrl.GetType() == typeof(RadioButton))
+                {
+                    ((RadioButton)ctrl).CheckedChanged += new EventHandler(this.MultiEventHandler);
+                }
                 else if (ctrl.GetType() == typeof(ComboBox))
                 {
                     ((ComboBox)ctrl).SelectedValueChanged += new EventHandler(this.MultiEventHandler);

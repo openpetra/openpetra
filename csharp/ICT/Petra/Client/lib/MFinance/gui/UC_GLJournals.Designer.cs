@@ -152,6 +152,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             this.txtLedgerNumber.Location = new System.Drawing.Point(2,2);
             this.txtLedgerNumber.Name = "txtLedgerNumber";
             this.txtLedgerNumber.Size = new System.Drawing.Size(150, 28);
+            this.txtLedgerNumber.ReadOnly = true;
             //
             // lblLedgerNumber
             //
@@ -183,6 +184,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             //
             this.grdDetails.Name = "grdDetails";
             this.grdDetails.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.grdDetails.Selection.FocusRowEntered += new SourceGrid.RowEventHandler(this.FocusedRowChanged);
             //
             // pnlDetailButtons
             //
@@ -209,7 +211,8 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             this.btnAdd.Location = new System.Drawing.Point(2,2);
             this.btnAdd.Name = "btnAdd";
             this.btnAdd.AutoSize = true;
-            this.btnAdd.Text = "Add";
+            this.btnAdd.Click += new System.EventHandler(this.NewRow);
+            this.btnAdd.Text = "&Add";
             this.tableLayoutPanel3.Controls.Add(this.btnAdd, 0, 0);
             this.tableLayoutPanel3.SetColumnSpan(this.btnAdd, 2);
             //
@@ -316,6 +319,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             this.dtpDetailDateEffective.Location = new System.Drawing.Point(2,2);
             this.dtpDetailDateEffective.Name = "dtpDetailDateEffective";
             this.dtpDetailDateEffective.Size = new System.Drawing.Size(150, 28);
+            this.dtpDetailDateEffective.Enabled = false;
             //
             // lblDetailDateEffective
             //

@@ -7,6 +7,8 @@ RootNode:
     DatatableType: Ict.Petra.Shared.MFinance.GL.Data.GLBatchTDSATransaction
     FormType: edit
     Template: controlMaintainTable
+    Actions:
+        actNew: {Label=&Add, ActionClick=NewRow}
     Controls:
         pnlContent:
             Controls: [pnlLedgerInfo, pnlBatches]
@@ -22,8 +24,8 @@ RootNode:
             Controls: [grdDetails, pnlDetailButtons]
         pnlDetailButtons:
             Dock: Right
-            Controls: [btnAdd, btnRemove]
-        btnAdd: {TODO=true}
+            Controls: [btnNew, btnRemove]
+        btnNew: {Action=actNew}
         btnRemove: {TODO=true}
         grdDetails:
             Dock: Fill
@@ -32,6 +34,8 @@ RootNode:
             CustomColumns:
                 DateEntered: {Label=Date Entered, Type=DateTime}
                 AnalysisAttributes: {Label=Analysis Attributes, Type=String}
+            ActionFocusRow: FocusedRowChanged
+            SortOrder: ATransaction.TransactionNumber DESC
         pnlDetails:
             Dock: Bottom
             Controls: [cmbDetailCostCentreCode, cmbDetailAccountCode, txtDetailNarrative, txtDetailReference, dtpDetailTransactionDate, cmbDetailKeyMinistryKey, pnlDetailAmounts]

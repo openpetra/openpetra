@@ -84,19 +84,24 @@ namespace {#NAMESPACE}
     {#EVENTHANDLERSIMPLEMENTATION}
 
     /// automatically generated, create a new record of {#DETAILTABLE} and display on the edit screen
-    /// we create the table locally, no dataset
     public bool CreateNew{#DETAILTABLE}()
     {
+{#IFNDEF CANFINDWEBCONNECTOR_CREATEDETAIL}
+        // we create the table locally, no dataset
         {#DATATABLETYPE}Row NewRow = FMainDS.{#DETAILTABLE}.NewRowTyped(true);
         {#INITNEWROWMANUAL}
         FMainDS.{#DETAILTABLE}.Rows.Add(NewRow);
-        
+{#ENDIFN CANFINDWEBCONNECTOR_CREATEDETAIL}
+{#IFDEF CANFINDWEBCONNECTOR_CREATEDETAIL}
+        FMainDS.Merge({#WEBCONNECTORDETAIL}.Create{#DETAILTABLE}({#CREATEDETAIL_ACTUALPARAMETERS_LOCAL}));
+{#ENDIF CANFINDWEBCONNECTOR_CREATEDETAIL}
+
         FPetraUtilsObject.SetChangedFlag();
 
         grdDetails.DataSource = new DevAge.ComponentModel.BoundDataView(FMainDS.{#DETAILTABLE}.DefaultView);
         grdDetails.Refresh();
         SelectDetailRowByDataTableIndex(FMainDS.{#DETAILTABLE}.Rows.Count - 1);
-        
+
         return true;
     }
 
@@ -192,6 +197,12 @@ namespace {#NAMESPACE}
 {#ENDIF SHOWDETAILS}
     
 {#IFDEF SAVEDETAILS}
+    /// get the data from the controls and store in the currently selected detail row
+    public void GetDataFromControls()
+    {
+        GetDetailsFromControls(GetSelectedDetailDataTableIndex());
+    }
+
     private void GetDetailsFromControls(Int32 ACurrentDetailIndex)
     {
         if (ACurrentDetailIndex != -1)

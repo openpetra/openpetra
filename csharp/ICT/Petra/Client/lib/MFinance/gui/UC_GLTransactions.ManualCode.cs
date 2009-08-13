@@ -24,60 +24,63 @@
  *
  ************************************************************************/
 using System;
+using System.Data;
 using Ict.Common;
+using Ict.Common.Data;
+using Ict.Petra.Shared.MFinance.Account.Data;
+using Ict.Petra.Shared.MFinance.GL.Data;
 using Ict.Petra.Client.App.Core.RemoteObjects;
 
 namespace Ict.Petra.Client.MFinance.Gui.GL
 {
-    public partial class TUC_GLBatches
+    public partial class TUC_GLTransactions
     {
         private Int32 FLedgerNumber;
+        private Int32 FBatchNumber;
+        private Int32 FJournalNumber;
 
         /// <summary>
-        /// load the batches into the grid
+        /// load the transactions into the grid
         /// </summary>
         /// <param name="ALedgerNumber"></param>
-        public void LoadBatches(Int32 ALedgerNumber)
+        /// <param name="ABatchNumber"></param>
+        /// <param name="AJournalNumber"></param>
+        public void LoadTransactions(Int32 ALedgerNumber, Int32 ABatchNumber, Int32 AJournalNumber)
         {
             FLedgerNumber = ALedgerNumber;
+            FBatchNumber = ABatchNumber;
+            FJournalNumber = AJournalNumber;
 
-            // TODO: more criteria: state of batch, period, etc
-            FMainDS.Merge(TRemote.MFinance.GL.WebConnectors.LoadABatch(ALedgerNumber));
+            FMainDS.Merge(TRemote.MFinance.GL.WebConnectors.LoadATransaction(ALedgerNumber, ABatchNumber, AJournalNumber));
 
             ShowData();
         }
 
-        private void ShowDetailsManual(Int32 ACurrentDetailIndex)
-        {
-            ((TFrmGLBatch)ParentForm).LoadJournals(
-                FMainDS.ABatch[ACurrentDetailIndex].LedgerNumber,
-                FMainDS.ABatch[ACurrentDetailIndex].BatchNumber);
-        }
-
         /// <summary>
-        /// add a new batch
+        /// add a new transactions
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
         public void NewRow(System.Object sender, EventArgs e)
         {
-            this.CreateNewABatch();
-
-            // TODO: this.dtpDateCantBeBeyond.Value = AAccountingPeriod[ALedger.CurrentPeriod + ALedger.ForwardingPostingPeriods].EndOfPeriod
-
-            // TODO: on change of FMainDS.ABatch[GetSelectedDetailDataTableIndex()].DateEffective
-            // also change FMainDS.ABatch[GetSelectedDetailDataTableIndex()].BatchPeriod
-            // and control this.dtpDateCantBeBeyond
+            this.CreateNewATransaction();
         }
 
         /// <summary>
-        /// cancel a batch (there is no deletion of batches)
+        /// make sure the correct transaction number is assigned and the journal.lastTransactionNumber is updated
         /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
-        public void CancelRow(System.Object sender, EventArgs e)
+        /// <param name="ANewRow"></param>
+        private void NewRowManual(ref GLBatchTDSATransactionRow ANewRow)
         {
-            // TODO
+            DataView view = FMainDS.AJournal.DefaultView;
+
+            view.Sort = StringHelper.StrMerge(TTypedDataTable.GetPrimaryKeyColumnStringList(AJournalTable.TableId), ",");
+            AJournalRow row = (AJournalRow)view.FindRows(new object[] { FLedgerNumber, FBatchNumber, FJournalNumber })[0].Row;
+            ANewRow.LedgerNumber = row.LedgerNumber;
+            ANewRow.BatchNumber = row.BatchNumber;
+            ANewRow.JournalNumber = row.JournalNumber;
+            ANewRow.TransactionNumber = row.LastTransactionNumber + 1;
+            row.LastTransactionNumber++;
         }
     }
 }

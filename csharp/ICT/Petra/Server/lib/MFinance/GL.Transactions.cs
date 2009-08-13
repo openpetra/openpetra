@@ -35,8 +35,8 @@ using Ict.Petra.Server.MFinance;
 using Ict.Petra.Shared.MFinance;
 using Ict.Petra.Shared.MFinance.GL;
 using Ict.Petra.Shared.MFinance.GL.Data;
-
-//using Ict.Petra.Shared.Interfaces.MFinance.GL.WebConnectors;
+using Ict.Petra.Shared.MFinance.Account.Data;
+using Ict.Petra.Shared.MFinance.Account.Data.Access;
 
 namespace Ict.Petra.Server.MFinance.GL.WebConnectors
 {
@@ -46,62 +46,147 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
     public class TTransactionWebConnector
     {
         /// <summary>
-        /// create a new batch and increase the last batch number of the ledger
+        /// create a new batch with a consecutive batch number in the ledger,
+        /// and immediately store the batch and the new number in the database
         /// </summary>
         /// <param name="ALedgerNumber"></param>
         /// <returns></returns>
-        public static GLBatchTDS CreateNewABatch(Int32 ALedgerNumber)
+        public static GLBatchTDS CreateABatch(Int32 ALedgerNumber)
         {
-            // create the DataSet that will later be passed to the Client
             GLBatchTDS MainDS = new GLBatchTDS();
+            ALedgerTable LedgerTable;
+            TDBTransaction Transaction = DBAccess.GDBAccessObj.BeginTransaction(IsolationLevel.Serializable);
 
-/*
- *          ABatchRow NewDocumentRow = MainDS.ABatchRow.NewRowTyped();
- *
- *          ABatchRow.ApNumber = -1; // ap number will be set in SubmitChanges
- *          NewDocumentRow.LedgerNumber = ALedgerNumber;
- *          NewDocumentRow.PartnerKey = APartnerKey;
- *          NewDocumentRow.CreditNoteFlag = ACreditNoteOrInvoice;
- *          NewDocumentRow.LastDetailNumber = -1;
- *
- *          // get the supplier defaults
- *          AApSupplierTable tempTable;
- *          AApSupplierAccess.LoadByPrimaryKey(out tempTable, APartnerKey, null);
- *
- *          if (tempTable.Rows.Count == 1)
- *          {
- *              MainDS.AApSupplier.Merge(tempTable);
- *
- *              AApSupplierRow Supplier = MainDS.AApSupplier[0];
- *
- *              if (!Supplier.IsDefaultCreditTermsNull())
- *              {
- *                  NewDocumentRow.CreditTerms = Supplier.DefaultCreditTerms;
- *              }
- *
- *              if (!Supplier.IsDefaultDiscountDaysNull())
- *              {
- *                  NewDocumentRow.DiscountDays = Supplier.DefaultDiscountDays;
- *              }
- *
- *              if (!Supplier.IsDefaultDiscountPercentageNull())
- *              {
- *                  NewDocumentRow.DiscountPercentage = Supplier.DefaultDiscountPercentage;
- *              }
- *
- *              if (!Supplier.IsDefaultApAccountNull())
- *              {
- *                  NewDocumentRow.ApAccount = Supplier.DefaultApAccount;
- *              }
- *          }
- *
- *          MainDS.AApDocument.Rows.Add(NewDocumentRow);
- */
+            ALedgerAccess.LoadByPrimaryKey(out LedgerTable, ALedgerNumber, Transaction);
 
-            // Remove all Tables that were not filled with data before remoting them.
-            MainDS.RemoveEmptyTables();
+            ABatchRow NewRow = MainDS.ABatch.NewRowTyped(true);
+            NewRow.LedgerNumber = ALedgerNumber;
+            LedgerTable[0].LastBatchNumber++;
+            NewRow.BatchNumber = LedgerTable[0].LastBatchNumber;
+            NewRow.BatchPeriod = LedgerTable[0].CurrentPeriod;
+            MainDS.ABatch.Rows.Add(NewRow);
 
+            TVerificationResultCollection VerificationResult;
+            ABatchAccess.SubmitChanges(MainDS.ABatch, Transaction, out VerificationResult);
+            ALedgerAccess.SubmitChanges(LedgerTable, Transaction, out VerificationResult);
+
+            DBAccess.GDBAccessObj.CommitTransaction();
             return MainDS;
+        }
+
+        /// <summary>
+        /// loads a list of batches for the given ledger
+        /// TODO: limit to period, limit to batch status, etc
+        /// </summary>
+        /// <param name="ALedgerNumber"></param>
+        /// <returns></returns>
+        public static GLBatchTDS LoadABatch(Int32 ALedgerNumber)
+        {
+            GLBatchTDS MainDS = new GLBatchTDS();
+            TDBTransaction Transaction = DBAccess.GDBAccessObj.BeginTransaction(IsolationLevel.ReadCommitted);
+
+            ABatchAccess.LoadViaALedger(MainDS, ALedgerNumber, Transaction);
+            DBAccess.GDBAccessObj.RollbackTransaction();
+            return MainDS;
+        }
+
+        /// <summary>
+        /// loads a list of journals for the given ledger and batch
+        /// </summary>
+        /// <param name="ALedgerNumber"></param>
+        /// <param name="ABatchNumber"></param>
+        /// <returns></returns>
+        public static GLBatchTDS LoadAJournal(Int32 ALedgerNumber, Int32 ABatchNumber)
+        {
+            GLBatchTDS MainDS = new GLBatchTDS();
+            TDBTransaction Transaction = DBAccess.GDBAccessObj.BeginTransaction(IsolationLevel.ReadCommitted);
+
+            AJournalAccess.LoadViaABatch(MainDS, ALedgerNumber, ABatchNumber, Transaction);
+            DBAccess.GDBAccessObj.RollbackTransaction();
+            return MainDS;
+        }
+
+        /// <summary>
+        /// loads a list of transactions for the given ledger and batch and journal
+        /// </summary>
+        /// <param name="ALedgerNumber"></param>
+        /// <param name="ABatchNumber"></param>
+        /// <param name="AJournalNumber"></param>
+        /// <returns></returns>
+        public static GLBatchTDS LoadATransaction(Int32 ALedgerNumber, Int32 ABatchNumber, Int32 AJournalNumber)
+        {
+            GLBatchTDS MainDS = new GLBatchTDS();
+            TDBTransaction Transaction = DBAccess.GDBAccessObj.BeginTransaction(IsolationLevel.ReadCommitted);
+
+            ATransactionAccess.LoadViaAJournal(MainDS, ALedgerNumber, ABatchNumber, AJournalNumber, Transaction);
+            DBAccess.GDBAccessObj.RollbackTransaction();
+            return MainDS;
+        }
+
+        /// <summary>
+        /// this will store all new and modified batches, journals, transactions
+        /// </summary>
+        /// <param name="AInspectDS"></param>
+        /// <param name="AVerificationResult"></param>
+        /// <returns></returns>
+        public static TSubmitChangesResult SaveGLBatchTDS(ref GLBatchTDS AInspectDS,
+            out TVerificationResultCollection AVerificationResult)
+        {
+            TSubmitChangesResult SubmissionResult = TSubmitChangesResult.scrError;
+            TDBTransaction SubmitChangesTransaction = DBAccess.GDBAccessObj.BeginTransaction(IsolationLevel.Serializable);
+
+            AVerificationResult = new TVerificationResultCollection();
+
+            try
+            {
+                SubmissionResult = TSubmitChangesResult.scrOK;
+
+                if (SubmissionResult == TSubmitChangesResult.scrOK)
+                {
+                    if (!ABatchAccess.SubmitChanges(AInspectDS.ABatch, SubmitChangesTransaction,
+                            out AVerificationResult))
+                    {
+                        SubmissionResult = TSubmitChangesResult.scrError;
+                    }
+                }
+
+                if (SubmissionResult == TSubmitChangesResult.scrOK)
+                {
+                    if (!AJournalAccess.SubmitChanges(AInspectDS.AJournal, SubmitChangesTransaction,
+                            out AVerificationResult))
+                    {
+                        SubmissionResult = TSubmitChangesResult.scrError;
+                    }
+                }
+
+                if (SubmissionResult == TSubmitChangesResult.scrOK)
+                {
+                    if (!ATransactionAccess.SubmitChanges(AInspectDS.ATransaction, SubmitChangesTransaction,
+                            out AVerificationResult))
+                    {
+                        SubmissionResult = TSubmitChangesResult.scrError;
+                    }
+                }
+
+                if (SubmissionResult == TSubmitChangesResult.scrOK)
+                {
+                    DBAccess.GDBAccessObj.CommitTransaction();
+                }
+                else
+                {
+                    DBAccess.GDBAccessObj.RollbackTransaction();
+                }
+            }
+            catch (Exception e)
+            {
+                TLogging.Log("SaveGLBatchTDS: exception " + e.Message);
+
+                DBAccess.GDBAccessObj.RollbackTransaction();
+
+                throw new Exception(e.ToString() + " " + e.Message);
+            }
+
+            return SubmissionResult;
         }
     }
 }

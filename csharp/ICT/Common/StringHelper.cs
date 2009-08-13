@@ -152,6 +152,37 @@ namespace Ict.Common
         }
 
         /// <summary>
+        /// concatenate a string using the given delimiter
+        /// </summary>
+        /// <param name="l">the string array containing the strings that should be concatenated</param>
+        /// <param name="delim">the delimiter to be used between the strings</param>
+        /// <returns>a string with the concatenated strings from the string array</returns>
+        public static string StrMerge(String[] l, string delim)
+        {
+            string ReturnValue = "";
+
+            for (int i = 0; i <= l.Length - 1; i++)
+            {
+                string element = l[i];
+
+                // if the element already contains the delimiter, mark it with an escape sequence
+                // strsplit and getNextCSV have to revert it
+                // escape the escape marker
+                element = element.Replace("\\", "\\\\");
+                element = element.Replace(delim, "\\" + delim);
+
+                if (i != 0)
+                {
+                    ReturnValue = ReturnValue + delim;
+                }
+
+                ReturnValue = ReturnValue + element;
+            }
+
+            return ReturnValue;
+        }
+
+        /// <summary>
         /// return a sorted version of the given StringCollection (not case sensitive)
         /// </summary>
         /// <param name="l">the StringCollection to be used to generate a sorted list</param>

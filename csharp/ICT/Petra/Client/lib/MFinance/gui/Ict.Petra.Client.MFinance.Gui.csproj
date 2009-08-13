@@ -214,10 +214,12 @@
     <Compile Include="UC_GLJournals.Designer.cs">
       <DependentUpon>UC_GLJournals.cs</DependentUpon>
     </Compile>
+    <Compile Include="UC_GLJournals.ManualCode.cs" />
     <Compile Include="UC_GLTransactions.cs" />
     <Compile Include="UC_GLTransactions.Designer.cs">
       <DependentUpon>UC_GLTransactions.cs</DependentUpon>
     </Compile>
+    <Compile Include="UC_GLTransactions.ManualCode.cs" />
     <EmbeddedResource Include="APEditDocument.resx">
       <DependentUpon>APEditDocument.cs</DependentUpon>
     </EmbeddedResource>

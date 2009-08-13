@@ -1890,7 +1890,7 @@ namespace Ict.Common.Data
                 (((GenerateSelectClause(AFieldList, ATableId) + " FROM PUB_" + TTypedDataTable.GetTableNameSQL(ATableId)) +
                   GenerateWhereClause(TTypedDataTable.GetColumnStringList(ATableId), ATemplateRow,
                       ATemplateOperators)) +
-            GenerateOrderByClause(AOrderBy)), TTypedDataTable.GetTableName(ATableId), ATransaction,
+                 GenerateOrderByClause(AOrderBy)), TTypedDataTable.GetTableName(ATableId), ATransaction,
                 GetParametersForWhereClause(ATableId, ATemplateRow), AStartRecord, AMaxRecords);
         }
 
@@ -1911,7 +1911,7 @@ namespace Ict.Common.Data
                     (((GenerateSelectClause(AFieldList, ATableId) + " FROM PUB_" + TTypedDataTable.GetTableNameSQL(ATableId)) +
                       GenerateWhereClause(TTypedDataTable.GetColumnStringList(
                               ATableId), ATemplateRow, ATemplateOperators)) +
-            GenerateOrderByClause(AOrderBy)), ATransaction,
+                     GenerateOrderByClause(AOrderBy)), ATransaction,
                     GetParametersForWhereClause(ATableId, ATemplateRow), AStartRecord, AMaxRecords);
         }
 
@@ -1965,6 +1965,14 @@ namespace Ict.Common.Data
             bool ResultValue = true;
             bool ExceptionReported = false;
             DataRow TheRow = null;
+
+            AVerificationResult = null;
+
+            // allow this method to be called with null values, eg. when saving complex TypedDataSets with some removed empty tables
+            if (ATable == null)
+            {
+                return true;
+            }
 
             AVerificationResult = new TVerificationResultCollection();
 

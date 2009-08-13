@@ -66,7 +66,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
 
       // this code has been inserted by GenerateI18N, all changes in this region will be overwritten by GenerateI18N
       this.lblLedgerNumber.Text = Catalog.GetString("LedgerNumber:");
-      this.btnAdd.Text = Catalog.GetString("Add");
+      this.btnAdd.Text = Catalog.GetString("&Add");
       this.btnRemove.Text = Catalog.GetString("Remove");
       this.lblDetailJournalDescription.Text = Catalog.GetString("Journal Description:");
       this.lblDetailSubSystemCode.Text = Catalog.GetString("Sub System:");
@@ -115,6 +115,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
       grdDetails.AddTextColumn("Journal Description", FMainDS.AJournal.ColumnJournalDescription);
       grdDetails.AddTextColumn("Sub System", FMainDS.AJournal.ColumnSubSystemCode);
       grdDetails.AddTextColumn("Transaction Type", FMainDS.AJournal.ColumnTransactionTypeCode);
+      FPetraUtilsObject.ActionEnablingEvent += ActionEnabledEvent;
 
       DataView myDataView = FMainDS.AJournal.DefaultView;
       myDataView.AllowNew = false;
@@ -125,11 +126,11 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
     }
 
     /// automatically generated, create a new record of AJournal and display on the edit screen
-    /// we create the table locally, no dataset
     public bool CreateNewAJournal()
     {
+        // we create the table locally, no dataset
         Ict.Petra.Shared.MFinance.Account.Data.AJournalRow NewRow = FMainDS.AJournal.NewRowTyped(true);
-
+        NewRowManual(ref NewRow);
         FMainDS.AJournal.Rows.Add(NewRow);
 
         FPetraUtilsObject.SetChangedFlag();
@@ -207,6 +208,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
         if (FMainDS.AJournal != null)
         {
             DataView myDataView = FMainDS.AJournal.DefaultView;
+            myDataView.Sort = "a_batch_number_i DESC";
             myDataView.AllowNew = false;
             grdDetails.DataSource = new DevAge.ComponentModel.BoundDataView(myDataView);
             grdDetails.AutoSizeCells();
@@ -254,6 +256,12 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
         ShowDetails(GetSelectedDetailDataTableIndex());
         FPreviouslySelectedDetailRow = GetSelectedDetailDataTableIndex();
         pnlDetails.Enabled = true;
+    }
+
+    /// get the data from the controls and store in the currently selected detail row
+    public void GetDataFromControls()
+    {
+        GetDetailsFromControls(GetSelectedDetailDataTableIndex());
     }
 
     private void GetDetailsFromControls(Int32 ACurrentDetailIndex)
@@ -307,6 +315,20 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
     {
         return (TFrmPetraUtils)FPetraUtilsObject;
     }
+#endregion
+
+#region Action Handling
+
+    /// auto generated
+    public void ActionEnabledEvent(object sender, ActionEventArgs e)
+    {
+        if (e.ActionName == "actNew")
+        {
+            btnAdd.Enabled = e.Enabled;
+        }
+
+    }
+
 #endregion
   }
 }

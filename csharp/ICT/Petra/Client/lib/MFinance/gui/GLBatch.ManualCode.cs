@@ -25,6 +25,7 @@
  ************************************************************************/
 using System;
 using Ict.Common;
+using Ict.Common.Data;
 using Ict.Petra.Client.App.Core.RemoteObjects;
 
 namespace Ict.Petra.Client.MFinance.Gui.GL
@@ -34,48 +35,32 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
         private Int32 FLedgerNumber;
 
         /// <summary>
-        /// AP is opened in this ledger
+        /// use this ledger
         /// </summary>
         public Int32 LedgerNumber
         {
             set
             {
                 FLedgerNumber = value;
+                ucoBatches.LoadBatches(FLedgerNumber);
             }
         }
 
-        /// <summary>
-        ///  TODOComment
-        /// </summary>
-        /// <returns></returns>
-        public bool SaveChanges()
+        private void InitializeManualCode()
         {
-            // TODO
-            return false;
+            this.tpgJournals.Enabled = false;
+            this.tpgTransactions.Enabled = false;
         }
 
         /// <summary>
-        /// TODOComment
+        /// activate the journal tab and load the journals of the batch
         /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
-        public void FileSave(System.Object sender, EventArgs e)
+        /// <param name="ALedgerNumber"></param>
+        /// <param name="ABatchNumber"></param>
+        public void LoadJournals(Int32 ALedgerNumber, Int32 ABatchNumber)
         {
-            // TODO
-        }
-
-        /// <summary>
-        /// get the current ledger
-        /// </summary>
-        public void InitializeManualCode()
-        {
-/*            todo
- *          Ict.Petra.Shared.MFinance.Account.Data.ALedgerTable LedgerTable;
- *          TRemote.MCommon.DataReader.GetData("ALedger",
- *              new TSearchCriteria[] { new TSearchCriteria("LedgerNumber", FLedgerNumber) },
- *              out LedgerTable);
- *          FMainDS.Merge(LedgerTable);
- */
+            this.tpgJournals.Enabled = true;
+            this.ucoJournals.LoadJournals(ALedgerNumber, ABatchNumber);
         }
     }
 }

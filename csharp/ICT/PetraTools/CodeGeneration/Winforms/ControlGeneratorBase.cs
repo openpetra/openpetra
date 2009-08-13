@@ -384,6 +384,10 @@ namespace Ict.Tools.CodeGeneration.Winforms
                     }
                 }
             }
+            else if (ctrl.controlTypePrefix == "uco")
+            {
+                writer.Template.AddToCodelet("SAVEDATA", ctrl.controlName + ".GetDataFromControls();" + Environment.NewLine);
+            }
         }
 
         /// <summary>

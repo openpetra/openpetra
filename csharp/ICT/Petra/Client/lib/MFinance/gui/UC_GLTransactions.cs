@@ -66,7 +66,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
 
       // this code has been inserted by GenerateI18N, all changes in this region will be overwritten by GenerateI18N
       this.lblLedgerNumber.Text = Catalog.GetString("LedgerNumber:");
-      this.btnAdd.Text = Catalog.GetString("Add");
+      this.btnNew.Text = Catalog.GetString("&Add");
       this.btnRemove.Text = Catalog.GetString("Remove");
       this.lblDetailCostCentreCode.Text = Catalog.GetString("Cost Centre Code:");
       this.lblDetailAccountCode.Text = Catalog.GetString("Account Code:");
@@ -129,6 +129,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
       grdDetails.AddTextColumn("Amount in Base Currency", FMainDS.ATransaction.ColumnAmountInBaseCurrency);
       grdDetails.AddTextColumn("Amount in International Currency", FMainDS.ATransaction.ColumnAmountInIntlCurrency);
       grdDetails.AddTextColumn("Analysis Attributes", FMainDS.ATransaction.ColumnAnalysisAttributes);
+      FPetraUtilsObject.ActionEnablingEvent += ActionEnabledEvent;
 
       DataView myDataView = FMainDS.ATransaction.DefaultView;
       myDataView.AllowNew = false;
@@ -139,11 +140,11 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
     }
 
     /// automatically generated, create a new record of ATransaction and display on the edit screen
-    /// we create the table locally, no dataset
     public bool CreateNewATransaction()
     {
+        // we create the table locally, no dataset
         Ict.Petra.Shared.MFinance.GL.Data.GLBatchTDSATransactionRow NewRow = FMainDS.ATransaction.NewRowTyped(true);
-
+        NewRowManual(ref NewRow);
         FMainDS.ATransaction.Rows.Add(NewRow);
 
         FPetraUtilsObject.SetChangedFlag();
@@ -221,6 +222,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
         if (FMainDS.ATransaction != null)
         {
             DataView myDataView = FMainDS.ATransaction.DefaultView;
+            myDataView.Sort = "a_transaction_number_i DESC";
             myDataView.AllowNew = false;
             grdDetails.DataSource = new DevAge.ComponentModel.BoundDataView(myDataView);
             grdDetails.AutoSizeCells();
@@ -282,6 +284,12 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
         ShowDetails(GetSelectedDetailDataTableIndex());
         FPreviouslySelectedDetailRow = GetSelectedDetailDataTableIndex();
         pnlDetails.Enabled = true;
+    }
+
+    /// get the data from the controls and store in the currently selected detail row
+    public void GetDataFromControls()
+    {
+        GetDetailsFromControls(GetSelectedDetailDataTableIndex());
     }
 
     private void GetDetailsFromControls(Int32 ACurrentDetailIndex)
@@ -350,6 +358,20 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
     {
         return (TFrmPetraUtils)FPetraUtilsObject;
     }
+#endregion
+
+#region Action Handling
+
+    /// auto generated
+    public void ActionEnabledEvent(object sender, ActionEventArgs e)
+    {
+        if (e.ActionName == "actNew")
+        {
+            btnNew.Enabled = e.Enabled;
+        }
+
+    }
+
 #endregion
   }
 }

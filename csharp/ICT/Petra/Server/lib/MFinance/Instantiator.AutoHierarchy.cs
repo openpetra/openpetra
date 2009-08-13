@@ -36,6 +36,7 @@ using Ict.Petra.Shared.Interfaces.MFinance.AccountsPayable.WebConnectors;
 using Ict.Petra.Shared.Interfaces.MFinance.Budget.UIConnectors;
 using Ict.Petra.Shared.Interfaces.MFinance.Gift.UIConnectors;
 using Ict.Petra.Shared.Interfaces.MFinance.GL.UIConnectors;
+using Ict.Petra.Shared.Interfaces.MFinance.GL.WebConnectors;
 using Ict.Petra.Shared.Interfaces.MFinance.ICH.UIConnectors;
 using Ict.Petra.Shared.Interfaces.MFinance.PeriodEnd.UIConnectors;
 using Ict.Petra.Shared.Interfaces.MFinance.Reporting.UIConnectors;
@@ -54,6 +55,7 @@ using Ict.Petra.Server.MFinance.Instantiator.AccountsPayable.WebConnectors;
 using Ict.Petra.Server.MFinance.Instantiator.Budget.UIConnectors;
 using Ict.Petra.Server.MFinance.Instantiator.Gift.UIConnectors;
 using Ict.Petra.Server.MFinance.Instantiator.GL.UIConnectors;
+using Ict.Petra.Server.MFinance.Instantiator.GL.WebConnectors;
 using Ict.Petra.Server.MFinance.Instantiator.ICH.UIConnectors;
 using Ict.Petra.Server.MFinance.Instantiator.PeriodEnd.UIConnectors;
 using Ict.Petra.Server.MFinance.Instantiator.Reporting.UIConnectors;
@@ -72,6 +74,7 @@ using Ict.Petra.Server.MFinance.AccountsPayable.WebConnectors;
 //using Ict.Petra.Server.MFinance.Budget.UIConnectors;
 //using Ict.Petra.Server.MFinance.Gift.UIConnectors;
 //using Ict.Petra.Server.MFinance.GL.UIConnectors;
+using Ict.Petra.Server.MFinance.GL.WebConnectors;
 //using Ict.Petra.Server.MFinance.ICH.UIConnectors;
 //using Ict.Petra.Server.MFinance.PeriodEnd.UIConnectors;
 //using Ict.Petra.Server.MFinance.Reporting.UIConnectors;
@@ -82,6 +85,7 @@ using Ict.Petra.Server.MFinance.AccountsPayable.WebConnectors;
 using Ict.Common.Verification;
 using Ict.Petra.Shared.RemotedExceptions;
 using Ict.Petra.Shared.MFinance.AP.Data;
+using Ict.Petra.Shared.MFinance.GL.Data;
 using Ict.Petra.Shared.MFinance;
 #endregion ManualCode
 namespace Ict.Petra.Server.MFinance.Instantiator
@@ -884,11 +888,11 @@ namespace Ict.Petra.Server.MFinance.Instantiator.AccountsPayable.WebConnectors
         }
 
         /// generated method from connector
-        public AccountsPayableTDS CreateNewAApDocument(Int32 ALedgerNumber,
-                                                       Int64 APartnerKey,
-                                                       bool ACreditNoteOrInvoice)
+        public AccountsPayableTDS CreateAApDocument(Int32 ALedgerNumber,
+                                                    Int64 APartnerKey,
+                                                    bool ACreditNoteOrInvoice)
         {
-            return Ict.Petra.Server.MFinance.AccountsPayable.WebConnectors.TTransactionWebConnector.CreateNewAApDocument(ALedgerNumber, APartnerKey, ACreditNoteOrInvoice);
+            return Ict.Petra.Server.MFinance.AccountsPayable.WebConnectors.TTransactionWebConnector.CreateAApDocument(ALedgerNumber, APartnerKey, ACreditNoteOrInvoice);
         }
 
         /// generated method from connector
@@ -899,14 +903,14 @@ namespace Ict.Petra.Server.MFinance.Instantiator.AccountsPayable.WebConnectors
         }
 
         /// generated method from connector
-        public AccountsPayableTDS CreateNewAApDocumentDetail(Int32 ALedgerNumber,
-                                                             Int32 AApNumber,
-                                                             string AApSupplier_DefaultExpAccount,
-                                                             string AApSupplier_DefaultCostCentre,
-                                                             double AAmount,
-                                                             Int32 ALastDetailNumber)
+        public AccountsPayableTDS CreateAApDocumentDetail(Int32 ALedgerNumber,
+                                                          Int32 AApNumber,
+                                                          string AApSupplier_DefaultExpAccount,
+                                                          string AApSupplier_DefaultCostCentre,
+                                                          double AAmount,
+                                                          Int32 ALastDetailNumber)
         {
-            return Ict.Petra.Server.MFinance.AccountsPayable.WebConnectors.TTransactionWebConnector.CreateNewAApDocumentDetail(ALedgerNumber, AApNumber, AApSupplier_DefaultExpAccount, AApSupplier_DefaultCostCentre, AAmount, ALastDetailNumber);
+            return Ict.Petra.Server.MFinance.AccountsPayable.WebConnectors.TTransactionWebConnector.CreateAApDocumentDetail(ALedgerNumber, AApNumber, AApSupplier_DefaultExpAccount, AApSupplier_DefaultCostCentre, AAmount, ALastDetailNumber);
         }
 
         /// generated method from connector
@@ -1581,6 +1585,7 @@ namespace Ict.Petra.Server.MFinance.Instantiator.GL
         private DateTime FStartTime;
 #endif
         private TGLUIConnectorsNamespace FGLUIConnectorsSubNamespace;
+        private TGLWebConnectorsNamespace FGLWebConnectorsSubNamespace;
 
         /// <summary>Constructor</summary>
         public TGLNamespace()
@@ -1678,6 +1683,37 @@ namespace Ict.Petra.Server.MFinance.Instantiator.GL
         }
 
 
+        /// <summary>The 'GLWebConnectors' subnamespace contains further subnamespaces.</summary>
+        public IGLWebConnectorsNamespace WebConnectors
+        {
+            get
+            {
+                //
+                // Creates or passes a reference to an instantiator of sub-namespaces that
+                // reside in the 'GL.WebConnectors' sub-namespace.
+                // A call to this function is done everytime a Client uses an object of this
+                // sub-namespace - this is fully transparent to the Client.
+                //
+                // @return A reference to an instantiator of sub-namespaces that reside in
+                //         the 'GL.WebConnectors' sub-namespace
+                //
+
+                // accessing TWebConnectorsNamespace the first time? > instantiate the object
+                if (FGLWebConnectorsSubNamespace == null)
+                {
+                    // NOTE AutoGeneration: * the returned Type will need to be manually coded in ManualEndpoints.cs of this Project!
+                    //      * for the Generator: the name of this Type ('TWebConnectorsNamespace') needs to come out of the XML definition,
+                    //      * The Namespace where it resides in ('Ict.Petra.Server.GL.Instantiator.WebConnectors') should be automatically contructable.
+                    FGLWebConnectorsSubNamespace = new TGLWebConnectorsNamespace();
+                }
+
+
+                return (IGLWebConnectorsNamespace)FGLWebConnectorsSubNamespace;
+            }
+
+        }
+
+
     }
 }
 
@@ -1755,6 +1791,118 @@ namespace Ict.Petra.Server.MFinance.Instantiator.GL.UIConnectors
             return null; // make sure that the TGLUIConnectorsNamespace object exists until this AppDomain is unloaded!
         }
 
+
+    }
+}
+
+
+namespace Ict.Petra.Server.MFinance.Instantiator.GL.WebConnectors
+{
+
+    /// <summary>auto generated class </summary>
+    public class TGLWebConnectorsNamespace : MarshalByRefObject, IGLWebConnectorsNamespace
+    {
+#if DEBUGMODE
+        private DateTime FStartTime;
+#endif
+
+        /// <summary>Constructor</summary>
+        public TGLWebConnectorsNamespace()
+        {
+#if DEBUGMODE
+            if (TSrvSetting.DL >= 9)
+            {
+                Console.WriteLine(this.GetType().FullName + " created: Instance hash is " + this.GetHashCode().ToString());
+            }
+
+            FStartTime = DateTime.Now;
+#endif
+        }
+
+
+        // NOTE AutoGeneration: This destructor is only needed for debugging...
+#if DEBUGMODE
+        /// <summary>Destructor</summary>
+        ~TGLWebConnectorsNamespace()
+        {
+#if DEBUGMODELONGRUNNINGFINALIZERS
+            const Int32 MAX_ITERATIONS = 100000;
+            System.Int32 LoopCounter;
+            object MyObject;
+            object MyObject2;
+#endif
+            if (TSrvSetting.DL >= 9)
+            {
+                Console.WriteLine(this.GetType().FullName + ": Getting collected after " + (new TimeSpan(
+                                                                                                DateTime.Now.Ticks -
+                                                                                                FStartTime.Ticks)).ToString() + " seconds.");
+            }
+
+#if DEBUGMODELONGRUNNINGFINALIZERS
+            MyObject = new object();
+            if (TSrvSetting.DL >= 9)
+            {
+                Console.WriteLine(this.GetType().FullName + ": Now performing some longer-running stuff...");
+            }
+
+            for (LoopCounter = 0; LoopCounter <= MAX_ITERATIONS; LoopCounter += 1)
+            {
+                MyObject2 = new object();
+                GC.KeepAlive(MyObject);
+            }
+
+            if (TSrvSetting.DL >= 9)
+            {
+                Console.WriteLine(this.GetType().FullName + ": FINALIZER has run.");
+            }
+
+#endif
+        }
+
+#endif
+
+
+
+        /// NOTE AutoGeneration: This function is all-important!!!
+        public override object InitializeLifetimeService()
+        {
+            return null; // make sure that the TGLWebConnectorsNamespace object exists until this AppDomain is unloaded!
+        }
+
+
+        /// generated method from connector
+        public GLBatchTDS CreateABatch(Int32 ALedgerNumber)
+        {
+            return Ict.Petra.Server.MFinance.GL.WebConnectors.TTransactionWebConnector.CreateABatch(ALedgerNumber);
+        }
+
+        /// generated method from connector
+        public GLBatchTDS LoadABatch(Int32 ALedgerNumber)
+        {
+            return Ict.Petra.Server.MFinance.GL.WebConnectors.TTransactionWebConnector.LoadABatch(ALedgerNumber);
+        }
+
+        /// generated method from connector
+        public GLBatchTDS LoadAJournal(Int32 ALedgerNumber,
+                                       Int32 ABatchNumber)
+        {
+            return Ict.Petra.Server.MFinance.GL.WebConnectors.TTransactionWebConnector.LoadAJournal(ALedgerNumber, ABatchNumber);
+        }
+
+        /// generated method from connector
+        public GLBatchTDS LoadATransaction(Int32 ALedgerNumber,
+                                           Int32 ABatchNumber,
+                                           Int32 AJournalNumber)
+        {
+            return Ict.Petra.Server.MFinance.GL.WebConnectors.TTransactionWebConnector.LoadATransaction(ALedgerNumber, ABatchNumber, AJournalNumber);
+        }
+
+        /// generated method from connector
+        public TSubmitChangesResult SaveGLBatchTDS(ref GLBatchTDS AInspectDS,
+                                                   out TVerificationResultCollection AVerificationResult)
+        {
+            return Ict.Petra.Server.MFinance.GL.WebConnectors.TTransactionWebConnector.SaveGLBatchTDS(ref AInspectDS, out AVerificationResult);
+        }
 
     }
 }

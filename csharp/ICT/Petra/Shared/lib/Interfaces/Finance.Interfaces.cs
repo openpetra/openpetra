@@ -23,12 +23,14 @@ using Ict.Petra.Shared.Interfaces.MFinance.AccountsPayable.WebConnectors;
 using Ict.Petra.Shared.Interfaces.MFinance.Budget.UIConnectors;
 using Ict.Petra.Shared.Interfaces.MFinance.Gift.UIConnectors;
 using Ict.Petra.Shared.Interfaces.MFinance.GL.UIConnectors;
+using Ict.Petra.Shared.Interfaces.MFinance.GL.WebConnectors;
 using Ict.Petra.Shared.Interfaces.MFinance.ICH.UIConnectors;
 using Ict.Petra.Shared.Interfaces.MFinance.PeriodEnd.UIConnectors;
 using Ict.Petra.Shared.Interfaces.MFinance.Reporting.UIConnectors;
 using Ict.Petra.Shared.Interfaces.MFinance.Setup.UIConnectors;
 #region ManualCode
 using Ict.Petra.Shared.MFinance.AP.Data;
+using Ict.Petra.Shared.MFinance.GL.Data;
 using Ict.Petra.Shared.Interfaces.AsynchronousExecution;
 #endregion
 namespace Ict.Petra.Shared.Interfaces.MFinance
@@ -180,19 +182,19 @@ namespace Ict.Petra.Shared.Interfaces.MFinance.AccountsPayable.WebConnectors
         AccountsPayableTDS LoadAApDocument(Int32 ALedgerNumber,
                                            Int32 AAPNumber);
         /// <summary> auto generated from Connector method(Ict.Petra.Server.MFinance.AccountsPayable.WebConnectors.TTransactionWebConnector)</summary>
-        AccountsPayableTDS CreateNewAApDocument(Int32 ALedgerNumber,
-                                                Int64 APartnerKey,
-                                                bool ACreditNoteOrInvoice);
+        AccountsPayableTDS CreateAApDocument(Int32 ALedgerNumber,
+                                             Int64 APartnerKey,
+                                             bool ACreditNoteOrInvoice);
         /// <summary> auto generated from Connector method(Ict.Petra.Server.MFinance.AccountsPayable.WebConnectors.TTransactionWebConnector)</summary>
         TSubmitChangesResult SaveAApDocument(ref AccountsPayableTDS AInspectDS,
                                              out TVerificationResultCollection AVerificationResult);
         /// <summary> auto generated from Connector method(Ict.Petra.Server.MFinance.AccountsPayable.WebConnectors.TTransactionWebConnector)</summary>
-        AccountsPayableTDS CreateNewAApDocumentDetail(Int32 ALedgerNumber,
-                                                      Int32 AApNumber,
-                                                      string AApSupplier_DefaultExpAccount,
-                                                      string AApSupplier_DefaultCostCentre,
-                                                      double AAmount,
-                                                      Int32 ALastDetailNumber);
+        AccountsPayableTDS CreateAApDocumentDetail(Int32 ALedgerNumber,
+                                                   Int32 AApNumber,
+                                                   string AApSupplier_DefaultExpAccount,
+                                                   string AApSupplier_DefaultCostCentre,
+                                                   double AAmount,
+                                                   Int32 ALastDetailNumber);
         /// <summary> auto generated from Connector method(Ict.Petra.Server.MFinance.AccountsPayable.WebConnectors.TTransactionWebConnector)</summary>
         AccountsPayableTDS FindAApDocument(Int32 ALedgerNumber,
                                            Int64 ASupplierKey,
@@ -298,6 +300,12 @@ namespace Ict.Petra.Shared.Interfaces.MFinance.GL
             get;
         }
 
+        /// <summary>access to sub namespace</summary>
+        IGLWebConnectorsNamespace WebConnectors
+        {
+            get;
+        }
+
     }
 
 }
@@ -308,6 +316,30 @@ namespace Ict.Petra.Shared.Interfaces.MFinance.GL.UIConnectors
     /// <summary>auto generated</summary>
     public interface IGLUIConnectorsNamespace : IInterface
     {
+    }
+
+}
+
+
+namespace Ict.Petra.Shared.Interfaces.MFinance.GL.WebConnectors
+{
+    /// <summary>auto generated</summary>
+    public interface IGLWebConnectorsNamespace : IInterface
+    {
+        /// <summary> auto generated from Connector method(Ict.Petra.Server.MFinance.GL.WebConnectors.TTransactionWebConnector)</summary>
+        GLBatchTDS CreateABatch(Int32 ALedgerNumber);
+        /// <summary> auto generated from Connector method(Ict.Petra.Server.MFinance.GL.WebConnectors.TTransactionWebConnector)</summary>
+        GLBatchTDS LoadABatch(Int32 ALedgerNumber);
+        /// <summary> auto generated from Connector method(Ict.Petra.Server.MFinance.GL.WebConnectors.TTransactionWebConnector)</summary>
+        GLBatchTDS LoadAJournal(Int32 ALedgerNumber,
+                                Int32 ABatchNumber);
+        /// <summary> auto generated from Connector method(Ict.Petra.Server.MFinance.GL.WebConnectors.TTransactionWebConnector)</summary>
+        GLBatchTDS LoadATransaction(Int32 ALedgerNumber,
+                                    Int32 ABatchNumber,
+                                    Int32 AJournalNumber);
+        /// <summary> auto generated from Connector method(Ict.Petra.Server.MFinance.GL.WebConnectors.TTransactionWebConnector)</summary>
+        TSubmitChangesResult SaveGLBatchTDS(ref GLBatchTDS AInspectDS,
+                                            out TVerificationResultCollection AVerificationResult);
     }
 
 }

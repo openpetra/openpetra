@@ -216,6 +216,7 @@ namespace Ict.Common
     /// <summary>
     /// search criteria for SQL queries
     /// </summary>
+    [Serializable()]
     public class TSearchCriteria
     {
         /// <summary>

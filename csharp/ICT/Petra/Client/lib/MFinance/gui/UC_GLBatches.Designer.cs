@@ -156,6 +156,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             this.txtLedgerNumber.Location = new System.Drawing.Point(2,2);
             this.txtLedgerNumber.Name = "txtLedgerNumber";
             this.txtLedgerNumber.Size = new System.Drawing.Size(150, 28);
+            this.txtLedgerNumber.ReadOnly = true;
             //
             // lblLedgerNumber
             //
@@ -241,6 +242,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             //
             this.grdDetails.Name = "grdDetails";
             this.grdDetails.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.grdDetails.Selection.FocusRowEntered += new SourceGrid.RowEventHandler(this.FocusedRowChanged);
             //
             // pnlDetailButtons
             //
@@ -278,7 +280,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             this.btnDelete.Name = "btnDelete";
             this.btnDelete.AutoSize = true;
             this.btnDelete.Click += new System.EventHandler(this.CancelRow);
-            this.btnDelete.Text = "&Delete";
+            this.btnDelete.Text = "&Cancel";
             this.tableLayoutPanel4.Controls.Add(this.btnDelete, 0, 1);
             this.tableLayoutPanel4.SetColumnSpan(this.btnDelete, 2);
             //
@@ -309,7 +311,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             //
             this.txtDetailBatchDescription.Location = new System.Drawing.Point(2,2);
             this.txtDetailBatchDescription.Name = "txtDetailBatchDescription";
-            this.txtDetailBatchDescription.Size = new System.Drawing.Size(150, 28);
+            this.txtDetailBatchDescription.Size = new System.Drawing.Size(350, 28);
             //
             // lblDetailBatchDescription
             //
@@ -320,6 +322,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             this.lblDetailBatchDescription.Margin = new System.Windows.Forms.Padding(3, 7, 3, 0);
             this.tableLayoutPanel5.Controls.Add(this.lblDetailBatchDescription, 0, 0);
             this.tableLayoutPanel5.Controls.Add(this.txtDetailBatchDescription, 1, 0);
+            this.tableLayoutPanel5.SetColumnSpan(this.txtDetailBatchDescription, 2 * 2 - 1);
             //
             // txtDetailBatchControlTotal
             //
@@ -358,6 +361,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             this.dtpDateCantBeBeyond.Location = new System.Drawing.Point(2,2);
             this.dtpDateCantBeBeyond.Name = "dtpDateCantBeBeyond";
             this.dtpDateCantBeBeyond.Size = new System.Drawing.Size(150, 28);
+            this.dtpDateCantBeBeyond.Enabled = false;
             //
             // lblDateCantBeBeyond
             //

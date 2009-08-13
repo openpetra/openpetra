@@ -24,60 +24,58 @@
  *
  ************************************************************************/
 using System;
+using System.Data;
 using Ict.Common;
+using Ict.Common.Data;
+using Ict.Petra.Shared.MFinance.Account.Data;
 using Ict.Petra.Client.App.Core.RemoteObjects;
 
 namespace Ict.Petra.Client.MFinance.Gui.GL
 {
-    public partial class TUC_GLBatches
+    public partial class TUC_GLJournals
     {
         private Int32 FLedgerNumber;
+        private Int32 FBatchNumber;
 
         /// <summary>
-        /// load the batches into the grid
+        /// load the journals into the grid
         /// </summary>
         /// <param name="ALedgerNumber"></param>
-        public void LoadBatches(Int32 ALedgerNumber)
+        /// <param name="ABatchNumber"></param>
+        public void LoadJournals(Int32 ALedgerNumber, Int32 ABatchNumber)
         {
             FLedgerNumber = ALedgerNumber;
+            FBatchNumber = ABatchNumber;
 
-            // TODO: more criteria: state of batch, period, etc
-            FMainDS.Merge(TRemote.MFinance.GL.WebConnectors.LoadABatch(ALedgerNumber));
+            FMainDS.Merge(TRemote.MFinance.GL.WebConnectors.LoadAJournal(ALedgerNumber, ABatchNumber));
 
             ShowData();
         }
 
-        private void ShowDetailsManual(Int32 ACurrentDetailIndex)
-        {
-            ((TFrmGLBatch)ParentForm).LoadJournals(
-                FMainDS.ABatch[ACurrentDetailIndex].LedgerNumber,
-                FMainDS.ABatch[ACurrentDetailIndex].BatchNumber);
-        }
-
         /// <summary>
-        /// add a new batch
+        /// add a new journal
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
         public void NewRow(System.Object sender, EventArgs e)
         {
-            this.CreateNewABatch();
-
-            // TODO: this.dtpDateCantBeBeyond.Value = AAccountingPeriod[ALedger.CurrentPeriod + ALedger.ForwardingPostingPeriods].EndOfPeriod
-
-            // TODO: on change of FMainDS.ABatch[GetSelectedDetailDataTableIndex()].DateEffective
-            // also change FMainDS.ABatch[GetSelectedDetailDataTableIndex()].BatchPeriod
-            // and control this.dtpDateCantBeBeyond
+            this.CreateNewAJournal();
         }
 
         /// <summary>
-        /// cancel a batch (there is no deletion of batches)
+        /// make sure the correct journal number is assigned and the batch.lastJournal is updated
         /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
-        public void CancelRow(System.Object sender, EventArgs e)
+        /// <param name="ANewRow"></param>
+        private void NewRowManual(ref AJournalRow ANewRow)
         {
-            // TODO
+            DataView view = FMainDS.ABatch.DefaultView;
+
+            view.Sort = StringHelper.StrMerge(TTypedDataTable.GetPrimaryKeyColumnStringList(ABatchTable.TableId), ",");
+            ABatchRow row = (ABatchRow)view.FindRows(new object[] { FLedgerNumber, FBatchNumber })[0].Row;
+            ANewRow.LedgerNumber = row.LedgerNumber;
+            ANewRow.BatchNumber = row.BatchNumber;
+            ANewRow.JournalNumber = row.LastJournal + 1;
+            row.LastJournal++;
         }
     }
 }

@@ -1450,6 +1450,7 @@ namespace Ict.Petra.Client.MPartner.Gui
         public void InitialiseUserControl()
         {
             SingleLineFlow LayoutManagerLeftColumn = new SingleLineFlow(pnlLeftColumn, 1, 1);
+
             LayoutManagerLeftColumn.SpacerDistance = 7;
             SingleLineFlow LayoutManagerRightColumn = new SingleLineFlow(pnlRightColumn, 1, 1);
             LayoutManagerRightColumn.SpacerDistance = 7;

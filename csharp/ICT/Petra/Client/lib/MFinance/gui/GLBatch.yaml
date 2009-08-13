@@ -4,7 +4,7 @@ RootNode:
     Namespace: Ict.Petra.Client.MFinance.Gui.GL
     DatasetType: Ict.Petra.Shared.MFinance.GL.Data.GLBatchTDS
     FormType: browse
-    Template: windowFind
+    Template: windowTDS
     WindowWidth: 660
     WindowHeight: 500
     Controls:
