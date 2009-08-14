@@ -6,11 +6,11 @@
     <OutputType>Library</OutputType>
     <RootNamespace>Ict.Tools.CodeGeneration.Winforms</RootNamespace>
     <AssemblyName>Ict.Tools.CodeGeneration.Winforms</AssemblyName>
-    <BaseIntermediateOutputPath>..\..\_bin\Release\</BaseIntermediateOutputPath>
     <AllowUnsafeBlocks>False</AllowUnsafeBlocks>
     <NoStdLib>False</NoStdLib>
     <WarningLevel>4</WarningLevel>
     <TreatWarningsAsErrors>false</TreatWarningsAsErrors>
+    <TargetFrameworkVersion>v2.0</TargetFrameworkVersion>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
     <OutputPath>..\..\_bin\Debug\</OutputPath>

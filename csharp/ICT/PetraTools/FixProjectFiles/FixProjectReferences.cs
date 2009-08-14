@@ -1,4 +1,4 @@
-﻿/*************************************************************************
+/*************************************************************************
  *
  * DO NOT REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
  *
@@ -75,10 +75,16 @@ public class TFixProjectReferences : TCSProjTools
         Console.WriteLine(AFilename);
         doc.Load(AFilename);
 
+        bool firstPropertyGroup = true;
+
+        string xmlns = "http://schemas.microsoft.com/developer/msbuild/2003"; // doc.Attributes["xmlns"].Value;
+
         foreach (XmlNode child in doc.DocumentElement)
         {
             if (child.Name == "PropertyGroup")
             {
+                bool containsTargetPlatform = false;
+
                 foreach (XmlNode child2 in child.ChildNodes)
                 {
                     if (child2.Name == "ProjectGuid")
@@ -89,7 +95,21 @@ public class TFixProjectReferences : TCSProjTools
                             child2.InnerText = FProjectGUIDs[System.IO.Path.GetFileNameWithoutExtension(AFilename)];
                         }
                     }
+                    if (child2.Name == "TargetFrameworkVersion")
+                    {
+                        containsTargetPlatform = true;
+                        child2.InnerText = "v2.0";
+                    }
                 }
+
+                if (firstPropertyGroup && !containsTargetPlatform)
+                {
+                    XmlNode targetPlatform = doc.CreateElement("TargetFrameworkVersion", xmlns);
+	            targetPlatform.InnerText = "v2.0";
+                    child.AppendChild(targetPlatform);
+                }
+
+                firstPropertyGroup = false;
             }
 
             if (child.Name == "Import")
@@ -112,8 +132,7 @@ public class TFixProjectReferences : TCSProjTools
                             if (child3.Name == "Project")
                             {
                                 string referencedProject =
-                                    System.IO.Path.GetFileNameWithoutExtension(child2.Attributes["Include"].Value);
-
+                                    System.IO.Path.GetFileNameWithoutExtension(child2.Attributes["Include"].Value.Replace('\\', Path.DirectorySeparatorChar));
                                 if (child3.InnerText != FProjectGUIDs[referencedProject])
                                 {
                                     Console.WriteLine("fixing " + child3.InnerText);
