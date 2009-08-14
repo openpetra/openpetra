@@ -12,7 +12,7 @@
     <TreatWarningsAsErrors>false</TreatWarningsAsErrors>
     <BaseIntermediateOutputPath>..\..\_bin\objcode\</BaseIntermediateOutputPath>
     <DocumentationFile>..\..\_bin\Debug\Ict.Petra.Server.MHospitality.UIConnectors.xml</DocumentationFile>
-    <TargetFrameworkVersion xmlns="">v2.0</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v2.0</TargetFrameworkVersion>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
     <OutputPath>..\..\_bin\Debug\</OutputPath>
