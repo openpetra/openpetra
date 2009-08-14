@@ -222,12 +222,13 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
         if (FMainDS.ATransaction != null)
         {
             DataView myDataView = FMainDS.ATransaction.DefaultView;
-            myDataView.Sort = "a_transaction_number_i DESC";
+            myDataView.Sort = "a_transaction_number_i ASC";
             myDataView.AllowNew = false;
             grdDetails.DataSource = new DevAge.ComponentModel.BoundDataView(myDataView);
             grdDetails.AutoSizeCells();
             if (FMainDS.ATransaction.Rows.Count > 0)
             {
+                grdDetails.Selection.SelectRow(1, true);
                 ShowDetails(0);
             }
             else
@@ -243,6 +244,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
 
     private void ShowDetails(Int32 ACurrentDetailIndex)
     {
+        pnlDetails.Enabled = true;
         cmbDetailCostCentreCode.SetSelectedString(FMainDS.ATransaction[ACurrentDetailIndex].CostCentreCode);
         cmbDetailAccountCode.SetSelectedString(FMainDS.ATransaction[ACurrentDetailIndex].AccountCode);
         if (FMainDS.ATransaction[ACurrentDetailIndex].IsNarrativeNull())

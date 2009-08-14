@@ -31,13 +31,16 @@ RootNode:
             Dock: Fill
             Columns: [AJournal.JournalNumber, AJournal.JournalStatus, AJournal.JournalDebitTotal, AJournal.JournalCreditTotal, AJournal.TransactionCurrency, AJournal.JournalDescription, AJournal.SubSystemCode, AJournal.TransactionTypeCode]
             ActionFocusRow: FocusedRowChanged
-            SortOrder: AJournal.JournalNumber DESC
+            SortOrder: AJournal.JournalNumber ASC
+            RowFilter: AJournal.BatchNumber
         pnlDetails:
             Dock: Bottom
             Controls: [txtDetailJournalDescription, cmbDetailSubSystemCode, cmbDetailTransactionTypeCode, cmbDetailTransactionCurrency, dtpDetailDateEffective, txtDetailExchangeRateToBase]
-        txtDetailJournalDescription: {Label=Journal Description}
-        cmbDetailSubSystemCode: {Label=Sub System}
-        cmbDetailTransactionTypeCode: {Label=Transaction Type}
+        txtDetailJournalDescription: {Label=Journal Description, Width=350}
+        # SubSystemCode: the user can only select GL, but the system can generate eg. AP journals or GR journals
+        cmbDetailSubSystemCode: {Label=Sub System, ReadOnly=true}
+        # transaction type depends on the ledger and the selected sub system
+        cmbDetailTransactionTypeCode: {Label=Transaction Type, List=TransactionTypeCodeList}
         cmbDetailTransactionCurrency: {Label=Currency, List=CurrencyCodeList}
         dtpDetailDateEffective: {Label=Effective Date, ReadOnly=true}
         txtDetailExchangeRateToBase: {Label= Exchange Rate to Base, TODOSaveToDailyExchangeRateTableWithDialog=think}

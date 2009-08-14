@@ -32,6 +32,7 @@ using System.Data;
 using Ict.Petra.Shared.MPartner;
 using Ict.Petra.Shared.MPartner.Mailroom.Data;
 using Ict.Petra.Shared.MPartner.Partner.Data;
+using Ict.Petra.Shared.MFinance.Account.Data;
 using Ict.Petra.Shared.MCommon.Data;
 using Ict.Petra.Client.CommonControls;
 using Ict.Common.Controls;
@@ -76,6 +77,9 @@ namespace Ict.Petra.Client.CommonControls
 
             /// <summary>todoComment</summary>
             CurrencyCodeList,
+
+            /// for GL journals transaction type
+            TransactionTypeCodeList,
 
             /// <summary>todoComment</summary>
             DataLabelLookupList,
@@ -138,14 +142,24 @@ namespace Ict.Petra.Client.CommonControls
             UnitTypeList
         };
 
-        private DataTable FDataCache_ListTable;
+        private DataTable FDataCache_ListTable = null;
         private DataView FDataView;
         private TListTableEnum FListTable;
-        private Boolean FUserControlInitialised;
+        private Boolean FUserControlInitialised = false;
         private String FFilter;
         private Boolean FAddNotSetValue = false;
         private String FNotSetValue;
         private String FNotSetDisplay;
+
+        /// this allows to set the table manually,
+        /// when it cannot come from a cache because it depends on too many other parameters on the screen
+        public DataTable Table
+        {
+            set
+            {
+                FDataCache_ListTable = value;
+            }
+        }
 
         /// <summary>todoComment</summary>
         public System.Object SelectedItem
@@ -305,7 +319,11 @@ namespace Ict.Petra.Client.CommonControls
             String TmpDisplayInColumn3 = "";
             String TmpDisplayInColumn4 = "";
 
-            TmpColumnsToSearch = "";
+            if ((FListTable == TListTableEnum.TransactionTypeCodeList) && (FDataCache_ListTable == null))
+            {
+                // the table must be set manually via the Table property
+                return;
+            }
 
             if (!(DesignMode))
             {
@@ -408,6 +426,17 @@ namespace Ict.Petra.Client.CommonControls
                         TmpDisplayInColumn3 = null;
                         TmpDisplayInColumn4 = null;
                         cmbAutoPopulated.LabelDisplaysColumn = ACurrencyTable.GetCurrencyNameDBName();
+                        break;
+
+                    case TListTableEnum.TransactionTypeCodeList:
+
+                        TmpDisplayMember = ATransactionTypeTable.GetTransactionTypeCodeDBName();
+                        TmpValueMember = ATransactionTypeTable.GetTransactionTypeCodeDBName();
+                        TmpDisplayInColumn1 = ATransactionTypeTable.GetTransactionTypeCodeDBName();
+                        TmpDisplayInColumn2 = ATransactionTypeTable.GetTransactionTypeDescriptionDBName();
+                        TmpDisplayInColumn3 = null;
+                        TmpDisplayInColumn4 = null;
+                        cmbAutoPopulated.LabelDisplaysColumn = ATransactionTypeTable.GetTransactionTypeDescriptionDBName();
                         break;
 
                     case TListTableEnum.DenominationList:
@@ -771,6 +800,16 @@ namespace Ict.Petra.Client.CommonControls
                     cmbAutoPopulated.Images = null;
                     break;
 
+                case TListTableEnum.TransactionTypeCodeList:
+                    cmbAutoPopulated.ComboBoxWidth = 100;
+                    cmbAutoPopulated.ColumnWidthCol1 = ComboBoxWidth;
+                    cmbAutoPopulated.ColumnWidthCol2 = 150;
+                    cmbAutoPopulated.ColumnWidthCol3 = 0;
+                    cmbAutoPopulated.ColumnWidthCol4 = 0;
+                    cmbAutoPopulated.ImageColumn = 0;
+                    cmbAutoPopulated.Images = null;
+                    break;
+
                 case TListTableEnum.DenominationList:
                     cmbAutoPopulated.ComboBoxWidth = 100;
                     cmbAutoPopulated.ColumnWidthCol1 = ComboBoxWidth;
@@ -1049,21 +1088,17 @@ namespace Ict.Petra.Client.CommonControls
             cmbAutoPopulated.cmbCombobox.DroppedDown = true;
         }
 
-        /// <summary>
-        /// todoComment
-        /// </summary>
-        /// <param name="AColumnName"></param>
-        public void RecoverSelectedValue(String AColumnName)
+        /// pass through the SelectedIndex property from the combobox
+        public Int32 SelectedIndex
         {
-            System.Data.DataRowView mRowView;
-            String mSelectedText;
-            MessageBox.Show("AColumnName: " + AColumnName);
-            MessageBox.Show("Selected Index: " + this.cmbAutoPopulated.cmbCombobox.SelectedIndex.ToString());
-            mRowView = (System.Data.DataRowView) this.cmbAutoPopulated.cmbCombobox.SelectedItem;
-            mSelectedText = mRowView.Row[AColumnName].ToString();
-            MessageBox.Show(mSelectedText);
-            this.cmbAutoPopulated.cmbCombobox.SelectedText = mSelectedText;
-            this.cmbAutoPopulated.cmbCombobox.Text = mSelectedText;
+            get
+            {
+                return this.cmbAutoPopulated.cmbCombobox.SelectedIndex;
+            }
+            set
+            {
+                this.cmbAutoPopulated.cmbCombobox.SelectedIndex = SelectedIndex;
+            }
         }
     }
 }

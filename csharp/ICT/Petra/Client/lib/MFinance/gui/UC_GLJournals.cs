@@ -102,6 +102,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
       FPetraUtilsObject.SetStatusBarText(txtDetailJournalDescription, Catalog.GetString("Enter a description for this general ledger journal."));
       FPetraUtilsObject.SetStatusBarText(cmbDetailSubSystemCode, Catalog.GetString("The subsystem from which this journal came."));
       FPetraUtilsObject.SetStatusBarText(cmbDetailTransactionTypeCode, Catalog.GetString("Select the type of journal."));
+      cmbDetailTransactionTypeCode.InitialiseUserControl();
       FPetraUtilsObject.SetStatusBarText(cmbDetailTransactionCurrency, Catalog.GetString("Select a currency code to use for the journal transactions."));
       cmbDetailTransactionCurrency.InitialiseUserControl();
       FPetraUtilsObject.SetStatusBarText(dtpDetailDateEffective, Catalog.GetString("Enter the date for the journal to come into effect."));
@@ -208,12 +209,14 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
         if (FMainDS.AJournal != null)
         {
             DataView myDataView = FMainDS.AJournal.DefaultView;
-            myDataView.Sort = "a_journal_number_i DESC";
+            myDataView.Sort = "a_journal_number_i ASC";
+            myDataView.RowFilter = "a_batch_number_i = " + FBatchNumber.ToString();
             myDataView.AllowNew = false;
             grdDetails.DataSource = new DevAge.ComponentModel.BoundDataView(myDataView);
             grdDetails.AutoSizeCells();
             if (FMainDS.AJournal.Rows.Count > 0)
             {
+                grdDetails.Selection.SelectRow(1, true);
                 ShowDetails(0);
             }
             else
@@ -229,6 +232,8 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
 
     private void ShowDetails(Int32 ACurrentDetailIndex)
     {
+        pnlDetails.Enabled = true;
+        BeforeShowDetailsManual(FMainDS.AJournal[ACurrentDetailIndex]);
         txtDetailJournalDescription.Text = FMainDS.AJournal[ACurrentDetailIndex].JournalDescription;
         cmbDetailSubSystemCode.SetSelectedString(FMainDS.AJournal[ACurrentDetailIndex].SubSystemCode);
         if (FMainDS.AJournal[ACurrentDetailIndex].IsTransactionTypeCodeNull())
@@ -269,7 +274,6 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
         if (ACurrentDetailIndex != -1)
         {
             FMainDS.AJournal[ACurrentDetailIndex].JournalDescription = txtDetailJournalDescription.Text;
-            FMainDS.AJournal[ACurrentDetailIndex].SubSystemCode = cmbDetailSubSystemCode.GetSelectedString();
             if (cmbDetailTransactionTypeCode.SelectedIndex == -1)
             {
                 FMainDS.AJournal[ACurrentDetailIndex].SetTransactionTypeCodeNull();

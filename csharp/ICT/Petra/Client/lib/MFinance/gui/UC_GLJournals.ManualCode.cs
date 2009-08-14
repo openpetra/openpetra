@@ -47,6 +47,8 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             FLedgerNumber = ALedgerNumber;
             FBatchNumber = ABatchNumber;
 
+            GetDataFromControls();
+
             FMainDS.Merge(TRemote.MFinance.GL.WebConnectors.LoadAJournal(ALedgerNumber, ABatchNumber));
 
             ShowData();
@@ -75,7 +77,41 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             ANewRow.LedgerNumber = row.LedgerNumber;
             ANewRow.BatchNumber = row.BatchNumber;
             ANewRow.JournalNumber = row.LastJournal + 1;
+
+            // manually created journals are all GL
+            ANewRow.SubSystemCode = "GL";
+            ANewRow.TransactionTypeCode = "STD";
+
+            // TODO: get base currency of ledger
+            ANewRow.TransactionCurrency = "EUR";
+
+            // TODO: get exchange rate from daily or corporate exchange rate table
+            // TODO: disable exchange rate if transaction currency equals base currency
+            ANewRow.ExchangeRateToBase = 1;
+            ANewRow.DateEffective = row.DateEffective;
+            ANewRow.JournalPeriod = row.BatchPeriod;
             row.LastJournal++;
+        }
+
+        /// initialise some comboboxes
+        private void BeforeShowDetailsManual(AJournalRow ARow)
+        {
+            // SubSystemCode: the user can only select GL, but the system can generate eg. AP journals or GR journals
+            this.cmbDetailSubSystemCode.Items.Clear();
+            this.cmbDetailSubSystemCode.Items.AddRange(new object[] { ARow.SubSystemCode });
+
+            TTypedDataTable TransactionTypeTable;
+            TRemote.MCommon.DataReader.GetData(TTypedDataTable.GetTableNameSQL(ATransactionTypeTable.TableId),
+                new TSearchCriteria[] {
+                    new TSearchCriteria(TTypedDataTable.GetColumnNameSQL(ATransactionTypeTable.TableId,
+                            ATransactionTypeTable.ColumnLedgerNumberId), FLedgerNumber),
+                    new TSearchCriteria(TTypedDataTable.GetColumnNameSQL(ATransactionTypeTable.TableId,
+                            ATransactionTypeTable.ColumnSubSystemCodeId), ARow.SubSystemCode)
+                },
+                out TransactionTypeTable);
+
+            cmbDetailTransactionTypeCode.Table = TransactionTypeTable;
+            cmbDetailTransactionTypeCode.InitialiseUserControl();
         }
     }
 }

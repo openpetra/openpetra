@@ -208,7 +208,8 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             grdDetails.AutoSizeCells();
             if (FMainDS.ABatch.Rows.Count > 0)
             {
-                ShowDetails(0);
+                grdDetails.Selection.SelectRow(FMainDS.ABatch.Rows.Count, true);
+                ShowDetails(FMainDS.ABatch.Rows.Count - 1);
             }
             else
             {
@@ -223,6 +224,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
 
     private void ShowDetails(Int32 ACurrentDetailIndex)
     {
+        pnlDetails.Enabled = true;
         if (FMainDS.ABatch[ACurrentDetailIndex].IsBatchDescriptionNull())
         {
             txtDetailBatchDescription.Text = String.Empty;

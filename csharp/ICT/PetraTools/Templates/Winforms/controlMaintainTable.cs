@@ -176,6 +176,7 @@ namespace {#NAMESPACE}
 {#IFDEF SHOWDETAILS}
     private void ShowDetails(Int32 ACurrentDetailIndex)
     {
+        pnlDetails.Enabled = true;
         {#SHOWDETAILS}
     }
 

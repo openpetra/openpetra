@@ -107,6 +107,7 @@ namespace Ict.Tools.CodeGeneration.Winforms
                 AvailableControlGenerators.Add(new ComboBoxGenerator());
                 AvailableControlGenerators.Add(new TcmbAutoPopulatedGenerator());
                 AvailableControlGenerators.Add(new TcmbAutoCompleteGenerator());
+                AvailableControlGenerators.Add(new TCmbVersatileGenerator());
                 AvailableControlGenerators.Add(new RadioGroupComplexGenerator());
                 AvailableControlGenerators.Add(new RadioGroupSimpleGenerator());
                 AvailableControlGenerators.Add(new RadioGroupNoBorderGenerator());
@@ -724,6 +725,11 @@ namespace Ict.Tools.CodeGeneration.Winforms
             FTemplate.AddToCodelet("INITNEWROWMANUAL", "");
             FTemplate.AddToCodelet("ACTIONENABLINGDISABLEMISSINGFUNCS", "");
 
+            if (FCodeStorage.ManualFileExistsAndContains("void BeforeShowDetailsManual"))
+            {
+                FTemplate.AddToCodelet("SHOWDETAILS", "BeforeShowDetailsManual(FMainDS.{#DETAILTABLE}[ACurrentDetailIndex]);" + Environment.NewLine);
+            }
+
             FTemplate.AddToCodelet("INITACTIONSTATE", "FPetraUtilsObject.InitActionState();" + Environment.NewLine);
 
             if (FCodeStorage.ManualFileExistsAndContains("InitializeManualCode"))
@@ -845,12 +851,12 @@ namespace Ict.Tools.CodeGeneration.Winforms
 
             FinishUpInitialisingControls();
 
-            if (FCodeStorage.ManualFileExistsAndContains("ShowDataManual"))
+            if (FCodeStorage.ManualFileExistsAndContains("void ShowDataManual"))
             {
                 FTemplate.AddToCodelet("SHOWDATA", "ShowDataManual();" + Environment.NewLine);
             }
 
-            if (FCodeStorage.ManualFileExistsAndContains("ShowDetailsManual"))
+            if (FCodeStorage.ManualFileExistsAndContains("void ShowDetailsManual"))
             {
                 FTemplate.AddToCodelet("SHOWDETAILS", "ShowDetailsManual(ACurrentDetailIndex);" + Environment.NewLine);
             }

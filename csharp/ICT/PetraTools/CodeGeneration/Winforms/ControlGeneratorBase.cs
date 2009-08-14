@@ -106,12 +106,18 @@ namespace Ict.Tools.CodeGeneration.Winforms
             }
         }
 
+        /// use the prefix to see if the control matches the current class
+        public bool SimplePrefixMatch(XmlNode curNode)
+        {
+            return curNode.Name.StartsWith(FPrefix);
+        }
+
         // overwrite for more complicated matches,
         // if the same prefix is used for more than one control type
         // e.g. txt
         public virtual bool ControlFitsNode(XmlNode curNode)
         {
-            return curNode.Name.StartsWith(FPrefix);
+            return SimplePrefixMatch(curNode);
         }
 
         public virtual void GenerateDeclaration(IFormWriter writer, TControlDef ctrl)

@@ -88,7 +88,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             this.lblDetailJournalDescription = new System.Windows.Forms.Label();
             this.cmbDetailSubSystemCode = new Ict.Common.Controls.TCmbAutoComplete();
             this.lblDetailSubSystemCode = new System.Windows.Forms.Label();
-            this.cmbDetailTransactionTypeCode = new Ict.Common.Controls.TCmbAutoComplete();
+            this.cmbDetailTransactionTypeCode = new Ict.Petra.Client.CommonControls.TCmbAutoPopulated();
             this.lblDetailTransactionTypeCode = new System.Windows.Forms.Label();
             this.cmbDetailTransactionCurrency = new Ict.Petra.Client.CommonControls.TCmbAutoPopulated();
             this.lblDetailTransactionCurrency = new System.Windows.Forms.Label();
@@ -253,7 +253,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             //
             this.txtDetailJournalDescription.Location = new System.Drawing.Point(2,2);
             this.txtDetailJournalDescription.Name = "txtDetailJournalDescription";
-            this.txtDetailJournalDescription.Size = new System.Drawing.Size(150, 28);
+            this.txtDetailJournalDescription.Size = new System.Drawing.Size(350, 28);
             //
             // lblDetailJournalDescription
             //
@@ -285,7 +285,8 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             //
             this.cmbDetailTransactionTypeCode.Location = new System.Drawing.Point(2,2);
             this.cmbDetailTransactionTypeCode.Name = "cmbDetailTransactionTypeCode";
-            this.cmbDetailTransactionTypeCode.Size = new System.Drawing.Size(150, 28);
+            this.cmbDetailTransactionTypeCode.Size = new System.Drawing.Size(300, 28);
+            this.cmbDetailTransactionTypeCode.ListTable = TCmbAutoPopulated.TListTableEnum.TransactionTypeCodeList;
             //
             // lblDetailTransactionTypeCode
             //
@@ -301,7 +302,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             //
             this.cmbDetailTransactionCurrency.Location = new System.Drawing.Point(2,2);
             this.cmbDetailTransactionCurrency.Name = "cmbDetailTransactionCurrency";
-            this.cmbDetailTransactionCurrency.Size = new System.Drawing.Size(150, 28);
+            this.cmbDetailTransactionCurrency.Size = new System.Drawing.Size(300, 28);
             this.cmbDetailTransactionCurrency.ListTable = TCmbAutoPopulated.TListTableEnum.CurrencyCodeList;
             //
             // lblDetailTransactionCurrency
@@ -393,7 +394,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
         private System.Windows.Forms.Label lblDetailJournalDescription;
         private Ict.Common.Controls.TCmbAutoComplete cmbDetailSubSystemCode;
         private System.Windows.Forms.Label lblDetailSubSystemCode;
-        private Ict.Common.Controls.TCmbAutoComplete cmbDetailTransactionTypeCode;
+        private Ict.Petra.Client.CommonControls.TCmbAutoPopulated cmbDetailTransactionTypeCode;
         private System.Windows.Forms.Label lblDetailTransactionTypeCode;
         private Ict.Petra.Client.CommonControls.TCmbAutoPopulated cmbDetailTransactionCurrency;
         private System.Windows.Forms.Label lblDetailTransactionCurrency;

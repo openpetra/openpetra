@@ -218,6 +218,7 @@ namespace Ict.Tools.CodeGeneration.Winforms
         public TcmbAutoPopulatedGenerator()
             : base("cmb", "Ict.Petra.Client.CommonControls.TCmbAutoPopulated")
         {
+            this.FWidth = 300;
         }
 
         public override bool ControlFitsNode(XmlNode curNode)
@@ -237,6 +238,24 @@ namespace Ict.Tools.CodeGeneration.Winforms
             writer.Template.AddToCodelet("INITUSERCONTROLS", ctrl.controlName + ".InitialiseUserControl();" + Environment.NewLine);
         }
     }
+    public class TCmbVersatileGenerator : ComboBoxGenerator
+    {
+        public TCmbVersatileGenerator()
+            : base("cmb", "Ict.Common.Controls.TCmbVersatile")
+        {
+        }
+
+        public override bool ControlFitsNode(XmlNode curNode)
+        {
+            if (SimplePrefixMatch(curNode))
+            {
+                return TYml2Xml.HasAttribute(curNode, "MultiColumn");
+            }
+
+            return false;
+        }
+    }
+
     public class ComboBoxGenerator : TControlGenerator
     {
         public ComboBoxGenerator()
@@ -254,7 +273,8 @@ namespace Ict.Tools.CodeGeneration.Winforms
             if (base.ControlFitsNode(curNode))
             {
                 return !TYml2Xml.HasAttribute(curNode, "List")
-                       && !TYml2Xml.HasAttribute(curNode, "AutoComplete");
+                       && !TYml2Xml.HasAttribute(curNode, "AutoComplete")
+                       && !TYml2Xml.HasAttribute(curNode, "MultiColumn");
             }
 
             return false;
@@ -319,7 +339,7 @@ namespace Ict.Tools.CodeGeneration.Winforms
                     }
                 }
 
-                writer.CallControlFunction(ctrl.controlName, "Items.AddRange(new object[] {" + formattedValues + "});");
+                writer.CallControlFunction(ctrl.controlName, "Items.AddRange(new object[] {" + formattedValues + "})");
 
                 if (defaultValue.Length > 0)
                 {
@@ -635,13 +655,54 @@ namespace Ict.Tools.CodeGeneration.Winforms
                     LoadDetailsToGrid += "    myDataView.Sort = \"" + SortOrder + "\";" + Environment.NewLine;
                 }
 
+                if (ctrl.HasAttribute("RowFilter"))
+                {
+                    // this references a field in the table, and assumes there exists a local variable with the same name
+                    // eg. FBatchNumber in GL Journals
+                    string RowFilter = ctrl.GetAttribute("RowFilter");
+
+                    String FilterString = "";
+
+                    foreach (string RowFilterPart in RowFilter.Split(','))
+                    {
+                        bool temp;
+                        string columnName =
+                            writer.CodeStorage.GetTableField(
+                                null,
+                                RowFilterPart,
+                                out temp, true).strName;
+
+                        if (FilterString.Length > 0)
+                        {
+                            FilterString += " and ";
+                        }
+
+                        FilterString += "\"" + columnName + " = \" + F" + TTable.NiceFieldName(columnName) + ".ToString()";
+                    }
+
+                    LoadDetailsToGrid += "    myDataView.RowFilter = " + FilterString + ";" + Environment.NewLine;
+                }
+
                 LoadDetailsToGrid += "    myDataView.AllowNew = false;" + Environment.NewLine;
                 LoadDetailsToGrid += "    " + ctrl.controlName + ".DataSource = new DevAge.ComponentModel.BoundDataView(myDataView);" +
                                      Environment.NewLine;
                 LoadDetailsToGrid += "    " + ctrl.controlName + ".AutoSizeCells();" + Environment.NewLine;
                 LoadDetailsToGrid += "    if (FMainDS." + FCodeStorage.GetAttribute("DetailTable") + ".Rows.Count > 0)" + Environment.NewLine;
                 LoadDetailsToGrid += "    {" + Environment.NewLine;
-                LoadDetailsToGrid += "        ShowDetails(0);" + Environment.NewLine;
+
+                if (ctrl.HasAttribute("SortOrder") && ctrl.GetAttribute("SortOrder").Contains("DESC"))
+                {
+                    LoadDetailsToGrid += "        grdDetails.Selection.SelectRow(FMainDS." + FCodeStorage.GetAttribute("DetailTable") +
+                                         ".Rows.Count, true);" + Environment.NewLine;
+                    LoadDetailsToGrid += "        ShowDetails(FMainDS." + FCodeStorage.GetAttribute("DetailTable") + ".Rows.Count - 1);" +
+                                         Environment.NewLine;
+                }
+                else
+                {
+                    LoadDetailsToGrid += "        grdDetails.Selection.SelectRow(1, true);" + Environment.NewLine;
+                    LoadDetailsToGrid += "        ShowDetails(0);" + Environment.NewLine;
+                }
+
                 LoadDetailsToGrid += "    }" + Environment.NewLine;
                 LoadDetailsToGrid += "    else" + Environment.NewLine;
                 LoadDetailsToGrid += "    {" + Environment.NewLine;
@@ -1005,7 +1066,7 @@ namespace Ict.Tools.CodeGeneration.Winforms
 
         public override bool ControlFitsNode(XmlNode curNode)
         {
-            if (curNode.Name.StartsWith(FPrefix))
+            if (SimplePrefixMatch(curNode))
             {
                 if (TXMLParser.GetChild(curNode, "Controls") == null)
                 {
@@ -1165,7 +1226,7 @@ namespace Ict.Tools.CodeGeneration.Winforms
 
         public override bool ControlFitsNode(XmlNode curNode)
         {
-            if (curNode.Name.StartsWith(FPrefix))
+            if (SimplePrefixMatch(curNode))
             {
                 return !base.ControlFitsNode(curNode);
             }
@@ -1261,7 +1322,7 @@ namespace Ict.Tools.CodeGeneration.Winforms
 
         public override bool ControlFitsNode(XmlNode curNode)
         {
-            if (curNode.Name.StartsWith(FPrefix))
+            if (SimplePrefixMatch(curNode))
             {
                 return !base.ControlFitsNode(curNode);
             }

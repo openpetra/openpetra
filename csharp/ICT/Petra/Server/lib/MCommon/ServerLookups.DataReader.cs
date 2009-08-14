@@ -77,6 +77,12 @@ namespace Ict.Petra.Server.MCommon.DataReader
                     AApDocumentAccess.LoadUsingTemplate(out typedTable, ASearchCriteria, ReadTransaction);
                     tempTable = typedTable;
                 }
+                else if (ATablename == ATransactionTypeTable.GetTableDBName())
+                {
+                    ATransactionTypeTable typedTable;
+                    ATransactionTypeAccess.LoadUsingTemplate(out typedTable, ASearchCriteria, ReadTransaction);
+                    tempTable = typedTable;
+                }
                 else if (ATablename == ACurrencyTable.GetTableDBName())
                 {
                     ACurrencyTable typedTable;
